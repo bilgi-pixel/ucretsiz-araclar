@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kurban Hisse Hesaplama – Hisse Bedeli, Kesim Ücreti ve Hisse Başı Tahmini Et</title>
+  <meta name="description" content="Kurban fiyatını hisse sayısına bölün: hisse bedeli, kesim ve yüzme ücreti payı, tahmini et miktarı ve hisse başı et. Eşit ya da hissedar bazlı paylaşım tablosu. Ücretsiz, veriler tarayıcıdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kurban-hisse-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kh-form .ba-field { margin-bottom: 12px; }
+    .kh-form input[type="text"], .kh-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kh-form input:focus, .kh-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kh-form input:disabled { background: var(--ba-surface-2); color: var(--ba-text-muted); cursor: not-allowed; }
+    .kh-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kh-grid { grid-template-columns: 1fr 1fr; } .kh-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .kh-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kh-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kh-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kh-modes input:disabled + span { color: var(--ba-text-muted); }
+    .kh-people { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+    .kh-person { display: grid; grid-template-columns: 1fr 96px auto; gap: 8px; align-items: end; margin: 0; }
+    .kh-person label { display: block; font-size: .82rem; font-weight: 600; color: var(--ba-text-2); }
+    .kh-person input { margin-top: 3px; }
+    .kh-total { font-family: var(--ba-mono); font-size: .9rem; margin: 8px 0 0; }
+    .kh-total.is-bad { color: var(--ba-danger); }
+    .kh-total.is-ok { color: var(--ba-success); }
+    .kh-results { margin: 0; display: grid; gap: 6px; }
+    .kh-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kh-row:last-child { border-bottom: 0; }
+    .kh-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kh-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kh-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kh-sub { margin: 14px 0 4px; font-size: .95rem; color: var(--ba-text); }
+    .kh-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kh-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kh-params { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .kh-disclaimer { margin-top: 12px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .9rem; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kh-disclaimer { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; } }
+    .kh-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 8px; }
+    .kh-table { width: 100%; border-collapse: collapse; font-size: .92rem; min-width: 520px; }
+    .kh-table th, .kh-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .kh-table th { background: var(--ba-surface-2); }
+    .kh-table td:first-child, .kh-table th:first-child { white-space: nowrap; }
+    .kh-table td.n, .kh-table th.n { text-align: right; font-family: var(--ba-mono); white-space: nowrap; }
+    .kh-table tfoot td { font-weight: 700; border-top: 2px solid var(--ba-border); }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+    .print-head { display: none; }
+    @media (max-width: 480px) { .kh-row { flex-direction: column; gap: 2px; } .kh-row dd { white-space: normal; } }
+    /* Yazdırma: yalnızca sonuç dökümü ve tablo, sade çıktı. */
+    @media print {
+      .ba-topbar, .ba-header, .ba-hero, .ba-ad, .ba-content, .ba-footer, .kh-form, .ba-error, .ba-actions, .kh-status, .kh-params, .ba-progress { display: none !important; }
+      body { background: #fff; color: #000; }
+      .ba-tool { box-shadow: none; border: 0; margin: 0; padding: 0; }
+      .ba-result { background: #fff; border: 1px solid #000; color: #000; }
+      .ba-result h3 { color: #000; }
+      .ba-result h3::before { display: none; }
+      .kh-table-wrap { overflow: visible; }
+      .kh-table { min-width: 0; }
+      .print-head { display: block; margin: 0 0 12px; font-size: .95rem; }
+      .print-head strong { font-size: 1.2rem; display: block; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kurban Hisse ve Et Paylaşımı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kurban-hisse-hesapla/","inLanguage":"tr"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Kurban Hisse Hesaplama</span> – Hisse Bedeli ve Tahmini Et Paylaşımı</h1>
+      <p class="lead">Kurbanlık hayvanın fiyatını hisse sayısına bölün; kesim ve yüzme ücretini paylaştırın, canlı ağırlıktan tahmini et miktarını ve hisse başına düşen eti görün. Hesap yaklaşıktır ve dinî hüküm vermez; hisse şartları için Diyanet'in açıklamalarına bakın. Girdiğiniz bilgiler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kh-form" novalidate>
+        <div class="kh-grid">
+          <div class="ba-field"><label for="animal">Hayvan türü</label>
+            <select id="animal"><option value="buyukbas" selected>Büyükbaş (sığır, manda, deve) – en fazla 7 hisse</option><option value="kucukbas">Küçükbaş (koyun, keçi) – tek kişi</option></select></div>
+          <div class="ba-field"><label for="shares">Hisse sayısı</label><input id="shares" type="text" inputmode="numeric" autocomplete="off" value="7"><div class="hint" id="shares-hint">Büyükbaşta 1 ile 7 arasında bir sayı yazın.</div></div>
+        </div>
+        <div class="kh-grid">
+          <div class="ba-field"><label for="price">Hayvanın toplam fiyatı (₺)</label><input id="price" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 70.000"></div>
+          <div class="ba-field"><label for="fee">Kesim, yüzme ve parçalama ücreti (toplam, ₺)</label><input id="fee" type="text" inputmode="decimal" autocomplete="off" placeholder="yoksa boş bırakın"></div>
+        </div>
+        <div class="kh-grid">
+          <div class="ba-field"><label for="other">Diğer giderler (nakliye, paketleme vb., toplam ₺)</label><input id="other" type="text" inputmode="decimal" autocomplete="off" placeholder="yoksa boş bırakın"></div>
+          <div class="ba-field"><label for="weight">Canlı ağırlık (kg, isteğe bağlı)</label><input id="weight" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 400"><div class="hint">Boş bırakırsanız et tahmini yapılmaz, yalnızca bedeller hesaplanır.</div></div>
+        </div>
+        <div class="kh-grid">
+          <div class="ba-field"><label for="randiman">Karkas randımanı (%)</label><input id="randiman" type="text" inputmode="decimal" autocomplete="off" value="50"><div class="hint" id="randiman-hint">Büyükbaşta yaklaşık %50 alınır; hayvanınıza göre değiştirebilirsiniz.</div></div>
+          <div class="ba-field"><span>Paylaşım şekli</span>
+            <div class="kh-modes" role="radiogroup" aria-label="Paylaşım şekli">
+              <label><input type="radio" name="mode" id="mode-equal" value="equal" checked><span>Eşit paylaşım</span></label>
+              <label><input type="radio" name="mode" id="mode-custom" value="custom"><span>İstek bazlı (hissedar başına hisse adedi)</span></label>
+            </div></div>
+        </div>
+        <div id="custom-box" hidden>
+          <p class="hint">Her hissedara kaç hisse düştüğünü yazın. Adetlerin toplamı toplam hisse sayısına eşit olmalıdır. Örneğin 7 hisselik büyükbaşta bir aile 3, iki aile 2'şer hisse alabilir.</p>
+          <ul id="people" class="kh-people" aria-label="Hissedarlar"></ul>
+          <p id="people-total" class="kh-total" role="status" aria-live="polite"></p>
+          <div class="ba-actions"><button id="add-person" class="ba-btn" type="button">Hissedar ekle</button></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <div class="print-head"><strong>Kurban Hisse ve Et Paylaşımı Hesabı (tahmini)</strong><span id="print-inputs"></span><br>Bilişim Ajans Ücretsiz Araçlar · araclar.bilisimajans.com/kurban-hisse-hesapla/ · <span id="print-date"></span></div>
+        <h3>Sonuç (tahmini)</h3>
+        <p class="kh-sub"><strong>Bir hisse için</strong></p>
+        <dl class="kh-results">
+          <div class="kh-row"><dt>Hisse bedeli</dt><dd id="r-share-price"></dd></div>
+          <div class="kh-row"><dt>Kesim ve yüzme ücreti payı</dt><dd id="r-fee-share"></dd></div>
+          <div class="kh-row"><dt>Diğer giderler payı</dt><dd id="r-other-share"></dd></div>
+          <div class="kh-row is-strong"><dt>Hisse başına toplam ödeme</dt><dd id="r-share-total"></dd></div>
+        </dl>
+        <p class="kh-sub"><strong>Hayvanın geneli</strong></p>
+        <dl class="kh-results">
+          <div class="kh-row"><dt>Toplam maliyet</dt><dd id="r-total"></dd></div>
+          <div class="kh-row" id="meat-row-a"><dt>Tahmini et (kemikli karkas, yaklaşık)</dt><dd id="r-meat"></dd></div>
+          <div class="kh-row is-strong" id="meat-row-b"><dt>Hisse başı tahmini et (yaklaşık)</dt><dd id="r-meat-share"></dd></div>
+          <div class="kh-row" id="meat-row-c"><dt>Kilogram başına maliyet (tahmini)</dt><dd id="r-per-kg"></dd></div>
+        </dl>
+        <p class="kh-sub"><strong id="table-title">Paylaşım tablosu</strong></p>
+        <div class="kh-table-wrap">
+          <table class="kh-table" id="tbl"><caption class="visually-hidden">Hissedar başına bedel, gider ve tahmini et</caption>
+            <thead><tr><th scope="col">Hissedar</th><th scope="col" class="n">Hisse</th><th scope="col" class="n">Hisse bedeli</th><th scope="col" class="n">Kesim ve diğer</th><th scope="col" class="n">Toplam ödeme</th><th scope="col" class="n" id="th-meat">Tahmini et</th></tr></thead>
+            <tbody></tbody><tfoot></tfoot></table>
+        </div>
+        <p class="kh-note" id="r-note"></p>
+        <div class="kh-disclaimer" id="din-uyari"><strong>Dinî hüküm vermez.</strong> Bu araç yalnızca aritmetik hesap yapar; et miktarı tahmindir ve gerçek değer değişir. Hisse şartları, niyet, yaş ve paylaşım usulü gibi dinî konularda <a href="https://www.diyanet.gov.tr/" rel="noopener">Diyanet İşleri Başkanlığı</a>'nın açıklamasına, il ya da ilçe müftülüğüne ya da Alo 190 hattına danışın.</div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır / PDF kaydet</button></div>
+        <p class="kh-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kh-params">Parametreler (karkas randımanı, hisse sınırı) <span id="params-date">…</span> tarihinde güncellendi. Randıman değerleri yaklaşık ortalamalardır.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="kurban-hisse-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Kurban hissesi nasıl hesaplanır?</h2>
+      <p>Büyükbaş bir hayvanı birkaç kişi birlikte aldığında ortada basit ama sık karıştırılan bir hesap vardır: hayvanın toplam bedeli hisse sayısına bölünür, kesim ve yüzme ücreti ile varsa nakliye ya da paketleme gibi ek giderler aynı oranda paylaşılır, ortaya çıkan et de hisselere dağıtılır. Bu araç bu işlemi sizin yerinize yapar. Fiyatı, hisse sayısını ve isterseniz canlı ağırlığı yazarsınız; bir hisse için ödenecek tutarı, hayvanın toplam maliyetini, tahmini et miktarını ve hisse başına düşen eti görürsünüz. Eşit paylaşım yerine bir ailenin iki hisse, diğerinin bir hisse aldığı gibi durumlar için hissedar bazlı paylaşım tablosu da hazırdır.</p>
+      <p>Örnek olarak 70.000 ₺'ye alınan bir büyükbaş hayvanı ele alalım. Yedi hisseye bölündüğünde hisse bedeli 10.000 ₺ olur. Canlı ağırlığı 400 kg ve karkas randımanı yüzde 50 ise tahmini et miktarı 400 × 0,50 = 200 kg'dır. Bu et yedi hisseye paylaştırıldığında hisse başına yaklaşık 28,6 kg düşer. Kesim ve yüzme ücreti toplam 7.000 ₺ ise hisse başına 1.000 ₺ daha eklenir ve hisse başına toplam ödeme 11.000 ₺ olur.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Hayvan türünü seçin. Büyükbaşta (sığır, manda, deve) 1 ile 7 arasında hisse sayısı yazabilirsiniz; küçükbaşta (koyun, keçi) hayvan tek kişi adınadır ve hisse sayısı 1'de kilitlidir.</li>
+        <li>Hayvanın toplam fiyatını yazın. Virgül ya da nokta kullanabilirsiniz: <code>70000</code>, <code>70.000</code> ve <code>70.000,50</code> aynı şekilde anlaşılır.</li>
+        <li>Kesim, yüzme ve parçalama ücretini ve varsa diğer giderleri toplam tutar olarak girin. Ücret yoksa kutuları boş bırakabilirsiniz.</li>
+        <li>Et tahmini için canlı ağırlığı kilogram olarak yazın. Karkas randımanı büyükbaşta yüzde 50, küçükbaşta yüzde 45 olarak gelir; hayvanınızın durumuna göre değiştirebilirsiniz.</li>
+        <li>Paylaşımı seçin. "Eşit paylaşım" tüm hisseleri aynı sayar. "İstek bazlı" seçeneğinde her hissedara düşen hisse adedini yazarsınız; adetlerin toplamı toplam hisse sayısına eşit olmalıdır.</li>
+        <li>"Hesapla" düğmesine basın. Sonucu kopyalayabilir ya da yazdırıp PDF olarak kaydedebilirsiniz.</li>
+      </ol>
+
+      <h2>Hisse bedeli ve ek giderler</h2>
+      <p>Hisse bedeli, hayvanın alış fiyatının hisse sayısına bölünmüş hâlidir. Ancak gerçek maliyet bununla bitmez. Kesim ve yüzme ücreti, parçalama ve paketleme, soğuk hava deposu, nakliye gibi kalemler hayvandan hayvana ve bölgeden bölgeye değişir. Bu giderleri iki ayrı kutuya yazarsanız sonuçta ayrı satırlar hâlinde görürsünüz; toplamı da hisse başına yansıtırız. Hissedarlar arasında önceden anlaşılması gereken konu şudur: giderler eşit mi bölünecek, yoksa hisse adedine göre mi? Bu araç her ikisini de destekler; eşit paylaşımda her hissedar aynı tutarı, istek bazlı paylaşımda hisse adedi oranında bir tutarı öder.</p>
+      <p>Kuruş farkları da hesaba katılır. 100.000 ₺'lik bir hayvan yedi hisseye bölündüğünde hisse bedeli 14.285,714… ₺ çıkar. Kimseye eksik ya da fazla yazmamak için kuruşlar "en büyük kalan" yöntemiyle dağıtılır: ilk üç hissedar 14.285,72 ₺, kalan dördü 14.285,71 ₺ öder ve toplam tam 100.000 ₺ eder. Tabloda bu fark açıkça görünür.</p>
+
+      <h2>Tahmini et miktarı nasıl bulunur?</h2>
+      <p>Canlı ağırlık, hayvanın tartıldığı hâliyle ağırlığıdır; derisi, kafası, bağırsakları ve iç organları dâhildir. Kesim ve yüzmeden sonra elde edilen, kemikli ve soğutulmuş gövde ağırlığına karkas denir. Karkas ağırlığının canlı ağırlığa oranına karkas randımanı adı verilir. Sektörde büyükbaşta yaklaşık yüzde 50, küçükbaşta yaklaşık yüzde 45 ortalama alınır; genç, zayıf ya da yağlı hayvanda oran düşüp yükselebilir. Bu sayfadaki varsayılan değerler yalnızca bir başlangıç noktasıdır ve alan açık bırakılmıştır, kendi tahmininizi girebilirsiniz.</p>
+      <table>
+        <thead><tr><th>Hayvan</th><th>Örnek canlı ağırlık</th><th>Varsayılan randıman</th><th>Tahmini karkas</th></tr></thead>
+        <tbody>
+          <tr><td>Büyükbaş</td><td>400 kg</td><td>%50</td><td>≈ 200 kg</td></tr>
+          <tr><td>Küçükbaş</td><td>50 kg</td><td>%45</td><td>≈ 22,5 kg</td></tr>
+        </tbody>
+      </table>
+      <p>Önemli bir ayrıntı: bulduğunuz değer kemikli karkas ağırlığıdır. Kemikleri ayırdığınızda ya da kıyma, kuşbaşı gibi parçalara böldüğünüzde eline geçen kemiksiz et miktarı bunun altında kalır; fire oranı kasabın kesim şekline ve istediğiniz parçalara göre değişir. Hissedarlar arasında et paylaşımı yapılırken pratikte tartı kullanılır; bu araç yalnızca planlama için bir fikir verir.</p>
+
+      <div class="ba-ad" data-slot="kurban-hisse-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Eşit ve istek bazlı paylaşım</h2>
+      <p>En yaygın durumda yedi kişi ya da aile birer hisse alır ve her şey yediye bölünür. Ancak her zaman böyle olmaz: kalabalık bir aile iki hisse alırken tek başına yaşayan bir akraba bir hisse alabilir. "İstek bazlı" seçeneğinde her hissedar için bir ad (isteğe bağlı) ve hisse adedi yazarsınız. Örneğin Ali 3, Veli 2, Ayşe 2 hisse alıyorsa Ali'nin bedeli toplam fiyatın 3/7'si, Ali'ye düşen tahmini et de toplam etin 3/7'si olur. Adetlerin toplamı hisse sayısına eşit değilse araç sizi uyarır ve neyi düzeltmeniz gerektiğini yazar; hesaplamaz.</p>
+      <p>Bu hesap yalnızca paranın ve tahmini etin matematiksel dağılımını gösterir. Hissedarların kimlerden oluşabileceği, hisselerin nasıl kurulacağı ve etin nasıl bölüşüleceği gibi konular dinî hükümlere bağlıdır; bunlarda karar verici olan Diyanet İşleri Başkanlığı'nın açıklamalarıdır, bu sayfa değil.</p>
+
+      <h2>Diyanet'e göre hisse şartları (özet bilgi)</h2>
+      <p>Aşağıdaki maddeler, Diyanet İşleri Başkanlığı'nın kamuya açık anlatımındaki genel çerçevenin kısa bir özetidir. Bu araç dinî hüküm vermez; ayrıntı, istisna ve güncel metin için lütfen <a href="https://www.diyanet.gov.tr/" rel="noopener">diyanet.gov.tr</a> adresine, il ya da ilçe müftülüğünüze ya da Alo 190 hattına başvurun.</p>
+      <ul>
+        <li><strong>Hisse sayısı:</strong> Büyükbaş hayvan (sığır, manda, deve) en fazla yedi kişi adına kesilebilir; koyun ve keçi tek kişi adınadır. Bu nedenle araç, büyükbaşta en çok 7, küçükbaşta 1 hisseye izin verir.</li>
+        <li><strong>Yaş:</strong> Kurbanlık hayvanın belirli bir yaşı doldurmuş olması gerekir; Diyanet'in anlatımında koyun ve keçi için bir, sığır için iki, deve için beş yaş esas alınır. İstisnalar ve ayrıntılar için Diyanet'e bakın.</li>
+        <li><strong>Hissedarlar ve niyet:</strong> Hisseye ortak olanların niyetiyle ve hisselerin dağılımıyla ilgili şartlar vardır. Bu şartları araç kontrol etmez; bu konuda mutlaka Diyanet'e danışın.</li>
+        <li><strong>Bağış ve vekâlet:</strong> Kurbanı kendiniz kesmek yerine kurumlara vekâlet vermeniz ya da bağış yapmanız hâlinde ücretler ve usuller ilgili kurumun duyurusuna tabidir.</li>
+      </ul>
+
+      <h2>Sonuçlar neden yaklaşıktır?</h2>
+      <p>Hesaptaki para tutarları kesindir, çünkü yalnızca girdiğiniz sayılara dayanan bir bölme işlemidir. Et miktarı ise bir tahmindir. Canlı ağırlığı çoğu zaman gözle ya da kabaca ölçersiniz; tartılan ağırlık bile karkas miktarını belirlemez. Hayvanın ırkı, cinsiyeti, yaşı, açlık süresi, kesim sonrası bekleme ve kasabın yağ ve kemik ayıklama biçimi sonucu yüzde birkaç puan değiştirebilir. Bu yüzden araç hep "yaklaşık" ve "tahmini" ifadelerini kullanır. Ek olarak karkas randımanı alanını değiştirerek en kötü ve en iyi senaryoyu kolayca görebilirsiniz: yüzde 48 ve yüzde 52 ile iki kez hesaplamak, 400 kg'lık bir hayvanda hisse başına yaklaşık bir kilogramlık aralığı gösterir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Fiyat, ağırlık ve hissedar adları tarayıcınızda işlenir; hiçbir sunucuya iletilmez, saklanmaz.</li>
+        <li><strong>Kuruşu şaşmaz.</strong> Kuruş farkları açıkça dağıtılır; tablodaki toplam her zaman girdiğiniz tutara eşittir.</li>
+        <li><strong>Şeffaf varsayımlar.</strong> Randıman değerleri ve hisse sınırı parametre dosyasında tarih ve kaynak notuyla tutulur, sayfada güncelleme tarihi görünür.</li>
+        <li><strong>Esnek paylaşım.</strong> Eşit ya da hissedar bazlı tablo; kopyalama ve yazdırma düğmeleri.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Büyükbaş kurban hissesi nasıl hesaplanır?</summary><p>Hayvanın toplam fiyatı hisse sayısına bölünür. 70.000 ₺'lik bir büyükbaş 7 hisseye bölünürse hisse bedeli 10.000 ₺ olur. Kesim, yüzme ve diğer giderler eklenirse hisse başına toplam ödeme artar; bu araç bunların hepsini ayrı satırlarda gösterir.</p></details>
+        <details><summary>Bir büyükbaş hayvana en fazla kaç hisse yazılabilir?</summary><p>Diyanet'in kamuya açık anlatımına göre büyükbaş hayvan (sığır, manda, deve) en fazla yedi kişi adına kesilebilir; bu yüzden araç büyükbaşta 7'den fazla hisseye izin vermez. Küçükbaş hayvan (koyun, keçi) tek kişi adınadır. Kesin ve güncel bilgi için Diyanet'e başvurun.</p></details>
+        <details><summary>Tahmini et miktarı nasıl hesaplanıyor?</summary><p>Canlı ağırlık karkas randımanıyla çarpılır. 400 kg canlı ağırlık ve yüzde 50 randımanla tahmini karkas 200 kg olur. Bunu hisse sayısına bölerek hisse başı eti bulursunuz: 200 ÷ 7 ≈ 28,6 kg. Bu, kemikli karkas ağırlığıdır; kemiksiz et bunun altında kalır.</p></details>
+        <details><summary>Karkas randımanı nedir, neden yüzde 50 ve yüzde 45 alınıyor?</summary><p>Kesim ve yüzme sonrası kemikli gövde ağırlığının canlı ağırlığa oranıdır. Sektörde büyükbaşta yaklaşık yüzde 50, küçükbaşta yaklaşık yüzde 45 ortalama kabul edilir; gerçek oran hayvana göre değişir. Bu yüzden alanı elle değiştirebilirsiniz.</p></details>
+        <details><summary>Kesim ve yüzme ücreti hissedarlar arasında nasıl paylaşılır?</summary><p>Eşit paylaşımda toplam ücret hisse sayısına bölünür. İstek bazlı paylaşımda hissedarın hisse adedi oranında pay alır. Tam bölünmeyen kuruşlar en büyük kalan yöntemiyle birer kuruş olarak dağıtılır, böylece tablodaki toplam girdiğiniz tutarla birebir aynı olur.</p></details>
+        <details><summary>İstek bazlı paylaşım ne demek?</summary><p>Her hissedar için kaç hisse aldığını yazdığınız paylaşım şeklidir. Örneğin 7 hisselik hayvanda Ali 3, Veli 2, Ayşe 2 hisse alabilir. Adetlerin toplamı 7'ye eşit olmalıdır; değilse araç hata verir ve toplamı gösterir.</p></details>
+        <details><summary>Bu araç hisse şartlarının dinen uygun olup olmadığını söyler mi?</summary><p>Hayır. Araç yalnızca aritmetik hesap yapar ve dinî hüküm vermez. Hisse şartları, niyet, yaş ve paylaşım usulü gibi konularda Diyanet İşleri Başkanlığı'nın açıklamasına, il ya da ilçe müftülüğüne veya Alo 190 hattına danışın.</p></details>
+        <details><summary>Küçükbaş hayvan için hisse hesabı yapılır mı?</summary><p>Küçükbaş hayvan tek kişi adına kesildiği için hisse sayısı 1'dir. Yine de toplam maliyeti (fiyat, kesim ve diğer giderler) ve tahmini et miktarını görebilirsiniz; randıman varsayılanı yüzde 45'tir.</p></details>
+        <details><summary>"Hisse sayısı en fazla 7 olabilir" hatası alıyorum.</summary><p>Büyükbaş hayvan için hisse sayısı 1 ile 7 arasında olmalıdır. 8 ya da daha fazla kişi varsa ikinci bir hayvan gerekir; kişi sayısını iki hayvana bölüp araçta her hayvan için ayrı hesap yapın.</p></details>
+        <details><summary>Girdiğim bilgiler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Fiyat, ağırlık ve hissedar adları hiçbir sunucuya iletilmez, saklanmaz ve çerezle izlenmez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu sayfa dinî hüküm vermez ve mali tavsiye niteliği taşımaz. Et miktarları yaklaşıktır; para tutarları yalnızca girdiğiniz değerlere dayanır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../oran-oranti-hesapla/">Oran Orantı Hesaplama</a></li>
+        <li><a href="../hicri-miladi/">Hicri Miladi Takvim Çevirici</a></li>
+        <li><a href="../kac-gun-kaldi/">Kaç Gün Kaldı</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kurban-hisse-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

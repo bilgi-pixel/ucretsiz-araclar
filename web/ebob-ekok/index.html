@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>EBOB EKOK Hesaplama – Asal Çarpanlara Ayırma ve Asal Sayı Testi (Adım Adım)</title>
+  <meta name="description" content="İki ya da daha fazla sayının EBOB ve EKOK'unu Öklid algoritmasıyla adım adım bulun; asal çarpanlara ayırın, asal sayı testi yapın, bölenleri listeleyin. Ücretsiz, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ebob-ekok/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .ac-results { margin: 0; display: grid; gap: 6px; }
+    .ac-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .ac-row:last-child { border-bottom: 0; }
+    .ac-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .ac-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; text-align: right; overflow-wrap: anywhere; }
+    .ac-row.is-strong dd { font-weight: 700; font-size: 1.3rem; color: var(--ba-text); }
+    .ac-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .ac-box:not(.is-active) { display: none; }
+    .ac-box h3 { margin: 0 0 8px; font-size: 1rem; }
+    .ac-box h4 { margin: 18px 0 6px; font-size: .98rem; }
+    .ac-box h5 { margin: 14px 0 4px; font-size: .9rem; }
+    .ac-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .eb-steps, .eb-lines, .eb-list { margin: 8px 0 0; padding-left: 22px; font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .eb-steps li, .eb-lines li, .eb-list li { margin: 4px 0; }
+    .eb-lines { padding-left: 16px; margin-bottom: 8px; }
+    .eb-note { margin: 6px 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .eb-yes { color: var(--ba-success); }
+    .eb-divs { margin-top: 4px; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .eb-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+    .eb-chips .lbl { font-size: .85rem; color: var(--ba-text-muted); }
+    .eb-chips .ba-btn { min-height: 38px; padding: 6px 12px; font-size: .9rem; }
+    .eb-two { display: grid; gap: 12px; align-items: start; }
+    @media (min-width: 600px) { .eb-two { grid-template-columns: 1fr 1fr; } }
+    .eb-factor-box { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .eb-tree, .eb-tree ul { list-style: none; margin: 0; padding: 0; font-family: var(--ba-mono); font-size: .88rem; overflow-wrap: anywhere; }
+    .eb-tree ul { padding-left: 12px; margin-left: 8px; border-left: 2px solid var(--ba-border); }
+    .eb-tree li { margin: 4px 0; }
+    .eb-node { font-weight: 700; }
+    .eb-leaf { display: inline-block; min-width: 1.9em; padding: 0 6px; border-radius: 999px; background: var(--ba-primary); color: var(--ba-bg); text-align: center; font-weight: 700; }
+    .eb-scroll { overflow-x: auto; max-width: 100%; }
+    .eb-table { border-collapse: collapse; font-size: .85rem; font-family: var(--ba-mono); }
+    .eb-table th, .eb-table td { padding: 5px 9px; border: 1px solid var(--ba-border); text-align: center; overflow-wrap: anywhere; }
+    .eb-table th { background: var(--ba-surface-2); font-family: var(--ba-font); font-weight: 600; }
+    .eb-sieve-wrap { margin-top: 18px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); padding: 0 14px; }
+    .eb-sieve-wrap summary { cursor: pointer; font-weight: 600; padding: 12px 0; min-height: 44px; }
+    .eb-sieve-wrap[open] summary { border-bottom: 1px solid var(--ba-border); }
+    .eb-legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 12px 0 0; padding: 0; list-style: none; font-size: .85rem; color: var(--ba-text-2); }
+    .eb-legend li { display: flex; align-items: center; gap: 6px; }
+    .eb-legend .eb-cell { width: 34px; }
+    .eb-sieve { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 2px; margin: 12px 0; }
+    @media (min-width: 481px) { .eb-sieve { grid-template-columns: repeat(10, minmax(0, 1fr)); } }
+    @media (min-width: 760px) { .eb-sieve { grid-template-columns: repeat(20, minmax(0, 1fr)); } }
+    .eb-cell { display: grid; place-items: center; min-height: 28px; font-size: .75rem; font-family: var(--ba-mono); color: var(--ba-text-muted); border-radius: 4px; }
+    .eb-cell.is-prime { background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-weight: 700; }
+    .eb-cell.is-hit { background: var(--ba-primary); color: var(--ba-bg); }
+    .eb-cell.is-input { box-shadow: inset 0 0 0 2px var(--ba-text); }
+    .eb-sieve-info { margin: 0 0 12px; font-size: .88rem; color: var(--ba-text-2); min-height: 1.3em; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"EBOB, EKOK ve Asal Çarpanlar Hesaplama – Bilişim Ajans","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ebob-ekok/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"EBOB nedir, nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"EBOB, iki ya da daha fazla sayıyı birlikte tam bölen en büyük pozitif tam sayıdır. En kolay yol Öklid algoritmasıdır: büyük sayıyı küçüğe bölün, kalanla küçük sayıyı yeniden bölün ve kalan sıfır olunca son bölen EBOB'tur. 48 ve 18 için 48 = 2 × 18 + 12, 18 = 1 × 12 + 6, 12 = 2 × 6 + 0 olduğundan EBOB 6'dır. Araç bu adımları sizin sayılarınızla yazar."}},{"@type":"Question","name":"EKOK nedir, nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"EKOK, verilen sayıların hepsine tam bölünen en küçük pozitif tam sayıdır. İki sayıda EKOK = (a × b) / EBOB formülüyle bulunur; 48 ve 18 için 864 / 6 = 144. Asal çarpanlarla bulmak için her asalı en büyük üssüyle alıp çarparsınız: 2⁴ × 3² = 144."}},{"@type":"Question","name":"EBOB ile EKOK arasındaki ilişki nedir?","acceptedAnswer":{"@type":"Answer","text":"İki sayı için EBOB × EKOK = a × b eşitliği her zaman geçerlidir; biri bulunursa diğeri çarpımdan çıkar. Üç ve daha fazla sayıda bu eşitlik geçerli değildir; EKOK'u zincirleme, ikişer ikişer hesaplamak gerekir."}},{"@type":"Question","name":"Bir sayının asal olup olmadığı nasıl anlaşılır?","acceptedAnswer":{"@type":"Answer","text":"Sayıyı karekökünden küçük ya da eşit asal sayılara bölmek yeter; hiçbiri tam bölmüyorsa sayı asaldır. 97 için √97 yaklaşık 9,85 olduğundan 2, 3, 5 ve 7'yi denemek yeterlidir ve hiçbiri 97'yi bölmez. Araç küçük sayılarda bu gerekçeyi yazar, çok büyük sayılarda Miller–Rabin testini kullanır."}},{"@type":"Question","name":"1 neden asal sayı değildir?","acceptedAnswer":{"@type":"Answer","text":"Asal sayı, tam olarak iki pozitif böleni olan sayıdır: 1 ve kendisi. 1'in yalnızca bir böleni olduğundan asal sayılmaz; bileşik de değildir. Bu kural, her sayının asal çarpanlara tek bir biçimde ayrılmasını sağlayan aritmetiğin temel teoremini düzgün tutar."}},{"@type":"Question","name":"Bir sayının kaç böleni olduğu nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Sayıyı asal çarpanlarına ayırın, her üsse 1 ekleyip sonuçları çarpın. 360 = 2³ × 3² × 5 olduğundan bölen sayısı (3+1) × (2+1) × (1+1) = 24'tür. Araç hem bu sayıyı hem de bölenlerin listesini ve toplamını verir."}},{"@type":"Question","name":"Üç veya daha fazla sayının EBOB ve EKOK'u nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Zincirleme bulunur: EBOB(a, b, c) = EBOB(EBOB(a, b), c); EKOK için de aynı yol geçerlidir. 12, 18 ve 30 için EBOB 6, EKOK 180'dir. Araç en fazla 10 sayıyı aynı anda işler; sayıları virgül, boşluk ya da noktalı virgülle ayırabilirsiniz."}},{"@type":"Question","name":"Çok büyük sayılarla çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sayılar BigInt ile tam kesinlikle işlenir ve en fazla 40 basamağa izin verilir. EBOB ve EKOK her boyutta anında bulunur. Çarpanlara ayırma ise iki büyük asalın çarpımı gibi sayılarda çok zordur; araç 2 saniyelik bir süre sınırı koyar ve ayrıştıramadığı kısmı açıkça belirtir."}},{"@type":"Question","name":"Girdiğim sayılar sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; yazdığınız sayılar sunucuya gönderilmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">EBOB, EKOK ve Asal Çarpanlar Hesaplama</span></h1>
+      <p class="lead">İki ya da daha fazla sayıyı virgülle yazın; EBOB ve EKOK Öklid algoritmasıyla adım adım, asal çarpanlara ayırma çarpan ağacı ve tabloyla, asal sayı testi ve bölenler listesiyle birlikte gelsin. Çok büyük sayılar da tam kesinlikle işlenir. Yazdığınız sayılar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" novalidate>
+        <div class="ba-field">
+          <label for="nums">Sayılar (virgülle ayırın)</label>
+          <input id="nums" type="text" autocomplete="off" spellcheck="false" placeholder="örn. 48, 18 ya da 360">
+          <div class="hint">Pozitif tam sayılar; virgül, boşluk ya da noktalı virgülle ayırın. EBOB ve EKOK için en az iki, çarpanlar ve asal testi için bir sayı yeter. En fazla 10 sayı, her biri en çok 40 basamak.</div>
+        </div>
+        <div class="ba-actions"><button type="submit" class="ba-btn ba-btn-primary">Hesapla</button></div>
+        <div class="eb-chips" role="group" aria-label="Örnek girişler"><span class="lbl">Örnekler:</span>
+          <button type="button" class="ba-btn" data-example="48, 18">48, 18</button>
+          <button type="button" class="ba-btn" data-example="12, 18, 30">12, 18, 30</button>
+          <button type="button" class="ba-btn" data-example="360">360</button>
+          <button type="button" class="ba-btn" data-example="97">97</button>
+        </div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="ac-box" aria-live="polite">
+        <h3>Sonuç</h3>
+        <p id="single-hint" class="eb-note" hidden>Tek sayı girdiniz: EBOB ve EKOK için en az iki sayı gerekir. Aşağıda bu sayının asal çarpanları, asal sayı testi ve bölenleri var.</p>
+        <dl class="ac-results">
+          <div class="ac-row is-strong" id="row-ebob"><dt>EBOB</dt><dd id="ebob"></dd></div>
+          <div class="ac-row is-strong" id="row-ekok"><dt>EKOK</dt><dd id="ekok"></dd></div>
+          <div class="ac-row" id="row-coprime"><dt>Aralarında asal mı?</dt><dd id="coprime"></dd></div>
+        </dl>
+
+        <div id="sec-euclid">
+          <h4>EBOB: Öklid algoritması</h4>
+          <p class="eb-note">Büyük sayı küçüğe bölünür, kalanla devam edilir; kalan 0 olunca son bölen EBOB'tur. Üç ve daha fazla sayıda EBOB ikişer ikişer zincirleme alınır.</p>
+          <ol class="eb-steps" id="euclid"></ol>
+        </div>
+        <div id="sec-ekok">
+          <h4>EKOK</h4>
+          <p class="eb-note">İki sayı için EKOK = (a × b) / EBOB. Daha fazla sayıda sonuç ikişer ikişer zincirlenir.</p>
+          <ol class="eb-steps" id="ekok-steps"></ol>
+          <div id="ekok-extra"></div>
+        </div>
+
+        <h4>Asal çarpanlara ayırma</h4>
+        <ul class="eb-list" id="factors"></ul>
+        <div id="trees"></div>
+
+        <h4>Asal sayı testi</h4>
+        <ul class="eb-list" id="prime-status"></ul>
+
+        <h4>Bölenler ve bölen sayısı</h4>
+        <ul class="eb-list" id="divisors"></ul>
+
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ac-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <details class="eb-sieve-wrap" id="sieve-wrap">
+        <summary>1–1000 arası asal sayı tablosu (168 asal sayı)</summary>
+        <ul class="eb-legend" aria-label="Renk açıklaması">
+          <li><span class="eb-cell is-prime">97</span> asal sayı (kalın, renkli)</li>
+          <li><span class="eb-cell">98</span> bileşik sayı veya 1</li>
+          <li><span class="eb-cell is-prime is-hit">7</span> girdinizdeki asal çarpan</li>
+          <li><span class="eb-cell is-prime is-input">97</span> girdiğiniz sayı</li>
+        </ul>
+        <div class="eb-sieve" id="sieve" aria-hidden="true"></div>
+        <p class="visually-hidden" id="prime-list"></p>
+        <p class="eb-sieve-info" id="sieve-info" aria-live="polite"></p>
+      </details>
+    </section>
+
+    <div class="ba-ad" data-slot="ebob-ekok-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Sayı kutusuna sayıları virgülle ayırarak yazın: "48, 18" ya da "12, 18, 30" gibi. Tek bir sayı yazarsanız araç yalnızca o sayının asal çarpanlarını, asal olup olmadığını ve bölenlerini gösterir.</li>
+        <li>Sonuç siz yazarken kısa bir beklemeden sonra kendiliğinden belirir; isterseniz "Hesapla" düğmesine ya da Enter tuşuna da basabilirsiniz. Üstte EBOB, EKOK ve sayıların aralarında asal olup olmadığı görünür.</li>
+        <li>Aşağı inerek Öklid algoritmasının satırlarını, EKOK hesabını, ortak bölme tablosunu, çarpan ağacını, asal sayı testinin gerekçesini ve bölenler listesini inceleyin. Ödevinizdeki işlemle karşılaştırmak için adımları sırayla okuyun.</li>
+        <li>"Sonucu kopyala" düğmesi tüm çözümü düz metin olarak panoya alır; ödev dosyanıza ya da mesajınıza yapıştırabilirsiniz. Sayfanın altındaki 1–1000 tablosunda girdinizin asal çarpanları renkle vurgulanır.</li>
+      </ol>
+
+      <h2>EBOB ve EKOK nedir?</h2>
+      <p>EBOB, "en büyük ortak bölen" ifadesinin kısaltmasıdır: verilen sayıların hepsini tam bölen sayılar arasındaki en büyüğüdür. EKOK ise "en küçük ortak kat" demektir: verilen sayıların hepsine tam bölünen sayılar arasındaki en küçüğüdür. 48 ve 18 örneğinde 48'in bölenleri 1, 2, 3, 4, 6, 8, 12, 16, 24 ve 48; 18'in bölenleri 1, 2, 3, 6, 9 ve 18'dir. Ortak bölenler 1, 2, 3 ve 6 olduğundan EBOB 6'dır. 48'in katları 48, 96, 144 diye, 18'in katları 18, 36, 54 diye sürer ve ilk ortak kat 144'tür; yani EKOK 144 çıkar.</p>
+      <p>İki kavram birbirinin tersi gibi görünse de aralarında güzel bir bağ vardır: iki sayı için EBOB ile EKOK'un çarpımı sayıların çarpımına eşittir. 6 × 144 = 864 = 48 × 18. Bu eşitlik bir sonucu doğrulamak için de, EKOK'u hızlıca bulmak için de kullanılır. Ancak üç ya da daha fazla sayıda bu eşitlik geçerli değildir; orada işlem ikişer ikişer zincirleme yapılır. Bu araç da böyle çalışır ve her zincir halkasını ayrı satırlarla gösterir.</p>
+
+      <h2>EBOB nasıl bulunur? Üç yöntem</h2>
+      <p><strong>1. Bölenleri listeleme.</strong> Her sayının bölenlerini yazar, ortak olanların en büyüğünü seçersiniz. Küçük sayılarda sezgisel ve öğreticidir; büyük sayılarda zahmetlidir. Aracın "Bölenler" bölümü bu listeleri sizin için çıkarır, EBOB'un bölenlerini de ortak bölenler olarak ayrıca verir.</p>
+      <p><strong>2. Asal çarpanlara ayırma.</strong> Sayıları asal çarpanlarına ayırırsınız: 48 = 2⁴ · 3 ve 18 = 2 · 3². Ortak asalları en küçük üsleriyle çarparsınız: 2¹ · 3¹ = 6. Okullarda en çok öğretilen yöntem budur ve araçtaki "asal çarpanlarla yöntem" tablosu her asal için üsleri yan yana koyar.</p>
+      <p><strong>3. Öklid algoritması.</strong> Büyük sayıyı küçüğe bölersiniz, sonra küçük sayıyı kalana bölersiniz ve kalan sıfır olana dek sürdürürsünüz. 48 = 2 × 18 + 12, 18 = 1 × 12 + 6, 12 = 2 × 6 + 0; son sıfır olmayan kalan 6'dır. Algoritma yaklaşık 2300 yıllıktır ve çarpanlara ayırma gerektirmediği için çok büyük sayılarda bile saniyenin binde biri sürede biter. Satır sayısı, küçük sayının basamak sayısının yaklaşık beş katını asla aşmaz.</p>
+
+      <h2>EKOK nasıl bulunur?</h2>
+      <p>En yaygın iki yol vardır. Birincisi asal çarpanlarla: tüm asalları, hangi sayıda geçerse geçsin, en büyük üsleriyle çarparsınız. 48 ve 18 için 2⁴ · 3² = 144. İkincisi ortak bölme tablosudur: sayıları yan yana yazar, en az birini bölen en küçük asalla hepsini böler, bölünemeyenleri aynen aşağı indirirsiniz. Tüm satırlar 1 olunca sağdaki asalların çarpımı EKOK'tur. Araç ikinci yöntemin tablosunu otomatik çizer; 12, 18 ve 30 için tablo 2, 2, 3, 3, 5 asallarını verir ve çarpım 180'dir.</p>
+      <p>Tabloları üretirken bilinçli bir sınır koyduk: ortak bölme tablosu 30 satırı aşacak kadar uzunsa gösterilmez, çünkü okunamaz hâle gelir. Bu durumda asal çarpan üs tablosu ve zincirleme formül yine görünür; sonuç her zaman kesindir.</p>
+
+      <h2>Asal çarpanlara ayırma ve çarpan ağacı</h2>
+      <p>Aritmetiğin temel teoremi, 1'den büyük her tam sayının asal çarpanların çarpımı olarak, çarpanların sırası dışında tek bir biçimde yazılabileceğini söyler. 360 sayısını en küçük asaldan başlayarak bölerseniz 360 = 2 × 180, 180 = 2 × 90, 90 = 2 × 45, 45 = 3 × 15, 15 = 3 × 5 elde edersiniz; yani 360 = 2³ · 3² · 5. Çarpan ağacı bu bölmeleri dallar hâlinde gösterir: her adımda sayı bir asal yaprağa ve kalana ayrılır, kalan sonraki dalın gövdesi olur. Araç bu ağacı ve altındaki asal, üs, değer tablosunu her bileşik sayı için çizer.</p>
+
+      <div class="ba-ad" data-slot="ebob-ekok-b" aria-label="Reklam"></div>
+
+      <h2>Asal sayı nedir, nasıl test edilir?</h2>
+      <p>Asal sayı, tam olarak iki pozitif böleni olan sayıdır: 1 ve kendisi. 2, 3, 5, 7, 11, 13 ilk asallardır; 2 tek çift asaldır. 1 asal sayı değildir, çünkü yalnızca bir böleni vardır; bileşik de sayılmaz. 1 ile 1000 arasında 168 asal sayı bulunur, 100'e kadar ise 25 tanedir. Aracın alt kısmındaki tablo bu asalları kalın ve renkli gösterir; girdinizin asal çarpanları ve girdiğiniz sayının kendisi ayrıca işaretlenir.</p>
+      <p>Bir sayının asal olup olmadığını anlamak için onu karekökünden küçük ya da eşit asallara bölmek yeter. Çünkü bileşik bir sayının en az bir çarpanı karekökünü aşmaz. 97 için √97 ≈ 9,85 olduğundan yalnızca 2, 3, 5 ve 7 denenir ve hiçbiri 97'yi bölmez; 97 asaldır. 91 ise 7 × 13 olduğu için asal değildir, hâlbuki ilk bakışta asal gibi görünür. Çok büyük sayılarda tek tek bölmek mümkün olmadığından araç Miller–Rabin testini kullanır; 3,3 × 10²⁴'ün altındaki sayılarda bu test kesin sonuç verir, daha büyüklerde çok yüksek olasılıklı sonuç verir ve bunu sayfada açıkça belirtir.</p>
+
+      <h2>Bölenler ve bölen sayısı</h2>
+      <p>Bir sayının kaç böleni olduğunu bulmak için asal çarpanlarının üslerine 1 ekleyip çarparsınız. 360 = 2³ · 3² · 5 için (3+1) × (2+1) × (1+1) = 24 bölen vardır. Nedeni basittir: bir bölen oluştururken 2'nin üssünü 0'dan 3'e (4 seçenek), 3'ün üssünü 0'dan 2'ye (3 seçenek) ve 5'in üssünü 0 ya da 1 (2 seçenek) seçersiniz; seçimler birbirinden bağımsızdır. Araç bölen sayısını, bölenlerin toplamını ve (bin bölene kadar) bölenlerin tam listesini verir. Bölenlerinin toplamı (kendisi dahil) sayının iki katına eşit olan mükemmel sayılar (6, 28, 496) merak edenler için ilginç bir araştırma konusudur.</p>
+
+      <h2>Günlük hayattan örnekler</h2>
+      <ul>
+        <li><strong>Karo döşemek.</strong> 360 × 240 cm'lik bir zemini hiç kesmeden, birbirine eşit en büyük kare karolarla kaplamak istiyorsanız EBOB(360, 240) = 120 cm bulursunuz; 3 × 2 = 6 karo yeter.</li>
+        <li><strong>Çakışan seferler.</strong> İki otobüs 12 ve 18 dakikada bir kalkıyorsa birlikte kalkış arası EKOK(12, 18) = 36 dakikadır.</li>
+        <li><strong>Kesir sadeleştirme.</strong> 48/18 kesrini pay ve paydanın EBOB'una (6) bölerek sadeleştirirsiniz: 8/3.</li>
+        <li><strong>Kesir toplama.</strong> 5/12 + 7/18 işleminde ortak payda olarak paydaların EKOK'unu (36) almak hesabı en kısa tutar.</li>
+        <li><strong>Grup bölme.</strong> 48 kız ve 30 erkek öğrenciyi her grupta aynı sayıda kız ve erkek olacak şekilde en fazla EBOB(48, 30) = 6 gruba ayırabilirsiniz.</li>
+      </ul>
+
+      <h2>Büyük sayılar ve sınırlar</h2>
+      <p>Araç sayıları tarayıcının BigInt türüyle işler; bu sayede 16 basamaktan sonra bile yuvarlama hatası olmaz. Sayılar en fazla 40 basamak ve en fazla 10 adet olabilir. EBOB ve EKOK hesabı Öklid algoritmasıyla her boyutta anında biter. Çarpanlara ayırma ise matematikte hâlâ zor bir problemdir: iki büyük asalın çarpımı olan bir sayının çarpanlarını bulmak, bugünkü bilinen yöntemlerle bile çok uzun sürer. Bu zorluk modern şifrelemenin dayanağıdır. Bu yüzden araç çarpanlara ayırmaya toplam 2 saniye ayırır; süre dolarsa bulduğu çarpanları, ayrıştıramadığı bileşik kısmı ve bunun nedenini yazar. Sayfanın donmaması için bu sınır bilinçli konmuştur.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>EBOB ile EKOK'u karıştırmak.</strong> EBOB hiçbir zaman sayıların en küçüğünden büyük olamaz; EKOK ise hiçbir zaman en büyüğünden küçük olamaz. Sonucunuz bu aralığın dışındaysa bir yerde hata vardır.</li>
+        <li><strong>1'i asal saymak.</strong> 1 asal değildir; asal çarpan listelerinde 1 yazılmaz.</li>
+        <li><strong>Ortak olmayan asalı EBOB'a katmak.</strong> EBOB'a yalnızca tüm sayılarda bulunan asallar girer, en küçük üsleriyle.</li>
+        <li><strong>Üçlü sayıda formülü yanlış uygulamak.</strong> EBOB × EKOK = çarpım eşitliği yalnızca iki sayı için doğrudur.</li>
+        <li><strong>Üssü eksik almak.</strong> EKOK'ta asalların en büyük üssü, EBOB'da en küçük üssü alınır; karıştırmak kolaydır.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Sayılarınız yalnızca tarayıcınızda işlenir; hiçbir sunucuya gönderilmez ve saklanmaz.</li>
+        <li><strong>Çözüm yolu açık.</strong> Yalnızca sonucu değil, Öklid satırlarını, ortak bölme tablosunu, çarpan ağacını ve asal testinin gerekçesini görürsünüz.</li>
+        <li><strong>Tam kesinlik.</strong> BigInt sayesinde büyük sayılarda yuvarlama hatası yoktur; asal testi Miller–Rabin ile desteklenir.</li>
+        <li><strong>Kayıt ve limit yok.</strong> Sayfa bir kez açıldıktan sonra çevrimdışı da kullanılabilir.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span>Araç eğitim ve bilgilendirme amaçlıdır. Sınavlarda ve ödevlerde işlem basamaklarını kendiniz yazmanız beklenebilir; önce kendi çözümünüzü yapıp sonucu burada denetlemek en iyi çalışma yoludur.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>EBOB nedir, nasıl bulunur?</summary><p>EBOB, iki ya da daha fazla sayıyı birlikte tam bölen en büyük pozitif tam sayıdır. En kolay yol Öklid algoritmasıdır: büyük sayıyı küçüğe bölün, kalanla küçük sayıyı yeniden bölün ve kalan sıfır olunca son bölen EBOB'tur. 48 ve 18 için 48 = 2 × 18 + 12, 18 = 1 × 12 + 6, 12 = 2 × 6 + 0 olduğundan EBOB 6'dır. Araç bu adımları sizin sayılarınızla yazar.</p></details>
+        <details><summary>EKOK nedir, nasıl bulunur?</summary><p>EKOK, verilen sayıların hepsine tam bölünen en küçük pozitif tam sayıdır. İki sayıda EKOK = (a × b) / EBOB formülüyle bulunur; 48 ve 18 için 864 / 6 = 144. Asal çarpanlarla bulmak için her asalı en büyük üssüyle alıp çarparsınız: 2⁴ × 3² = 144.</p></details>
+        <details><summary>EBOB ile EKOK arasındaki ilişki nedir?</summary><p>İki sayı için EBOB × EKOK = a × b eşitliği her zaman geçerlidir; biri bulunursa diğeri çarpımdan çıkar. Üç ve daha fazla sayıda bu eşitlik geçerli değildir; EKOK'u zincirleme, ikişer ikişer hesaplamak gerekir.</p></details>
+        <details><summary>Bir sayının asal olup olmadığı nasıl anlaşılır?</summary><p>Sayıyı karekökünden küçük ya da eşit asal sayılara bölmek yeter; hiçbiri tam bölmüyorsa sayı asaldır. 97 için √97 yaklaşık 9,85 olduğundan 2, 3, 5 ve 7'yi denemek yeterlidir ve hiçbiri 97'yi bölmez. Araç küçük sayılarda bu gerekçeyi yazar, çok büyük sayılarda Miller–Rabin testini kullanır.</p></details>
+        <details><summary>1 neden asal sayı değildir?</summary><p>Asal sayı, tam olarak iki pozitif böleni olan sayıdır: 1 ve kendisi. 1'in yalnızca bir böleni olduğundan asal sayılmaz; bileşik de değildir. Bu kural, her sayının asal çarpanlara tek bir biçimde ayrılmasını sağlayan aritmetiğin temel teoremini düzgün tutar.</p></details>
+        <details><summary>Bir sayının kaç böleni olduğu nasıl bulunur?</summary><p>Sayıyı asal çarpanlarına ayırın, her üsse 1 ekleyip sonuçları çarpın. 360 = 2³ × 3² × 5 olduğundan bölen sayısı (3+1) × (2+1) × (1+1) = 24'tür. Araç hem bu sayıyı hem de bölenlerin listesini ve toplamını verir.</p></details>
+        <details><summary>Üç veya daha fazla sayının EBOB ve EKOK'u nasıl bulunur?</summary><p>Zincirleme bulunur: EBOB(a, b, c) = EBOB(EBOB(a, b), c); EKOK için de aynı yol geçerlidir. 12, 18 ve 30 için EBOB 6, EKOK 180'dir. Araç en fazla 10 sayıyı aynı anda işler; sayıları virgül, boşluk ya da noktalı virgülle ayırabilirsiniz.</p></details>
+        <details><summary>Çok büyük sayılarla çalışır mı?</summary><p>Evet. Sayılar BigInt ile tam kesinlikle işlenir ve en fazla 40 basamağa izin verilir. EBOB ve EKOK her boyutta anında bulunur. Çarpanlara ayırma ise iki büyük asalın çarpımı gibi sayılarda çok zordur; araç 2 saniyelik bir süre sınırı koyar ve ayrıştıramadığı kısmı açıkça belirtir.</p></details>
+        <details><summary>Girdiğim sayılar sunucuya gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; yazdığınız sayılar sunucuya gönderilmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul>
+        <li><a href="../denklem-cozucu/">Denklem Çözücü</a> — 1. ve 2. derece denklemler, iki bilinmeyenli sistemler</li>
+        <li><a href="../oran-oranti-hesapla/">Oran Orantı Hesaplama</a> — doğru ve ters orantı, ölçek</li>
+        <li><a href="../kombinasyon-permutasyon/">Kombinasyon ve Permütasyon</a> — sayma problemleri</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Özel hesaplama aracı, eğitim yazılımı ya da kurumsal web projesi ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ebob-ekok-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

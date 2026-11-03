@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>HTML Tablo Oluşturucu – Excel'den HTML, Markdown ve WordPress Tablosu (Ücretsiz)</title>
+  <meta name="description" content="Ücretsiz HTML tablo oluşturucu: Excel veya CSV'den yapıştırın, başlık, hizalama, kenarlık, zebra ve hücre birleştirmeyi ayarlayın; HTML, Markdown ve WordPress blok tablo kodunu kopyalayın. Veri gönderilmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/html-tablo-olustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .ht-area label { display: block; font-weight: 600; margin: 14px 0 6px; }
+    .ht-area input[type=text], .ht-area input[type=number], .ht-area textarea, .ht-area select { width: 100%; font-family: var(--ba-font); font-size: .95rem; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: inherit; min-height: 44px; }
+    .ht-area input[type=color] { width: 100%; min-height: 44px; padding: 4px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); cursor: pointer; }
+    .ht-area textarea { min-height: 110px; line-height: 1.5; resize: vertical; font-family: var(--ba-mono); font-size: .88rem; }
+    .ht-area input:focus, .ht-area textarea:focus, .ht-area select:focus { border-color: var(--ba-primary); }
+    .ht-area label.ht-check { display: flex; align-items: center; gap: 8px; font-weight: 400; margin: 12px 0 0; min-height: 32px; }
+    .ht-area label.ht-check input { width: auto; min-height: 0; }
+    .ht-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+    .ht-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 16px; }
+    @media (max-width: 640px) { .ht-grid2, .ht-grid3 { grid-template-columns: 1fr; } }
+    .ht-area fieldset { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); margin: 18px 0 0; padding: 4px 14px 14px; min-width: 0; }
+    .ht-area legend { font-weight: 700; padding: 0 6px; }
+    .ht-area h3 { margin: 22px 0 8px; font-size: 1.05rem; }
+    .ht-note { font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .ht-warn { color: var(--ba-danger, #a3271f); font-size: .88rem; margin: 4px 0 0; min-height: 1px; }
+    .ht-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
+    .ht-btns .ba-btn { min-height: 44px; }
+    #copied { color: var(--ba-success); font-weight: 600; font-size: .9rem; }
+    .ht-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--ba-border); margin-top: 18px; }
+    .ht-tabs button { background: none; border: 1px solid transparent; border-bottom: 0; padding: 10px 14px; min-height: 44px; font: inherit; font-weight: 600; color: var(--ba-text-2); cursor: pointer; border-radius: var(--ba-radius-sm) var(--ba-radius-sm) 0 0; }
+    .ht-tabs button[aria-selected=true] { color: var(--ba-primary); border-color: var(--ba-border); background: var(--ba-surface); margin-bottom: -1px; }
+    /* Düzenleme tablosu: dar ekranda yatay kaydırılır. */
+    .ht-grid { overflow-x: auto; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); max-width: 100%; }
+    .ht-grid table.ht-edit { display: table; width: auto; max-width: none; overflow: visible; border-collapse: collapse; }
+    .ht-edit th, .ht-edit td { border: 1px solid var(--ba-border); padding: 2px; vertical-align: middle; background: var(--ba-surface); }
+    .ht-edit thead th { background: var(--ba-surface-2); font-weight: 600; font-size: .78rem; padding: 4px; text-align: left; }
+    .ht-edit .ht-colno { display: block; color: var(--ba-text-muted); margin-bottom: 2px; }
+    .ht-edit thead select { min-height: 34px; padding: 4px 6px; font-size: .82rem; }
+    .ht-edit .ht-rowno { background: var(--ba-surface-2); color: var(--ba-text-muted); font-size: .78rem; text-align: center; width: 34px; padding: 2px 6px; }
+    .ht-edit td input { width: 100%; min-width: 120px; min-height: 40px; border: 0; background: transparent; padding: 6px 8px; font-size: .92rem; }
+    .ht-edit td input:focus { outline: 2px solid var(--ba-primary); outline-offset: -2px; }
+    .ht-edit td.is-head { background: var(--ba-primary-soft); }
+    .ht-edit td.is-head input { font-weight: 700; }
+    .ht-edit td.is-merged { background: var(--ba-surface-2); box-shadow: inset 0 0 0 2px var(--ba-accent); }
+    /* Önizleme her temada okunur kalsın diye sabit renkli. */
+    .ht-preview { background: #fff; color: #1e2126; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 16px; overflow-x: auto; }
+    .ht-preview table { display: table; max-width: none; }
+    .ht-out { font-family: var(--ba-mono); font-size: .82rem; min-height: 200px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"HTML Tablo Oluşturucu – Bilişim Ajans","applicationCategory":"DeveloperApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/html-tablo-olustur/","inLanguage":"tr"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1><span class="ba-grad">HTML Tablo Oluşturucu</span>: Excel'den HTML, Markdown ve WordPress Tablosu</h1>
+      <p class="lead">Excel ya da CSV'den hücreleri yapıştırın veya tabloyu elle doldurun; başlık, hizalama, kenarlık, zebra desen ve hücre birleştirmeyi ayarlayın. Hazır HTML, Markdown ve WordPress blok tablo kodunu kopyalayın ya da indirin. Verileriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool ht-area" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+
+      <fieldset>
+        <legend>1. Veri: Excel veya CSV'den yapıştırın</legend>
+        <label for="t-paste">Hücreleri buraya yapıştırın</label>
+        <textarea id="t-paste" spellcheck="false" placeholder="Excel'de hücreleri seçip kopyalayın (Ctrl+C) ve buraya yapıştırın (Ctrl+V). CSV metni de olur."></textarea>
+        <div class="ht-grid3">
+          <div><label for="t-delim">Ayırıcı</label><select id="t-delim"><option value="auto" selected>Otomatik bul</option><option value="tab">Sekme (Excel)</option><option value="semi">Noktalı virgül ( ; )</option><option value="comma">Virgül ( , )</option><option value="pipe">Dikey çizgi ( | )</option></select></div>
+          <div><label for="t-rows">Satır sayısı (1-100)</label><input id="t-rows" type="number" min="1" max="100" value="3" inputmode="numeric"></div>
+          <div><label for="t-cols">Sütun sayısı (1-20)</label><input id="t-cols" type="number" min="1" max="20" value="3" inputmode="numeric"></div>
+        </div>
+        <div class="ht-btns">
+          <button class="ba-btn ba-btn-primary" type="button" id="btn-import">Tabloya aktar</button>
+          <button class="ba-btn" type="button" id="btn-clear">Hücreleri temizle</button>
+        </div>
+        <p class="ht-note" id="t-info" role="status" aria-live="polite"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Tabloyu düzenleyin</legend>
+        <p class="ht-note">Hücrelere doğrudan yazın; Enter alttaki hücreye geçer. Sütun başlıklarının altındaki listeden sütunun hizasını seçin. Excel'den kopyaladığınız bir bloğu bir hücreye yapıştırırsanız oradan başlayarak yayılır.</p>
+        <div class="ht-grid" id="grid" role="region" aria-label="Tablo düzenleyici" tabindex="-1"></div>
+        <div class="ht-btns">
+          <button class="ba-btn" type="button" id="btn-mright">Seçiliyi sağdakiyle birleştir</button>
+          <button class="ba-btn" type="button" id="btn-mdown">Seçiliyi alttakiyle birleştir</button>
+          <button class="ba-btn" type="button" id="btn-munmerge">Birleştirmeyi çöz</button>
+        </div>
+        <p class="ht-note" id="active-info" role="status" aria-live="polite"></p>
+        <p class="ht-note" id="merge-info" role="status"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Görünüm</legend>
+        <div class="ht-grid2">
+          <div>
+            <label class="ht-check"><input type="checkbox" id="o-hrow" checked> Başlık satırı (ilk satır)</label>
+            <label class="ht-check"><input type="checkbox" id="o-hcol"> Başlık sütunu (ilk sütun)</label>
+            <label class="ht-check"><input type="checkbox" id="o-zebra"> Zebra desen (satırlar sırayla renkli)</label>
+            <label class="ht-check"><input type="checkbox" id="o-full"> Tabloyu tam genişliğe yay (%100)</label>
+            <label class="ht-check"><input type="checkbox" id="o-scroll"> Dar ekranda yatay kaydırma kutusu ekle</label>
+          </div>
+          <div>
+            <label for="o-alignall">Tüm sütunları hizala</label>
+            <select id="o-alignall"><option value="#" selected>Toplu hizala…</option><option value="">Otomatik</option><option value="left">Sol</option><option value="center">Orta</option><option value="right">Sağ</option></select>
+            <label for="o-border">Kenarlık</label>
+            <select id="o-border"><option value="none">Yok</option><option value="thin" selected>İnce (1 px)</option><option value="thick">Kalın (2 px)</option></select>
+            <label for="o-pad">Hücre iç boşluğu</label>
+            <select id="o-pad"><option value="4">Dar (4 px)</option><option value="8" selected>Normal (8 px)</option><option value="12">Geniş (12 px)</option><option value="16">Çok geniş (16 px)</option></select>
+          </div>
+        </div>
+        <div class="ht-grid3">
+          <div><label for="o-bcolor">Kenarlık rengi</label><input id="o-bcolor" type="color" value="#bdb8b5"></div>
+          <div><label for="o-hcolor">Başlık rengi</label><input id="o-hcolor" type="color" value="#7b2331"></div>
+          <div><label for="o-zcolor">Zebra rengi</label><input id="o-zcolor" type="color" value="#f7f1f2"></div>
+        </div>
+        <label for="o-caption">Tablo başlığı (caption, isteğe bağlı)</label>
+        <input id="o-caption" type="text" autocomplete="off" placeholder="Örnek: 2026 ürün fiyat listesi">
+        <label for="o-style">HTML stil biçimi</label>
+        <select id="o-style"><option value="inline" selected>Satır içi stil (style="…", her yerde çalışır)</option><option value="class">class + ayrı CSS (siteye eklemek için)</option></select>
+        <div id="o-class-wrap" hidden>
+          <label for="o-class">Sınıf adı</label>
+          <input id="o-class" type="text" value="ba-tablo" autocomplete="off" spellcheck="false">
+          <p class="ht-warn" id="w-class" role="status"></p>
+        </div>
+      </fieldset>
+
+      <h3>Önizleme</h3>
+      <div class="ht-preview" id="preview" aria-label="Tablo önizlemesi"></div>
+
+      <h3>Çıktı</h3>
+      <div class="ht-tabs" role="tablist" aria-label="Çıktı biçimi">
+        <button id="tab-html" role="tab" type="button" aria-selected="true" aria-controls="panel-html">HTML</button>
+        <button id="tab-md" role="tab" type="button" aria-selected="false" aria-controls="panel-md" tabindex="-1">Markdown</button>
+        <button id="tab-wp" role="tab" type="button" aria-selected="false" aria-controls="panel-wp" tabindex="-1">WordPress blok</button>
+      </div>
+
+      <div id="panel-html" role="tabpanel" aria-labelledby="tab-html">
+        <label for="out-html">HTML kodu</label>
+        <textarea id="out-html" class="ht-out" readonly spellcheck="false"></textarea>
+        <div class="ht-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="out-html">HTML'i kopyala</button><button class="ba-btn" type="button" data-download="out-html" data-filename="tablo.html">HTML olarak indir</button></div>
+        <div id="wrap-css" hidden>
+          <label for="out-css">CSS kodu (sitenizin stil dosyasına ya da style bloğuna ekleyin)</label>
+          <textarea id="out-css" class="ht-out" readonly spellcheck="false" style="min-height:160px"></textarea>
+          <div class="ht-btns"><button class="ba-btn" type="button" data-copy="out-css">CSS'i kopyala</button><button class="ba-btn" type="button" data-download="out-css" data-filename="tablo.css">CSS olarak indir</button></div>
+        </div>
+      </div>
+
+      <div id="panel-md" role="tabpanel" aria-labelledby="tab-md" hidden>
+        <p class="ht-note" id="note-md" hidden>Markdown tablo hücre birleştirmeyi desteklemez: birleşik hücrenin metni sol-üst hücrede kalır, diğerleri boş yazılır.</p>
+        <label for="out-md">Markdown tablo (GitHub, README, wiki)</label>
+        <textarea id="out-md" class="ht-out" readonly spellcheck="false"></textarea>
+        <div class="ht-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="out-md">Markdown'ı kopyala</button><button class="ba-btn" type="button" data-download="out-md" data-filename="tablo.md">.md olarak indir</button></div>
+        <p class="ht-note">Başlık satırı kapalıysa Markdown biçimi zorunlu olarak boş bir başlık satırı yazar. Başlık sütunu açıksa ilk sütun kalın yazılır.</p>
+      </div>
+
+      <div id="panel-wp" role="tabpanel" aria-labelledby="tab-wp" hidden>
+        <p class="ht-note" id="note-wp" hidden>WordPress tablo bloğu birleştirilmiş hücreleri güvenle taşımaz. Bu yüzden çıktı "Özel HTML" bloğu olarak üretildi; bloğu o şekilde yapıştırın.</p>
+        <label class="ht-check"><input type="checkbox" id="o-wpfixed"> Sütun genişliklerini eşitle (sabit yerleşim)</label>
+        <label for="out-wp">WordPress blok kodu (blok düzenleyicide Kod düzenleyici moduna yapıştırın)</label>
+        <textarea id="out-wp" class="ht-out" readonly spellcheck="false"></textarea>
+        <div class="ht-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="out-wp">Blok kodunu kopyala</button><button class="ba-btn" type="button" data-download="out-wp" data-filename="tablo-wordpress.html">Dosya olarak indir</button></div>
+        <p class="ht-note">Renkler ve kenarlık ölçüleri bu biçimde temanızdan gelir; bu ayarlar yalnızca HTML çıktısında yer alır. Zebra desen, WordPress'in "Çizgili" tablo stiline dönüşür.</p>
+      </div>
+
+      <p><span id="copied" role="status" aria-live="polite"></span></p>
+      <div id="error" class="ba-error" role="alert"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="html-tablo-olustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>HTML tablo nedir, ne zaman kullanılır?</h2>
+      <p>HTML tablosu, verileri satır ve sütunlara dizen standart bir web öğesidir. Fiyat listeleri, karşılaştırma çizelgeleri, ders programları, teknik özellik tabloları ve sonuç listeleri gibi gerçekten tablo niteliği taşıyan her veri için doğru araçtır. Bir tabloyu elle yazmak ise sıkıcıdır: her hücre için açılış ve kapanış etiketi, her satır için bir <code>tr</code>, başlık için <code>th</code>, birleştirme için <code>colspan</code> ve <code>rowspan</code>. Tek bir yazım hatası bütün tabloyu bozabilir. Bu araç, tabloyu bir elektronik tablo gibi doldurmanızı, kodu sizin yerinize doğru ve düzenli biçimde üretmesini sağlar.</p>
+      <p>Tablo yalnızca görünüm için değil, anlam için de önemlidir. Ekran okuyucu kullanan bir ziyaretçi, başlık hücrelerini (<code>th</code>) doğru işaretlenmiş bir tabloda her veriyi başlığıyla birlikte duyar. Arama motorları da tablodaki yapılandırılmış veriyi daha iyi anlar. Bu yüzden araç başlık satırını <code>thead</code> içinde, başlık hücrelerini <code>scope</code> özniteliğiyle üretir ve isterseniz tabloya <code>caption</code> (tablo başlığı) ekler.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Excel ya da Google E-Tablolar'da hücreleri seçip kopyalayın, "Hücreleri buraya yapıştırın" kutusuna yapıştırın ve "Tabloya aktar" düğmesine basın. CSV metniniz varsa aynı şekilde yapıştırın; ayırıcı otomatik bulunur.</li>
+        <li>Yapıştırmadan başlamak istemezseniz satır ve sütun sayısını yazın, hücreleri doğrudan düzenleme tablosunda doldurun.</li>
+        <li>Başlık satırı, başlık sütunu, zebra desen, kenarlık, renk ve hizayı seçin. Önizleme her değişiklikte güncellenir.</li>
+        <li>Gerekirse bir hücreye tıklayıp "sağdakiyle" ya da "alttakiyle birleştir" düğmesini kullanın.</li>
+        <li>HTML, Markdown ya da WordPress blok sekmesinden çıktıyı kopyalayın veya dosya olarak indirin.</li>
+      </ol>
+
+      <h2>Excel ve CSV'den yapıştırma</h2>
+      <p>Excel'de hücreleri kopyaladığınızda panoya sekmeyle ayrılmış metin gelir: sütunlar sekme karakteriyle, satırlar satır sonuyla ayrılır. Araç bunu tanır ve her değeri doğru hücreye yerleştirir. Türkiye'de kaydedilen CSV dosyaları çoğunlukla noktalı virgül kullanır, çünkü virgül ondalık ayırıcıdır; yabancı kaynaklı dosyalarda ise virgül yaygındır. "Otomatik bul" seçeneği önce sekmeye, sonra noktalı virgüle, virgüle ve dikey çizgiye bakar. Yanlış tahmin ederse ayırıcıyı kendiniz seçip yeniden aktarabilirsiniz.</p>
+      <p>Çift tırnak içindeki değerler tek hücre sayılır; yani <code>"Ankara, Türkiye"</code> gibi virgül içeren bir metin bölünmez. Hücre içindeki satır sonları tek satırlık metin kutularına sığması için boşluğa çevrilir. Tablo en fazla 100 satır ve 20 sütun olabilir; daha büyük veri yapıştırırsanız ilk bölümü alınır ve size söylenir. Bu sınır, tarayıcının akıcı çalışması içindir; çok büyük listeler için tabloyu parçalara bölmek hem sayfa hızına hem okunabilirliğe yardımcı olur.</p>
+
+      <h2>Başlık, hizalama, kenarlık ve zebra desen</h2>
+      <p>Başlık satırı açıkken ilk satır <code>thead</code> bölümüne taşınır ve başlık rengiyle boyanır; yazı rengi, arka plana göre otomatik olarak beyaz ya da koyu seçilir, böylece okunaklı kalır. Başlık sütunu ise ilk sütundaki hücreleri satır başlığı olarak işaretler; ürün adı, ay adı gibi her satırı tanımlayan sütunlar için uygundur. Hizalama sütun bazında yapılır: metin sütunlarını sola, sayıları sağa, kısa kodları ortaya yaslamak okumayı kolaylaştırır. Para tutarlarını ve oranları sağa hizalamak, rakamların alt alta okunmasını sağlar.</p>
+      <p>Kenarlık için yok, ince ve kalın seçenekleri vardır; renk ve iç boşluğu da seçebilirsiniz. Zebra desen, sırayla değişen satır renkleriyle uzun listelerde gözün satırı kaybetmesini önler. Renk seçerken kontrasta dikkat edin: çok açık bir başlık rengi seçerseniz yazı koyulaşır, çok koyu seçerseniz beyaz olur; iki durumda da metin okunur kalır. Tüm ayarlar HTML'de, siteniz ya da e-posta programı hangi ortamda olursa olsun çalışacak biçimde yazılır.</p>
+
+      <h2>Hücre birleştirme: colspan ve rowspan</h2>
+      <p>Bazen tek bir başlığın birden çok sütunu kapsaması gerekir; örneğin "2026" başlığı altında Ocak, Şubat ve Mart sütunları gibi. Bunun için hücrenin üzerine tıklayıp "Seçiliyi sağdakiyle birleştir" düğmesine basın; araç <code>colspan</code> özniteliğini yazar. Aşağıdaki hücreyle birleştirmek için <code>rowspan</code> kullanılır. Birleşik hücrenin içeriği olarak yalnızca sol-üst hücrenin metni kullanılır; gizlenen hücrelerin metni silinmez, birleştirmeyi çözdüğünüzde geri gelir.</p>
+      <p>Birleştirmenin sınırları vardır. Başlık satırındaki bir hücre <code>thead</code> sınırını geçemeyeceği için aşağı birleştirilemez. Başka bir birleşik hücrenin içine taşan birleştirme de yapılmaz; araç bu durumda hangi hücrenin engel olduğunu Türkçe olarak açıklar. Markdown tablolar birleştirmeyi hiç desteklemez, WordPress'in çekirdek tablo bloğu da güvenilir biçimde desteklemez; bu yüzden birleşik hücre varsa WordPress çıktısı "Özel HTML" bloğu olarak üretilir.</p>
+
+      <div class="ba-ad" data-slot="html-tablo-olustur-b" aria-label="Reklam"></div>
+
+      <h2>Satır içi stil mi, class mı?</h2>
+      <p>Satır içi stil, her hücrenin biçimini doğrudan <code>style</code> özniteliğine yazar. Kodu bir e-postaya, bir blog yazısı editörüne ya da stil dosyasına erişemediğiniz bir panele yapıştırıyorsanız en güvenli yoldur; çünkü tablo nereye giderse biçimi de onunla gider. Dezavantajı kodun uzun olmasıdır. Class seçeneği ise kodu kısa tutar ve biçimleri ayrı bir CSS bloğuna toplar; aynı biçimi siteniz boyunca birçok tabloda kullanacaksanız stil dosyanıza bir kez eklemeniz yeter. Sınıf adını istediğiniz gibi değiştirebilirsiniz; araç yalnızca harf, rakam, tire ve alt çizgi içeren geçerli adları kabul eder. Önizleme CSS'i yalnızca önizleme alanıyla sınırlıdır ve sayfanın kendi tasarımını etkilemez.</p>
+
+      <h2>Markdown tablo biçimi</h2>
+      <p>Markdown tabloları dikey çizgilerle yazılır: ilk satır başlıklar, ikinci satır ayırıcı, sonraki satırlar veridir. Ayırıcı satırdaki iki nokta üst üste işaretleri hizayı belirler: <code>:---</code> sola, <code>:---:</code> ortaya, <code>---:</code> sağa. GitHub, GitLab, birçok wiki ve not uygulaması bu söz dizimini destekler. Araç sütunları aynı genişliğe getirerek ham metnin okunabilir kalmasını sağlar, hücre içindeki dikey çizgileri kaçırır ve satır sonlarını <code>&lt;br&gt;</code> yapar. Başlık satırı kapalıysa Markdown, tabloyu başlıksız tanımadığı için boş bir başlık satırı yazılır.</p>
+
+      <h2>WordPress blok tablo (wp:table) kullanımı</h2>
+      <p>WordPress'in blok düzenleyicisi tabloları <code>wp:table</code> bloğu olarak saklar. Üretilen kod bu biçimdedir: bir blok yorumu, <code>wp-block-table</code> sınıflı bir <code>figure</code> ve içinde tablo. Kullanmak için yazı ya da sayfa düzenleyicisinde sağ üstteki üç nokta menüsünden "Kod düzenleyici" moduna geçin, kodu istediğiniz yere yapıştırın ve görsel düzenleyiciye dönün; tablo normal bir blok olarak görünür ve oradan düzenlenebilir. Menü adları WordPress sürümüne göre değişebilir. Zebra desen seçiliyse çıktı WordPress'in "Çizgili" tablo stilini kullanır; renkler ve kenarlıklar ise temanızdan gelir. Birleşik hücre varsa kod "Özel HTML" bloğuna yazılır; bu durumda tabloyu görsel olarak değil, HTML olarak düzenlersiniz.</p>
+
+      <h2>Mobilde taşan tablolar</h2>
+      <p>Çok sütunlu tablolar telefon ekranına sığmaz. "Dar ekranda yatay kaydırma kutusu ekle" seçeneği tabloyu <code>overflow-x:auto</code> özellikli bir kutuya sarar; böylece tablo sayfayı genişletmez, ziyaretçi tabloyu parmağıyla yana kaydırır. Sütun sayısı fazlaysa başlıkları kısa tutmak ve gereksiz sütunları çıkarmak da mobil deneyimi iyileştirir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Yapıştırdığınız tablo yalnızca tarayıcınızda işlenir; hiçbir sunucuya yazılmaz.</li>
+        <li><strong>Üç çıktı tek yerde.</strong> HTML, Markdown ve WordPress blok kodu aynı tablodan üretilir.</li>
+        <li><strong>Güvenli kod.</strong> Hücre metinleri kaçırılır; hücreye yazılan etiketler sayfayı bozamaz, betik çalıştıramaz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa yüklendikten sonra internetsiz de kullanılabilir.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sınır ve "premium" tuzağı yok.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yapıştırdığım veriler bir yere gönderiliyor mu?</summary><p>Hayır. Tüm işlemler tarayıcınızın belleğinde yapılır; ağ isteği yoktur. Tarayıcının geliştirici araçlarındaki Network sekmesinden bunu doğrulayabilirsiniz.</p></details>
+        <details><summary>Excel'den kopyaladığım tablo neden tek sütun olarak geldi?</summary><p>Ayırıcı yanlış bulunmuş olabilir. Ayırıcı listesinden "Sekme (Excel)" ya da "Noktalı virgül" seçip "Tabloya aktar" düğmesine yeniden basın. Veriyi bir metin düzenleyicisinden kopyaladıysanız sekmeler boşluğa dönmüş olabilir; bu durumda doğrudan Excel'den kopyalayın.</p></details>
+        <details><summary>Hücreme HTML etiketi yazarsam ne olur?</summary><p>Etiket çalışmaz, metin olarak gösterilir. Araç hücre içindeki &lt;, &gt; ve &amp; karakterlerini kaçırır; bu sayede yanlışlıkla ya da kötü niyetle yazılan bir etiket tabloyu bozamaz ve betik çalıştıramaz. Kalın ya da bağlantılı metin gerekiyorsa çıktıyı aldıktan sonra kodda elle ekleyin.</p></details>
+        <details><summary>Hücre birleştirince metin kayboldu mu?</summary><p>Hayır. Birleşik hücrenin çıktısında yalnızca sol-üst hücrenin metni kullanılır, ama gizlenen hücrelerin metni modelde saklanır. "Birleştirmeyi çöz" dediğinizde hepsi geri gelir.</p></details>
+        <details><summary>Başlık satırı olmadan tablo yapabilir miyim?</summary><p>Evet; "Başlık satırı" kutusunun işaretini kaldırın. HTML'de tüm satırlar <code>tbody</code> içinde, <code>td</code> hücreleriyle yazılır. Markdown'da başlıksız tablo desteklenmediği için boş bir başlık satırı eklenir.</p></details>
+        <details><summary>WordPress'e yapıştırınca "beklenmeyen içerik" uyarısı çıkarsa ne yapmalıyım?</summary><p>Kodu blok düzenleyicinin Kod düzenleyici modunda yapıştırdığınızdan emin olun; görsel modda yapıştırırsanız yorum satırları metin sayılır. Sorun sürerse HTML sekmesindeki kodu "Özel HTML" bloğuna yapıştırın; bu blok her tabloyu olduğu gibi saklar.</p></details>
+        <details><summary>Tabloyu e-postaya koyabilir miyim?</summary><p>Evet, satır içi stil seçeneği e-posta programlarında da çalışacak şekilde yazılır. E-posta programlarının çoğu class ile ayrı CSS'i desteklemediği için e-posta için satır içi stili tercih edin ve tabloyu genişliği 600 pikseli aşmayacak şekilde küçük tutun.</p></details>
+        <details><summary>Neden en fazla 100 satır ve 20 sütun?</summary><p>Düzenleme tablosundaki her hücre ayrı bir metin kutusudur; çok büyük tablolar tarayıcıyı yavaşlatır. Sınır, aracın her cihazda akıcı kalması içindir. Daha büyük veriler için tabloyu bölümlere ayırın ya da CSV araçlarımızı kullanın.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../csv-excel/">CSV - Excel Dönüştürücü</a></li>
+        <li><a href="../markdown-html-donustur/">Markdown - HTML Dönüştürücü</a></li>
+        <li><a href="../html-markdown-donustur/">HTML - Markdown Dönüştürücü</a></li>
+        <li><a href="../csv-json-donustur/">CSV - JSON Dönüştürücü</a></li>
+      </ul>
+      <p class="ba-note">Web sitenizin tasarım ve içerik çalışmaları için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibinden destek alabilirsiniz.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="html-tablo-olustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+    <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
