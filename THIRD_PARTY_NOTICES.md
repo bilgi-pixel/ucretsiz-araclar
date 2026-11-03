@@ -13,3 +13,7 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | DejaVu Sans (dejavu-fonts-ttf) | 2.37 | Bitstream Vera License (DejaVu eklemeleri kamu malı) | Word'den PDF'e |
 | fflate | 0.8.3 | MIT | Zip Oluştur / Zip Aç |
 | qrcode | 1.5.1 | MIT | QR Kod Oluşturucu |
+| tesseract.js | 7.0.0 | Apache-2.0 | Resimden Yazıya (OCR) |
+| tesseract.js-core | 7.0.0 | Apache-2.0 | Resimden Yazıya (OCR) |
+| tessdata_fast (tur, eng) | 4.1.0 | Apache-2.0 | Resimden Yazıya (OCR) |
+| jsQR | 1.4.0 | Apache-2.0 | QR Kod Okuyucu |

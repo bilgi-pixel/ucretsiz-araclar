@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KDV Hesaplama – KDV Dahil / Hariç Hesaplayıcı (%1, %10, %20) ve Yüzde Hesaplama</title>
+  <meta name="description" content="KDV dahil ve KDV hariç tutarı %1, %10, %20 ya da özel oranla anında hesaplayın. Adet, tevkifat, çoklu satırlı fatura taslağı ve yüzde hesaplama. Ücretsiz, kayıt yok, verileriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kdv-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; padding: 0; list-style: none; border-bottom: 1px solid var(--ba-border); }
+    .kdv-tabs button { font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; border: 1px solid transparent; border-bottom: 0; border-radius: var(--ba-radius-sm) var(--ba-radius-sm) 0 0; background: transparent; color: var(--ba-text-2); cursor: pointer; margin-bottom: -1px; }
+    .kdv-tabs button:hover { color: var(--ba-primary); }
+    .kdv-tabs button[aria-selected="true"] { background: var(--ba-surface); border-color: var(--ba-border); border-bottom: 1px solid var(--ba-surface); color: var(--ba-primary); }
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    details.kdv-adv { margin-top: 18px; border-top: 1px solid var(--ba-border); padding-top: 6px; }
+    details.kdv-adv summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .inv-row { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; padding: 12px; margin-bottom: 10px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); align-items: end; }
+    .inv-row label span, .inv-line span { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; }
+    .inv-row label:first-child { grid-column: 1 / -1; }
+    .inv-line output { display: block; font-family: var(--ba-mono); min-height: 44px; line-height: 44px; }
+    .inv-del { justify-self: end; }
+    @media (min-width: 720px) { .inv-row { grid-template-columns: 2fr .8fr 1.2fr .9fr 1.2fr auto; } .inv-row label:first-child { grid-column: auto; } }
+    .inv-totals { margin-top: 14px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .pct-block { padding: 14px 16px; margin-bottom: 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .pct-block h3 { margin: 0 0 10px; font-size: 1rem; }
+    .pct-out { margin: 10px 0 0; font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 700; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"KDV Hesaplama – Bilişim Ajans","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kdv-hesapla/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><a href="https://bilisimajans.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>bilisimajans.com'a dön</a><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>KDV Hesaplama – Dahil / Hariç, %1, %10, %20</h1>
+      <p class="lead">Tutarı yazın, oranı seçin; KDV tutarı ile KDV dahil ya da KDV hariç karşılığı anında görün. Adet, tevkifat ve çoklu satırlı fatura taslağı desteklenir; ikinci sekmede yüzde hesaplama vardır. Girdiğiniz rakamlar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="kdv-tabs" role="tablist" aria-label="Hesaplayıcı türü">
+        <button type="button" role="tab" id="tab-kdv" data-tab="kdv" aria-selected="true" aria-controls="panel-kdv">KDV hesaplama</button>
+        <button type="button" role="tab" id="tab-yuzde" data-tab="yuzde" aria-selected="false" aria-controls="panel-yuzde" tabindex="-1">Yüzde hesaplama</button>
+      </div>
+
+      <div id="panel-kdv" role="tabpanel" aria-labelledby="tab-kdv">
+        <form id="form-single" class="kdv-form" novalidate>
+          <div class="ba-field"><span>Hangi tutarı biliyorsunuz?</span>
+            <div class="kdv-modes">
+              <label><input type="radio" name="mode" value="haric" checked> KDV hariç tutarı (KDV'yi ekle)</label>
+              <label><input type="radio" name="mode" value="dahil"> KDV dahil tutarı (KDV'yi ayır)</label>
+            </div>
+          </div>
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="f-amount" id="amount-label">KDV hariç tutar (₺)</label><input id="f-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.250,50"><div class="hint">Virgül ondalık ayırıcıdır; binlik noktası isteğe bağlı.</div></div>
+            <div class="ba-field"><label for="f-qty">Adet</label><input id="f-qty" type="text" inputmode="decimal" value="1" autocomplete="off"><div class="hint">Birim fiyat × adet.</div></div>
+            <div class="ba-field"><label for="f-rate">KDV oranı</label><select id="f-rate"><option value="1">%1</option><option value="10">%10</option><option value="20" selected>%20</option><option value="ozel">Özel oran…</option></select></div>
+          </div>
+          <div class="ba-field" id="rate-custom-wrap" hidden><label for="f-rate-custom">Özel KDV oranı (%)</label><input id="f-rate-custom" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 8"></div>
+          <div class="ba-field"><label><input id="f-wh" type="checkbox"> KDV tevkifatı uygula</label></div>
+          <div class="ba-field" id="wh-wrap" hidden><label for="f-wh-rate">Tevkifat oranı</label><input id="f-wh-rate" type="text" list="f-wh-list" inputmode="decimal" autocomplete="off" value="5/10" placeholder="örn. 5/10"><datalist id="f-wh-list"></datalist><div class="hint">Hangi oranın uygulanacağı işlem türüne bağlıdır; KDV Genel Uygulama Tebliği'nden ya da mali müşavirinizden doğrulayın. Tevkifatlı faturada alıcı, tevkif edilen kısmı 2 No.lu KDV beyannamesiyle kendisi beyan eder.</div></div>
+          <button type="submit" class="visually-hidden">Hesapla</button>
+        </form>
+        <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+        <div id="error" class="ba-error" role="alert"></div>
+        <div id="result" class="ba-result" aria-live="polite"><h3>Sonuç</h3><dl class="kdv-results" id="r-rows"></dl><p class="kdv-note" id="r-note"></p>
+          <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="copy-link" class="ba-btn" type="button">Bağlantıyı kopyala</button></div>
+          <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+        </div>
+        <p class="kdv-rates">Oranlar son güncelleme: <strong id="rates-updated">…</strong> · Kaynak: GİB. Güncel oran listesini <a href="https://www.gib.gov.tr/" rel="noopener">gib.gov.tr</a> üzerinden doğrulayın.</p>
+
+        <details class="kdv-adv" id="multi">
+          <summary>Çoklu satır – fatura taslağı (satır ekle, oran karıştır, toplamları gör)</summary>
+          <div class="kdv-form">
+            <div class="ba-field"><label for="inv-mode">Birim fiyatlar</label><select id="inv-mode"><option value="haric" selected>KDV hariç</option><option value="dahil">KDV dahil</option></select></div>
+            <div id="inv-rows" aria-label="Fatura satırları"></div>
+            <div class="ba-actions"><button id="inv-add" class="ba-btn" type="button">+ Satır ekle</button><button id="inv-copy" class="ba-btn" type="button">Taslağı kopyala</button></div>
+            <p class="kdv-status" id="inv-status" aria-live="polite"></p>
+            <div id="inv-error" class="ba-error" role="alert"></div>
+            <div id="inv-totals" class="inv-totals" aria-live="polite" hidden></div>
+            <p class="kdv-note">Taslak yalnızca hesap içindir; resmî fatura e-Fatura / e-Arşiv sisteminden düzenlenir.</p>
+          </div>
+        </details>
+      </div>
+
+      <div id="panel-yuzde" role="tabpanel" aria-labelledby="tab-yuzde" hidden>
+        <form id="form-percent" class="kdv-form" novalidate>
+          <div class="pct-block"><h3>Bir sayının yüzdesi</h3>
+            <div class="kdv-grid"><div class="ba-field"><label for="p-x">Sayı</label><input id="p-x" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 2.500"></div><div class="ba-field"><label for="p-y">Yüzde (%)</label><input id="p-y" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 18"></div></div>
+            <p class="pct-out">Sonuç: <output id="p-r1">—</output></p>
+          </div>
+          <div class="pct-block"><h3>Yüzde artış / azalış</h3>
+            <div class="kdv-grid"><div class="ba-field"><label for="p-a">Eski değer</label><input id="p-a" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 800"></div><div class="ba-field"><label for="p-b">Yeni değer</label><input id="p-b" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.000"></div></div>
+            <p class="pct-out">Değişim: <output id="p-r2">—</output></p>
+          </div>
+          <div class="pct-block"><h3>İndirimli / zamlı fiyat</h3>
+            <div class="kdv-grid c3"><div class="ba-field"><label for="p-price">Fiyat (₺)</label><input id="p-price" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.200"></div><div class="ba-field"><label for="p-rate">Oran (%)</label><input id="p-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 15"></div><div class="ba-field"><label for="p-dir">İşlem</label><select id="p-dir"><option value="indirim" selected>İndirim</option><option value="artis">Zam / artış</option></select></div></div>
+            <p class="pct-out">Yeni fiyat: <output id="p-r3">—</output></p>
+          </div>
+          <button type="submit" class="visually-hidden">Hesapla</button>
+        </form>
+        <div id="p-error" class="ba-error" role="alert"></div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="kdv-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Elinizdeki tutarın KDV hariç mi, KDV dahil mi olduğunu seçin. Fiyat listesi ve tekliflerde genellikle hariç, fiş ve perakende etiketlerinde dahil tutar yazar.</li>
+        <li>Tutarı yazın. Türkçe biçim kullanabilirsiniz: <code>1.250,50</code>. Birden fazla ürün varsa "Adet" alanına sayıyı girin.</li>
+        <li>KDV oranını seçin: %1, %10, %20 ya da "Özel oran" ile başka bir yüzde. Sonuç siz yazarken anında güncellenir.</li>
+        <li>Tevkifatlı bir işlemse kutuyu işaretleyip oranı (örn. 5/10) girin; tevkif edilen KDV, satıcının beyan edeceği KDV ve alıcının ödeyeceği toplam ayrı satırlarda görünür.</li>
+        <li>"Sonucu kopyala" ile rakamları alın ya da "Bağlantıyı kopyala" ile aynı hesabı meslektaşınıza gönderin. Birden çok kalem için "Çoklu satır" bölümünü açın.</li>
+      </ol>
+
+      <h2>KDV nasıl hesaplanır? Formüller ve örnekler</h2>
+      <p>Katma Değer Vergisi, mal veya hizmetin KDV hariç bedeli (matrah) üzerinden yüzde olarak eklenir. Üç temel işlem vardır ve hepsi aynı mantığa dayanır:</p>
+      <table>
+        <thead><tr><th>İşlem</th><th>Formül</th><th>Örnek (%20)</th></tr></thead>
+        <tbody>
+          <tr><td>KDV tutarı (hariçten)</td><td>Matrah × Oran / 100</td><td>1.000 × 20 / 100 = <strong>200,00 ₺</strong></td></tr>
+          <tr><td>KDV dahil tutar</td><td>Matrah × (1 + Oran / 100)</td><td>1.000 × 1,20 = <strong>1.200,00 ₺</strong></td></tr>
+          <tr><td>KDV hariç tutar (dahilden)</td><td>Dahil tutar / (1 + Oran / 100)</td><td>1.200 / 1,20 = <strong>1.000,00 ₺</strong></td></tr>
+          <tr><td>KDV tutarı (dahilden)</td><td>Dahil tutar − Hariç tutar</td><td>1.200 − 1.000 = <strong>200,00 ₺</strong></td></tr>
+        </tbody>
+      </table>
+      <p>%10 için çarpan 1,10; %1 için 1,01'dir. Örneğin KDV dahil 550,00 ₺ olan %10'luk bir ürünün matrahı 550 / 1,10 = 500,00 ₺, KDV'si 50,00 ₺'dir. Araç, sonuçları kuruşa (iki ondalığa) yuvarlar ve tr-TR biçiminde gösterir.</p>
+
+      <h2>En sık yapılan hata: dahil tutardan yüzde çıkarmak</h2>
+      <p>KDV dahil 1.200 ₺'lik bir tutarın hariç karşılığını bulmak için "yüzde 20'sini çıkarayım" diyen çok kişi 1.200 × 0,80 = 960 ₺ sonucuna ulaşır. <strong>Bu yanlıştır.</strong> Çünkü %20, dahil tutarın değil matrahın yüzdesidir; 1.200 ₺ zaten 1.000 ₺'nin 1,20 katıdır. Doğru işlem bölmedir: 1.200 / 1,20 = 1.000 ₺. Aradaki 40 ₺'lik fark, tek bir satırda küçük görünse de aylık KDV beyannamesinde ya da yüzlerce kalemli bir fiyat listesinde ciddi tutarsızlıklara yol açar. Aynı mantık %10 için de geçerlidir: dahil tutarı 0,90 ile çarpmak yerine 1,10'a bölün. Bu araçta "KDV dahil tutarı" modunu seçtiğinizde hesap her zaman bölmeyle yapılır; ayrıca sonucun altında hangi işlemin uygulandığı açıkça yazılır.</p>
+
+      <div class="ba-ad" data-slot="kdv-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Türkiye'de KDV oranları ve tevkifat</h2>
+      <p>Türkiye'de üç KDV oranı uygulanır. Hangi mal ve hizmetin hangi listeye girdiği Cumhurbaşkanı kararlarıyla değişebildiği için aşağıdaki açıklamalar genel niteliktedir; kesin bilgi için <a href="https://www.gib.gov.tr/" rel="noopener">GİB</a>'in güncel oran listesine bakın. Araçtaki parametreler ayrı bir dosyada tutulur ve "Oranlar son güncelleme" satırında tarihini görürsünüz.</p>
+      <ul id="rates-list">
+        <li><strong>%1</strong> – indirimli oran; sınırlı sayıda temel ürün.</li>
+        <li><strong>%10</strong> – indirimli oran; belirli mal ve hizmetler.</li>
+        <li><strong>%20</strong> – genel oran; listelerde yer almayan her şey.</li>
+      </ul>
+      <p><strong>KDV tevkifatı</strong>, belirli işlemlerde hesaplanan KDV'nin bir kısmının satıcı yerine alıcı tarafından vergi dairesine ödenmesidir. Örneğin 5/10 tevkifatlı 1.000 ₺ matrahlı bir hizmette KDV 200 ₺'dir; bunun 100 ₺'sini alıcı sorumlu sıfatıyla 2 No.lu KDV beyannamesiyle beyan eder, satıcı yalnızca kalan 100 ₺'yi beyan eder ve faturada alıcıdan 1.100 ₺ tahsil eder. Hangi hizmetin hangi oranda tevkifata tabi olduğu KDV Genel Uygulama Tebliği'nde listelenir ve alıcının statüsüne (belirlenmiş alıcı olup olmadığına) göre değişir. Bu araç yalnızca girdiğiniz orana göre aritmetiği yapar; oranın doğruluğunu kontrol etmez.</p>
+
+      <h2>Fatura ve e-Arşiv pratiği: satır satır hesap, kuruş farkları</h2>
+      <p>e-Fatura ve e-Arşiv sistemleri KDV'yi her satır için ayrı hesaplar, sonra oran bazında matrah ve KDV toplamlarını çıkarır. Toplam tutar üzerinden tek seferde KDV hesaplarsanız satır bazlı yuvarlamalar nedeniyle 1–2 kuruşluk farklar oluşabilir ve entegratör ya da muhasebe programı faturayı reddedebilir. Bu yüzden aracın "Çoklu satır" bölümü de aynı yöntemi izler: her satırın KDV'si kendi içinde kuruşa yuvarlanır, ardından %1, %10 ve %20 matrahları ayrı ayrı toplanır. Farklı oranlı ürünleri aynı taslağa ekleyip oran bazında dökümü görebilir, "Taslağı kopyala" ile satırları sekmeyle ayrılmış metin olarak Excel ya da muhasebe programınıza yapıştırabilirsiniz.</p>
+      <p>Perakende satışlarda etiket fiyatı KDV dahildir; müşteriye kesilen e-Arşiv faturada birim fiyatı dahil tutardan türetmeniz gerekir. "Birim fiyatlar: KDV dahil" seçeneği tam bunun içindir: 120 ₺'lik etiketi yazarsınız, taslak matrahı 100 ₺, KDV'yi 20 ₺ olarak ayırır. İskonto uyguluyorsanız iskontoyu matrahtan düştükten sonra KDV hesaplanır; iskontolu birim fiyatı girmeniz yeterlidir.</p>
+
+      <h2>Yüzde hesaplama sekmesi</h2>
+      <p>KDV dışındaki günlük yüzde işlemleri için ikinci sekmeyi kullanın. Üç hesap vardır: bir sayının yüzdesi (2.500'ün %18'i = 450), iki değer arasındaki yüzde değişim (800'den 1.000'e çıkış %25 artıştır; formül (Yeni − Eski) / Eski × 100) ve indirimli ya da zamlı fiyat (1.200 ₺'ye %15 indirim = 1.020 ₺). Zam ve indirim hesabı burada çarpmayla yapılır, çünkü yüzde bu kez bilinen fiyatın yüzdesidir; KDV ayırmadaki bölme kuralıyla karıştırmayın. Yüzde değişimde "eski değer" sıfırsa oran tanımsızdır; araç bu durumda açıklayıcı bir uyarı gösterir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Sayfa statik yayınlanır, hesap tarayıcınızda yapılır. Fiyatlarınız, müşteri kalemleriniz hiçbir yere kaydedilmez; paylaşılabilir bağlantı yalnızca tutar, oran ve modu taşır.</li>
+        <li><strong>Türkçe sayı biçimi.</strong> 1.250,50 yazarsınız, 1.250,50 okursunuz; nokta-virgül karmaşası yok.</li>
+        <li><strong>Doğru ters hesap.</strong> Dahilden harice geçişte her zaman bölme kullanılır; yapılan işlem sonucun altında yazar.</li>
+        <li><strong>Tek sayfa, üç iş.</strong> Tek kalem hesabı, çoklu satırlı fatura taslağı ve yüzde hesaplama aynı yerde; reklam alanları sonuç ve düğmelerden uzaktadır.</li>
+        <li><strong>Açık kaynak.</strong> Hesap kodu GitHub'da; formülleri kendiniz kontrol edebilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>KDV dahil fiyattan KDV nasıl ayrılır?</summary><p>Dahil tutarı (1 + oran/100) değerine bölün: %20 için 1,20'ye, %10 için 1,10'a, %1 için 1,01'e. Sonuç KDV hariç tutardır; KDV ise ikisinin farkıdır. Yüzde çıkarmak (0,80 ile çarpmak) yanlış sonuç verir.</p></details>
+        <details><summary>Girdiğim rakamlar bir yere gönderiliyor mu?</summary><p>Hayır. Sayfa yüklendikten sonra ağ bağlantısı gerekmez; hesaplar tarayıcınızda yapılır. "Bağlantıyı kopyala" özelliği de yalnızca adres çubuğuna tutar, oran ve mod parametresi ekler; açıklama metinleri bağlantıya girmez.</p></details>
+        <details><summary>Tevkifat oranını nereden öğrenirim?</summary><p>KDV Genel Uygulama Tebliği'nin kısmi tevkifat bölümünde işlem türlerine göre oranlar (2/10, 3/10, 4/10, 5/10, 7/10, 9/10, 10/10 gibi) listelenir. Oran hizmetin niteliğine ve alıcının statüsüne göre değişir; emin değilseniz mali müşavirinize sorun. Araç yalnızca girdiğiniz oranla hesap yapar.</p></details>
+        <details><summary>Kuruş farkı neden oluşuyor?</summary><p>Her satırın KDV'si ayrı ayrı yuvarlanır. Üç satırın KDV'si 0,335 → 0,34 gibi yukarı yuvarlanınca toplam, "toplam matrah × oran" sonucundan bir kuruş sapabilir. e-Fatura sistemleri de satır bazlı çalıştığı için çoklu satır bölümündeki toplamlar bu kurala uyar.</p></details>
+        <details><summary>Adet alanına ondalık girebilir miyim?</summary><p>Evet; kilogram ya da saat gibi birimler için 2,5 yazabilirsiniz. Araç önce adet × birim fiyat çarpımını kuruşa yuvarlar, sonra KDV'yi hesaplar.</p></details>
+        <details><summary>%8 ve %18 gibi eski oranları hesaplayabilir miyim?</summary><p>Evet. "Özel oran" seçeneğini açıp istediğiniz yüzdeyi yazın. Eski tarihli faturaları kontrol ederken ya da başka ülkelerin KDV oranlarını hesaplarken kullanışlıdır.</p></details>
+        <details><summary>Fiyat "sayı olmalı" hatası veriyor, ne yapmalıyım?</summary><p>Alanda harf, "TL" dışında sembol ya da iki ondalık ayırıcı olabilir. Yalnızca rakam, nokta ve virgül bırakın (örn. 1.250,50). Negatif tutar da kabul edilmez; iade ya da iskonto için pozitif tutarı girip sonucu eksi olarak değerlendirin.</p></details>
+        <details><summary>Çevrimdışı çalışır mı?</summary><p>Evet. Sayfayı bir kez açtıktan sonra internet olmadan da kullanabilirsiniz; oran parametre dosyası yüklenemezse araç yerleşik %1, %10 ve %20 değerleriyle devam eder.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bu araç vergi danışmanlığı değildir.</strong> Hesaplar girdiğiniz oran ve tutara göre yapılan aritmetiktir; hangi oranın, istisnanın ya da tevkifatın uygulanacağına dair kararlar için mali müşavirinize veya Gelir İdaresi Başkanlığı'na başvurun.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sayi-yaziya-cevir/">Sayıyı Yazıya Çevir</a></li>
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../pdf-birlestir/">PDF Birleştir</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Ön muhasebe, e-Fatura entegrasyonu ya da özel hesaplama yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kdv-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF Sayfa Düzenle – Sırala, Döndür, Sil, Çıkar (Ücretsiz, Online)</title>
+  <meta name="description" content="PDF sayfalarını sürükleyerek sıralayın, ters sayfaları döndürün, gereksiz sayfaları silin, boş sayfa ekleyin ya da seçtiklerinizi yeni PDF olarak çıkarın. Ücretsiz, kayıt yok, dosyanız bilgisayarınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/pdf-sayfa-duzenle/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfa kartı ızgarası; tema token'ları ba.css'ten gelir. */
+    .pg-bulk { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+    .pg-bulk .ba-btn { min-height: 42px; padding: 8px 14px; font-size: .9rem; }
+    .pg-summary { font-family: var(--ba-mono); font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .pg-grid { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .pg-card { margin: 0; background: var(--ba-surface-2); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); padding: 8px; display: flex; flex-direction: column; gap: 6px; transition: border-color .15s, opacity .15s; }
+    .pg-card.is-selected { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .pg-card.is-dragging { opacity: .45; }
+    .pg-card.is-deleted .pg-thumb { opacity: .35; filter: grayscale(1); }
+    .pg-top { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+    .pg-check { display: inline-flex; align-items: center; min-width: 28px; min-height: 28px; cursor: pointer; }
+    .pg-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); margin: 0; }
+    .pg-num { flex: 1; font-family: var(--ba-mono); font-size: .8rem; color: var(--ba-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pg-card .ba-handle { font-size: 1.2rem; padding: 0 4px; min-width: 28px; text-align: center; }
+    .pg-thumb { position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); overflow: hidden; }
+    .pg-thumb canvas { max-width: 92%; max-height: 92%; width: auto; height: auto; box-shadow: var(--ba-shadow-card); background: #fff; transform: rotate(var(--rot, 0deg)); transition: transform .2s; }
+    .pg-thumb[data-rotation="90"] canvas, .pg-thumb[data-rotation="270"] canvas { max-width: 92%; max-height: 92%; }
+    .pg-card.is-blank .pg-thumb canvas { display: none; }
+    .pg-blank { color: var(--ba-text-muted); font-size: .85rem; border: 1px dashed var(--ba-border-hover); padding: 30px 12px; border-radius: 4px; background: #fff; }
+    .pg-deleted { position: absolute; inset: auto 0 8px; margin: 0 auto; width: max-content; background: var(--ba-danger); color: #fff; font-size: .75rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+    .pg-thumb.is-failed::after { content: "Önizleme yok"; position: absolute; color: var(--ba-text-muted); font-size: .8rem; }
+    .pg-tools { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .pg-tools .ba-icon-btn { min-width: 0; min-height: 36px; padding: 0; font-size: 1rem; }
+    .pg-tools .pg-del { color: var(--ba-danger); }
+    .pg-tools .ba-icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pg-warn { margin-top: 12px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .92rem; }
+    @media (max-width: 420px) { .pg-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"PDF Sayfa Düzenle – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/pdf-sayfa-duzenle/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><a href="https://bilisimajans.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>bilisimajans.com'a dön</a><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#pdf" class="ba-nav-optional">PDF</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#pdf">PDF Araçları</a></li></ol>
+      <h1>PDF Sayfa Düzenle – Sırala, Döndür, Sil, Çıkar</h1>
+      <p class="lead">PDF'inizi açın, sayfaları küçük resimler halinde görün; sürükleyerek sıralayın, ters sayfaları döndürün, gereksizleri silin, boş sayfa ekleyin ya da seçtiklerinizi yeni bir PDF olarak alın. Dosyanız bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div id="drop"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><strong>PDF dosyasını buraya bırakın</strong><small>veya seçmek için tıklayın · tek PDF · sayfalar önizlenir</small><span class="ba-btn">PDF seç</span></div>
+      <ul id="files" class="ba-filelist" aria-label="Seçilen dosya"></ul>
+      <p id="warn-big" class="pg-warn" hidden>Dosya 50 MB'tan büyük. Önizleme ve kaydetme tarayıcı belleğine bağlı olarak yavaşlayabilir; takılırsa önce <a href="../pdf-bol/">PDF Böl</a> ile parçalara ayırmayı deneyin.</p>
+
+      <div id="editor" hidden>
+        <div class="pg-bulk" role="group" aria-label="Toplu işlemler">
+          <button id="bulk-select-all" class="ba-btn" type="button">Tümünü seç / bırak</button>
+          <button id="bulk-rotate" class="ba-btn" type="button">Tümünü döndür 90°</button>
+          <button id="bulk-delete" class="ba-btn" type="button">Seçilenleri sil</button>
+          <button id="bulk-extract" class="ba-btn" type="button">Seçilenleri yeni PDF olarak çıkar</button>
+          <button id="bulk-reverse" class="ba-btn" type="button">Ters sırala</button>
+          <button id="bulk-blank" class="ba-btn" type="button">Boş sayfa ekle</button>
+        </div>
+        <p class="hint" style="font-size:.85rem;color:var(--ba-text-muted);margin:6px 0 0">Seçili sayfa varsa "Tümünü döndür" yalnızca seçilenleri döndürür, boş sayfa seçilenin ardına eklenir. Kartı tutamaçtan (⠿) sürükleyebilir ya da ok düğmeleriyle klavyeden taşıyabilirsiniz.</p>
+        <p id="summary" class="pg-summary" aria-live="polite"></p>
+        <p id="lazy-note" class="pg-summary" hidden>İlk 60 sayfanın önizlemesi hazırlandı; diğerleri siz kaydırdıkça çizilir.</p>
+        <ul id="pages" class="pg-grid" aria-label="Sayfalar"></ul>
+      </div>
+
+      <div class="ba-actions" id="actions" hidden>
+        <button id="run" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Düzenlenmiş PDF'i oluştur</button>
+        <button id="clear" class="ba-btn" type="button">Temizle</button>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result"><h3>PDF hazır</h3><p id="result-info"></p><div class="ba-actions"><button id="download" class="ba-btn ba-btn-success ba-btn-lg" type="button">PDF'i indir</button></div></div>
+    </section>
+
+    <div class="ba-ad" data-slot="pdf-sayfa-duzenle-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Yukarıdaki alana PDF'inizi sürükleyin ya da "PDF seç" düğmesine tıklayın. Her sayfanın küçük resmi birkaç saniye içinde kart olarak dizilir; uzun belgelerde ilk 60 sayfa hemen, kalanı siz kaydırdıkça çizilir.</li>
+        <li>Kartların üzerindeki düğmelerle çalışın: ⟲ ve ⟳ sayfayı 90° sola/sağa döndürür (küçük resim de döner), ✕ sayfayı siler (yanlışlıkla sildiyseniz aynı düğme ↶ geri alır), ← ve → sayfayı bir konum öne/arkaya taşır. Fareyle çalışmayı tercih ediyorsanız kartı ⠿ tutamacından tutup istediğiniz yere bırakın.</li>
+        <li>Birden çok sayfayı aynı anda işlemek için kutucuklarını işaretleyin; ardından "Seçilenleri sil", "Seçilenleri yeni PDF olarak çıkar" ya da "Tümünü döndür" (seçim varsa yalnızca seçilenler) düğmelerini kullanın. "Ters sırala" tüm belgeyi sondan başa çevirir, "Boş sayfa ekle" seçili sayfanın ardına ya da sona boş bir sayfa koyar.</li>
+        <li>"Düzenlenmiş PDF'i oluştur" düğmesine basın. İşlem cihazınızda yapılır; özetteki "kalacak" sayısı kadar sayfa içeren yeni dosya hazırlanır.</li>
+        <li>"PDF'i indir" ile kaydedin. Dosya adı özgün adın sonuna "-duzenlenmis" eklenerek verilir (örneğin <code>sozlesme-duzenlenmis.pdf</code>); orijinal dosyanıza dokunulmaz.</li>
+      </ol>
+
+      <h2>Hangi durumda ne yapmalı?</h2>
+      <p><strong>Yanlış sırada taranmış sayfalar.</strong> Ofis tarayıcılarının belge besleyicisine kağıtlar ters konduğunda ya da iki taraflı tarama "önce ön yüzler, sonra arka yüzler" biçiminde çıktığında sayfa sırası karışır. Kartları sürükleyerek doğru sıraya getirin; arka yüzler topluca sona geldiyse önce "Ters sırala" ile tüm belgeyi çevirip ardından yalnızca gereken birkaç sayfayı taşımak çoğu zaman daha hızlıdır. "Eski 7" gibi etiketler sayfanın kaynak belgedeki yerini gösterdiği için nereden nereye gittiğinizi kaybetmezsiniz.</p>
+      <p><strong>Ters ya da yan duran sayfalar.</strong> Telefonla çekilip PDF'e dönüştürülen belgelerde bazı sayfalar 90° ya da 180° yan çıkar. İlgili kartın ⟳ düğmesine bir kez basmak 90°, iki kez basmak 180° döndürür; önizleme anında döner, böylece doğru yönü görerek karar verirsiniz. Tüm belge yan taranmışsa hiçbir kutucuğu işaretlemeden "Tümünü döndür" yeterlidir. Döndürme, sayfa içeriğini yeniden çizmez; PDF'in sayfa yönü bilgisini günceller, bu yüzden kalite kaybı olmaz ve dosya büyümez.</p>
+      <p><strong>Tez, rapor ve ek birleştirme.</strong> Tez eklerinde çoğunlukla ana metin ile ekler ayrı dosyalardan gelir, araya bölüm kapağı ya da boş sayfa gerekir. Önce <a href="../pdf-birlestir/">PDF Birleştir</a> ile tek dosya yapın, sonra burada "Boş sayfa ekle" ile çift sayfadan başlaması gereken bölümlerin önüne boş sayfa koyun; boş sayfa, kendisinden sonraki sayfanın ölçüsünü alır, dolayısıyla A4 belgede A4, yatay ekte yatay olur.</p>
+      <p><strong>Birkaç sayfayı paylaşmak.</strong> 80 sayfalık sözleşmenin yalnızca imza sayfalarını ya da bir kitapçığın tek bölümünü göndermeniz gerekiyorsa ilgili kartları işaretleyip "Seçilenleri yeni PDF olarak çıkar" deyin; orijinal belge olduğu gibi kalır, "-secilen.pdf" adıyla ikinci bir dosya inersiniz. Sayfa aralıklarını numarayla yazmayı tercih ediyorsanız <a href="../pdf-bol/">PDF Böl</a> aracı aynı işi "1-3, 7, 12-15" biçiminde yapar.</p>
+      <p><strong>Gereksiz sayfaları atmak.</strong> Taramaların sonundaki boş sayfalar, yanlışlıkla eklenen kapak ya da tekrar eden sayfalar için ✕ düğmesi yeterlidir. Silinen sayfa listeden kaybolmaz, soluklaşır ve "Silindi" etiketi alır; fikrinizi değiştirirseniz ↶ ile geri alırsınız. Çıktı oluşturulana kadar hiçbir şey kalıcı değildir.</p>
+
+      <div class="ba-ad" data-slot="pdf-sayfa-duzenle-b" aria-label="Reklam"></div>
+
+      <h2>Acrobat, Önizleme ve diğer seçenekler: dürüst bir karşılaştırma</h2>
+      <p>Aynı işi yapan başka yollar da var; hangisinin size uyduğunu bilmek için sınırlarını açıkça yazalım. <strong>Adobe Acrobat Reader</strong> (ücretsiz sürüm) sayfaları görüntüler ve döndürür, ancak döndürmeyi kaydetmek, sayfa silmek, sıralamak ve çıkarmak <em>Acrobat Pro</em> ya da aylık abonelikli "Organize Pages" eklentisi ister. Acrobat'ın web sürümü bu işlemleri ücretsiz sunar ama dosyanızı Adobe sunucularına yükler ve hesap açmanızı bekler. <strong>macOS Önizleme</strong> gerçekten ücretsizdir ve sürükleyerek sıralama, döndürme, silme yapar; yalnızca Mac'te vardır, Windows ve Android'de alternatifi yoktur ve bazı sürümlerde döndürülmüş sayfayı kaydederken belgeyi yeniden kodlayıp dosyayı büyütebilir. <strong>Microsoft Edge ve Chrome</strong> PDF'i döndürerek gösterir ama yalnızca ekranda; "Yazdır → PDF olarak kaydet" ile dışa aktardığınızda metin katmanı ve yer imleri çoğu zaman bozulur. <strong>Online PDF siteleri</strong> ise genellikle günlük işlem sınırı, dosya boyutu sınırı ya da filigran koyar ve en önemlisi belgeyi kendi sunucularında işler; kimlik, sözleşme, sağlık raporu gibi belgeler için bu, sizin kontrolünüzde olmayan bir kopya demektir.</p>
+      <p>Bu aracın yaklaşımı farklıdır: sayfa açıldıktan sonra her şey tarayıcınızın içinde, açık kaynaklı <code>pdf.js</code> (önizleme) ve <code>pdf-lib</code> (çıktı) kütüphaneleriyle yapılır. Sunucuya giden tek şey sayfanın kendisini indirmek için yapılan istek; belgeniz hiçbir yere gönderilmez. Sınırlamalarımızı da söyleyelim: sayfa içindeki metni düzenlemez, form alanlarını değiştirmez, şifreli PDF'leri açmaz. Çok büyük belgelerde (yüzlerce fotoğraf sayfası, 200 MB üstü) tarayıcı belleği yetmeyebilir; bu durumda önce <a href="../pdf-bol/">PDF Böl</a> ile parçalara ayırıp sonra düzenlemek daha güvenlidir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Dosya yüklenmez.</strong> Site statik yayınlanır, dosya alan bir sunucumuz yok. Belgeniz yalnızca sizin cihazınızda açılır; dilerseniz dosyayı seçtikten sonra interneti kapatıp devam edebilirsiniz.</li>
+        <li><strong>Kayıt, limit, filigran yok.</strong> Sayfa sayısı, dosya sayısı ya da günlük kullanım sınırı koymuyoruz.</li>
+        <li><strong>Kalite korunur.</strong> Döndürme ve sıralama sayfa içeriğini yeniden çizmez; metin katmanı, bağlantılar ve görüntü çözünürlüğü olduğu gibi kalır.</li>
+        <li><strong>Klavye ve mobil.</strong> Her işlem düğmeyle de yapılabilir; ekran okuyucu her kartın numarasını, döndürme açısını ve silinip silinmediğini okur. Telefonda kartlar iki sütuna iner.</li>
+        <li><strong>Açık kaynak.</strong> Kodun tamamı GitHub'da; ne yaptığını herkes inceleyebilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>PDF'im sunucuya gönderiliyor mu?</summary><p>Hayır. Önizleme ve yeni PDF'in oluşturulması tarayıcınızın belleğinde yapılır. Sayfa yüklendikten sonra ağ bağlantısı gerekmez; dilerseniz Wi-Fi'yi kapatıp deneyebilirsiniz.</p></details>
+        <details><summary>Döndürme kalıcı mı, başka programlarda da döndürülmüş görünür mü?</summary><p>Evet. Döndürme PDF standardındaki sayfa yönü (Rotate) bilgisine yazılır; Acrobat, Chrome, Önizleme, telefon uygulamaları ve yazıcılar bunu tanır. Sayfa zaten döndürülmüş olarak kaydedilmişse yeni açı üzerine eklenir.</p></details>
+        <details><summary>Sildiğim sayfayı geri alabilir miyim?</summary><p>Çıktıyı oluşturmadan önce evet: kartın ↶ düğmesi silmeyi geri alır. Çıktı indirildikten sonra orijinal dosyanız yine de değişmemiş olduğundan baştan açıp yeniden düzenleyebilirsiniz.</p></details>
+        <details><summary>Kaç sayfalık belge açabilirim?</summary><p>Yapay bir sınır yok. 200–300 sayfalık metin ağırlıklı belgeler bilgisayarda rahat çalışır; önizleme ilk 60 sayfa için hemen, kalanı için siz kaydırdıkça yapılır. Fotoğraf ağırlıklı çok büyük dosyalarda 50 MB üstünde uyarı gösteririz; takılırsa belgeyi önce bölün.</p></details>
+        <details><summary>Şifreli PDF açılmıyor, ne yapmalıyım?</summary><p>Şifreli dosyalar güvenlik gereği okunamaz. Belgeyi şifresini bildiğiniz bir programda (Acrobat Reader, Chrome'da "Yazdır → PDF olarak kaydet" ya da Önizleme'de "Dışa aktar") şifresiz kaydedip yeniden seçin.</p></details>
+        <details><summary>Dosya boyutu değişir mi?</summary><p>Genellikle çok az. Sayfalar yeniden sıkıştırılmaz; yalnızca kullanılmayan sayfalar atılır, bu yüzden silme işlemi dosyayı küçültür. Boyut hâlâ büyükse <a href="../pdf-kucult/">PDF Küçült</a> aracı görüntüleri sıkıştırabilir.</p></details>
+        <details><summary>Boş sayfa hangi boyutta eklenir?</summary><p>Kendisinden sonraki ilk gerçek sayfanın boyutunda; belgenin sonuna eklediyseniz önceki sayfanın boyutunu alır. Böylece A4 dikey belgeye A4 dikey, yatay sunuma yatay boş sayfa gelir.</p></details>
+        <details><summary>Sayfa içindeki yazıyı düzenleyebilir miyim?</summary><p>Hayır; bu araç sayfa düzeyinde çalışır (sıra, yön, silme, çıkarma). Metni değiştirmek için belgeyi <a href="../pdfden-worde/">PDF'den Word'e</a> çevirip düzenledikten sonra <a href="../wordden-pdfe/">Word'den PDF'e</a> ile geri dönüştürebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../pdf-bol/">PDF Böl</a></li>
+        <li><a href="../pdf-birlestir/">PDF Birleştir</a></li>
+        <li><a href="../pdfden-resme/">PDF'den Resme</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kurumsal belge akışı, arşivleme ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="pdf-sayfa-duzenle-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

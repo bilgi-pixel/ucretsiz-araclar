@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF İmzala – Ücretsiz Online PDF'e İmza Ekle (Elle Çizilmiş İmza veya İmza Resmi)</title>
+  <meta name="description" content="PDF'e imza ekleyin: imzanızı fareyle ya da dokunarak çizin, imza resminizi yükleyin veya adınızı yazın; sayfada sürükleyip boyutlandırın, tarih ekleyin, imzalı PDF'i indirin. Ücretsiz, kayıt yok, dosyanız bilgisayarınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/pdf-imzala/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .sig-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 10px; }
+    .sig-tab { min-height: 44px; padding: 8px 14px; font: inherit; font-weight: 600; color: var(--ba-text-2); background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .sig-tab[aria-selected="true"] { background: var(--ba-primary-soft); border-color: var(--ba-primary); color: var(--ba-primary); }
+    .sig-tab:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    .sig-panel { padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .sig-pad { background: #fff; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); overflow: hidden; }
+    #sig-canvas { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    .sig-toolbar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 10px; }
+    .sig-toolbar label { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; font-weight: 600; }
+    .sig-toolbar input[type="color"] { width: 44px; height: 36px; padding: 2px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); cursor: pointer; }
+    .sig-toolbar input[type="range"] { width: 120px; accent-color: var(--ba-primary); }
+    .sig-text-field input[type="text"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); }
+    #img-drop { padding: 18px 12px 16px; }
+    #img-drop .ba-drop-icon { width: 40px; height: 40px; margin-bottom: 8px; }
+    #img-drop .ba-drop-icon svg { width: 22px; height: 22px; }
+    #img-name { display: block; margin-top: 8px; font-size: .88rem; color: var(--ba-text-muted); }
+    .stage-bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 18px 0 10px; }
+    .stage-bar .ba-field { margin: 0; }
+    .stage-bar select { min-width: 150px; }
+    #stage { background: var(--ba-ink); border-radius: var(--ba-radius); padding: 12px; overflow: auto; }
+    #page-wrap { position: relative; margin: 0 auto; box-shadow: 0 6px 24px rgba(0,0,0,.35); background: #fff; }
+    #page-canvas { display: block; width: 100%; height: auto; }
+    #overlay { position: absolute; left: 0; top: 0; box-sizing: border-box; border: 2px dashed var(--ba-primary); cursor: move; touch-action: none; user-select: none; background: rgba(123,35,49,.04); }
+    #overlay:focus-visible { outline: 3px solid var(--ba-accent); outline-offset: 2px; }
+    #overlay.is-dragging { border-style: solid; }
+    #overlay-img { display: block; width: 100%; height: 100%; pointer-events: none; }
+    #overlay-date { position: absolute; left: 0; top: 100%; margin-top: 2px; font-family: Helvetica, Arial, sans-serif; color: #262626; white-space: nowrap; pointer-events: none; line-height: 1.2; }
+    .overlay-handle { position: absolute; right: -11px; bottom: -11px; width: 22px; height: 22px; border-radius: 50%; background: var(--ba-primary); border: 2px solid #fff; cursor: nwse-resize; touch-action: none; }
+    .place-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-top: 12px; font-size: .9rem; color: var(--ba-text-muted); }
+    .place-bar label, label.place-bar { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ba-text); }
+    .place-bar input[type="range"] { width: 140px; accent-color: var(--ba-primary); }
+    .place-bar input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    #file-meta { margin: 12px 0 0; font-size: .9rem; color: var(--ba-text-2); font-family: var(--ba-mono); }
+    #apply-hint { font-size: .9rem; color: var(--ba-text-muted); margin: 0; }
+    .ba-legal { margin-top: 14px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); border: 1px solid var(--ba-border); font-size: .88rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"PDF İmzala – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/pdf-imzala/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><a href="https://bilisimajans.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>bilisimajans.com'a dön</a><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#pdf" class="ba-nav-optional">PDF</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#pdf">PDF Araçları</a></li></ol>
+      <h1>PDF İmzala – Elle Çizilmiş İmza veya İmza Resmi Ekle</h1>
+      <p class="lead">İmzanızı çizin, imza resminizi yükleyin ya da adınızı yazın; PDF sayfasında istediğiniz yere sürükleyin, boyutlandırın, tarih ekleyin ve imzalı PDF'i indirin. Belgeniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div id="drop"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><strong>İmzalanacak PDF'i buraya bırakın</strong><small>veya seçmek için tıklayın · tek PDF dosyası</small><span class="ba-btn">PDF seç</span></div>
+      <p id="file-meta"></p>
+
+      <div id="workspace" hidden>
+        <h3 class="visually-hidden">İmza kaynağı</h3>
+        <div class="sig-tabs" role="tablist" aria-label="İmza kaynağı">
+          <button class="sig-tab" type="button" role="tab" data-tab="draw" id="tab-draw" aria-selected="true" aria-controls="panel-draw">İmza çiz</button>
+          <button class="sig-tab" type="button" role="tab" data-tab="image" id="tab-image" aria-selected="false" aria-controls="panel-image" tabindex="-1">İmza resmi yükle</button>
+          <button class="sig-tab" type="button" role="tab" data-tab="text" id="tab-text" aria-selected="false" aria-controls="panel-text" tabindex="-1">Adımı yaz</button>
+        </div>
+
+        <div class="sig-panel" data-panel="draw" id="panel-draw" role="tabpanel" aria-labelledby="tab-draw">
+          <div class="sig-pad"><canvas id="sig-canvas" aria-label="İmza çizim alanı: fare, parmak ya da kalemle imzanızı çizin"></canvas></div>
+          <div class="sig-toolbar">
+            <label for="pen-color">Kalem rengi <input id="pen-color" type="color" value="#1a237e"></label>
+            <label for="pen-width">Kalınlık <input id="pen-width" type="range" min="1" max="8" step="0.5" value="2.5"></label>
+            <button id="pen-undo" class="ba-btn" type="button">Geri al</button>
+            <button id="pen-clear" class="ba-btn" type="button">Temizle</button>
+          </div>
+        </div>
+
+        <div class="sig-panel" data-panel="image" id="panel-image" role="tabpanel" aria-labelledby="tab-image" hidden>
+          <div id="img-drop" aria-label="İmza resmi seçmek için tıklayın veya buraya bırakın"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg></span><strong>İmza resmini bırakın</strong><small>PNG, JPG veya WebP · taranmış ya da fotoğraflanmış imza</small><span id="img-name"></span></div>
+          <div class="sig-toolbar"><label><input id="img-transparent" type="checkbox" checked> Beyaz zemini şeffaf yap (taranmış imza için)</label></div>
+        </div>
+
+        <div class="sig-panel" data-panel="text" id="panel-text" role="tabpanel" aria-labelledby="tab-text" hidden>
+          <div class="ba-field sig-text-field"><label for="sig-text">Ad soyad</label><input id="sig-text" type="text" autocomplete="name" placeholder="Örn. Ayşe Çelik" maxlength="60"><div class="hint">Türkçe karakterler korunur; renk için soldaki "Kalem rengi" ayarı kullanılır.</div></div>
+          <div class="sig-toolbar"><label for="text-style">Stil <select id="text-style"><option value="italic" selected>Eğik</option><option value="normal">Düz</option></select></label></div>
+        </div>
+
+        <div class="stage-bar">
+          <button id="page-prev" class="ba-btn" type="button" aria-label="Önceki sayfa">‹ Önceki</button>
+          <div class="ba-field"><label for="page-select" class="visually-hidden">Sayfa</label><select id="page-select"></select></div>
+          <button id="page-next" class="ba-btn" type="button" aria-label="Sonraki sayfa">Sonraki ›</button>
+          <label class="place-bar" style="margin:0"><input id="opt-all-pages" type="checkbox"> Tüm sayfalara uygula</label>
+        </div>
+      </div>
+
+      <div id="stage" hidden>
+        <div id="page-wrap">
+          <canvas id="page-canvas" aria-label="PDF sayfa önizlemesi"></canvas>
+          <div id="overlay" tabindex="0" role="img" aria-label="İmza. Sürükleyerek taşıyın, köşeden boyutlandırın; klavyede ok tuşları taşır, artı ve eksi boyutlandırır" hidden>
+            <img id="overlay-img" alt="">
+            <span id="overlay-date" hidden></span>
+            <span class="overlay-handle" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="placement" class="place-bar">
+        <label for="size-range">Boyut <input id="size-range" type="range" min="5" max="90" value="27"></label>
+        <label><input id="opt-date" type="checkbox"> Tarih ekle (bugün)</label>
+        <span id="pos-info" aria-live="polite"></span>
+      </div>
+
+      <div class="ba-actions">
+        <button id="apply" class="ba-btn ba-btn-primary ba-btn-lg" type="button" disabled>İmzayı uygula</button>
+        <button id="clear" class="ba-btn" type="button">Temizle</button>
+        <p id="apply-hint">Önce PDF seçin, sonra imzanızı çizin, yükleyin ya da yazın.</p>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result"><h3>İmzalı PDF hazır</h3><p id="result-info"></p><div class="ba-actions"><button id="download" class="ba-btn ba-btn-success ba-btn-lg" type="button">İmzalı PDF'i indir</button></div></div>
+      <p class="ba-legal"><strong>Önemli:</strong> Bu araç belgeye <em>görsel</em> bir imza ekler. 5070 sayılı Elektronik İmza Kanunu kapsamındaki nitelikli elektronik imza (e-imza), KEP ya da mobil imza <strong>değildir</strong>; ıslak imza yerine geçip geçmeyeceği karşı tarafın kabulüne ve işlemin türüne bağlıdır.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="pdf-imzala-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"PDF seç" düğmesiyle ya da sürükleyip bırakarak imzalanacak belgeyi açın. Sayfa önizlemesi birkaç saniyede görünür; şifreli PDF'lerde önce şifreyi kaldırmanız istenir.</li>
+        <li>İmza kaynağını seçin: <strong>İmza çiz</strong> sekmesinde fare, parmak ya da kalemle çizin (renk ve kalınlığı ayarlayabilir, son hamleyi geri alabilirsiniz); <strong>İmza resmi yükle</strong> ile taranmış imzanızı PNG/JPG olarak ekleyin; <strong>Adımı yaz</strong> ile adınızı yazıp eğik yazı imzası oluşturun.</li>
+        <li>İmza, sayfanın sağ alt bölgesine yerleşir. Sürükleyerek taşıyın, sağ alt köşedeki tutamaçtan ya da "Boyut" kaydırıcısıyla büyütüp küçültün. Klavyeyle de çalışır: ok tuşları taşır, artı/eksi boyutlandırır.</li>
+        <li>Önceki/Sonraki düğmeleriyle doğru sayfaya gidin; her sayfanın imzalanması gerekiyorsa "Tüm sayfalara uygula" kutusunu işaretleyin. İsterseniz "Tarih ekle" ile bugünün tarihi imzanın altına yazılır.</li>
+        <li>"İmzayı uygula" düğmesine basın ve "İmzalı PDF'i indir" ile dosyayı kaydedin. Dosya adı <code>belge-imzali.pdf</code> biçiminde olur; orijinal dosyanız değişmez.</li>
+      </ol>
+
+      <h2>Bu araç ne işe yarar?</h2>
+      <p>Kira sözleşmesi, iş teklifi, dilekçe, izin formu, veli onayı, teklif onayı, taahhütname… Günlük hayatta imza istenen belgelerin çoğu artık PDF olarak e-postayla geliyor ve "imzalayıp geri gönderin" deniyor. Klasik yol belgeyi yazdırmak, imzalamak, taramak ya da fotoğrafını çekip tekrar PDF yapmak; hem zaman alıyor hem de ortaya çarpık, gölgeli, büyük boyutlu bir dosya çıkıyor. Bu araç aynı işi iki dakikada, yazıcı ve tarayıcı olmadan yapar: PDF'i açarsınız, imzanızı ekrana çizersiniz ya da hazır imza görselinizi yüklersiniz, imzayı sayfada tam olması gereken yere taşırsınız ve imzalı PDF'i indirirsiniz.</p>
+      <p>İşlem tamamen tarayıcınızın içinde gerçekleşir. Sayfa önizlemesi açık kaynak <code>pdf.js</code> ile, imzanın belgeye gömülmesi <code>pdf-lib</code> ile yapılır; ikisi de sitenin kendi klasöründen yüklenir, dışarıya hiçbir istek atılmaz. Yani kimlik bilgisi, maaş, adres ya da ticari sır içeren bir sözleşmeyi imzalamak için belgeyi bir sunucuya göndermeniz gerekmez. Sayfa bir kez açıldıktan sonra interneti kapatıp devam edebilirsiniz.</p>
+
+      <h2>Üç imza türü: hangisi ne zaman?</h2>
+      <p><strong>Elle çizilmiş imza.</strong> Telefon ya da tablette parmakla, bilgisayarda fareyle ya da grafik tabletle çizersiniz. En doğal sonucu dokunmatik ekranda verir; fareyle çizim biraz köşeli olabilir, bu durumda kalınlığı 3–4 yapıp yavaş çizmek yardımcı olur. "Geri al" son hamleyi siler, "Temizle" baştan başlatır. Çizim, kenarlarından kırpılmış şeffaf bir PNG'ye dönüştürülür; belgenin arka planı imzanın altından görünür.</p>
+      <p><strong>İmza resmi.</strong> Beyaz kağıda attığınız imzanın taramasını ya da fotoğrafını yüklersiniz. "Beyaz zemini şeffaf yap" seçeneği açık olduğunda açık renkli pikseller şeffaflaştırılır; böylece imzanın etrafında beyaz bir kutu kalmaz ve imza, belgedeki çizgi ya da metnin üstüne doğal biçimde oturur. Fotoğrafta gölge varsa sonuç lekeli olabilir; bu durumda seçeneği kapatın ya da resmi önce <a href="../resim-kucult/">Resim Küçült</a> aracıyla kırpıp parlaklığını düzelterek yeniden deneyin. Bu yöntem, tutarlı görünen bir imzayı tekrar tekrar kullanmak isteyenler için en pratik olanıdır.</p>
+      <p><strong>Yazılı ad.</strong> Adınızı yazar, eğik ya da düz stil seçersiniz; araç bunu Türkçe karakterleri tam destekleyen DejaVu Sans yazı tipiyle görsele çevirir. "Ç, Ğ, İ, Ö, Ş, Ü" harfleri sorunsuz basılır. Bu seçenek, paraf niteliğindeki onaylar, "okudum, anladım" türü formlar ya da imzanın görsel biçiminden çok adın belgede yer almasının yeterli olduğu iç yazışmalar için uygundur.</p>
+
+      <div class="ba-ad" data-slot="pdf-imzala-b" aria-label="Reklam"></div>
+
+      <h2>Görsel imza ile e-imza arasındaki fark</h2>
+      <p>Burada eklediğiniz imza, belgenin üzerine konan bir <em>resimdir</em>. Belgeyi kimin, ne zaman imzaladığını kriptografik olarak kanıtlamaz; belge sonradan değiştirilirse bunu da tespit etmez. Türkiye'de 5070 sayılı Elektronik İmza Kanunu'na göre ıslak imzayla aynı hukuki sonucu doğuran imza, yetkili elektronik sertifika hizmet sağlayıcılarından alınan <strong>nitelikli elektronik sertifika</strong> ile atılan <strong>güvenli elektronik imzadır</strong> (e-imza, mobil imza). Resmî kurum başvuruları, UYAP, KEP yazışmaları, e-fatura ya da noter işlemleri gibi süreçlerde görsel imza kabul edilmez; bu işler için e-imza sertifikası ve ilgili kurumun imzalama uygulaması gerekir.</p>
+      <p>Öte yandan günlük ticari hayatta pek çok belge için taraflar görsel imzayı yeterli görür: taranmış imzalı PDF'in e-postayla gönderilmesi uzun zamandır yaygın bir uygulamadır ve bu aracın ürettiği dosya o uygulamanın dijital karşılığıdır. Karşı tarafın görsel imzayı kabul edip etmediğini, belgenin türüne göre ıslak imza ya da e-imza şartı olup olmadığını önceden sorun. Kuşkuya düştüğünüzde bir hukukçuya danışın; bu sayfa hukuki tavsiye değildir.</p>
+
+      <h2>Örnek iş akışları</h2>
+      <ul>
+        <li><strong>Sözleşme:</strong> E-postayla gelen PDF'i açın, imza bloğunun olduğu son sayfaya gidin, çizdiğiniz imzayı "İmza:" satırının üzerine taşıyın, "Tarih ekle" kutusunu işaretleyin ve indirin. Her sayfanın paraflanması isteniyorsa "Adımı yaz" ile kısa bir paraf oluşturup "Tüm sayfalara uygula" seçeneğini kullanın; sayfa altındaki konum tüm sayfalarda korunur.</li>
+        <li><strong>Dilekçe:</strong> Dilekçenizi Word'de yazıp <a href="../wordden-pdfe/">Word'den PDF'e</a> aracıyla PDF yapın, burada imzalayın. Dilekçeyi şahsen teslim edecekseniz yine de çıktıya ıslak imza atmanız gerekebilir; kurumun kuralını kontrol edin.</li>
+        <li><strong>Form:</strong> Okul, spor kulübü ya da işyeri formlarını yazdırmadan doldurup imzalayabilirsiniz. Form alanlarını doldurmak için ayrı bir araç gerekiyorsa önce onu kullanın; bu araç yalnızca imza görseli ekler, sonradan eklenen imza mevcut içeriği değiştirmez.</li>
+        <li><strong>Çok parçalı belge:</strong> Ekleri ayrı PDF olarak aldıysanız önce <a href="../pdf-birlestir/">PDF Birleştir</a> ile tek dosya yapın, sonra imzalayın; e-posta sınırını aşıyorsa son olarak <a href="../pdf-kucult/">PDF Küçült</a> aracından geçirin.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Belge yüklenmez.</strong> Sunucumuz yok; site statik yayınlanır. Sözleşmeniz yalnızca sizin cihazınızda açılır ve imzalanır.</li>
+        <li><strong>İmzanız kaydedilmez.</strong> Çizdiğiniz imza yalnızca sayfa açıkken bellekte durur; sekmeyi kapatınca silinir. İmzanızı tekrar kullanmak istiyorsanız PNG olarak kendiniz saklayıp "İmza resmi yükle" ile ekleyin.</li>
+        <li><strong>Kayıt, limit, filigran yok.</strong> Günlük belge sınırı ya da "premium" tuzağı yoktur.</li>
+        <li><strong>Telefonda çalışır.</strong> Dokunmatik ekranda parmakla çizim, 360 piksel genişlikte bile kullanılabilir arayüz.</li>
+        <li><strong>Açık kaynak.</strong> Kod GitHub'da; imzanızın nereye gittiğini merak ediyorsanız bakabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Bu imza hukuken geçerli mi? e-imza yerine geçer mi?</summary><p>Hayır, e-imza yerine geçmez. Eklenen imza bir görseldir; 5070 sayılı kanundaki güvenli elektronik imza, mobil imza ya da KEP değildir. Taraflar arasında kabul görürse günlük ticari yazışmalar için kullanılabilir, ancak resmî kurum işlemleri ve e-imza şartı olan belgeler için uygun değildir.</p></details>
+        <details><summary>Belgem ve imzam sunucuya gönderiliyor mu?</summary><p>Hayır. PDF'in okunması, önizlemesi ve imzanın gömülmesi tarayıcınızın içinde yapılır. Sayfa yüklendikten sonra ağ bağlantısı gerekmez; dilerseniz uçak modunda deneyebilirsiniz.</p></details>
+        <details><summary>Şifreli PDF'i imzalayabilir miyim?</summary><p>Açılış şifresi olan PDF'lerde araç "şifreyi kaldırın" uyarısı verir. Belgeyi şifresiyle açıp Adobe Reader ya da tarayıcınızdan "Yazdır → PDF olarak kaydet" ile şifresiz bir kopya oluşturun ve o kopyayı imzalayın.</p></details>
+        <details><summary>İmza her sayfaya mı ekleniyor?</summary><p>Varsayılan olarak yalnızca önizlemede gördüğünüz sayfaya eklenir. "Tüm sayfalara uygula" kutusunu işaretlerseniz aynı konum ve boyutla her sayfaya eklenir; farklı boyutlu sayfalarda imza, sayfa sınırının içinde kalacak şekilde kaydırılır.</p></details>
+        <details><summary>İmzam çok köşeli ya da titrek çıktı, ne yapmalıyım?</summary><p>Fareyle çizim doğası gereği köşelidir. Kalınlığı 3–4'e çıkarın, yavaş çizin ya da telefonunuzdan parmakla çizin. En düzgün sonuç için beyaz kağıda attığınız imzanın fotoğrafını "İmza resmi yükle" sekmesinden ekleyip "beyaz zemini şeffaf yap" seçeneğini açık bırakın.</p></details>
+        <details><summary>Sonradan imzayı silmek ya da yerini değiştirmek mümkün mü?</summary><p>İndirdiğiniz dosyada imza sayfa içeriğine gömülür ve bu araçla geri alınamaz; o yüzden orijinal PDF'iniz değiştirilmez, yeni bir "-imzali.pdf" dosyası üretilir. Yeri yanlışsa orijinali yeniden açıp tekrar imzalayın.</p></details>
+        <details><summary>Tarih hangi biçimde ve hangi dilde yazılıyor?</summary><p>Cihazınızın bugünkü tarihi gün.ay.yıl (örn. 03.11.2026) biçiminde, imzanın hemen altına yazılır. Geçmiş ya da ileri tarih girilemez; tarihi belgeye ayrıca yazmanız gerekiyorsa "Adımı yaz" sekmesine tarihi metin olarak girip ikinci bir imza nesnesi gibi ekleyebilirsiniz.</p></details>
+        <details><summary>Dosya boyutu neden büyüdü?</summary><p>İmza görseli PNG olarak belgeye gömülür; genellikle 20–100 KB ekler. Çok büyük bir imza resmi yüklediyseniz araç onu 1600 piksele küçültür. Yine de sınır aşılıyorsa <a href="../pdf-kucult/">PDF Küçült</a> aracını kullanın.</p></details>
+      </div>
+
+      <h2>Gizlilik notu</h2>
+      <p>Bu sayfada çerez, analitik ya da izleme kodu yoktur; tek dış bileşen reklam alanlarını dolduran AdSense betiğidir ve o betik belgenize erişemez. İmza çizimleriniz, yüklediğiniz imza resimleri ve PDF içeriği yalnızca tarayıcı belleğinde tutulur, sekme kapanınca yok olur. Ayrıntılar için <a href="../gizlilik/">Gizlilik Politikası</a> sayfasına bakın.</p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../pdf-birlestir/">PDF Birleştir</a></li>
+        <li><a href="../pdfden-worde/">PDF'den Word'e</a></li>
+        <li><a href="../pdf-kucult/">PDF Küçült</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kurumsal belge akışı, e-imza entegrasyonu ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="pdf-imzala-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sayıyı Yazıya Çevir – TL Para Yazısı, Çek/Senet ve Fatura Biçimi (Ücretsiz)</title>
+  <meta name="description" content="Rakamla yazılan tutarı anında yazıya çevirin: çek/senet/fatura için bitişik biçim (YalnızBinİkiYüzOtuzDörtTL,ElliKr), okunur para yazısı, düz sayı ve sıra sayısı. TL, dolar, avro, sterlin. Kayıt yok, veri sunucuya gitmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/sayi-yaziya-cevir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .sy-form .ba-field { margin-bottom: 14px; }
+    .sy-form input[type="text"], .sy-form select, .sy-form textarea {
+      width: 100%; min-height: 44px; padding: 8px 10px; font: inherit; color: var(--ba-text);
+      background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm);
+    }
+    .sy-form #amount { font-size: 1.35rem; font-family: var(--ba-mono); min-height: 54px; letter-spacing: .02em; }
+    .sy-form textarea { min-height: 64px; resize: vertical; }
+    .sy-row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 480px) { .sy-row { grid-template-columns: 1fr; } }
+    .sy-modes { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sy-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 14px; border: 1px solid var(--ba-border); border-radius: 999px; cursor: pointer; font-weight: 600; font-size: .92rem; background: var(--ba-surface); }
+    .sy-modes label:has(input:checked) { border-color: var(--ba-primary); background: var(--ba-primary); color: #fff; }
+    .sy-modes input { width: 18px; height: 18px; accent-color: var(--ba-primary); margin: 0; }
+    .sy-examples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .sy-examples button { min-height: 36px; padding: 4px 12px; font: inherit; font-size: .85rem; font-family: var(--ba-mono); border: 1px solid var(--ba-border); border-radius: 999px; background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; }
+    .sy-examples button:hover { border-color: var(--ba-primary); color: var(--ba-primary); }
+    .sy-out { display: grid; gap: 12px; margin-top: 8px; }
+    .sy-out-row { display: grid; gap: 8px; grid-template-columns: 1fr auto; align-items: start; }
+    @media (max-width: 480px) { .sy-out-row { grid-template-columns: 1fr; } }
+    .sy-out-row .lbl { display: block; font-size: .82rem; color: var(--ba-text-muted); font-weight: 600; margin-bottom: 4px; }
+    .sy-out-row output { display: block; font-size: 1.1rem; line-height: 1.5; word-break: break-word; color: var(--ba-text); }
+    .sy-out-row output.sy-check { font-family: var(--ba-mono); font-size: 1.05rem; }
+    .sy-formatted { font-family: var(--ba-mono); color: var(--ba-text-muted); margin: 0 0 10px; font-size: .95rem; }
+    .sy-copy-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .sy-history { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+    .sy-history li { margin: 0; }
+    .hist-btn { width: 100%; text-align: left; display: grid; gap: 2px; padding: 8px 12px; min-height: 44px; font: inherit; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); cursor: pointer; }
+    .hist-btn:hover { border-color: var(--ba-primary); }
+    .hist-btn strong { font-family: var(--ba-mono); font-size: .9rem; }
+    .hist-btn span { font-size: .85rem; color: var(--ba-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sy-reverse { margin-top: 28px; padding-top: 20px; border-top: 1px dashed var(--ba-border); }
+    .sy-reverse h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .sy-table { width: 100%; border-collapse: collapse; font-size: .95rem; margin: 12px 0 20px; }
+    .sy-table th, .sy-table td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .sy-table th { font-size: .85rem; color: var(--ba-text-muted); }
+    .sy-table td:first-child { font-family: var(--ba-mono); white-space: nowrap; }
+    .sy-table-wrap { overflow-x: auto; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Sayıyı Yazıya Çevir – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/sayi-yaziya-cevir/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><a href="https://bilisimajans.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>bilisimajans.com'a dön</a><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesaplama</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Sayıyı Yazıya Çevir – TL Para Yazısı, Çek, Senet ve Fatura Biçimi</h1>
+      <p class="lead">Tutarı rakamla yazın; çek ve senet için bitişik yazım, fatura ve sözleşme için okunur para yazısı, düz sayı ve sıra sayısı anında hazır. Türk lirası, dolar, avro ve sterlin desteklenir. Girdiğiniz sayı bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="sy-form">
+        <div class="ba-field">
+          <label for="amount">Sayı veya tutar</label>
+          <input id="amount" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="Örn. 1.234,50">
+          <div class="hint">Binlik ayracı nokta, ondalık ayracı virgül kullanın (1.234,50). 1234.50 ve 1,234.50 biçimleri de anlaşılır. Negatif için başa eksi koyun.</div>
+          <div class="sy-examples" aria-label="Hızlı örnekler">
+            <button type="button" data-example="1.234,50" data-example-mode="money">1.234,50 ₺</button>
+            <button type="button" data-example="1000000" data-example-mode="plain">1.000.000</button>
+            <button type="button" data-example="100" data-example-mode="plain">100</button>
+            <button type="button" data-example="2026" data-example-mode="ordinal">2026.</button>
+            <button type="button" data-example="-15,75" data-example-mode="plain">-15,75</button>
+          </div>
+        </div>
+
+        <div class="ba-field">
+          <span id="mode-label">Ne üretilsin?</span>
+          <div class="sy-modes" role="radiogroup" aria-labelledby="mode-label">
+            <label><input type="radio" name="mode" value="money" checked> Para yazısı (TL, çek/senet)</label>
+            <label><input type="radio" name="mode" value="plain"> Düz sayı</label>
+            <label><input type="radio" name="mode" value="ordinal"> Sıra sayısı (birinci, ikinci…)</label>
+          </div>
+        </div>
+
+        <div class="sy-row">
+          <div id="money-options" class="ba-field">
+            <label for="currency">Para birimi</label>
+            <select id="currency">
+              <option value="TRY" selected>Türk lirası (TL / kuruş)</option>
+              <option value="USD">Amerikan doları (dolar / sent)</option>
+              <option value="EUR">Avro (avro / sent)</option>
+              <option value="GBP">İngiliz sterlini (sterlin / peni)</option>
+            </select>
+            <label style="margin-top:10px"><input id="opt-yalniz" type="checkbox" checked> Çek biçiminin başına "Yalnız" ekle</label>
+            <label><input id="opt-hash" type="checkbox"> Çek biçimini # işaretleriyle sar (#…#)</label>
+          </div>
+          <div class="ba-field">
+            <label for="case">Harf biçimi</label>
+            <select id="case">
+              <option value="lower" selected>küçük harf (TDK)</option>
+              <option value="sentence">İlk harf büyük</option>
+              <option value="title">Her Kelime Büyük</option>
+              <option value="upper">TÜMÜ BÜYÜK</option>
+            </select>
+            <div class="hint">Çek/senet satırı her durumda bitişik ve büyük harf başlangıçlı üretilir; "TÜMÜ BÜYÜK" seçerseniz o da tamamen büyük yazılır.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="ba-result" aria-live="polite" data-ready="0">
+        <h3>Yazıyla</h3>
+        <p id="formatted" class="sy-formatted"></p>
+        <div class="sy-out">
+          <div id="row-readable" class="sy-out-row" hidden>
+            <div><span class="lbl">Okunur biçim (fatura, sözleşme, makbuz)</span><output id="out-readable" for="amount"></output></div>
+            <button class="ba-btn" type="button" data-copy="out-readable">Kopyala</button>
+          </div>
+          <div id="row-check" class="sy-out-row" hidden>
+            <div><span class="lbl">Çek / senet biçimi (bitişik)</span><output id="out-check" class="sy-check" for="amount"></output></div>
+            <button class="ba-btn" type="button" data-copy="out-check">Kopyala</button>
+          </div>
+          <div id="row-main" class="sy-out-row" hidden>
+            <div><span class="lbl">Yazıyla</span><output id="out-main" for="amount"></output></div>
+            <button class="ba-btn" type="button" data-copy="out-main">Kopyala</button>
+          </div>
+        </div>
+        <p id="copy-status" class="sy-copy-status" role="status"></p>
+      </div>
+
+      <div id="history-wrap" hidden>
+        <p class="hint" style="margin:18px 0 0;font-size:.85rem;color:var(--ba-text-muted)">Son çevirdikleriniz (yalnızca bu sekmede, sayfa kapanınca silinir):</p>
+        <ul id="history" class="sy-history"></ul>
+      </div>
+
+      <div class="sy-reverse sy-form">
+        <h3>Ters yön: yazıdan sayıya</h3>
+        <div class="ba-field">
+          <label for="words-input">Yazıyla tutar</label>
+          <textarea id="words-input" placeholder="Örn. bin iki yüz otuz dört Türk lirası elli kuruş  ya da  YalnızBinİkiYüzOtuzDörtTL,ElliKr"></textarea>
+          <div class="hint">Düz yazı, çekteki bitişik yazım ve "virgül" ile ondalık okunuşu anlaşılır. Çekteki rakamla yazıyı karşılaştırmak için kullanın.</div>
+        </div>
+        <div id="words-error" class="ba-error" role="alert"></div>
+        <div id="row-words" class="sy-out-row" hidden>
+          <div><span class="lbl">Rakamla</span><output id="words-out" class="sy-check" for="words-input"></output></div>
+          <button class="ba-btn" type="button" data-copy="words-out">Kopyala</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="sayi-yaziya-cevir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Sayı veya tutar" kutusuna rakamı yazın: 1.234,50 gibi. Binlik ayracını yazmanız şart değil; 1234,5 de aynı sonucu verir.</li>
+        <li>Ne istediğinizi seçin: çek, senet ve fatura için <strong>Para yazısı</strong>; sözleşme, tutanak ve ödev için <strong>Düz sayı</strong>; tarih, yarışma ve madde numarası için <strong>Sıra sayısı</strong>.</li>
+        <li>Para yazısında birimi seçin (TL, dolar, avro, sterlin) ve çek satırının başına "Yalnız" eklenip eklenmeyeceğine karar verin. Harf biçimini belgenize göre ayarlayın.</li>
+        <li>Sonuç yazdıkça anında güncellenir. İstediğiniz satırın yanındaki "Kopyala" düğmesiyle metni alıp çekinize, faturanıza ya da sözleşmenize yapıştırın.</li>
+        <li>Elinizdeki bir çekteki yazıyı doğrulamak için alttaki "Yazıdan sayıya" alanına yazıyı yapıştırın; araç rakamı geri üretir, rakam kısmıyla karşılaştırın.</li>
+      </ol>
+
+      <h2>Bu araç ne işe yarar?</h2>
+      <p>Para tutarlarını yazıyla yazmak, hata ve tahrifata karşı yüzyıllardır kullanılan bir güvencedir. 1.000 ile 10.000 arasındaki fark tek bir sıfırdır, ama "bin" ile "on bin" arasındaki fark gözden kaçmaz. Bu yüzden çek ve senetlerde, faturaların bazı türlerinde, kira ve satış sözleşmelerinde, tutanak ve makbuzlarda tutar hem rakamla hem yazıyla yazılır. Sorun şu: yazı kısmını elle yazarken "iki yüz" ile "ikiyüz", "bir bin" ile "bin" gibi takılmalar, büyük sayılarda milyon–milyar karışıklığı ve kuruş kısmının unutulması sık görülür. Bu araç, Türkçe sayı okuma kurallarını (bin, milyon, milyar, trilyon, katrilyon) uygulayarak tutarı sizin yerinize yazar; 18 basamağa kadar sayıyı, ondalık kısmı ve negatif değerleri destekler.</p>
+      <p>Üç ayrı çıktı türü vardır. <strong>Para yazısı</strong> iki satır verir: faturalar ve sözleşmeler için "bin iki yüz otuz dört Türk lirası elli kuruş" gibi okunur biçim ve çek/senet üzerine yazılan "YalnızBinİkiYüzOtuzDörtTL,ElliKr" gibi bitişik biçim. <strong>Düz sayı</strong> modu, herhangi bir sayıyı ondalığıyla birlikte okur: "on iki virgül beş". <strong>Sıra sayısı</strong> modu "yirmi altıncı", "yüzüncü", "iki bininci" gibi ekli biçimleri ünlü uyumuna göre üretir. Tüm hesaplama tarayıcınızda birkaç satır JavaScript ile yapılır; sayfa yüklendikten sonra internet bağlantısına gerek kalmaz ve yazdığınız tutar hiçbir sunucuya gitmez.</p>
+
+      <h2>Çek, senet ve faturada tutarı yazıyla yazma kuralları</h2>
+      <p>Türk Ticaret Kanunu, çekin unsurları arasında "belirli bir bedelin ödenmesi için kayıtsız şartsız havale"yi sayar; bedel rakamla ve yazıyla farklı yazılmışsa <strong>yazıyla yazılan tutar geçerli</strong> olur (çek için TTK m. 781'in bonoya ve poliçeye ilişkin hükümlerle birlikte uygulanması). Yazı birden fazla kez yazılmış ve birbirini tutmuyorsa en düşük olan tutar esas alınır. Bu kural, yazı kısmının neden bu kadar önemli olduğunu açıklar: bir sıfır fazla ya da eksik yazılan rakam, yazı doğruysa sorun çıkarmaz; ama yazıdaki hata doğrudan ödenecek tutarı değiştirir.</p>
+      <p>Bankaların çek karnelerinde ve senet matbularında yerleşmiş uygulama, yazı tutarının başına "Yalnız" ya da "#" işareti koymak, kelimeleri boşluk bırakmadan bitişik yazmak ve her kelimeye büyük harfle başlamaktır: <code>#YalnızBinİkiYüzOtuzDörtTL,ElliKr#</code>. Boşluk bırakılmamasının nedeni, araya sonradan kelime sıkıştırılmasını engellemektir; "Yalnız" ve "#" işaretleri aynı amaçla baş ve son sınırı belirler. Kuruş yoksa "SıfırKr" yazmak ya da sonuna "Kr" kısmını hiç eklememek yaygındır; araç varsayılan olarak "SıfırKr" ekler, böylece sonradan kuruş eklenmesi önlenir. Yazıdan sonra kalan boş alanı bir çizgiyle kapatmak da iyi bir alışkanlıktır.</p>
+      <p>Faturada yazıyla tutar yazmak zorunlu değildir; ancak e-fatura ve e-arşiv şablonlarının çoğunda, özellikle kâğıt çıktısı verilen nüshalarda "Yalnız ... TL" satırı bulunur ve muhasebe programları bunu otomatik doldurur. Serbest meslek makbuzu, gider pusulası, tahsilat makbuzu ve kira kontratı gibi belgelerde ise yazıyla tutar hâlâ elle yazılır. Burada çekteki gibi bitişik yazım şart değildir; TDK kuralına uygun, ayrı yazılmış okunur biçim ("bin iki yüz otuz dört Türk lirası elli kuruş") tercih edilir. Tutarı para birimiyle birlikte, kuruşu açıkça belirterek yazın: "yüz lira" yerine "yüz Türk lirası sıfır kuruş" ya da en azından "yüz Türk lirası".</p>
+
+      <h2>Türkçede sayıların yazımı (TDK kuralları)</h2>
+      <p>Türk Dil Kurumu Yazım Kılavuzu'na göre sayılar harflerle yazıldığında <strong>her kelime ayrı yazılır</strong>: "bin iki yüz otuz dört", "iki milyon beş yüz bin". Bunun tek istisnası, para ile ilgili işlemlerde ve belgelerde (çek, senet, fatura) kelimelerin araya başka bir şey sokulmasını önlemek için <strong>bitişik yazılması</strong>dır. Yani "ikiyüzelli" yazımı günlük metinde yanlış, çekte doğru kabul edilir; araç bu iki ihtiyacı iki ayrı satırda karşılar.</p>
+      <p>Diğer kurallar: Yüz ve bin için "bir" kullanılmaz: 100 "yüz", 1.000 "bin"dir; ancak 1.000.000 "bir milyon", 1.000.000.000 "bir milyar"dır. Ondalık kısım "virgül" sözcüğüyle okunur: 12,5 "on iki virgül beş". Sıra sayıları ekle ("beşinci") ya da rakamdan sonra nokta ile ("5.") gösterilir; "5'inci" yazımı da doğrudur, "5.nci" yanlıştır. Yüzde ve binde işaretleri sayıdan önce yazılır (%50) ama "yüzde elli" diye okunur. Yaş, tarih, saat, para, ölçü ve istatistik verileri rakamla; edebi ve resmî metinlerdeki küçük sayılar yazıyla yazılır: "üç gün sonra", "yedi kişi". Romen rakamları yüzyıl, hükümdar adı ve bölüm numarası dışında kullanılmaz.</p>
+
+      <div class="ba-ad" data-slot="sayi-yaziya-cevir-b" aria-label="Reklam"></div>
+
+      <h2>Örnekler tablosu</h2>
+      <div class="sy-table-wrap">
+      <table class="sy-table">
+        <thead><tr><th>Rakam</th><th>Düz sayı</th><th>Okunur para yazısı</th><th>Çek / senet biçimi</th></tr></thead>
+        <tbody>
+          <tr><td>100</td><td>yüz</td><td>yüz Türk lirası</td><td>YalnızYüzTL,SıfırKr</td></tr>
+          <tr><td>1.000</td><td>bin</td><td>bin Türk lirası</td><td>YalnızBinTL,SıfırKr</td></tr>
+          <tr><td>1.234,50</td><td>bin iki yüz otuz dört virgül elli</td><td>bin iki yüz otuz dört Türk lirası elli kuruş</td><td>YalnızBinİkiYüzOtuzDörtTL,ElliKr</td></tr>
+          <tr><td>0,05</td><td>sıfır virgül sıfır beş</td><td>beş kuruş</td><td>YalnızSıfırTL,BeşKr</td></tr>
+          <tr><td>15.000</td><td>on beş bin</td><td>on beş bin Türk lirası</td><td>YalnızOnBeşBinTL,SıfırKr</td></tr>
+          <tr><td>1.000.000</td><td>bir milyon</td><td>bir milyon Türk lirası</td><td>YalnızBirMilyonTL,SıfırKr</td></tr>
+          <tr><td>2.500.000,99</td><td>iki milyon beş yüz bin virgül doksan dokuz</td><td>iki milyon beş yüz bin Türk lirası doksan dokuz kuruş</td><td>YalnızİkiMilyonBeşYüzBinTL,DoksanDokuzKr</td></tr>
+          <tr><td>1.000.000.000</td><td>bir milyar</td><td>bir milyar Türk lirası</td><td>YalnızBirMilyarTL,SıfırKr</td></tr>
+          <tr><td>-250</td><td>eksi iki yüz elli</td><td>eksi iki yüz elli Türk lirası</td><td>— (çekte negatif olmaz)</td></tr>
+          <tr><td>2026 (sıra)</td><td>iki bin yirmi altıncı</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Dolar seçildiğinde çıktı "bin iki yüz otuz dört dolar elli sent" ve "YalnızBinİkiYüzOtuzDörtUSD,ElliSent" olur; avro için "avro / sent", sterlin için "sterlin / peni" kullanılır. Döviz çeklerinde para birimini kısaltmayla (USD, EUR, GBP) yazmak, kur farkı tartışmalarını önlediği için bankalarca tercih edilir.</p>
+
+      <h2>Muhasebe ve ön muhasebede kullanım</h2>
+      <p>Ön muhasebe çalışanları günde onlarca tahsilat makbuzu, çek ve senet düzenler. Yazıyla tutarın hatalı yazılması, çekin karşılıksız işlemi görmesine değil ama bankada "yazı ile rakam uyuşmuyor" gerekçesiyle bekletilmesine ya da bono tutarının yazıdaki düşük değer üzerinden ödenmesine yol açabilir. Çek yazarken rakamı yazdıktan sonra bu araçtan yazı satırını kopyalayıp aynen aktarmak, "otuz dört" yerine "otuz dörd" gibi yazım hatalarını ve kuruş unutmayı önler. Yazıdan sayıya özelliği ise tersini yapar: müşteriden gelen çekteki bitişik yazıyı kutuya yapıştırın, rakamın tuttuğunu tek bakışta görün.</p>
+      <p>Sözleşmelerde ise yazıyla tutar genellikle parantez içinde rakamdan sonra gelir: "15.000,00 TL (on beş bin Türk lirası)". Bu kullanımda "Harf biçimi" seçeneğinden "küçük harf" ya da "İlk harf büyük" uygundur; resmî yazışmalarda bazı kurumlar "TÜMÜ BÜYÜK" ister, o da bir tıkla hazırdır. Sayfadaki geçmiş listesi son beş çevirinizi tutar; böylece aynı sözleşmede tekrar eden tutarları yeniden yazmanız gerekmez. Geçmiş yalnızca bu sekmenin belleğinde durur, sayfayı kapattığınızda silinir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri yüklenmez.</strong> Tutarlar sunucuya gönderilmez, çerez ya da izleme yoktur; çek bilgileriniz yalnızca sizin cihazınızda işlenir.</li>
+        <li><strong>Doğru Türkçe.</strong> "bir bin" ve "bir yüz" hataları yapılmaz, sıra sayıları ünlü uyumuna göre eklenir, Türkçe büyük harf (İ/I) doğru çevrilir.</li>
+        <li><strong>Hem çek hem fatura biçimi.</strong> Bitişik ve ayrı yazım aynı anda üretilir; "Yalnız" ve "#" seçenekleri bankanızın alışkanlığına göre ayarlanır.</li>
+        <li><strong>Büyük sayılar.</strong> 999 katrilyona kadar tam sayı, ondalık kısım, negatif değerler ve dört para birimi.</li>
+        <li><strong>Telefonda ve çevrimdışı çalışır.</strong> Kütüphane yok, sayfa anında açılır; uygulama olarak yükleyip internet olmadan kullanabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Çekte rakam ile yazı farklıysa hangisi geçerlidir?</summary><p>Yazıyla yazılan tutar geçerlidir. Tutar yazıyla birden çok kez yazılmış ve farklıysa en düşük olanı esas alınır. Bu nedenle yazı satırını her zaman araçtan kopyalayıp kontrol ederek yazın.</p></details>
+        <details><summary>Çekte "Yalnız" yazmak zorunlu mu?</summary><p>Kanunen zorunlu değildir; bankaların yerleşik uygulamasıdır ve yazının başına sonradan kelime eklenmesini önler. Aynı amaçla "#" işareti de kullanılır. Araçta ikisi de isteğe bağlıdır; bankanızın çek karnesindeki örneğe uyun.</p></details>
+        <details><summary>Kuruş yoksa ne yazmalıyım?</summary><p>"SıfırKr" ya da ",00Kr" yazmak, sonradan kuruş eklenmesini engeller. Araç varsayılan olarak "SıfırKr" ekler. Okunur biçimde kuruş sıfırsa yalnızca "… Türk lirası" yazılır.</p></details>
+        <details><summary>1.234,50 girince neden "virgül beş" değil "virgül elli" diyor?</summary><p>Düz sayı modu, ondalık kısmı yazıldığı gibi okur; muhasebede 50 kuruş "elli" diye okunur. 1234,5 yazarsanız "virgül beş" alırsınız. Para modunda ise kuruş her zaman iki basamağa tamamlanır ve üçüncü basamak yuvarlanır (1234,999 → 1235,00).</p></details>
+        <details><summary>Nokta mı virgül mü? 1.234 ne demek?</summary><p>Türkçede nokta binlik, virgül ondalık ayracıdır: 1.234 = bin iki yüz otuz dört, 1,234 = bir virgül iki yüz otuz dört. Araç 1,234.50 gibi İngilizce yazımı da tanır; iki ayraç birlikte kullanıldığında sondaki ondalık sayılır. Tek nokta ve ardından üç basamak varsa binlik, aksi hâlde (12.5) ondalık kabul edilir.</p></details>
+        <details><summary>En büyük sayı kaç?</summary><p>18 basamak, yani 999 katrilyon 999 trilyon … Bu sınırın üzerinde araç uyarı verir. Günlük muhasebede milyar ve trilyon basamakları yeterlidir; kentilyon ve üzeri bilinçli olarak eklenmemiştir.</p></details>
+        <details><summary>Sıra sayısı neden ondalık kabul etmiyor?</summary><p>"On iki virgül beşinci" diye bir ifade Türkçede yoktur. Sıra sayısı yalnızca tam ve pozitif sayılar için üretilir; ondalık girerseniz araç açıklayıcı bir uyarı gösterir.</p></details>
+        <details><summary>Yazıdan sayıya çevirme hangi yazımları anlar?</summary><p>Ayrı yazılmış düz Türkçe ("bin iki yüz otuz dört virgül elli"), çekteki bitişik yazım ("YalnızBinİkiYüzOtuzDörtTL,ElliKr"), para sözcüklü ("yüz lira elli kuruş") ve sıra sayılı ("ikinci") girdiler tanınır. Tanınmayan bir kelime varsa hangi kelime olduğu söylenir.</p></details>
+        <details><summary>Girdiğim tutarlar kaydediliyor mu?</summary><p>Hayır. Sayfa hiçbir ağ isteği yapmaz; geçmiş listesi sayfanın belleğindedir ve sekmeyi kapatınca yok olur. Tarayıcı depolaması (localStorage) bile kullanılmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../sifre-uret/">Güçlü Şifre Üretici</a></li>
+      </ul>
+      <p class="ba-note">Fatura ve e-ticaret sitenizde tutarı otomatik yazıya çeviren bir modül mü istiyorsunuz? <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yazılım entegrasyonunda yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="sayi-yaziya-cevir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>
