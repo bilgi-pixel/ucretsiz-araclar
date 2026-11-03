@@ -92,6 +92,8 @@ for (const file of walk(join(root, 'web'))) {
     // Hub hero'su iki sütun: metin (.ba-hl) + ana sitedeki gibi hareketli ağ şeması
     h = h.replace(/<section class="ba-hero"><div class="ba-container">([\s\S]*?)<\/div><\/section>/, (m, inner) =>
       `<section class="ba-hero"><div class="ba-container ba-hero-w"><div class="ba-hl">${inner}</div>${HERO_DIA}</div></section>`);
+    // Şema daha önce kaldırıldıysa (ör. güncellenmiş hero-dia.svg) yalnızca şemayı ekle
+    if (!h.includes('ba-dia')) h = h.replace(/(<div class="ba-hl">[\s\S]*?<\/div>)(<\/div><\/section>)/, (m, hl, end) => hl + HERO_DIA + end);
   }
   if (!isHub && h.includes('ba-hero-tool') && !h.includes('ba-grad')) {
     // Araç sayfası: " – ", ": " veya " (" öncesi anahtar parça; yoksa tüm başlık. <small> gibi iç etiketler korunur.
