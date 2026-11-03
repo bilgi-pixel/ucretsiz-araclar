@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Online Klavye Testi – Tuş Testi, Ghosting ve Tekrar Hızı (Ücretsiz)</title>
+  <meta name="description" content="Online klavye testi: basılan her tuş şemada yeşile döner. Basılmayan tuşları listeleyin, aynı anda kaç tuşa basılabildiğini (ghosting) ve tuş tekrar hızını ölçün. TR Q ve F düzeni. Ücretsiz, kayıt yok, veri cihazınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/klavye-test/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .kb-opts { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; margin-bottom: 12px; }
+    .kb-opts .ba-field { flex: 1 1 200px; min-width: 0; }
+    .kb-area { border: 2px dashed var(--ba-border); border-radius: var(--ba-radius); padding: 12px; background: var(--ba-surface-2); overflow-x: auto; }
+    .kb-area:focus { outline: 3px solid var(--ba-primary); outline-offset: 2px; border-style: solid; }
+    .kb-wrap { display: flex; gap: 14px; min-width: 760px; }
+    .kb-main { flex: 15 1 0; } .kb-nav { flex: 3.4 1 0; } .kb-num { flex: 4.4 1 0; }
+    .kb-wrap[data-layout="laptop"] .kb-num, .kb-wrap[data-layout="compact"] .kb-num, .kb-wrap[data-layout="compact"] .kb-nav { display: none; }
+    .kb-wrap[data-layout="compact"] { min-width: 640px; }
+    .kb-row { display: flex; gap: 4px; margin-bottom: 4px; height: 38px; }
+    .kb-gap { min-width: 0; }
+    .kb-key { min-width: 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--ba-border); border-radius: 5px; background: var(--ba-surface); color: var(--ba-text); font-size: .78rem; font-weight: 600; user-select: none; overflow: hidden; }
+    .kb-key.is-tested { background: #d5f0dc; border-color: #2e8b57; color: #0d3a1d; }
+    .kb-key.is-pressed { background: #1a7f37; border-color: #0f5a25; color: #fff; transform: translateY(1px); box-shadow: 0 0 0 2px #7fd69a; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .kb-key.is-tested { background: #1f4d2e; border-color: #4caf70; color: #d8f5e0; }
+      :root:not([data-theme="light"]) .kb-key.is-pressed { background: #3fbf6a; border-color: #8ce0a8; color: #06210f; box-shadow: 0 0 0 2px #1f4d2e; }
+    }
+    :root[data-theme="dark"] .kb-key.is-tested { background: #1f4d2e; border-color: #4caf70; color: #d8f5e0; }
+    :root[data-theme="dark"] .kb-key.is-pressed { background: #3fbf6a; border-color: #8ce0a8; color: #06210f; box-shadow: 0 0 0 2px #1f4d2e; }
+    .kb-state { font-size: .9rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .kb-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+    .kb-stat { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 12px; background: var(--ba-surface); }
+    .kb-stat b { display: block; font-size: 1.35rem; font-family: var(--ba-mono); }
+    .kb-stat span { font-size: .82rem; color: var(--ba-text-muted); }
+    .kb-ev { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-family: var(--ba-mono); font-size: .9rem; margin: 0 0 14px; }
+    .kb-ev div { border-left: 3px solid var(--ba-primary); padding: 2px 8px; word-break: break-word; }
+    .kb-ev small { display: block; font-family: inherit; color: var(--ba-text-muted); font-size: .75rem; }
+    .kb-block { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 16px; margin: 0 0 16px; background: var(--ba-surface); }
+    .kb-block h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .kb-pre { white-space: pre-wrap; word-break: break-word; font-family: var(--ba-mono); font-size: .85rem; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 12px; margin: 0; }
+    .kb-warn { padding: 10px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .92rem; margin: 10px 0 0; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kb-warn { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Online Klavye Testi – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/klavye-test/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#donustur" class="ba-nav-optional">Dönüştür</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1>Online Klavye Testi</h1>
+      <p class="lead">Klavyenizde çalışmayan, basılı kalan ya da çift yazan tuş mu var? Tuşlara basın; basılan her tuş şemada yeşile döner. Basılmayan tuşların listesini, aynı anda kaç tuşa basabildiğinizi ve tuş tekrar hızını görün. Yazdıklarınız hiçbir yere gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Klavye testi</h2>
+
+      <div class="kb-opts">
+        <div class="ba-field"><label for="kb-layout">Klavye boyutu</label><select id="kb-layout"><option value="full">Tam boy (sayısal tuş takımlı)</option><option value="laptop">Dizüstü (sayısal tuş takımı yok)</option><option value="compact">Kompakt (yalnızca ana blok)</option></select></div>
+        <div class="ba-field"><label for="kb-kind">Harf düzeni</label><select id="kb-kind"><option value="q">Türkçe Q</option><option value="f">Türkçe F</option></select></div>
+        <div class="ba-field"><label><input type="checkbox" id="block-shortcuts" checked> Tarayıcı kısayollarını engelle</label><div class="hint">Yalnızca test alanı seçiliyken geçerlidir.</div></div>
+      </div>
+
+      <div id="kb-area" class="kb-area" tabindex="0" role="group" aria-label="Klavye test alanı. Tuşlara basarak test edin.">
+        <div id="kb-wrap" class="kb-wrap" data-layout="full">
+          <div id="kb-main" class="kb-main"></div>
+          <div id="kb-nav" class="kb-nav"></div>
+          <div id="kb-num" class="kb-num"></div>
+        </div>
+      </div>
+      <p id="area-state" class="kb-state" aria-live="polite">Başlamak için bu alana tıklayın veya Tab ile gelin.</p>
+      <p id="block-state" class="kb-state" aria-live="off"></p>
+      <p class="kb-warn"><strong>Not:</strong> F5, Ctrl+P, F1 gibi tuşların tarayıcı eylemleri test alanı seçiliyken engellenir. Ctrl+W, Ctrl+T, Ctrl+N, Alt+F4 ve Windows tuşu gibi işletim sistemi ya da tarayıcı tarafından ayrılmış kısayollar engellenemez; bu tuşlar sayfaya hiç ulaşmayabilir. Tab tuşu kaydedilir ama klavye kullanıcıları sıkışmasın diye odağı yine taşır.</p>
+      <p id="touch-note" class="kb-warn" hidden>Dokunmatik ekran klavyesi tuşları bu şemada çoğu zaman <code>Unidentified</code> koduyla bildirir. Telefon ve tabletin ekran klavyesini bu araçla güvenilir biçimde test edemezsiniz; fiziksel (Bluetooth veya USB) klavye bağlayın.</p>
+
+      <div class="kb-stats" aria-live="polite">
+        <div class="kb-stat"><b id="stat-tested">0 tuş</b><span>test edilen tuş</span></div>
+        <div class="kb-stat"><b id="stat-total">0 / 0</b><span>şemadaki tuşlardan basılan</span></div>
+        <div class="kb-stat"><b id="stat-now">0</b><span>şu an basılı</span></div>
+        <div class="kb-stat"><b id="stat-peak">0</b><span>aynı anda en çok basılı</span></div>
+      </div>
+
+      <div class="kb-block" aria-labelledby="h-ev">
+        <h3 id="h-ev">Son tuş olayı</h3>
+        <div class="kb-ev">
+          <div><small>event.code</small><span id="ev-code">–</span></div>
+          <div><small>event.key</small><span id="ev-key">–</span></div>
+          <div><small>event.keyCode</small><span id="ev-keycode">–</span></div>
+          <div><small>konum</small><span id="ev-loc">–</span></div>
+          <div><small>değiştirici tuşlar</small><span id="ev-mods">–</span></div>
+          <div><small>tuş tekrar hızı</small><span id="ev-rate">–</span></div>
+        </div>
+        <p class="kb-state" style="margin:0">Tekrar hızını ölçmek için bir tuşa basılı tutun; birkaç saniye sonra değer görünür.</p>
+      </div>
+
+      <div class="kb-block" aria-labelledby="h-miss">
+        <h3 id="h-miss">Basılmayan tuşlar (<span id="missing-count">0</span>)</h3>
+        <p id="missing-list" class="kb-pre" aria-live="off"></p>
+      </div>
+
+      <div class="kb-block" aria-labelledby="h-rep">
+        <h3 id="h-rep">Sonuç raporu</h3>
+        <pre id="report" class="kb-pre"></pre>
+        <div class="ba-actions">
+          <button id="btn-copy" class="ba-btn ba-btn-primary" type="button">Raporu kopyala</button>
+          <button id="btn-reset" class="ba-btn" type="button">Sıfırla</button>
+        </div>
+        <p id="copy-msg" class="kb-state" role="status"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="klavye-test-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Klavye boyutunuzu ve harf düzeninizi seçin. Sayısal tuş takımı olan masaüstü klavye için "Tam boy", dizüstü için "Dizüstü" seçin. Türkçe F klavye kullanıyorsanız harf düzenini F yapın; tuşların üzerindeki harfler sizinkiyle aynı görünür.</li>
+        <li>Klavye şemasının bulunduğu kutuya tıklayın. Kutunun çevresinde belirgin bir çerçeve çıkar; bu, tuşların artık dinlendiği anlamına gelir.</li>
+        <li>Tuşlara tek tek basın. Basılı tuş koyu yeşil, daha önce basılmış tuş açık yeşil olur. Altta o tuşun <code>event.code</code>, <code>event.key</code> ve <code>keyCode</code> değerlerini görürsünüz.</li>
+        <li>Aynı anda birkaç tuşa birden basarak ghosting testini yapın; "aynı anda en çok basılı" sayacı kaç tuşun algılandığını gösterir.</li>
+        <li>İşiniz bitince "Basılmayan tuşlar" listesine bakın, gerekirse "Raporu kopyala" ile sonucu servise ya da satıcıya gönderin.</li>
+      </ol>
+
+      <h2>Klavye testi neden gerekli?</h2>
+      <p>Klavye, bilgisayarın en çok yıpranan parçalarından biridir. Yılda yüz binlerce tuş vuruşu yapan bir kullanıcıda tuş altındaki lastik kubbe, membran ya da mekanik anahtar zamanla aşınır. Bu aşınma çoğu zaman tek bir tuşun bazen yazmaması, bazen iki kez yazması ya da hiç bırakmamasıyla kendini gösterir. Sorun bir yazılım hatası mı yoksa donanım arızası mı olduğunu anlamanın en kolay yolu, tuşu işletim sisteminden bağımsız, saf bir test sayfasında denemektir. Burada tuş yeşile dönüyorsa donanım çalışıyordur ve sorun genellikle yazdığınız programda, dil ayarında ya da bir kısayol çakışmasındadır. Tuş yeşile dönmüyorsa sinyal bilgisayara hiç ulaşmıyor demektir.</p>
+      <p>İkinci kullanım alanı ikinci el ya da yeni klavye alırken yapılan kabul kontrolüdür. Mağazada ya da kargodan çıkarken tüm tuşlara birer kez basıp şemanın tamamen yeşile döndüğünü görmek, iade süresi dolmadan kusuru yakalamanızı sağlar. Oyuncu klavyelerinde ise aynı anda basılabilen tuş sayısı (n-key rollover) önemlidir; üç dört tuşa birden basılan oyun senaryolarında bazı tuşların yok sayılması gerçek bir dezavantajdır.</p>
+
+      <h2>Ghosting ve rollover nedir?</h2>
+      <p>Ucuz membran klavyelerde tuşlar bir matris üzerinde bağlanır. Belirli tuş kombinasyonlarına aynı anda basıldığında matris, basılmamış bir tuşu basılmış gibi algılayabilir (ghosting) ya da basılmış bir tuşu hiç göremeyebilir (tuş engelleme). Rollover, klavyenin aynı anda kaç tuşu doğru raporlayabildiğinin ölçüsüdür. Ofis klavyeleri çoğunlukla altı tuşa kadar güvenli çalışır; yüksek bütçeli oyuncu klavyeleri her tuşu bağımsız raporlar. Bu sayfada parmaklarınızla sırayla beş, altı, yedi tuşa basılı tutup "aynı anda en çok basılı" sayacına bakabilirsiniz. Sayaç sizin bastığınız tuş sayısından düşük kalıyorsa klavye o kombinasyonu engelliyordur.</p>
+      <p>Testi yaparken şu noktalara dikkat edin: Değiştirici tuşlar (Ctrl, Shift, Alt) genellikle ayrı bağlandığı için kolayca sayılır; asıl bilgi harf tuşları arasındaki kombinasyonlardan gelir. Parmaklarınızı bitişik olmayan tuşlara dağıtmak ghosting olasılığını artırır, bu yüzden hem bitişik hem uzak tuş gruplarını deneyin. Ayrıca bazı işletim sistemleri Shift tuşuna arka arkaya basıldığında "yapışkan tuşlar" penceresi açar; bu pencere testi kesebilir ve önce kapatılmalıdır.</p>
+
+      <div class="ba-ad" data-slot="klavye-test-b" aria-label="Reklam"></div>
+
+      <h2>Tuş çalışmıyorsa sorun giderme adımları</h2>
+      <p>Test sırasında bir tuş yeşile dönmüyorsa şu sırayla ilerleyin. Birincisi, tuşun gerçekten kirli ya da tozlu olmadığından emin olun. Dizüstü klavyelerde basınçlı hava ile tuş aralarını üflemek, masaüstü klavyede klavyeyi ters çevirip hafifçe silkelemek çoğu zaman yeter. İkincisi, kablolu klavyede kabloyu başka bir USB bağlantı noktasına, kablosuz klavyede pili ya da alıcıyı kontrol edin. Üçüncüsü, klavyeyi başka bir bilgisayarda deneyin; tuş orada da çalışmıyorsa arıza klavyededir. Dördüncüsü, dizüstüde sorun yalnızca belirli bir tuş ya da tuş grubundaysa, bağlantı şeridi gevşemiş olabilir; bu durumda yetkili servis gerekir.</p>
+      <p>Tuş bu sayfada yeşile dönüyor ama yazdığınız programda çıkmıyorsa donanım sağlamdır. Dil ve düzen ayarınızı (Türkçe Q ile Türkçe F, İngilizce karışması), "sayısal tuş takımı kilidi" (Num Lock) durumunu, bir makro ya da tuş yeniden atama yazılımının çalışıp çalışmadığını kontrol edin. Uzaktan masaüstü ve sanal makine programları da bazı tuşları kendisi yakalayabilir.</p>
+
+      <h2>Çift yazan ya da basılı kalan tuşlar</h2>
+      <p>Bir tuşa tek kez basmanıza rağmen iki harf yazılıyorsa mekanik anahtarın kontağı "sekiyor" demektir. Bu sayfada ilgili tuşa tek vuruş yapın ve sayacı izleyin: "test edilen tuş" artmıyor ama "şu an basılı" değeri takılı kalıyorsa tuş bırakıldığında sinyal kesilmiyor demektir. Windows'ta Ayarlar'daki "filtre tuşları" ve "yapışkan tuşlar" erişilebilirlik özellikleri de benzer davranış yaratabilir; açıksa kapatın. Sıvı dökülmesi sonrası yapışan tuşlarda klavyeyi hemen fişten çekin ve kurumaya bırakın.</p>
+
+      <h2>Tuş tekrar hızı</h2>
+      <p>Bir tuşa basılı tuttuğunuzda işletim sistemi önce kısa bir gecikmeden sonra tuşu belirli bir hızla tekrarlar. Bu sayfa, aynı tuş için gelen tekrar olaylarının aralığını ölçüp yaklaşık "tuş/sn" değerini ve ilk tekrara kadar geçen süreyi gösterir. Değer klavyenin değil, işletim sisteminin ayarıdır (Windows'ta Denetim Masası'ndaki Klavye özellikleri). Çok düşükse yazarken tuş geç tekrar eder; çok yüksekse istemeden fazladan harf yazarsınız.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Yazdıklarınız cihazdan çıkmaz.</strong> Tuş olayları yalnızca sayfanın belleğinde işlenir; kayıt, gönderim, çerez ya da izleme yoktur.</li>
+        <li><strong>Hesap gerekmez.</strong> Üye olmadan, kurulum yapmadan tek sayfada tam test.</li>
+        <li><strong>Gerçek veriler.</strong> Tarayıcının bildirdiği kod, anahtar ve konum bilgileri olduğu gibi gösterilir.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılır.</li>
+        <li><strong>Sade.</strong> Sahte uyarı, "sürücünüz eski" tuzağı ya da geri sayım yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Bastığım tuşlar bir yere kaydediliyor mu?</summary><p>Hayır. Sayfa, tuş olaylarını yalnızca ekranda göstermek için kullanır. Hiçbir sunucuya gönderilmez, saklanmaz. Rapor da yalnızca siz "Raporu kopyala" dediğinizde panonuza yazılır. Parola gibi gizli bilgileri yine de bu sayfada yazmayın; amaç tuşların çalışıp çalışmadığını görmektir.</p></details>
+        <details><summary>Windows tuşu veya Ctrl+W neden test edilemiyor?</summary><p>İşletim sistemi ve tarayıcı bazı kısayolları sayfa görmeden önce yakalar. Windows tuşu, Alt+Tab, Alt+F4, Ctrl+W, Ctrl+T ve Ctrl+N bunların başında gelir. Web sayfası bunları engelleyemez; bu tuşları tek başına denemek için masaüstü bir uygulama gerekir. Fn tuşu da çoğu klavyede yazılımla görünmez, doğrudan klavye donanımında işlenir.</p></details>
+        <details><summary>Bir tuşa bastım ama şemada yeşile dönmedi, klavye bozuk mu?</summary><p>Önce doğru tuşa bastığınızdan ve test alanının seçili olduğundan emin olun. Dizüstüde bazı tuşlar Fn ile birlikte çalışır ve tarayıcıya hiç ulaşmaz. Tuş gerçekten tepkisizse temizleyin, klavyeyi başka bilgisayarda deneyin ve gerekirse servise başvurun. Sorun tek tuşta ise çoğu zaman o tuşun altındaki kontak aşınmıştır.</p></details>
+        <details><summary>Ghosting testi nasıl yapılır?</summary><p>Parmaklarınızla üç, dört, beş, altı tuşa aynı anda basılı tutun ve "aynı anda en çok basılı" sayacına bakın. Bastığınız sayı ile sayaç eşitse klavye o kombinasyonu algılıyor demektir. Düşük kalıyorsa farklı tuş gruplarıyla tekrarlayın. Oyun oynuyorsanız en sık kullandığınız tuş kombinasyonlarını (WASD ile boşluk, Shift ve Ctrl gibi) özellikle deneyin.</p></details>
+        <details><summary>Türkçe F klavyeyi seçince fiziksel tuşlar neden aynı yerde?</summary><p>Tarayıcı tuşun fiziksel konumunu <code>event.code</code> ile, ürettiği karakteri <code>event.key</code> ile bildirir. F düzeninde fiziksel olarak Q'nun bulunduğu tuş "F" yazar. Şemada yalnızca etiketler değişir; basıldığında doğru tuşun yeşile dönmesi için konum bilgisi kullanılır.</p></details>
+        <details><summary>Telefonda ya da tabletin ekran klavyesinde çalışır mı?</summary><p>Güvenilir biçimde çalışmaz. Ekran klavyeleri çoğu zaman tuşu fiziksel kod olmadan bildirir ve bırakma olayları farklı davranır. Telefona ya da tablete Bluetooth ya da USB klavye bağlayıp deneyin; o zaman şema masaüstündeki gibi çalışır.</p></details>
+        <details><summary>Tuş tekrar hızı neden hiç görünmüyor?</summary><p>Ölçüm için bir tuşu bırakmadan en az birkaç saniye basılı tutmanız gerekir. Bazı kablosuz klavyeler ya da uzaktan erişim programları tekrar olaylarını farklı üretir. Tekrar hızı klavyenin değil işletim sisteminin ayarıdır; Windows'ta Denetim Masası'ndaki Klavye ayarlarından değiştirebilirsiniz.</p></details>
+        <details><summary>Klavyem Türkçe karakterleri yazmıyorsa ne yapmalıyım?</summary><p>Bu sayfada ğ, ü, ş, ı, ö, ç tuşlarına basın. Şemada yeşile dönüyorlarsa donanım çalışıyor, işletim sistemindeki giriş dili ya da klavye düzeni İngilizce olabilir. Görev çubuğundaki dil göstergesinden Türkçe Q ya da Türkçe F düzenini seçin.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../fare-testi/">Fare Testi</a></li>
+        <li><a href="../kamera-test/">Kamera ve Mikrofon Testi</a></li>
+        <li><a href="../yazdirilabilir-kagit/">Yazdırılabilir Kağıt</a></li>
+      </ul>
+      <p class="ba-note">Kurumsal bilgisayar bakımı, klavye ve çevre birimi tedariği için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibiyle görüşebilirsiniz.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="klavye-test-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

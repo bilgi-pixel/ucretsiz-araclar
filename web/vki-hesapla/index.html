@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VKİ Hesaplama – Vücut Kitle İndeksi (BMI) ve İdeal Kilo Aralığı</title>
+  <meta name="description" content="Boy ve kilonuzu girin; vücut kitle indeksinizi (VKİ/BMI), WHO sınıflandırmasını, normal kilo aralığınızı ve yaklaşık günlük enerji ihtiyacını görün. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/vki-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form input[type="number"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row[hidden] { display: none; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .88rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .vki-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; color: #fff; font-family: inherit; font-weight: 700; font-size: .95rem; }
+    .vki-badge.under { background: #2b6cb0; } .vki-badge.normal { background: #276749; } .vki-badge.over { background: #8a5a0b; } .vki-badge.obese { background: #b83232; }
+    .vki-gauge { display: block; width: 100%; max-width: 360px; height: auto; margin: 4px auto 12px; }
+    .vki-warn { font-weight: 600; color: var(--ba-text); }
+    table.vki-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    table.vki-table th, table.vki-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"VKİ Hesaplama – Bilişim Ajans","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/vki-hesapla/","inLanguage":"tr","description":"Boy ve kilodan vücut kitle indeksi, WHO sınıflandırması ve yaklaşık günlük enerji tahmini. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"VKİ nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"VKİ, kilonun (kg) boyun metre cinsinden karesine bölünmesiyle bulunur. 175 cm ve 70 kg için 70 / (1,75 x 1,75) = 22,9 olur."}},
+  {"@type":"Question","name":"Normal VKİ aralığı kaçtır?","acceptedAnswer":{"@type":"Answer","text":"Dünya Sağlık Örgütü yetişkinler için 18,5 ile 24,9 arasını normal kabul eder."}},
+  {"@type":"Question","name":"VKİ çocuklarda kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Çocuk ve ergenlerde VKİ yaş ve cinsiyete göre persentil eğrileriyle değerlendirilir; bu araç yalnızca 18 yaş üzeri içindir."}},
+  {"@type":"Question","name":"VKİ kas kütlesini hesaba katar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kas yağdan ağır olduğu için kas kütlesi yüksek kişilerde VKİ yüksek çıkabilir."}},
+  {"@type":"Question","name":"Günlük enerji ihtiyacı nasıl tahmin ediliyor?","acceptedAnswer":{"@type":"Answer","text":"Mifflin-St Jeor denklemiyle bazal metabolizma hızı bulunur ve aktivite katsayısıyla çarpılır. Sonuç yaklaşık bir değerdir."}},
+  {"@type":"Question","name":"Bu araç tanı koyar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; sağlıkla ilgili kararlar için hekiminize danışın."}},
+  {"@type":"Question","name":"Boy ve kilom bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; değerler sunucuya iletilmez ve saklanmaz."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>VKİ Hesaplama – Vücut Kitle İndeksi (BMI)</h1>
+      <p class="lead">Boy ve kilonuzu girin; vücut kitle indeksinizi, WHO sınıflandırmasındaki yerinizi, VKİ 18,5–24,9 aralığına denk gelen kilo aralığını ve yaklaşık günlük enerji ihtiyacını görün. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <p class="vki-warn" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong></p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="height">Boy (cm)</label><input id="height" type="text" inputmode="decimal" autocomplete="off" placeholder="175"><div class="hint">Santimetre olarak, örneğin 175.</div></div>
+          <div class="ba-field"><label for="weight">Kilo (kg)</label><input id="weight" type="text" inputmode="decimal" autocomplete="off" placeholder="70"><div class="hint">Kilogram olarak, örneğin 70 ya da 70,5.</div></div>
+          <div class="ba-field"><label for="age">Yaş</label><input id="age" type="text" inputmode="numeric" autocomplete="off" placeholder="35"><div class="hint">18 ve üzeri yetişkinler için.</div></div>
+          <div class="ba-field"><span id="sex-l" class="lbl">Cinsiyet</span>
+            <div class="kdv-modes" role="radiogroup" aria-labelledby="sex-l"><label><input type="radio" name="sex" value="k"> Kadın</label><label><input type="radio" name="sex" value="e"> Erkek</label></div>
+            <div class="hint">Yalnızca günlük enerji tahmini ve bel eşiği için kullanılır.</div></div>
+          <div class="ba-field"><label for="waist">Bel çevresi (cm, isteğe bağlı)</label><input id="waist" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 84"><div class="hint">Göbek deliği hizasından ölçülür. Bel/boy oranı için.</div></div>
+          <div class="ba-field"><label for="activity">Aktivite düzeyi</label>
+            <select id="activity"><option value="1.2">Hareketsiz (masa başı, az hareket)</option><option value="1.375" selected>Hafif aktif (haftada 1–3 gün egzersiz)</option><option value="1.55">Orta aktif (haftada 3–5 gün)</option><option value="1.725">Çok aktif (haftada 6–7 gün)</option><option value="1.9">Aşırı aktif (ağır fiziksel iş / günde iki antrenman)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">VKİ hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <canvas id="gauge" class="vki-gauge" width="360" height="200" role="img" aria-label="VKİ göstergesi"></canvas>
+        <dl class="kdv-results">
+          <div class="kdv-row is-strong"><dt>VKİ (kg/m²)</dt><dd id="r-bmi"></dd></div>
+          <div class="kdv-row"><dt>WHO sınıfı</dt><dd><span id="r-class" class="vki-badge"></span></dd></div>
+          <div class="kdv-row"><dt>VKİ 18,5–24,9 aralığına denk gelen kilo</dt><dd id="r-ideal"></dd></div>
+          <div class="kdv-row" id="r-waist-row" hidden><dt>Bel/boy oranı</dt><dd id="r-whtr"></dd></div>
+          <div class="kdv-row"><dt>Bazal metabolizma (Mifflin-St Jeor)</dt><dd id="r-bmr"></dd></div>
+          <div class="kdv-row"><dt id="r-tdee-label">Günlük enerji ihtiyacı tahmini</dt><dd id="r-tdee"></dd></div>
+        </dl>
+        <p class="kdv-note" id="r-diff"></p>
+        <p class="kdv-note" id="r-waist-note" hidden></p>
+        <p class="kdv-note">Enerji değerleri yaklaşık tahmindir; kişiden kişiye belirgin biçimde değişir. VKİ kas kütlesini, yağ dağılımını ve sağlık durumunu ayırt etmez.</p>
+        <p class="vki-warn" id="r-disclaimer" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sonuç tanı, tedavi, ilaç ya da diyet önerisi içermez.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="vki-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Boyunuzu santimetre, kilonuzu kilogram cinsinden yazın. Ondalık için virgül ya da nokta kullanabilirsiniz (70,5 gibi).</li>
+        <li>Yaşınızı ve cinsiyetinizi seçin. Bu iki bilgi VKİ'yi değiştirmez; yalnızca günlük enerji tahmini ve bel çevresi eşikleri için gereklidir.</li>
+        <li>İsterseniz bel çevrenizi girin. Göbek deliği hizasından, nefesinizi verdikten sonra, mezuranın sıkmadan çevreyi sarmasıyla ölçün.</li>
+        <li>Aktivite düzeyinizi dürüstçe seçin ve "VKİ hesapla" düğmesine basın. Sonuçta VKİ, WHO sınıfı, kilo aralığı ve yaklaşık enerji tahmini görünür.</li>
+        <li>"Sonucu kopyala" ile özeti panoya alabilirsiniz. Sonuçları mutlaka hekiminizle birlikte değerlendirin.</li>
+      </ol>
+
+      <h2>Vücut kitle indeksi (VKİ) nedir?</h2>
+      <p>Vücut kitle indeksi, İngilizce adıyla Body Mass Index (BMI), kişinin kilosunun boyuna göre ne kadar olduğunu tek bir sayıyla ifade eden basit bir orandır. 19. yüzyılda Belçikalı matematikçi Adolphe Quetelet tarafından geliştirilen bu oran, bugün Dünya Sağlık Örgütü (WHO) başta olmak üzere pek çok sağlık kuruluşunun nüfus düzeyinde tarama için kullandığı bir ölçüttür. VKİ bir tanı aracı değildir; bir hekimin yapacağı değerlendirmenin yalnızca ilk ve çok kaba bir basamağıdır.</p>
+      <p>Formül şöyledir: VKİ = kilo (kg) / boy (m)². Örneğin boyu 175 cm, kilosu 70 kg olan bir yetişkin için boy 1,75 metredir; karesi 3,0625 eder. 70 / 3,0625 = 22,86 olur ve ondalık tek basamağa yuvarlandığında VKİ 22,9 görünür. Bu değer WHO sınıflandırmasında "normal" aralığa girer.</p>
+
+      <h2>WHO sınıflandırması ve aralık tablosu</h2>
+      <p>Aşağıdaki tablo, yetişkinler (18 yaş ve üzeri) için WHO'nun kullandığı sınıfları gösterir. Sınırlar kilogram bölü metrekare cinsinden verilmiştir. Aynı tablo hem kadınlar hem erkekler için geçerlidir; ancak bazı toplumlarda, özellikle Asya kökenli nüfuslarda, riskin daha düşük VKİ değerlerinde başladığı yönünde uzman görüşleri vardır.</p>
+      <table class="vki-table"><caption class="visually-hidden">WHO yetişkin VKİ sınıflandırması</caption><thead><tr><th scope="col">VKİ aralığı</th><th scope="col">Sınıf</th></tr></thead><tbody id="range-body"></tbody></table>
+      <p>Tablodaki sınıf adları bir tanı değil, istatistiksel gruplamadır. "Fazla kilolu" ya da "obez" sınıfında olmak tek başına bir hastalık anlamına gelmez; benzer şekilde "normal" sınıfında olmak da her yönüyle sağlıklı olduğunuzu garanti etmez. Kan değerleri, tansiyon, aile öyküsü, yaşam tarzı ve yağ dağılımı gibi unsurları ancak bir hekim birlikte yorumlayabilir.</p>
+
+      <h2>İdeal kilo aralığı nasıl bulunuyor?</h2>
+      <p>Bu araç "ideal kilo" yerine daha dürüst bir ifadeyle, VKİ'nin 18,5 ile 24,9 arasında kalacağı kilo aralığını gösterir. Hesap, formülün tersine çevrilmesiyle yapılır: alt sınır 18,5 × boy², üst sınır 24,9 × boy² şeklindedir. 175 cm için bu aralık yaklaşık 56,7 – 76,3 kg'dır. Aralık geniştir, çünkü aynı boydaki iki sağlıklı insanın kemik yapısı, kas oranı ve vücut kompozisyonu birbirinden çok farklı olabilir. Tek bir "doğru kilo" yoktur; aralık yalnızca bir referans çerçevesidir. Bu aralığın dışında olmak ya da içinde kalmak için kilo vermeniz, almanız ya da herhangi bir uygulamaya başlamanız gerektiği anlamına gelmez; aracın böyle bir önerisi yoktur.</p>
+
+      <div class="ba-ad" data-slot="vki-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Bel çevresi ve bel/boy oranı</h2>
+      <p>VKİ yağın vücutta nerede toplandığını göstermez. Karın bölgesinde toplanan yağ, kalça ve uyluktaki yağa göre genel olarak daha fazla sağlık riskiyle ilişkilendirildiği için bel çevresi tamamlayıcı bir ölçü olarak kullanılır. WHO, bel çevresinde kadınlarda 80 cm, erkeklerde 94 cm üzerini "artmış risk"; kadınlarda 88 cm, erkeklerde 102 cm üzerini "belirgin biçimde artmış risk" eşiği olarak anar. Bel/boy oranı ise bel çevresini boya bölerek bulunur ve uzun ya da kısa boylu kişilerde karşılaştırmayı kolaylaştırır; pek çok kaynakta 0,50 değeri dikkat çekici bir eşik olarak geçer ("belinizin çevresi boyunuzun yarısını geçmesin"). Bu da bir tanı değil, genel bir bilgilendirmedir.</p>
+
+      <h2>Günlük enerji ihtiyacı tahmini nasıl yapılıyor?</h2>
+      <p>Bu araç, bazal metabolizma hızını Mifflin-St Jeor denklemiyle tahmin eder: erkekler için 10 × kilo + 6,25 × boy (cm) − 5 × yaş + 5; kadınlar için aynı denklemin sonundaki sabit −161'dir. Bu değer, vücudun tam dinlenme halinde harcadığı yaklaşık enerjidir. Ardından aktivite katsayısı uygulanır: hareketsiz için 1,2, hafif aktif için 1,375, orta aktif için 1,55, çok aktif için 1,725 ve aşırı aktif için 1,9. Çıkan sayı, kilonuzu korumanıza yaklaşık olarak yetecek enerji miktarıdır.</p>
+      <p>Önemli bir uyarı: Bu değer yalnızca istatistiksel bir tahmindir. Gerçek harcama; kas oranı, hormonlar, uyku, ilaçlar, hastalıklar, gebelik ve emzirme gibi birçok etkene göre belirgin biçimde sapabilir. Araç bir beslenme planı, kalori hedefi, kilo verme ya da kilo alma programı sunmaz. Beslenme ve egzersizle ilgili kararlar için bir hekim ya da diyetisyenle görüşün.</p>
+
+      <h2>VKİ'nin sınırları</h2>
+      <ul>
+        <li><strong>Kas kütlesini ayırt etmez.</strong> Düzenli ağırlık çalışan bir sporcunun VKİ'si kas nedeniyle yüksek çıkabilir.</li>
+        <li><strong>Yağ dağılımını göstermez.</strong> Aynı VKİ'ye sahip iki kişinin karın yağı oranı çok farklı olabilir.</li>
+        <li><strong>Yaşa göre değişir.</strong> İleri yaşta kas kaybı nedeniyle normal görünen VKİ'ye rağmen yağ oranı yüksek olabilir.</li>
+        <li><strong>Çocuklarda kullanılmaz.</strong> Çocuk ve ergenlerde VKİ, yaş ve cinsiyete göre persentil eğrileriyle yorumlanır. Bu araç yalnızca 18 yaş ve üzeri yetişkinler içindir; çocuğunuzun değerlendirmesi için çocuk hekimine başvurun.</li>
+        <li><strong>Hamilelikte uygun değildir.</strong> Gebelikte kilo değişimi kendi izlem kurallarına bağlıdır; hekiminizin takibini esas alın.</li>
+        <li><strong>Etnik köken ve hastalık durumu.</strong> Bazı hastalıklar ve ilaçlar kilonuzu ve vücut yapınızı etkileyebilir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Boy, kilo ve yaş gibi hassas bilgiler tarayıcınızda işlenir; sunucuya iletilmez, saklanmaz.</li>
+        <li><strong>Açık formül.</strong> Kullanılan her denklem bu sayfada yazılıdır; kara kutu yoktur.</li>
+        <li><strong>Abartısız sonuç.</strong> Korkutucu uyarılar, ürün yönlendirmeleri ya da "mucize" vaatleri yok.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+        <li><strong>Mobil uyumlu.</strong> Telefon ekranında da rahat kullanılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>VKİ nasıl hesaplanır?</summary><p>Kilonuzu (kg), boyunuzun metre cinsinden karesine bölersiniz. 175 cm ve 70 kg için 70 / (1,75 × 1,75) = 22,9 çıkar. Araç bu hesabı sizin yerinize yapar ve sonucu tek ondalık basamakla gösterir.</p></details>
+        <details><summary>Normal VKİ aralığı kaçtır?</summary><p>Dünya Sağlık Örgütü yetişkinler için 18,5 – 24,9 aralığını normal kabul eder. 25,0 – 29,9 fazla kilolu, 30 ve üzeri obez sınıfındadır; 18,5'in altı zayıf olarak adlandırılır. Bu gruplar istatistikîdir, tanı değildir.</p></details>
+        <details><summary>VKİ çocuklarda kullanılabilir mi?</summary><p>Hayır. Çocuk ve ergenlerde vücut oranları büyüme sürecinde sürekli değişir; bu yüzden VKİ yaş ve cinsiyete göre hazırlanmış persentil eğrileriyle değerlendirilir. Bu araç yalnızca 18 yaş ve üzeri için çalışır; 18 yaşın altını girerseniz hesap yapılmaz ve çocuk hekimine yönlendirilirsiniz.</p></details>
+        <details><summary>Sporcular için VKİ yanıltıcı olabilir mi?</summary><p>Evet. Kas dokusu yağ dokusundan yoğundur; kas kütlesi yüksek kişilerde VKİ yüksek görünse de yağ oranı düşük olabilir. Bu durumda bel çevresi, yağ oranı ölçümü gibi başka yöntemleri hekiminiz değerlendirir.</p></details>
+        <details><summary>Günlük enerji ihtiyacı nasıl tahmin ediliyor ve ne kadar güvenilir?</summary><p>Mifflin-St Jeor denklemiyle bazal metabolizma hızı bulunur, ardından aktivite katsayısıyla çarpılır. Sonuç "yaklaşık" bir değerdir ve gerçek harcamadan yüzlerce kalori sapabilir. Bir beslenme planı değildir; diyetle ilgili kararlar için hekim ya da diyetisyene danışın.</p></details>
+        <details><summary>Bel/boy oranı neden gösteriliyor?</summary><p>VKİ yağın nerede toplandığını göstermez. Bel çevresi ve bel/boy oranı karın bölgesindeki yağ konusunda ek bir fikir verir. 0,50 ve üzeri oran dikkat çekici kabul edilir; yine de bu bir tanı değildir, hekim değerlendirmesinin yerini tutmaz.</p></details>
+        <details><summary>Bu araç tanı koyar ya da kilo verme tavsiyesi verir mi?</summary><p>Hayır. Araç yalnızca matematik yapar: bilgilendirme amaçlıdır, tıbbi tavsiye değildir. Tanı, tedavi, ilaç ya da diyet önerisi vermez. Sağlığınızla ilgili tüm kararlar için hekiminize danışın.</p></details>
+        <details><summary>Boy ve kilom bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Sayfa girdiğiniz değerleri bir sunucuya iletmez, kaydetmez ve çerez ya da analiz kodu içermez.</p></details>
+        <details><summary>"Boy 100–250 cm arasında olmalıdır" hatası alıyorum, ne yapmalıyım?</summary><p>Boyu metre değil santimetre olarak yazın; 1,75 yerine 175 girin. Kilo için de 20–400 kg aralığı geçerlidir. Alanı temizleyip değeri yeniden yazın.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sayfa tanı, tedavi, ilaç ya da diyet önerisi sunmaz. Sağlığınızla ilgili endişeleriniz için bir sağlık profesyoneline başvurun.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../yas-hesapla/">Yaş Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="vki-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>
+

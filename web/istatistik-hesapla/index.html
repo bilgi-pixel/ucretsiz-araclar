@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ortalama, Medyan, Mod ve Standart Sapma Hesaplama – Adım Adım, Ücretsiz</title>
+  <meta name="description" content="Sayı listesinin ortalama, medyan, mod, standart sapma (örneklem/anakütle), varyans, çeyrekler ve z-skorunu adım adım hesaplayın; histogram ve sıklık tablosu. Ücretsiz, veri yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/istatistik-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .st-grid { display: grid; gap: 12px; margin-top: 12px; }
+    @media (min-width: 600px) { .st-grid { grid-template-columns: 1fr 1fr; } }
+    .st-data { width: 100%; min-height: 140px; padding: 10px 12px; font: inherit; font-family: var(--ba-mono); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-bg); color: var(--ba-text); }
+    .st-fileinfo { font-size: .88rem; color: var(--ba-success); min-height: 1.3em; margin: 6px 0 0; }
+    .st-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .st-box:not(.is-active) { display: none; }
+    .st-box h3 { margin: 0 0 8px; font-size: 1rem; }
+    .st-results { margin: 0; display: grid; gap: 2px; }
+    .st-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed var(--ba-border); }
+    .st-row:last-child { border-bottom: 0; }
+    .st-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .st-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; overflow-wrap: anywhere; }
+    .st-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .st-steps { margin: 12px 0 0; padding-left: 22px; font-family: var(--ba-mono); font-size: .86rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .st-steps li { margin: 4px 0; }
+    .st-sorted { font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); overflow-wrap: anywhere; margin: 6px 0 0; max-height: 9em; overflow: auto; }
+    .st-box table { width: 100%; border-collapse: collapse; font-size: .92rem; margin-top: 6px; }
+    .st-box th, .st-box td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--ba-border); }
+    .st-box th { background: var(--ba-surface-2); }
+    .st-tablewrap { max-height: 280px; overflow: auto; }
+    .st-canvaswrap { margin-top: 6px; overflow-x: auto; }
+    #hist { display: block; max-width: 100%; background: var(--ba-bg); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .st-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Ortalama, Medyan, Mod, Standart Sapma Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/istatistik-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ortalama nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Bütün değerleri toplayıp değer sayısına bölersiniz. 2, 4, 4, 4, 5, 5, 7, 9 için toplam 40, değer sayısı 8 olduğundan ortalama 40 / 8 = 5'tir. Araç bu işlemi adım adım gösterir."}},{"@type":"Question","name":"Medyan nasıl bulunur, çift sayıda değer varsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Değerleri küçükten büyüğe sıralayın. Değer sayısı tekse ortadaki değer medyandır. Çift sayıdaysa ortadaki iki değerin ortalaması alınır; örneğin 2, 4, 4, 4, 5, 5, 7, 9 listesinde ortadaki değerler 4 ve 5 olduğundan medyan 4,5'tir."}},{"@type":"Question","name":"Birden fazla mod olabilir mi, hiç mod olmayabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. İki değer en yüksek sıklıkla eşit sayıda tekrar ediyorsa ikisi de moddur. Hiçbir değer birden fazla kez geçmiyorsa mod yoktur. Araç tüm modları listeler, mod yoksa bunu belirtir."}},{"@type":"Question","name":"Örneklem ve anakütle standart sapması arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Anakütle formülü kareler toplamını n'e, örneklem formülü n − 1'e böler. Elinizdeki veri incelediğiniz grubun tamamıysa anakütleyi, daha büyük bir grubu temsil eden bir örnekse örneklemi seçin. Örneklem sapması her zaman biraz daha büyüktür."}},{"@type":"Question","name":"Varyans ile standart sapma arasındaki ilişki nedir?","acceptedAnswer":{"@type":"Answer","text":"Standart sapma varyansın karekökü, varyans da standart sapmanın karesidir. Varyansın birimi verinin biriminin karesidir; standart sapma verinin kendi birimindedir ve yorumlaması daha kolaydır."}},{"@type":"Question","name":"Çeyrekler hangi yöntemle hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Doğrusal enterpolasyon yöntemi kullanılır; bu, Excel'in ÇEYREK.DHL (QUARTILE.INC) işleviyle aynı sonucu verir. Bazı ders kitapları farklı bir yarıya bölme yöntemi öğretir; küçük veri kümelerinde Q1 ve Q3 buna göre biraz farklı çıkabilir."}},{"@type":"Question","name":"z-skoru ne işe yarar ve nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"z-skoru, bir değerin ortalamadan kaç standart sapma uzakta olduğunu verir: (x − ortalama) / standart sapma. Farklı ölçeklerdeki puanları (örneğin iki farklı sınavın notunu) karşılaştırmak için kullanılır. Standart sapma sıfırsa z-skoru tanımsızdır."}},{"@type":"Question","name":"Dosyadaki veya yazdığım sayılar sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Dosya okuma ve hesaplamanın tamamı tarayıcınızda JavaScript ile yapılır; veriler hiçbir sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+    <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Ortalama, Medyan, Mod ve Standart Sapma Hesaplama</h1>
+      <p class="lead">Sayılarınızı yapıştırın ya da bir .csv/.txt dosyası bırakın; aritmetik ortalama, medyan, mod, varyans, standart sapma, çeyrekler ve z-skoru formülleriyle birlikte adım adım gelsin. Histogram ve sıklık tablosu da hazır. Verileriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div id="drop"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></span><strong>Sayı içeren .csv ya da .txt dosyasını buraya bırakın</strong><small>veya seçmek için tıklayın · isterseniz aşağıya elle de yazabilirsiniz</small><span class="ba-btn">Dosya seç</span></div>
+      <div id="file-info" class="st-fileinfo" aria-live="polite"></div>
+      <p id="warn-big" class="ba-note" hidden>Dosya 5 MB'tan büyük. Hesap bilgisayarınızda yapılır; çok büyük listelerde birkaç saniye beklemeniz gerekebilir.</p>
+
+      <div class="ba-field" style="margin-top:12px">
+        <label for="data">Sayı listesi</label>
+        <textarea id="data" class="st-data" spellcheck="false" autocomplete="off" placeholder="Örn. 2, 4, 4, 4, 5, 5, 7, 9&#10;ya da her satıra bir sayı; ondalık için virgül: 3,5"></textarea>
+        <div class="hint">Sayıları satır, boşluk, noktalı virgül ya da virgülle ayırın. Boşluksuz yazılan 2,4,4,5 liste sayılır; tek virgüllü 2,5 ondalık sayıdır. İki sayıyı virgülle ayırırken sonrasına boşluk koyun: 3, 4.</div>
+      </div>
+      <div class="st-grid">
+        <div class="ba-field"><label for="kind">Varyans ve standart sapma türü</label><select id="kind"><option value="pop" selected>Anakütle (n'e bölünür)</option><option value="sample">Örneklem (n − 1'e bölünür)</option></select></div>
+        <div class="ba-field"><label for="zx">z-skoru için değer x (isteğe bağlı)</label><input id="zx" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 7"></div>
+      </div>
+      <div class="ba-actions">
+        <button id="example" class="ba-btn" type="button">Örnek veri yükle</button>
+        <button id="clear" class="ba-btn" type="button">Temizle</button>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="st-box" aria-live="polite">
+        <h3>Sonuçlar</h3>
+        <dl class="st-results" id="r-rows"></dl>
+        <h4 style="margin:14px 0 0;font-size:.95rem">Adım adım çözüm</h4>
+        <ol class="st-steps" id="steps"></ol>
+        <h4 style="margin:14px 0 0;font-size:.95rem">Sıralı liste</h4>
+        <p class="st-sorted" id="sorted"></p>
+        <h4 style="margin:14px 0 0;font-size:.95rem">Histogram</h4>
+        <div class="st-canvaswrap"><canvas id="hist" role="img" aria-label="Histogram"></canvas></div>
+        <h4 style="margin:14px 0 0;font-size:.95rem">Sıklık tablosu</h4>
+        <p class="hint" id="freq-note" style="font-size:.85rem;color:var(--ba-text-muted);margin:2px 0"></p>
+        <div class="st-tablewrap"><table><thead><tr><th scope="col" id="freq-head">Değer</th><th scope="col">Sıklık</th><th scope="col">Oran</th><th scope="col">Birikimli</th></tr></thead><tbody id="freq-body"></tbody></table></div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonuçları kopyala</button><button id="csv" class="ba-btn" type="button">CSV indir</button></div>
+        <p class="st-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="istatistik-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Sayılarınızı "Sayı listesi" kutusuna yazın ya da yapıştırın. Excel veya Google Sayfalar'dan kopyaladığınız bir sütunu doğrudan yapıştırabilirsiniz; her satır bir değer sayılır. Elinizde .csv veya .txt dosyası varsa kutunun üstündeki alana bırakın; dosya yalnızca tarayıcınızda okunur.</li>
+        <li>Verinin bütün evreni mi yoksa evrenden seçilmiş bir örnek mi olduğuna karar verin ve "Anakütle" ya da "Örneklem" seçeneğini işaretleyin. Bu seçim yalnızca varyans ve standart sapmayı etkiler; ortalama, medyan ve mod aynı kalır.</li>
+        <li>İsterseniz "z-skoru için değer x" alanına bir sayı yazın. Araç, bu değerin ortalamadan kaç standart sapma uzakta olduğunu hesaplar.</li>
+        <li>Sonuçlar siz yazdıkça anında belirir. "Adım adım çözüm" bölümü formüllerde sizin sayılarınızı gösterir; histogram ve sıklık tablosu verinin dağılımını görsel olarak özetler. İşiniz bitince sonuçları kopyalayın ya da CSV olarak indirin.</li>
+      </ol>
+
+      <h2>Ortalama, medyan ve mod arasındaki fark</h2>
+      <p>Bu üç değer de "merkezi eğilim" ölçüsüdür; yani bir veri kümesinin tipik değerini tek sayıyla özetlemeye çalışır, ancak her biri farklı bir soruya cevap verir. Aritmetik ortalama, bütün değerlerin toplamının değer sayısına bölünmesiyle bulunur. Bir sınıfın sınav notu ortalaması ya da bir ürünün aylık ortalama satışı gibi durumlarda en bilinen ölçüdür. Medyan, değerler küçükten büyüğe dizildiğinde tam ortada kalan değerdir; değer sayısı çiftse ortadaki iki değerin ortalaması alınır. Mod ise en sık tekrar eden değerdir ve bir veri kümesinde birden fazla mod olabileceği gibi hiç mod olmayabilir de.</p>
+      <p>Farkı görmek için küçük bir örnek yeterlidir: 2, 4, 4, 4, 5, 5, 7, 9 listesinde toplam 40, değer sayısı 8 olduğundan ortalama 5'tir. Sıralı listede ortadaki iki değer 4 ve 5 olduğu için medyan 4,5'tir. En çok tekrar eden sayı 4 olduğu için mod 4'tür. Şimdi listeye 100 eklediğinizi düşünün: ortalama yaklaşık 15,6'ya fırlar, medyan ise yalnızca 5'e çıkar. İşte bu yüzden maaş, ev fiyatı ya da hane geliri gibi uç değerlerin bulunduğu verilerde medyan çoğu zaman ortalamadan daha dürüst bir özet sunar.</p>
+
+      <h2>Standart sapma ve varyans nedir?</h2>
+      <p>Merkezi değer tek başına yetmez; veri ortalamanın etrafında ne kadar yayılıyor, onu da bilmek gerekir. İki sınıfın not ortalaması 70 olabilir; ama birinde herkes 65 ile 75 arasında, diğerinde ise notlar 30 ile 100 arasında dağılmış olabilir. Yayılımı ölçen en yaygın değer standart sapmadır. Hesabı şöyledir: her değerin ortalamadan farkı alınır, bu farkların karesi toplanır, toplam bölenle bölünür (bu sayıya varyans denir) ve sonuncuda karekök alınır. Karekök almanın nedeni, sonucu verinin kendi birimine döndürmektir; varyansın birimi karedir, standart sapmanın birimi ise ölçtüğünüz şeyle aynıdır.</p>
+      <p>Yukarıdaki örnekte farkların kareleri toplamı 32'dir. Veriler tüm evreni oluşturuyorsa 32 / 8 = 4 varyansı ve √4 = 2 standart sapmayı elde edersiniz. Aynı veri daha büyük bir evrenden alınmış bir örnekse bölen n − 1 = 7 olur: varyans yaklaşık 4,5714, standart sapma yaklaşık 2,1381 çıkar.</p>
+
+      <h2>Anakütle mi, örneklem mi?</h2>
+      <p>Bu seçim, istatistik derslerinde en çok karıştırılan konulardan biridir. Elinizdeki sayılar incelemek istediğiniz grubun tamamıysa (örneğin bir sınıftaki 30 öğrencinin tamamının notu) anakütle formülünü, yani n'e bölmeyi kullanırsınız. Sayılar daha büyük bir grubu temsil etmek üzere seçilmiş bir örnekse (örneğin bir fabrikanın ürettiği binlerce parçadan ölçtüğünüz 20 parça) örneklem formülünü, yani n − 1'e bölmeyi kullanırsınız. Örneklem değerleri kendi ortalamalarına evrenin ortalamasından daha yakın durduğu için n'e bölmek yayılımı olduğundan küçük gösterir; n − 1 ile bölmek (Bessel düzeltmesi) bu eğilimi giderir. Hangisini seçeceğinizden emin değilseniz ders kitabınıza ya da ödevin yönergesine bakın; Excel'de anakütle için STDSAPMA.P, örneklem için STDSAPMA.S işlevleri vardır.</p>
+
+      <div class="ba-ad" data-slot="istatistik-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çeyrekler, IQR ve aykırı değerler</h2>
+      <p>Medyan veriyi iki eşit parçaya böler; birinci çeyrek (Q1) alt yarının, üçüncü çeyrek (Q3) üst yarının ortasıdır. İkisinin farkı çeyrekler açıklığıdır (IQR) ve verinin orta yüzde 50'sinin ne kadar geniş bir aralığa yayıldığını gösterir. Uç değerlerden etkilenmediği için standart sapmaya sağlam bir alternatiftir. Pratikte Q1 − 1,5 × IQR değerinden küçük ya da Q3 + 1,5 × IQR değerinden büyük sayılar aykırı değer adayı sayılır; bu bir kesin hüküm değil, incelemeye değer olduğunu gösteren bir kuraldır.</p>
+      <p>Çeyrek hesabı için birden çok yöntem kullanılır. Bu araç, Excel'in ÇEYREK.DHL (QUARTILE.INC) işleviyle aynı sonucu veren doğrusal enterpolasyon yöntemini uygular. Bazı ders kitapları değer sayısına göre farklı bir yarıya bölme yöntemi anlatır; küçük veri kümelerinde Q1 ve Q3 bu yüzden birkaç onda farklı çıkabilir. Ödev yapıyorsanız öğretmeninizin yöntemini kontrol edin.</p>
+
+      <h2>Geometrik ve harmonik ortalama</h2>
+      <p>Aritmetik ortalama toplama dayanır; geometrik ortalama çarpmaya dayanır. Değerlerin çarpımının n'inci kökü alınır. Büyüme oranları, enflasyon ya da faiz gibi birbirini çarpan değişimlerde doğru ortalama budur. Harmonik ortalama ise değerlerin terslerinin aritmetik ortalamasının tersidir ve hız, fiyat başına miktar gibi oranların ortalamasında kullanılır: gidişte saatte 60, dönüşte saatte 40 kilometre hızla giden bir aracın ortalama hızı 50 değil, harmonik ortalama olan 48'dir. Her iki ortalama da yalnızca pozitif değerlerle tanımlıdır; listede sıfır ya da negatif sayı varsa araç bunu "tanımsız" olarak belirtir.</p>
+
+      <h2>z-skoru ne anlatır?</h2>
+      <p>z-skoru, bir değerin ortalamanın kaç standart sapma üstünde ya da altında olduğunu gösterir: (x − ortalama) / standart sapma. Sıfır, değerin tam ortalamada olduğunu; +1 ortalamanın bir standart sapma üstünde olduğunu; −2 iki standart sapma altında olduğunu söyler. Farklı ölçeklerdeki sonuçları karşılaştırmak için kullanışlıdır: matematikten 70, fizikten 60 alan bir öğrencinin hangi derste sınıfına göre daha başarılı olduğunu z-skorları gösterir. Normal dağılan verilerde değerlerin yaklaşık yüzde 68'i ortalamanın bir, yaklaşık yüzde 95'i iki standart sapma çevresinde bulunur.</p>
+
+      <h2>Histogram ve sıklık tablosu</h2>
+      <p>Sayılar tek başına dağılımı göstermez. Histogram, değerleri eşit genişlikte aralıklara böler ve her aralığa kaç değerin düştüğünü sütunlarla çizer. Sütun sayısı Sturges kuralıyla (yaklaşık log₂ n + 1) belirlenir ve en fazla 20 olur. Tek tepeli simetrik bir şekil ortalama ile medyanın yakın olduğunu, sağa uzanan bir kuyruk ortalamanın medyandan büyük olduğunu düşündürür. Sıklık tablosu aynı bilgiyi sayılarla verir: her değerin kaç kez geçtiği, toplamdaki oranı ve birikimli oran. Çok sayıda farklı değer varsa tablo otomatik olarak sınıf aralıklarına geçer.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Ondalık ayırıcıyı karıştırmak.</strong> Türkçede ondalık virgüldür. 3,5 yazarsanız üç buçuk okunur; 1.250 ise bin iki yüz elli sayılır. İngilizce biçimli 3.5 gibi sayılar da tanınır, ancak 1.250 gibi üç haneli noktalı kısımlar binlik ayırıcı kabul edilir.</li>
+        <li><strong>Başlık satırını bırakmak.</strong> Dosyadaki ilk satır bir sütun adıysa araç onu atlamayı dener; yine de yalnızca sayı içeren tek sütun yüklemeniz en güvenlisidir.</li>
+        <li><strong>Yanlış sapma türünü seçmek.</strong> Örneklem verisine anakütle formülü uygulamak yayılımı biraz küçük gösterir.</li>
+        <li><strong>Modu her zaman beklemek.</strong> Hiçbir değer tekrar etmiyorsa mod yoktur; araç bunu açıkça yazar.</li>
+        <li><strong>Küçük veriden büyük sonuç çıkarmak.</strong> Üç beş değerden hesaplanan standart sapma güvenilir bir genelleme sunmaz.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Sayılarınız ve dosyanız yalnızca tarayıcınızda işlenir; hiçbir sunucuya gönderilmez, saklanmaz.</li>
+        <li><strong>Adım adım çözüm.</strong> Sonuçla yetinmez, formülü sizin sayılarınızla gösterir; ödev ve sınav çalışması için uygundur.</li>
+        <li><strong>Türkçe sayı biçimi.</strong> Ondalık virgülü ve binlik noktayı doğru okur, sonuçları Türkçe biçimde yazar.</li>
+        <li><strong>Tek sayfada her şey.</strong> Ortalama, medyan, mod, sapma, çeyrekler, histogram ve sıklık tablosu için ayrı ayrı araç aramazsınız.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span>Sonuçlar bilgilendirme ve eğitim amaçlıdır. Bilimsel yayın, tez ya da resmî rapor için kullandığınız yöntemi (anakütle/örneklem, çeyrek yöntemi) kendi kaynağınızla doğrulayın.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Ortalama nasıl hesaplanır?</summary><p>Bütün değerleri toplayıp değer sayısına bölersiniz. 2, 4, 4, 4, 5, 5, 7, 9 için toplam 40, değer sayısı 8 olduğundan ortalama 40 / 8 = 5'tir. Araç bu işlemi adım adım gösterir.</p></details>
+        <details><summary>Medyan nasıl bulunur, çift sayıda değer varsa ne olur?</summary><p>Değerleri küçükten büyüğe sıralayın. Değer sayısı tekse ortadaki değer medyandır. Çift sayıdaysa ortadaki iki değerin ortalaması alınır; örneğin 2, 4, 4, 4, 5, 5, 7, 9 listesinde ortadaki değerler 4 ve 5 olduğundan medyan 4,5'tir.</p></details>
+        <details><summary>Birden fazla mod olabilir mi, hiç mod olmayabilir mi?</summary><p>Evet. İki değer en yüksek sıklıkla eşit sayıda tekrar ediyorsa ikisi de moddur. Hiçbir değer birden fazla kez geçmiyorsa mod yoktur. Araç tüm modları listeler, mod yoksa bunu belirtir.</p></details>
+        <details><summary>Örneklem ve anakütle standart sapması arasındaki fark nedir?</summary><p>Anakütle formülü kareler toplamını n'e, örneklem formülü n − 1'e böler. Elinizdeki veri incelediğiniz grubun tamamıysa anakütleyi, daha büyük bir grubu temsil eden bir örnekse örneklemi seçin. Örneklem sapması her zaman biraz daha büyüktür.</p></details>
+        <details><summary>Varyans ile standart sapma arasındaki ilişki nedir?</summary><p>Standart sapma varyansın karekökü, varyans da standart sapmanın karesidir. Varyansın birimi verinin biriminin karesidir; standart sapma verinin kendi birimindedir ve yorumlaması daha kolaydır.</p></details>
+        <details><summary>Çeyrekler hangi yöntemle hesaplanıyor?</summary><p>Doğrusal enterpolasyon yöntemi kullanılır; bu, Excel'in ÇEYREK.DHL (QUARTILE.INC) işleviyle aynı sonucu verir. Bazı ders kitapları farklı bir yarıya bölme yöntemi öğretir; küçük veri kümelerinde Q1 ve Q3 buna göre biraz farklı çıkabilir.</p></details>
+        <details><summary>z-skoru ne işe yarar ve nasıl hesaplanır?</summary><p>z-skoru, bir değerin ortalamadan kaç standart sapma uzakta olduğunu verir: (x − ortalama) / standart sapma. Farklı ölçeklerdeki puanları (örneğin iki farklı sınavın notunu) karşılaştırmak için kullanılır. Standart sapma sıfırsa z-skoru tanımsızdır.</p></details>
+        <details><summary>Dosyadaki veya yazdığım sayılar sunucuya gönderiliyor mu?</summary><p>Hayır. Dosya okuma ve hesaplamanın tamamı tarayıcınızda JavaScript ile yapılır; veriler hiçbir sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a> — oran, artış ve azalış hesapları</li>
+        <li><a href="../not-ortalamasi/">Not Ortalaması Hesaplama</a> — ders notlarının ortalaması</li>
+        <li><a href="../kombinasyon-permutasyon/">Kombinasyon ve Permütasyon</a> — olasılık hesapları</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Özel analiz aracı, veri paneli ya da kurumsal web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="istatistik-hesapla-c" aria-label="Reklam"></div>
+    </div>
+
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>
