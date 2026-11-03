@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hesap Makinesi – Online Bilimsel ve Basit Hesap Makinesi (Ücretsiz)</title>
+  <meta name="description" content="Ücretsiz online hesap makinesi: basit ve bilimsel mod, sin cos tan, log, kök, üs, faktöriyel, parantez, hafıza tuşları ve işlem geçmişi. Kayıt yok, işlemleriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/hesap-makinesi/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .calc-wrap { max-width: 460px; margin: 0 auto; }
+    .calc-wrap:has(.calc.is-sci) { max-width: 760px; }
+    .calc-top { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .calc-modes { display: inline-flex; gap: 6px; }
+    .calc-modes .ba-btn, .calc-top .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .calc-modes .ba-btn[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .calc-display { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 10px 14px 12px; margin-bottom: 12px; }
+    .calc-badges { display: flex; gap: 8px; min-height: 22px; font-size: .8rem; color: var(--ba-text-2); font-family: var(--ba-mono); }
+    .calc-badges span { border: 1px solid var(--ba-border); border-radius: 999px; padding: 0 8px; }
+    .calc-expr { width: 100%; box-sizing: border-box; border: 0; background: transparent; color: var(--ba-text); font-family: var(--ba-mono); font-size: 1.35rem; text-align: right; padding: 6px 0; min-height: 44px; }
+    .calc-expr:focus { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    .calc-result { display: block; text-align: right; font-family: var(--ba-mono); font-size: 2.3rem; line-height: 1.2; min-height: 2.8rem; color: var(--ba-text-2); overflow-x: auto; white-space: nowrap; }
+    .calc-result.is-final { color: var(--ba-text); font-weight: 700; }
+    .calc-body { display: grid; gap: 10px; }
+    .calc.is-sci .calc-body { grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .calc.is-sci .calc-body { grid-template-columns: 1.15fr 1fr; align-items: start; } }
+    .calc-pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .calc-sci { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .calc-mem { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+    .calc button.k { min-height: 56px; padding: 6px; font: inherit; font-size: 1.2rem; font-weight: 600; touch-action: manipulation; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); cursor: pointer; }
+    .calc button.k:hover { border-color: var(--ba-border-hover); background: var(--ba-surface-2); }
+    .calc button.k:active { transform: translateY(1px); }
+    .calc button.k.op { background: var(--ba-primary-soft); color: var(--ba-primary); }
+    .calc button.k.fn { font-size: 1rem; font-weight: 500; }
+    .calc button.k.mem { font-size: .95rem; min-height: 44px; font-weight: 500; }
+    .calc button.k.eq { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; grid-column: span 2; }
+    .calc button.k.eq:hover { background: var(--ba-primary-strong); }
+    .calc-status { font-size: .88rem; color: var(--ba-success); min-height: 1.3em; margin: 8px 0 0; }
+    .calc-history { margin-top: 18px; }
+    .calc-history h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .calc-history ol { list-style: none; margin: 0; padding: 0; max-height: 280px; overflow: auto; }
+    .calc-h-item { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .calc-h-text { flex: 1 1 140px; font-family: var(--ba-mono); overflow-wrap: anywhere; }
+    .calc-h-btn { min-height: 40px; padding: 6px 12px; font-size: .9rem; }
+    .calc-hint { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    /* Tam ekran görünümü (yerel Fullscreen API ya da CSS yedeği). */
+    .calc-wrap:fullscreen, .calc-wrap.is-fs { max-width: none; width: 100%; height: 100%; box-sizing: border-box; overflow: auto; background: var(--ba-bg); padding: 16px; }
+    .calc-wrap.is-fs { position: fixed; inset: 0; z-index: 100; }
+    .calc-wrap:fullscreen .calc, .calc-wrap.is-fs .calc { max-width: 900px; margin: 0 auto; }
+    .calc-wrap:fullscreen .calc-result, .calc-wrap.is-fs .calc-result { font-size: 3.4rem; }
+    .calc-wrap:fullscreen .calc-expr, .calc-wrap.is-fs .calc-expr { font-size: 1.8rem; }
+    .calc-wrap:fullscreen .calc button.k, .calc-wrap.is-fs .calc button.k { min-height: 68px; font-size: 1.4rem; }
+    @media (max-width: 380px) { .calc-result { font-size: 1.9rem; } .calc button.k { font-size: 1.05rem; } .calc button.k.fn { font-size: .85rem; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hesap Makinesi – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/hesap-makinesi/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Hesap Makinesi – Online Bilimsel ve Basit</h1>
+      <p class="lead">Telefonda da bilgisayarda da açılan, kurulum gerektirmeyen hesap makinesi. Basit modda dört işlem ve yüzde, bilimsel modda trigonometri, logaritma, üs, kök, faktöriyel ve parantez. Klavyenizle yazabilir, hafıza tuşlarını ve işlem geçmişini kullanabilirsiniz. İşlemleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Hesap makinesi</h2>
+      <div id="calc-wrap" class="calc-wrap">
+        <div id="calc" class="calc">
+          <div class="calc-top">
+            <div class="calc-modes" role="group" aria-label="Hesap makinesi modu">
+              <button type="button" class="ba-btn" data-act="mode" data-mode="basic" aria-pressed="true">Basit</button>
+              <button type="button" class="ba-btn" data-act="mode" data-mode="sci" aria-pressed="false">Bilimsel</button>
+            </div>
+            <button type="button" id="fs-btn" class="ba-btn" data-act="fullscreen" aria-pressed="false">Tam ekran</button>
+          </div>
+
+          <div class="calc-display">
+            <div class="calc-badges"><span id="angle-badge" title="Açı birimi">DER</span><span id="mem-badge" hidden>M</span></div>
+            <label for="expr" class="visually-hidden">İşlem</label>
+            <input id="expr" class="calc-expr" type="text" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="İşlemi yazın, örn. 2+3×4" aria-describedby="calc-help">
+            <output id="result" class="calc-result" aria-live="polite">0</output>
+          </div>
+          <div id="error" class="ba-error" role="alert"></div>
+
+          <div class="calc-mem" role="group" aria-label="Hafıza tuşları">
+            <button type="button" class="k mem" data-act="mem" data-mem="MC" aria-label="Hafızayı temizle">MC</button>
+            <button type="button" class="k mem" data-act="mem" data-mem="MR" aria-label="Hafızadaki sayıyı çağır">MR</button>
+            <button type="button" class="k mem" data-act="mem" data-mem="M+" aria-label="Hafızaya ekle">M+</button>
+            <button type="button" class="k mem" data-act="mem" data-mem="M-" aria-label="Hafızadan çıkar">M−</button>
+          </div>
+
+          <div class="calc-body">
+            <div id="sci" class="calc-sci" role="group" aria-label="Bilimsel tuşlar" hidden>
+              <button type="button" class="k fn" data-act="angle" aria-pressed="false" aria-label="Açı birimi: derece ya da radyan">Derece</button>
+              <button type="button" class="k fn" data-ins="sin(" aria-label="Sinüs">sin</button>
+              <button type="button" class="k fn" data-ins="cos(" aria-label="Kosinüs">cos</button>
+              <button type="button" class="k fn" data-ins="tan(" aria-label="Tanjant">tan</button>
+              <button type="button" class="k fn" data-ins="asin(" aria-label="Ters sinüs">sin⁻¹</button>
+              <button type="button" class="k fn" data-ins="acos(" aria-label="Ters kosinüs">cos⁻¹</button>
+              <button type="button" class="k fn" data-ins="atan(" aria-label="Ters tanjant">tan⁻¹</button>
+              <button type="button" class="k fn" data-ins="π" aria-label="Pi sayısı">π</button>
+              <button type="button" class="k fn" data-ins="log(" aria-label="On tabanında logaritma">log</button>
+              <button type="button" class="k fn" data-ins="ln(" aria-label="Doğal logaritma">ln</button>
+              <button type="button" class="k fn" data-ins="√(" aria-label="Karekök">√</button>
+              <button type="button" class="k fn" data-ins="e" aria-label="Euler sayısı e">e</button>
+              <button type="button" class="k fn" data-ins="^2" aria-label="Karesi">x²</button>
+              <button type="button" class="k fn" data-ins="^" aria-label="Üs alma">xʸ</button>
+              <button type="button" class="k fn" data-ins="!" aria-label="Faktöriyel">x!</button>
+              <button type="button" class="k fn" data-ins="exp(" aria-label="e üzeri x">eˣ</button>
+              <button type="button" class="k fn" data-ins="(" aria-label="Parantez aç">(</button>
+              <button type="button" class="k fn" data-ins=")" aria-label="Parantez kapa">)</button>
+              <button type="button" class="k fn" data-ins=" mod " aria-label="Mod, bölümden kalan">mod</button>
+              <button type="button" class="k fn" data-ins="abs(" aria-label="Mutlak değer">|x|</button>
+              <button type="button" class="k fn" data-ins="∛(" aria-label="Küp kök">∛</button>
+              <button type="button" class="k fn" data-ins="ans" aria-label="Son sonuç">Ans</button>
+              <button type="button" class="k fn" data-act="copy-result" aria-label="Sonucu kopyala">Kopyala</button>
+              <button type="button" class="k fn" data-ins="1/(" aria-label="Çarpmaya göre ters, 1 bölü x">1/x</button>
+            </div>
+            <div class="calc-pad" role="group" aria-label="Sayı tuşları">
+              <button type="button" class="k op" data-act="ac" aria-label="Hepsini temizle">AC</button>
+              <button type="button" class="k op" data-act="back" aria-label="Son karakteri sil">⌫</button>
+              <button type="button" class="k op" data-ins="%" aria-label="Yüzde">%</button>
+              <button type="button" class="k op" data-ins="÷" aria-label="Böl">÷</button>
+              <button type="button" class="k" data-ins="7">7</button>
+              <button type="button" class="k" data-ins="8">8</button>
+              <button type="button" class="k" data-ins="9">9</button>
+              <button type="button" class="k op" data-ins="×" aria-label="Çarp">×</button>
+              <button type="button" class="k" data-ins="4">4</button>
+              <button type="button" class="k" data-ins="5">5</button>
+              <button type="button" class="k" data-ins="6">6</button>
+              <button type="button" class="k op" data-ins="−" aria-label="Çıkar">−</button>
+              <button type="button" class="k" data-ins="1">1</button>
+              <button type="button" class="k" data-ins="2">2</button>
+              <button type="button" class="k" data-ins="3">3</button>
+              <button type="button" class="k op" data-ins="+" aria-label="Topla">+</button>
+              <button type="button" class="k" data-ins="0">0</button>
+              <button type="button" class="k" data-ins="," aria-label="Ondalık virgül">,</button>
+              <button type="button" class="k eq" data-act="eval" aria-label="Eşittir, hesapla">=</button>
+            </div>
+          </div>
+          <p id="calc-help" class="calc-hint">Klavye: rakamlar ve + − * / ^ ( ) tuşları, hesaplamak için Enter, temizlemek için Esc. Ondalık için virgül ya da nokta yazabilirsiniz.</p>
+          <p id="status" class="calc-status" aria-live="polite"></p>
+
+          <div class="calc-history">
+            <h3>İşlem geçmişi <span class="calc-hint">(son 50, yalnızca bu sayfada)</span></h3>
+            <p id="history-empty" class="calc-hint">Henüz işlem yok. = tuşuna ya da Enter'a bastıkça burada listelenir.</p>
+            <ol id="history" aria-label="İşlem geçmişi"></ol>
+            <div class="ba-actions"><button type="button" id="history-clear" class="ba-btn" data-act="history-clear" hidden>Geçmişi temizle</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="hesap-makinesi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>İşlemi ekrandaki tuşlarla ya da klavyenizle yazın. Örneğin <strong>2+3×4</strong> yazdığınızda ekranın altında sonuç anında soluk renkte görünür; Enter tuşuna ya da <strong>=</strong> düğmesine basınca sonuç kesinleşir ve geçmişe eklenir.</li>
+        <li>Parantez, üs, kök ya da trigonometri gerekiyorsa <strong>Bilimsel</strong> düğmesine basın. Ek tuşlar açılır; sin, cos, tan gibi fonksiyonlar parantezi kendisi açar, siz sayıyı yazıp parantezi kapatırsınız (kapatmasanız da hesap makinesi eksik parantezleri sonda kendisi kapatır).</li>
+        <li>Açı birimini <strong>Derece</strong> düğmesiyle derece ve radyan arasında değiştirin. Ekranın sol üstündeki DER ya da RAD rozeti o anki birimi gösterir.</li>
+        <li>Ara sonuçları saklamak için hafıza tuşlarını kullanın: M+ ekrandaki değeri hafızaya ekler, M− çıkarır, MR hafızadaki sayıyı işleme yazar, MC hafızayı siler.</li>
+        <li>Önceki işlemlere aşağıdaki geçmiş listesinden dönün; "Kullan" sonucu yeni işlemin içine yazar, "Kopyala" işlemi ve sonucu panoya alır. Büyük ekranda rahat çalışmak için "Tam ekran" düğmesini kullanabilirsiniz.</li>
+      </ol>
+
+      <h2>Basit ve bilimsel hesap makinesi: hangisi ne zaman?</h2>
+      <p>Günlük hayatta market alışverişi, bölüşülen fatura, indirim oranı ya da taksit toplamı gibi işlerin çoğu dört işlem ve yüzde ile çözülür. Basit mod bu yüzden yalnızca büyük sayı tuşlarını gösterir; parmakla dokunmak için geniş, yanlışlıkla yanındaki tuşa basılmayacak kadar aralıklıdır. Okul ve üniversite derslerinde, mühendislik hesaplarında ya da programlamada ise trigonometri, logaritma, üstel ifadeler ve faktöriyel gerekir. Bilimsel mod bu fonksiyonları tek ekranda sunar; hepsini aynı ifade satırında birleştirebilirsiniz. Örneğin <strong>sin(30)+log(1000)^2</strong> ya da <strong>√(3^2+4^2)</strong> gibi bileşik ifadeleri parçalamadan yazarsınız.</p>
+
+      <h2>İşlem önceliği nasıl çalışır?</h2>
+      <p>Bu hesap makinesi, ifadeyi soldan sağa tuşlara bastığınız sırayla değil, matematikteki kurallara göre değerlendirir. Önce parantez içi hesaplanır, ardından üs alma, sonra çarpma, bölme ve mod, en son toplama ile çıkarma gelir. Yani <strong>2+3×4</strong> sonucu 20 değil 14'tür; <strong>(2+3)×4</strong> ise 20 verir. Üs alma sağdan sola birleşir: <strong>2^3^2</strong> işlemi (2^3)^2 değil 2^(3^2) olarak yani 512 olarak hesaplanır. Eksi işareti üs almadan sonra gelir; bu nedenle <strong>−2^2</strong> sonucu −4'tür, (−2)^2 yazarsanız 4 elde edersiniz. Basit cep hesap makinelerinin çoğu tuşlara basış sırasıyla çalıştığı için aynı işlemde farklı sonuç verebilir; bu araçta ise yazdığınız ifade bir bütün olarak çözümlenir ve ne yazdığınızı ekranda görürsünüz.</p>
+      <p>Çarpma işaretini unutmanız da sorun değildir. <strong>2π</strong>, <strong>3(4+5)</strong> ve <strong>2sin(30)</strong> gibi yazımlar örtük çarpma olarak anlaşılır. Ondalık ayırıcı olarak hem virgül hem nokta kabul edilir; sonuçlar Türkçe alışkanlığa uygun biçimde virgülle gösterilir.</p>
+
+      <h2>Yüzde hesabı: 200+10% neden 220 eder?</h2>
+      <p>Yüzde tuşu, tek başına kullanıldığında sayıyı 100'e böler: <strong>50%</strong> sonucu 0,5'tir. Toplama ya da çıkarma ile birlikte kullanıldığında ise cep hesap makinelerinde olduğu gibi soldaki sayıya göre uygulanır: <strong>200+10%</strong> işlemi 200'ün yüzde 10'unu ekler ve 220 verir; <strong>200−10%</strong> ise 180'dir. Çarpmada <strong>200×10%</strong> yazarsanız 200'ün onda biri olan 20 elde edersiniz. Yalnızca bir oranı bulmak istiyorsanız bu araçla birlikte yüzde hesaplama sayfamıza da göz atabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="hesap-makinesi-b" aria-label="Reklam"></div>
+
+      <h2>Derece ve radyan farkı</h2>
+      <p>Açılar iki ayrı birimle ölçülür. Derecede tam çember 360'tır; radyanda ise 2π. Okulda ve günlük işlerde derece daha yaygındır, bilimsel yazılımlarda, fizikte ve analizde radyan esastır. Hesap makinesini yanlış birimde kullanmak en sık yapılan hatalardır: <strong>sin(90)</strong> derece modunda 1 verir, radyan modunda ise yaklaşık 0,894 sonucunu verir. Bu sayfa derece modunda açılır; radyana geçmek için "Derece" düğmesine basmanız yeter. 30°, 45°, 60°, 90° ve 180° gibi açılarda sonuçlar kayan nokta hatası olmadan tam çıkar: sin(180) tam olarak 0, cos(90) tam olarak 0 olarak gösterilir. Tanjantın tanımsız olduğu 90° ve 270° gibi açılarda ise sessizce büyük bir sayı vermek yerine açıklayıcı bir hata mesajı görürsünüz.</p>
+
+      <h2>0,1 + 0,2 neden 0,30000000000000004 çıkmaz?</h2>
+      <p>Bilgisayarlar ondalık sayıları ikili düzende saklar ve 0,1 gibi bazı sayılar ikili düzende sonsuza kadar uzar. Bu yüzden birçok programlama dilinde 0,1+0,2 işleminin ham sonucu 0,30000000000000004 gibi görünür. Bu bir hata değil, kayan nokta aritmetiğinin doğal sonucudur. Hesap makinesi sonucu gösterirken 12 anlamlı basamağa yuvarlar ve "0,3" yazar. Böylece günlük hesaplarda göze batan gürültü basamaklar görünmez. Çok büyük ya da çok küçük sayılar bilimsel gösterimle yazılır; örneğin 2^100 sonucu 1,26765060023e+30 olarak görünür. Tam sayılar 9 katrilyona (2^53) kadar tüm basamaklarıyla gösterilir.</p>
+
+      <h2>Hesap makinesinin sınırları ve hata mesajları</h2>
+      <p>Sıfıra bölme tanımsızdır; böyle bir işlem yazdığınızda "Sıfıra bölme tanımsız" uyarısı görürsünüz. Negatif sayının karekökü, sıfır ya da negatif sayının logaritması ve 170'ten büyük sayıların faktöriyeli de açıklayıcı hata verir; 171! sayısı bilgisayarların gösterebildiği en büyük sayıyı aşar. Parantezler eşleşmiyorsa fazladan kapanış parantezi hata sayılır, eksik kapanış parantezleri ise otomatik tamamlanır. Hata mesajı çıkınca ifade kutusu silinmez; yalnızca yanlış kısmı düzeltip yeniden Enter'a basmanız yeterlidir.</p>
+
+      <h2>İşlem geçmişi ve hafıza gizliliği</h2>
+      <p>Geçmişte son 50 işlem listelenir; daha eskileri otomatik silinir. Hafıza ve geçmiş yalnızca bu sayfanın belleğinde durur, hiçbir yere kaydedilmez ve sayfayı kapattığınızda ya da yenilediğinizde kaybolur. Hesaplamalar tarayıcınızda çalışan kendi yazdığımız bir ifade çözümleyicisiyle yapılır; ifadeleriniz bir sunucuya gönderilmez, çerezlerle izlenmez. Çevrimdışı çalışması için sayfayı bir kez açıp tarayıcınızdan "Uygulama olarak yükle" seçeneğini de kullanabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans hesap makinesi?</h2>
+      <ul>
+        <li><strong>Gerçek işlem önceliği.</strong> Yazdığınız ifade matematik kurallarına göre çözülür; tuşa basış sırasına bağlı sürpriz sonuçlar yoktur.</li>
+        <li><strong>Dokunmatik uyumlu.</strong> Geniş tuşlar, 360 piksel genişlikli telefonlarda bile rahat kullanılır; ekran klavyesi açılıp işlemi kapatmaz.</li>
+        <li><strong>Klavyeyle de tam çalışır.</strong> Tuşlar Tab ile gezilebilir, Enter hesaplar, Esc temizler.</li>
+        <li><strong>Veri gönderilmez, kayıt yok.</strong> Hiçbir bilgi sunucuya gitmez; üyelik ya da kurulum gerekmez.</li>
+        <li><strong>Okunaklı ekran.</strong> Büyük sonuç alanı ve tam ekran modu, sunum ve ders ortamlarında projeksiyonla da işe yarar.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Hesap makinesi telefonda çalışır mı?</summary><p>Evet. Tuşlar dokunmatik ekran için büyük tutulmuştur ve 360 piksel genişlikte bile sığar. İfade kutusuna dokunduğunuzda ekran klavyesinin açılmaması için tuş takımını kullanmanız yeterlidir. Ana ekrana ekleyerek uygulama gibi de açabilirsiniz.</p></details>
+        <details><summary>Bilimsel moda nasıl geçerim?</summary><p>Tuş takımının üstündeki "Bilimsel" düğmesine basın. sin, cos, tan, log, ln, kök, üs, faktöriyel, parantez, π, e ve mod tuşları açılır. "Basit" düğmesine basarak sade görünüme dönebilirsiniz.</p></details>
+        <details><summary>sin(90) neden 1 çıkıyor, radyan nasıl seçilir?</summary><p>Açı birimi varsayılan olarak derecedir; 90 derecenin sinüsü 1'dir. Radyan kullanmak için bilimsel modda "Derece" düğmesine basın; düğme "Radyan" olur ve ekranda RAD rozeti görünür. Radyan modunda sin(π/2) de 1 verir.</p></details>
+        <details><summary>Yüzde tuşu nasıl çalışır?</summary><p>Tek başına sayıyı 100'e böler (50% = 0,5). Toplama ve çıkarmada soldaki sayıya göre oran olarak uygulanır: 200+10% sonucu 220, 200−10% sonucu 180'dir. Çarpmada 200×10% sonucu 20'dir.</p></details>
+        <details><summary>Eval kullanıyor musunuz, işlemlerim güvende mi?</summary><p>Hayır. Eval ya da benzeri dinamik kod çalıştırma kullanılmaz; ifadeniz ayrıştırıcı tarafından sayı, işleç ve fonksiyon parçalarına ayrılıp ters Lehçe gösterimle hesaplanır. Hesap tarayıcınızda yapılır, hiçbir bilgi sunucuya gönderilmez.</p></details>
+        <details><summary>Hafıza ve geçmiş saklanıyor mu?</summary><p>Hayır. Hafıza ve son 50 işlem yalnızca açık sayfanın belleğinde durur. Sayfayı kapatırsanız ya da yenilerseniz silinir; hiçbir yere kaydedilmez, çerez bırakılmaz.</p></details>
+        <details><summary>Neden "Sıfıra bölme tanımsız" hatası alıyorum?</summary><p>Matematikte bir sayıyı sıfıra bölmek tanımsızdır. İfadenizde bölen olarak 0 ya da sonucu 0 olan bir parantez kullanmış olabilirsiniz. Bölen kısmını kontrol edip düzeltin; ifade kutusundaki yazı silinmediği için yalnızca ilgili kısmı değiştirmeniz yeterlidir.</p></details>
+        <details><summary>Faktöriyel en fazla kaç olabilir?</summary><p>170! değerine kadar hesaplanır; bu değerden büyük faktöriyeller bilgisayarların gösterebildiği sayı aralığını aşar. Faktöriyel yalnızca 0 ve pozitif tam sayılar için tanımlıdır; 5! sonucu 120'dir.</p></details>
+        <details><summary>Klavye ile kullanabilir miyim?</summary><p>Evet. İfade kutusuna rakamları ve + − * / ^ ( ) işaretlerini yazabilir, Enter ile hesaplayabilir, Esc ile temizleyebilirsiniz. Sayfada başka bir yere odaklıyken bir rakama basarsanız yazı otomatik olarak ifade kutusuna gider.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="hesap-makinesi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

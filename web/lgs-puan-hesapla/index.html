@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LGS Puan Hesaplama 2026 – Net ve Yaklaşık Puan Hesaplama</title>
+  <meta name="description" content="LGS puan hesaplama: sözel ve sayısal doğru-yanlış sayılarından net ve 100-500 ölçeğinde yaklaşık puanınızı hesaplayın. Yalnızca tahmindir; ücretsiz, veriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/lgs-puan-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+  
+    .yks-set { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px 14px; margin: 0 0 14px; min-width: 0; }
+    .yks-set legend { font-weight: 700; padding: 0 6px; }
+    .ders-row { display: grid; grid-template-columns: 1fr 88px 88px; gap: 8px; align-items: end; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); }
+    .ders-row:last-child { border-bottom: 0; }
+    .ders-ad { font-weight: 500; padding-bottom: 10px; }
+    .ders-in { display: grid; gap: 2px; font-size: .82rem; color: var(--ba-text-2); }
+    .ders-in input { width: 100%; min-height: 44px; padding: 6px 8px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    @media (max-width: 480px) { .ders-row { grid-template-columns: 1fr 1fr; } .ders-ad { grid-column: 1 / -1; padding-bottom: 0; } }
+    .yks-table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: .92rem; }
+    .yks-table th, .yks-table td { padding: 6px 8px; border-bottom: 1px solid var(--ba-border); text-align: left; }
+    .yks-table td:not(:first-child), .yks-table th:not(:first-child) { text-align: right; }
+    @media print {
+      .ba-topbar, .ba-header, .ba-hero .lead, .ba-badges, .ba-ad, .ba-content, .ba-footer, .kdv-form, .ba-actions, .ba-crumb, .kdv-rates { display: none !important; }
+      .ba-hero { background: none !important; color: #000 !important; }
+      #uyari { display: flex !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"LGS Puan Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/lgs-puan-hesapla/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>LGS Puan Hesaplama 2026 – Net ve Yaklaşık Puan Hesaplama</h1>
+      <p class="lead">LGS sözel ve sayısal bölümlerdeki doğru/yanlış sayılarınızı girin; her dersin netini, toplam neti ve 100-500 ölçeğinde yaklaşık puanınızı görün. Girdiğiniz hiçbir bilgi bilgisayarınızdan çıkmaz.</p>
+      <p class="ba-note" id="uyari" role="note"><span aria-hidden="true">⚠️</span><span><strong>Önemli uyarı:</strong> ÖSYM/MEB'in resmî puan hesaplaması, soru iptalleri ve standart sapma değerlerine göre değişir; bu araç yalnızca yaklaşık tahmin verir.</span></p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="yks-set"><legend>Sözel bölüm (50 soru)</legend><div id="rows-sozel"></div></fieldset>
+        <fieldset class="yks-set"><legend>Sayısal bölüm (40 soru)</legend><div id="rows-sayisal"></div></fieldset>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Puanı hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç (yaklaşık tahmin)</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Sözel net</dt><dd id="r-sozel"></dd></div>
+          <div class="kdv-row"><dt>Sayısal net</dt><dd id="r-sayisal"></dd></div>
+          <div class="kdv-row"><dt>Toplam net</dt><dd id="r-net"></dd></div>
+          <div class="kdv-row is-strong"><dt>Yaklaşık puan (100-500)</dt><dd id="r-puan"></dd></div>
+        </dl>
+        <h4>Net tablosu</h4>
+        <table class="yks-table"><thead><tr><th scope="col">Ders</th><th scope="col">Bölüm</th><th scope="col">Soru</th><th scope="col">Doğru</th><th scope="col">Yanlış</th><th scope="col">Boş</th><th scope="col">Net</th><th scope="col">Katsayı</th></tr></thead><tbody id="tbl"></tbody></table>
+        <p class="kdv-note">Yüzdelik dilim bu araçta gösterilmez; çünkü yüzdelik dilim, tüm adayların sonuçları belli olduktan sonra hesaplanır.</p>
+        <p class="kdv-note"><strong>Hatırlatma:</strong> ÖSYM/MEB'in resmî puan hesaplaması, soru iptalleri ve standart sapma değerlerine göre değişir; bu araç yalnızca yaklaşık tahmin verir.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Parametreler <span id="params-date">…</span> tarihinde güncellendi.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="lgs-puan-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Sözel bölümde Türkçe, T.C. İnkılap Tarihi ve Atatürkçülük, Din Kültürü ve Ahlak Bilgisi ile İngilizce derslerinin doğru ve yanlış sayılarını yazın.</li>
+        <li>Sayısal bölümde Matematik ve Fen Bilimleri için aynısını yapın. Boş bıraktığınız alanlar sıfır sayılır; boş soru sayısı araç tarafından bulunur.</li>
+        <li>"Puanı hesapla" düğmesine basın. Sözel net, sayısal net, toplam net ve yaklaşık puanınız görünür; altında ders ders net tablosu yer alır.</li>
+        <li>"Sonucu kopyala" ile sonucu panoya alabilir, "Yazdır" ile çıktı alabilirsiniz. Cevap anahtarı değiştikçe sayıları güncelleyip yeniden hesaplayın.</li>
+      </ol>
+
+      <h2>LGS puan hesaplama nedir, sonuç ne kadar kesin?</h2>
+      <p>Liselere Geçiş Sistemi (LGS), ortaokul 8. sınıf öğrencileri için Millî Eğitim Bakanlığı'nın (MEB) yaptığı merkezî sınavdır. Sınav iki oturumdan oluşur; sözel oturumda 50, sayısal oturumda 40 soru bulunur. Sınavdan sonra aileler ve öğrenciler, resmî sonuçlar açıklanmadan önce cevap anahtarına bakarak "Kaç net yaptım, puanım kaç olur?" sorusunu yanıtlamak ister. Bu sayfadaki araç tam bu soruya hızlı bir yaklaşık yanıt verir.</p>
+      <p><strong>Önemli:</strong> MEB'in kullandığı gerçek puan hesabı, her dersin ağırlıklı netinin o yılki öğrenci kitlesinin ortalaması ve standart sapmasıyla standart puana çevrilmesine dayanır. Bu değerler yalnızca sınavdan sonra bilinir. Bu yüzden ÖSYM/MEB'in resmî puan hesaplaması, soru iptalleri ve standart sapma değerlerine göre değişir; bu araç yalnızca yaklaşık tahmin verir. Resmî sonucunuz MEB'in açıkladığı sonuç belgesindeki puandır.</p>
+
+      <h2>LGS neti nasıl hesaplanır?</h2>
+      <p>LGS'de üç yanlış cevap bir doğru cevabı götürür. Net, doğru sayısından yanlış sayısının üçte birini çıkararak bulunur: <strong>net = doğru − yanlış ÷ 3</strong>. Boş bırakılan sorular nete etki etmez. Örneğin Türkçe testinde 17 doğru ve 3 yanlış yapan bir öğrencinin neti 17 − 3 ÷ 3 = 16'dır. Bu oran YKS'deki dörtte birden farklıdır; iki sınavın hesaplarını karıştırmamak gerekir.</p>
+      <p>Dersler ve soru sayıları şöyledir: Türkçe 20, T.C. İnkılap Tarihi ve Atatürkçülük 10, Din Kültürü ve Ahlak Bilgisi 10, Yabancı Dil (İngilizce) 10; ikinci oturumda Matematik 20 ve Fen Bilimleri 20 soru. Araç, bir derste doğru ve yanlış toplamı soru sayısını aşarsa Türkçe bir uyarı verir ve hesaplamaz.</p>
+
+      <h2>Katsayılar ve 100-500 ölçeği</h2>
+      <p>LGS puanı hesaplanırken Türkçe, Matematik ve Fen Bilimleri derslerinin katsayısı 4, T.C. İnkılap Tarihi, Din Kültürü ve İngilizce derslerinin katsayısı ise 1'dir. Yani bir Matematik neti, bir İnkılap Tarihi netinin dört katı kadar ağırlık taşır. Araç, her dersin pozitif netini katsayısıyla çarpar, toplamı en yüksek mümkün ağırlıklı toplama (tüm sorular doğru olduğunda 270) böler ve sonucu 100-500 aralığına yerleştirir. Tüm sorular doğru olduğunda 500, hiç net yoksa 100 görürsünüz.</p>
+      <p>Bu doğrusal ölçekleme, resmî standart puan hesabının sadeleştirilmiş hâlidir. Gerçekte aynı net sayısı, sınav o yıl zor veya kolay geçtiyse farklı puan getirir. Bu yüzden araç ortalama bir fikir verir; birkaç ile yirmi puan arası sapma görebilirsiniz. Parametreler (katsayılar, ölçek) güncelleme tarihiyle ayrı bir dosyada tutulur ve "yaklaşık" olarak işaretlenmiştir.</p>
+
+      <div class="ba-ad" data-slot="lgs-puan-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Neden yüzdelik dilim göstermiyoruz?</h2>
+      <p>Yüzdelik dilim, puanınızın tüm adaylar arasında nerede durduğunu gösterir. Örneğin yüzde 2'lik dilimde olmak, sınava giren öğrencilerin ilk yüzde 2'si içinde olmak demektir. Bunu hesaplamak için gerçek puan dağılımı gerekir; dağılım ise yalnızca MEB'in bütün cevap kâğıtlarını işlemesinden sonra ortaya çıkar. Bir hesap aracı bu dağılımı bilemez. Tahminî bir yüzdelik dilim üretmek, ailelerde yanlış bir güven ya da gereksiz bir kaygı oluşturabileceği için bilerek eklenmemiştir. Yüzdelik dilimi resmî sonuç belgenizde göreceksiniz.</p>
+
+      <h2>Taban puanlar ve tercih yaparken dikkat edilecekler</h2>
+      <p>Lise tercih sürecinde okulların önceki yıl taban puanları ve yüzdelik dilimleri rehber olarak kullanılır. Ancak taban puanlar her yıl değişir; sınavın zorluğu, kontenjan ve tercih davranışları puanı etkiler. Bu araçla bulduğunuz yaklaşık puanı, geçen yılın taban puanıyla kıyaslarken marjı geniş tutun. Birkaç farklı puan düzeyinde (güvenli, hedef ve iddialı) tercih listesi hazırlamak daha sağlıklıdır. Güncel kontenjan ve puan bilgileri için MEB'in ve ilgili il millî eğitim müdürlüğünün duyurularına bakın.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Netin hesabında YKS'deki 1/4 oranını kullanmak.</strong> LGS'de oran 1/3'tür.</li>
+        <li><strong>Tüm derslerin eşit ağırlıkta olduğunu varsaymak.</strong> Türkçe, Matematik ve Fen dört katsayılıdır; küçük derslerdeki net, puanı daha az etkiler.</li>
+        <li><strong>Boş soruları yanlış saymak.</strong> Boş sorular neti düşürmez.</li>
+        <li><strong>Resmî cevap anahtarını beklemeden kesin hesap yapmak.</strong> Soru iptali ve itirazlar neti değiştirebilir.</li>
+        <li><strong>Deneme sınavı puanını gerçek sınav puanı sanmak.</strong> Deneme sınavlarının ortalaması ve zorluğu farklıdır.</li>
+        <li><strong>Yaklaşık puanı yüzdelik dilim yerine kullanmak.</strong> Aynı puanın hangi dilime denk geldiği her yıl değişir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Doğru ve yanlış sayılarınız tarayıcınızda işlenir; hiçbir sunucuya iletilmez.</li>
+        <li><strong>Dürüst sonuç.</strong> Puanın yaklaşık olduğu sayfanın başında ve içeriğinde açıkça yazar; sahte bir "kesin sonuç" iddiası yoktur.</li>
+        <li><strong>Ders ders net tablosu.</strong> Hangi derste kaç net kaybettiğinizi görüp çalışmanızı yönlendirebilirsiniz.</li>
+        <li><strong>Kopyala ve yazdır.</strong> Sonucu aileyle ya da öğretmenle paylaşmak kolaydır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>LGS puanı nasıl hesaplanır?</summary><p>Her derste net bulunur (doğru − yanlış ÷ 3); dersler katsayılarla (Türkçe, Matematik, Fen için 4; diğerleri için 1) ağırlıklandırılır; sonuç öğrenci kitlesinin ortalama ve standart sapmasına göre 100-500 ölçeğinde standart puana çevrilir. Bu araç aynı mantığı yaklaşık bir doğrusal ölçekle taklit eder.</p></details>
+        <details><summary>Bu araç MEB'in verdiği puanla aynı sonucu verir mi?</summary><p>Hayır, yaklaşık bir tahmindir. Resmî puan, standart sapma ve soru iptallerine göre değiştiği için sapma olabilir. Kesin değer yalnızca MEB'in açıkladığı sonuç belgesindedir.</p></details>
+        <details><summary>LGS'de kaç yanlış bir doğruyu götürür?</summary><p>Üç yanlış bir doğruyu götürür. Net = doğru − yanlış ÷ 3. Boş sorular nete etki etmez.</p></details>
+        <details><summary>Hangi derslerin katsayısı yüksektir?</summary><p>Türkçe, Matematik ve Fen Bilimleri 4 katsayılıdır. T.C. İnkılap Tarihi ve Atatürkçülük, Din Kültürü ve Ahlak Bilgisi ile Yabancı Dil 1 katsayılıdır.</p></details>
+        <details><summary>Neden yüzdelik dilim hesaplanmıyor?</summary><p>Yüzdelik dilim, tüm adayların puanları bilindikten sonra hesaplanabilir. Bir hesap aracı bu dağılımı bilemez; tahmin üretmek yanıltıcı olurdu. Yüzdelik dilimi resmî sonuç belgenizde görürsünüz.</p></details>
+        <details><summary>Tüm soruları doğru yaparsam kaç puan çıkar?</summary><p>Bu araçta tüm sorular doğru olduğunda yaklaşık puan 500 olur. Gerçek sonuçta da en yüksek puan 500'dür.</p></details>
+        <details><summary>Verilerim bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; girdiğiniz sayılar sunucuya gönderilmez ve çerezle izlenmez.</p></details>
+        <details><summary>"Toplamı aşamaz" hatası alıyorum, ne yapmalıyım?</summary><p>Bir derste doğru ve yanlış sayılarının toplamı o dersin soru sayısını (örneğin Türkçe için 20) aşamaz. Sayıları cevap anahtarınızla kontrol edip hatalı alanı düzeltin ve yeniden hesaplayın.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç tahmin amaçlıdır; tercih ya da yerleştirme kararı için tek başına dayanak değildir. Resmî bilgi için <a href="https://www.meb.gov.tr/" rel="noopener">meb.gov.tr</a> adresini kontrol edin (bağlantıya yalnızca siz tıklarsanız gidilir).</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yks-puan-hesapla/">YKS Puan Hesaplama</a></li>
+        <li><a href="../not-ortalamasi/">Not Ortalaması Hesaplama</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="lgs-puan-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

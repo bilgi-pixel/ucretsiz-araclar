@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sayı Tabanı Dönüştürücü – İkili, Sekizli, Onlu, Onaltılı (Binary, Hex) Çevirici</title>
+  <meta name="description" content="İkili, sekizli, onlu ve onaltılı sayı sistemleri ile 2-36 arası özel tabanlar arasında dönüştürün. Büyük sayı, negatif sayı, ondalık kesir, bit işlemleri ve ASCII/Unicode tablosu. Ücretsiz, tarayıcıda çalışır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/sayi-tabani-donustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .tb-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--ba-border); }
+    .tb-tabs [role="tab"] { min-height: 44px; padding: 8px 14px; font: inherit; font-weight: 600; color: var(--ba-text-2); background: transparent; border: 0; border-bottom: 3px solid transparent; cursor: pointer; }
+    .tb-tabs [role="tab"][aria-selected="true"] { color: var(--ba-primary); border-bottom-color: var(--ba-primary); }
+    .tb-form .ba-field { margin-bottom: 12px; }
+    .tb-form input[type="text"], .tb-form select, .tb-form textarea { width: 100%; box-sizing: border-box; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .tb-form input.mono, .tb-form textarea { font-family: var(--ba-mono); }
+    .tb-form input:focus, .tb-form select:focus, .tb-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .tb-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .tb-grid { grid-template-columns: 1fr 1fr; } }
+    .tb-results { margin: 0; display: grid; gap: 6px; }
+    .tb-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .tb-row:last-child { border-bottom: 0; }
+    .tb-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; flex: 0 0 auto; }
+    .tb-row dd { margin: 0; display: flex; gap: 8px; align-items: center; flex: 1 1 200px; justify-content: flex-end; min-width: 0; }
+    .tb-val { font-family: var(--ba-mono); font-size: 1.05rem; overflow-wrap: anywhere; text-align: right; }
+    .tb-copy { min-height: 40px; padding: 4px 12px; font-size: .88rem; }
+    .tb-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .tb-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; overflow-wrap: anywhere; }
+    .tb-table-wrap { overflow-x: auto; margin-top: 12px; }
+    .tb-table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+    .tb-table th, .tb-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--ba-border); white-space: nowrap; font-family: var(--ba-mono); }
+    .tb-table th { font-family: inherit; color: var(--ba-text-2); font-weight: 600; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Sayı Tabanı Dönüştürücü – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/sayi-tabani-donustur/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Sayı Tabanı Dönüştürücü – İkili, Sekizli, Onlu, Onaltılı</h1>
+      <p class="lead">Bir sayıyı ikili (binary), sekizli, onlu ve onaltılı (hex) olarak aynı anda görün; 2 ile 36 arasında istediğiniz tabana çevirin. Çok büyük sayıları, negatif sayıları ve ondalık kesirleri destekler. Bit işlemleri ve ASCII/Unicode kod tablosu da aynı sayfada. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="tb-tabs" role="tablist" aria-label="Araç bölümleri">
+        <button type="button" role="tab" id="tab-conv" aria-selected="true" aria-controls="panel-conv">Taban dönüştür</button>
+        <button type="button" role="tab" id="tab-bit" aria-selected="false" aria-controls="panel-bit" tabindex="-1">Bit işlemleri</button>
+        <button type="button" role="tab" id="tab-text" aria-selected="false" aria-controls="panel-text" tabindex="-1">Karakter kodları</button>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <!-- 1) Taban dönüştürme -->
+      <div id="panel-conv" role="tabpanel" aria-labelledby="tab-conv">
+        <form id="conv-form" class="tb-form" novalidate>
+          <div class="ba-field"><label for="value">Sayı</label><input id="value" class="mono" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Örn. 255, FF, 1010, -5, 0,5"><div class="hint">Negatif için başına − koyun; ondalık için virgül ya da nokta kullanın. 0x, 0b, 0o önekleri kabul edilir.</div></div>
+          <div class="tb-grid">
+            <div class="ba-field"><label for="from">Girdiğiniz sayının tabanı</label><select id="from"></select></div>
+            <div class="ba-field"><label for="to">Özel hedef taban</label><select id="to"></select></div>
+          </div>
+          <div class="ba-actions">
+            <button id="conv-btn" class="ba-btn ba-btn-primary" type="submit">Dönüştür</button>
+            <button id="swap" class="ba-btn" type="button">Tabanları değiştir</button>
+            <button id="conv-clear" class="ba-btn" type="button">Temizle</button>
+          </div>
+        </form>
+        <div id="conv-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Sonuç</h3>
+          <dl class="tb-results">
+            <div class="tb-row"><dt>İkili (taban 2)</dt><dd><span class="tb-val" id="r-2"></span><button type="button" class="ba-btn tb-copy" data-copy="r-2" aria-label="İkili sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>Sekizli (taban 8)</dt><dd><span class="tb-val" id="r-8"></span><button type="button" class="ba-btn tb-copy" data-copy="r-8" aria-label="Sekizli sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>Onlu (taban 10)</dt><dd><span class="tb-val" id="r-10"></span><button type="button" class="ba-btn tb-copy" data-copy="r-10" aria-label="Onlu sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>Onaltılı (taban 16)</dt><dd><span class="tb-val" id="r-16"></span><button type="button" class="ba-btn tb-copy" data-copy="r-16" aria-label="Onaltılı sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt id="r-custom-label">Özel taban</dt><dd><span class="tb-val" id="r-custom"></span><button type="button" class="ba-btn tb-copy" data-copy="r-custom" aria-label="Özel taban sonucunu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>Dörderli gruplu ikili</dt><dd><span class="tb-val" id="r-bits"></span></dd></div>
+          </dl>
+          <p class="tb-note" id="conv-note"></p>
+        </div>
+      </div>
+
+      <!-- 2) Bit işlemleri -->
+      <div id="panel-bit" role="tabpanel" aria-labelledby="tab-bit" hidden>
+        <form id="bit-form" class="tb-form" novalidate>
+          <div class="tb-grid">
+            <div class="ba-field"><label for="bit-width">Bit genişliği</label><select id="bit-width"><option value="8">8 bit</option><option value="16">16 bit</option><option value="32" selected>32 bit</option><option value="64">64 bit</option></select></div>
+            <div class="ba-field"><label for="bit-base">Girdi tabanı</label><select id="bit-base"><option value="10" selected>Onlu</option><option value="16">Onaltılı</option><option value="2">İkili</option><option value="8">Sekizli</option></select></div>
+          </div>
+          <div class="ba-field"><label for="bit-op">İşlem</label>
+            <select id="bit-op">
+              <option value="show">Yalnızca A'nın gösterimi (two's complement)</option>
+              <option value="and">A AND B</option>
+              <option value="or">A OR B</option>
+              <option value="xor">A XOR B</option>
+              <option value="not">NOT A</option>
+              <option value="shl">A &lt;&lt; n (sola kaydır)</option>
+              <option value="shr">A &gt;&gt; n (işaretli sağa kaydır)</option>
+              <option value="ushr">A &gt;&gt;&gt; n (işaretsiz sağa kaydır)</option>
+            </select>
+          </div>
+          <div class="ba-field"><label for="bit-a">A değeri</label><input id="bit-a" class="mono" type="text" autocomplete="off" spellcheck="false" placeholder="Örn. -5 ya da 200"></div>
+          <div class="ba-field" id="bit-b-field" hidden><label for="bit-b">B değeri</label><input id="bit-b" class="mono" type="text" autocomplete="off" spellcheck="false" placeholder="Örn. 15"></div>
+          <div class="ba-field" id="bit-n-field" hidden><label for="bit-n">Kaydırma miktarı (n)</label><input id="bit-n" class="mono" type="text" inputmode="numeric" autocomplete="off" value="1"></div>
+          <div class="ba-actions"><button id="bit-btn" class="ba-btn ba-btn-primary" type="submit">Hesapla</button></div>
+        </form>
+        <div id="bit-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Sonuç</h3>
+          <dl class="tb-results">
+            <div class="tb-row"><dt>A (ikili)</dt><dd><span class="tb-val" id="b-a-bin"></span></dd></div>
+            <div class="tb-row" id="b-b-row" hidden><dt>B (ikili)</dt><dd><span class="tb-val" id="b-b-bin"></span></dd></div>
+            <div class="tb-row"><dt>Sonuç (ikili)</dt><dd><span class="tb-val" id="b-bin"></span><button type="button" class="ba-btn tb-copy" data-copy="b-bin" aria-label="İkili sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>Sonuç (dörderli gruplu)</dt><dd><span class="tb-val" id="b-bin4"></span></dd></div>
+            <div class="tb-row"><dt>Sonuç (onaltılı)</dt><dd><span class="tb-val" id="b-hex"></span><button type="button" class="ba-btn tb-copy" data-copy="b-hex" aria-label="Onaltılı sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>İşaretsiz onlu</dt><dd><span class="tb-val" id="b-udec"></span><button type="button" class="ba-btn tb-copy" data-copy="b-udec" aria-label="İşaretsiz onlu sonucu kopyala">Kopyala</button></dd></div>
+            <div class="tb-row"><dt>İşaretli onlu (two's complement)</dt><dd><span class="tb-val" id="b-sdec"></span><button type="button" class="ba-btn tb-copy" data-copy="b-sdec" aria-label="İşaretli onlu sonucu kopyala">Kopyala</button></dd></div>
+          </dl>
+          <p class="tb-note" id="b-width-note"></p>
+        </div>
+      </div>
+
+      <!-- 3) Karakter kodları -->
+      <div id="panel-text" role="tabpanel" aria-labelledby="tab-text" hidden>
+        <div class="tb-form">
+          <div class="ba-field"><label for="text">Metin</label><textarea id="text" rows="3" spellcheck="false" placeholder="Örn. Merhaba ğ€😀"></textarea><div class="hint">Her karakterin Unicode kod noktası, onlu, onaltılı, ikili değeri ve UTF-8 baytları listelenir. İlk 500 karakter gösterilir.</div></div>
+        </div>
+        <p class="tb-note" id="cp-summary"></p>
+        <div class="tb-table-wrap" id="cp-wrap" hidden>
+          <table class="tb-table">
+            <thead><tr><th scope="col">Karakter</th><th scope="col">Unicode</th><th scope="col">Onlu</th><th scope="col">Onaltılı</th><th scope="col">İkili</th><th scope="col">UTF-8 baytları</th></tr></thead>
+            <tbody id="cp-body"></tbody>
+          </table>
+        </div>
+        <div class="ba-actions"><button type="button" id="cp-copy" class="ba-btn" hidden>Kod listesini kopyala</button></div>
+      </div>
+      <p class="tb-status" id="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="sayi-tabani-donustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Taban dönüştür</strong> sekmesinde sayıyı yazın ve "Girdiğiniz sayının tabanı" listesinden doğru tabanı seçin: onlu için 10, ikili için 2, onaltılı için 16. Sonuçlar yazdıkça güncellenir; Enter ya da "Dönüştür" düğmesi de aynı işi yapar.</li>
+        <li>İkili, sekizli, onlu ve onaltılı sonuçlar her zaman birlikte gösterilir. Bunların dışında bir taban gerekiyorsa "Özel hedef taban" listesinden 2 ile 36 arasında seçin; 36 tabanında rakamlar 0-9 ve A-Z olur.</li>
+        <li>Negatif sayı için başa eksi işareti koyun. Ondalık kesir için virgül ya da nokta kullanın; kesirli kısım en fazla 20 basamak üretilir. Sonuç satırlarındaki "Kopyala" düğmesiyle değeri panoya alın.</li>
+        <li>Bit düzeyinde çalışmak için <strong>Bit işlemleri</strong> sekmesine geçin: bit genişliğini (8, 16, 32 ya da 64) ve işlemi seçin, A ve B değerlerini girin. Sonuç ikili, onaltılı, işaretsiz ve işaretli onlu olarak görünür.</li>
+        <li>Bir metnin karakter kodlarını görmek için <strong>Karakter kodları</strong> sekmesine metni yapıştırın; her karakter için Unicode, onlu, onaltılı, ikili ve UTF-8 bayt değerleri tabloda listelenir.</li>
+      </ol>
+
+      <h2>Sayı tabanı nedir?</h2>
+      <p>Günlük hayatta sayıları onlu sistemle yazarız: on rakam (0-9) vardır ve her basamak bir önceki basamağın on katını temsil eder. 345 sayısı 3×100 + 4×10 + 5×1 demektir. Sayı tabanı bu "on" sayısının yerine başka bir sayı koymaktır. İkili sistemde yalnızca 0 ve 1 vardır ve basamaklar 2'nin kuvvetleridir; 1011 sayısı 1×8 + 0×4 + 1×2 + 1×1 olarak 11'e eşittir. Sekizli sistemde 0-7, onaltılı sistemde 0-9 ve A-F rakamları kullanılır. A, 10; F ise 15 değerindedir. 36 tabanında alfabenin tamamı rakam olur: Z, 35 değerini taşır.</p>
+      <p>Bilgisayarlar elektrik devrelerinde "açık" ve "kapalı" durumlarıyla çalıştığı için her şeyi ikili düzende saklar. Ancak uzun ikili diziler insan gözüyle okunmaz. Onaltılı sistem bu yüzden yaygındır: her onaltılı rakam tam dört bit (bir yarım bayt) karşılığıdır. 11111111 yazmak yerine FF yazmak çok daha kısadır ve iki rakam tam bir baytı ifade eder. Sekizli sistem ise üçer bitlik gruplara karşılık gelir ve özellikle Unix dosya izinlerinde (chmod 755 gibi) karşımıza çıkar.</p>
+
+      <h2>Taban dönüşümü nasıl yapılır?</h2>
+      <p>Başka tabandan onluya çevirmek için her rakam, bulunduğu basamağın taban kuvvetiyle çarpılıp toplanır. Örneğin onaltılı 2F, 2×16 + 15 = 47'dir. Onludan başka tabana çevirmek için sayı hedef tabana ardışık olarak bölünür, kalanlar sondan başa doğru okunur. 47'yi ikiliye çevirirsek 47 = 23×2 + 1, 23 = 11×2 + 1, 11 = 5×2 + 1, 5 = 2×2 + 1, 2 = 1×2 + 0, 1 = 0×2 + 1 olur; kalanlar sondan başa okunduğunda 101111 bulunur. Bu araç aynı işlemi sizin yerinize yapar ve tüm tabanları aynı anda gösterir. Hesap, JavaScript'in sınırlı kayan nokta sayıları yerine BigInt ile yapıldığı için yüzlerce basamaklı sayılar bile kayıpsız dönüştürülür. 2^64 değeri olan 18446744073709551616 sayısı onaltılıda tam olarak 10000000000000000 çıkar.</p>
+
+      <h2>Ondalık kesirlerin dönüşümü</h2>
+      <p>Kesirli bir sayıyı başka tabana çevirirken tam kısım bölme yöntemiyle, kesir kısmı ise ardışık çarpma yöntemiyle çevrilir: kesir hedef tabanla çarpılır, çarpımın tam kısmı bir sonraki basamak olur, kalan kesirle işlem tekrarlanır. 0,5 ikilide 0,1 olur çünkü 0,5×2 = 1,0 işleminde tam kısım 1 çıkar ve kalan sıfırdır. Buna karşılık 0,1 sayısı ikilide sonsuza kadar uzar (0,000110011001100…). Bilgisayarların 0,1+0,2 işleminde tam 0,3 bulamamasının nedeni budur. Bu araç kesirli kısmı en fazla 20 basamakta keser ve bunu notta belirtir; 20 basamak sonrası yuvarlanmaz, kesilir.</p>
+
+      <div class="ba-ad" data-slot="sayi-tabani-donustur-b" aria-label="Reklam"></div>
+
+      <h2>Negatif sayılar ve two's complement</h2>
+      <p>Bilgisayarlar negatif sayıları genellikle "ikiye tümleyen" (two's complement) gösterimiyle saklar. Yöntemde sabit bir bit genişliği seçilir; negatif sayı için önce pozitif karşılığının bitleri ters çevrilir (NOT), sonra 1 eklenir. −5 için 8 bitte: 5 = 00000101, ters çevrilince 11111010, 1 eklenince 11111011. Bu yüzden 8 bitlik işaretli bir bellekte 11111011 değeri −5, işaretsiz okunduğunda ise 251 anlamına gelir. En soldaki bit işaret bitidir: 1 ise sayı negatiftir. 8 bit işaretli aralık −128 ile 127, 16 bit için −32768 ile 32767, 32 bit için yaklaşık ±2,1 milyardır.</p>
+      <p>Bit işlemleri sekmesi bu gösterimi doğrudan üretir. A değerine −5 yazıp 8 bit ve "Yalnızca A'nın gösterimi" seçeneğini işaretlerseniz 11111011 görürsünüz. Seçtiğiniz genişliğe sığmayan bir sayı yazarsanız aracın verdiği hata mesajı geçerli aralığı da söyler.</p>
+
+      <h2>Bit işlemleri: AND, OR, XOR, NOT ve kaydırma</h2>
+      <ul>
+        <li><strong>AND:</strong> İki bit de 1 ise 1 verir. Belirli bitleri sıfırlamak ya da maskelemek için kullanılır; örneğin bir sayının alt dört bitini almak için 15 (0xF) ile AND yapılır.</li>
+        <li><strong>OR:</strong> Bitlerden biri 1 ise 1 verir. Belirli bitleri açmak için kullanılır; bayrak (flag) birleştirmede yaygındır.</li>
+        <li><strong>XOR:</strong> Bitler farklıysa 1 verir. Bitleri tersine çevirmek ve basit şifreleme ya da sağlama toplamlarında kullanılır.</li>
+        <li><strong>NOT:</strong> Her biti tersine çevirir. Seçilen bit genişliği içinde çalışır; 8 bitte NOT 0 sonucu 255'tir (işaretli okunduğunda −1).</li>
+        <li><strong>Sola kaydırma (&lt;&lt;):</strong> Bitleri sola iter; her adım sayıyı 2 ile çarpmak gibidir. Genişliği aşan bitler atılır.</li>
+        <li><strong>Sağa kaydırma (&gt;&gt; ve &gt;&gt;&gt;):</strong> İşaretli kaydırma işaret bitini korur (negatif sayılar negatif kalır), işaretsiz kaydırma soldan sıfır doldurur.</li>
+      </ul>
+
+      <h2>ASCII ve Unicode kod tablosu</h2>
+      <p>Bilgisayar metni de sayılarla saklar. ASCII standardı 0-127 arasındaki sayılara harfleri, rakamları, noktalama işaretlerini ve kontrol karakterlerini atar: büyük A harfi 65, küçük a harfi 97, boşluk 32'dir. Türkçe karakterler (ç, ğ, ı, ö, ş, ü) ASCII'de yoktur; Unicode'da ayrı kod noktaları vardır, örneğin ğ için U+011F. Unicode kod noktaları UTF-8 ile bir ila dört bayt olarak saklanır; ASCII karakterler tek bayttır, Türkçe harfler iki bayt tutar, emojiler çoğunlukla dört bayt kaplar. Karakter kodları sekmesi her karakter için kod noktasını ve UTF-8 baytlarını göstererek kodlama sorunlarını (bozuk Türkçe karakterler gibi) anlamanıza yardım eder.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Büyük sayılar kayıpsız.</strong> BigInt kullanıldığı için JavaScript'in 2^53 sınırı yoktur; yüzlerce basamaklı sayılar da tam dönüşür.</li>
+        <li><strong>Tek sayfada hepsi.</strong> Taban dönüşümü, bit işlemleri ve karakter kodları ayrı araçlar aramadan aynı yerde.</li>
+        <li><strong>Açıklayıcı hatalar.</strong> Geçersiz rakamda hangi karakterin neden uymadığı ve o tabanda hangi rakamların kullanılabileceği söylenir.</li>
+        <li><strong>Veri gönderilmez.</strong> Tüm hesap tarayıcınızda yapılır; yazdıklarınız hiçbir sunucuya iletilmez.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Onlu sayıyı ikiliye nasıl çeviririm?</summary><p>Sayıyı yazın, "Girdiğiniz sayının tabanı" listesinde 10'u bırakın; ikili sonuç ilk satırda görünür. Örneğin 255 yazdığınızda 11111111 çıkar. Elle yapmak isterseniz sayıyı art arda 2'ye bölüp kalanları sondan başa okuyun.</p></details>
+        <details><summary>Onaltılı (hex) sayıda hangi harfler kullanılır?</summary><p>0-9 rakamlarının yanı sıra A, B, C, D, E ve F harfleri kullanılır; A=10, B=11, C=12, D=13, E=14, F=15. Büyük küçük harf fark etmez: "ff" ve "FF" aynı sayıdır. Sonuçlar büyük harfle gösterilir.</p></details>
+        <details><summary>Negatif sayıları ikiliye nasıl çeviriyorsunuz?</summary><p>Taban dönüştür sekmesi negatif sayıyı işaretle birlikte gösterir; −5 ikilide −101 olur. Bilgisayarda saklanan biçim için Bit işlemleri sekmesini kullanın: −5 sayısı 8 bitte 11111011, 16 bitte 1111111111111011 olarak ikiye tümleyen (two's complement) gösterimle görünür.</p></details>
+        <details><summary>İki tabanı arasında en fazla kaç basamaklı sayı çevirebilirim?</summary><p>Tam kısım için 5000 basamağa, kesirli kısım için 200 basamağa kadar girdi kabul edilir. Sonuçta kesirli kısım 20 basamakla sınırlandırılır. Sayılar BigInt ile hesaplandığı için basamak sayısı sonucu bozmaz.</p></details>
+        <details><summary>0,1 sayısı neden ikilide tam çıkmıyor?</summary><p>0,1 ikili düzende 0,0001100110011… biçiminde sonsuza kadar tekrar eder; tıpkı onlu düzende 1/3'ün 0,333… olması gibi. Araç bu durumda 20 basamak üretir ve kesildiğini belirtir. Kesirli sayıların bilgisayarlarda küçük yuvarlama hataları vermesinin nedeni de budur.</p></details>
+        <details><summary>"Karakter bu tabanda geçerli değil" hatası ne demek?</summary><p>Yazdığınız sayıda seçili tabanın izin vermediği bir rakam var. İkilide yalnızca 0 ve 1, sekizlide 0-7, onaltılıda 0-9 ve A-F kullanılabilir. Tabanı doğru seçtiğinizden emin olun; örneğin FF yazıp taban olarak 10 seçerseniz bu hatayı alırsınız. Önce tabanı 16 yapın.</p></details>
+        <details><summary>İşaretli ve işaretsiz sayı arasındaki fark nedir?</summary><p>Aynı bit dizisi iki farklı şekilde okunabilir. İşaretsiz okumada tüm bitler değer taşır (8 bitte 0-255). İşaretli (two's complement) okumada en soldaki bit işaret bitidir (8 bitte −128 ile 127). 11111011 değeri işaretsiz 251, işaretli −5'tir. Araç ikisini birlikte gösterir.</p></details>
+        <details><summary>Kaydırma işlemlerinde işaretli ve işaretsiz sağa kaydırma nasıl farklılaşır?</summary><p>İşaretli sağa kaydırmada (&gt;&gt;) soldan işaret bitinin kopyası girer; negatif sayılar negatif kalır. İşaretsiz kaydırmada (&gt;&gt;&gt;) soldan sıfır girer. 8 bitte 11111011 (−5) değerini 1 bit işaretli kaydırırsanız 11111101 (−3), işaretsiz kaydırırsanız 01111101 (125) bulursunuz.</p></details>
+        <details><summary>Girdiğim sayılar bir yere gönderiliyor mu?</summary><p>Hayır. Dönüşüm ve bit işlemleri tamamen tarayıcınızda yapılır; yazdıklarınız hiçbir sunucuya iletilmez, saklanmaz, çerezle izlenmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hesap-makinesi/">Hesap Makinesi</a></li>
+        <li><a href="../base64-donustur/">Base64 Dönüştür</a></li>
+        <li><a href="../roma-rakami/">Roma Rakamı Çevirici</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="sayi-tabani-donustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

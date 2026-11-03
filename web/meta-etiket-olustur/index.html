@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meta Etiket Oluşturucu – Open Graph, Twitter Card, robots.txt ve Sitemap (Ücretsiz)</title>
+  <meta name="description" content="Meta etiket, Open Graph ve Twitter Card kodunu üretin; Google sonucu ve sosyal paylaşım önizlemesini görün. robots.txt ve sitemap.xml oluşturucu dahil. Ücretsiz, kayıt yok, veri gönderilmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/meta-etiket-olustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .me-area label { display: block; font-weight: 600; margin: 16px 0 6px; }
+    .me-area input[type=text], .me-area input[type=url], .me-area input[type=date], .me-area input[type=number], .me-area textarea, .me-area select { width: 100%; font-family: var(--ba-mono); font-size: .92rem; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: inherit; min-height: 44px; }
+    .me-area textarea { min-height: 120px; line-height: 1.5; resize: vertical; }
+    .me-area input:focus, .me-area textarea:focus, .me-area select:focus { border-color: var(--ba-primary); }
+    .me-area label.me-check { display: flex; align-items: center; gap: 8px; font-weight: 400; margin: 10px 0 0; min-height: 32px; }
+    .me-area label.me-check input { width: auto; min-height: 0; }
+    .me-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--ba-border); }
+    .me-tabs button { background: none; border: 1px solid transparent; border-bottom: 0; padding: 10px 14px; min-height: 44px; font: inherit; font-weight: 600; color: var(--ba-text-2); cursor: pointer; border-radius: var(--ba-radius-sm) var(--ba-radius-sm) 0 0; }
+    .me-tabs button[aria-selected=true] { color: var(--ba-primary); border-color: var(--ba-border); background: var(--ba-surface); margin-bottom: -1px; }
+    .me-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+    .me-btns .ba-btn { min-height: 44px; }
+    #copied { color: var(--ba-success); font-weight: 600; font-size: .9rem; }
+    .me-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+    @media (max-width: 600px) { .me-grid { grid-template-columns: 1fr; } }
+    .me-area fieldset { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); margin: 18px 0 0; padding: 4px 14px 14px; }
+    .me-area legend { font-weight: 700; padding: 0 6px; }
+    .me-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .me-count { font-family: var(--ba-mono); font-size: .85rem; color: var(--ba-text-muted); }
+    .me-count.is-over { color: var(--ba-danger, #b3261e); font-weight: 700; }
+    .me-warn { color: var(--ba-danger, #b3261e); font-size: .88rem; margin: 4px 0 0; min-height: 1px; }
+    .me-note { font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .me-previews { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+    @media (max-width: 760px) { .me-previews { grid-template-columns: 1fr; } }
+    .me-previews h3 { margin: 0 0 8px; font-size: 1rem; }
+    /* Önizlemeler her temada okunur kalsın diye sabit renkli. */
+    .me-serp { background: #fff; color: #202124; border: 1px solid #dadce0; border-radius: 8px; padding: 14px 16px; font-family: Arial, sans-serif; overflow-wrap: anywhere; }
+    .me-serp .crumb { font-size: .8rem; color: #4d5156; }
+    .me-serp .t { font-size: 1.15rem; line-height: 1.3; color: #1a0dab; margin: 4px 0; }
+    .me-serp .d { font-size: .88rem; line-height: 1.5; color: #4d5156; }
+    .me-card { background: #fff; color: #0f1419; border: 1px solid #cfd9de; border-radius: 12px; overflow: hidden; font-family: Arial, sans-serif; }
+    .me-card .img { background: #d0d3d8; color: #3b4048; aspect-ratio: 1.91 / 1; display: grid; place-items: center; text-align: center; padding: 10px; font-size: .82rem; }
+    .me-card .body { padding: 10px 14px 14px; overflow-wrap: anywhere; }
+    .me-card .dom { font-size: .75rem; color: #536471; letter-spacing: .03em; }
+    .me-card .ct { font-weight: 700; font-size: .98rem; margin: 2px 0; }
+    .me-card .cd { font-size: .86rem; color: #536471; line-height: 1.4; }
+    .me-card.is-small { display: grid; grid-template-columns: 110px 1fr; }
+    .me-card.is-small .img { aspect-ratio: auto; min-height: 100px; font-size: .7rem; }
+    .me-out { font-size: .85rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Meta Etiket Oluşturucu – Bilişim Ajans","applicationCategory":"DeveloperApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/meta-etiket-olustur/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1>Meta Etiket Oluşturucu: Open Graph, Twitter Card, robots.txt ve Sitemap</h1>
+      <p class="lead">Başlık ve açıklamanızı yazın; title, description, canonical, robots, Open Graph, Twitter Card, favicon ve JSON-LD etiketleri hazır HTML olarak çıksın. Google arama sonucunu ve sosyal medya paylaşım kartını canlı görün, robots.txt ile sitemap.xml dosyalarını da üretin. Yazdıklarınız bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool me-area" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="me-tabs" role="tablist" aria-label="Araç seçimi">
+        <button id="tab-meta" role="tab" type="button" aria-selected="true" aria-controls="panel-meta">Meta etiketler</button>
+        <button id="tab-robots" role="tab" type="button" aria-selected="false" aria-controls="panel-robots" tabindex="-1">robots.txt</button>
+        <button id="tab-sitemap" role="tab" type="button" aria-selected="false" aria-controls="panel-sitemap" tabindex="-1">sitemap.xml</button>
+      </div>
+
+      <div id="panel-meta" role="tabpanel" aria-labelledby="tab-meta">
+        <div class="me-head"><label for="m-title">Sayfa başlığı (title)</label><span class="me-count" id="c-title" aria-live="polite">0 / 60</span></div>
+        <input id="m-title" type="text" autocomplete="off" placeholder="Örnek: Ücretsiz PDF Birleştir – Bilişim Ajans">
+        <p id="w-title" class="me-warn" role="status"></p>
+
+        <div class="me-head"><label for="m-desc">Açıklama (meta description)</label><span class="me-count" id="c-desc" aria-live="polite">0 / 160</span></div>
+        <textarea id="m-desc" spellcheck="false" placeholder="Sayfanın içeriğini 1-2 cümlede özetleyin."></textarea>
+        <p id="w-desc" class="me-warn" role="status"></p>
+
+        <label for="m-canon">Canonical adres (isteğe bağlı)</label>
+        <input id="m-canon" type="url" autocomplete="off" placeholder="https://ornek.com/sayfa/">
+        <p id="w-canon" class="me-warn" role="status"></p>
+
+        <fieldset>
+          <legend>Arama motoru ve sayfa ayarları</legend>
+          <div class="me-grid">
+            <div><label for="m-index">İndeksleme</label><select id="m-index"><option value="index" selected>index (aramada çıksın)</option><option value="noindex">noindex (aramada çıkmasın)</option></select></div>
+            <div><label for="m-follow">Bağlantılar</label><select id="m-follow"><option value="follow" selected>follow (bağlantıları izle)</option><option value="nofollow">nofollow (izleme)</option></select></div>
+            <div><label for="m-lang">Sayfa dili (html lang)</label><select id="m-lang"><option value="tr" selected>Türkçe (tr)</option><option value="en">İngilizce (en)</option><option value="de">Almanca (de)</option></select></div>
+            <div><label for="m-locale">Open Graph dil kodu</label><select id="m-locale"><option value="tr_TR" selected>tr_TR</option><option value="en_US">en_US</option><option value="de_DE">de_DE</option></select></div>
+          </div>
+          <label class="me-check"><input type="checkbox" id="m-noarchive" value="noarchive"> noarchive (önbellek kopyası gösterilmesin)</label>
+          <label class="me-check"><input type="checkbox" id="m-nosnippet" value="nosnippet"> nosnippet (açıklama parçası gösterilmesin)</label>
+          <label class="me-check"><input type="checkbox" id="m-noimageindex" value="noimageindex"> noimageindex (sayfadaki resimler indekslenmesin)</label>
+          <label class="me-check"><input type="checkbox" id="m-maximg"> max-image-preview:large (büyük resim önizlemesine izin ver)</label>
+          <label class="me-check"><input type="checkbox" id="m-robots-always"> Varsayılan olsa da robots etiketini açıkça yaz</label>
+          <label class="me-check"><input type="checkbox" id="m-viewport" checked> viewport etiketini ekle (mobil uyum için gerekli)</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Open Graph ve Twitter Card</legend>
+          <label class="me-check"><input type="checkbox" id="m-og" checked> Open Graph etiketlerini ekle</label>
+          <label class="me-check"><input type="checkbox" id="m-tw" checked> Twitter Card etiketlerini ekle</label>
+          <label for="m-ogtitle">Paylaşım başlığı (boşsa sayfa başlığı kullanılır)</label>
+          <input id="m-ogtitle" type="text" autocomplete="off">
+          <label for="m-ogdesc">Paylaşım açıklaması (boşsa meta description kullanılır)</label>
+          <textarea id="m-ogdesc" spellcheck="false" style="min-height:70px"></textarea>
+          <label for="m-ogimage">Paylaşım resmi adresi (1200 x 630 önerilir)</label>
+          <input id="m-ogimage" type="url" autocomplete="off" placeholder="https://ornek.com/resim.jpg">
+          <div class="me-grid">
+            <div><label for="m-ogtype">og:type</label><select id="m-ogtype"><option value="website" selected>website</option><option value="article">article</option></select></div>
+            <div><label for="m-twcard">twitter:card</label><select id="m-twcard"><option value="summary_large_image" selected>summary_large_image (büyük resim)</option><option value="summary">summary (küçük kare resim)</option></select></div>
+            <div><label for="m-sitename">Site adı (og:site_name)</label><input id="m-sitename" type="text" autocomplete="off" placeholder="Bilişim Ajans"></div>
+            <div><label for="m-twsite">Twitter/X hesabı (isteğe bağlı)</label><input id="m-twsite" type="text" autocomplete="off" placeholder="@hesapadi"></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Simgeler (favicon)</legend>
+          <div class="me-grid">
+            <div><label for="m-fav">Favicon (SVG/ICO yolu)</label><input id="m-fav" type="text" autocomplete="off" placeholder="/favicon.svg"></div>
+            <div><label for="m-fav-png">PNG favicon (32x32)</label><input id="m-fav-png" type="text" autocomplete="off" placeholder="/favicon-32.png"></div>
+            <div><label for="m-apple">Apple touch icon (180x180)</label><input id="m-apple" type="text" autocomplete="off" placeholder="/apple-touch-icon.png"></div>
+            <div><label for="m-theme">Tarayıcı tema rengi</label><input id="m-theme" type="text" autocomplete="off" placeholder="#7b2331"></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Yapısal veri (JSON-LD)</legend>
+          <label for="m-schema">Şablon</label>
+          <select id="m-schema"><option value="none" selected>Ekleme</option><option value="Organization">Organization (kurum)</option><option value="WebSite">WebSite (site)</option><option value="Article">Article (makale)</option></select>
+          <div id="j-fields" hidden>
+            <div class="me-grid">
+              <div><label for="j-name">Ad (boşsa site adı/başlık)</label><input id="j-name" type="text" autocomplete="off"></div>
+              <div><label for="j-url">Adres (boşsa canonical)</label><input id="j-url" type="url" autocomplete="off"></div>
+            </div>
+            <div id="j-logo-wrap" hidden><label for="j-logo">Logo adresi</label><input id="j-logo" type="url" autocomplete="off" placeholder="https://ornek.com/logo.png"></div>
+            <div id="j-art" class="me-grid" hidden>
+              <div><label for="j-author">Yazar adı</label><input id="j-author" type="text" autocomplete="off"></div>
+              <div><label for="j-date">Yayın tarihi</label><input id="j-date" type="date"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="me-previews">
+          <div>
+            <h3>Google arama sonucu önizlemesi</h3>
+            <div class="me-serp" aria-label="Arama sonucu önizlemesi"><div class="crumb" id="pv-crumb"></div><div class="t" id="pv-title"></div><div class="d" id="pv-desc"></div></div>
+            <p class="me-note">Önizleme yaklaşık bir görünümdür; Google başlığı ve açıklamayı kendi kurallarıyla değiştirebilir.</p>
+          </div>
+          <div>
+            <h3>Sosyal paylaşım kartı önizlemesi</h3>
+            <div class="me-card" id="sc-card" aria-label="Paylaşım kartı önizlemesi">
+              <div class="img">Resim önizlemesi gizlilik için gösterilmez</div>
+              <div class="body"><div class="dom" id="sc-domain"></div><div class="ct" id="sc-title"></div><div class="cd" id="sc-desc"></div></div>
+            </div>
+            <p class="me-note">Resim adresi girmeniz önizleme için o adrese istek yapılmasına yol açardı; gizliliğiniz için resim hiç yüklenmez, gri alan yer tutucudur.</p>
+          </div>
+        </div>
+
+        <label for="m-out">Üretilen HTML (head içine yapıştırın)</label>
+        <textarea id="m-out" class="me-out" readonly spellcheck="false" style="min-height:260px"></textarea>
+        <div class="me-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="m-out">HTML'i kopyala</button><button class="ba-btn" type="button" data-download="m-out" data-filename="meta-etiketler.html">HTML olarak indir</button><span id="copied" role="status"></span></div>
+      </div>
+
+      <div id="panel-robots" role="tabpanel" aria-labelledby="tab-robots" hidden>
+        <div class="me-grid">
+          <div><label for="r-agent">User-agent</label><input id="r-agent" type="text" value="*" autocomplete="off"></div>
+          <div><label for="r-mode">Genel kural</label><select id="r-mode"><option value="all" selected>Her şeye izin ver (belirtilen yollar hariç)</option><option value="none">Tüm siteyi engelle (Disallow: /)</option></select></div>
+        </div>
+        <p id="r-note" class="me-warn" role="status" hidden>Dikkat: "Disallow: /" tüm siteyi tarayıcılara kapatır. Yayındaki bir sitede arama trafiğinizi yok edebilir; yalnızca geliştirme ortamları için kullanın.</p>
+        <label for="r-dis">Engellenecek yollar (her satıra bir tane)</label>
+        <textarea id="r-dis" spellcheck="false" placeholder="/admin/&#10;/sepet/&#10;/ara?"></textarea>
+        <label for="r-allow">İzin verilen istisna yollar (isteğe bağlı)</label>
+        <textarea id="r-allow" spellcheck="false" style="min-height:70px" placeholder="/admin/yardim/"></textarea>
+        <label for="r-sitemap">Sitemap adresi (isteğe bağlı)</label>
+        <input id="r-sitemap" type="url" autocomplete="off" placeholder="https://ornek.com/sitemap.xml">
+        <p id="r-warn" class="me-warn" role="status"></p>
+        <label for="r-out">robots.txt içeriği</label>
+        <textarea id="r-out" class="me-out" readonly spellcheck="false"></textarea>
+        <div class="me-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="r-out">Kopyala</button><button class="ba-btn" type="button" data-download="r-out" data-filename="robots.txt">robots.txt indir</button></div>
+        <p class="me-note">robots.txt gizli bilgi saklamaz: herkes okuyabilir ve kurala uymak tarayıcının iyi niyetine bağlıdır. Gizli içerik için parola koruması kullanın.</p>
+      </div>
+
+      <div id="panel-sitemap" role="tabpanel" aria-labelledby="tab-sitemap" hidden>
+        <label for="s-urls">Adres listesi (her satıra bir tam adres)</label>
+        <textarea id="s-urls" spellcheck="false" style="min-height:160px" placeholder="https://ornek.com/&#10;https://ornek.com/hakkimizda/&#10;https://ornek.com/iletisim/"></textarea>
+        <div class="me-grid">
+          <div><label for="s-lastmod">Son değişiklik tarihi (lastmod, isteğe bağlı)</label><input id="s-lastmod" type="date"></div>
+          <div><label for="s-freq">Değişim sıklığı (changefreq)</label><select id="s-freq"><option value="" selected>Yazma</option><option value="daily">daily</option><option value="weekly">weekly</option><option value="monthly">monthly</option><option value="yearly">yearly</option></select></div>
+        </div>
+        <label for="s-prio">Öncelik (priority, 0.0-1.0, isteğe bağlı)</label>
+        <input id="s-prio" type="text" inputmode="decimal" autocomplete="off" placeholder="0.8">
+        <p id="s-info" class="me-note" role="status"></p>
+        <label for="s-out">sitemap.xml içeriği</label>
+        <textarea id="s-out" class="me-out" readonly spellcheck="false" style="min-height:200px"></textarea>
+        <div class="me-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="s-out">Kopyala</button><button class="ba-btn" type="button" data-download="s-out" data-filename="sitemap.xml">sitemap.xml indir</button></div>
+        <p class="me-note">Google, changefreq ve priority değerlerini artık dikkate almadığını açıkladı; doğru lastmod ve geçerli adresler asıl önemli olandır.</p>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="meta-etiket-olustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Meta etiket nedir, neden önemlidir?</h2>
+      <p>Bir web sayfasının görünmeyen kimlik kartı, HTML'in head bölümünde yer alan meta etiketleridir. Sayfanızı Google'da aradığınızda gördüğünüz mavi başlık, altındaki gri açıklama, WhatsApp'ta bir bağlantıyı gönderdiğinizde beliren küçük resimli kart ve tarayıcı sekmesindeki simge, hep bu etiketlerden beslenir. Etiketler yanlış ya da eksik olduğunda arama motoru sizin yerinize bir başlık uydurur, sosyal ağ rastgele bir görsel seçer, mobil tarayıcı sayfayı masaüstü genişliğinde gösterir. İyi hazırlanmış etiketler ise tıklanma oranını artırır, paylaşımları daha çekici yapar ve sayfanızın ne hakkında olduğunu arama motoruna net biçimde anlatır.</p>
+      <p>Bu araç, bu etiketlerin tamamını bir form üzerinden doldurmanızı, sonucu hazır HTML olarak kopyalamanızı sağlar. Kod bilmeniz gerekmez; ancak çıktıyı site yönetim panelinizdeki "head'e kod ekle" alanına ya da temanızın başlık dosyasına yapıştırabilmeniz yeterlidir. Her şey tarayıcınızda hesaplanır, yazdığınız başlık ve açıklama hiçbir yere gönderilmez.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Meta etiketler" sekmesinde sayfa başlığını ve açıklamayı yazın. Sağ üstteki sayaç karakter sayısını gösterir; başlık 60, açıklama 160 karakteri aşınca kırmızı uyarı çıkar.</li>
+        <li>Varsa canonical adresi, paylaşım resminin adresini ve site adını girin. Robots seçeneklerini yalnızca ihtiyacınız varsa değiştirin; varsayılan hâl (index, follow) çoğu sayfa için doğrudur.</li>
+        <li>İsterseniz JSON-LD şablonu seçin: Organization, WebSite ya da Article. Yanıt kutusu form doldukça anında güncellenir.</li>
+        <li>Önizlemelerde Google sonucunu ve paylaşım kartını kontrol edin, ardından "HTML'i kopyala" ile çıktıyı alın ya da dosya olarak indirin.</li>
+        <li>Gerekirse "robots.txt" ve "sitemap.xml" sekmelerinden iki ek dosyayı üretip sitenizin ana dizinine yükleyin.</li>
+      </ol>
+
+      <h2>Title ve description ne kadar uzun olmalı?</h2>
+      <p>Google başlığı piksel genişliğine göre keser, karakter sayısına göre değil; ancak pratikte 50-60 karakter güvenli bir sınırdır. Daha uzun başlıkların sonu üç nokta ile kısalır ve en önemli kelimeler sonda kaldıysa kaybolur. Bu yüzden hedef sorguyu başlığın başına yakın yerleştirmek ve markayı sona bırakmak iyi bir kuraldır. Açıklama için yaklaşık 150-160 karakter önerilir; mobilde bu sınır biraz daha kısadır. Açıklama doğrudan sıralama faktörü değildir, fakat arama sonucunda kullanıcının tıklayıp tıklamayacağını etkiler; bu yüzden reklam metni gibi özenle yazılmalıdır: sayfanın ne sunduğunu, kim için olduğunu ve bir eylem çağrısını içersin.</p>
+      <p>Her sayfa için ayrı bir başlık ve açıklama yazın. Tüm sayfalarda aynı metni kullanmak, arama motorunun sayfaları ayırt etmesini zorlaştırır. Araç, yazdığınız metni anında Google sonuç görünümüne yerleştirir; böylece kesilme olup olmayacağını yayına almadan önce görürsünüz.</p>
+
+      <h2>Open Graph ve Twitter Card farkı</h2>
+      <p>Open Graph, Facebook tarafından başlatılan ve bugün WhatsApp, LinkedIn, Telegram, Slack gibi birçok uygulamanın bağlantı kartı oluştururken okuduğu bir standarttır. Başlıca etiketler og:title, og:description, og:image, og:url, og:type ve og:site_name'dir. Twitter Card (X) ise ayrı bir etiket ailesi kullanır; twitter etiketleri yoksa X çoğu zaman Open Graph değerlerine geri döner, yine de twitter:card değerini açıkça belirtmek iyi bir alışkanlıktır. "summary_large_image" büyük, geniş bir görsel gösterir; "summary" küçük kare bir görselle yan yana metin sunar. Paylaşım görseli için 1200 x 630 piksellik, önemli içeriği kenarlardan uzak tutan bir tasarım güvenli bir tercihtir.</p>
+      <p>og:locale alanı sayfanın dilini ve bölgesini bildirir; Türkçe içerik için tr_TR kullanılır. og:type olarak genel sayfalar için "website", haber ve blog yazıları için "article" seçilir.</p>
+
+      <div class="ba-ad" data-slot="meta-etiket-olustur-b" aria-label="Reklam"></div>
+
+      <h2>Robots meta etiketi ve canonical</h2>
+      <p>Robots etiketi arama motoruna sayfayla ne yapacağını söyler. "noindex" sayfanın arama sonuçlarında çıkmamasını, "nofollow" sayfadaki bağlantılara güvenilmemesini ister. Teşekkür sayfaları, sepet adımları, iç arama sonuçları ve test sayfaları genellikle noindex adaydır. Dikkat: sayfayı hem robots.txt ile engellerseniz hem de noindex koyarsanız, tarayıcı sayfayı hiç göremeyeceği için noindex talimatını da okuyamaz; bu iki yöntemi karıştırmayın. Canonical bağlantısı ise aynı içeriğe birden çok adresle ulaşılabildiğinde (parametreli adresler, www ve www'suz sürümler) asıl adresi göstermek içindir. Canonical her zaman tam adres olmalı ve genellikle kendi sayfasını işaret etmelidir.</p>
+
+      <h2>JSON-LD yapısal veri</h2>
+      <p>JSON-LD, sayfanızın ne olduğunu makinelerin anlayacağı biçimde anlatan küçük bir betik bloğudur. Organization şablonu kurumunuzun adını, adresini ve logosunu; WebSite şablonu sitenizin adını; Article şablonu ise bir yazının başlığını, yazarını ve yayın tarihini tanımlar. Yapısal veri, sıralama için garanti vermez, ancak arama sonuçlarında zengin görünümlerin ön koşuludur. Araç, JSON içindeki "&lt;" karakterini güvenli biçimde kaçırır; böylece beklenmedik bir metin betik bloğunu kapatıp sayfayı bozamaz. Üretilen şablonu yayına almadan önce arama motorlarının yapısal veri test araçlarıyla doğrulamanız önerilir.</p>
+
+      <h2>robots.txt ve sitemap.xml nasıl çalışır?</h2>
+      <p>robots.txt, sitenizin ana dizinine konan düz metin dosyasıdır ve tarayıcı botlara hangi yolları taramamaları gerektiğini bildirir. Yönetim paneli, sepet, filtre sonuçları gibi arama sonucunda yer almaması gereken yolları engellemek için kullanılır. Dosyaya sitemap adresini de yazmak, botların haritanıza ulaşmasını kolaylaştırır. Sitemap.xml ise önemli sayfalarınızın listesidir; özellikle yeni siteler ve iç bağlantısı zayıf sayfalar için keşfi hızlandırır. Sitemap sekmesine adresleri satır satır yapıştırdığınızda araç geçersiz satırları söyler, yinelenenleri ayıklar ve geçerli bir XML üretir. Tek bir sitemap en fazla 50.000 adres taşıyabilir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Başlık, açıklama ve adres listeleri tarayıcınızda işlenir; hiçbir sunucuya yazılmaz. Resim adresine bile önizleme için istek yapılmaz.</li>
+        <li><strong>Tek sayfada tam paket.</strong> Meta etiket, Open Graph, Twitter Card, favicon, JSON-LD, robots.txt ve sitemap bir arada.</li>
+        <li><strong>Canlı önizleme.</strong> Google sonucu ve paylaşım kartı yazarken güncellenir; kesilme uyarıları anında görünür.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa yüklendikten sonra internetsiz de kullanılabilir.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sınır ve "premium" tuzağı yok.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yazdığım başlık ve açıklama bir yere gönderiliyor mu?</summary><p>Hayır. Tüm alanlar tarayıcınızın belleğinde işlenir ve çıktı yalnızca ekranınızda oluşur. Ağ isteği yapılmaz; geliştirici araçlarının Network sekmesinden bunu doğrulayabilirsiniz.</p></details>
+        <details><summary>Neden paylaşım resminin önizlemesi görünmüyor?</summary><p>Resmi önizlemede göstermek, tarayıcınızın o adrese bağlanması demektir ve bu, hangi sayfaya baktığınızın başka bir sunucuya bildirilmesi anlamına gelir. Gizlilik için bunu yapmıyoruz; gri alan yer tutucudur. Gerçek görünümü paylaşım yaptıktan sonra ilgili platformun kendi önizleme araçlarında kontrol edebilirsiniz.</p></details>
+        <details><summary>Başlık 60 karakteri aşarsa ne olur?</summary><p>Sayfa yine yayınlanır, ancak Google sonuçta başlığı kısaltabilir ya da kendi seçtiği bir başlığı gösterebilir. Önemli kelimeleri başa almak ve markayı sona bırakmak kayıpları azaltır.</p></details>
+        <details><summary>Meta description doğrudan sıralamayı etkiler mi?</summary><p>Hayır, doğrudan sıralama faktörü değildir. Fakat arama sonucundaki metni oluşturduğu için tıklanma oranını etkiler. Google, aranan kelimeye göre sayfadan başka bir parçayı da gösterebilir.</p></details>
+        <details><summary>Çıktıyı sitemin neresine yapıştırmalıyım?</summary><p>HTML'deki head bölümüne, yani açılış ve kapanış head etiketlerinin arasına. WordPress'te tema başlık dosyası ya da SEO eklentisinin "head'e kod ekle" alanı kullanılabilir. SEO eklentisi zaten aynı etiketleri üretiyorsa çift etiket oluşmaması için birini kapatın.</p></details>
+        <details><summary>noindex ile robots.txt engeli arasındaki fark nedir?</summary><p>robots.txt botun sayfayı taramasını engeller; noindex ise sayfa taransa bile sonuçlarda çıkmamasını ister. İkisini birlikte kullanırsanız bot sayfayı okuyamadığı için noindex'i göremez ve adres yine de sonuçlarda belirebilir. Sonuçlardan çıkarmak istiyorsanız noindex kullanın ve taramaya izin verin.</p></details>
+        <details><summary>Sitemap'e kaç adres yazabilirim?</summary><p>Bir sitemap dosyası en fazla 50.000 adres ve yaklaşık 50 MB boyutuna kadar destekler. Daha büyük siteler birden çok dosya ve bir sitemap dizini kullanır. Araç 50.000'den fazla adresi almaz ve bunu size bildirir.</p></details>
+        <details><summary>"Geçersiz adres var" uyarısını neden alıyorum?</summary><p>Sitemap satırlarından biri http:// ya da https:// ile başlamıyor olabilir ya da içinde boşluk bulunuyor olabilir. Her satıra https://ornek.com/sayfa/ gibi tam bir adres yazın; uyarıda hangi satırın sorunlu olduğu gösterilir.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../favicon-olustur/">Favicon Oluşturucu</a></li>
+        <li><a href="../url-kodla/">URL Kodla / Çöz</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendirici</a></li>
+        <li><a href="../qr-kod/">QR Kod Oluşturucu</a></li>
+      </ul>
+      <p class="ba-note">Web sitenizin SEO ve teknik altyapı çalışmaları için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibinden destek alabilirsiniz.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="meta-etiket-olustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+    <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

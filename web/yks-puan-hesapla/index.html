@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YKS Puan Hesaplama 2026 – TYT ve AYT Net ve Puan Hesaplama (Yaklaşık)</title>
+  <meta name="description" content="YKS puan hesaplama: TYT ve AYT doğru-yanlış sayılarından net, yaklaşık TYT/SAY/EA/SÖZ/DİL puanı ve OBP katkısını hesaplayın. Yalnızca tahmindir; ücretsiz, veriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/yks-puan-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+  
+    .yks-set { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px 14px; margin: 0 0 14px; min-width: 0; }
+    .yks-set legend { font-weight: 700; padding: 0 6px; }
+    .ders-row { display: grid; grid-template-columns: 1fr 88px 88px; gap: 8px; align-items: end; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); }
+    .ders-row:last-child { border-bottom: 0; }
+    .ders-ad { font-weight: 500; padding-bottom: 10px; }
+    .ders-in { display: grid; gap: 2px; font-size: .82rem; color: var(--ba-text-2); }
+    .ders-in input { width: 100%; min-height: 44px; padding: 6px 8px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    @media (max-width: 480px) { .ders-row { grid-template-columns: 1fr 1fr; } .ders-ad { grid-column: 1 / -1; padding-bottom: 0; } }
+    .yks-table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: .92rem; }
+    .yks-table th, .yks-table td { padding: 6px 8px; border-bottom: 1px solid var(--ba-border); text-align: left; }
+    .yks-table td:not(:first-child), .yks-table th:not(:first-child) { text-align: right; }
+    @media print {
+      .ba-topbar, .ba-header, .ba-hero .lead, .ba-badges, .ba-ad, .ba-content, .ba-footer, .kdv-form, .ba-actions, .ba-crumb, .kdv-rates { display: none !important; }
+      .ba-hero { background: none !important; color: #000 !important; }
+      #uyari { display: flex !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"YKS Puan Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/yks-puan-hesapla/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>YKS Puan Hesaplama 2026 – TYT ve AYT Net ve Puan Hesaplama</h1>
+      <p class="lead">TYT ve AYT doğru/yanlış sayılarınızı girin; netlerinizi, yaklaşık TYT ham puanınızı, seçtiğiniz alandaki (SAY, EA, SÖZ, DİL) AYT puanını ve diploma notunuzla OBP katkısını görün. Girdiğiniz hiçbir bilgi bilgisayarınızdan çıkmaz.</p>
+      <p class="ba-note" id="uyari" role="note"><span aria-hidden="true">⚠️</span><span><strong>Önemli uyarı:</strong> ÖSYM/MEB'in resmî puan hesaplaması, soru iptalleri ve standart sapma değerlerine göre değişir; bu araç yalnızca yaklaşık tahmin verir.</span></p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="yks-set"><legend>TYT – Temel Yeterlilik Testi (120 soru)</legend>
+          <div id="tyt-rows"></div>
+        </fieldset>
+        <fieldset class="yks-set"><legend>AYT – Alan Yeterlilik Testi (isteğe bağlı)</legend>
+          <div class="ba-field"><label for="alan">AYT alanı</label>
+            <select id="alan"><option value="">AYT puanı hesaplama</option></select>
+            <div class="hint">Alanı seçince ilgili derslerin doğru/yanlış alanları açılır.</div></div>
+          <div id="ayt-wrap" hidden><div id="ayt-rows"></div></div>
+        </fieldset>
+        <fieldset class="yks-set"><legend>OBP – Ortaöğretim başarı puanı (isteğe bağlı)</legend>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="diploma">Diploma notu (50-100)</label><input id="diploma" type="text" inputmode="decimal" placeholder="örn. 85,5" autocomplete="off"><div class="hint">OBP = diploma notu × 5; katkı OBP × 0,12.</div></div>
+            <div class="kdv-modes"><label><input id="placed" type="checkbox"> Geçen yıl bir programa yerleştim (katkı yarıya iner)</label></div>
+          </div>
+        </fieldset>
+        <p class="kdv-rates" id="baraj-info"></p>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Puanı hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç (yaklaşık tahmin)</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>TYT toplam net</dt><dd id="r-tyt-net"></dd></div>
+          <div class="kdv-row is-strong"><dt>TYT ham puan (yaklaşık)</dt><dd id="r-tyt-puan"></dd></div>
+          <div class="kdv-row" id="row-ayt-net" hidden><dt>AYT toplam net</dt><dd id="r-ayt-net"></dd></div>
+          <div class="kdv-row is-strong" id="row-ayt" hidden><dt>AYT puanı (yaklaşık)</dt><dd id="r-ayt"></dd></div>
+          <div class="kdv-row" id="row-obp" hidden><dt>OBP</dt><dd id="r-obp"></dd></div>
+          <div class="kdv-row is-strong" id="row-place" hidden><dt>Yerleştirme puanı (yaklaşık)</dt><dd id="r-place"></dd></div>
+        </dl>
+        <h4>TYT net tablosu</h4>
+        <table class="yks-table"><thead><tr><th scope="col">Ders</th><th scope="col">Soru</th><th scope="col">Doğru</th><th scope="col">Yanlış</th><th scope="col">Boş</th><th scope="col">Net</th></tr></thead><tbody id="tbl-tyt"></tbody></table>
+        <div id="wrap-ayt" hidden><h4>AYT net tablosu</h4>
+        <table class="yks-table"><thead><tr><th scope="col">Ders</th><th scope="col">Soru</th><th scope="col">Doğru</th><th scope="col">Yanlış</th><th scope="col">Boş</th><th scope="col">Net</th></tr></thead><tbody id="tbl-ayt"></tbody></table></div>
+        <p class="kdv-note" id="r-notes"></p>
+        <p class="kdv-note"><strong>Hatırlatma:</strong> ÖSYM/MEB'in resmî puan hesaplaması, soru iptalleri ve standart sapma değerlerine göre değişir; bu araç yalnızca yaklaşık tahmin verir.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Parametreler <span id="params-date">…</span> tarihinde güncellendi (ayrıntı için aşağıdaki "Puan nasıl hesaplanıyor?" bölümüne bakın).</p>
+    </section>
+
+    <div class="ba-ad" data-slot="yks-puan-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>TYT bölümünde dört testin (Türkçe, Sosyal Bilimler, Temel Matematik, Fen Bilimleri) doğru ve yanlış sayılarını yazın. Boş bıraktığınız alan sıfır sayılır; boş soru sayısı otomatik bulunur.</li>
+        <li>AYT puanını da görmek istiyorsanız alanınızı (Sayısal, Eşit Ağırlık, Sözel ya da Yabancı Dil) seçin ve açılan derslerin doğru/yanlış sayılarını girin.</li>
+        <li>İsterseniz diploma notunuzu girerek OBP katkısını ekleyin. Geçen yıl bir programa yerleştiyseniz kutuyu işaretleyin; katkı yarıya iner.</li>
+        <li>"Puanı hesapla" düğmesine basın. Netleriniz, yaklaşık puanlarınız ve ders ders net tablosu görünür. "Sonucu kopyala" ile metni panoya alabilir, "Yazdır" ile sonucu çıktı olarak alabilirsiniz.</li>
+      </ol>
+
+      <h2>YKS puan hesaplama nedir, bu araç ne kadar doğru?</h2>
+      <p>Yükseköğretim Kurumları Sınavı (YKS) iki oturumdan oluşur: herkesin girdiği 120 soruluk Temel Yeterlilik Testi (TYT) ve alan seçimine göre girilen Alan Yeterlilik Testleri (AYT). Sonuçların ilanında ÖSYM, her aday için net sayılarını ve bunlardan türetilen puanları verir. Bu sayfadaki araç, sınavdan sonra "Kaç puan yaparım, hangi aralığa düşerim?" sorusuna hızlı bir fikir vermek için hazırlandı.</p>
+      <p><strong>Çok önemli:</strong> ÖSYM'nin gerçek puan hesabı ham netleri doğrudan toplamaz. Her test için o yılki aday kitlesinin ortalaması ve standart sapması kullanılır, netler standart puana çevrilir, sonra testlerin ağırlıklarıyla birleştirilir. Bu değerler yalnızca sınav sonrasında belli olur. Dolayısıyla aynı net, kolay bir yılda ve zor bir yılda farklı puan karşılığı bulur. Bu araç ise sabit ve sadeleştirilmiş katsayılar kullandığı için yalnızca yaklaşık bir tahmin verir; ÖSYM/MEB'in resmî puan hesaplaması, soru iptalleri ve standart sapma değerlerine göre değişir. Resmî sonucunuz yalnızca ÖSYM'nin açıkladığı sonuç belgesindeki değerdir.</p>
+
+      <h2>Net nasıl hesaplanır?</h2>
+      <p>YKS'de dört yanlış cevap bir doğru cevabı götürür. Net, doğru sayısından yanlış sayısının dörtte birini çıkararak bulunur: <strong>net = doğru − yanlış ÷ 4</strong>. Boş bırakılan sorular nete etki etmez. Örnek: Türkçe testinde 30 doğru, 8 yanlış yaptıysanız net 30 − 8 ÷ 4 = 28 olur. Bu araç ders başına net hesabını tabloda gösterir; negatif çıkan bir net yaklaşık puan hesabında sıfır sayılır, böylece tek bir testteki çok sayıda yanlış puanı ölçek dışına çekmez.</p>
+      <p>Her testin soru sayısı sabittir: TYT'de Türkçe 40, Sosyal Bilimler 20, Temel Matematik 40, Fen Bilimleri 20 soru bulunur. Doğru ve yanlış toplamı testteki soru sayısını aşarsa araç sizi uyarır; çünkü bu mümkün değildir ve genellikle bir yazım hatasına işaret eder.</p>
+
+      <h2>Puan nasıl hesaplanıyor? (yaklaşık yöntem)</h2>
+      <p>Araç TYT ham puanını "100 + netlerin ağırlıklı toplamı" biçiminde tahmin eder. Kullanılan yaklaşık ağırlıklar Türkçe için 3,3, Sosyal Bilimler için 3,4, Temel Matematik için 3,3 ve Fen Bilimleri için 3,4'tür. Tüm sorular doğru olduğunda toplam 400 puan eklenir ve sonuç ölçeğin üst sınırı olan 500'e ulaşır; hiç net yoksa 100'de kalır. Gerçek sınavda 500'e ulaşmak çoğu yıl mümkün olmasa da bu sadeleştirme sınırları anlamanıza yardım eder.</p>
+      <p>AYT puanı için ise TYT'nin yüzde 40'ının, seçtiğiniz alanın AYT netlerinin ise yüzde 60'ına denk gelen ağırlıklarla toplandığı bir yaklaşım kullanılır. Sayısal alanda matematik biraz daha ağırdır; Eşit Ağırlık, Sözel ve Dil alanlarında ağırlıklar birbirine yakındır. Tüm bu katsayılar sayfayla birlikte gelen ve güncelleme tarihi yazan bir parametre dosyasında tutulur ve "yaklaşık" olarak işaretlenmiştir. ÖSYM bu katsayıları yayımlamaz; gerçekte her yıl değişen standart puanlar kullanılır.</p>
+
+      <h2>Puan türleri: TYT, SAY, EA, SÖZ ve DİL</h2>
+      <ul>
+        <li><strong>TYT:</strong> Yalnızca TYT netlerinden hesaplanır; ön lisans programlarına ve ikinci aşama olan AYT puanlarının hesaplanmasına temel olur.</li>
+        <li><strong>SAY (Sayısal):</strong> AYT Matematik, Fizik, Kimya ve Biyoloji netleri ile TYT netlerinden oluşur. Mühendislik, tıp ve fen bilimleri programlarında kullanılır.</li>
+        <li><strong>EA (Eşit Ağırlık):</strong> AYT Matematik, Türk Dili ve Edebiyatı, Tarih-1 ve Coğrafya-1 netleri kullanılır. Hukuk, işletme, psikoloji gibi programlar bu puanı arar.</li>
+        <li><strong>SÖZ (Sözel):</strong> Edebiyat, Tarih, Coğrafya, Felsefe grubu ve Din Kültürü testlerine dayanır; edebiyat, tarih, iletişim gibi programlarda kullanılır.</li>
+        <li><strong>DİL:</strong> Yabancı dil testinin netlerinden hesaplanır; yabancı dil öğretmenliği ve mütercim-tercümanlık gibi programlarda aranır.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="yks-puan-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>OBP (diploma notu) puanı nasıl etkiler?</h2>
+      <p>Ortaöğretim Başarı Puanı (OBP), lise diploma notunun beşle çarpılmasıyla bulunur; 100 üzerinden 80 diploma notu 400 OBP eder. Yerleştirme puanı hesaplanırken OBP'nin 0,12 katsayısıyla çarpılmış hâli ham puana eklenir; yani en yüksek katkı 60 puana yakındır. Bir önceki yıl bir yükseköğretim programına (açıköğretim hariç) yerleşmiş adaylar için bu katkı kırılır ve yarıya iner; bu araçtaki kutu bu duruma karşılık gelir. Meslek lisesi mezunlarının kendi alanlarındaki programlara tercihlerinde ek katkı gibi özel durumlar bulunabilir; bunlar araca dahil değildir, ÖSYM kılavuzuna bakın.</p>
+      <p>Ham puan ile yerleştirme puanı farklı kavramlardır. Ham puan yalnızca sınav performansınızı gösterir; yerleştirme puanı ise OBP katkısı eklenmiş değerdir ve tercih listelerinde asıl kullanılan budur. Üniversitelerin taban puanlarını incelerken yerleştirme puanıyla kıyaslama yaptığınızdan emin olun.</p>
+
+      <h2>Baraj puanları</h2>
+      <p>YKS'de iki tür baraj akılda tutulmalıdır. Birincisi, AYT puanlarının hesaplanabilmesi için TYT ham puanının en az 150 olması gerektiğidir. İkincisi, lisans programlarına yerleştirme için gereken puan barajıdır; araçta bu değer 180 olarak gösterilir. Bu değerler aday sayısı, kılavuz ve yıla göre değişebilir; sayfadaki parametrelerde yıl bilgisiyle ("2026, teyit edin") saklanır. Güncel değerleri mutlaka ÖSYM'nin yayımladığı kılavuzdan kontrol edin; araç baraj altındaysa size bir uyarı notu gösterir ama resmî bir karar vermez.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Ham puanla yerleştirme puanını karıştırmak.</strong> Tercih yaparken OBP katkılı yerleştirme puanını kullanın.</li>
+        <li><strong>Neti dörtle çarpıp doğru sayısıyla kıyaslamak.</strong> Net, doğru değildir; yanlışlarınız doğrularınızdan düşer.</li>
+        <li><strong>Boş bırakılan soruları yanlış saymak.</strong> Boş sorular net hesabında sıfır etkilidir. Doğru + yanlış + boş toplamı soru sayısına eşit olmalıdır.</li>
+        <li><strong>Resmî cevap anahtarını beklemeden kesin puan sanmak.</strong> Soru iptalleri net sayınızı ve puanınızı değiştirebilir.</li>
+        <li><strong>Geçen yıla ait puanlarla kıyaslamak.</strong> Aday kitlesi ve sınav zorluğu değiştiğinden aynı net her yıl aynı puanı getirmez.</li>
+        <li><strong>OBP katkısını unutmak ya da iki kez eklemek.</strong> Katkı yalnızca yerleştirme puanında bir kez hesaplanır.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Netleriniz ve diploma notunuz tarayıcınızda işlenir; hiçbir sunucuya iletilmez, kaydedilmez.</li>
+        <li><strong>Şeffaf varsayımlar.</strong> Kullanılan katsayılar, güncelleme tarihleri ve baraj notları sayfada açıkça yer alır; "yaklaşık" olduğu gizlenmez.</li>
+        <li><strong>Ders ders net tablosu.</strong> Güçlü ve zayıf testlerinizi görmek, çalışma planı yapmak için kolaydır.</li>
+        <li><strong>Kopyala ve yazdır.</strong> Sonucu paylaşabilir ya da çıktı alabilirsiniz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>YKS puanı nasıl hesaplanır?</summary><p>Önce her testte net bulunur (doğru − yanlış ÷ 4). ÖSYM bu netleri o yılki aday kitlesinin ortalama ve standart sapmasıyla standart puana çevirir, test ağırlıklarıyla birleştirir ve 100-500 ölçeğine yerleştirir. Bu araç, sabit ve yaklaşık katsayılarla aynı mantığı taklit eder; kesin sonuç ÖSYM'nin açıkladığı belgedir.</p></details>
+        <details><summary>Bu araç ÖSYM'nin puanıyla birebir aynı sonucu verir mi?</summary><p>Hayır. Gerçek puan her yıl değişen standart sapma değerlerine, soru iptallerine ve aday performansına bağlıdır. Araç yalnızca yaklaşık bir fikir verir; birkaç ile onlarca puan arası fark görmeniz normaldir.</p></details>
+        <details><summary>TYT'de kaç net kaç puan eder?</summary><p>Bu araçta sabit ağırlıklarla her net yaklaşık 3,3-3,4 puan ekler; 60 net civarı yaklaşık 300 puana denk gelir. Gerçekte ilan edilen puan sınavın zorluğuna göre kayar; bu yüzden aynı net farklı yıllarda farklı puan getirebilir.</p></details>
+        <details><summary>TYT barajı kaç? Altında kalırsam ne olur?</summary><p>AYT puanlarının hesaplanması için TYT ham puanının en az 150 olması gerekir. Baraj altında kalırsanız AYT puanınız hesaplanmaz. Araç bu değeri parametre olarak tutar ve 2026 için "teyit edin" notu düşer; güncel değeri ÖSYM kılavuzundan kontrol edin.</p></details>
+        <details><summary>OBP nedir, diploma notum puanı kaç artırır?</summary><p>OBP, diploma notunun beşle çarpılmasıdır. Yerleştirme puanına OBP × 0,12 kadar katkı yapar; 100 diploma notu yaklaşık 60 puan ekler. Geçen yıl yerleşmiş adaylar için bu katkı yarıya iner.</p></details>
+        <details><summary>Yanlışlar neden doğruyu götürüyor?</summary><p>ÖSYM şans etkisini azaltmak için dört yanlış cevabı bir doğru ile dengeler. Bu yüzden emin olmadığınız sorularda rastgele işaretlemek, ortalamada net kazandırmaz.</p></details>
+        <details><summary>Verilerim bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; net ve diploma notu sunucuya iletilmez, çerezle izlenmez.</p></details>
+        <details><summary>"Toplamı aşamaz" hatası alıyorum, ne yapmalıyım?</summary><p>Bir testte doğru ve yanlış sayılarının toplamı o testin soru sayısından fazla olamaz (örneğin Türkçe için 40). Sayıları cevap anahtarınızla kontrol edin, hatalı alanı düzeltip yeniden hesaplayın.</p></details>
+        <details><summary>Soru iptal olursa puan nasıl değişir?</summary><p>İptal edilen soru, tüm adaylara doğru kabul edilir ya da hesaptan çıkarılır; böylece net ve puan değişir. Araç bu durumu bilemez. İptalleri ÖSYM'nin açıklamasından takip edip netlerinizi güncelleyerek yeniden hesaplayın.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç tahmin amaçlıdır; hiçbir tercih, kayıt ya da yerleştirme kararı için tek başına dayanak değildir. Resmî bilgi için <a href="https://www.osym.gov.tr/" rel="noopener">osym.gov.tr</a> adresini kontrol edin (bağlantıya yalnızca siz tıklarsanız gidilir).</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../lgs-puan-hesapla/">LGS Puan Hesaplama</a></li>
+        <li><a href="../not-ortalamasi/">Not Ortalaması Hesaplama</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="yks-puan-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>
