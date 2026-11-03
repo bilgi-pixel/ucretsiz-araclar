@@ -130,3 +130,9 @@ Teknik notlar:
 - **Hub hero:** iki sütun (`.ba-hero-w`): solda metin (`.ba-hl`, 620 px), sağda ana sitedeki ağ şemasının araçlara uyarlanmış
   sürümü (`scripts/hero-dia.svg`: PDF · Resim · Dönüştürücü · Hesaplayıcı · Metin & Dosya → "Ücretsiz Araçlar"). 1000 px altında
   şema metnin altına iner, 640 px altında gizlenir. `apply-motion.mjs` şemayı hub'a ekler.
+- **Hero zemini ve etiket şeridi (4 Kasım, akşam):** ana sayfadan ölçülen değerlerle birebir: taban `#1F2226`, 135° antrasit→bordo gradyan,
+  iki bordo parıltı, 22 px nokta ızgarası (hareket bloğunun sonundaki `:root` geçersiz kılması). Etiket şeridi ana sitedeki `.ba-cm` gibi
+  bordo üçlüsü + beyaz (açık zeminde antrasit); CMYK token'ları yalnızca altbilgi şeridinde kalır.
+- **Şema düğümleri tıklanabilir (4 Kasım, akşam):** beş düğüm `<a class="bd-link" href="#pdf|#donustur|#dosya|#hesapla|#rehber">`;
+  hover/odakta bordo dolgu, pembe kenar, %10 büyüme, beyaz etiket. Tıklama hub.js'in hash filtresini tetikler, motion.js
+  listeye kaydırır. Etiketler hub kategorileriyle birebir: PDF Araçları · Dönüştürücüler · Dosya & Metin · Hesaplayıcılar · Rehberler.

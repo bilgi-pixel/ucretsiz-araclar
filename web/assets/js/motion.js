@@ -103,3 +103,13 @@ document.querySelectorAll('.ba-card').forEach((card, i) => {
   for (const ch of key) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   card.dataset.fx = FX[h % FX.length];
 });
+
+/* 5. Hero şemasındaki düğümler: kategori sekmesi gibi filtreler (hub.js hash'i dinler); ardından listeye kaydır. */
+document.querySelectorAll('a.bd-link').forEach((a) => {
+  a.addEventListener('click', () => {
+    setTimeout(() => {
+      const target = document.querySelector('[data-category]:not([hidden])');
+      if (target) target.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
+    }, 60);
+  });
+});
