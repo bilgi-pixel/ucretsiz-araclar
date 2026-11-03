@@ -119,3 +119,14 @@ Teknik notlar:
 - Yeniden uygulama: `npm run motion:apply` (`scripts/apply-motion.mjs`) tüm HTML sayfalarına head betiği, motion.js,
   logo sarmalı ve gradyan h1'i ekler; ba.css'te hareket bloğu yoksa `scripts/motion.css` şablonundan ekler.
   Tekrar çalıştırılabilir; main ile birleştirme sonrası veya yeni sayfa eklenince çalıştırılır (`--dry` yalnızca sayar).
+
+## 6. Üst bilgi ve hero eşlemesi (4 Kasım 2026)
+
+- **Logo:** dosya ana siteyle aynı (`logo.png`, 800×120). Ana sitedeki gibi X simgesi CSS maskesiyle kırpılır
+  (`--off: -44.2px`), kelime markası `--ba-primary` ile boyanır, 39 px (≤780 px: 28,5 px). `.ba-logo-img::before` maske +
+  bordo, `::after` maske + kayan parıltı. `--ba-logo-mask` token'ı `:root`'ta.
+- **Üst bilgi:** ana sitedeki gibi iki satır: logo + "Ücretsiz Araçlar" alt başlığı üstte, menü altta; `bilisimajans.com`
+  bordo düğme sağda. 600 px altında alt başlık ve ikincil menü gizlenir, logo kalır.
+- **Hub hero:** iki sütun (`.ba-hero-w`): solda metin (`.ba-hl`, 620 px), sağda ana sitedeki ağ şemasının araçlara uyarlanmış
+  sürümü (`scripts/hero-dia.svg`: PDF · Resim · Dönüştürücü · Hesaplayıcı · Metin & Dosya → "Ücretsiz Araçlar"). 1000 px altında
+  şema metnin altına iner, 640 px altında gizlenir. `apply-motion.mjs` şemayı hub'a ekler.

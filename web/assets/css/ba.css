@@ -69,6 +69,7 @@
   --ba-ease-inout: cubic-bezier(.65, 0, .35, 1);
   --ba-rise: 22px;
   --ba-icon-cycle: 3.4s;
+  --ba-logo-mask: url("../img/logo.png"); /* ana sitedeki gibi: X simgesi kırpılır, kelime markası bordo boyanır */
   color-scheme: light dark;
 }
 @media (min-width: 768px) { :root { --ba-gutter: 24px; } }
@@ -530,3 +531,28 @@ main h2.ba-rev.is-in::after { scale: 1 1; }
 .ba-card:has(a.ba-card-link:hover) .icon svg, .ba-card:has(a.ba-card-link:focus-visible) .icon svg { animation-duration: 1.1s; }
 .ba-card.is-soon .icon svg { animation-duration: calc(var(--ba-icon-cycle) * 1.6); }
 @media (prefers-reduced-motion: reduce) { .ba-card .icon, .ba-card .icon svg { animation: none !important; } }
+
+/* ---------- Üst bilgi ve hero: bilisimajans.com ile birebir ----------
+   Logo: ana sitedeki gibi X simgesi maskeyle kırpılır, kelime markası bordo (#7B2331) boyanır, 39px;
+   menü logonun altında ayrı satırda. Hub hero'su iki sütun: solda metin, sağda hareketli ağ şeması (.ba-dia). */
+.ba-header .ba-container { flex-wrap: wrap; align-items: center; row-gap: 12px; padding-top: 16px; padding-bottom: 14px; }
+.ba-header .ba-logo { flex: 1 0 100%; gap: 16px; }
+.ba-logo-img { --lw: 260px; --lh: 39px; --off: -44.2px; width: calc(var(--lw) + var(--off)); height: var(--lh); overflow: hidden; }
+.ba-logo-img img { opacity: 0; width: calc(var(--lw) + var(--off)); height: var(--lh); object-fit: cover; object-position: right; }
+.ba-logo-img::before { content: ""; position: absolute; inset: 0; background: var(--ba-primary); -webkit-mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); }
+.ba-logo-img::after { -webkit-mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); left: 0; width: 100%; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .75) 50%, transparent 70%) no-repeat; background-size: 60% 100%; background-position: -80% 0; translate: none; animation: baLogoSweep 5s steps(40) infinite; }
+@keyframes baLogoSweep { 0%, 60% { background-position: -80% 0; } 100% { background-position: 180% 0; } }
+.ba-logo span { font-size: .95rem; padding-left: 16px; }
+.ba-header .ba-nav { flex: 1 1 auto; justify-content: flex-start; gap: 4px; }
+.ba-header .ba-nav .ba-nav-site { margin-left: auto; }
+@media (max-width: 780px) { .ba-logo-img { --lw: 190px; --lh: 28.5px; --off: -32.3px; } }
+@media (max-width: 600px) { .ba-header .ba-nav { gap: 2px; } .ba-logo span.ba-logo-img { display: inline-block; } /* alt başlığı gizleyen .ba-logo span kuralı logoyu kapatmasın */ }
+
+.ba-hero-w { display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+.ba-hl { flex: 1; min-width: 0; max-width: 620px; }
+.ba-dia { flex: none; width: 500px; max-width: 100%; height: auto; }
+.ba-in .ba-hero .ba-dia { animation: baRise 1s var(--ba-ease-out) .3s both; }
+@media (min-width: 768px) { .ba-hero:has(.ba-dia) { padding: 76px 0 72px; } }
+@media (max-width: 1000px) { .ba-hero-w { flex-direction: column; align-items: flex-start; } .ba-dia { align-self: center; width: 420px; } }
+@media (max-width: 640px) { .ba-dia { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ba-logo-img::after, .ba-dia { animation: none !important; } }

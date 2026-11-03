@@ -6,7 +6,7 @@
 //   1. <head>: viewport'tan sonra html.ba-js (+ sayfa görünürse html.ba-in) ekleyen tek satırlık betik
 //   2. </body> öncesi: <script type="module" src="…/assets/js/motion.js">
 //   3. .ba-logo içindeki <img> → <span class="ba-logo-img"> (parıltı)
-//   4. Hub h1 iki satır + .ba-grad + daktilo satırı; araç sayfalarında (.ba-hero-tool) h1'in anahtar parçası .ba-grad
+//   4. Hub h1 iki satır + .ba-grad + daktilo satırı + iki sütunlu hero (scripts/hero-dia.svg şeması); araç sayfalarında (.ba-hero-tool) h1'in anahtar parçası .ba-grad
 // ba.css: :root'a --ba-dur-*/--ba-ease-* token'ları, dosya sonuna scripts/motion.css bloğu (yoksa).
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, sep } from 'node:path';
@@ -29,8 +29,10 @@ const TOKENS = `  /* hareket (design-tokens.json → motion) */
   --ba-ease-inout: cubic-bezier(.65, 0, .35, 1);
   --ba-rise: 22px;
   --ba-icon-cycle: 3.4s;
+  --ba-logo-mask: url("../img/logo.png"); /* ana sitedeki gibi: X simgesi kırpılır, kelime markası bordo boyanır */
 `;
 const HEAD_SCRIPT = `<script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>`;
+const HERO_DIA = readFileSync(join(here, 'hero-dia.svg'), 'utf8').replace(/\r?\n/g, '');
 const TYPER_WORDS = 'PDF birleştir|PDF böl|resimden PDF yap|QR kod üret|maaş hesapla|zip aç|CV oluştur';
 
 /* ---------- ba.css ---------- */
@@ -84,7 +86,13 @@ for (const file of walk(join(root, 'web'))) {
   if (isHub && !h.includes('ba-typer')) {
     h = h.replace('<h1>Ücretsiz online araçlar — dosyanız bilgisayarınızdan çıkmaz</h1>',
       `<h1>Ücretsiz online araçlar,<br><span class="ba-grad">dosyanız bilgisayarınızdan çıkmaz.</span></h1>${nl}      <p class="ba-typer"><span class="pre">Tek tıkla:</span> <span class="ba-type" data-words="${TYPER_WORDS}">PDF birleştir</span></p>`);
-  } else if (!isHub && h.includes('ba-hero-tool') && !h.includes('ba-grad')) {
+  }
+  if (isHub && !h.includes('ba-dia')) {
+    // Hub hero'su iki sütun: metin (.ba-hl) + ana sitedeki gibi hareketli ağ şeması
+    h = h.replace(/<section class="ba-hero"><div class="ba-container">([\s\S]*?)<\/div><\/section>/, (m, inner) =>
+      `<section class="ba-hero"><div class="ba-container ba-hero-w"><div class="ba-hl">${inner}</div>${HERO_DIA}</div></section>`);
+  }
+  if (!isHub && h.includes('ba-hero-tool') && !h.includes('ba-grad')) {
     // Araç sayfası: " – ", ": " veya " (" öncesi anahtar parça; yoksa tüm başlık. <small> gibi iç etiketler korunur.
     h = h.replace(/<h1>([^<]+?)((?:\s*<[^>]+>[^<]*<\/[^>]+>)*)<\/h1>/, (m, t, tail) => {
       const sep = t.match(/^(.*?)(\s+–\s+|:\s+|\s+\()(.*)$/);
