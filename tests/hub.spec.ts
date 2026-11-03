@@ -4,7 +4,7 @@ import { trackExternalRequests } from './helpers';
 test('hub yüklenir, kartlar ve reklam yer tutucuları görünür', async ({ page }) => {
   const external = trackExternalRequests(page);
   await page.goto('/');
-  await expect(page).toHaveTitle(/Ücretsiz Online Araçlar/);
+  await expect(page).toHaveTitle(/Ücretsiz Online Araç/);
   await expect(page.locator('.ba-card')).toHaveCount(181);
   await expect(page.locator('.ba-card:not(.is-soon) a.ba-card-link')).toHaveCount(181);
   await expect(page.locator('.ba-ad .ba-ad-placeholder').first()).toContainText('Reklam alanı');
