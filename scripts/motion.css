@@ -1,0 +1,137 @@
+/* scripts/apply-motion.mjs bu bloğu ba.css sonuna ekler (docs/TASARIM.md §5). Kalıcı düzenleme ba.css'te yapılır;
+   burası yalnızca main ile birleştirme sonrası yeniden uygulama şablonudur. */
+
+/* =====================================================================
+   Hareket — bilisimajans.com ile aynı dil (docs/TASARIM.md §5)
+   Kaynak token'lar: assets/design-tokens.json → motion. Kaydırmada açılış
+   `translate`/`scale` özelliklerini kullanır; hover `transform`'u ile çakışmaz.
+   ===================================================================== */
+@keyframes baRise { from { opacity: 0; translate: 0 var(--ba-rise); } to { opacity: 1; translate: 0 0; } }
+@keyframes baWord { from { opacity: 0; translate: 0 .55em; filter: blur(5px); } 60% { filter: blur(0); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
+@keyframes baShine { to { background-position: -200% center; } }
+@keyframes baCaret { 50% { opacity: 0; } }
+@keyframes baGlow { from { translate: 0 0; } to { translate: -90px 70px; } }
+@keyframes baLogoShine { 0%, 60% { translate: 0 0; } 100% { translate: 400% 0; } }
+@keyframes baStripe { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes baRing { 0% { scale: .8; opacity: 0; } 3% { opacity: .9; } 16% { scale: 1.9; opacity: 0; } 100% { scale: 1.9; opacity: 0; } }
+
+/* Hero: gezen bordo parıltı + yüklenince sıralı giriş. html.ba-in sayfa görünür olunca eklenir;
+   sekme arka planda açıldıysa animasyon öne gelince başlar, JS yoksa içerik düz görünür. */
+.ba-hero { position: relative; overflow: hidden; isolation: isolate; }
+.ba-hero::before { content: ""; position: absolute; top: -220px; right: -160px; width: 900px; height: 620px; z-index: -1; pointer-events: none; background: radial-gradient(closest-side, rgba(165, 71, 90, .26), transparent); will-change: translate; animation: baGlow 14s steps(140) infinite alternate; }
+.ba-in .ba-hero .ba-label, .ba-in .ba-hero .ba-crumb { animation: baRise var(--ba-dur-reveal) var(--ba-ease-out) both; }
+.ba-in .ba-hero h1 { animation: baRise .8s var(--ba-ease-out) .08s both; text-wrap: balance; }
+.ba-hero h1.is-split { animation: none; }
+.ba-in .ba-hero h1 .w { display: inline-block; animation: baWord var(--ba-dur-word) var(--ba-ease-out) both; animation-delay: calc(.12s + var(--i, 0) * var(--ba-stagger)); }
+.ba-in .ba-hero .ba-typer { animation: baRise .8s var(--ba-ease-out) .42s both; }
+.ba-in .ba-hero p.lead { animation: baRise .8s var(--ba-ease-out) .5s both; }
+.ba-in .ba-hero .ba-badges { animation: baRise .8s var(--ba-ease-out) .6s both; }
+.ba-in .ba-hero .ba-badges li { animation: baRise .6s var(--ba-ease-spring) both; animation-delay: calc(.7s + var(--i, 0) * .08s); }
+.ba-badges li:nth-child(2) { --i: 1; } .ba-badges li:nth-child(3) { --i: 2; } .ba-badges li:nth-child(4) { --i: 3; }
+.ba-in .ba-hero .ba-toolbar, .ba-in .ba-hero .ba-tabs { animation: baRise .8s var(--ba-ease-out) .8s both; }
+
+/* Parlayan başlık parçası (ana sitedeki .bkx-grad) */
+.ba-grad { background: linear-gradient(100deg, #fff 0%, #7fd3f5 25%, #f28cc8 50%, #ffd27a 75%, #fff 100%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; animation: baShine var(--ba-dur-shine) steps(120) infinite; }
+.ba-in .ba-hero h1 .ba-grad.w { animation: baWord var(--ba-dur-word) var(--ba-ease-out) both, baShine var(--ba-dur-shine) steps(120) infinite; animation-delay: calc(.12s + var(--i, 0) * var(--ba-stagger)), 0s; }
+
+/* Daktilo satırı */
+.ba-typer { margin: 0 0 18px; font-size: clamp(1.02rem, 1.7vw, 1.3rem); font-weight: 600; color: #e7e9ee; line-height: 1.35; min-height: 1.4em; }
+.ba-typer .pre { color: var(--ba-on-ink-muted); font-weight: 500; }
+.ba-type { color: #7fd3f5; }
+.ba-js .ba-type::after { content: ""; display: inline-block; width: 2px; height: 1em; margin-left: 3px; vertical-align: -.12em; background: #e7e9ee; animation: baCaret 1s steps(2) infinite; }
+
+/* Etiket şeridi: CMYK + bordo, yüklenince soldan çizilir */
+.ba-label::before { background: linear-gradient(90deg, var(--ba-cmyk-c) 0 25%, var(--ba-cmyk-m) 25% 50%, var(--ba-cmyk-y) 50% 75%, var(--ba-primary) 75%); transform-origin: 0 50%; }
+.ba-in .ba-label::before { animation: baStripe .9s var(--ba-ease-inout) .25s both; }
+.ba-hero .ba-label::before { background: linear-gradient(90deg, var(--ba-cmyk-c) 0 25%, var(--ba-cmyk-m) 25% 50%, var(--ba-cmyk-y) 50% 75%, #fff 75%); }
+
+/* Logo parıltısı (ana sitedeki baLogoShine) */
+.ba-logo-img { position: relative; display: inline-block; line-height: 0; overflow: hidden; }
+.ba-logo-img::after { content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 60%; pointer-events: none; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .75) 50%, transparent 70%); will-change: translate; animation: baLogoShine 5s steps(40) infinite; }
+.ba-logo:hover .ba-logo-img::after { animation-duration: 1.4s; }
+
+/* Kaydırmada açılış */
+.ba-js .ba-rev { opacity: 0; translate: 0 var(--ba-rise); transition: opacity var(--ba-dur-reveal) ease, translate var(--ba-dur-reveal) var(--ba-ease-out); transition-delay: calc(var(--i, 0) * var(--ba-stagger)); }
+.ba-js .ba-rev.is-in { opacity: 1; translate: 0 0; }
+.ba-js h2.ba-rev { translate: -14px 0; }
+.ba-js h2.ba-rev.is-in { translate: 0 0; }
+
+/* h2 altındaki bordo çizgi: görünür olunca soldan dolar */
+main h2.ba-rev::after { content: ""; display: block; width: 44px; height: 3px; margin-top: 10px; border-radius: 2px; background: linear-gradient(90deg, #5e1a25, #a5475a 50%, #8a2a3a); scale: 0 1; transform-origin: 0 50%; transition: scale .9s var(--ba-ease-inout) .25s; }
+main h2.ba-rev.is-in::after { scale: 1 1; }
+.ba-section-title h2 { position: relative; }
+.ba-section-title h2.ba-rev::after { position: absolute; left: 0; bottom: -8px; margin: 0; }
+.ba-cta h2.ba-rev::after { background: linear-gradient(90deg, var(--ba-cmyk-c), var(--ba-cmyk-m) 50%, var(--ba-cmyk-y)); }
+
+/* Adım noktaları: yayla büyür, sonra halka darbesi adımdan adıma dolaşır */
+.ba-js .ba-steps li.ba-rev::before { scale: .6; transition: scale .6s var(--ba-ease-spring) calc(var(--i, 0) * var(--ba-stagger) + .1s); }
+.ba-js .ba-steps li.ba-rev.is-in::before { scale: 1; }
+.ba-steps li { position: relative; }
+.ba-steps li::after { content: ""; position: absolute; left: 0; top: 0; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--ba-accent); opacity: 0; pointer-events: none; }
+.ba-js .ba-steps.is-in li.is-in::after { animation: baRing var(--ba-cycle) ease-out infinite; animation-delay: calc(1.4s + var(--i, 0) * var(--ba-cycle) / 4); }
+.ba-steps li:hover::before { scale: 1.08; }
+
+/* Nasıl çalışır kartları */
+.ba-js .ba-how > div.ba-rev { translate: 0 28px; }
+.ba-js .ba-how > div.ba-rev.is-in { translate: 0 0; }
+.ba-how > div::before { transition: color var(--ba-dur-fast); }
+.ba-how > div:hover::before { color: var(--ba-accent); }
+
+/* Hareket azaltma: her şey anında ve sabit */
+@media (prefers-reduced-motion: reduce) {
+  .ba-hero *, .ba-hero::before, .ba-grad, .ba-logo-img::after, .ba-type::after, .ba-label::before, .ba-steps li::before, .ba-steps li::after { animation: none !important; }
+  .ba-hero h1 .w, .ba-hero .ba-badges li { opacity: 1; translate: 0 0; filter: none; }
+  .ba-js .ba-rev, .ba-js h2.ba-rev { opacity: 1; translate: 0 0; transition: none; }
+  .ba-js .ba-steps li.ba-rev::before { scale: 1; transition: none; }
+  main h2.ba-rev::after { scale: 1 1; transition: none; }
+}
+@media print { .ba-js .ba-rev, .ba-hero h1 .w, .ba-hero .ba-badges li { opacity: 1 !important; translate: 0 0 !important; animation: none !important; } }
+
+/* Araç ikonları: ana sitedeki .ba-fx kartları gibi neşeli, küçük döngüler (yalnızca transform; compositor'da çalışır).
+   motion.js her karta data-fx verir: bob · wiggle · pulse · swing · jump · spin. Hover'da kutu bordoya döner, ikon oynar. */
+@keyframes fxBob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+@keyframes fxWiggle { 0%, 70%, 100% { rotate: 0deg; } 76% { rotate: -12deg; } 82% { rotate: 10deg; } 88% { rotate: -6deg; } 94% { rotate: 3deg; } }
+@keyframes fxPulse { 0%, 100% { scale: 1; } 50% { scale: 1.14; } }
+@keyframes fxSwing { 0%, 100% { rotate: -8deg; } 50% { rotate: 8deg; } }
+@keyframes fxJump { 0%, 60%, 100% { translate: 0 0; scale: 1; } 70% { translate: 0 -6px; scale: 1.08 .94; } 80% { translate: 0 0; scale: .96 1.04; } 90% { translate: 0 -2px; scale: 1; } }
+@keyframes fxSpin { 0%, 65%, 100% { rotate: 0deg; } 85% { rotate: 360deg; } }
+@keyframes fxPop { 0% { scale: 1; rotate: 0deg; } 40% { scale: 1.18; rotate: -8deg; } 70% { scale: .96; rotate: 4deg; } 100% { scale: 1.08; rotate: -4deg; } }
+.ba-card .icon { transition: background-color var(--ba-dur-fast), color var(--ba-dur-fast), box-shadow .25s; will-change: transform; }
+.ba-card .icon svg { transform-origin: 50% 55%; }
+.ba-js .ba-card.is-in .icon svg { animation-duration: var(--ba-icon-cycle); animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-delay: calc(var(--i, 0) * -.45s); }
+.ba-js .ba-card.is-in[data-fx="bob"] .icon svg { animation-name: fxBob; }
+.ba-js .ba-card.is-in[data-fx="wiggle"] .icon svg { animation-name: fxWiggle; }
+.ba-js .ba-card.is-in[data-fx="pulse"] .icon svg { animation-name: fxPulse; }
+.ba-js .ba-card.is-in[data-fx="swing"] .icon svg { animation-name: fxSwing; transform-origin: 50% 20%; }
+.ba-js .ba-card.is-in[data-fx="jump"] .icon svg { animation-name: fxJump; }
+.ba-js .ba-card.is-in[data-fx="spin"] .icon svg { animation-name: fxSpin; }
+.ba-card.is-hidden .icon svg { animation: none; }
+.ba-card:has(a.ba-card-link:hover) .icon, .ba-card:has(a.ba-card-link:focus-visible) .icon { background: var(--ba-primary); color: #fff; box-shadow: 0 8px 20px -8px rgba(123, 35, 49, .6); animation: fxPop .5s var(--ba-ease-spring) both; }
+.ba-card:has(a.ba-card-link:hover) .icon svg, .ba-card:has(a.ba-card-link:focus-visible) .icon svg { animation-duration: 1.1s; }
+.ba-card.is-soon .icon svg { animation-duration: calc(var(--ba-icon-cycle) * 1.6); }
+@media (prefers-reduced-motion: reduce) { .ba-card .icon, .ba-card .icon svg { animation: none !important; } }
+
+/* ---------- Üst bilgi ve hero: bilisimajans.com ile birebir ----------
+   Logo: ana sitedeki gibi X simgesi maskeyle kırpılır, kelime markası bordo (#7B2331) boyanır, 39px;
+   menü logonun altında ayrı satırda. Hub hero'su iki sütun: solda metin, sağda hareketli ağ şeması (.ba-dia). */
+.ba-header .ba-container { flex-wrap: wrap; align-items: center; row-gap: 12px; padding-top: 16px; padding-bottom: 14px; }
+.ba-header .ba-logo { flex: 1 0 100%; gap: 16px; }
+.ba-logo-img { --lw: 260px; --lh: 39px; --off: -44.2px; width: calc(var(--lw) + var(--off)); height: var(--lh); overflow: hidden; }
+.ba-logo-img img { opacity: 0; width: calc(var(--lw) + var(--off)); height: var(--lh); object-fit: cover; object-position: right; }
+.ba-logo-img::before { content: ""; position: absolute; inset: 0; background: var(--ba-primary); -webkit-mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); }
+.ba-logo-img::after { -webkit-mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); mask: var(--ba-logo-mask) no-repeat var(--off) 0 / var(--lw) var(--lh); left: 0; width: 100%; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .75) 50%, transparent 70%) no-repeat; background-size: 60% 100%; background-position: -80% 0; translate: none; animation: baLogoSweep 5s steps(40) infinite; }
+@keyframes baLogoSweep { 0%, 60% { background-position: -80% 0; } 100% { background-position: 180% 0; } }
+.ba-logo span { font-size: .95rem; padding-left: 16px; }
+.ba-header .ba-nav { flex: 1 1 auto; justify-content: flex-start; gap: 4px; }
+.ba-header .ba-nav .ba-nav-site { margin-left: auto; }
+@media (max-width: 780px) { .ba-logo-img { --lw: 190px; --lh: 28.5px; --off: -32.3px; } }
+@media (max-width: 600px) { .ba-header .ba-nav { gap: 2px; } .ba-logo span.ba-logo-img { display: inline-block; } /* alt başlığı gizleyen .ba-logo span kuralı logoyu kapatmasın */ }
+
+.ba-hero-w { display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+.ba-hl { flex: 1; min-width: 0; max-width: 620px; }
+.ba-dia { flex: none; width: 500px; max-width: 100%; height: auto; }
+.ba-in .ba-hero .ba-dia { animation: baRise 1s var(--ba-ease-out) .3s both; }
+@media (min-width: 768px) { .ba-hero:has(.ba-dia) { padding: 76px 0 72px; } }
+@media (max-width: 1000px) { .ba-hero-w { flex-direction: column; align-items: flex-start; } .ba-dia { align-self: center; width: 420px; } }
+@media (max-width: 640px) { .ba-dia { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ba-logo-img::after, .ba-dia { animation: none !important; } }
