@@ -4,7 +4,10 @@
 // Politika: reklam alanları yalnızca HTML'de işaretli yerlerde (araç kutusu altı, içerik ortası,
 // sayfa sonu). Auto ads bilinçli olarak KAPALI — indirme butonu yanına reklam basabilir.
 (function () {
-  const client = (window.BA_ADSENSE_CLIENT || '').trim();
+  // Yayıncı kimliği yalnızca onaylı alan adında (bilisimajans.com ve alt alan adları) kullanılır;
+  // github.io önizlemesi, yerel test ve masaüstü paketinde reklam isteği yapılmaz.
+  const onApprovedHost = /(^|\.)bilisimajans\.com$/.test(location.hostname);
+  const client = (window.BA_ADSENSE_CLIENT || (onApprovedHost ? 'ca-pub-5734060206675377' : '')).trim();
   const slots = document.querySelectorAll('.ba-ad');
   if (!slots.length) return;
 

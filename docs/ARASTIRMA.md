@@ -156,6 +156,8 @@ Diğerleri (orta/düşük): #9, #12, #15, #16, #23, #24, #28–#31 (HEIC hariç)
 
 ### 3.4 "Yapma" listesi
 
+**İlke (sahip kararı, 2026-11-03):** Yasa dışı kullanıma hizmet edebilecek hiçbir araç yapılmaz. Yeni bir araç eklenmeden önce "kötüye kullanılırsa suç oluşturur mu?" sorusu sorulur; cevap evet ise araç ya yapılmaz ya da yalnızca doğrulama/koruma amaçlı biçimiyle yapılır.
+
 | Ne | Sebep |
 |---|---|
 | YouTube/Instagram/TikTok indirici, video/ses "indir" araçları | AdSense yasaklı içerik (telif ihlali kolaylaştırma); zaten PLAN'da var |

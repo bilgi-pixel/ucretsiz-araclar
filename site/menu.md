@@ -13,7 +13,7 @@ Daha iddialı alternatifler: "Araç Kutusu", "Bedava Araçlar", "Online Araçlar
 
 | Etiket | Bağlantı (şimdilik) | DNS sonrası |
 |---|---|---|
-| Tüm Araçlar | https://bilgi-pixel.github.io/ucretsiz-araclar/ | https://araclar.bilisimajans.com/ |
+| Tüm Araçlar | https://araclar.bilisimajans.com/ | https://araclar.bilisimajans.com/ |
 | Resimden PDF'e | …/ucretsiz-araclar/resimden-pdfe/ | …/resimden-pdfe/ |
 | PDF Birleştir | …/ucretsiz-araclar/pdf-birlestir/ | …/pdf-birlestir/ |
 | PDF Böl | …/ucretsiz-araclar/pdf-bol/ | …/pdf-bol/ |

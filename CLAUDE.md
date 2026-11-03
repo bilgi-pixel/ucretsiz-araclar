@@ -54,6 +54,10 @@ site/                         # WordPress'e yapıştırılacak menü/sayfa metin
 6. **Dil:** arayüz metinleri HTML içinde TR; EN sayfalar ayrı dosya. Kodda Türkçe yorum, İngilizce
    tanımlayıcı.
 7. Commit mesajları Türkçe, emir kipinde: "PDF birleştirmede sayfa sırasını düzelt".
+8. **Yasal sınır:** Yasa dışı kullanıma hizmet edebilecek araç yapılmaz (sahte belge/dekont,
+   TC kimlik veya IBAN üretici, filigran kaldırıcı, şifre kırıcı, telifli içerik indirici vb.).
+   Yeni araçtan önce "kötüye kullanılırsa suç oluşturur mu?" diye bakılır; evet ise yapılmaz
+   ya da yalnızca doğrulama/koruma amaçlı biçimiyle yapılır. Ayrıntı: `docs/ARASTIRMA.md` §3.4.
 
 ## Komutlar
 
