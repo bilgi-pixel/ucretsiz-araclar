@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enflasyon Hesaplama – Alım Gücü, Reel Getiri ve Geçmiş Değeri Bugüne Çevirme</title>
+  <meta name="description" content="Enflasyon hesaplama: geçmiş bir tutarın bugünkü değerini, belirli oranla N yıl sonraki fiyatı, reel getiriyi ve maaşınızın alım gücü kaybını bulun. Oranları siz girersiniz; ücretsiz, veriler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/enflasyon-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .en-form .ba-field { margin-bottom: 12px; }
+    .en-form input[type="text"], .en-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .en-form input:focus, .en-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .en-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .en-grid { grid-template-columns: 1fr 1fr; } }
+    .en-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; border: 0; padding: 0; margin: 0 0 12px; }
+    .en-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .en-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .en-results { margin: 0; display: grid; gap: 6px; }
+    .en-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .en-row:last-child { border-bottom: 0; }
+    .en-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .en-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; }
+    .en-big { font-size: 1.3rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .en-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .en-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .en-chart { display: block; width: 100%; height: 220px; margin: 12px 0 4px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .en-legend { font-size: .85rem; color: var(--ba-text-muted); margin: 0 0 8px; }
+    .plan-wrap { overflow-x: auto; margin: 8px 0 0; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .plan-wrap:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    .plan-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: .9rem; }
+    .plan-table th, .plan-table td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--ba-border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .plan-table thead th { background: var(--ba-surface); font-weight: 600; }
+    .plan-table th:first-child { text-align: left; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Enflasyon ve Alım Gücü Hesaplama – Bilişim Ajans","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/enflasyon-hesapla/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Enflasyon Hesaplama: Alım Gücü ve Reel Getiri</h1>
+      <p class="lead">Geçmişteki bir tutarın bugünkü karşılığını, belirli bir enflasyon oranıyla N yıl sonraki fiyatı, reel getiriyi ve maaşınızın alım gücü kaybını hesaplayın. Oranları siz girersiniz; araç hiçbir veri saklamaz ve girdiğiniz rakamlar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="en-form" novalidate>
+        <fieldset class="en-modes">
+          <legend class="visually-hidden">Hesap türü</legend>
+          <label><input type="radio" name="mode" value="gecmis" checked> Geçmiş değer → bugün</label>
+          <label><input type="radio" name="mode" value="gelecek"> N yıl sonraki fiyat</label>
+          <label><input type="radio" name="mode" value="reel"> Reel getiri</label>
+          <label><input type="radio" name="mode" value="maas"> Maaş alım gücü</label>
+        </fieldset>
+
+        <div id="g-gecmis" class="en-grid">
+          <div class="ba-field"><label for="p-amount">Geçmişteki tutar (TL)</label><input id="p-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="10.000"></div>
+          <div class="ba-field"><label for="p-method">Oranı nasıl gireceksiniz?</label><select id="p-method"><option value="kumulatif" selected>Kümülatif oran (tek rakam)</option><option value="yillik">Yıllık oranlar (liste)</option></select></div>
+          <div class="ba-field" id="g-cum"><label for="p-cum">Dönem boyunca kümülatif enflasyon (%)</label><input id="p-cum" type="text" inputmode="decimal" autocomplete="off" placeholder="50"><div class="hint">Örnek: fiyatlar toplamda yüzde 50 arttıysa 50 yazın.</div></div>
+          <div class="ba-field" id="g-list" hidden><label for="p-rates">Yıllık enflasyon oranları (%)</label><textarea id="p-rates" rows="4" autocomplete="off" placeholder="40&#10;30&#10;25" style="width:100%;padding:8px 12px;font:inherit;border:1px solid var(--ba-border);border-radius:var(--ba-radius-sm);background:var(--ba-surface);color:var(--ba-text)"></textarea><div class="hint">Her yılı yeni satıra ya da noktalı virgülle ayırın; ondalık için virgül kullanın. Oranları kendiniz girersiniz, araç veri saklamaz.</div></div>
+        </div>
+
+        <div id="g-gelecek" class="en-grid" hidden>
+          <div class="ba-field"><label for="f-price">Güncel fiyat (TL)</label><input id="f-price" type="text" inputmode="decimal" autocomplete="off" placeholder="1.000"></div>
+          <div class="ba-field"><label for="f-rate">Yıllık enflasyon oranı (%)</label><input id="f-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="40"></div>
+          <div class="ba-field"><label for="f-years">Kaç yıl sonra? (boşsa 1)</label><input id="f-years" type="text" inputmode="decimal" autocomplete="off" placeholder="3"></div>
+        </div>
+
+        <div id="g-reel" class="en-grid" hidden>
+          <div class="ba-field"><label for="r-nominal">Nominal getiri, yıllık (%)</label><input id="r-nominal" type="text" inputmode="decimal" autocomplete="off" placeholder="40"></div>
+          <div class="ba-field"><label for="r-infl">Enflasyon, yıllık (%)</label><input id="r-infl" type="text" inputmode="decimal" autocomplete="off" placeholder="30"></div>
+          <div class="ba-field"><label for="r-years">Süre (yıl; boşsa 1)</label><input id="r-years" type="text" inputmode="decimal" autocomplete="off" placeholder="1"></div>
+          <div class="ba-field"><label for="r-amount">Anapara (TL, isteğe bağlı)</label><input id="r-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="100.000"><div class="hint">Boşsa 100 birimlik endeks kullanılır.</div></div>
+        </div>
+
+        <div id="g-maas" class="en-grid" hidden>
+          <div class="ba-field"><label for="m-salary">Maaş (TL)</label><input id="m-salary" type="text" inputmode="decimal" autocomplete="off" placeholder="30.000"></div>
+          <div class="ba-field"><label for="m-infl">Yıllık enflasyon (%)</label><input id="m-infl" type="text" inputmode="decimal" autocomplete="off" placeholder="50"></div>
+          <div class="ba-field"><label for="m-raise">Yıllık zam oranı (%, boşsa 0)</label><input id="m-raise" type="text" inputmode="decimal" autocomplete="off" placeholder="30"></div>
+          <div class="ba-field"><label for="m-years">Süre (yıl; boşsa 1)</label><input id="m-years" type="text" inputmode="decimal" autocomplete="off" placeholder="1"></div>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Bugünkü değeri hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="ba-result" aria-live="polite">
+        <h3>Sonuç</h3>
+        <p class="en-big" id="r-head"></p>
+        <dl class="en-results" id="r-rows"></dl>
+        <p class="en-note" id="r-note"></p>
+        <h3>Grafik</h3>
+        <p class="en-legend" id="r-legend"></p>
+        <canvas id="chart" class="en-chart" role="img" aria-label="Enflasyon grafiği"></canvas>
+        <h3>Tablo</h3>
+        <div class="plan-wrap" tabindex="0" role="region" aria-label="Sonuç tablosu; yatay kaydırılabilir">
+          <table class="plan-table">
+            <thead id="plan-head"></thead>
+            <tbody id="plan-body"></tbody>
+          </table>
+        </div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Özeti kopyala</button></div>
+      </div>
+      <p class="en-status" id="copy-status" aria-live="polite"></p>
+      <p class="en-note">TÜİK TÜFE verisini kullanıcı girer; araç veri saklamaz. Resmî tüketici fiyat endeksi ve yıllık değişim oranları için <a href="https://www.tuik.gov.tr/" rel="noopener">TÜİK</a> sitesine bakabilirsiniz; bağlantıya yalnızca siz tıklarsanız gidilir.</p>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Önemli:</strong> Bu araç yalnızca matematiksel bir hesaptır; yatırım ya da finansal tavsiye değildir. Gelecekteki enflasyonu tahmin etmez; yalnızca girdiğiniz oranlarla işlem yapar.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="enflasyon-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki dört hesap türünden birini seçin: geçmiş değeri bugüne çevirmek, belirli oranla N yıl sonraki fiyatı bulmak, reel getiriyi hesaplamak ya da maaşınızın alım gücünü ölçmek.</li>
+        <li>İlgili tutarı ve oranı yazın. Binlik ayırıcı olarak nokta kullanabilirsiniz; ondalık için virgül kullanın. Örneğin "42,5" yüzde kırk iki buçuk demektir.</li>
+        <li>Geçmiş değer modunda oranı iki şekilde verebilirsiniz: tek bir kümülatif oran ya da her yılın enflasyonunu satır satır yazdığınız bir liste. Oranları TÜİK'in açıkladığı değerlerden kendiniz alırsınız; araç içinde gömülü bir veri yoktur.</li>
+        <li>Düğmeye basın. Üstte özet rakam, altında ayrıntılı satırlar, çizgi grafik ve yıllık tablo görünür. "Özeti kopyala" ile sonucu bir mesaja yapıştırabilirsiniz.</li>
+      </ol>
+
+      <h2>Enflasyon nedir, alım gücü neden düşer?</h2>
+      <p>Enflasyon, mal ve hizmet fiyatlarının genel düzeyindeki sürekli artıştır. Fiyatlar yüzde 50 artıyorsa dün 100 TL'ye aldığınız sepeti bugün 150 TL'ye alırsınız; başka bir deyişle elinizdeki 100 TL'nin satın alma gücü, ilk haline göre üçte bir azalır. Alım gücü değişimi, enflasyon çarpanının tersiyle bulunur: 1 / 1,5 = 0,667; yani yüzde 33,33'lük bir kayıp. Bu ayrım önemlidir: fiyatlar yüzde 50 artmışsa paranın değeri yüzde 50 değil, yaklaşık yüzde 33,33 düşmüştür.</p>
+
+      <h2>Geçmiş değer bugün ne kadar eder?</h2>
+      <p>Geçmişteki bir tutarın bugünkü karşılığı, tutarın kümülatif enflasyon çarpanıyla çarpılmasıyla bulunur: bugünkü değer = geçmiş tutar × (1 + kümülatif oran). Örneğin 10.000 TL için dönem boyunca kümülatif enflasyon yüzde 50 ise bugünkü karşılığı 10.000 × 1,5 = 15.000 TL'dir; yani aynı sepeti almak için bugün 15.000 TL gerekir. Her yılın oranını ayrı biliyorsanız bunlar toplanmaz, çarpılır: yıllık oranlar yüzde 40, 30 ve 25 ise çarpan 1,40 × 1,30 × 1,25 = 2,275, yani 10.000 TL bugün 22.750 TL eder. Araç listedeki her yılı ayrı satırda gösterir ve kümülatif artışı tabloya işler.</p>
+      <p>Yıllık oranları toplamak yaygın bir hatadır. 40 ile 30'un toplamı 70 eder; ama gerçek birikimli artış yüzde 82'dir (1,40 × 1,30 = 1,82). Fark küçük görünse de uzun dönemde büyür. Bu yüzden araç daima çarpma kullanır.</p>
+
+      <h2>Belirli oranla N yıl sonra fiyat</h2>
+      <p>Bir ürünün bugünkü fiyatını ve varsayımsal bir yıllık oranı girerek gelecekteki fiyatı görebilirsiniz: gelecek fiyat = bugünkü fiyat × (1 + oran)<sup>yıl</sup>. 1.000 TL'lik bir ürün yıllık yüzde 40 oranla üç yılda 1.000 × 1,4³ = 2.744 TL olur. Tabloda her yılın fiyatı ve o yıl içindeki artış ayrı ayrı listelenir. Bu bir tahmin değil, "enflasyon bu oranda sabit kalırsa" sorusunun aritmetik karşılığıdır; gerçek enflasyon yıldan yıla değişir. Kira, abonelik ya da bütçe planlaması yaparken farklı oranları deneyerek senaryo karşılaştırması yapmak için kullanışlıdır.</p>
+
+      <div class="ba-ad" data-slot="enflasyon-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Reel getiri nasıl hesaplanır?</h2>
+      <p>Nominal getiri, paranızın rakamsal olarak ne kadar arttığıdır; reel getiri ise enflasyondan arındırılmış, yani alım gücü cinsinden artıştır. Doğru formül (Fisher ilişkisi) şudur: reel getiri = (1 + nominal) / (1 + enflasyon) − 1. Nominal getiri yüzde 40, enflasyon yüzde 30 ise reel getiri 1,40 / 1,30 − 1 = 0,0769, yani yaklaşık yüzde 7,69'dur. Pek çok kişi iki oranı doğrudan çıkarır (40 − 30 = 10); bu basit fark yüksek oranlarda gerçeği olduğundan fazla gösterir. Araç ikisini de yan yana yazar. Süre eklerseniz tablo, nominal ve reel değerlerin yıllara göre seyrini verir; böylece paranızın rakam olarak büyürken alım gücünün ne kadar büyüdüğünü görebilirsiniz.</p>
+      <p>Reel getiri negatif çıkabilir: nominal yüzde 25, enflasyon yüzde 30 ise 1,25 / 1,30 − 1 = −0,0385, yani yüzde −3,85'lik reel kayıp. Böyle bir sonuç, hesabın nominal olarak kazanç sağlasa da alım gücü bakımından kayıp yaşandığını gösterir. Araç bunun hangi ürün için geçerli olduğunu yorumlamaz; yalnızca aritmetiği yapar. Faiz tarafında nominal getiriyi ayrıca hesaplamak için <a href="../faiz-hesapla/">Faiz Hesaplama</a> aracını kullanabilirsiniz.</p>
+
+      <h2>Maaşın alım gücü kaybı</h2>
+      <p>Maaş modunda mevcut maaşınızı, yıllık enflasyonu ve aldığınız zam oranını girersiniz. Araç, alım gücünü korumak için gereken maaşı (maaş × (1 + enflasyon)<sup>yıl</sup>) ve zamlı maaşı (maaş × (1 + zam)<sup>yıl</sup>) karşılaştırır. Örnek: 30.000 TL maaş, yıllık enflasyon yüzde 50, zam yüzde 30. Aynı alım gücü için 45.000 TL gerekir; zamlı maaş 39.000 TL'dir; fark 6.000 TL eksiktir. Alım gücü değişimi (1,30 / 1,50) − 1 = −0,1333, yani yaklaşık yüzde 13,33'lük kayıptır; zamlı maaşın başlangıç parasıyla değeri 26.000 TL'dir. Bu hesap vergi dilimlerini, yan ödemeleri ve kesintileri hesaba katmaz; brüt ile net dönüşümü için <a href="../brut-net-maas/">Brüt Net Maaş Hesaplama</a> aracına bakın.</p>
+
+      <h2>TÜİK verisi ve oranlar</h2>
+      <p>Türkiye'de resmî enflasyon verisi TÜİK'in açıkladığı tüketici fiyat endeksine (TÜFE) dayanır. Bu araç hiçbir TÜFE verisini içinde taşımaz, çekmez ve saklamaz; oranı sizin kaynağınızdan alıp yazarsınız. Bunun iki nedeni vardır: verinin güncelliği sizin elinizde kalır ve araç hiçbir ağ isteği yapmaz, böylece çevrimdışı ve gizli çalışır. İsterseniz TÜİK sitesine kendi tarayıcınızda gidip yıllık değişim oranlarını okuyabilir, ardından buraya yazabilirsiniz. Farklı enflasyon göstergeleri (aylık, yıllık, 12 aylık ortalama) farklı rakamlar verir; hangisini kullandığınıza dikkat edin.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; rakamlarınız hiçbir sunucuya iletilmez, çerezle izlenmez.</li>
+        <li><strong>Doğru matematik.</strong> Oranlar toplanmaz çarpılır; reel getiri Fisher formülüyle bulunur.</li>
+        <li><strong>Eskimeyen araç.</strong> İçinde gömülü veri olmadığı için güncel olmayan bir oranla sizi yanıltmaz.</li>
+        <li><strong>Grafik ve tablo.</strong> Sonucu yıllara göre çizgi grafikte ve tabloda görürsünüz.</li>
+        <li><strong>Reklamsız hesap alanı.</strong> Düğmelerin yanında reklam yoktur; sahte geri sayım ya da sahte teklif yoktur.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Enflasyon oranlarını nereden bulacağım?</summary><p>Resmî rakamlar için TÜİK'in tüketici fiyat endeksi duyurularına bakabilirsiniz. Aylık, yıllık ve 12 aylık ortalama gibi farklı göstergeler vardır; hangisini kullandığınızdan emin olun ve oranı buraya kendiniz yazın.</p></details>
+        <details><summary>Yıllık oranları neden toplamıyor, çarpıyorsunuz?</summary><p>Her yılın artışı bir önceki yılın artmış fiyatı üzerine eklenir. Yüzde 40 ve yüzde 30 art arda gelirse toplam artış 1,40 × 1,30 − 1 = yüzde 82'dir, yüzde 70 değil.</p></details>
+        <details><summary>Kümülatif oran ile yıllık oran farkı nedir?</summary><p>Yıllık oran bir yıllık değişimi, kümülatif oran ise birden çok yılın toplam birikimli değişimini gösterir. Kümülatif oran yüzde 50 ise fiyatlar dönem boyunca toplam 1,5 katına çıkmıştır.</p></details>
+        <details><summary>Reel getiri neden nominal farktan farklı çıkıyor?</summary><p>Doğru formül bölmedir: (1 + nominal) / (1 + enflasyon) − 1. Basit çıkarma yüksek oranlarda gerçek reel getiriyi olduğundan büyük gösterir. Yüzde 40 nominal ve yüzde 30 enflasyonda fark 10 puan, reel getiri ise yüzde 7,69'dur.</p></details>
+        <details><summary>Alım gücü kaybı neden enflasyon oranına eşit değil?</summary><p>Fiyatlar 1,5 katına çıkarsa para 1/1,5 = 0,667 katına iner; kayıp yüzde 33,33'tür. Kayıp, enflasyon oranının "çarpan tersi" üzerinden hesaplanır.</p></details>
+        <details><summary>Maaş hesabı net maaşı da kapsıyor mu?</summary><p>Hayır. Hesap girdiğiniz maaşın rakamsal değişimini kullanır; vergi dilimi, SGK ve diğer kesintileri hesaba katmaz. Brüt-net dönüşümü için ayrı bir araç kullanın.</p></details>
+        <details><summary>Gelecekteki enflasyonu tahmin ediyor musunuz?</summary><p>Hayır. "N yıl sonra fiyat" bölümü, sizin girdiğiniz sabit orana göre aritmetik bir senaryo çıkarır. Gelecekteki enflasyonu öngörmek, yatırım ya da finansal tavsiye vermek araç kapsamında değildir.</p></details>
+        <details><summary>Negatif enflasyon (deflasyon) girebilir miyim?</summary><p>Evet. Oranın başına eksi işareti koyun (örnek: -2,5). Oran -100'ün altına inemez ve çok büyük değerler de kabul edilmez; geçersiz girişte açıklayıcı bir hata görürsünüz.</p></details>
+        <details><summary>Girdiğim rakamlar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; tutarlarınız ve oranlarınız kaydedilmez ve hiçbir sunucuya gönderilmez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu sayfadaki hesaplamalar matematiksel örneklerdir; yatırım ya da finansal tavsiye değildir. Sonuçlar yalnızca sizin girdiğiniz oranlara bağlıdır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../faiz-hesapla/">Faiz Hesaplama (Basit ve Bileşik)</a></li>
+        <li><a href="../zam-orani-hesapla/">Zam Oranı Hesaplama</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="enflasyon-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

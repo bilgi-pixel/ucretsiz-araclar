@@ -31,6 +31,7 @@ test.describe('Kelime Bulutu Oluşturucu', () => {
     await page.locator('#generate').click();
     await expect(page.locator('#canvas')).toHaveAttribute('data-ready', '1');
     await expect(page.locator('#cloud-info')).toContainText('kelime yerleşti');
+    await expect(page.locator('#download-png')).toBeEnabled();
     const [png] = await Promise.all([page.waitForEvent('download'), page.locator('#download-png').click()]);
     expect(png.suggestedFilename()).toBe('kelime-bulutu.png');
     const head = readFileSync((await png.path())!).subarray(0, 8);

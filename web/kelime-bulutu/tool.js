@@ -74,6 +74,7 @@ const nf = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 1 });
 let stats = { list: [], total: 0, distinct: 0 };
 let shown = [];
 let cloudReady = false;
+let building = null; // devam eden çizim (indirme bunu bekler)
 
 function refreshTable() {
   const text = $('text').value;
@@ -109,12 +110,10 @@ function refreshTable() {
   } else {
     showError($('error'), null);
   }
-  cloudReady = false;
-  $('download-png').disabled = true;
 }
 
 let timer = null;
-const schedule = () => { clearTimeout(timer); timer = setTimeout(refreshTable, 250); };
+const schedule = () => { clearTimeout(timer); timer = setTimeout(() => { timer = null; refreshTable(); }, 250); };
 $('text').addEventListener('input', schedule);
 ['opt-minlen', 'opt-topn', 'opt-stop', 'opt-numbers', 'opt-extra', 'opt-case'].forEach((id) => {
   $(id).addEventListener('input', schedule);
@@ -204,7 +203,9 @@ function markMask(mask, x, y, occ, gw) {
   for (let i = 0; i < pts.length; i += 2) occ[(y + pts[i + 1]) * gw + (x + pts[i])] = 1;
 }
 
-async function buildCloud(o) {
+async function buildCloud(o, words) {
+  const shown = words; // başlangıçtaki liste kopyası: yerleşim sırasında tablo değişse de etkilenmez
+  const t0 = performance.now();
   const f = FONTS[o.font];
   // Yazı tipi dosyaları (latin-ext dahil) ölçümden önce yüklenmeli.
   await Promise.all(['IBM Plex Sans', 'Caveat', 'IBM Plex Mono'].filter((n) => f.family.includes(n)).map((n) => document.fonts.load(`${f.weight} 40px "${n}"`, 'ğüşıİçöĞÜŞÇÖ Abc')));
@@ -225,6 +226,8 @@ async function buildCloud(o) {
   let skipped = 0;
   for (let i = 0; i < shown.length; i++) {
     const it = shown[i];
+    // Süre sınırı: 1,5 sn aşılırsa kalan kelimeler atlanır (yavaş cihazda takılmayı önler).
+    if (performance.now() - t0 > 1500) { skipped += shown.length - i; break; }
     const label = showCase(it.word, o.caseMode);
     const t = maxC === minC ? 0.5 : (it.count - minC) / span;
     let size = minSize + (maxSize - minSize) * Math.pow(t, 0.65);
@@ -263,17 +266,20 @@ function paint(canvas, o, placed, f) {
   }
 }
 
-$('generate').addEventListener('click', async () => {
+$('generate').addEventListener('click', () => { building = generateCloud().finally(() => { building = null; }); });
+async function generateCloud() {
+  if (timer) { clearTimeout(timer); timer = null; refreshTable(); }
   if (!shown.length) return;
   showError($('error'), null);
   const o = readOptions();
+  const words = shown.slice(0, 200);
   const btn = $('generate');
   btn.disabled = true;
   $('canvas').dataset.ready = '0';
   try {
     setProgress($('progress'), 0, 'Hazırlanıyor…');
     await tick();
-    const { placed, skipped, f } = await buildCloud(o);
+    const { placed, skipped, f } = await buildCloud(o, words);
     paint($('canvas'), o, placed, f);
     $('cloud-box').hidden = false;
     $('canvas').dataset.ready = '1';
@@ -291,10 +297,11 @@ $('generate').addEventListener('click', async () => {
     setProgress($('progress'), null);
     btn.disabled = false;
   }
-});
+}
 
 /* ---------- İndirme ---------- */
-$('download-png').addEventListener('click', () => {
+$('download-png').addEventListener('click', async () => {
+  if (building) await building; // çizim bitmeden tıklanırsa bitmesini bekle
   if (!cloudReady) return;
   $('canvas').toBlob((b) => {
     if (b) downloadBlob(b, 'kelime-bulutu.png');
