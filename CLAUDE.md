@@ -4,8 +4,11 @@ bilisimajans.com'un "Ücretsiz Programlar" menüsü altında sunulan araçlar. �
 
 1. **Online araçlar** (`web/`): tarayıcıda çalışır, **dosya hiçbir zaman sunucuya gitmez**
    (tamamı istemci tarafı JS). Statik site; GitHub Pages → `araclar.bilisimajans.com`.
-2. **Masaüstü uygulamalar** (`desktop/`, Faz 2): aynı `web/` kodunu Tauri 2 ile Windows ve
-   macOS uygulamasına sarar. Reklam ve ağ erişimi masaüstünde **yok**.
+2. **Masaüstü kullanım** iki yolla: (a) **PWA** — `web/manifest.webmanifest` + `web/sw.js`;
+   tarayıcıdan "Uygulama olarak yükle", çevrimdışı çalışır, AdSense **gösterilebilir** (hâlâ
+   bizim alan adımızdaki web sayfasıdır). (b) Tauri 2 paketleri (`desktop/`, Faz 2) — Windows ve
+   macOS; içinde AdSense **asla yok** (politika ihlali, hesap kapatır), yalnızca kendi
+   tanıtımımız. Ağ erişimi masaüstünde yalnızca kullanıcı bağlantıya tıklayınca.
 
 ## Teknoloji
 

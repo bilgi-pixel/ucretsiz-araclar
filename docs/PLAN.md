@@ -7,8 +7,14 @@ Tarih: 2026-11-03. Sahip: Bilişim Ajans (bilisimajans.com).
 - **Online önce, masaüstü sonra.** "pdf birleştir online", "resimden pdf'e" gibi aramalar
   "pdf programı indir" aramalarından kat kat büyük ve tıkla-kullan dönüşümü anında. İndirme
   gerektiren araç, trafiğin %90'ını kapıda kaybeder.
-- **Tek kod, üç kanal.** Araçlar saf tarayıcı JS'i: (1) web sayfası, (2) aynı kodun Tauri ile
-  Windows `.exe` / macOS `.dmg` paketi, (3) ileride PWA ("Ana ekrana ekle").
+- **Tek kod, üç kanal.** Araçlar saf tarayıcı JS'i: (1) web sayfası, (2) **PWA** — siteye
+  "Uygulama olarak yükle" düğmesi; Windows/Mac'te Chrome/Edge masaüstüne kurar, çevrimdışı
+  çalışır ve hâlâ bizim alan adımızdaki web sayfası olduğu için **AdSense gösterilebilir**
+  (masaüstü sürümünün reklam geliri buradan gelir), (3) Tauri ile Windows `.exe` / macOS `.dmg`
+  paketi — **reklamsız**. AdSense politikası reklamı yalnızca tarayıcıda açılan web sayfalarında
+  serbest bırakır; yerel uygulama içine gömülü AdSense hesap kapatma sebebidir, AdMob ise yalnızca
+  Android/iOS içindir. Tauri paketlerinin görevi indirme portallarından backlink/güven ve kendi
+  tanıtımımız (ajans hizmetleri, "daha fazla araç için online sürüm" bağlantısı).
 - **Dosya sunucuya gitmez.** Hem gizlilik hem maliyet: sunucu yok, bant genişliği yok, KVKK derdi yok.
   Bu aynı zamanda ana pazarlama mesajı: *"Dosyanız bilgisayarınızdan çıkmaz."*
 - **AdSense siteyi değil, alt alan adını kullanır.** Araçlar `araclar.bilisimajans.com` üzerinde
