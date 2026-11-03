@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Takdir Teşekkür Hesaplama – Karne Ağırlıklı Ortalama ve Kaç Puan Gerekli</title>
+  <meta name="description" content="Takdir teşekkür hesaplama: ders saatine göre ağırlıklı yıl sonu ortalamanızı bulun, takdir mi teşekkür mü aldığınızı ve eksik puanı görün. Ücretsiz; veriniz tarayıcıdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/takdir-tesekkur-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+  
+    
+    @media print {
+      .ba-topbar, .ba-header, .ba-hero .lead, .ba-badges, .ba-ad, .ba-content, .ba-footer, .kdv-form, .ba-actions, .ba-crumb, .kdv-rates { display: none !important; }
+      .ba-hero { background: none !important; color: #000 !important; }
+      #uyari { display: flex !important; }
+    }
+  
+    .tk-set, .yks-set { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px 14px; margin: 0 0 14px; min-width: 0; }
+    .tk-set legend, .yks-set legend { font-weight: 700; padding: 0 6px; }
+    .net-row { display: grid; grid-template-columns: 1fr 84px 84px 84px auto; gap: 8px; align-items: end; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .net-row.tk-row { grid-template-columns: 1fr 96px 100px 100px auto; }
+    .net-row:last-child { border-bottom: 0; }
+    .net-row .net-del { min-height: 44px; }
+    .ders-in { display: grid; gap: 2px; font-size: .82rem; color: var(--ba-text-2); }
+    .ders-in input { width: 100%; min-height: 44px; padding: 6px 8px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    @media (max-width: 600px) { .net-row, .net-row.tk-row { grid-template-columns: 1fr 1fr; } .net-ad { grid-column: 1 / -1; } .net-row .net-del { grid-column: 1 / -1; } }
+    .yks-table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: .92rem; }
+    .yks-table th, .yks-table td { padding: 6px 8px; border-bottom: 1px solid var(--ba-border); text-align: left; }
+    .yks-table td:not(:first-child), .yks-table th:not(:first-child) { text-align: right; }
+    .tk-low { color: #a40000; font-weight: 700; }
+    #r-durum { white-space: normal; text-align: right; }
+    #r-durum[data-durum="yok"] { color: #a40000; }
+    .hist-list { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+    .hist-item { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); font-size: .92rem; }
+    #chart { width: 100%; height: 200px; display: block; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); }
+    .kdv-form input[type="checkbox"], .kdv-form input[type="radio"] { width: 20px; height: 20px; }
+    .kdv-actions { margin-top: 10px; }
+    @media print { .tk-set, .hist-wrap-x, #hist-section { display: none !important; } }
+  </style>
+  <script type="application/ld+json">
+  [{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Takdir Teşekkür Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/takdir-tesekkur-hesapla/"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Takdir için kaç puan gerekir?","acceptedAnswer":{"@type":"Answer","text":"Genel kurala göre ağırlıklı yıl sonu başarı puanı ortalamasının en az 85 olması ve hiçbir dersten yıl sonu puanının 50'nin altında olmaması gerekir. Güncel yönetmeliği kontrol edin; araçtaki eşikleri değiştirebilirsiniz."}},{"@type":"Question","name":"Teşekkür için kaç puan gerekir?","acceptedAnswer":{"@type":"Answer","text":"Ağırlıklı ortalama 70 ile 84,99 arasında olmalı ve yine hiçbir ders 50'nin altında olmamalıdır. Ortalama 85 ve üzerindeyse takdir belgesi söz konusu olur."}},{"@type":"Question","name":"Ağırlıklı ortalama ile basit ortalama aynı mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Ağırlıklı ortalamada her dersin puanı haftalık ders saatiyle çarpılır; çok saatli dersler ortalamayı daha fazla etkiler. Basit ortalama tüm dersleri eşit sayar."}},{"@type":"Question","name":"Bir dersten 50 altı alırsam belge alamaz mıyım?","acceptedAnswer":{"@type":"Answer","text":"Genel kurala göre ortalaması ne olursa olsun yıl sonu puanı 50'nin altında olan dersi bulunan öğrenci takdir ya da teşekkür belgesi alamaz. Araç böyle bir durumda hangi dersin engel olduğunu gösterir."}},{"@type":"Question","name":"Yıl sonu puanı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"İki dönem puanının ortalaması alınır: (1. dönem + 2. dönem) ÷ 2. Araçta yıl sonu modunda bu işlem otomatik yapılır."}},{"@type":"Question","name":"Henüz 2. dönem puanım yok, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Dersin 2. dönem kutusunu boş bırakın. Araç şimdilik 1. dönem puanını kullanır ve takdir ya da teşekkür için bekleyen derslerde 2. dönemde almanız gereken ortalamayı hesaplar."}},{"@type":"Question","name":"Davranış notu veya devamsızlık belgeyi etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"Okul türüne ve dönemin yönetmeliğine göre ek şartlar olabilir. Bu araç yalnızca ortalama ve ders alt sınırını denetler; davranış ve devamsızlıkla ilgili koşullar için okul yönetiminden bilgi alın."}},{"@type":"Question","name":"Girdiğim notlar kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hiçbir bilgi sunucuya gönderilmez ve tarayıcıda saklanmaz. Sayfayı kapatınca girdiğiniz puanlar silinir; saklamak isterseniz \"Sonucu kopyala\" düğmesini kullanın."}}]}]
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Takdir Teşekkür Hesaplama – Karne Ortalaması ve Eksik Puan</h1>
+      <p class="lead">Derslerinizin haftalık saatini ve dönem puanlarını girin; ağırlıklı yıl sonu ortalamanızı, takdir ya da teşekkür durumunuzu ve belge için eksik puanı görün. Girdiğiniz hiçbir bilgi bilgisayarınızdan çıkmaz.</p>
+      <p class="ba-note" id="uyari" role="note"><span aria-hidden="true">ℹ️</span><span>Bilgilendirme amaçlıdır: takdir 85 ve üzeri, teşekkür 70-84,99, hiçbir dersin 50 altında olmaması kuralı uygulanır. Güncel yönetmeliği kontrol edin; resmî karar okulunuza aittir.</span></p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="tk-set"><legend>Hesaplama modu</legend>
+          <div class="kdv-modes">
+            <label><input type="radio" name="mode" value="yil" id="mode-yil" checked> Yıl sonu (iki dönem)</label>
+            <label><input type="radio" name="mode" value="donem" id="mode-donem"> Dönem (tek dönem puanı)</label>
+          </div>
+          <p class="kdv-note">Yıl sonu modunda her dersin yıl sonu puanı iki dönem puanının ortalamasıdır. 2. dönem puanını boş bırakırsanız o ders "bekleyen" sayılır ve araç, takdir için 2. dönemde kaç puan gerektiğini hesaplar.</p>
+        </fieldset>
+        <fieldset class="tk-set"><legend>Dersler (puan 0-100)</legend>
+          <div id="rows"></div>
+          <div class="ba-actions kdv-actions"><button id="add-row" class="ba-btn" type="button">Ders ekle</button></div>
+          <p class="kdv-note">Puanı boş bırakılan satırlar hesaba katılmaz. Haftalık ders saati ağırlık olarak kullanılır.</p>
+        </fieldset>
+        <details class="tk-set"><summary>Eşik değerleri (yönetmelik değişirse güncelleyin)</summary>
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="p-takdir">Takdir için en az ortalama</label><input id="p-takdir" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="ba-field"><label for="p-tesekkur">Teşekkür için en az ortalama</label><input id="p-tesekkur" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="ba-field"><label for="p-alt">Hiçbir ders şu puanın altında olmamalı</label><input id="p-alt" type="text" inputmode="decimal" autocomplete="off"></div>
+          </div>
+          <div class="ba-actions"><button id="reset-params" class="ba-btn" type="button">Eşikleri sıfırla</button></div>
+          <p class="kdv-note">Varsayılanlar: takdir 85, teşekkür 70 (84,99'a kadar), ders alt sınırı 50. Güncel yönetmeliği kontrol edin.</p>
+        </details>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Ortalamayı hesapla</button><button id="clear" class="ba-btn" type="button">Puanları temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row is-strong"><dt>Ağırlıklı ortalama</dt><dd id="r-ort"></dd></div>
+          <div class="kdv-row is-strong"><dt>Durum</dt><dd id="r-durum"></dd></div>
+          <div class="kdv-row"><dt>Hesaba katılan</dt><dd id="r-ders"></dd></div>
+        </dl>
+        <p class="kdv-note" id="r-neden" hidden></p>
+        <p class="ba-note" id="r-eksik" hidden></p>
+        <h4>Ders bazında tablo</h4>
+        <table class="yks-table"><thead><tr><th scope="col">Ders</th><th scope="col">Saat</th><th scope="col">1. dönem</th><th scope="col">2. dönem</th><th scope="col">Yıl sonu</th><th scope="col">Puan × saat</th></tr></thead><tbody id="tbl"></tbody></table>
+        <p class="kdv-note">* 2. dönem puanı girilmediği için geçici olarak 1. dönem puanıyla hesaplandı. Bu araç bilgilendirme amaçlıdır; resmî karar okulunuzun e-Okul kayıtlarına ve güncel yönetmeliğe göre verilir.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Eşik parametreleri <span id="params-date">…</span> tarihinde güncellendi. Yönetmelik değişirse yukarıdaki "Eşik değerleri" bölümünden kendiniz düzeltebilirsiniz.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="takdir-tesekkur-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+<h2>Nasıl kullanılır?</h2>
+<ol class="ba-steps"><li>Modu seçin: yıl sonu karnesi için "Yıl sonu", yalnızca bir dönemin karnesi için "Dönem". Hazır gelen ders satırlarını kendi derslerinize göre düzenleyin; ders ekleyebilir ya da silebilirsiniz.</li><li>Her dersin haftalık ders saatini ve 1. ile 2. dönem puanını yazın. Puanı boş bıraktığınız satırlar hesaba katılmaz.</li><li>"Ortalamayı hesapla" düğmesine basın. Ağırlıklı yıl sonu ortalamanız, takdir/teşekkür durumunuz ve varsa eksik puan görünür.</li><li>Sonucu kopyalayabilir veya yazdırabilirsiniz. Eşikler okulunuzda farklıysa "Eşik değerleri" bölümünden değiştirin.</li></ol>
+
+<h2>Takdir ve teşekkür belgesi nedir?</h2>
+<p>Takdir ve teşekkür belgeleri, öğrencinin dönem ya da yıl boyunca gösterdiği akademik başarıyı ödüllendirmek için karnenin yanında verilen belgelerdir. Ortaöğretim kurumlarında uygulanan genel kurala göre ağırlıklı yıl sonu başarı puanı ortalaması 85 ve üzeri olan öğrenciye takdir, 70 ile 84,99 arasında olan öğrenciye teşekkür belgesi verilir. Ayrıca bu belgelerin ikisi için de hiçbir dersten yıl sonu puanının 50'nin altında olmaması aranır; yani ortalaması 90 olan bir öğrenci bile tek bir dersten 48 aldıysa belge alamaz.</p>
+<strong>Önemli:</strong> Bu kurallar MEB mevzuatında zaman zaman güncellenir; okul türüne, sınıf düzeyine ve davranış koşullarına göre ek maddeler bulunabilir. Bu araç yalnızca yukarıda anlatılan ortalama ve alt sınır kuralını uygular. Kesin karar için okulunuzun müdürlüğüne ve güncel yönetmeliğe başvurun; eşikleri araçta değiştirebilmeniz bu yüzdendir.
+
+<h2>Ağırlıklı yıl sonu ortalaması nasıl hesaplanır?</h2>
+<p>Önce her dersin yıl sonu puanı bulunur: iki dönem puanının ortalaması alınır. Örneğin Matematik 1. dönem 80, 2. dönem 90 ise yıl sonu puanı 85'tir. Ardından her dersin yıl sonu puanı haftalık ders saatiyle çarpılır, bu çarpımlar toplanır ve toplam ders saatine bölünür. Formül: <strong>ortalama = Σ(puan × haftalık saat) ÷ Σ haftalık saat</strong>. Haftada altı saat okutulan Matematik'in sonucu, haftada bir saat olan bir seçmeli dersten çok daha fazla etki eder.</p>
+<p>Basit bir örnek: 5 saatlik Türkçe yıl sonu 90, 4 saatlik Matematik 80, 3 saatlik Fizik 92 ve 2 saatlik İngilizce 100 olsun. Toplam puan-saat: 450 + 320 + 276 + 200 = 1246. Toplam saat 14 olduğundan ortalama 1246 ÷ 14 = 89,00 çıkar; bu değer 85'in üzerinde olduğu için, hiçbir ders 50'nin altında değilse takdir belgesi alınır. Aynı dersleri sıradan (ağırlıksız) ortalamayla hesaplarsanız 90,5 bulursunuz; fark küçük görünse de sınır değerlerde belge durumunu değiştirebilir.</p>
+<p>Dönem modunda ise ikinci dönem puanı kullanılmaz; her dersin tek dönem puanı doğrudan ağırlıklandırılır. Bu mod, örneğin birinci dönem karnesinde "şu ana kadar nerede duruyorum?" sorusuna yanıt vermek için uygundur.</p>
+<div class="ba-ad" data-slot="takdir-tesekkur-hesapla-b" aria-label="Reklam"></div>
+
+<h2>Eksik puan hesabı: takdir için kaç puan gerekli?</h2>
+<p>Araç, hedef belgeye ulaşamadığınızda aradaki farkı iki biçimde gösterir. Birincisi ağırlıklı ortalamadaki eksik puandır: örneğin ortalamanız 83,40 ise takdir için 1,60 puan eksiktir. İkincisi, yıl sonu modunda bazı derslerin yalnızca 1. dönem puanını girdiyseniz çalışır: bu derslerin 2. dönem puan ortalamasının en az kaç olması gerektiğini hesaplar. Böylece "ikinci dönemde bu derslerden ortalama 91 almam gerekiyor" gibi somut bir hedefe sahip olursunuz. Gereken puan 100'ü aşıyorsa araç, bekleyen derslerde tam puan alsanız bile eşiğe ulaşılamayacağını açıkça söyler.</p>
+<p>Bu hesabı yaparken bekleyen derslerin hepsinin aynı 2. dönem puanını alacağı varsayılır. Gerçekte her ders farklı olacaktır; ancak ortak bir hedef, çalışma önceliğinizi belirlemek için yeterli bir yol göstericidir. Ders alt sınırı (50) ihlal edilmişse, ortalamayı yükseltmek tek başına yetmez; o dersin puanını sınırın üzerine çıkarmanız gerekir ve araç bu durumu ayrıca belirtir.</p>
+
+<h2>Karne notlarını yükseltmek için pratik ipuçları</h2>
+<p>Haftalık saati yüksek derslerin ortalamayı daha çok etkilediğini unutmayın; matematik, edebiyat ve yabancı dil gibi ağır dersler çalışma zamanınızın büyük kısmını hak eder. İkinci yazılıdan önce ilk yazılı sonuçlarınızı girip eksik puan hesabına bakmak, kaç puana ihtiyacınız olduğunu önceden gösterir. Son olarak alt sınırın altında kalma riski olan dersleri ayrıca takip edin; çünkü tek bir düşük ders, yüksek bir ortalamayı geçersiz kılabilir.</p>
+<p>Hesaplarken sık yapılan hatalar da vardır. Birincisi, ders saatlerini girmeden basit ortalama almaktır; bu, çok saatli derslerin etkisini yok sayar. İkincisi, seçmeli derslerin saatini unutmaktır; karnede yer alan ve puanı olan her ders ağırlıklı ortalamaya girer. Üçüncüsü, dönem puanını yazılı notuyla karıştırmaktır: karnedeki dönem puanı yazılılar, sözlüler ve performans notlarının birleşiminden oluşur. Bu araca karnenizde görünen dönem puanını girmeniz gerekir. Dördüncüsü ise yuvarlamadır; okul sistemi puanları farklı biçimde yuvarlayabilir, bu yüzden sınırda (örneğin 84,9) olan sonuçlarda e-Okul değerini esas alın.</p>
+
+<h2>Neden Bilişim Ajans takdir teşekkür hesaplama aracı?</h2>
+<p>Puanlarınız yalnızca tarayıcınızda işlenir; hiçbir veri sunucuya gönderilmez, kayıt ya da üyelik gerekmez. Sayfa telefonda 360 piksel genişlikte de kullanılabilir. Araç yalnızca matematiksel bir hesaplama yapar ve resmî karar yerine geçmez; güncel kural için okulunuza ve MEB duyurularına başvurun.</p>
+
+<h2>Sık sorulan sorular</h2>
+<details><summary>Takdir için kaç puan gerekir?</summary><p>Genel kurala göre ağırlıklı yıl sonu başarı puanı ortalamasının en az 85 olması ve hiçbir dersten yıl sonu puanının 50'nin altında olmaması gerekir. Güncel yönetmeliği kontrol edin; araçtaki eşikleri değiştirebilirsiniz.</p></details>
+<details><summary>Teşekkür için kaç puan gerekir?</summary><p>Ağırlıklı ortalama 70 ile 84,99 arasında olmalı ve yine hiçbir ders 50'nin altında olmamalıdır. Ortalama 85 ve üzerindeyse takdir belgesi söz konusu olur.</p></details>
+<details><summary>Ağırlıklı ortalama ile basit ortalama aynı mı?</summary><p>Hayır. Ağırlıklı ortalamada her dersin puanı haftalık ders saatiyle çarpılır; çok saatli dersler ortalamayı daha fazla etkiler. Basit ortalama tüm dersleri eşit sayar.</p></details>
+<details><summary>Bir dersten 50 altı alırsam belge alamaz mıyım?</summary><p>Genel kurala göre ortalaması ne olursa olsun yıl sonu puanı 50'nin altında olan dersi bulunan öğrenci takdir ya da teşekkür belgesi alamaz. Araç böyle bir durumda hangi dersin engel olduğunu gösterir.</p></details>
+<details><summary>Yıl sonu puanı nasıl bulunur?</summary><p>İki dönem puanının ortalaması alınır: (1. dönem + 2. dönem) ÷ 2. Araçta yıl sonu modunda bu işlem otomatik yapılır.</p></details>
+<details><summary>Henüz 2. dönem puanım yok, ne yapmalıyım?</summary><p>Dersin 2. dönem kutusunu boş bırakın. Araç şimdilik 1. dönem puanını kullanır ve takdir ya da teşekkür için bekleyen derslerde 2. dönemde almanız gereken ortalamayı hesaplar.</p></details>
+<details><summary>Davranış notu veya devamsızlık belgeyi etkiler mi?</summary><p>Okul türüne ve dönemin yönetmeliğine göre ek şartlar olabilir. Bu araç yalnızca ortalama ve ders alt sınırını denetler; davranış ve devamsızlıkla ilgili koşullar için okul yönetiminden bilgi alın.</p></details>
+<details><summary>Girdiğim notlar kaydediliyor mu?</summary><p>Hayır. Hiçbir bilgi sunucuya gönderilmez ve tarayıcıda saklanmaz. Sayfayı kapatınca girdiğiniz puanlar silinir; saklamak isterseniz "Sonucu kopyala" düğmesini kullanın.</p></details>
+
+<h2>İlgili araçlar</h2>
+<ul><li><a href="../not-ortalamasi/">Not Ortalaması Hesaplama</a></li><li><a href="../net-hesaplama/">Net Hesaplama</a></li><li><a href="../yks-puan-hesapla/">YKS Puan Hesaplama</a></li><li><a href="../lgs-puan-hesapla/">LGS Puan Hesaplama</a></li><li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li></ul>
+    </article>
+
+    <div class="ba-ad" data-slot="takdir-tesekkur-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

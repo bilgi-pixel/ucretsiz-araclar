@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Net Hesaplama – TYT, AYT, LGS, KPSS Deneme Net Hesaplama (Yanlış Doğruyu Götürür mü?)</title>
+  <meta name="description" content="Net hesaplama: TYT, AYT, LGS, KPSS, ALES ve DGS deneme doğru-yanlış sayılarınızdan ders ders net, doğruluk ve hedef farkı. Ücretsiz; veriniz tarayıcıdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/net-hesaplama/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+  
+    
+    @media print {
+      .ba-topbar, .ba-header, .ba-hero .lead, .ba-badges, .ba-ad, .ba-content, .ba-footer, .kdv-form, .ba-actions, .ba-crumb, .kdv-rates { display: none !important; }
+      .ba-hero { background: none !important; color: #000 !important; }
+      #uyari { display: flex !important; }
+    }
+  
+    .tk-set, .yks-set { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px 14px; margin: 0 0 14px; min-width: 0; }
+    .tk-set legend, .yks-set legend { font-weight: 700; padding: 0 6px; }
+    .net-row { display: grid; grid-template-columns: 1fr 84px 84px 84px auto; gap: 8px; align-items: end; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .net-row.tk-row { grid-template-columns: 1fr 96px 100px 100px auto; }
+    .net-row:last-child { border-bottom: 0; }
+    .net-row .net-del { min-height: 44px; }
+    .ders-in { display: grid; gap: 2px; font-size: .82rem; color: var(--ba-text-2); }
+    .ders-in input { width: 100%; min-height: 44px; padding: 6px 8px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    @media (max-width: 600px) { .net-row, .net-row.tk-row { grid-template-columns: 1fr 1fr; } .net-ad { grid-column: 1 / -1; } .net-row .net-del { grid-column: 1 / -1; } }
+    .yks-table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: .92rem; }
+    .yks-table th, .yks-table td { padding: 6px 8px; border-bottom: 1px solid var(--ba-border); text-align: left; }
+    .yks-table td:not(:first-child), .yks-table th:not(:first-child) { text-align: right; }
+    .tk-low { color: #a40000; font-weight: 700; }
+    #r-durum { white-space: normal; text-align: right; }
+    #r-durum[data-durum="yok"] { color: #a40000; }
+    .hist-list { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+    .hist-item { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); font-size: .92rem; }
+    #chart { width: 100%; height: 200px; display: block; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); }
+    .kdv-form input[type="checkbox"], .kdv-form input[type="radio"] { width: 20px; height: 20px; }
+    .kdv-actions { margin-top: 10px; }
+    @media print { .tk-set, .hist-wrap-x, #hist-section { display: none !important; } }
+  </style>
+  <script type="application/ld+json">
+  [{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Net Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/net-hesaplama/"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Yanlış doğruyu götürür mü?","acceptedAnswer":{"@type":"Answer","text":"Evet. TYT, AYT, KPSS, ALES ve DGS'de dört yanlış bir doğruyu götürür (her yanlış 0,25 net). LGS'de üç yanlış bir doğruyu götürür. Boş bırakılan sorular nete etki etmez. Güncel katsayıyı her zaman sınav kılavuzundan doğrulayın."}},{"@type":"Question","name":"TYT net nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Her test için net = doğru − yanlış ÷ 4 işlemi yapılır, sonra dört testin (Türkçe, Sosyal, Matematik, Fen) neti toplanır. Örneğin Türkçede 30 doğru 8 yanlış 28 nettir."}},{"@type":"Question","name":"LGS net nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"LGS'de net = doğru − yanlış ÷ 3 formülü kullanılır. Matematikte 17 doğru ve 3 yanlış 16 net eder. Aracı LGS seçeneğine aldığınızda katsayı otomatik 3 olur."}},{"@type":"Question","name":"Net ile puan aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Net, doğru ve yanlış sayılarından çıkan ham değerdir. Puan ise sınav kurumunun ders ağırlıkları ve aday kitlesinin ortalama/standart sapma değerleriyle hesapladığı sonuçtur. Puan için ilgili puan hesaplama araçlarımızı yaklaşık tahmin olarak kullanabilirsiniz."}},{"@type":"Question","name":"Negatif net çıkabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Yanlışlarınızın dörtte biri doğrularınızdan fazlaysa bir dersin neti negatif olabilir. Araç bunu olduğu gibi gösterir; toplam net hesabına da negatif değer olarak katar."}},{"@type":"Question","name":"Deneme geçmişim nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca kendi tarayıcınızın localStorage alanında. Sunucuya gönderilmez, başkası göremez. Tarayıcı verilerini temizlerseniz ya da gizli sekme kullanırsanız geçmiş silinebilir; önemli sonuçları kopyalayıp saklayın."}},{"@type":"Question","name":"Kendi okul sınavım için kullanabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. \"Özel sınav\" seçeneğinde ders adlarını, soru sayılarını ve yanlış katsayısını kendiniz belirlersiniz. Yanlış cezası olmayan bir sınav için katsayıya çok büyük bir değer (örn. 1000) yazabilirsiniz."}},{"@type":"Question","name":"Doğru ve yanlışlarımın toplamı soru sayısını aşarsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Araç bunun mümkün olmadığını belirten bir uyarı gösterir ve hesap yapmaz. Genellikle bir rakam hatasıdır; ilgili dersin sayılarını kontrol edip tekrar deneyin."}}]}]
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Net Hesaplama – TYT, AYT, LGS, KPSS ve Deneme Sınavı Net Hesaplama</h1>
+      <p class="lead">Sınav türünü seçin, her dersin doğru ve yanlış sayısını yazın; toplam netinizi, ders bazında tabloyu, doğruluk yüzdenizi ve hedefe kalan farkı görün. Denemelerinizi kaydedip grafikle izleyin. Girdiğiniz hiçbir bilgi bilgisayarınızdan çıkmaz.</p>
+      <p class="ba-note" id="uyari" role="note"><span aria-hidden="true">ℹ️</span><span>Net = doğru − yanlış ÷ katsayı (YKS/KPSS/ALES/DGS için 4, LGS için 3). Bu araç yalnızca net hesaplar; resmî puan ve sonuç için ilgili sınav kurumunun açıklamalarına bakın.</span></p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="exam">Sınav türü</label><select id="exam"></select></div>
+          <div class="ba-field"><label for="k">Yanlış katsayısı (kaç yanlış 1 doğruyu götürür)</label><input id="k" type="text" inputmode="numeric" autocomplete="off"></div>
+        </div>
+        <p class="kdv-note" id="k-note" hidden></p>
+        <fieldset class="yks-set"><legend>Dersler</legend>
+          <div id="rows"></div>
+          <div class="ba-actions kdv-actions"><button id="add-row" class="ba-btn" type="button">Ders ekle</button></div>
+          <p class="kdv-note">Boş bıraktığınız doğru/yanlış alanları 0 sayılır; boş sayısı otomatik bulunur. Değerleriniz bu tarayıcıda taslak olarak saklanır, hiçbir yere gönderilmez.</p>
+        </fieldset>
+        <div class="ba-field"><label for="hedef">Hedef net (isteğe bağlı)</label><input id="hedef" type="text" inputmode="decimal" placeholder="örn. 85,5" autocomplete="off"></div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Neti hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row is-strong"><dt>Toplam net</dt><dd id="r-net"></dd></div>
+          <div class="kdv-row"><dt>Doğru / yanlış / boş</dt><dd id="r-dy"></dd></div>
+          <div class="kdv-row"><dt>Doğruluk (doğru ÷ cevaplanan)</dt><dd id="r-acc"></dd></div>
+          <div class="kdv-row"><dt>Net başarı (net ÷ soru)</dt><dd id="r-basari"></dd></div>
+          <div class="kdv-row" id="row-hedef" hidden><dt>Hedef net</dt><dd id="r-hedef"></dd></div>
+        </dl>
+        <h4>Ders bazında net tablosu</h4>
+        <table class="yks-table"><thead><tr><th scope="col">Ders</th><th scope="col">Soru</th><th scope="col">Doğru</th><th scope="col">Yanlış</th><th scope="col">Boş</th><th scope="col">Net</th><th scope="col">Doğruluk</th></tr></thead><tbody id="tbl"></tbody></table>
+        <div class="ba-field"><label for="deneme-ad">Deneme adı (isteğe bağlı, geçmişe kaydederken)</label><input id="deneme-ad" type="text" maxlength="30" autocomplete="off" placeholder="örn. Deneme 3"></div>
+        <div class="ba-actions"><button id="save-hist" class="ba-btn" type="button">Denemeyi geçmişe kaydet</button><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <section id="hist-section" aria-labelledby="h-hist">
+        <h3 id="h-hist">Deneme geçmişi ve net grafiği</h3>
+        <p class="kdv-note" id="hist-empty">Henüz kayıtlı deneme yok. Sonuç hesapladıktan sonra "Denemeyi geçmişe kaydet" düğmesine basın; kayıtlar yalnızca bu cihazın tarayıcısında (localStorage) tutulur ve sitemize gönderilmez.</p>
+        <div id="hist-wrap" hidden>
+          <canvas id="chart" role="img" aria-label="Kayıtlı denemelerin toplam net grafiği"></canvas>
+          <ul id="hist-list" class="hist-list"></ul>
+          <div class="ba-actions"><button id="clear-hist" class="ba-btn" type="button">Tüm geçmişi sil</button></div>
+        </div>
+      </section>
+    </section>
+
+    <div class="ba-ad" data-slot="net-hesaplama-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+<h2>Nasıl kullanılır?</h2>
+<ol class="ba-steps"><li>Sınav türünü seçin: TYT, AYT (Sayısal, Eşit Ağırlık, Sözel), LGS, KPSS, ALES, DGS ya da kendi sınavınız için "Özel sınav". Ders satırları ve yanlış katsayısı otomatik gelir.</li><li>Her dersin yanına denemede yaptığınız doğru ve yanlış sayısını yazın. Boş bıraktığınız alan sıfır sayılır; boş soru sayısını araç kendisi bulur.</li><li>İsterseniz hedef net yazın. "Neti hesapla" dediğinizde toplam net, ders bazında tablo, doğruluk yüzdesi ve hedefe kalan fark görünür.</li><li>Sonucu beğendiyseniz "Denemeyi geçmişe kaydet" ile listenize ekleyin. Her yeni denemede grafik güncellenir; böylece haftalar içindeki ilerlemenizi tek bakışta görürsünüz.</li></ol>
+
+<h2>Net nedir ve nasıl hesaplanır?</h2>
+<p>Net, bir sınavda gerçekten kazandığınız puanlık başarıyı gösteren sayıdır. Ham doğru sayınız değil, yanlışlarınızın cezası düşüldükten sonra kalan değerdir. Formül çok basittir: <strong>net = doğru − yanlış ÷ katsayı</strong>. Katsayı, kaç yanlışın bir doğruyu götürdüğünü gösterir. YKS (TYT ve AYT), KPSS, ALES ve DGS gibi sınavlarda katsayı 4, LGS'de ise 3'tür. Boş bıraktığınız sorular ne artı ne eksi etki eder.</p>
+<p>Örneğin TYT Türkçe testinde 30 doğru ve 8 yanlış yaptıysanız net 30 − 8 ÷ 4 = 28 olur. LGS Matematik'te 17 doğru ve 3 yanlışınız varsa net 17 − 3 ÷ 3 = 16 çıkar. Bu araç aynı işlemi her ders için ayrı ayrı yapar, ardından dersleri toplayarak toplam neti verir. Sonuçlar iki ondalık basamağa yuvarlanarak gösterilir; çünkü 4 katsayısında net çoğu zaman 0,25'in katları olarak ortaya çıkar.</p>
+<p>Doğruluk yüzdesi, doğru sayınızın cevapladığınız soru sayısına oranıdır. Net başarı ise toplam netinizin toplam soru sayısına oranıdır. İkisi birbirinden farklı bir şeyi anlatır: doğruluğunuz yüksek ama çok soru boş bırakıyorsanız hız sorununuz vardır; çok soru cevaplayıp doğruluğunuz düşükse tahmin ve dikkat sorununuz vardır. Araç bu iki oranı yan yana gösterir.</p>
+
+<h2>Yanlış doğruyu götürür mü?</h2>
+<p>Kısa cevap: evet, ama sınava göre değişen bir oranda. Yanlış cevaplar rastgele işaretlemeyi caydırmak için doğru sayısından belli bir oranda düşülür. TYT, AYT, KPSS, ALES ve DGS'de dört yanlış bir doğruyu götürür; yani her yanlış 0,25 net kaybettirir. LGS'de üç yanlış bir doğruyu götürür; her yanlış yaklaşık 0,33 net kaybettirir. Bu fark, LGS'de emin olmadığınız soruyu işaretleme kararını TYT'ye göre biraz daha riskli kılar.</p>
+<p>Peki bu, emin olmadığınız soruları boş bırakmanız gerektiği anlamına mı gelir? Matematiksel olarak beşli seçenekli bir soruda tamamen şansa bırakırsanız doğru bulma ihtimaliniz beşte birdir; beklenen kazanç 0,2 × 1 − 0,8 × 0,25 = 0 netir. Yani gerçekten rastgele işaretlemenin beklenen net etkisi sıfırdır. Ancak şıklardan bir ya da ikisini kesin olarak eleyebiliyorsanız beklenen değer artıya geçer. Bu yüzden genel tavsiye, tamamen bilmediğiniz soruda boş bırakmak, iki şık arasında kaldığınız soruda ise işaretlemektir. Elbette bu bir istatistik bilgisidir; sınav stratejinizi kendi deneyiminize göre belirleyin.</p>
+<p>LGS için aynı hesap yapıldığında rastgele işaretlemenin beklenen değeri dörtlü seçenekte 0,25 × 1 − 0,75 × (1/3) = 0 olur. Yine sıfırdır; çünkü katsayı seçenek sayısına göre kurulmuştur. Bu ilke sınavın adil olması için bilinçli olarak seçilir. Resmî sınav duyurularındaki katsayılar zamanla değişebileceği için kendi sınavınızın güncel kılavuzunu mutlaka okuyun; araçtaki katsayı kutusu değiştirilebilir olduğundan yeni bir oran açıklanırsa hemen uygulayabilirsiniz.</p>
+<div class="ba-ad" data-slot="net-hesaplama-b" aria-label="Reklam"></div>
+
+<h2>Sınavlara göre katsayılar ve soru dağılımları</h2>
+<p>Araçtaki hazır şablonlar şu soru dağılımlarını kullanır. TYT: Türkçe 40, Sosyal Bilimler 20, Temel Matematik 40, Fen Bilimleri 20 (toplam 120). AYT Sayısal: Matematik 40, Fizik 14, Kimya 13, Biyoloji 13. AYT Eşit Ağırlık: Matematik 40, Edebiyat 24, Tarih-1 10, Coğrafya-1 6. AYT Sözel: Edebiyat 24, Tarih-1 10, Coğrafya-1 6, Tarih-2 11, Coğrafya-2 11, Felsefe grubu 12, Din Kültürü 6. LGS: Türkçe, Matematik, Fen Bilimleri 20'şer; İnkılap Tarihi, Din Kültürü ve Yabancı Dil 10'ar soru (toplam 90). KPSS Lisans genel yetenek ve genel kültür için ders başına 30, 30, 27, 18, 9, 6 soru. ALES ve DGS'de sayısal ve sözel bölümler 50'şer soru.</p>
+<p>Bu dağılımlar sınav kurumlarının yayımladığı kılavuzlara dayanır; ancak yıllar içinde değişebilir. Satırlardaki soru sayısı alanı düzenlenebilir olduğundan farklı bir sınav biçimiyle karşılaşırsanız değeri kendiniz yazabilir, ders ekleyip silebilirsiniz. Okul yazılıları, kurs denemeleri ve yayınevi denemeleri için "Özel sınav" seçeneği en esnek yoldur.</p>
+
+<h2>Deneme geçmişi ve hedef net ile ilerlemeyi izleme</h2>
+<p>Tek bir deneme sonucu, tek başına çok şey anlatmaz; asıl bilgi, denemeler arasındaki eğilimdedir. Bu yüzden araç, hesapladığınız sonucu isterseniz tarihiyle birlikte geçmişe kaydeder ve kayıtlı denemelerin toplam netini çizgi grafiğiyle gösterir. Grafik tamamen tarayıcınızda çizilir; veriler yalnızca cihazınızın yerel depolamasında (localStorage) durur. Başka bir bilgisayara ya da tarayıcıya geçerseniz geçmiş taşınmaz; bu durumda "Sonucu kopyala" ile sonuçlarınızı bir not uygulamasına alabilirsiniz.</p>
+<p>Hedef net alanı, deneme sonrası motivasyon için kullanışlıdır. Örneğin TYT'de 85 net hedefliyorsanız ve 78,25 yaptıysanız araç "Hedefe 6,75 net kaldı" der. Bu farkı derslere bölerek bir sonraki denemeye daha gerçekçi alt hedefler koyabilirsiniz: Matematikten iki, Fenden bir, Türkçeden üç net gibi. Küçük ve ölçülebilir hedefler, büyük hedeflerden genellikle daha sürdürülebilirdir.</p>
+<p>Tablodaki ders bazında doğruluk yüzdesi de ders çalışma planınız için ipucu verir. Doğruluğu düşük bir ders, konu eksiğinizin ya da dikkat hatalarınızın olduğu yerdir; doğruluğu yüksek ama çok boş bırakılan bir ders ise zaman yönetimi çalışması gerektirdiğini gösterir. Bu yorumlar bir rehber öğretmenin yerini tutmaz, ancak kendi verinize bakarak karar vermenize yardımcı olur.</p>
+
+<h2>Neden Bilişim Ajans net hesaplama aracı?</h2>
+<p>Hesaplama tamamen tarayıcınızda yapılır; girdiğiniz doğru ve yanlış sayıları sunucuya gönderilmez, çerez veya izleme kodu kullanılmaz. Kayıt, üyelik ya da e-posta istenmez. Sayfa mobilde 360 piksel genişlikte de rahat çalışır, klavyeyle kullanılabilir ve PWA olarak yüklendiğinde çevrimdışı açılır. Bu araç yalnızca matematiksel net hesabı yapar; resmî sonuç ve puanlar için ilgili sınav kurumunun açıklamalarına bakmalısınız.</p>
+
+<h2>Sık sorulan sorular</h2>
+<details><summary>Yanlış doğruyu götürür mü?</summary><p>Evet. TYT, AYT, KPSS, ALES ve DGS'de dört yanlış bir doğruyu götürür (her yanlış 0,25 net). LGS'de üç yanlış bir doğruyu götürür. Boş bırakılan sorular nete etki etmez. Güncel katsayıyı her zaman sınav kılavuzundan doğrulayın.</p></details>
+<details><summary>TYT net nasıl hesaplanır?</summary><p>Her test için net = doğru − yanlış ÷ 4 işlemi yapılır, sonra dört testin (Türkçe, Sosyal, Matematik, Fen) neti toplanır. Örneğin Türkçede 30 doğru 8 yanlış 28 nettir.</p></details>
+<details><summary>LGS net nasıl hesaplanır?</summary><p>LGS'de net = doğru − yanlış ÷ 3 formülü kullanılır. Matematikte 17 doğru ve 3 yanlış 16 net eder. Aracı LGS seçeneğine aldığınızda katsayı otomatik 3 olur.</p></details>
+<details><summary>Net ile puan aynı şey mi?</summary><p>Hayır. Net, doğru ve yanlış sayılarından çıkan ham değerdir. Puan ise sınav kurumunun ders ağırlıkları ve aday kitlesinin ortalama/standart sapma değerleriyle hesapladığı sonuçtur. Puan için ilgili puan hesaplama araçlarımızı yaklaşık tahmin olarak kullanabilirsiniz.</p></details>
+<details><summary>Negatif net çıkabilir mi?</summary><p>Evet. Yanlışlarınızın dörtte biri doğrularınızdan fazlaysa bir dersin neti negatif olabilir. Araç bunu olduğu gibi gösterir; toplam net hesabına da negatif değer olarak katar.</p></details>
+<details><summary>Deneme geçmişim nerede saklanıyor?</summary><p>Yalnızca kendi tarayıcınızın localStorage alanında. Sunucuya gönderilmez, başkası göremez. Tarayıcı verilerini temizlerseniz ya da gizli sekme kullanırsanız geçmiş silinebilir; önemli sonuçları kopyalayıp saklayın.</p></details>
+<details><summary>Kendi okul sınavım için kullanabilir miyim?</summary><p>Evet. "Özel sınav" seçeneğinde ders adlarını, soru sayılarını ve yanlış katsayısını kendiniz belirlersiniz. Yanlış cezası olmayan bir sınav için katsayıya çok büyük bir değer (örn. 1000) yazabilirsiniz.</p></details>
+<details><summary>Doğru ve yanlışlarımın toplamı soru sayısını aşarsa ne olur?</summary><p>Araç bunun mümkün olmadığını belirten bir uyarı gösterir ve hesap yapmaz. Genellikle bir rakam hatasıdır; ilgili dersin sayılarını kontrol edip tekrar deneyin.</p></details>
+
+<h2>İlgili araçlar</h2>
+<ul><li><a href="../yks-puan-hesapla/">YKS Puan Hesaplama</a></li><li><a href="../lgs-puan-hesapla/">LGS Puan Hesaplama</a></li><li><a href="../kpss-puan-hesapla/">KPSS Puan Hesaplama</a></li><li><a href="../not-ortalamasi/">Not Ortalaması Hesaplama</a></li><li><a href="../takdir-tesekkur-hesapla/">Takdir Teşekkür Hesaplama</a></li></ul>
+    </article>
+
+    <div class="ba-ad" data-slot="net-hesaplama-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

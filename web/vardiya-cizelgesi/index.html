@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vardiya Çizelgesi Oluştur – Aylık Vardiya ve Nöbet Listesi (PDF, PNG)</title>
+  <meta name="description" content="Ücretsiz vardiya çizelgesi oluşturucu: çalışanları ekleyin, 2 sabah 2 akşam 2 gece 2 izin gibi rotasyonu otomatik doldurun, toplam saatleri görün; A4 yatay PDF veya PNG indirin. Verileriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/vardiya-cizelgesi/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .vd-form .ba-field { margin-bottom: 12px; }
+    .vd-form input[type="text"], .vd-form input[type="number"], .vd-form input[type="month"], .vd-form textarea { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .vd-form textarea { min-height: 110px; }
+    .vd-form input:focus, .vd-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .vd-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .vd-grid { grid-template-columns: 1fr 1fr; } .vd-grid.c3 { grid-template-columns: repeat(3, 1fr); } }
+    .vd-types { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 12px 4px; margin: 0 0 14px; }
+    .vd-types legend { font-weight: 600; padding: 0 6px; }
+    .vd-type { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 0 0 8px; }
+    .vd-code { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #222; color: #fff; font-weight: 700; }
+    .vd-tname { min-width: 72px; font-weight: 600; }
+    .vd-type label { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; }
+    .vd-type input[type="time"] { min-height: 40px; padding: 4px 8px; font: inherit; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .vd-type input[type="color"] { width: 44px; height: 40px; padding: 2px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: #fff; }
+    .vd-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .vd-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .vd-status { font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; min-height: 1.3em; }
+    .vd-warn { margin: 10px 0; padding: 10px 14px; background: #fff7dd; border: 1px solid #c9a227; border-radius: var(--ba-radius-sm); color: #3d3000; font-size: .9rem; }
+    .vd-warn ul { margin: 6px 0 0; padding-left: 20px; }
+    .vd-scroll { overflow-x: auto; margin: 14px 0; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: #fff; }
+    #grid { border-collapse: collapse; width: max-content; min-width: 100%; }
+    #grid th, #grid td { border: 1px solid #888; padding: 0; text-align: center; }
+    #grid thead th { background: #7b2331; color: #fff; padding: 3px 2px; font-size: .75rem; min-width: 30px; }
+    #grid thead th.we { background: #4f1621; }
+    #grid thead th .dn, #grid thead th .wd { display: block; line-height: 1.2; }
+    #grid thead th .wd { font-weight: 400; font-size: .68rem; }
+    #grid th.name { min-width: 130px; max-width: 170px; text-align: left; padding: 4px 8px; position: sticky; left: 0; z-index: 1; }
+    #grid tbody th.name { background: #f8eaec; color: #111; font-size: .85rem; }
+    #grid thead th.name { background: #7b2331; }
+    #grid td.we { background: #ececec; }
+    #grid td.tot, #grid th.tot { min-width: 38px; padding: 0 4px; font-size: .82rem; background: #f2f2f2; color: #111; }
+    #grid thead th.tot { background: #7b2331; color: #fff; }
+    #grid button.cell { display: block; width: 100%; min-width: 30px; height: 44px; border: 0; background: transparent; font: inherit; font-weight: 700; font-size: .85rem; color: #111; cursor: pointer; padding: 0; }
+    #grid button.cell:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: -3px; }
+    .vd-drop { margin-top: 8px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Vardiya ve Nöbet Çizelgesi Oluşturucu – Bilişim Ajans","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/vardiya-cizelgesi/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Vardiya çizelgesini nasıl hazırlarım?","acceptedAnswer":{"@type":"Answer","text":"Çalışanların adlarını her satıra bir kişi gelecek şekilde yazın, ayı seçin ve vardiya saatlerini kontrol edin. Ardından ya \"Rotasyonu uygula\" düğmesiyle otomatik döngüyü doldurun ya da tablodaki hücrelere tıklayarak sabah, akşam, gece ve izin arasında geçiş yapın. Hazır olunca PDF veya PNG olarak indirin."}},{"@type":"Question","name":"2 sabah 2 akşam 2 gece 2 izin rotasyonu nasıl kurulur?","acceptedAnswer":{"@type":"Answer","text":"Rotasyon düzeni alanına S,S,A,A,G,G,İ,İ yazın; bu zaten varsayılan değerdir. \"Kişiler arası kaydırma\" alanı her çalışanın düzende kaç gün ileriden başlayacağını belirler: 2 yazarsanız ikinci çalışan döngüye iki gün sonra girer, böylece aynı gün herkes aynı vardiyada olmaz. \"Başlangıç ofseti\" ise tüm ekibi birlikte kaydırır."}},{"@type":"Question","name":"Haftalık 45 saat ve gece 7,5 saat sınırı kesin yasal sonuç verir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç, İş Kanunu'ndaki genel kuralları (haftalık normal çalışma süresi en çok 45 saat, gece çalışması günde en çok 7,5 saat, haftada en az 24 saat kesintisiz dinlenme) hatırlatan bilgilendirici uyarılar üretir. İşyerinizin toplu iş sözleşmesi, denkleştirme uygulaması, fazla mesai ve sektöre özel düzenlemeler sonucu değiştirebilir. Bağlayıcı karar için iş hukuku uzmanına ya da bağlı olduğunuz kuruma danışın."}},{"@type":"Question","name":"\"Eksik haftalara izin ekle\" seçeneği ne yapar?","acceptedAnswer":{"@type":"Answer","text":"Seçili olduğunda rotasyon uygulanırken Pazartesi'den Pazar'a tam bir haftada hiç izin günü yoksa o haftanın Pazar gününü izin yapar. Ay başı ve sonundaki eksik haftalara dokunmaz. Seçili değilse çizelge olduğu gibi kalır, yalnızca üstte uyarı listesi görürsünüz; böylece hangi kararı vereceğinize siz karar verirsiniz."}},{"@type":"Question","name":"Gece vardiyası gece yarısını geçiyor, saat doğru hesaplanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Başlangıç saati bitişten büyükse vardiya ertesi güne taşıyor kabul edilir. Örneğin 23:00-06:30 vardiyası 7,5 saat sayılır, 16:00-00:00 vardiyası 8 saat. Vardiyanın toplam süresi o gün çalışma saati olarak kişinin toplamına eklenir; gece yarısından sonraki kısmı ayrıca takvimde ertesi güne yazılmaz."}},{"@type":"Question","name":"Çizelgem sunucuya yükleniyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Çalışan adları, vardiyalar ve ayarlar yalnızca tarayıcınızda işlenir; PDF ve PNG bilgisayarınızda oluşur. Sayfada çerez ya da izleme kodu yoktur. Çalışmanız kaybolmasın diye taslak bu tarayıcının yerel depolamasına kaydedilir; isterseniz silebilirsiniz."}},{"@type":"Question","name":"Çizelgeyi sonra düzenlemek için ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"\"JSON kaydet\" düğmesiyle küçük bir dosya indirin. Bir sonraki ay ya da gün tekrar açtığınızda \"JSON yükle\" alanına bu dosyayı bırakın; çalışanlar, vardiya saatleri, renkler ve doldurduğunuz hücreler geri gelir. Yalnızca bu araçtan indirilen JSON dosyaları kabul edilir."}},{"@type":"Question","name":"Çalışan sayısı çok olursa PDF sayfaya sığar mı?","acceptedAnswer":{"@type":"Answer","text":"Bir A4 yatay sayfaya yaklaşık 22 çalışan sığar. Daha fazla çalışan varsa PDF otomatik olarak birden çok sayfaya bölünür, başlık satırı ve vardiya açıklaması her sayfada tekrarlanır. Araç en fazla 40 çalışana izin verir; daha büyük ekipler için bölümlere ayrı çizelge hazırlayın."}},{"@type":"Question","name":"Vardiya saatlerini ve renkleri değiştirebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sabah, akşam ve gece vardiyaları için başlangıç ve bitiş saatini, her tür için hücre rengini seçebilirsiniz. Yazıcı siyah-beyazsa açık renkler seçin; vardiya kodları (S, A, G, İ) renkten bağımsız olarak hücrede yazdığı için çıktı fotokopide de okunur."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#pdf" class="ba-nav-optional">PDF</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#pdf">PDF ve belge</a></li></ol>
+      <h1>Vardiya Çizelgesi Oluştur – Aylık Vardiya ve Nöbet Listesi</h1>
+      <p class="lead">Çalışanlarınızı yazın, ayı seçin; sabah, akşam, gece ve izin vardiyalarını otomatik rotasyonla doldurun ya da hücrelere tıklayarak düzenleyin. Kişi başı toplam saatleri görün, A4 yatay PDF veya PNG olarak indirin. Listeniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="vd-form" novalidate>
+        <div class="vd-grid">
+          <div class="ba-field"><label for="f-title">Başlık</label><input id="f-title" type="text" maxlength="80" value="Vardiya Çizelgesi"></div>
+          <div class="ba-field"><label for="f-month">Ay</label><input id="f-month" type="month" placeholder="2026-11" pattern="\d{4}-\d{2}"></div>
+        </div>
+        <div class="ba-field"><label for="f-emps">Çalışanlar (her satıra bir kişi, en fazla 40)</label>
+          <textarea id="f-emps" spellcheck="false" placeholder="Ayşe Yılmaz&#10;Mehmet Öztürk&#10;Çağrı Şahin"></textarea></div>
+        <fieldset class="vd-types"><legend>Vardiya türleri (saat ve renk)</legend>
+          <div class="vd-type"><span class="vd-code">S</span><span class="vd-tname">Sabah</span><label>Başlangıç <input id="t-S-start" type="time"></label><label>Bitiş <input id="t-S-end" type="time"></label><label class="vd-color">Renk <input id="t-S-color" type="color" value="#cccccc"></label></div>
+          <div class="vd-type"><span class="vd-code">A</span><span class="vd-tname">Akşam</span><label>Başlangıç <input id="t-A-start" type="time"></label><label>Bitiş <input id="t-A-end" type="time"></label><label class="vd-color">Renk <input id="t-A-color" type="color" value="#cccccc"></label></div>
+          <div class="vd-type"><span class="vd-code">G</span><span class="vd-tname">Gece</span><label>Başlangıç <input id="t-G-start" type="time"></label><label>Bitiş <input id="t-G-end" type="time"></label><label class="vd-color">Renk <input id="t-G-color" type="color" value="#cccccc"></label></div>
+          <div class="vd-type"><span class="vd-code">İ</span><span class="vd-tname">İzin (çalışma yok)</span><label class="vd-color">Renk <input id="t-İ-color" type="color" value="#bfe3c8"></label></div>
+        </fieldset>
+        <div class="vd-grid c3">
+          <div class="ba-field"><label for="f-pattern">Rotasyon düzeni (kodları virgülle yazın)</label><input id="f-pattern" type="text" maxlength="120" value="S,S,A,A,G,G,İ,İ"></div>
+          <div class="ba-field"><label for="f-offset">Başlangıç ofseti (gün)</label><input id="f-offset" type="number" value="0" inputmode="numeric"></div>
+          <div class="ba-field"><label for="f-step">Kişiler arası kaydırma (gün)</label><input id="f-step" type="number" value="2" inputmode="numeric"></div>
+        </div>
+        <label class="vd-check"><input id="f-fix" type="checkbox"> Rotasyonda izni olmayan tam haftalara Pazar izni ekle</label>
+      </form>
+      <div class="ba-actions">
+        <button id="apply-rotation" class="ba-btn ba-btn-primary" type="button">Rotasyonu uygula (hücrelerin üzerine yazar)</button>
+        <button id="clear-cells" class="ba-btn" type="button">Tüm hücreleri temizle</button>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <p class="vd-status" id="status" aria-live="polite">Bir hücreye tıklayın: boş → S (sabah) → A (akşam) → G (gece) → İ (izin) → boş.</p>
+      <div id="warnings" class="vd-warn" role="status" hidden></div>
+
+      <div class="vd-scroll"><table id="grid"></table></div>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Uyarılar İş Kanunu md. 63 (haftalık 45 saat), md. 69 (gece çalışması günde 7,5 saat) ve md. 46 (haftalık dinlenme) genel kurallarına göredir; bilgilendirme amaçlıdır, hukuki tavsiye değildir.</span></p>
+
+      <div class="ba-actions">
+        <button id="make-pdf" class="ba-btn ba-btn-primary" type="button">PDF indir (A4 yatay)</button>
+        <button id="make-png" class="ba-btn" type="button">PNG indir</button>
+        <button id="save-json" class="ba-btn" type="button">JSON kaydet</button>
+      </div>
+      <div id="json-drop" class="vd-drop"><strong>JSON yükle</strong> — daha önce kaydettiğiniz çizelge dosyasını seçin ya da buraya bırakın</div>
+      <p class="vd-status" id="draft-status" aria-live="polite"></p>
+      <p class="vd-status"><button id="clear-draft" class="ba-btn" type="button">Kayıtlı taslağı sil</button></p>
+
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="result" class="ba-result">
+        <h3>Dosya hazır</h3>
+        <p id="result-info"></p>
+        <p>Dosya bilgisayarınızda oluşturuldu; hiçbir sunucuya gönderilmedi.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="vardiya-cizelgesi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Başlığı yazın, çizelgenin ayını seçin ve çalışanların adlarını her satıra bir kişi gelecek biçimde girin. Liste değiştikçe tablo anında yenilenir; en fazla 40 kişi eklenebilir.</li>
+        <li>Sabah, akşam ve gece vardiyalarının başlangıç ve bitiş saatlerini işyerinizdeki düzene göre ayarlayın, isterseniz renkleri değiştirin. Gece yarısını geçen vardiyalar otomatik doğru saat olarak hesaplanır.</li>
+        <li>Otomatik döngü için rotasyon düzenini yazın (örneğin S,S,A,A,G,G,İ,İ) ve "Rotasyonu uygula"ya basın. Kişiler arası kaydırma, ekibin aynı anda aynı vardiyada olmamasını sağlar. El ile düzenlemek isterseniz hücrelere tıklayarak vardiyayı değiştirin.</li>
+        <li>Tablonun üstündeki uyarı kutusuna bakın: izni olmayan haftalar, 45 saati aşan haftalar ve gece vardiyası süresi burada listelenir. Satırın sağındaki toplam saat ve gün sayıları kişi başı yükü gösterir.</li>
+        <li>"PDF indir" ile A4 yatay çıktıyı, "PNG indir" ile paylaşım görselini alın. Çizelgeyi sonraki ay yeniden kullanmak için "JSON kaydet" ile dosyayı saklayın.</li>
+      </ol>
+
+      <h2>Vardiya çizelgesi nedir, neden önemlidir?</h2>
+      <p>Vardiya çizelgesi, bir ekibin hangi gün hangi saat aralığında çalışacağını ve ne zaman izinli olacağını gösteren aylık plandır. Hastane, eczane, güvenlik, otel, restoran, çağrı merkezi, fabrika ve mağaza gibi mesaisi sabaha, akşama ya da geceye yayılan her işyerinin vazgeçilmez belgesidir. İyi hazırlanmış bir çizelge çalışanın kendi hayatını önceden planlayabilmesini sağlar, aynı vardiyada çok az ya da çok fazla kişi kalmasını engeller ve iş yükünün adil dağıtıldığını kanıtlar. Elle çizilen kâğıt tablolar ise çoğu zaman silinti, hesap hatası ve unutulmuş izin günleriyle dolar. Bu araç; tabloyu, saat toplamlarını ve uyarıları sizin yerinize hesaplayarak ayın başında vakit kaybetmenizi önler.</p>
+      <p>Nöbet çizelgesi de aynı mantıkla çalışır. Okullarda nöbetçi öğretmen listesi, apartman ya da sitelerde temizlik sırası, derneklerde stant görevi, eczanelerde nöbet günleri bu araçla hazırlanabilir. Vardiya türlerini "S, A, G, İ" kodlarıyla düşünmek zorunda değilsiniz; sabah vardiyasını nöbet, akşam vardiyasını yedek olarak yorumlayıp çizelgeyi kendi amacınıza uyarlayabilirsiniz. Önemli olan her hücrede kısa bir kod ve renk görmenizdir; çıktıyı duvara astığınızda herkes bir bakışta kendi satırını bulur.</p>
+
+      <h2>Otomatik döngü ve el ile düzenleme</h2>
+      <p>Çoğu işyeri vardiyaları bir döngüye göre döndürür. Klasik örnek, iki sabah, iki akşam, iki gece ve iki izin günlük sekiz günlük döngüdür. Araçta döngü, virgülle ayrılmış kodlarla yazılır ve ay boyunca baştan sona tekrarlanır. Çalışanlar aynı noktadan başlarsa hepsi aynı gün aynı vardiyada olur ve gece kimse kalmaz; bu yüzden "kişiler arası kaydırma" alanı her kişinin döngüye kaç gün sonra gireceğini belirler. Kaydırmayı 2 yaptığınızda dört kişilik bir ekipte her vardiya türünde her gün birini bulursunuz. Kaydırmayı 0 yaparsanız herkes aynı düzende çalışır.</p>
+      <p>Başlangıç ofseti ise önceki aydan devam etmek için kullanışlıdır. Geçen ay döngünün üçüncü gününde bitmişse bu ay ofsete 3 yazarak kaldığınız yerden devam edebilirsiniz. Otomatik doldurduktan sonra her hücre ayrı ayrı değiştirilebilir: bir çalışanın izin istediği günü ya da bayram tatilini el ile düzeltmek için hücreye art arda tıklamanız yeterlidir. Hücreler klavyeyle de kullanılabilir; Tab ile hücreye gelip Enter ya da Boşluk tuşuyla vardiyayı değiştirirsiniz ve ekran okuyucu "Ayşe Yılmaz, 5 Kasım: Sabah" gibi açıklayıcı bir etiket okur.</p>
+
+      <div class="ba-ad" data-slot="vardiya-cizelgesi-b" aria-label="Reklam"></div>
+
+      <h2>Çalışma süresi sınırları ve uyarılar</h2>
+      <p>İş Kanunu'na göre genel olarak haftalık normal çalışma süresi en çok 45 saattir (md. 63); gece çalışmasında, yani 20.00 ile 06.00 arasındaki dönemde, bir işçi günde en çok 7,5 saat çalıştırılabilir (md. 69); ayrıca işçiye her yedi günlük zaman diliminde en az 24 saat kesintisiz dinlenme verilmesi gerekir (md. 46). Araç bu üç kuralı hatırlatan uyarılar üretir: gece vardiyanızı 7,5 saatten uzun tanımlarsanız, bir haftadaki toplam saat 45'i aşarsa ya da tam bir haftada hiç izin günü yoksa tablonun üstünde sarı bir bilgilendirme kutusu belirir.</p>
+      <p>Bu uyarılar yalnızca bir kontrol listesidir; hukuki görüş değildir. Denkleştirme uygulaması, toplu iş sözleşmesi, kısmi süreli çalışma, fazla mesai ve sektöre özgü yönetmelikler (sağlık, güvenlik, turizm gibi) hesabı değiştirebilir. Araç, vardiya saatinin içinde ara dinlenmesi ya da yemek molası olup olmadığını bilmez; yalnızca başlangıçtan bitişe geçen süreyi sayar. Mola düşülen net süre için bitiş saatini buna göre girin. Ayrıca çizelgede belirttiğiniz saatler sizin sorumluluğunuzdadır; resmî bir belge ya da puantaj yerine geçmez.</p>
+
+      <h2>Kişi başı toplamlar</h2>
+      <p>Her satırın sağında dört sütun daha vardır: toplam çalışma saati ve sabah, akşam, gece, izin günlerinin sayısı. Bu rakamlar çizelgenin adil olup olmadığını anlamak için en hızlı yoldur. Bir kişi diğerlerinden on saat fazla çalışıyorsa tabloyu hemen görürsünüz. Çıktıya da aynı sütunlar basılır, böylece çalışanlar kendi toplamlarını kontrol edebilir. Toplamlar yalnızca çizelgedeki aya aittir; ay sonuna sarkan vardiyalar ertesi aya yazılmaz.</p>
+
+      <h2>PDF, PNG ve JSON farkı</h2>
+      <p>PDF yazdırmak içindir: A4 yatay sayfaya vektörel olarak çizilir, Türkçe karakterler (İ, ı, Ş, Ğ, Ç, Ö, Ü) gömülü yazı tipiyle eksiksiz basılır. PNG, WhatsApp grubuna ya da duyuru panosuna görüntü olarak göndermek içindir. JSON ise çizelgenin düzenlenebilir kaydıdır; PDF'ten geri düzenleme yapılamadığı için bir sonraki ay işe yeniden başlamak yerine JSON'u yükleyip ayı değiştirmeniz ve rotasyonu tekrar uygulamanız yeterlidir. Yazdırırken ölçeği yüzde 100 yapmayı unutmayın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Çalışan adları ve vardiyalar yalnızca tarayıcınızda işlenir.</li>
+        <li><strong>Kayıt ve filigran yok.</strong> Üyelik istenmez, çıktıya logo ya da reklam basılmaz.</li>
+        <li><strong>Gece vardiyası doğru sayılır.</strong> Gece yarısını geçen saatler ve toplamlar otomatik hesaplanır.</li>
+        <li><strong>Uyarılar dahil.</strong> Haftalık 45 saat, gece 7,5 saat ve izin günü kontrolleri bilgilendirme olarak görünür.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Vardiya çizelgesini nasıl hazırlarım?</summary><p>Çalışanların adlarını her satıra bir kişi gelecek şekilde yazın, ayı seçin ve vardiya saatlerini kontrol edin. Ardından ya "Rotasyonu uygula" düğmesiyle otomatik döngüyü doldurun ya da tablodaki hücrelere tıklayarak sabah, akşam, gece ve izin arasında geçiş yapın. Hazır olunca PDF veya PNG olarak indirin.</p></details>
+        <details><summary>2 sabah 2 akşam 2 gece 2 izin rotasyonu nasıl kurulur?</summary><p>Rotasyon düzeni alanına S,S,A,A,G,G,İ,İ yazın; bu zaten varsayılan değerdir. "Kişiler arası kaydırma" alanı her çalışanın düzende kaç gün ileriden başlayacağını belirler: 2 yazarsanız ikinci çalışan döngüye iki gün sonra girer, böylece aynı gün herkes aynı vardiyada olmaz. "Başlangıç ofseti" ise tüm ekibi birlikte kaydırır.</p></details>
+        <details><summary>Haftalık 45 saat ve gece 7,5 saat sınırı kesin yasal sonuç verir mi?</summary><p>Hayır. Araç, İş Kanunu'ndaki genel kuralları (haftalık normal çalışma süresi en çok 45 saat, gece çalışması günde en çok 7,5 saat, haftada en az 24 saat kesintisiz dinlenme) hatırlatan bilgilendirici uyarılar üretir. İşyerinizin toplu iş sözleşmesi, denkleştirme uygulaması, fazla mesai ve sektöre özel düzenlemeler sonucu değiştirebilir. Bağlayıcı karar için iş hukuku uzmanına ya da bağlı olduğunuz kuruma danışın.</p></details>
+        <details><summary>"Eksik haftalara izin ekle" seçeneği ne yapar?</summary><p>Seçili olduğunda rotasyon uygulanırken Pazartesi'den Pazar'a tam bir haftada hiç izin günü yoksa o haftanın Pazar gününü izin yapar. Ay başı ve sonundaki eksik haftalara dokunmaz. Seçili değilse çizelge olduğu gibi kalır, yalnızca üstte uyarı listesi görürsünüz; böylece hangi kararı vereceğinize siz karar verirsiniz.</p></details>
+        <details><summary>Gece vardiyası gece yarısını geçiyor, saat doğru hesaplanıyor mu?</summary><p>Evet. Başlangıç saati bitişten büyükse vardiya ertesi güne taşıyor kabul edilir. Örneğin 23:00-06:30 vardiyası 7,5 saat sayılır, 16:00-00:00 vardiyası 8 saat. Vardiyanın toplam süresi o gün çalışma saati olarak kişinin toplamına eklenir; gece yarısından sonraki kısmı ayrıca takvimde ertesi güne yazılmaz.</p></details>
+        <details><summary>Çizelgem sunucuya yükleniyor mu?</summary><p>Hayır. Çalışan adları, vardiyalar ve ayarlar yalnızca tarayıcınızda işlenir; PDF ve PNG bilgisayarınızda oluşur. Sayfada çerez ya da izleme kodu yoktur. Çalışmanız kaybolmasın diye taslak bu tarayıcının yerel depolamasına kaydedilir; isterseniz silebilirsiniz.</p></details>
+        <details><summary>Çizelgeyi sonra düzenlemek için ne yapmalıyım?</summary><p>"JSON kaydet" düğmesiyle küçük bir dosya indirin. Bir sonraki ay ya da gün tekrar açtığınızda "JSON yükle" alanına bu dosyayı bırakın; çalışanlar, vardiya saatleri, renkler ve doldurduğunuz hücreler geri gelir. Yalnızca bu araçtan indirilen JSON dosyaları kabul edilir.</p></details>
+        <details><summary>Çalışan sayısı çok olursa PDF sayfaya sığar mı?</summary><p>Bir A4 yatay sayfaya yaklaşık 22 çalışan sığar. Daha fazla çalışan varsa PDF otomatik olarak birden çok sayfaya bölünür, başlık satırı ve vardiya açıklaması her sayfada tekrarlanır. Araç en fazla 40 çalışana izin verir; daha büyük ekipler için bölümlere ayrı çizelge hazırlayın.</p></details>
+        <details><summary>Vardiya saatlerini ve renkleri değiştirebilir miyim?</summary><p>Evet. Sabah, akşam ve gece vardiyaları için başlangıç ve bitiş saatini, her tür için hücre rengini seçebilirsiniz. Yazıcı siyah-beyazsa açık renkler seçin; vardiya kodları (S, A, G, İ) renkten bağımsız olarak hücrede yazdığı için çıktı fotokopide de okunur.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../takvim-olustur/">Yazdırılabilir Takvim Oluştur</a></li>
+        <li><a href="../mesai-hesapla/">Mesai Hesapla</a></li>
+        <li><a href="../ders-programi-olustur/">Ders Programı Oluştur</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>İşletmeniz için puantaj, personel takibi ya da özel yazılım gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="vardiya-cizelgesi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

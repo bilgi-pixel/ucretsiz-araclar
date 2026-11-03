@@ -353,7 +353,7 @@ async function buildDocx(d) {
     alignment: o.align || AlignmentType.LEFT,
     spacing: { after: o.after ?? 120, before: o.before ?? 0, line: 300 },
     indent: o.firstLine ? { firstLine: o.firstLine } : undefined,
-    children: text === '' ? [] : o.runs || [run(text, o)],
+    children: o.runs || (text === '' ? [] : [run(text, o)]),
   });
   const children = [];
   children.push(para(upperTr(d.makam), { align: AlignmentType.CENTER, bold: true, after: 360 }));
