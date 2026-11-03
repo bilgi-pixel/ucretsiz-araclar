@@ -89,3 +89,33 @@ Reklam alanları (`.ba-ad`) geliştirme modunda kesikli kenarlıklı, mono "REKL
 - `pdf-birlestir-360.png`, `pdf-birlestir-768.png`, `pdf-birlestir-1280.png` — örnek araç sayfası.
 
 Notlar: 360px'te menüdeki ikincil bağlantılar gizlenir, "bilisimajans.com" butonu kalır; üst çubuğun sağ metni gizlenir. Hero başlığı 34px'e iner; araç kutusu tam genişlik, dropzone 28px iç boşluk. 768px'te kart ızgarası 2–3 sütun, altbilgi 2 sütun. 1280px'te içerik 1200px'e sabitlenir; kartlar 4 sütun.
+## 5. Hareket (4 Kasım 2026)
+
+Ana sitedeki hareket dili birebir taşındı; kaynak token'lar `web/assets/design-tokens.json` → `motion`,
+CSS karşılıkları `ba.css` `:root` (`--ba-dur-*`, `--ba-ease-*`, `--ba-stagger`, `--ba-cycle`).
+`npm run tokens:check` JSON ile CSS'in eşleştiğini doğrular (47 token).
+
+| Ana site | Araçlar sitesi | Nasıl |
+|---|---|---|
+| `.bkx-grad` parlayan başlık (bkxShine 7s) | `.ba-grad` | Hero h1'in anahtar parçası (hub: ikinci satır; araç: araç adı) beyaz→cam göbeği→pembe→amber gradyanıyla kayar |
+| Daktilo (`.bkx-type` data-words + caret) | `.ba-typer .ba-type` | Hub hero'da "Tek tıkla: PDF birleştir │" — 5 ifade döner, 2 sn bekler, siler |
+| Hero sıralı giriş | `.ba-in .ba-hero *` | Etiket → kelimeler (70 ms ara, hafif blur) → daktilo → lead → rozetler (yay easing) → arama/sekmeler |
+| Koyu zeminde gezen bordo parıltı | `.ba-hero::before` | 14 sn ileri-geri `translate` |
+| `.ba-eb` CMYK etiket | `.ba-label::before` | C·M·Y·bordo şerit; yüklenince soldan çizilir |
+| `baLogoShine` | `.ba-logo-img::after` | 5 sn'de bir çapraz parıltı, hover'da hızlanır |
+| `.ba-steps.is-in` sıralı açılış + `baRing`/`baLit` | `.ba-rev` + `.ba-steps.is-in li::before` | IntersectionObserver ile `is-in`; adım numarası yayla büyür, sonra 6.8 sn döngüde halka darbesi adımdan adıma dolaşır |
+| Bölüm başlığı | `main h2.ba-rev::after` | Soldan 14px kayarak gelir, altında 44×3 bordo çizgi soldan dolar; CTA'da CMYK çizgi |
+| `.ba-fx` çözüm kartlarındaki döngüsel ikon hareketleri (fxBob, fxSpin, fxPulse…) | `.ba-card[data-fx] .icon svg` | motion.js bağlantı adından sabit bir tür seçer (bob · wiggle · pulse · swing · jump · spin), 3.4 sn döngü, kart sırasına göre faz kayması; hover'da kutu bordoya döner ve ikon hızlanır |
+| Kartlar / SSS / paragraflar | `.ba-rev` | 22px yukarı kayarak açılır; aynı ebeveyn içinde sıra × 70 ms gecikme (en çok 8) |
+
+Teknik notlar:
+
+- Açılış `translate` / `scale` özellikleriyle yapılır, kart hover'ının `transform`'u ile çakışmaz.
+- `<head>`'deki tek satırlık betik `html.ba-js` (açılış stilleri yalnızca JS varken) ve sayfa görünürse `html.ba-in`
+  (hero yükleme animasyonları) ekler. Arka planda açılan sekmede animasyon sekme öne gelince başlar; JS yoksa her şey düz görünür.
+- Kelime ayırma h1'e `aria-label` ile tam metni yazar; ekran okuyucu tek parça okur.
+- `prefers-reduced-motion: reduce` → kelime ayırma ve daktilo çalışmaz, tüm `animation`/`transition` kapalı, her öğe anında görünür.
+- Reklam alanları (`.ba-ad`) ve altbilgi hareketsiz; AdSense konumları değişmedi.
+- Yeniden uygulama: `npm run motion:apply` (`scripts/apply-motion.mjs`) tüm HTML sayfalarına head betiği, motion.js,
+  logo sarmalı ve gradyan h1'i ekler; ba.css'te hareket bloğu yoksa `scripts/motion.css` şablonundan ekler.
+  Tekrar çalıştırılabilir; main ile birleştirme sonrası veya yeni sayfa eklenince çalıştırılır (`--dry` yalnızca sayar).
