@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ekran Kaydedici – Tarayıcıda, Yüklemesiz Ekran Kaydı (Ücretsiz, Program Kurmadan)</title>
+  <meta name="description" content="Program kurmadan ekranınızı, bir pencereyi ya da sekmeyi tarayıcıda kaydedin: sistem sesi, mikrofon, duraklat/devam, 3 saniye geri sayım. Kayıt WebM olarak bilgisayarınıza iner; video hiçbir sunucuya gitmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ekran-kaydedici/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .ek-support { margin: 0 0 14px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .93rem; }
+    .ek-warn { margin-top: 12px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .92rem; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ek-support, :root:not([data-theme="light"]) .ek-warn { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; } }
+    .ek-intro { margin: 0 0 6px; color: var(--ba-text-2); }
+    .ek-formatnote { font-size: .85rem; color: var(--ba-text-muted); font-family: var(--ba-mono); margin: 0 0 10px; min-height: 1.2em; }
+    .ek-live { margin-top: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 12px; background: var(--ba-surface-2); }
+    .ek-live video { width: 100%; max-height: 50vh; background: #000; border-radius: var(--ba-radius-sm); display: block; }
+    .ek-status { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-top: 10px; font-family: var(--ba-mono); font-size: .95rem; }
+    .ek-status .lbl { color: var(--ba-text-muted); font-family: inherit; }
+    .ek-state { font-family: var(--ba-sans, inherit); font-weight: 600; }
+    .ek-state.is-rec::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ba-danger); margin-right: 6px; animation: ek-blink 1s steps(2) infinite; }
+    .ek-state.is-pause { color: var(--ba-text-muted); }
+    @keyframes ek-blink { to { opacity: .25; } }
+    @media (prefers-reduced-motion: reduce) { .ek-state.is-rec::before { animation: none; } }
+    .ek-countdown { font-size: 3.4rem; font-weight: 800; text-align: center; color: var(--ba-primary); line-height: 1.1; margin: 8px 0; font-variant-numeric: tabular-nums; }
+    .ek-preview { width: 100%; max-height: 60vh; background: #000; border-radius: var(--ba-radius-sm); display: block; margin-top: 10px; }
+    .ek-meta { font-family: var(--ba-mono); font-size: .9rem; color: var(--ba-text-2); margin: 8px 0 0; }
+    .ek-kbd kbd { font-family: var(--ba-mono); font-size: .85em; padding: 2px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); color: var(--ba-text); }
+    .ek-compare { width: 100%; border-collapse: collapse; font-size: .93rem; margin: 10px 0 18px; }
+    .ek-compare th, .ek-compare td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .ek-compare th { background: var(--ba-surface-2); }
+    .ek-compare-wrap { overflow-x: auto; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Ekran Kaydedici – Bilişim Ajans","applicationCategory":"MultimediaApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ekran-kaydedici/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Metin</a></li></ol>
+      <h1>Ekran Kaydedici (Tarayıcıda, Yüklemesiz)</h1>
+      <p class="lead">Program kurmadan tüm ekranı, tek bir pencereyi ya da tarayıcı sekmesini kaydedin. Sistem sesi ve mikrofon isteğe bağlı; duraklatıp devam edebilirsiniz. Kayıt WebM dosyası olarak bilgisayarınıza iner, görüntü hiçbir sunucuya gitmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div id="support" class="ek-support" role="status" hidden><strong>Tarayıcı notu:</strong> <span id="support-text"></span></div>
+      <p class="ek-intro">"Kaydı başlat"a basınca tarayıcı size <strong>tüm ekran, pencere ya da sekme</strong> seçtirir. Seçiminizi onayladığınızda kayıt başlar; bitince dosya aşağıda önizlenir ve indirilir.</p>
+      <p id="format-note" class="ek-formatnote"></p>
+      <div id="options" class="ba-options">
+        <div class="ba-field"><label><input type="checkbox" id="opt-sysaudio" checked> Sistem / sekme sesini kaydet</label><div class="hint">Paylaşım penceresinde "Sesi paylaş" kutusunu da işaretleyin.</div></div>
+        <div class="ba-field"><label><input type="checkbox" id="opt-mic"> Mikrofonu kaydet (anlatım)</label><div class="hint">Ayrı bir mikrofon izni istenir.</div></div>
+        <div class="ba-field"><label for="opt-res">Çözünürlük</label><select id="opt-res"><option value="auto" selected>Otomatik (ekran boyutu)</option><option value="1080">En çok 1920×1080</option><option value="720">En çok 1280×720 (küçük dosya)</option></select></div>
+        <div class="ba-field"><label for="opt-fps">Kare hızı</label><select id="opt-fps"><option value="30" selected>30 kare/sn (ofis, ders)</option><option value="60">60 kare/sn (akıcı hareket, büyük dosya)</option><option value="15">15 kare/sn (en küçük dosya)</option></select></div>
+        <div class="ba-field"><label><input type="checkbox" id="opt-countdown" checked> Başlamadan önce 3 saniye geri say</label><div class="hint">Pencereyi düzenlemeniz için süre tanır; istemezseniz kapatın.</div></div>
+      </div>
+      <div class="ba-actions" style="margin-top:0">
+        <button id="start" class="ba-btn ba-btn-primary" type="button">Kaydı başlat</button>
+        <span id="controls" hidden>
+          <button id="pause" class="ba-btn" type="button" disabled>Duraklat</button>
+          <button id="stop" class="ba-btn ba-btn-success" type="button" disabled>Durdur ve kaydet</button>
+        </span>
+      </div>
+      <div id="live-panel" class="ek-live" hidden>
+        <div id="countdown" class="ek-countdown" aria-live="assertive" hidden>3</div>
+        <video id="live" playsinline muted autoplay aria-label="Canlı kayıt önizlemesi"></video>
+        <div class="ek-status" aria-live="polite"><span id="rec-state" class="ek-state"></span><span><span class="lbl">Süre</span> <span id="timer">00:00</span></span><span><span class="lbl">Boyut</span> <span id="size-live">0 B</span></span></div>
+        <div id="mic-warn" class="ek-warn" role="status" hidden>Mikrofon izni verilmedi ya da mikrofon bulunamadı; kayıt mikrofon olmadan sürüyor. Sesli anlatım istiyorsanız durdurup tarayıcı adres çubuğundaki izinlerden mikrofonu açın ve yeniden başlatın.</div>
+        <div id="mem-warn" class="ek-warn" role="alert" hidden><strong>Kayıt 2 GB'ı geçti.</strong> Kayıt tarayıcı belleğinde tutulur; daha uzun sürerse sekme çökebilir ve kayıt kaybolur. "Durdur ve kaydet" ile bu bölümü indirip yeni bir kayıt başlatmanız önerilir.</div>
+        <p class="ek-kbd" style="margin:10px 0 0;font-size:.88rem;color:var(--ba-text-muted)">Klavye: <kbd>Boşluk</kbd> duraklat/devam, <kbd>Esc</kbd> durdur. Tarayıcının "Paylaşımı durdur" çubuğu da kaydı bitirir.</p>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" data-mime="" data-bytes="">
+        <h3>Kayıt hazır</h3>
+        <p id="result-meta" class="ek-meta"></p>
+        <video id="preview" class="ek-preview" controls playsinline aria-label="Kayıt önizlemesi"></video>
+        <div class="ba-actions">
+          <button id="download" class="ba-btn ba-btn-success" type="button">Videoyu indir</button>
+          <button id="again" class="ba-btn" type="button">Yeni kayıt</button>
+        </div>
+        <p style="margin-top:10px;font-size:.9rem">Dosya WebM biçimindedir; Chrome, Edge, Firefox, VLC ve YouTube/Drive doğrudan oynatır. MP4 gerekiyorsa aşağıdaki "MP4 değil, neden?" bölümüne bakın.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ekran-kaydedici-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Seçenekleri ayarlayın: sistem sesi, mikrofon, çözünürlük ve kare hızı. Ders ya da program anlatımı için 30 kare/sn ve "Otomatik" çözünürlük yeterlidir; dosyayı küçük tutmak isterseniz 1280×720 seçin.</li>
+        <li>"Kaydı başlat"a tıklayın. Tarayıcının kendi paylaşım penceresi açılır; <strong>Tüm ekran</strong>, <strong>Pencere</strong> ya da <strong>Sekme</strong> sekmesinden kaydedilecek alanı seçin. Sistem sesi istiyorsanız pencerenin altındaki "Sesi paylaş" kutusunu işaretleyip "Paylaş"a basın.</li>
+        <li>Mikrofonu açtıysanız tarayıcı ikinci bir izin sorar; onaylayın. Ardından 3 saniyelik geri sayım başlar (kapatabilirsiniz); bu sürede anlatacağınız pencereyi öne alın.</li>
+        <li>Kayıt sırasında süre ve dosya boyutu canlı görünür. "Duraklat" ile ara verin, "Devam et" ile sürdürün; bu aralar videoya girmez. Bitirmek için "Durdur ve kaydet"e basın ya da tarayıcının "Paylaşımı durdur" çubuğunu kullanın.</li>
+        <li>Kayıt sayfada önizlenir. "Videoyu indir" ile <code>ekran-kaydi-tarih-saat.webm</code> adıyla bilgisayarınıza kaydedin. Beğenmediyseniz "Yeni kayıt" ile baştan başlayın; önceki kayıt bellekten silinir.</li>
+      </ol>
+
+      <h2>Program kurmadan ekran kaydı: kimler için?</h2>
+      <p>Ekran kaydı denince akla önce oyun yayınları gelir, ama günlük işte en çok ihtiyaç duyan kesim bambaşkadır: bir yazılımın nasıl kullanıldığını müşteriye göstermek isteyen destek ekibi, uzaktan ders anlatan öğretmen, "hata şöyle oluyor" demek yerine görüntüsünü göndermek isteyen çalışan, ön muhasebe programındaki fatura adımlarını yeni gelen arkadaşına bir kez kaydedip bırakmak isteyen ofis yöneticisi. Bu kullanımların ortak özelliği şudur: kayıt kısa sürer, kurulum için BT'den izin istemek zahmetlidir ve video genellikle şirket içi bilgi içerdiği için bir sunucuya yüklenmesi istenmez. Bu araç tam bu boşluk için yapıldı. Tarayıcınızın yerleşik ekran paylaşımı (video toplantılarda kullandığınız aynı özellik) ile görüntüyü alır, yine tarayıcının yerleşik kaydedicisiyle dosyaya yazar. İndirilecek program, kurulacak eklenti, açılacak hesap yoktur.</p>
+      <p>Tipik senaryolar: bir web uygulamasındaki hatayı adım adım göstererek yazılım firmasına bildirmek (ekran görüntüsü yerine video, "ne yaptınız?" sorusunu baştan cevaplar); Excel'de bir formülün nasıl kurulduğunu meslektaşa anlatmak; e-Devlet, banka ya da kamu portalında bir işlemin yolunu müşteriye göstermek; LMS'e yüklenecek 10 dakikalık ders videosu çekmek; sunum provasını kaydedip kendi anlatımınızı dinlemek. Mikrofonu açtığınızda anlatımınız görüntüyle birlikte tek dosyada kaydedilir; sistem sesini de açarsanız oynattığınız videonun ya da toplantının sesi de kayda girer.</p>
+
+      <h2>Ekran, pencere ve sekme: hangisini seçmeli?</h2>
+      <p>Tarayıcının paylaşım penceresi üç seçenek sunar. <strong>Tüm ekran</strong>, birden çok uygulama arasında geçiş yapacağınız anlatımlar içindir; bildirimler ve masaüstünüz de görüneceği için kayıt öncesi gereksiz pencereleri kapatın ve "rahatsız etmeyin" modunu açın. <strong>Pencere</strong>, yalnızca tek bir programı (örneğin muhasebe yazılımı ya da Word) kaydeder; başka pencereye geçseniz bile kayıt seçtiğiniz pencereye kilitli kalır ve masaüstünüz görünmez — hata bildirimi için en güvenli seçenektir. <strong>Sekme</strong> ise yalnızca bir tarayıcı sekmesini kaydeder, sistem sesi en güvenilir biçimde bu modda alınır (Chrome ve Edge'de her işletim sisteminde) ve çözünürlük sekmenin boyutuyla sınırlı olduğu için dosya küçük çıkar. Web uygulaması anlatımları için sekme modu idealdir.</p>
+      <p>Sistem sesi konusunda tarayıcılar farklı davranır: Chrome ve Edge, Windows'ta tüm ekran sesini verir; macOS'ta tüm ekran paylaşımında ses alınmaz, yalnızca sekme sesi alınır. Firefox hiçbir modda sistem sesi vermez, mikrofon çalışır. Safari ekran kaydını MediaRecorder ile WebM yerine MP4 yazar ve sistem sesi almaz. Araç, ses parçası gelmediğinde sizi kayıt sırasında uyarır; böylece 20 dakikalık anlatımın sonunda "ses yokmuş" sürpriziyle karşılaşmazsınız.</p>
+
+      <h2>MP4 değil, neden?</h2>
+      <p>Tarayıcıların yerleşik kaydedicisi (MediaRecorder) Chrome, Edge ve Firefox'ta yalnızca WebM konteynerine yazar: görüntü VP9 ya da VP8, ses Opus ile sıkıştırılır. MP4 (H.264) yazmak için ya tarayıcı desteği (şu an yalnızca Safari) ya da sayfaya gömülü, onlarca megabaytlık bir dönüştürücü gerekir; ikincisi hem sayfayı ağırlaştırır hem de uzun kayıtlarda belleği ikiye katlar. Bu yüzden dürüst bir tercih yaptık: aracın ürettiği dosya WebM'dir. WebM; Chrome, Edge, Firefox, VLC, YouTube, Google Drive, Slack, Teams ve WhatsApp Web tarafından doğrudan oynatılır; Windows 10/11'deki "Filmler ve TV" de açar. Sorun çıkaran yerler eski PowerPoint sürümleri, iPhone'un yerleşik oynatıcısı ve bazı LMS'lerdir.</p>
+      <p>MP4 gerekiyorsa en kolay iki ücretsiz yol: <strong>VLC</strong> ile Medya → Dönüştür/Kaydet menüsünden "Video – H.264 + MP3 (MP4)" profilini seçmek ya da <strong>HandBrake</strong> ile dosyayı açıp "Fast 1080p30" ön ayarıyla kaydetmek. Her ikisi de bilgisayarınızda çalışır, video yine hiçbir yere yüklenmez. Dosyayı yalnızca paylaşmanız gerekiyorsa dönüştürmeden önce ZIP içine koymak da işe yarar; <a href="../zip/">ZIP aracımızla</a> tarayıcıda sıkıştırabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="ekran-kaydedici-b" aria-label="Reklam"></div>
+
+      <h2>OBS, Xbox Game Bar ve macOS kaydıyla dürüst karşılaştırma</h2>
+      <div class="ek-compare-wrap"><table class="ek-compare">
+        <thead><tr><th>Araç</th><th>Güçlü yanı</th><th>Sınırı</th></tr></thead>
+        <tbody>
+          <tr><td>Bu sayfa</td><td>Kurulum ve hesap yok, her işletim sisteminde çalışır, duraklatma ve geri sayım var, dosya cihazda kalır.</td><td>Çıktı WebM; kamera baloncuğu, çizim ve kırpma yok; kayıt tarayıcı belleğinde tutulduğu için çok uzun (2 GB üstü) kayıtlar için uygun değil.</td></tr>
+          <tr><td>OBS Studio</td><td>Sınırsız sahne, kamera, yeşil perde, canlı yayın, MP4/MKV çıktı, profesyonel ses karıştırma.</td><td>Kurulum ve öğrenme süresi; ofis bilgisayarlarında kurulum izni gerekebilir; bir hata videosu için fazla.</td></tr>
+          <tr><td>Xbox Game Bar (Win+Alt+R)</td><td>Windows 10/11'de hazır, MP4 üretir, mikrofon destekler.</td><td>Masaüstünü ve Dosya Gezgini'ni kaydetmez, yalnızca tek uygulama penceresini alır; bazı kurumsal cihazlarda kapalıdır; macOS/Linux'ta yok.</td></tr>
+          <tr><td>macOS Cmd+Shift+5</td><td>Mac'te yerleşik, MOV/MP4 üretir, bölge seçimi var.</td><td>Sistem sesi için ek sürücü gerekir; Windows'ta yok; duraklatma yok.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Özetle: düzenli içerik üretiyorsanız OBS; Windows'ta tek bir programı kaydedecekseniz Game Bar; Mac'teyseniz yerleşik kısayol zaten iyidir. Bu sayfa, "şimdi, bu bilgisayarda, hiçbir şey kurmadan" durumu içindir; ayrıca kullanıcı oyun değil ofis işi kaydediyorsa fazla ayara boğulmadan sonuç alır.</p>
+
+      <h2>Gizlilik: video nereye gidiyor?</h2>
+      <p>Hiçbir yere. Ekran görüntüsü tarayıcının içinde parçalar hâlinde (saniyede bir) belleğe yazılır; durdurduğunuzda bu parçalar tek dosyada birleştirilir ve sayfada önizlenir. Sayfa hiçbir ağ isteği yapmaz; bunu tarayıcınızın geliştirici araçlarındaki "Network" sekmesinden doğrulayabilirsiniz. Sekmeyi kapattığınızda ya da "Yeni kayıt"a bastığınızda indirmediğiniz kayıt bellekten silinir, bu yüzden indirmeyi unutmayın. Aynı nedenle sayfa, kayıt sürerken sekmeyi kapatmaya çalışırsanız sizi uyarır. Bu sayfa çevrimdışı da çalışır: bir kez açtıktan sonra internet kesilse bile kayıt yapabilirsiniz.</p>
+      <p>Kayda neyin girdiğine siz karar verirsiniz; yine de ekranda şifre, kart bilgisi ya da müşteri verisi görünebileceğini unutmayın. Hata bildirimi için "Pencere" modunu seçmek, bildirimleri kapatmak ve kayıt öncesi gereksiz sekmeleri kapatmak iyi alışkanlıklardır. Mikrofon ve ekran izinleri yalnızca o kayıt için kullanılır; kayıt bitince tüm akışlar kapatılır, kamera ya da mikrofon ışığı söner.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Yükleme yok, kayıt yok.</strong> Ne program ne de hesap; sayfayı açın, kaydedin, indirin.</li>
+        <li><strong>Video bilgisayarınızda kalır.</strong> Şirket içi ekranlar, öğrenci bilgileri ya da müşteri verileri içeren kayıtlar sunucuya çıkmaz.</li>
+        <li><strong>Ofis işine göre ayarlar.</strong> 30 kare/sn ve otomatik çözünürlük varsayılanı, ders ve anlatım için küçük ve net dosya üretir.</li>
+        <li><strong>Dürüst sınırlar.</strong> WebM çıktı, bellek uyarısı ve tarayıcı farkları sayfada açıkça yazar; sürpriz yok.</li>
+        <li><strong>Klavye ve erişilebilirlik.</strong> Boşluk ile duraklatma, Esc ile durdurma; durum metinleri ekran okuyucuya iletilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kayıt bir sunucuya yükleniyor mu?</summary><p>Hayır. Görüntü ve ses tarayıcınızın belleğinde tutulur, dosya bilgisayarınıza iner. Sayfa dış ağ isteği yapmaz; internet kesilse bile kayıt sürer. Bu nedenle sayfayı kapatmadan önce "Videoyu indir"e basmayı unutmayın.</p></details>
+        <details><summary>Ses kaydedilmedi, neden?</summary><p>Paylaşım penceresinde "Sesi paylaş" kutusunu işaretlemek gerekir; ayrıca Chrome macOS'ta tüm ekran sesini vermez (sekme sesini verir), Firefox hiçbir modda sistem sesi vermez. Mikrofon için ayrı izin istenir; reddettiyseniz adres çubuğundaki kilit simgesinden mikrofon iznini açıp kaydı yeniden başlatın. Ses gelmediğinde araç kayıt sırasında uyarı gösterir.</p></details>
+        <details><summary>Video neden MP4 değil, PowerPoint'te nasıl açarım?</summary><p>Tarayıcı kaydedicisi WebM üretir; MP4 yazmak tarayıcıda mümkün değildir. VLC (Medya → Dönüştür/Kaydet) ya da HandBrake ile bir dakikada MP4'e çevirebilirsiniz; her ikisi de ücretsizdir ve bilgisayarınızda çalışır. Güncel PowerPoint (Microsoft 365) WebM'i doğrudan ekler.</p></details>
+        <details><summary>Ne kadar uzun kayıt yapabilirim?</summary><p>Teknik olarak bir sınır yok, ama kayıt tarayıcı belleğinde tutulur. 1080p 30 kare/sn'de yaklaşık dakikada 35–40 MB üretilir; 2 GB'a (kabaca 50–60 dakika) ulaşınca araç uyarır. Uzun eğitimleri 20–30 dakikalık bölümler hâlinde kaydedip her bölümü indirmeniz hem daha güvenli hem de paylaşması kolaydır.</p></details>
+        <details><summary>Telefonda çalışıyor mu?</summary><p>Hayır. Android ve iOS tarayıcıları ekran paylaşımına (getDisplayMedia) izin vermez; sayfa bunu açıkça söyler. Telefonda Android'in bildirim panelindeki "Ekran kaydı" ya da iPhone'da Denetim Merkezi'ndeki kayıt düğmesini kullanın; kaydı sonra bilgisayarda bu sayfanın ilgili araçlarıyla küçültebilir ya da sıkıştırabilirsiniz.</p></details>
+        <details><summary>Oynatıcıda süre çubuğu neden boş görünüyor?</summary><p>Chrome'un yazdığı WebM dosyalarında süre bilgisi başlıkta bulunmaz; bazı oynatıcılar dosya tamamen okunmadan süreyi gösteremez. Sayfadaki önizleme bunu kendiliğinden düzeltir; VLC ve YouTube de sorunsuz oynatır. Kalıcı çözüm istiyorsanız dosyayı HandBrake'ten bir kez geçirin.</p></details>
+        <details><summary>Fare imleci ve tıklamalar kayda giriyor mu?</summary><p>İmleç çoğu tarayıcıda kayda girer (Chrome ve Edge bunu varsayılan yapar). Tıklama vurgusu, ok çizme ya da yakınlaştırma gibi düzenleme özellikleri bu araçta yok; bunlar için OBS ya da bir video düzenleyici gerekir.</p></details>
+        <details><summary>Kamera görüntümü köşeye ekleyebilir miyim?</summary><p>Şu an hayır; bu sürüm yalnızca ekran ve sesi kaydeder. Kamera baloncuğu için OBS'nin "Video Yakalama Cihazı" kaynağını ya da Teams/Zoom kaydını kullanabilirsiniz. Bu özellik için istek alırsak ekleyeceğiz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../gif-olustur/">GIF Oluştur</a></li>
+        <li><a href="../resim-kucult/">Resim Küçült</a></li>
+        <li><a href="../zip/">ZIP Oluştur</a></li>
+      </ul>
+      <p class="ba-note">Ürün tanıtım videosu, eğitim içeriği ya da yazılım dokümantasyonu için profesyonel destek isterseniz <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="ekran-kaydedici-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metin Karşılaştırma (Diff) – İki Metin Arasındaki Farkları Bulun (Ücretsiz)</title>
+  <meta name="description" content="İki metni satır, kelime veya karakter düzeyinde karşılaştırın; eklenen ve silinenleri yan yana ya da birleşik görünümde renkle görün. Ücretsiz, kayıt yok, metin sunucuya gitmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/metin-karsilastir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .md-inputs { display: grid; gap: 16px; }
+    @media (min-width: 760px) { .md-inputs { grid-template-columns: 1fr 1fr; } }
+    .md-box label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .md-box textarea { width: 100%; font-family: var(--ba-mono); font-size: .9rem; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: inherit; resize: vertical; }
+    .md-drop { margin-top: 8px; padding: 10px; font-size: .9rem; text-align: center; }
+    .md-name { display: block; min-height: 1.2em; color: var(--ba-text-muted); margin-top: 4px; }
+    .md-fs { border: 0; padding: 0; margin: 0; min-width: 0; }
+    .md-fs legend { font-weight: 600; font-size: .9rem; padding: 0; margin-bottom: 5px; }
+    .md-fs label, .ba-field > label { display: block; font-weight: 400; margin-bottom: 4px; }
+    .ba-field input[type="radio"] { width: 20px; height: 20px; accent-color: var(--ba-primary); vertical-align: middle; margin-right: 6px; }
+    .md-result { display: none; margin-top: 22px; }
+    .md-result.is-active { display: block; }
+    .md-stats { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 6px; }
+    .md-chip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--ba-border); background: var(--ba-surface-2); font-weight: 600; }
+    .md-chip-add { background: #e3f6e8; color: #0f4a22; border-color: #8cc9a0; }
+    .md-chip-del { background: #fde8ea; color: #7a0f1c; border-color: #e19aa2; }
+    .md-unit, .md-copied { color: var(--ba-text-muted); font-size: .88rem; }
+    .md-sum { margin: 0 0 10px; }
+    .md-out { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); max-height: 640px; overflow: auto; margin-top: 12px; font-family: var(--ba-mono); font-size: .85rem; }
+    .md-row { display: block; }
+    .md-row.md-side { display: grid; grid-template-columns: 1fr 1fr; min-width: 640px; }
+    .md-cell { display: flex; gap: 6px; padding: 1px 8px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 1.5em; }
+    .md-num { flex: none; width: 3.2em; text-align: right; color: var(--ba-text-muted); user-select: none; }
+    .md-sign { flex: none; width: 1em; font-weight: 700; user-select: none; }
+    .md-text { flex: 1; min-width: 0; }
+    .md-add { background: #e3f6e8; color: #0f4a22; }
+    .md-del { background: #fde8ea; color: #7a0f1c; }
+    .md-empty { background: var(--ba-surface-2); }
+    span.md-add, span.md-del { border-radius: 2px; }
+    span.md-add { background: #b6ebc6; color: #06331a; }
+    span.md-del { background: #ffc4ca; color: #650c18; text-decoration: line-through; }
+    .md-gap { display: block; width: 100%; text-align: left; border: 0; border-top: 1px dashed var(--ba-border); border-bottom: 1px dashed var(--ba-border); background: var(--ba-surface-2); color: var(--ba-text-muted); font: inherit; padding: 6px 12px; cursor: pointer; min-height: 32px; }
+    .md-gap:hover, .md-gap:focus-visible { color: var(--ba-primary); }
+    .md-inline { padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+    .md-cols { display: grid; gap: 0; }
+    @media (min-width: 760px) { .md-cols { grid-template-columns: 1fr 1fr; } .md-col + .md-col { border-left: 1px solid var(--ba-border); } }
+    .md-colh { padding: 6px 12px; font-weight: 600; background: var(--ba-surface-2); border-bottom: 1px solid var(--ba-border); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .md-add, :root:not([data-theme="light"]) .md-chip-add { background: #12361f; color: #c8f5d4; }
+      :root:not([data-theme="light"]) .md-del, :root:not([data-theme="light"]) .md-chip-del { background: #3d1218; color: #ffd5d9; }
+      :root:not([data-theme="light"]) span.md-add { background: #1f6b3a; color: #eafff0; }
+      :root:not([data-theme="light"]) span.md-del { background: #8c2432; color: #fff0f2; }
+    }
+    .md-table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 12px 0 20px; }
+    .md-table th, .md-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .md-table th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Metin Karşılaştırma (Diff) – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/metin-karsilastir/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#donustur" class="ba-nav-optional">Dönüştür</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1>Metin Karşılaştırma (Diff)</h1>
+      <p class="lead">İki metni ya da .txt dosyasını yan yana koyun; eklenen ve silinen satır, kelime ve karakterleri renkle görün. Büyük/küçük harf ve boşlukları yok sayabilir, farkları tek tıkla kopyalayabilirsiniz. Metinleriniz tarayıcıdan dışarı çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="md-inputs">
+        <div class="md-box">
+          <label for="text-a">Özgün metin (eski)</label>
+          <textarea id="text-a" rows="10" spellcheck="false" placeholder="Eski metni yapıştırın"></textarea>
+          <div id="drop-a" class="md-drop"><strong>veya .txt dosyası bırakın</strong></div>
+          <small id="name-a" class="md-name"></small>
+        </div>
+        <div class="md-box">
+          <label for="text-b">Yeni metin (değişmiş)</label>
+          <textarea id="text-b" rows="10" spellcheck="false" placeholder="Yeni metni yapıştırın"></textarea>
+          <div id="drop-b" class="md-drop"><strong>veya .txt dosyası bırakın</strong></div>
+          <small id="name-b" class="md-name"></small>
+        </div>
+      </div>
+
+      <div class="ba-options">
+        <div class="ba-field"><label for="opt-level">Karşılaştırma düzeyi</label><select id="opt-level"><option value="line" selected>Satır</option><option value="word">Kelime</option><option value="char">Karakter</option></select></div>
+        <fieldset class="ba-field md-fs"><legend>Görünüm</legend>
+          <label><input type="radio" name="opt-view" value="side" checked> Yan yana</label>
+          <label><input type="radio" name="opt-view" value="uni"> Birleşik</label>
+        </fieldset>
+        <div class="ba-field"><span>Yok say</span>
+          <label><input id="opt-case" type="checkbox"> Büyük/küçük harf farkını</label>
+          <label><input id="opt-space" type="checkbox"> Boşluk farklarını</label>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button id="compare" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Karşılaştır</button>
+        <button id="swap" class="ba-btn" type="button">Tarafları değiştir</button>
+        <button id="clear" class="ba-btn" type="button">Temizle</button>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="md-result">
+        <h3>Sonuç</h3>
+        <p class="md-stats" aria-live="polite"><span class="md-chip md-chip-add">+<b id="stat-add">0</b> eklenen</span><span class="md-chip md-chip-del">−<b id="stat-del">0</b> silinen</span><span class="md-chip">=<b id="stat-same">0</b> aynı</span><span class="md-unit">birim: <span id="stat-unit">satır</span></span></p>
+        <p id="summary-text" class="md-sum"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Farkları kopyala</button><span id="copy-status" class="md-copied" role="status"></span></div>
+        <div id="output" class="md-out" tabindex="0" aria-label="Fark sonucu"></div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="metin-karsilastir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Eski metni sol kutuya, yeni (değişmiş) metni sağ kutuya yapıştırın. Metin bir dosyadaysa .txt, .md, .csv, .json gibi düz metin dosyasını kutunun altındaki alana bırakmanız yeterli; dosya yalnızca tarayıcınızda okunur.</li>
+        <li>Karşılaştırma düzeyini seçin. "Satır" sözleşme, kod ve liste gibi uzun metinlerde bütün değişen satırları gösterir; "Kelime" bir paragrafta hangi kelimenin değiştiğini; "Karakter" ise tek harflik yazım farklarını bulur.</li>
+        <li>Gerekiyorsa "Büyük/küçük harf" ve "Boşluk" farklarını yok sayın. Örneğin iki metin yalnızca girinti ya da satır sonu boşluğuyla ayrışıyorsa bu seçenek gürültüyü kaldırır.</li>
+        <li>"Karşılaştır"a basın. Özet satırı kaç öğenin eklendiğini ve silindiğini söyler; altta yan yana ya da birleşik görünümde renkli sonuç belirir. Yeşil "+" eklenen, kırmızı "−" silinen demektir; renk körlüğü için işaretler de yazılıdır.</li>
+        <li>Farkları e-posta ya da görev kaydına yapıştırmak için "Farkları kopyala"yı kullanın. Bu düğme yalnızca değişen satırları "+" ve "−" ön ekleriyle panoya alır.</li>
+      </ol>
+
+      <h2>Diff nedir, nasıl çalışır?</h2>
+      <p>"Diff", iki metin arasındaki farkı üreten yöntemin adıdır; yazılımcıların sürüm karşılaştırmasında onlarca yıldır kullandığı yaklaşım artık sözleşme, makale ya da mevzuat metni karşılaştırmak isteyen herkes için de çok işe yarar. Mantığı şudur: iki metinde sırası bozulmadan ortak olan en uzun parçayı bulur, geriye kalanı "silinen" ve "eklenen" diye ayırır. Bu aracın kullandığı Myers algoritması, bu işi en az sayıda ekleme ve silmeyle yapar; yani size gösterilen fark, bir metni diğerine çevirmek için gereken en kısa değişiklik listesidir. Bir satır değiştirilmişse eski hâli silinmiş, yenisi eklenmiş olarak görünür; araç yan yana görünümde bu iki satırı aynı hizaya koyar ki hangisinin hangisine dönüştüğü kolayca anlaşılsın.</p>
+      <table class="md-table">
+        <thead><tr><th>Düzey</th><th>Karşılaştırma birimi</th><th>En uygun olduğu iş</th></tr></thead>
+        <tbody>
+          <tr><td>Satır</td><td>Her satır bir birim</td><td>Kod, yapılandırma, liste, sözleşme maddeleri, CSV</td></tr>
+          <tr><td>Kelime</td><td>Kelime, boşluk ve noktalama</td><td>Paragraf, makale, e-posta taslağı, dilekçe</td></tr>
+          <tr><td>Karakter</td><td>Tek karakter</td><td>Yazım hataları, sayı farkları, benzer iki kod/ID</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Kimler, ne için kullanır?</h2>
+      <p>Hukuk ve satın alma ekipleri tarafından gönderilen sözleşmenin yeni sürümünde hangi maddenin sessizce değiştiğini görmek için kullanılır; özellikle "sadece biçim düzelttik" denilen revizyonlarda gerçekten yalnızca biçim mi değişmiş sorusuna yanıt verir. Yazarlar ve editörler iki taslak arasındaki değişiklikleri izlemek için, öğrenciler ise ödev metninin farklı sürümlerini toplamak için kullanır. Yazılımcılar yapılandırma dosyası, SQL betiği ya da log çıktısı karşılaştırır. Çeviri ve yerelleştirme çalışanları iki dil dosyasının hangi anahtarlarının farklı olduğuna bakar. Muhasebe tarafında iki liste (ör. iki sistemden çıkan fatura numaraları) arasındaki eksik ve fazla satırları bulmak için de pratiktir: her kayıt ayrı satırdaysa sonuçta yalnızca uyuşmayanlar renkli görünür.</p>
+
+      <div class="ba-ad" data-slot="metin-karsilastir-b" aria-label="Reklam"></div>
+
+      <h2>Sonucu doğru okumak için ipuçları</h2>
+      <p>Satır düzeyinde bir paragraf tek satırsa, içindeki küçük bir değişiklik yine de bütün satırın silinip yeniden eklenmesi gibi görünür; böyle durumlarda "Kelime" düzeyine geçin. Metinleri farklı programlardan kopyaladıysanız satır sonu işaretleri (Windows'un CRLF'i, Unix'in LF'i) ya da satır başındaki girintiler farklı olabilir; araç satır sonlarını kendi içinde birleştirir, girinti ve fazladan boşluk için "Boşluk farklarını yok say" seçeneğini açabilirsiniz. Büyük/küçük harfi yok saymak Türkçe kurallarına göre yapılır; yani İ ile i, I ile ı eşleşir. Çok uzun, bambaşka iki metni karşılaştırırsanız araç, işlem süresini makul tutmak için ayrıntılı eşleştirmeyi bırakır ve bunu açıkça belirtir; böyle bir durumda metni bölümlere ayırmak daha anlamlı sonuç verir. Binlerce satırlık ve çoğu aynı olan metinlerde ise aynı satırlar katlanır, yalnızca değişikliklerin çevresindeki üç satır gösterilir; gizlenen satırları açmak için ilgili çubuğa tıklamanız yeterlidir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Metin çıkmaz.</strong> Gizli sözleşmeler, kaynak kod ve kişisel yazılar sunucuya gitmez; karşılaştırma bilgisayarınızda yapılır ve sayfa çevrimdışı da çalışır.</li>
+        <li><strong>Hızlı.</strong> Binlerce satır birkaç saniyede karşılaştırılır, tarayıcı donmaz, ilerleme çubuğu işlemi gösterir.</li>
+        <li><strong>Erişilebilir renkler.</strong> Eklenen ve silinen bölümler yalnızca renkle değil "+" ve "−" işaretleriyle de ayrılır; kontrast AA düzeyindedir.</li>
+        <li><strong>Üç düzey, iki görünüm.</strong> Satır, kelime ve karakter düzeyi; yan yana ve birleşik görünüm tek sayfada.</li>
+        <li><strong>Kayıt ya da kısıtlama yok.</strong> Üyelik istemez, sonucu kısıtlamaz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Metinlerim sunucuya gönderiliyor mu?</summary><p>Hayır. Yapıştırdığınız metin ya da bıraktığınız dosya yalnızca tarayıcınızın belleğinde işlenir. Ağ trafiğini geliştirici araçlarından izlerseniz karşılaştırma sırasında hiçbir istek çıkmadığını görürsünüz; sayfa yüklendikten sonra internet kesilse de araç çalışır.</p></details>
+        <details><summary>Kaç satıra kadar karşılaştırabilirim?</summary><p>Kesin bir sınır yok; on binlerce satırlık metinler sorunsuz karşılaştırılır. İki metin ağırlıklı olarak aynıysa hız çok yüksektir. Tamamen farklı çok büyük iki metinde araç ayrıntılı eşleştirmeyi durdurur ve bunu size söyler. 50 MB üstü dosyalarda tarayıcı belleği zorlanabilir.</p></details>
+        <details><summary>Satır, kelime ve karakter düzeyi arasında ne fark var?</summary><p>Satır düzeyi her satırı bir bütün sayar; satırın bir harfi bile değişse tüm satır "değişti" olur. Kelime düzeyi kelimeleri, boşlukları ve noktalama işaretlerini ayrı birimler sayar. Karakter düzeyi her harfi ayrı karşılaştırır; en ayrıntılı ama en kalabalık görünümdür.</p></details>
+        <details><summary>Boşlukları yok saymak neyi değiştirir?</summary><p>Satır düzeyinde satır başı/sonu boşlukları ve art arda gelen boşluklar tek boşluk gibi sayılır. Kelime ve karakter düzeyinde boşluk karakterleri birbirine eşit kabul edilir. Böylece yalnızca girinti ya da satır sonu boşluğu farkı olan satırlar değişmiş sayılmaz.</p></details>
+        <details><summary>Word veya PDF belgelerini karşılaştırabilir miyim?</summary><p>Doğrudan değil; araç düz metin ile çalışır. Word'de metni seçip kopyalayın ve kutuya yapıştırın. PDF için önce PDF Metin Çıkar aracıyla metni alın, sonra iki metni buraya yapıştırın. Biçim (kalın, renk, tablo) farkları karşılaştırılmaz, yalnızca metin içeriği karşılaştırılır.</p></details>
+        <details><summary>Farkları nasıl paylaşırım?</summary><p>"Farkları kopyala" düğmesi yalnızca değişen kısımları panoya alır: silinenler "-" ile, eklenenler "+" ile başlar; satır düzeyinde her değişikliğin başına hangi satırda başladığı yazılır. Bunu e-postaya, mesaj uygulamasına ya da görev takip sistemine yapıştırabilirsiniz.</p></details>
+        <details><summary>"Dosya metin dosyası gibi görünmüyor" hatası alıyorum.</summary><p>Bıraktığınız dosya ikili (binary) içerik taşıyor: Word, PDF, Excel ya da resim olabilir. Araç yalnızca .txt, .md, .csv, .json, .html gibi düz metin dosyalarını açar. Belgenizdeki metni kopyalayıp kutuya yapıştırın ya da dosyayı "Düz metin (.txt)" olarak yeniden kaydedin.</p></details>
+        <details><summary>Türkçe karakterler doğru karşılaştırılıyor mu?</summary><p>Evet. Dosyalar UTF-8 olarak okunur ve karşılaştırma Unicode karakterleriyle yapılır. Büyük/küçük harfi yok sayarken Türkçe kuralları (İ-i, I-ı) uygulanır. Eski bir programdan gelen ve ğ, ş harfleri bozuk görünen dosyalar için dosyayı UTF-8 olarak yeniden kaydedin.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../pdf-metin-cikar/">PDF'den Metin Çıkar</a></li>
+        <li><a href="../csv-excel/">CSV - Excel Dönüştür</a></li>
+        <li><a href="../pdfden-worde/">PDF'den Word'e</a></li>
+      </ul>
+      <p class="ba-note">Sözleşme, içerik ya da yazılım projelerinizde destek için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibiyle iletişime geçebilirsiniz.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="metin-karsilastir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

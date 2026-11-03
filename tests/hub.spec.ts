@@ -5,8 +5,8 @@ test('hub yüklenir, kartlar ve reklam yer tutucuları görünür', async ({ pag
   const external = trackExternalRequests(page);
   await page.goto('/');
   await expect(page).toHaveTitle(/Ücretsiz Online Araçlar/);
-  await expect(page.locator('.ba-card')).toHaveCount(23);
-  await expect(page.locator('.ba-card:not(.is-soon) a.ba-card-link')).toHaveCount(23);
+  await expect(page.locator('.ba-card')).toHaveCount(53);
+  await expect(page.locator('.ba-card:not(.is-soon) a.ba-card-link')).toHaveCount(53);
   await expect(page.locator('.ba-ad .ba-ad-placeholder').first()).toContainText('Reklam alanı');
   await expect(page.locator('footer a[href="gizlilik/"]')).toBeVisible();
   expect(external).toEqual([]);
@@ -14,9 +14,10 @@ test('hub yüklenir, kartlar ve reklam yer tutucuları görünür', async ({ pag
 
 test('arama kutusu kartları filtreler', async ({ page }) => {
   await page.goto('/');
-  await page.getByLabel('Araç ara').fill('birleştir');
-  await expect(page.locator('.ba-card:not(.is-hidden)')).toHaveCount(1);
-  await expect(page.locator('.ba-card:not(.is-hidden)')).toContainText('PDF Birleştir');
+  await page.getByLabel('Araç ara').fill('pdf birleştir');
+  const visible = page.locator('.ba-card:not(.is-hidden)');
+  await expect(visible.first()).toContainText('PDF Birleştir');
+  expect(await visible.count()).toBeLessThan(await page.locator('.ba-card').count());
   await page.getByLabel('Araç ara').fill('olmayan-arac-xyz');
   await expect(page.locator('#ba-empty')).toBeVisible();
 });

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IBAN Doğrulama ve Banka Bulma (TR) – IBAN Geçerli mi, Hangi Banka? (Ücretsiz)</title>
+  <meta name="description" content="IBAN numarasını mod-97 algoritmasıyla doğrulayın, Türkiye IBAN'ından banka kodunu ve banka adını görün. 4'lü biçimli gösterim, kopyalama. Hesap sahibi sorgulamaz, IBAN sunucuya gönderilmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/iban-dogrula/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .iban-form .ba-field { margin-bottom: 12px; }
+    .iban-form input[type="text"] { width: 100%; min-height: 48px; padding: 8px 12px; font: inherit; font-family: var(--ba-mono); font-size: 1.1rem; letter-spacing: .04em; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .iban-form input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .iban-notice { margin: 0 0 14px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); border: 1px solid var(--ba-border); font-size: .92rem; color: var(--ba-text-2); }
+    .iban-formatted { font-family: var(--ba-mono); font-size: 1.15rem; letter-spacing: .06em; word-break: break-all; margin: 8px 0 12px; padding: 10px 12px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .iban-results { margin: 0; display: grid; gap: 4px; }
+    .iban-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed var(--ba-border); flex-wrap: wrap; }
+    .iban-row:last-child { border-bottom: 0; }
+    .iban-row dt { margin: 0; color: var(--ba-text-2); font-size: .92rem; }
+    .iban-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; }
+    .iban-row dd.is-text { font-family: inherit; font-weight: 600; }
+    .iban-reason { font-size: .9rem; margin: 12px 0 0; }
+    .ba-result.is-invalid { background: var(--ba-danger-soft); border-color: var(--ba-danger); }
+    .ba-result.is-invalid h3 { color: var(--ba-danger); }
+    .ba-result.is-invalid h3::before { content: "✕"; background: var(--ba-danger); }
+    .iban-status-line { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .iban-meta { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+    .ba-content details.iban-banks summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"IBAN Doğrulama ve Banka Bulma – Bilişim Ajans","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/iban-dogrula/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>IBAN Doğrulama ve Banka Bulma (TR)</h1>
+      <p class="lead">IBAN'ı yapıştırın; kontrol hanesi (mod-97) ve uzunluk anında denetlenir, Türkiye IBAN'larında banka kodu ve banka adı gösterilir. Hesap sahibi sorgulanmaz; yazdığınız IBAN bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <p class="iban-notice"><strong>Bu araç hesap sahibini sorgulamaz.</strong> Yalnızca IBAN'ın yazım olarak doğru olup olmadığını (kontrol hanesi, uzunluk, yapı) ve Türkiye IBAN'larında banka kodunu gösterir. Kime ait olduğunu, açık mı kapalı mı olduğunu bilemez; bu bilgiyi yalnızca bankanız verir.</p>
+      <form id="form-iban" class="iban-form" novalidate>
+        <div class="ba-field"><label for="f-iban">IBAN</label><input id="f-iban" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TR__ ____ ____ ____ ____ ____ __"><div class="hint">Boşluk, tire ve küçük harf sorun değildir; yapıştırdığınız IBAN otomatik düzenlenir. Diğer ülkelerin IBAN'ları da (DE, GB, FR, NL…) kontrol edilir.</div></div>
+        <div class="ba-actions" style="margin-top:0"><button type="submit" class="ba-btn ba-btn-primary">Doğrula</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite">
+        <h3 id="r-status">Sonuç</h3>
+        <div id="r-formatted" class="iban-formatted"></div>
+        <dl class="iban-results" id="r-rows"></dl>
+        <p class="iban-reason" id="r-reason"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Kopyala (4'lü gruplar)</button><button id="copy-compact" class="ba-btn" type="button">Kopyala (boşluksuz)</button></div>
+        <p class="iban-status-line" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="iban-meta">Banka kodu tablosu son güncelleme: <strong id="banks-updated">…</strong>. Banka adı bilgi amaçlıdır; birleşme ve unvan değişiklikleri için bankanızla doğrulayın. IBAN'ı paylaşmak için <a href="../qr-kod/">QR Kod Oluşturucu</a> aracına gidip metin olarak yapıştırabilirsiniz.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="iban-dogrula-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>IBAN'ı dekonttan, mesajdan ya da banka uygulamasından kopyalayıp kutuya yapıştırın. Boşluklu, tireli ya da küçük harfli yazılmış olması sorun değildir; araç temizleyip 4'lü gruplara ayırır.</li>
+        <li>Sonuç kendiliğinden görünür: "Geçerli IBAN" ya da "Geçersiz IBAN". Türkiye IBAN'ı girdiyseniz banka kodu, banka adı, rezerv hane ve 16 haneli hesap numarası ayrı satırlarda listelenir.</li>
+        <li>Geçersiz sonuç aldıysanız IBAN'ı kaynağından yeniden kopyalayın. En sık hata, elle yazarken bir hanenin eksik ya da iki hanenin yer değiştirmiş olmasıdır; araç bu durumu yakalar ama hangi hanenin yanlış olduğunu bilemez.</li>
+        <li>Doğru IBAN'ı "Kopyala" ile panoya alın. Çoğu banka uygulaması boşluklu biçimi de kabul eder; kabul etmeyenler için "boşluksuz" seçeneğini kullanın.</li>
+        <li>Para göndermeden önce bankanızın havale/EFT ekranındaki alıcı adı kontrolünü mutlaka yapın. Bu araç yalnızca yazım hatasını yakalar; alıcının kim olduğunu söyleyemez.</li>
+      </ol>
+
+      <h2>IBAN nedir, Türkiye IBAN'ı nasıl okunur?</h2>
+      <p>IBAN (International Bank Account Number – Uluslararası Banka Hesap Numarası), hesap numaralarının ülkeler arasında tek biçimde yazılabilmesi için ISO 13616 standardıyla tanımlanmış bir numaradır. Türkiye 2009'dan beri yurt içi havale ve EFT işlemlerinde de IBAN'ı zorunlu tutar. Her IBAN iki harfli ülke koduyla başlar, ardından iki haneli kontrol numarası gelir; geri kalan kısım (BBAN) ülkeye göre farklı uzunluktadır. Türkiye IBAN'ı tam <strong>26 karakter</strong>dir ve şu parçalardan oluşur:</p>
+      <table>
+        <thead><tr><th>Haneler</th><th>Anlamı</th><th>Örnek</th></tr></thead>
+        <tbody>
+          <tr><td>1–2</td><td>Ülke kodu</td><td><code>TR</code></td></tr>
+          <tr><td>3–4</td><td>Kontrol numarası (mod-97 ile hesaplanır)</td><td><code>33</code></td></tr>
+          <tr><td>5–9</td><td>Banka kodu (5 hane; başındaki 0 atılınca 4 haneli TCMB EFT kodu)</td><td><code>00062</code> → 0062</td></tr>
+          <tr><td>10</td><td>Rezerv hane (şimdilik hep 0)</td><td><code>0</code></td></tr>
+          <tr><td>11–26</td><td>Hesap numarası (16 hane, bankaya göre şube bilgisini de içerebilir)</td><td><code>0519 7864 5784 1326</code></td></tr>
+        </tbody>
+      </table>
+      <p>Banka kodu bölümü sayesinde IBAN'dan bankanın hangisi olduğu anlaşılır; bu araç kodu TCMB'nin EFT katılımcı listesindeki adla eşleştirir. Örneğin <code>00010</code> ile başlayan IBAN'lar Ziraat Bankası'na, <code>00064</code> ile başlayanlar İş Bankası'na, <code>00205</code> ile başlayanlar Kuveyt Türk'e aittir. Şube kodu ise IBAN'ın standart bir parçası değildir; bazı bankalar hesap numarası bloğunun içine şube bilgisini gömer, bazıları gömmez. Bu yüzden IBAN'dan şube adı okumak güvenilir değildir ve bu araç bunu iddia etmez.</p>
+
+      <h2>Kontrol hanesi (mod-97) nasıl çalışır?</h2>
+      <p>IBAN'ın 3. ve 4. hanesi, geri kalan tüm hanelerden hesaplanan bir kontrol numarasıdır. Doğrulama şöyle yapılır: ilk dört karakter sona taşınır, harfler sayıya çevrilir (A=10, B=11 … Z=35; "TR" → "2927"), elde edilen uzun sayının 97'ye bölümünden kalan hesaplanır. Kalan tam olarak <strong>1</strong> ise IBAN geçerlidir. Bu yöntem (ISO 7064 MOD 97-10) tek haneli her yazım hatasını ve bitişik hanelerin yer değiştirmesini %100 yakalar; rastgele bir hatanın gözden kaçma olasılığı yaklaşık %1'dir. Sayı 26 basamaklı olduğundan JavaScript'in normal sayı türüne sığmaz; araç bu yüzden hesabı tam sayı aritmetiğiyle (BigInt) yapar ve yuvarlama hatası ihtimali yoktur.</p>
+      <p>Önemli bir ayrım: mod-97'nin tutması "bu IBAN doğru yazılmış" demektir, "bu hesap var ve şu kişiye ait" demek değildir. Rastgele yazılan 26 haneli bir dizinin de yaklaşık yüzde birinde kontrol tutar. Araç bu nedenle sonuçta yalnızca "yapı ve kontrol hanesi doğru" ifadesini kullanır.</p>
+
+      <h2>Yanlış IBAN'a para göndermenin riski</h2>
+      <p>Bankalar havale ve EFT'yi yalnızca IBAN'a göre işler; alıcı adı eşleşmese bile para çoğu zaman gider. Yanlış hesaba giden para "sehven gönderim" sayılır ve geri alınması, hesap sahibinin iade etmeyi kabul etmesine bağlıdır. Kabul etmezse süreç ihtarname ve sebepsiz zenginleşme davasıyla mahkemeye uzar; haftalar, hatta aylar alabilir. Bu yüzden en ucuz önlem, göndermeden önce IBAN'ı doğrulamaktır. Araç, elle yazarken en sık yapılan üç hatayı yakalar: eksik ya da fazla hane, yer değiştirmiş hane ve 0/O, 1/I, 5/S, 8/B gibi benzer karakter karışıklığı (harf girildiğinde Türkiye IBAN'ı geçersiz sayılır).</p>
+      <p>İkinci güvenlik katmanı bankanızın kendisidir. Türkiye'de bankaların havale ekranı, IBAN'ı girdiğinizde alıcı adını kısmen (ör. "A*** D*****") gösterir; "ad soyad IBAN uyuşmazlığı" uyarısı çıkıyorsa işlemi durdurun ve alıcıyla başka bir kanaldan konuşun. Dolandırıcılar e-posta ya da WhatsApp üzerinden "IBAN'ımız değişti" mesajı göndererek fatura ödemelerini kendi hesaplarına yönlendirir; bu araçta geçerli görünen bir IBAN da dolandırıcıya ait olabilir. Özellikle tedarikçi ödemelerinde, IBAN değişikliğini her zaman bilinen bir telefon numarasından teyit edin.</p>
+
+      <div class="ba-ad" data-slot="iban-dogrula-b" aria-label="Reklam"></div>
+
+      <h2>Diğer ülkelerin IBAN'ları</h2>
+      <p>Araç Türkiye dışındaki IBAN'ları da kontrol eder: Almanya (22 karakter), Birleşik Krallık (22), Fransa (27), Hollanda (18), İtalya (27), İspanya (24), Azerbaycan (28), Birleşik Arap Emirlikleri (23), Suudi Arabistan (24) ve ISO kayıtlarındaki yetmişten fazla ülke için uzunluk ve mod-97 denetimi yapılır. Bu ülkelerde banka adı gösterilmez; çünkü banka kodu yapısı ülkeden ülkeye değişir ve güvenilir bir tablo tutmak mümkün değildir. Yurt dışına SWIFT transferi yaparken IBAN'ın yanı sıra BIC/SWIFT kodunun da gerektiğini unutmayın; IBAN tek başına yetmez.</p>
+
+      <h2>Gizlilik: IBAN nereye gidiyor?</h2>
+      <p>Hiçbir yere. Doğrulama, bu sayfanın içindeki JavaScript kodunda yapılır; IBAN'ınız, sonuç ya da banka adı hiçbir sunucuya gönderilmez, adres çubuğuna yazılmaz, çerezde tutulmaz. Sayfa bir kez yüklendikten sonra internet bağlantısı kesilse bile araç çalışmaya devam eder. IBAN tek başına gizli bir veri değildir (fatura ve web sitelerinde açıkça yazılır) ancak ad soyadla birlikte kişisel veridir; bu yüzden araç IBAN'ı paylaşılabilir bağlantıya bile koymaz. Bir IBAN'ı başkasıyla paylaşmak isterseniz <a href="../qr-kod/">QR Kod Oluşturucu</a>'ya gidip oraya metin olarak yapıştırın; o araç da aynı şekilde tarayıcıda çalışır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Sunucuya gitmez.</strong> IBAN sayfada kalır; ağ isteği yapılmadığını tarayıcının geliştirici araçlarından doğrulayabilirsiniz.</li>
+        <li><strong>Banka adı eşlemesi.</strong> Türkiye IBAN'larında banka kodu TCMB kodlarıyla eşleştirilir; tablo kodu kesin bilinen bankalarla sınırlı tutulur, tahmin yürütülmez.</li>
+        <li><strong>Hatayı açıklar.</strong> "Geçersiz" demekle kalmaz; uzunluk, ülke kodu, harf-rakam karışıklığı gibi nedeni ve ne yapmanız gerektiğini söyler.</li>
+        <li><strong>Dürüst sınırlar.</strong> Hesap sahibi sorgusu yapılmaz ve yapıldığı iddia edilmez; bu bilgiyi yalnızca bankanız verebilir.</li>
+        <li><strong>Kurulum yok, reklam tuzağı yok.</strong> Telefon ve bilgisayarda tarayıcıdan çalışır, uygulama olarak yüklenebilir.</li>
+      </ul>
+
+      <details class="iban-banks"><summary>Tanınan banka kodları (TCMB EFT katılımcı kodu → banka adı)</summary>
+        <table><thead><tr><th>Kod</th><th>Banka</th></tr></thead><tbody id="banks-list"></tbody></table>
+        <p>Liste bilgi amaçlıdır ve yalnızca kodu kesin bilinen bankaları içerir. Kodu listede olmayan bir IBAN yine de mod-97 ile doğrulanır; sonuçta "listede yok" ifadesi görünür.</p>
+      </details>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>IBAN'dan hesap sahibinin adını öğrenebilir miyim?</summary><p>Hayır; bu araç ya da başka hiçbir web sitesi bunu meşru yolla yapamaz. Hesap sahibi bilgisi yalnızca bankaların arasında, havale sırasında paylaşılır. Bankanızın havale ekranında IBAN'ı girdiğinizde alıcı adı maskelenmiş olarak görünür; doğrulamayı orada yapın. "IBAN'dan isim sorgulama" vaat eden siteler ya çalışmaz ya da girdiğiniz veriyi toplar.</p></details>
+        <details><summary>Araç "geçerli" dedi; para gönderebilir miyim?</summary><p>"Geçerli", IBAN'ın yazım olarak doğru olduğu anlamına gelir: uzunluk tam, kontrol hanesi tutuyor. Hesabın açık olduğu ya da beklediğiniz kişiye ait olduğu anlamına gelmez. Göndermeden önce bankanızdaki alıcı adı kontrolünü yapın; ad soyad uyuşmuyorsa işlemi durdurun.</p></details>
+        <details><summary>"Geçersiz IBAN" çıktı ama bankadan aldım; neden?</summary><p>Büyük olasılıkla kopyalarken bir hane düştü, fazladan bir karakter eklendi ya da el yazısından okurken 0 ile O, 1 ile I karıştı. IBAN'ı dekont ya da banka uygulamasından yeniden kopyalayın. Bankadan gelen bir IBAN'ın kontrol hanesi her zaman tutar; tutmuyorsa hata aktarım sırasında oluşmuştur.</p></details>
+        <details><summary>Banka adı neden "listede yok" görünüyor?</summary><p>Tablo yalnızca kodu kesin bilinen bankaları içerir; bazı yatırım bankaları, yeni kurulan katılım bankaları ya da birleşme sonrası kod değişiklikleri listede olmayabilir. IBAN'ın geçerliliği bundan etkilenmez; yalnızca banka adı gösterilemez. Bankanın adını alıcıya sorarak ya da bankanızın havale ekranından doğrulayabilirsiniz.</p></details>
+        <details><summary>IBAN'ı boşluklu mu boşluksuz mu yazmalıyım?</summary><p>İkisi de aynı IBAN'dır; boşluklar yalnızca okunabilirlik içindir. Banka uygulamalarının çoğu iki biçimi de kabul eder, bazı web formları yalnızca boşluksuz ister. Araç her iki biçimde kopyalama düğmesi sunar.</p></details>
+        <details><summary>Yurt dışı IBAN'ları da kontrol ediyor mu?</summary><p>Evet; Almanya, İngiltere, Fransa, Hollanda, Azerbaycan, Körfez ülkeleri dahil ISO 13616 kayıtlarındaki yetmişten fazla ülkenin uzunluk ve mod-97 kontrolü yapılır. Bu ülkelerde banka adı gösterilmez. Yurt dışına transfer için ayrıca BIC/SWIFT kodu gerekir.</p></details>
+        <details><summary>IBAN'ım burada güvende mi?</summary><p>Evet. IBAN tarayıcınızdan çıkmaz; araç ağ isteği yapmaz, adres çubuğuna veri yazmaz, çerez kullanmaz. Yine de IBAN'ı ad soyadla birlikte herkese açık yerlerde paylaşmamanızı öneririz; birlikte kişisel veri oluştururlar.</p></details>
+        <details><summary>Neden bu araçta IBAN üretici yok?</summary><p>Rastgele "geçerli" IBAN üretmek, gerçek bir hesaba denk gelme ve sahte belge düzenleme riski taşır; meşru bir ihtiyaç karşılamaz. Test ortamı için IBAN gerekiyorsa bankanızın ya da ödeme sağlayıcınızın resmî test hesaplarını kullanın.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../sayi-yaziya-cevir/">Sayıyı Yazıya Çevir</a></li>
+        <li><a href="../sifre-uret/">Şifre Üret</a></li>
+      </ul>
+      <p class="ba-note">Muhasebe ve ödeme süreçlerinizi dijitalleştirmek, web sitenize ödeme formu eklemek isterseniz <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="iban-dogrula-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

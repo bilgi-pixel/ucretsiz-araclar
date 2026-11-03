@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Belge Tarayıcı – Fotoğraftan Taranmış PDF Oluştur (Ücretsiz, Yüklemesiz)</title>
+  <meta name="description" content="Telefonla çektiğiniz belge fotoğrafını taranmış PDF'e çevirin: köşeleri sürükleyip perspektifi düzeltin, siyah-beyaz tarama filtresi uygulayın, e-Devlet için 2 MB altı PDF alın. Fotoğraf yüklenmez, tarayıcıda çalışır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/belge-tarayici/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .sc-inputs { display: grid; gap: 12px; }
+    .sc-cam { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 12px; background: var(--ba-surface-2); }
+    .sc-cam video { width: 100%; max-height: 60vh; background: #000; border-radius: var(--ba-radius-sm); display: block; }
+    .sc-cam p { margin: 8px 0 0; font-size: .9rem; color: var(--ba-text-muted); }
+    .ba-filelist li.is-current { border-color: var(--ba-primary); box-shadow: 0 0 0 2px var(--ba-primary-soft); }
+    .ba-filelist .thumb { cursor: pointer; }
+    .sc-editor { margin-top: 20px; padding: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .sc-editor-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .sc-editor-head strong { font-size: .95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+    .sc-editor-head .hint { font-size: .88rem; color: var(--ba-text-muted); }
+    .sc-grid { display: grid; gap: 16px; }
+    @media (min-width: 768px) { .sc-grid { grid-template-columns: 3fr 2fr; align-items: start; } }
+    .sc-stage-wrap { width: 100%; }
+    .sc-stage { position: relative; touch-action: none; user-select: none; -webkit-user-select: none; margin: 0 auto; }
+    .sc-stage canvas { display: block; border-radius: var(--ba-radius-sm); background: #fff; }
+    .sc-handle { position: absolute; width: 44px; height: 44px; margin: 0; padding: 0; transform: translate(-50%, -50%); border-radius: 50%; border: 0; background: transparent; cursor: grab; touch-action: none; }
+    .sc-handle::before { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: #fff; border: 3px solid var(--ba-primary); box-shadow: 0 1px 4px rgba(0,0,0,.4); transition: transform .1s; }
+    .sc-handle:hover::before, .sc-handle.is-active::before { transform: scale(1.25); }
+    .sc-handle:focus-visible { outline: none; }
+    .sc-handle:focus-visible::before { outline: 3px solid var(--ba-accent); outline-offset: 2px; }
+    .sc-handle.is-active { cursor: grabbing; }
+    .sc-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .sc-tools .ba-btn { min-height: 40px; padding: 6px 12px; font-size: .9rem; }
+    .sc-controls { display: grid; gap: 10px; }
+    .sc-controls .ba-field input[type="range"] { width: 100%; accent-color: var(--ba-primary); min-height: 32px; }
+    .sc-controls .ba-field output { font-family: var(--ba-mono); font-size: .85rem; color: var(--ba-text-muted); margin-left: 6px; }
+    .sc-preview { margin-top: 4px; }
+    .sc-preview .ba-label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 5px; }
+    .sc-preview-box { position: relative; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); padding: 8px; min-height: 120px; }
+    .sc-preview-box canvas { display: block; max-width: 100%; max-height: 50vh; margin: 0 auto; box-shadow: var(--ba-shadow-card); }
+    .sc-preview-box[data-state="busy"]::after { content: "İşleniyor…"; position: absolute; right: 10px; top: 8px; font-size: .78rem; font-family: var(--ba-mono); color: var(--ba-text-muted); background: var(--ba-surface); padding: 2px 6px; border-radius: 4px; }
+    .sc-apply-status { font-size: .88rem; color: var(--ba-success); min-height: 1.2em; margin: 4px 0 0; }
+    .sc-honest { font-size: .85rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Belge Tarayıcı – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/belge-tarayici/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#donustur" class="ba-nav-optional">Dönüştür</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#donustur">Dönüştür</a></li></ol>
+      <h1>Belge Tarayıcı: Fotoğraftan Taranmış PDF</h1>
+      <p class="lead">Telefonla çektiğiniz kimlik, diploma, fatura ya da sözleşme fotoğrafını taranmış gibi görünen PDF'e çevirin. Köşeleri sürükleyip eğikliği düzeltin, siyah-beyaz tarama filtresi uygulayın, birden çok sayfayı tek PDF'te birleştirin; fotoğraflar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="sc-inputs">
+        <div id="drop"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M7 8.5h6M7 15.5h8"/></svg></span><strong>Belge fotoğraflarını buraya bırakın</strong><small>veya seçmek için tıklayın · JPG, PNG, WebP · birden çok sayfa</small><span class="ba-btn">Fotoğraf seç</span></div>
+        <div class="ba-actions" style="margin-top:0">
+          <button id="cam-start" class="ba-btn" type="button">Kamerayla çek</button>
+        </div>
+        <div id="cam-panel" class="sc-cam" hidden>
+          <video id="cam-video" playsinline muted autoplay aria-label="Kamera görüntüsü"></video>
+          <p id="cam-status" role="status"></p>
+          <div class="ba-actions"><button id="cam-shot" class="ba-btn ba-btn-primary" type="button">Çek ve sayfa olarak ekle</button><button id="cam-stop" class="ba-btn" type="button">Kamerayı kapat</button></div>
+        </div>
+      </div>
+      <ul id="pages" class="ba-filelist" aria-label="Sayfalar (sürükleyerek sıralayın)"></ul>
+      <div id="warning" class="ba-error" role="status"></div>
+
+      <div id="editor" class="sc-editor" hidden>
+        <div class="sc-editor-head"><strong id="editor-title"></strong><span class="hint">Dört köşeyi belgenin köşelerine sürükleyin; ok tuşlarıyla da taşıyabilirsiniz.</span></div>
+        <div class="sc-grid">
+          <div>
+            <div id="stage-wrap" class="sc-stage-wrap">
+              <div id="stage" class="sc-stage" data-corners="">
+                <canvas id="stage-canvas" aria-label="Belge fotoğrafı ve seçili alan"></canvas>
+                <button class="sc-handle" data-i="0" type="button" aria-label="Sol üst köşe (ok tuşlarıyla taşıyın)"></button>
+                <button class="sc-handle" data-i="1" type="button" aria-label="Sağ üst köşe (ok tuşlarıyla taşıyın)"></button>
+                <button class="sc-handle" data-i="2" type="button" aria-label="Sağ alt köşe (ok tuşlarıyla taşıyın)"></button>
+                <button class="sc-handle" data-i="3" type="button" aria-label="Sol alt köşe (ok tuşlarıyla taşıyın)"></button>
+              </div>
+            </div>
+            <div class="sc-tools">
+              <button id="corners-reset" class="ba-btn" type="button">Köşeleri sıfırla</button>
+              <button id="rotate-left" class="ba-btn" type="button" aria-label="Sola 90° döndür">↺ 90°</button>
+              <button id="rotate-right" class="ba-btn" type="button" aria-label="Sağa 90° döndür">↻ 90°</button>
+              <button id="nav-prev" class="ba-btn" type="button">‹ Önceki sayfa</button>
+              <button id="nav-next" class="ba-btn" type="button">Sonraki sayfa ›</button>
+            </div>
+            <p class="sc-honest">Otomatik kenar bulma yoktur; köşeleri siz yerleştirirsiniz. Böylece yanlış kırpma olmaz ve fotoğraf hiçbir sunucuya gitmez.</p>
+          </div>
+          <div class="sc-controls">
+            <div class="ba-field"><label for="opt-filter">Tarama filtresi</label><select id="opt-filter"><option value="bw" selected>Siyah-beyaz (belge)</option><option value="gray">Gri tonlama</option><option value="color">Renkli (beyaz dengesi)</option></select><div class="hint">Siyah-beyaz, gölgeleri temizler ve en küçük dosyayı verir; renkli kaşe/mühür için "Renkli" seçin.</div></div>
+            <div class="ba-field"><label for="opt-brightness">Parlaklık <output for="opt-brightness" id="out-brightness">0</output></label><input id="opt-brightness" type="range" min="-60" max="60" step="5" value="0"></div>
+            <div class="ba-field"><label for="opt-contrast">Kontrast <output for="opt-contrast" id="out-contrast">1.0</output></label><input id="opt-contrast" type="range" min="0.6" max="2" step="0.1" value="1"></div>
+            <div class="ba-field"><label for="opt-crop">Kenar kırpma</label><select id="opt-crop"><option value="0" selected>Yok</option><option value="1">%1</option><option value="2">%2</option><option value="4">%4</option></select><div class="hint">Köşelerden sonra kalan ince koyu kenarları atar.</div></div>
+            <div class="ba-actions" style="margin-top:4px"><button id="apply-all" class="ba-btn" type="button">Bu ayarları tüm sayfalara uygula</button></div>
+            <p id="apply-status" class="sc-apply-status" role="status"></p>
+            <div class="sc-preview"><span class="ba-label">Önizleme</span><div id="preview-wrap" class="sc-preview-box" data-state=""><canvas id="preview" aria-label="İşlenmiş sayfa önizlemesi"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="options" class="ba-options" hidden>
+        <div class="ba-field"><label for="opt-output">Çıktı</label><select id="opt-output"><option value="pdf" selected>Tek PDF (tüm sayfalar)</option><option value="jpg">JPG dosyaları (çoksa ZIP)</option></select></div>
+        <div class="ba-field" id="field-size"><label for="opt-size">Sayfa boyutu</label><select id="opt-size"><option value="a4" selected>A4 (belgeyi sığdır)</option><option value="image">Görüntü oranı</option></select></div>
+        <div class="ba-field"><label for="opt-quality">JPG kalitesi</label><select id="opt-quality"><option value="0.85">Yüksek</option><option value="0.7" selected>Dengeli</option><option value="0.5">Küçük dosya</option></select></div>
+        <div class="ba-field" id="field-target"><label><input id="opt-target" type="checkbox" checked> e-Devlet hedefi: 2 MB altı</label><div class="hint">Hedefi aşarsa çözünürlük ve kalite kademeli düşürülür.</div></div>
+      </div>
+      <div class="ba-actions" id="actions" hidden>
+        <button id="run" class="ba-btn ba-btn-primary ba-btn-lg" type="button">PDF oluştur</button>
+        <button id="clear" class="ba-btn" type="button">Temizle</button>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result"><h3>Tarama hazır</h3><p id="result-info"></p><p id="result-note" hidden></p><div class="ba-actions"><button id="download" class="ba-btn ba-btn-success ba-btn-lg" type="button">PDF'i indir</button></div></div>
+    </section>
+
+    <div class="ba-ad" data-slot="belge-tarayici-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Belgenin fotoğraflarını "Fotoğraf seç" ile ekleyin ya da telefondaysanız "Kamerayla çek"e basıp her sayfayı sırayla çekin. Birden çok sayfa eklediğinizde liste üzerinde sürükleyerek ya da ▲▼ düğmeleriyle sıralayabilirsiniz.</li>
+        <li>Her sayfa için dört köşe tutamacını belgenin gerçek köşelerine sürükleyin. Araç, seçtiğiniz dörtgeni dik bir dikdörtgene açar; eğik ya da yandan çekilmiş belge tarayıcıdan çıkmış gibi düzleşir. Parmakla sürüklemek için tutamaçlar 44 piksel genişliğindedir; klavyede ok tuşlarıyla da taşınır.</li>
+        <li>Tarama filtresini seçin: metin belgeleri için "Siyah-beyaz", fotoğraf içeren sayfalar için "Gri" ya da "Renkli". Parlaklık, kontrast ve kenar kırpmayı önizlemeye bakarak ayarlayın; "Tüm sayfalara uygula" ile aynı ayarı diğer sayfalara kopyalayın.</li>
+        <li>Çıktı olarak tek PDF ya da JPG dosyaları seçin. e-Devlet, KYK, üniversite ve iş başvurularında istenen 2 MB sınırı için "e-Devlet hedefi" kutusunu işaretli bırakın; araç hedefin altına inene kadar kaliteyi kademeli düşürür.</li>
+        <li>"PDF oluştur"a basın ve dosyayı indirin. İşlem bittiğinde belge bilgisayarınızda ya da telefonunuzda kalır; hiçbir şey sunucuya gönderilmediği için silmeniz gereken bir kopya da yoktur.</li>
+      </ol>
+
+      <h2>Telefonla belge tararken dikkat edilecekler</h2>
+      <p>İyi bir taramanın yarısı çekim anında belirlenir. Belgeyi düz, tek renkli ve belgeyle zıt bir zemine koyun: beyaz kâğıdı koyu bir masaya, koyu kapaklı bir cüzdanı açık zemine. Böylece köşeleri yerleştirirken kenarları rahat görürsünüz. Işık, belgenin üstünden değil yanından gelmeli; tepeden gelen ışık telefonun ve elinizin gölgesini kâğıda düşürür, siyah-beyaz filtre o gölgeyi lekeye çevirir. Pencere kenarında gündüz ışığı çoğu zaman en iyi sonucu verir, flaş ise parlak kâğıtta yansıma yapar ve metni siler; flaşı kapatın.</p>
+      <p>Telefonu belgeye olabildiğince paralel tutun. Küçük bir eğiklik perspektif düzeltmeyle giderilir, ama 30–40 derece yandan çekilmiş bir belgede uzak kenar az piksel içerir ve düzeltilmiş sayfanın o kısmı bulanık kalır. Belge kadrajı doldursun fakat kenarlardan taşmasın; etrafta birkaç santim boşluk bırakmak tutamaçları yerleştirmeyi kolaylaştırır. Çekimden sonra fotoğrafı yakınlaştırıp en küçük yazının okunduğunu kontrol edin; odak hatalı çıktıysa hiçbir filtre onu geri getiremez. Son olarak birden çok sayfayı aynı mesafeden ve aynı ışıkta çekerseniz PDF'te sayfalar birbirine yakın tonda olur.</p>
+
+      <h2>e-Devlet, okul ve başvurularda "taranmış belge" ne demek?</h2>
+      <p>e-Devlet üzerinden yapılan birçok başvuru, KYK burs ve yurt işlemleri, üniversite kayıtları, ÖSYM belgeleri, vize başvuruları ve işe alım portalları "taranmış belge" ister ve bunu çoğunlukla "PDF, en fazla 2 MB" gibi bir sınırla tanımlar. Kurumlar bu ifadeyle gerçek bir tarayıcıdan geçmiş olmayı değil, belgenin düz, okunaklı, tek parça ve makul boyutta bir dosya olmasını kasteder. Telefonla çekilmiş ham fotoğraf bu tanıma genellikle uymaz: 4–8 MB'tır, yamuktur, arka planda masa ve el görünür, JPG olduğu için çok sayfalı belgelerde her sayfa ayrı dosya olur.</p>
+      <p>Bu araç tam olarak bu boşluğu kapatır. Köşe düzeltme masayı ve eli kadrajdan atar, siyah-beyaz filtre kâğıdı beyaza, yazıyı siyaha çeker, A4 sayfa seçeneği belgeyi standart sayfaya ortalar ve 2 MB hedefi dosya boyutunu kurumun sınırına indirir. Çok sayfalı belgelerde (transkript, sözleşme, nüfus kayıt örneği) tüm sayfalar tek bir PDF'te, sizin belirlediğiniz sırada birleşir. Sonucu yüklemeden önce bir kez açıp bakın: imza ve kaşe gibi renkli ögelerin kaybolmaması gerekiyorsa o sayfada "Renkli" filtreyi seçip yeniden oluşturmak yeterlidir.</p>
+
+      <div class="ba-ad" data-slot="belge-tarayici-b" aria-label="Reklam"></div>
+
+      <h2>Tarayıcı uygulamalarının yükleme ve abonelik sorunu</h2>
+      <p>CamScanner, Adobe Scan ve benzeri mobil tarayıcı uygulamaları işi iyi yapar, ama iki konuda düşünmeye değer. Birincisi gizlilik: bu uygulamaların çoğu fotoğrafı "işlemek", OCR yapmak ya da bulutta yedeklemek için kendi sunucularına gönderir. Kimlik, pasaport, banka dökümü ve sağlık raporu gibi belgelerin üçüncü bir tarafın sunucusunda kopyalanması, siz sildikten sonra bile orada kalması anlamına gelebilir. İkincisi maliyet ve kısıtlar: ücretsiz sürümlerde filigran, sayfa sınırı, reklam ve "Premium'a geçin" pencereleri vardır; PDF dışa aktarma ya da çok sayfalı belge çoğunlukla aboneliğe bağlanır.</p>
+      <p>Buradaki araç farklı bir yaklaşımla çalışır: tamamı tarayıcınızın içinde, JavaScript ile koşar. Perspektif düzeltme için kendi homografi kodumuzu yazdık; her çıktı pikseli için kaynak fotoğraftaki karşılığı hesaplanır ve çift doğrusal örneklemeyle alınır. Siyah-beyaz filtre, sayfanın her bölgesinde ayrı eşik kullanan uyarlanabilir bir yöntemdir; bu yüzden bir yarısı gölgede kalan kâğıt bile temiz çıkar. PDF, açık kaynaklı pdf-lib kütüphanesiyle yine cihazınızda yazılır. Sayfa yüklendikten sonra internet bağlantısını kesseniz de araç çalışmaya devam eder; filigran, sayfa sınırı ya da abonelik yoktur.</p>
+      <p>Dürüst olmak gerekirse bir sınır da var: otomatik kenar algılama yapmıyoruz. Mobil uygulamalar belgenin kenarını kendileri bulmaya çalışır ve bazen masa desenini belge sanıp yanlış kırpar; biz köşeleri size bırakıyoruz. Dört tutamacı yerleştirmek birkaç saniye sürer ve sonuç her zaman sizin istediğiniz alandır.</p>
+
+      <h2>Hangi filtre ne zaman?</h2>
+      <p><strong>Siyah-beyaz (belge)</strong>: Daktilo ya da bilgisayar çıktısı metin, formlar, faturalar, diploma ve sertifikalar. Gölgeleri ve kâğıt rengini yok eder, en küçük dosyayı üretir; e-Devlet için varsayılan seçimdir. Açık renkli kurşun kalem yazılar ya da soluk mühürler bu filtrede kaybolabilir; o durumda kontrastı biraz düşürüp parlaklığı azaltın ya da griye geçin. <strong>Gri tonlama</strong>: El yazısı, fotokopi, soluk baskı ve içinde resim bulunan sayfalar. Tonları korur, dosya biraz daha büyük olur. <strong>Renkli (beyaz dengesi)</strong>: Renkli kaşe, imza, logo ya da fotoğraflı kimlik gibi belgeler. Araç her renk kanalını ayrı ayrı gerer; sarımsı ışıkta çekilmiş kâğıt beyaza döner, renkli ögeler korunur.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Fotoğraf yüklenmez.</strong> Kimlik ve sözleşme gibi belgeleriniz tarayıcınızdan dışarı çıkmaz; ağ isteği yapılmadığını geliştirici araçlarından doğrulayabilirsiniz.</li>
+        <li><strong>Gerçek perspektif düzeltme.</strong> Yalnızca kırpma değil, dört köşeden dik dikdörtgene açma; eğik çekimler düzleşir.</li>
+        <li><strong>e-Devlet'e hazır.</strong> 2 MB hedefi, A4 sayfa ve çok sayfalı tek PDF; başvuru portalının istediği biçim tek tıkla.</li>
+        <li><strong>Telefonda kullanılabilir.</strong> Tutamaçlar parmağa göre boyutlandırıldı, arayüz 360 piksel ekranda çalışır, kamera doğrudan açılır.</li>
+        <li><strong>Filigran, abonelik, sayfa sınırı yok.</strong> İstediğiniz kadar belge, istediğiniz kadar sayfa.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Fotoğraflarım sunucuya gönderiliyor mu?</summary><p>Hayır. Perspektif düzeltme, filtreleme ve PDF yazma işlemlerinin tamamı tarayıcınızın içinde JavaScript ile yapılır. Dosya seçtiğinizde ya da kamera açtığınızda hiçbir ağ isteği oluşmaz; sayfa açıldıktan sonra internet kesilse bile araç çalışır.</p></details>
+        <details><summary>Köşeleri otomatik bulmuyor mu?</summary><p>Hayır, bilerek. Otomatik kenar algılama desenli masa ya da düşük kontrastlı zeminde yanılır ve belgeyi yanlış kırpar. Tutamaçlar başta fotoğrafın köşelerindedir; onları belgenin köşelerine sürüklemeniz yeterlidir. Fare, dokunmatik ekran ve klavye (ok tuşları, Shift ile büyük adım) desteklenir.</p></details>
+        <details><summary>PDF 2 MB'ın altına inmedi, ne yapmalıyım?</summary><p>Önce filtreyi "Siyah-beyaz" yapın; dosya boyutunu en çok düşüren ayar budur. Çok sayfalı belgelerde "JPG kalitesi"ni "Küçük dosya"ya alın. Hâlâ büyükse sayfaları iki ayrı PDF olarak oluşturun ya da sonucu <a href="../pdf-kucult/">PDF Küçült</a> aracından geçirin.</p></details>
+        <details><summary>Çıktı neden en fazla yaklaşık 2 megapiksel?</summary><p>Taranmış belge için A4 sayfada yaklaşık 150 dpi'ye denk gelen bu çözünürlük okunaklı metin için yeterlidir ve dosya boyutunu makul tutar. Daha yüksek çözünürlük, telefon fotoğrafının zaten sınırlı olan netliğini artırmaz, yalnızca dosyayı büyütür. Büyük fotoğraflar işleme alınırken en uzun kenar 3000 piksele indirilir.</p></details>
+        <details><summary>Kamera açılmıyor ya da izin hatası veriyor.</summary><p>Tarayıcınızın adres çubuğundaki kilit/kamera simgesinden bu site için kameraya izin verin; sayfanın https ile açıldığından ve kameranın başka bir uygulamada (Zoom, Teams) kullanılmadığından emin olun. Olmazsa telefonun kendi kamera uygulamasıyla çekip fotoğrafı "Fotoğraf seç" ile ekleyin; sonuç aynıdır.</p></details>
+        <details><summary>iPhone HEIC fotoğrafları neden açılmıyor?</summary><p>Tarayıcılar HEIC biçimini çözemez. iPhone'da Ayarlar &gt; Kamera &gt; Formatlar &gt; "En Uyumlu" seçeneğini açarsanız yeni fotoğraflar JPEG olur; mevcut fotoğrafı Fotoğraflar uygulamasından paylaşırken de otomatik JPEG'e dönüşür. Alternatif olarak kamerayı bu sayfadan açıp doğrudan çekin.</p></details>
+        <details><summary>Sayfaların sırasını nasıl değiştiririm?</summary><p>Listede satırın solundaki ≡ tutamacından sürükleyin ya da ▲ ▼ düğmelerini kullanın. PDF'teki sıra listedeki sıradır. Bir sayfayı çıkarmak için ✕ düğmesine basın; sonradan yeni sayfa ekleyebilirsiniz.</p></details>
+        <details><summary>Taranan belgedeki yazıyı metne çevirebilir miyim?</summary><p>Evet; oluşturduğunuz PDF'i ya da JPG'yi <a href="../resimden-yaziya/">Resimden Yazıya (OCR)</a> aracına verin. Siyah-beyaz filtreyle düzleştirilmiş sayfa, OCR için ham fotoğraftan çok daha iyi sonuç verir.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../resimden-pdfe/">Resimden PDF'e</a></li>
+        <li><a href="../pdf-kucult/">PDF Küçült</a></li>
+        <li><a href="../resimden-yaziya/">Resimden Yazıya (OCR)</a></li>
+      </ul>
+      <p class="ba-note">Şirketinizin belge akışını (teklif, sözleşme, e-imza) dijitalleştirmek isterseniz <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="belge-tarayici-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

@@ -18,3 +18,6 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | tessdata_fast (tur, eng) | 4.1.0 | Apache-2.0 | Resimden Yazıya (OCR) |
 | jsQR | 1.4.0 | Apache-2.0 | QR Kod Okuyucu |
 | IBM Plex Sans / Mono | 2023 (Google Fonts kopyası) | SIL OFL 1.1 | Tüm sayfalar (tema yazı tipi) |
+| gifenc | 1.0.3 | MIT | GIF Oluşturucu |
+| @jspawn/qpdf-wasm | 0.0.2 | Apache-2.0 | PDF'e Şifre Ekle, PDF Şifre Kaldır |
+| jsbarcode | 3.12.1 | MIT | Barkod Oluşturucu |
