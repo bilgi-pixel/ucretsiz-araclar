@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fazla Mesai Hesaplama – Saat Ücreti, Fazla Çalışma, Hafta Tatili ve Bayram Mesaisi</title>
+  <meta name="description" content="Aylık brüt ücretinizden saat ücretini; %50 zamlı fazla çalışma, %25 zamlı fazla sürelerle çalışma, hafta tatili ve genel tatil çalışması ek ücretlerini hesaplayın. 225 saat esaslı, ücretsiz, rakamlarınız tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/mesai-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+  
+    .kdv-warn { margin: 12px 0 0; padding: 10px 12px; border-radius: var(--ba-radius-sm); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); font-size: .92rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Fazla Mesai Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/mesai-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Fazla mesai ücreti nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Saat ücreti (aylık brüt ücret / 225) fazla çalışma saatiyle çarpılır ve %50 zam eklenir. Örneğin 30.000 TL aylık ücretle saat ücreti 133,33 TL, 10 saat fazla çalışmanın karşılığı 2.000 TL'dir."}},
+  {"@type":"Question","name":"Yıllık fazla çalışma sınırı kaç saattir?","acceptedAnswer":{"@type":"Answer","text":"4857 sayılı İş Kanunu md. 41 ve ilgili yönetmeliğe göre bir işçi yılda en fazla 270 saat fazla çalışma yapabilir."}},
+  {"@type":"Question","name":"Fazla süreli çalışma nedir?","acceptedAnswer":{"@type":"Answer","text":"Sözleşmedeki haftalık süre 45 saatten azsa, bu süre ile 45 saat arasındaki çalışmaya fazla sürelerle çalışma denir; saat ücreti %25 zamlı ödenir."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Fazla Mesai Hesaplama</h1>
+      <p class="lead">Aylık brüt ücretinizi ve çalıştığınız fazla saatleri girin; saat ücretinizi, fazla çalışma, fazla sürelerle çalışma, hafta tatili ve genel tatil çalışması ek ücretlerini ve toplam brüt ek ücreti görün. Rakamlarınız bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="kdv-modes" style="border:0;padding:0;margin:0 0 12px">
+          <legend class="visually-hidden">Ücret türü</legend>
+          <label><input type="radio" name="mode" value="monthly" checked> Aylık brüt ücret</label>
+          <label><input type="radio" name="mode" value="hourly"> Saatlik ücret</label>
+        </fieldset>
+        <div class="kdv-grid">
+          <div class="ba-field"><label id="wage-label" for="wage">Aylık brüt ücret (TL)</label><input id="wage" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 30.000"></div>
+          <div class="ba-field"><label for="hours">Aylık çalışma saati</label><input id="hours" type="text" inputmode="decimal" autocomplete="off"><div class="hint">Haftalık 45 saat için standart 225 saattir.</div></div>
+          <div class="ba-field"><label for="ot">Fazla çalışma (saat, %50 zamlı)</label><input id="ot" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><div class="hint">Haftalık 45 saatin üzerindeki çalışma.</div></div>
+          <div class="ba-field"><label for="ext">Fazla süreli çalışma (saat, %25 zamlı)</label><input id="ext" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><div class="hint">Haftalık sözleşme süresi 45 saatten azsa, 45 saate kadar olan fark.</div></div>
+          <div class="ba-field"><label for="sunday">Hafta tatilinde çalışılan gün</label><input id="sunday" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+          <div class="ba-field"><label for="holiday">Genel tatil / bayramda çalışılan gün</label><input id="holiday" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+          <div class="ba-field"><label for="prior">Bu yıl önceki fazla çalışma (saat, isteğe bağlı)</label><input id="prior" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><div class="hint">270 saatlik yıllık sınır uyarısı için.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Mesaiyi hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Saat ücreti</dt><dd id="r-hourly"></dd></div>
+          <div class="kdv-row"><dt>Günlük ücret</dt><dd id="r-daily"></dd></div>
+          <div class="kdv-row"><dt id="r-ot-label">Fazla çalışma</dt><dd id="r-ot"></dd></div>
+          <div class="kdv-row"><dt id="r-ext-label">Fazla süreli çalışma</dt><dd id="r-ext"></dd></div>
+          <div class="kdv-row"><dt>Hafta tatili çalışması (ek)</dt><dd id="r-sunday"></dd></div>
+          <div class="kdv-row"><dt>Genel tatil çalışması (ek)</dt><dd id="r-holiday"></dd></div>
+          <div class="kdv-row is-strong"><dt>Toplam brüt ek ücret</dt><dd id="r-total"></dd></div>
+        </dl>
+        <p class="kdv-warn" id="r-limit" role="status" hidden></p>
+        <p class="kdv-note">Tutarlar brüttür; SGK, gelir ve damga vergisi kesintileri yapılmamıştır. Gece çalışması (20.00-06.00) için ayrı bir zam yoktur; yalnızca süre sınırı vardır. Bilgilendirme amaçlıdır, hukuki tavsiye değildir.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Parametreler <strong id="params-updated"></strong> tarihinde güncellendi.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="mesai-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Ücret türünü seçin ve brüt ücretinizi yazın. Aylık ücret seçtiyseniz araç saat ücretini aylık çalışma saatine bölerek bulur; saatlik ücret seçtiyseniz doğrudan o değeri kullanır.</li>
+        <li>Aylık çalışma saati alanı varsayılan olarak 225'tir (haftalık 45 saat için standart). İşyerinizde farklı bir esas kullanılıyorsa değiştirebilirsiniz.</li>
+        <li>Çalıştığınız fazla saatleri girin. Haftalık 45 saati aşan çalışma "fazla çalışma", sözleşmedeki haftalık süre 45 saatten azsa 45 saate kadar olan kısım "fazla süreli çalışma"dır. Hafta tatili ve genel tatil için çalıştığınız gün sayısını yazın.</li>
+        <li>"Mesaiyi hesapla" düğmesine basın. Kalem kalem ek ücretleri ve toplam brüt ek ücreti görün. Yıl içinde daha önce yaptığınız fazla çalışmayı girerseniz 270 saatlik sınır kontrol edilir.</li>
+      </ol>
+
+      <h2>Saat ücreti nasıl bulunur?</h2>
+      <p>Türkiye'de tam zamanlı çalışmada haftalık yasal çalışma süresi 45 saattir. Aylık ücretli işçi için bir ay 30 gün kabul edilir; bunun içinde hafta tatili günleri de ücretlidir. Bu nedenle uygulamada aylık çalışma saati, 30 günün 7,5 saatlik günlük karşılığı olarak 225 saat (30 x 7,5) alınır. Saat ücreti, aylık brüt ücretin 225'e bölünmesiyle bulunur. Örneğin 30.000 TL brüt aylık ücret için saat ücreti 30.000 / 225 = 133,33 TL'dir. Günlük ücret ise aylık ücretin 30'a bölünmesidir: 1.000 TL. Bu araçta 225 saat ve 30 gün değerleri bir parametre dosyasında tutulur; haftalık süresi farklı olan işyerleri için aylık saat alanını değiştirebilirsiniz.</p>
+
+      <h2>Fazla çalışma ve %50 zam</h2>
+      <p>4857 sayılı İş Kanunu'nun 41. maddesine göre haftalık 45 saati aşan çalışmalar fazla çalışmadır. Fazla çalışmanın her saati için saat ücreti %50 zamlı ödenir; yani 1,5 ile çarpılır. 30.000 TL ücretli çalışan 10 saat fazla çalıştığında 133,33 x 1,5 x 10 = 2.000 TL ek brüt ücret alır. İşçinin yazılı onayı olmadan fazla çalışma yaptırılamaz; onay iş sözleşmesinde ya da ayrıca alınabilir. İşçi isterse fazla çalışma ücreti yerine her bir fazla çalışma saati için 1 saat 30 dakika serbest zaman kullanabilir. Fazla çalışma günde 11 saati, yıllık 270 saati aşamaz. Araç yıllık toplamı hesaba katarak sınırı aşan durumlarda uyarı verir.</p>
+
+      <div class="ba-ad" data-slot="mesai-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Fazla süreli çalışma ve %25 zam</h2>
+      <p>Haftalık çalışma süresi sözleşmeyle 45 saatten az belirlenmişse (örneğin 40 saat), bu süre ile 45 saat arasındaki çalışma fazla sürelerle çalışmadır. Bu saatler için ücret %25 zamlı, yani 1,25 ile çarpılarak ödenir. Fazla sürelerle çalışma, yıllık 270 saatlik fazla çalışma sınırına dahil değildir. Örnek: 133,33 TL saat ücretli çalışan haftalık 40 saat sözleşmeliyse ve haftada 3 saat fazlası çalışırsa, bir ayda 12 saat için 133,33 x 1,25 x 12 = 2.000 TL ek ücret hak eder. Sözleşmede başka bir zam oranı yazıyorsa o uygulanır; bu araçtaki oran yasal minimumdur.</p>
+
+      <h2>Hafta tatili ve genel tatilde çalışma</h2>
+      <p>Hafta tatili, çalışanın 24 saatten az olmamak üzere dinlenme hakkıdır. Aylık ücretli işçinin hafta tatili ücreti aylık ücrete dahildir. Hafta tatilinde çalıştırılan işçiye, çalıştığı her gün için günlük ücretin %50 fazlası ek olarak ödenir; araç bu nedenle ek ödeme olarak günlük ücretin 1,5 katını hesaplar. Ulusal bayram ve genel tatil günlerinde ise aylık ücret zaten ödenmektedir; çalışılan her gün için ayrıca bir günlük ücret eklenir. 1.000 TL günlük ücretle bir hafta tatili günü çalışmanın ek karşılığı 1.500 TL, bir bayram günü çalışmanın ek karşılığı 1.000 TL'dir. Yargı uygulaması ve sözleşmeniz farklı bir kural öngörüyorsa bu oranlar ilgili parametreyle uyarlanır.</p>
+      <p>Gece çalışması (20.00 ile 06.00 arası) ayrıca zamlı değildir; ancak gece çalışma süresi en çok 7,5 saat olabilir ve bu çalışanlar için sağlık gözetimi gibi ek yükümlülükler vardır. Araç gece çalışması için bir zam hesaplamaz, yalnızca bu uyarıyı gösterir.</p>
+
+      <h2>Örnek hesap</h2>
+      <p>Aylık brüt ücreti 30.000 TL olan bir işçinin bir ayda 10 saat fazla çalışma, 12 saat fazla sürelerle çalışma, 1 gün hafta tatili ve 1 gün genel tatil çalışması yaptığını düşünelim. Saat ücreti 133,33 TL, günlük ücret 1.000 TL'dir. Fazla çalışma 2.000 TL, fazla sürelerle çalışma 2.000 TL, hafta tatili 1.500 TL, genel tatil 1.000 TL; toplam brüt ek ücret 6.500 TL olur. Bu tutardan SGK işçi payı, işsizlik sigortası, gelir vergisi ve damga vergisi kesildikten sonra eline geçen net tutar daha düşüktür. Net hesap için <a href="../brut-net-maas/">brüt net maaş aracını</a> kullanabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Ücretiniz ve çalışma saatleriniz tarayıcınızda hesaplanır; hiçbir sunucuya iletilmez.</li>
+        <li><strong>Kalem kalem sonuç.</strong> Toplam yerine her ek ücretin ayrı ayrı görünmesi, bordronuzla karşılaştırmayı kolaylaştırır.</li>
+        <li><strong>270 saat uyarısı.</strong> Yıllık sınırı aşan durumlarda araç sizi uyarır.</li>
+        <li><strong>Şeffaf parametreler.</strong> 225 saat ve zam oranları ayrı bir dosyada tutulur, güncelleme tarihi sayfada gösterilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Fazla mesai ücreti nasıl hesaplanır?</summary><p>Saat ücreti, fazla çalışma saatiyle çarpılır ve %50 zam eklenir (1,5 katı). 30.000 TL aylık ücretle saat ücreti 133,33 TL, 10 saat fazla mesai için ek ücret 2.000 TL'dir.</p></details>
+        <details><summary>Neden 225 saat?</summary><p>Haftalık 45 saat çalışmada bir ay 30 gün sayılır ve günlük 7,5 saat esas alınır; 30 x 7,5 = 225 saat. Aylık ücret bu saate bölünerek saat ücreti bulunur.</p></details>
+        <details><summary>Yılda en fazla kaç saat fazla çalışma yapılabilir?</summary><p>270 saat. Bu sınır fazla çalışma içindir; fazla sürelerle çalışma bu sınıra dahil edilmez. Sınırı aşan çalışma idari para cezası riski taşır.</p></details>
+        <details><summary>Fazla çalışma ile fazla süreli çalışma arasındaki fark nedir?</summary><p>Haftalık 45 saati aşan çalışma fazla çalışmadır (%50 zam). Sözleşmedeki süre 45 saatten azsa, sözleşme süresi ile 45 saat arasındaki çalışma fazla sürelerle çalışmadır (%25 zam).</p></details>
+        <details><summary>Hafta tatilinde çalışırsam ne kadar alırım?</summary><p>Aylık ücretli işçide hafta tatili ücreti maaşa dahildir. Çalışılan gün için günlük ücretin %50 fazlası ek ödenir; yani 1.000 TL günlük ücret için ek 1.500 TL hesaplanır. Sözleşmeniz daha yüksek oran öngörebilir.</p></details>
+        <details><summary>Bayramda çalışırsam ek ücret alır mıyım?</summary><p>Evet. Ulusal bayram ve genel tatil günlerinde çalışan işçiye, aylık ücrete dahil tatil ücretine ek olarak çalıştığı her gün için bir günlük ücret ödenir.</p></details>
+        <details><summary>Gece çalışmasının zammı var mı?</summary><p>Kanunda gece çalışması için ayrıca zam öngörülmemiştir; ancak gece çalışma süresi 7,5 saati geçemez. Toplu iş sözleşmesi gece zammı öngörebilir; sözleşmenizi kontrol edin.</p></details>
+        <details><summary>Fazla mesai yerine izin kullanabilir miyim?</summary><p>Evet. İşçi isterse fazla çalışma ücreti yerine her fazla çalışma saati için 1 saat 30 dakika serbest zaman kullanabilir. Serbest zaman ücretin ödenmeyeceği anlamına gelir; kullanım süresi kanunda belirlenmiştir.</p></details>
+        <details><summary>Hatalı giriş uyarısı alıyorum, ne yapmalıyım?</summary><p>Ücret ve saat alanlarına yalnızca sayı yazın (örn. 30.000 ya da 30000,50). Saat ve gün alanları negatif olamaz; gün sayıları bir ay için 6'yı geçemez. Alanı düzeltip tekrar deneyin.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç bilgilendirme amaçlıdır, hukuki ve mali tavsiye değildir. Tutarlar brüt ve tahminidir; kesin ödeme için iş sözleşmenize, toplu iş sözleşmenize ve bordronuza bakın. Uyuşmazlıkta bir avukata ya da Çalışma ve Sosyal Güvenlik Bakanlığı'na danışın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../brut-net-maas/">Brüt Net Maaş Hesaplama</a></li>
+        <li><a href="../yillik-izin/">Yıllık İzin Hesaplama</a></li>
+        <li><a href="../kidem-tazminati/">Kıdem Tazminatı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="mesai-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

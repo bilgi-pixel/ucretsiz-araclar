@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Markdown Editör ve Önizleme – Canlı Önizleme, HTML Dışa Aktarma (Ücretsiz)</title>
+  <meta name="description" content="Markdown yazın, yanında canlı önizlemeyi görün. Tablo, kod bloğu, araç çubuğu; .md yükleyin, .md ya da .html indirin, HTML'i kopyalayın, yazdırın. Ücretsiz, kayıt yok, metin yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/markdown-onizleme/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .mo-bar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+    .mo-bar .ba-btn { min-height: 44px; min-width: 44px; padding: 6px 12px; }
+    .mo-split { display: grid; gap: 14px; }
+    @media (min-width: 900px) { .mo-split { grid-template-columns: 1fr 1fr; } .mo-tabs { display: none !important; } }
+    @media (max-width: 899px) {
+      .mo-split[data-view="edit"] .mo-pane-preview { display: none; }
+      .mo-split[data-view="preview"] .mo-pane-edit { display: none; }
+    }
+    .mo-tabs { display: flex; gap: 6px; margin: 16px 0 12px; }
+    .mo-tabs button { flex: 1; min-height: 44px; border: 1px solid var(--ba-border); background: var(--ba-surface-2); color: inherit; font: inherit; font-weight: 600; border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .mo-tabs button[aria-selected="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .mo-pane h3 { margin: 0 0 6px; font-size: .95rem; }
+    #editor { width: 100%; min-height: 460px; font-family: var(--ba-mono); font-size: .88rem; line-height: 1.55; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: inherit; resize: vertical; tab-size: 2; }
+    #editor:focus { border-color: var(--ba-primary); }
+    #preview { min-height: 460px; max-height: 640px; overflow: auto; padding: 14px 18px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); overflow-wrap: anywhere; }
+    /* Önizleme tipografisi: ba.css yazı tipi ve renkleriyle uyumlu */
+    #preview > :first-child { margin-top: 0; }
+    #preview h1, #preview h2, #preview h3, #preview h4 { line-height: 1.25; margin: 1.3em 0 .5em; }
+    #preview h1 { font-size: 1.7rem; padding-bottom: .25em; border-bottom: 1px solid var(--ba-border); }
+    #preview h2 { font-size: 1.4rem; padding-bottom: .2em; border-bottom: 1px solid var(--ba-border); }
+    #preview h3 { font-size: 1.15rem; }
+    #preview p, #preview ul, #preview ol, #preview blockquote, #preview pre, #preview table { margin: 0 0 1em; }
+    #preview ul, #preview ol { padding-left: 1.5em; }
+    #preview a { color: var(--ba-primary); text-decoration: underline; }
+    #preview blockquote { padding: .2em 1em; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); color: var(--ba-text-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    #preview code { font-family: var(--ba-mono); font-size: .88em; background: var(--ba-surface-2); border: 1px solid var(--ba-border); padding: .1em .35em; border-radius: 4px; }
+    #preview pre { background: var(--ba-ink); color: var(--ba-on-ink); padding: 14px 16px; border-radius: var(--ba-radius); overflow: auto; line-height: 1.5; }
+    #preview pre code { background: none; border: 0; padding: 0; color: inherit; font-size: .86rem; }
+    #preview table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+    #preview th, #preview td { border: 1px solid var(--ba-border); padding: 7px 12px; text-align: left; }
+    #preview th { background: var(--ba-surface-2); font-weight: 600; }
+    #preview tr:nth-child(even) td { background: var(--ba-surface-2); }
+    #preview img { max-width: 100%; height: auto; }
+    #preview hr { border: 0; border-top: 1px solid var(--ba-border); margin: 1.5em 0; }
+    #file-name, #stats { color: var(--ba-text-muted); font-size: .9rem; }
+    #file-name { display: block; min-height: 1.2em; margin-top: 6px; }
+    #copied { color: var(--ba-success); font-weight: 600; font-size: .9rem; }
+    .mo-drop { margin-bottom: 4px; }
+    /* Yazdırma: yalnızca önizleme çıkar */
+    @media print {
+      body * { visibility: hidden !important; }
+      #preview, #preview * { visibility: visible !important; }
+      #preview { position: absolute; left: 0; top: 0; width: 100%; max-height: none !important; overflow: visible !important; border: 0; display: block !important; }
+      .mo-split[data-view] .mo-pane-preview { display: block !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Markdown Editör ve Önizleme – Bilişim Ajans","applicationCategory":"DeveloperApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/markdown-onizleme/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#pdf" class="ba-nav-optional">PDF</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1>Markdown Editör ve Önizleme</h1>
+      <p class="lead">Markdown yazın, sonucu aynı anda yanında görün. Başlık, liste, tablo ve kod bloğu araç çubuğuyla eklenir; .md dosyanızı yükleyebilir, .md ya da .html olarak indirebilirsiniz. Metniniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div id="drop" class="mo-drop"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><strong>.md dosyasını buraya bırakın</strong><small>veya seçmek için tıklayın · isteğe bağlı, doğrudan yazmaya da başlayabilirsiniz</small><span class="ba-btn">Markdown dosyası seç</span></div>
+      <span id="file-name" aria-live="polite"></span>
+      <div id="warning" class="ba-error" role="status"></div>
+
+      <div class="mo-tabs" role="tablist" aria-label="Görünüm">
+        <button type="button" role="tab" id="tab-edit" data-view="edit" aria-selected="true" aria-controls="pane-edit">Yazı</button>
+        <button type="button" role="tab" id="tab-preview" data-view="preview" aria-selected="false" tabindex="-1" aria-controls="pane-preview">Önizleme</button>
+      </div>
+
+      <div id="split" class="mo-split" data-view="edit">
+        <div id="pane-edit" class="mo-pane mo-pane-edit" role="tabpanel" aria-labelledby="tab-edit">
+          <div class="mo-bar" role="toolbar" aria-label="Biçimlendirme araç çubuğu">
+            <button type="button" class="ba-btn" data-md="bold" title="Kalın (Ctrl+B)" aria-label="Kalın"><b>K</b></button>
+            <button type="button" class="ba-btn" data-md="italic" title="İtalik (Ctrl+I)" aria-label="İtalik"><i>İ</i></button>
+            <button type="button" class="ba-btn" data-md="h2" title="Başlık" aria-label="Başlık">Başlık</button>
+            <button type="button" class="ba-btn" data-md="ul" title="Madde işaretli liste" aria-label="Madde işaretli liste">• Liste</button>
+            <button type="button" class="ba-btn" data-md="ol" title="Numaralı liste" aria-label="Numaralı liste">1. Liste</button>
+            <button type="button" class="ba-btn" data-md="quote" title="Alıntı" aria-label="Alıntı">“ ”</button>
+            <button type="button" class="ba-btn" data-md="link" title="Bağlantı" aria-label="Bağlantı">Bağlantı</button>
+            <button type="button" class="ba-btn" data-md="code" title="Kod" aria-label="Kod">&lt;/&gt;</button>
+            <button type="button" class="ba-btn" data-md="table" title="Tablo" aria-label="Tablo">Tablo</button>
+          </div>
+          <h3><label for="editor">Markdown metni</label></h3>
+          <textarea id="editor" spellcheck="false">
+# Merhaba Markdown
+
+Bu bir **deneme** metnidir. Soldan yazın, sonucu sağda görün. Yazıyı *eğik* ya da `kod` olarak da işaretleyebilirsiniz.
+
+## Yapılacaklar
+
+- Metni düzenle
+- Önizlemeyi kontrol et
+- `.html` olarak indir
+
+## Örnek tablo
+
+| Ürün | Adet | Fiyat |
+| --- | ---: | ---: |
+| Kalem | 10 | 25,00 ₺ |
+| Defter | 4 | 60,00 ₺ |
+
+## Örnek kod
+
+```js
+const selam = (ad) => `Merhaba ${ad}!`;
+console.log(selam('Dünya'));
+```
+
+> Alıntılar böyle görünür.
+
+Bir [bağlantı](https://bilisimajans.com/) da ekleyebilirsiniz.
+</textarea>
+        </div>
+        <div id="pane-preview" class="mo-pane mo-pane-preview" role="tabpanel" aria-labelledby="tab-preview">
+          <h3 id="preview-h">Önizleme</h3>
+          <div id="preview" aria-labelledby="preview-h" tabindex="0"></div>
+        </div>
+      </div>
+      <p id="stats" aria-live="polite"></p>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <div class="ba-actions">
+        <button id="btn-md" class="ba-btn ba-btn-primary" type="button">.md indir</button>
+        <button id="btn-html" class="ba-btn" type="button">.html indir</button>
+        <button id="btn-copy-html" class="ba-btn" type="button">HTML'i kopyala</button>
+        <button id="btn-print" class="ba-btn" type="button">Yazdır</button>
+        <button id="btn-clear" class="ba-btn" type="button">Temizle</button>
+        <span id="copied" role="status"></span>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="markdown-onizleme-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Markdown nedir, neden bu kadar yaygın?</h2>
+      <p>Markdown, düz metni birkaç basit işaretle biçimlendirmeye yarayan hafif bir yazım dilidir. Başlık için satırın başına <code>#</code>, kalın yazı için iki yıldız, liste için tire koyarsınız; bir araç bu işaretleri düzgün bir web sayfasına dönüştürür. Kolay okunması, her metin düzenleyicide yazılabilmesi ve sürüm kontrol sistemlerinde temiz fark üretmesi sayesinde yazılım projelerinin README dosyalarından teknik belgelere, blog yazılarından not alma uygulamalarına kadar çok geniş bir alanda kullanılır. Word gibi bir programın menülerinde kaybolmadan, ellerinizi klavyeden kaldırmadan yazı yazmak isteyenler için ideal bir yoldur. Bu sayfa, yazdıklarınızı anında görebileceğiniz bir editör ve önizleme sunar; hesap açmanız ya da bir şey kurmanız gerekmez.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Metninizi "Markdown metni" kutusuna yazın ya da yapıştırın. İsterseniz bir <code>.md</code> dosyasını kutuya bırakıp içeriğini editöre aktarın. Kutuda hazır bir örnek bulunur; silip kendi metninizi yazabilirsiniz.</li>
+        <li>Önizlemeyi yazarken canlı olarak izleyin. Geniş ekranda iki bölme yan yanadır; telefonda üstteki "Yazı" ve "Önizleme" sekmeleriyle geçiş yaparsınız.</li>
+        <li>Araç çubuğundaki düğmelerle işaretleri elle yazmadan ekleyin: kalın, italik, başlık, listeler, alıntı, bağlantı, kod ve tablo. Önce metni seçip düğmeye basarsanız seçili kısım biçimlendirilir. Ctrl+B ve Ctrl+I kısayolları da çalışır.</li>
+        <li>Bitirince ".md indir" ile kaynak metni, ".html indir" ile bağımsız bir web sayfasını kaydedin. Başka bir yere yapıştırmak için "HTML'i kopyala"yı, kâğıda dökmek ya da PDF yapmak için "Yazdır"ı kullanın.</li>
+      </ol>
+
+      <h2>Temel Markdown sözdizimi</h2>
+      <p>Başlıklar için <code>#</code> işaretini kullanın; bir tane h1, iki tane h2, üç tane h3 anlamına gelir ve işaretten sonra bir boşluk bırakılmalıdır. Paragraflar arasında bir boş satır olması yeterlidir. Kalın için <code>**metin**</code>, italik için <code>*metin*</code>, üstü çizili için <code>~~metin~~</code> yazılır. Madde işaretli listeler tire ya da yıldızla, numaralı listeler "1." ile başlar; girintiyle iç içe liste yapılır. Bağlantı <code>[görünen metin](adres)</code> biçimindedir. Alıntı için satırın başına <code>&gt;</code> konur. Kod için tek satırda ters tırnak (<code>`</code>), blok için üç ters tırnak kullanılır ve ilk üç tırnağın yanına dil adı yazabilirsiniz. Yatay çizgi üç tire ile çizilir.</p>
+      <p>Tablolar, GitHub'ın da kullandığı biçimde yazılır: ilk satır sütun başlıkları, ikinci satır tireli ayırıcı, sonraki satırlar verilerdir. Sütunları dikey çizgi (<code>|</code>) ayırır. Ayırıcı satırda iki noktanın yeri hizalamayı belirler: <code>:---</code> sola, <code>---:</code> sağa, <code>:---:</code> ortaya yaslar. Araç çubuğundaki "Tablo" düğmesi üç sütunlu hazır bir iskelet ekler; yalnızca hücreleri doldurmanız gerekir. Çok geniş tablolar küçük ekranda yatay kaydırılır, sayfa taşmaz.</p>
+
+      <div class="ba-ad" data-slot="markdown-onizleme-b" aria-label="Reklam"></div>
+
+      <h2>Güvenlik: önizleme neden "temizleniyor"?</h2>
+      <p>Markdown, içine ham HTML yazılmasına izin verir. Başkasından kopyaladığınız bir metinde <code>&lt;script&gt;</code> etiketi, <code>onclick</code> gibi olay öznitelikleri ya da <code>javascript:</code> bağlantısı gizli olabilir; bunlar önizlemede çalıştırılırsa sayfanızı ele geçirebilir (XSS saldırısı). Bu yüzden önizleme ve dışa aktarılan HTML, üretildikten sonra bir temizleyiciden geçer: script, iframe, object, embed, form ve benzeri etiketler çıkarılır, tüm <code>on...</code> öznitelikleri ve satır içi stiller silinir, tehlikeli bağlantı adresleri kaldırılır. Temizleme yalnızca http, https, mailto, tel ve sayfa içi bağlantılara izin verir. Aynı nedenle uzak adreslerden görsel yüklenmez: bir görselin adresi dışarıdaki bir sunucuya çıkıyorsa, açıldığı anda o sunucuya IP adresiniz iletilir. Gizlilik sözümüzü korumak için yalnızca metin içine gömülmüş (<code>data:image</code>) görseller gösterilir; diğerleri yerine "görsel engellendi" notu yazılır.</p>
+
+      <h2>HTML'e dışa aktarma ve yazdırma</h2>
+      <p>".html indir" düğmesi, önizlemedeki içeriği başlığı, temel stilleri ve Türkçe karakter desteğiyle birlikte tek dosyalık bir web sayfası olarak kaydeder; dosya internet bağlantısı gerektirmez ve her tarayıcıda açılır. Yalnızca gövde kodunu bir blog sistemine, e-posta şablonuna ya da içerik yönetim sistemine yapıştıracaksanız "HTML'i kopyala"yı kullanın; kopyalanan kod temizlenmiş halidir. "Yazdır" düğmesi yalnızca önizlemeyi yazdırma ekranına getirir; araç düğmeleri ve menüler çıktıya girmez. Yazıcı seçiminde "PDF olarak kaydet"i seçerek belgenizi PDF'e de dönüştürebilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Metin yüklenmez.</strong> Yazdıklarınız yalnızca tarayıcı belleğinde işlenir; sayfa çevrimdışı da çalışır ve hiçbir şey sunucuya gitmez.</li>
+        <li><strong>Güvenli önizleme.</strong> Zararlı etiketler ve bağlantılar temizlenir, uzak görseller engellenir.</li>
+        <li><strong>Mobil uyumlu.</strong> Telefonda yazı ve önizleme sekmelerle ayrılır, klavyeyle tamamen kullanılabilir.</li>
+        <li><strong>Hesap, filigran, sınır yok.</strong> Dilediğiniz kadar kullanın.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yazdığım metin sunucuya gönderiliyor mu?</summary><p>Hayır. Markdown dönüşümü ve temizleme tarayıcınızda yapılır; sayfa yüklendikten sonra internetinizi kesseniz de çalışır. Sayfayı kapattığınızda metin silinir; saklamak istiyorsanız ".md indir" ile kaydedin.</p></details>
+        <details><summary>Hangi Markdown türünü destekliyor?</summary><p>CommonMark'ı ve GitHub tarzı eklentileri (tablolar, üstü çizili metin, otomatik bağlantılar) destekleyen marked kütüphanesini kullanır. GitHub README dosyalarınız büyük oranda aynı şekilde görünür; yine de GitHub'a özgü emoji kısa kodları ya da matematik formülleri desteklenmez.</p></details>
+        <details><summary>Neden görselim önizlemede görünmüyor?</summary><p>Uzak bir adresteki (https://...) görseller gizliliğiniz için engellenir; yerine "görsel engellendi" notu çıkar. Görseli metne gömmek isterseniz base64 olarak <code>data:image/png;base64,...</code> biçiminde yazabilirsiniz. HTML indirmeyi başka bir yere taşıyacaksanız görsel bağlantısını yayınlandığı yerde ekleyebilirsiniz.</p></details>
+        <details><summary>HTML'imdeki script etiketi neden çalışmıyor?</summary><p>Güvenlik nedeniyle script, iframe, form, object gibi etiketler ve onclick benzeri öznitelikler çıkarılır. Bunun amacı sizi ve metni açan kişileri XSS saldırılarından korumaktır. Düz HTML biçimlendirme etiketleri (başlık, paragraf, tablo, bağlantı, kalın, italik) çalışmaya devam eder.</p></details>
+        <details><summary>Dosyam büyükse ne olur?</summary><p>Birkaç yüz kilobaytlık metinler anında önizlenir. 50 MB üstü dosyalar için araç uyarı verir; bu boyutta tarayıcı yavaşlayabilir, bilgisayarda deneyin ya da metni bölümlere ayırın.</p></details>
+        <details><summary>Telefonda nasıl kullanırım?</summary><p>Ekran dar olduğunda yazı ve önizleme alt alta değil sekmeli gösterilir. "Yazı" sekmesinde yazar, "Önizleme" sekmesinde sonucu görürsünüz. Sekmeler arasında sağ ve sol ok tuşlarıyla da gezebilirsiniz.</p></details>
+        <details><summary>PDF olarak nasıl kaydederim?</summary><p>"Yazdır" düğmesine basın ve yazıcı olarak "PDF olarak kaydet" ya da "Microsoft Print to PDF" seçin. Çıktıda yalnızca önizleme yer alır. Daha fazla yazım denetimi ve sayfa düzenlemesi gerekiyorsa Metinden PDF aracını da deneyebilirsiniz.</p></details>
+        <details><summary>Dosyayı indirirken Türkçe karakterler bozulur mu?</summary><p>Hayır. .md ve .html dosyaları UTF-8 olarak kaydedilir ve HTML dosyasında karakter kodlaması belirtilir; ş, ğ, ı, İ gibi harfler her yerde doğru görünür.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../metin-karsilastir/">Metin Karşılaştırma</a></li>
+        <li><a href="../metinden-pdf/">Metinden PDF</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir ve Doğrula</a></li>
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+      </ul>
+      <p class="ba-note">Belgelendirme sistemi, kurumsal web sitesi ya da özel yazılım gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="markdown-onizleme-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

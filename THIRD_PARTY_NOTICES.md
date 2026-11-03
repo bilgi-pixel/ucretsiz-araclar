@@ -21,3 +21,4 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | gifenc | 1.0.3 | MIT | GIF Oluşturucu |
 | @jspawn/qpdf-wasm | 0.0.2 | Apache-2.0 | PDF'e Şifre Ekle, PDF Şifre Kaldır |
 | jsbarcode | 3.12.1 | MIT | Barkod Oluşturucu |
+| marked | 15.0.7 | MIT | Markdown Editör ve Önizleme |
