@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Emekli İkramiyesi ve Emekli Maaşı Zammı Hesaplama (Tahmini) – Bayram İkramiyesi</title>
+  <meta name="description" content="Memur emekli ikramiyesini hizmet yılı ve aylıktan, emekli maaşı zammını TÜFE oranından ve bayram ikramiyesini tutardan tahmini hesaplayın. Yalnızca yaklaşık sonuç verir. Ücretsiz, kayıt yok, veriler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/emekli-ikramiyesi-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+      .yk-modes { margin-bottom: 14px; }
+    .yk-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .yk-table th, .yk-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); }
+    .yk-table td.n { font-family: var(--ba-mono); white-space: nowrap; }
+    .yk-table .ba-btn { min-height: 40px; padding: 6px 12px; }
+    .ba-field input[type="text"] { width: 100%; }
+  
+    .dev-row { display: grid; gap: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); }
+    .dev-row .ba-field { margin: 0; }
+    @media (min-width: 700px) { .dev-row { grid-template-columns: 2fr 1fr 1fr 80px auto; align-items: end; } }
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
+    .el-pie { width: 100%; max-width: 260px; margin: 8px auto; }
+    .el-tablewrap { overflow-x: auto; }
+    .el-params { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .el-sub { margin: 0 0 6px; font-weight: 600; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Emekli İkramiyesi ve Zam Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/emekli-ikramiyesi-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Memur emekli ikramiyesi nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Genel mantıkla hizmet süresinin her yılı için bir aylık tutarında hesaplanır ve süre en çok 30 yıl sayılır. Araç, hizmet yılı ile emekli keseneğine esas aylığı çarparak tahmini bir tutar verir. Örneğin 25 yıl ve 40.000 TL aylık için 1.000.000 TL görünür. Kesin hesap SGK ve kurum tarafından yapılır."}},{"@type":"Question","name":"Emekli maaşı zammı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Mevcut aylığı, TÜFE'ye göre belirlenen zam oranıyla çarpıp zam farkını bulur, aylığa eklersiniz. 20.000 TL ve yüzde 15 için yeni aylık 23.000 TL olur. Oran her Ocak ve Temmuz'da altı aylık enflasyon farkına göre belirlenir; güncel oranı resmî duyurudan girin."}},{"@type":"Question","name":"Bu araç emekli maaşını hesaplıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Emekli maaşı tutarı hesaplanmaz; yalnızca girdiğiniz maaşa zam ve girdiğiniz bilgilerle ikramiye hesaplanır. Aylık hesabı prim gün sayısı, kazanç ve statüye bağlıdır ve SGK tarafından yapılır."}},{"@type":"Question","name":"Zam oranını nereden öğrenirim?","acceptedAnswer":{"@type":"Answer","text":"Altı aylık TÜFE farkı TÜİK tarafından açıklanır; emekli aylıklarına yansıyacak oran SGK ve ilgili kurum duyurularında yer alır. Resmî oran açıklanmadan önce kendi tahmininizi girerek senaryo da çalışabilirsiniz."}},{"@type":"Question","name":"Aylık katsayıyı neden kendim giriyorum?","acceptedAnswer":{"@type":"Answer","text":"Memur aylık katsayıları dönemsel olarak güncellenir. Eski bir değer yanlış sonuç vereceği için sayfaya sabit katsayı koymadık. Güncel katsayıyı resmî duyurudan bulup alana yazın; sonuç yine de yaklaşıktır."}},{"@type":"Question","name":"Bayram ikramiyesi ne kadar?","acceptedAnswer":{"@type":"Answer","text":"Tutar her dönem için Cumhurbaşkanı kararı ve SGK duyurusuyla belirlenir ve değişebilir. Araçtaki başlangıç değeri yaklaşıktır. SGK'nın güncel duyurusunu kontrol edip tutar alanını kendiniz güncelleyin."}},{"@type":"Question","name":"SSK ve Bağ-Kur emeklilerinde ikramiye var mı?","acceptedAnswer":{"@type":"Answer","text":"Bu araçtaki ikramiye modeli memur emekli ikramiyesine yöneliktir. SSK ve Bağ-Kur emeklileri için hak ve hesap yöntemi farklıdır; ayrıntı için SGK'ya başvurun. Zam ve bayram ikramiyesi bölümleri ise genel olarak kullanılabilir."}},{"@type":"Question","name":"Sonuç kesin mi, vergi ve kesintiler dahil mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sonuçlar yaklaşıktır ve vergi, kesinti, ek ödeme gibi unsurları dahil etmez. SGK ve ilgili kurumun hesabı esastır; araç yalnızca fikir vermek içindir."}},{"@type":"Question","name":"\"Hizmet yılı boş\" ya da \"geçersiz\" hatası alıyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Hizmet yılı alanına tam sayı yazın (örn. 25); artan ayları \"Artan ay\" alanına yazın. Harf, para birimi simgesi, sıfır ve eksi değerler kabul edilmez. Alanı düzeltip yeniden \"Hesapla\"ya basın."}},{"@type":"Question","name":"Girdiğim bilgiler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; maaş, hizmet yılı ve oran bilgileri sunucuya gönderilmez, saklanmaz; çerez ya da analiz kodu kullanılmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Emekli İkramiyesi ve Emekli Maaşı Zammı Hesaplama (Tahmini)</h1>
+      <p class="lead">Memur emekli ikramiyenizi hizmet yılınız ve emekli keseneğine esas aylığınızla, emekli maaşı zammını Ocak ya da Temmuz dönemi TÜFE oranıyla, bayram ikramiyesini de güncel tutarla tahmini olarak hesaplayın. Araç emekli maaşının kendisini hesaplamaz; yalnızca zam ve ikramiye tutarlarını gösterir. Sonuçlar yaklaşıktır, girdileriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="kdv-modes yk-modes" style="border:0;padding:0;margin:0 0 14px">
+          <legend class="visually-hidden">Hesaplama türü</legend>
+          <label><input type="radio" name="mode" value="ikramiye" checked> Emekli ikramiyesi (memur)</label>
+          <label><input type="radio" name="mode" value="zam"> Emekli maaşı zammı</label>
+          <label><input type="radio" name="mode" value="bayram"> Bayram ikramiyesi</label>
+        </fieldset>
+
+        <div data-panel="ikramiye">
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="i-years">Hizmet yılı</label><input id="i-years" type="text" inputmode="numeric" autocomplete="off" placeholder="25"><div class="hint">Tam yıl olarak yazın.</div></div>
+            <div class="ba-field"><label for="i-months">Artan ay (isteğe bağlı)</label><input id="i-months" type="text" inputmode="numeric" autocomplete="off" placeholder="0"><div class="hint">0 ile 11 arası.</div></div>
+          </div>
+          <div class="ba-field"><label for="i-salary">Emekli keseneğine esas aylık (TL)</label><input id="i-salary" type="text" inputmode="decimal" autocomplete="off" placeholder="40.000"><div class="hint">Biliyorsanız doğrudan yazın. Bilmiyorsanız aşağıdaki gösterge alanlarını doldurun.</div></div>
+          <p class="kdv-note">Aylığı bilmiyorsanız yaklaşık hesap: (gösterge + ek gösterge) × güncel aylık katsayı. Güncel katsayıyı kendiniz girin; sayfa katsayı tutmaz.</p>
+          <div class="kdv-grid c3" style="margin-top:8px">
+            <div class="ba-field"><label for="i-gosterge">Gösterge puanı</label><input id="i-gosterge" type="text" inputmode="decimal" autocomplete="off" placeholder="1320"></div>
+            <div class="ba-field"><label for="i-ek">Ek gösterge</label><input id="i-ek" type="text" inputmode="decimal" autocomplete="off" placeholder="3600"></div>
+            <div class="ba-field"><label for="i-katsayi">Aylık katsayı</label><input id="i-katsayi" type="text" inputmode="decimal" autocomplete="off" placeholder="güncel katsayıyı girin"></div>
+          </div>
+        </div>
+
+        <div data-panel="zam" hidden>
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="z-salary">Mevcut aylık (TL)</label><input id="z-salary" type="text" inputmode="decimal" autocomplete="off" placeholder="20.000"></div>
+            <div class="ba-field"><label for="z-rate">Zam oranı (%)</label><input id="z-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="15"><div class="hint">6 aylık TÜFE farkı oranı.</div></div>
+            <div class="ba-field"><label for="z-period">Dönem</label><select id="z-period"><option value="ocak">Ocak</option><option value="temmuz">Temmuz</option></select></div>
+          </div>
+        </div>
+
+        <div data-panel="bayram" hidden>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="b-amount">Bayram ikramiyesi tutarı (TL)</label><input id="b-amount" type="text" inputmode="decimal" autocomplete="off"><div class="hint">Yaklaşık değerdir; SGK duyurusundan teyit edip düzeltin.</div></div>
+            <div class="ba-field"><label for="b-count">Bayram sayısı</label><input id="b-count" type="text" inputmode="numeric" autocomplete="off" value="1"><div class="hint">Yıllık toplam için 2 yazın.</div></div>
+          </div>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="rows"></dl>
+
+        <p class="kdv-note" id="r-notes"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="el-params">Parametreler <span id="param-date">4 Kasım 2026</span> tarihinde güncellendi; değerler yaklaşıktır.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="emekli-ikramiyesi-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstten hesap türünü seçin: emekli ikramiyesi, emekli maaşı zammı ya da bayram ikramiyesi.</li>
+        <li>İkramiye için hizmet yılınızı ve emekli keseneğine esas aylığınızı yazın. Aylığı bilmiyorsanız gösterge puanı, ek gösterge ve güncel aylık katsayıyı girin.</li>
+        <li>Zam için mevcut aylığınızı ve TÜFE'ye bağlı zam oranını yüzde olarak yazın; Ocak ya da Temmuz dönemini seçin.</li>
+        <li>"Hesapla"ya basın. Sonuç satırlarında tutar, fark ve notlar görünür; "Sonucu kopyala" ile panoya alabilirsiniz.</li>
+      </ol>
+
+      <p class="ba-note"><span aria-hidden="true">⚠️</span><span><strong>Önemli:</strong> Bu araç emekli maaşının tutarını hesaplamaz; yalnızca zam ve ikramiye tutarlarını tahmini olarak gösterir. Sonuçlar yaklaşıktır ve SGK ile ilgili kurumun hesabı esastır.</span></p>
+
+      <h2>Memur emekli ikramiyesi nedir?</h2>
+      <p>Memurlar, 5434 sayılı Emekli Sandığı Kanunu kapsamında emekliye ayrılırken bir defaya mahsus emekli ikramiyesi alabilir. Genel mantık, hizmet süresinin her yılı için bir aylık tutarında ödeme yapılmasıdır; üst sınır ise hizmet süresinin en çok 30 yıl üzerinden hesaplanmasıdır. Ödemenin dayanağı olan aylık, emekli keseneğine esas aylıktır. Yani çalışma hayatının sonunda aldığınız ek ödemenin büyüklüğünü iki şey belirler: kaç yıl çalıştığınız ve emekli keseneğine esas aylığınızın ne kadar olduğu.</p>
+      <p>Araçtaki formül bu genel mantığı izler: sayılan hizmet süresi (en çok 30 yıl) × emekli keseneğine esas aylık. Örneğin 25 yıl hizmeti ve 40.000 TL esas aylığı olan bir memur için tahmini ikramiye 25 × 40.000 = 1.000.000 TL olarak görünür. Kanundaki istisnalar, kurum uygulamaları, vergi ve kesintiler ile hizmet süresinin hangi dönemleri kapsadığı aracın dışındadır; bu yüzden sonucu yalnızca ön bilgi olarak kullanın.</p>
+
+      <h2>Emekli keseneğine esas aylık nasıl bulunur?</h2>
+      <p>Memurun aylığı, gösterge rakamlarının aylık katsayı ile çarpılmasıyla bulunur. Hesapta kullanılan ana kalem, derece ve kademeye bağlı gösterge puanı ile görev ve unvana bağlı ek göstergenin toplamıdır. Toplamı aylık katsayı ile çarptığınızda yaklaşık aylık ortaya çıkar. Katsayılar toplu sözleşme ve kanun kararlarıyla yılda iki kez güncellendiği için sayfaya sabit bir değer koymadık; güncel katsayıyı resmî duyurudan öğrenip alana siz yazarsınız. Bu yaklaşık hesapta taban aylık, ek ödemeler, yan ödemeler ve tazminatlar yer almaz. Kesin esas aylık için kurumunuzun personel birimine ya da emeklilik hesaplama belgenize başvurun.</p>
+      <p>Gösterge puanları genellikle maaş bordronuzda ya da kurumunuzun kademe-derece tablosunda yer alır. Aracın gösterge alanlarını kullanıyorsanız, bordrodaki değerlerle birebir uyuşup uyuşmadığını kontrol edin; emeklilik anındaki derece ve kademe, bugünkünden farklı olabilir.</p>
+
+    </article>
+
+    <div class="ba-ad" data-slot="emekli-ikramiyesi-hesapla-b" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Emekli maaşı zammı nasıl hesaplanır?</h2>
+      <p>Emekli aylıklarına her yıl Ocak ve Temmuz aylarında, önceki altı aylık enflasyon (TÜFE) farkı kadar artış uygulanır. Bu oranı açıklayan kurum TÜİK'tir; aylıklara yansıyacak zam oranı da bu verilere göre belirlenir. Araçta oranı yüzde olarak girersiniz. Mevcut aylığınızı bu oranla çarparak zam farkını, aylığa ekleyerek yeni aylığı bulursunuz. Örneğin 20.000 TL aylık ve yüzde 15 zam için fark 3.000 TL, yeni aylık 23.000 TL olur. Altı ay boyunca aldığınız farkın yıllık etkisini görmek için araç 12 aylık ek geliri de gösterir.</p>
+      <p>Gerçek hayatta yeni aylık, ek ödemeler, vergi kesintileri ve bazı durumlarda ödenen taban aylık gibi unsurlarla farklılaşabilir. Ayrıca farklı emeklilik statülerine (SSK, Bağ-Kur, memur) uygulanan zam oranı aynı olsa da aylık hesaplama yöntemi farklıdır. Araç yalnızca girdiğiniz aylığa girdiğiniz oranı uyguladığı için maaşın nasıl oluştuğunu hesaplamaz.</p>
+
+      <h2>Bayram ikramiyesi nedir?</h2>
+      <p>Ramazan ve Kurban bayramlarından önce emekli aylığı alanlara, her dönem için ayrıca açıklanan sabit bir tutarda bayram ikramiyesi ödenir. Tutar ve ödeme tarihi Cumhurbaşkanı kararıyla ve SGK duyurusuyla belirlenir; her dönem değişebilir. Araçta başlangıç değeri yaklaşık bir tutar olarak gelir (parametre dosyasındaki tarihle birlikte sayfada gösterilir) ve değiştirilebilir. Mutlaka SGK'nın güncel duyurusunu kontrol edin ve tutarı kendiniz düzeltin. Yıllık toplam için bayram sayısı alanına 2 yazabilirsiniz.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Oranı ondalık değil yüzde olarak yazmak.</strong> Yüzde 15 için 15 yazın, 0,15 yazmayın.</li>
+        <li><strong>Brüt ile net tutarı karıştırmak.</strong> Aylık ve ikramiye girişlerinde kendi belgenizdeki tutarın brüt mü net mi olduğuna dikkat edin; araç vergiyi ayrıca hesaplamaz.</li>
+        <li><strong>Hizmet yılını eksik ya da fazla saymak.</strong> Borçlanılan ya da sayılan süreler hesaba katılırsa hizmet yılı değişir; kesin süre için hizmet dökümünüze bakın.</li>
+        <li><strong>Eski katsayı kullanmak.</strong> Katsayılar yılda iki kez değişir; güncel değeri resmî duyurudan alın.</li>
+      </ul>
+
+      <h2>Resmî kaynaklar</h2>
+      <p>Kesin tutar ve haklar için SGK'nın resmî sitesi <a href="https://www.sgk.gov.tr/" rel="noopener">sgk.gov.tr</a>, memurlar için bağlı olduğunuz kurumun personel birimi ve <a href="https://www.turkiye.gov.tr/" rel="noopener">e-Devlet</a> üzerindeki hizmet dökümünüz esastır. Bu bağlantılara yalnızca siz tıklarsanız gidilir; araç hiçbir sorgu yapmaz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Girdiğiniz tutarlar ve değerler tarayıcınızda işlenir; hiçbir sunucuya gitmez, kaydedilmez.</li>
+        <li><strong>Gömülü fiyat ve oran yok.</strong> Güncel değeri siz yazarsınız; eskimiş bir tarife sizi yanıltmaz.</li>
+        <li><strong>Reklam düğmelerden uzaktadır.</strong> Reklam alanları yalnızca araç kutusunun altında ve içerik arasında yer alır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Memur emekli ikramiyesi nasıl hesaplanır?</summary><p>Genel mantıkla hizmet süresinin her yılı için bir aylık tutarında hesaplanır ve süre en çok 30 yıl sayılır. Araç, hizmet yılı ile emekli keseneğine esas aylığı çarparak tahmini bir tutar verir. Örneğin 25 yıl ve 40.000 TL aylık için 1.000.000 TL görünür. Kesin hesap SGK ve kurum tarafından yapılır.</p></details>
+        <details><summary>Emekli maaşı zammı nasıl bulunur?</summary><p>Mevcut aylığı, TÜFE'ye göre belirlenen zam oranıyla çarpıp zam farkını bulur, aylığa eklersiniz. 20.000 TL ve yüzde 15 için yeni aylık 23.000 TL olur. Oran her Ocak ve Temmuz'da altı aylık enflasyon farkına göre belirlenir; güncel oranı resmî duyurudan girin.</p></details>
+        <details><summary>Bu araç emekli maaşını hesaplıyor mu?</summary><p>Hayır. Emekli maaşı tutarı hesaplanmaz; yalnızca girdiğiniz maaşa zam ve girdiğiniz bilgilerle ikramiye hesaplanır. Aylık hesabı prim gün sayısı, kazanç ve statüye bağlıdır ve SGK tarafından yapılır.</p></details>
+        <details><summary>Zam oranını nereden öğrenirim?</summary><p>Altı aylık TÜFE farkı TÜİK tarafından açıklanır; emekli aylıklarına yansıyacak oran SGK ve ilgili kurum duyurularında yer alır. Resmî oran açıklanmadan önce kendi tahmininizi girerek senaryo da çalışabilirsiniz.</p></details>
+        <details><summary>Aylık katsayıyı neden kendim giriyorum?</summary><p>Memur aylık katsayıları dönemsel olarak güncellenir. Eski bir değer yanlış sonuç vereceği için sayfaya sabit katsayı koymadık. Güncel katsayıyı resmî duyurudan bulup alana yazın; sonuç yine de yaklaşıktır.</p></details>
+        <details><summary>Bayram ikramiyesi ne kadar?</summary><p>Tutar her dönem için Cumhurbaşkanı kararı ve SGK duyurusuyla belirlenir ve değişebilir. Araçtaki başlangıç değeri yaklaşıktır. SGK'nın güncel duyurusunu kontrol edip tutar alanını kendiniz güncelleyin.</p></details>
+        <details><summary>SSK ve Bağ-Kur emeklilerinde ikramiye var mı?</summary><p>Bu araçtaki ikramiye modeli memur emekli ikramiyesine yöneliktir. SSK ve Bağ-Kur emeklileri için hak ve hesap yöntemi farklıdır; ayrıntı için SGK'ya başvurun. Zam ve bayram ikramiyesi bölümleri ise genel olarak kullanılabilir.</p></details>
+        <details><summary>Sonuç kesin mi, vergi ve kesintiler dahil mi?</summary><p>Hayır. Sonuçlar yaklaşıktır ve vergi, kesinti, ek ödeme gibi unsurları dahil etmez. SGK ve ilgili kurumun hesabı esastır; araç yalnızca fikir vermek içindir.</p></details>
+        <details><summary>"Hizmet yılı boş" ya da "geçersiz" hatası alıyorum, ne yapmalıyım?</summary><p>Hizmet yılı alanına tam sayı yazın (örn. 25); artan ayları "Artan ay" alanına yazın. Harf, para birimi simgesi, sıfır ve eksi değerler kabul edilmez. Alanı düzeltip yeniden "Hesapla"ya basın.</p></details>
+        <details><summary>Girdiğim bilgiler kaydediliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; maaş, hizmet yılı ve oran bilgileri sunucuya gönderilmez, saklanmaz; çerez ya da analiz kodu kullanılmaz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç yalnızca bilgilendirme amacıyla tahmini sonuç verir; mali, hukuki veya resmî tavsiye değildir. Kesin tutarlar için SGK ve bağlı olduğunuz kurumun hesabı esastır. Katsayı, oran ve bayram ikramiyesi tutarı dönemsel olarak değişir.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../zam-orani-hesapla/">Zam Oranı Hesaplama</a></li>
+        <li><a href="../enflasyon-hesapla/">Enflasyon Hesaplama</a></li>
+        <li><a href="../kidem-tazminati/">Kıdem Tazminatı Hesaplama</a></li>
+        <li><a href="../brut-net-maas/">Brüt Net Maaş Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="emekli-ikramiyesi-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

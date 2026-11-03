@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kira Stopajı Hesaplama – İş Yeri Brüt Net Kira ve %20 Stopaj Hesaplayıcı</title>
+  <meta name="description" content="İş yeri kirasında brüt kiradan net kirayı, netten brüt kirayı ve %20 stopaj tutarını hesaplayın. KDV'li kira, aylık ve yıllık toplam. Ücretsiz, kayıt yok, tutarlar tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kira-stopaj-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; padding: 0; list-style: none; border-bottom: 1px solid var(--ba-border); }
+    .kdv-tabs button { font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; border: 1px solid transparent; border-bottom: 0; border-radius: var(--ba-radius-sm) var(--ba-radius-sm) 0 0; background: transparent; color: var(--ba-text-2); cursor: pointer; margin-bottom: -1px; }
+    .kdv-tabs button:hover { color: var(--ba-primary); }
+    .kdv-tabs button[aria-selected="true"] { background: var(--ba-surface); border-color: var(--ba-border); border-bottom: 1px solid var(--ba-surface); color: var(--ba-primary); }
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    details.kdv-adv { margin-top: 18px; border-top: 1px solid var(--ba-border); padding-top: 6px; }
+    details.kdv-adv summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .inv-row { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; padding: 12px; margin-bottom: 10px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); align-items: end; }
+    .inv-row label span, .inv-line span { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; }
+    .inv-row label:first-child { grid-column: 1 / -1; }
+    .inv-line output { display: block; font-family: var(--ba-mono); min-height: 44px; line-height: 44px; }
+    .inv-del { justify-self: end; }
+    @media (min-width: 720px) { .inv-row { grid-template-columns: 2fr .8fr 1.2fr .9fr 1.2fr auto; } .inv-row label:first-child { grid-column: auto; } }
+    .inv-totals { margin-top: 14px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .pct-block { padding: 14px 16px; margin-bottom: 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .pct-block h3 { margin: 0 0 10px; font-size: 1rem; }
+    .pct-out { margin: 10px 0 0; font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 700; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kira Stopajı Hesaplama – Bilişim Ajans","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kira-stopaj-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kira stopajı nedir, oranı kaçtır?","acceptedAnswer":{"@type":"Answer","text":"Kira stopajı (kira tevkifatı), gerçek kişiden kiralanan iş yeri gibi taşınmazlar için kiracının, kira bedelinden vergi keserek kiraya veren adına vergi dairesine ödemesidir. Genel oran yüzde 20'dir ve KDV hariç brüt kira üzerinden hesaplanır. Oran mevzuat değişikliğiyle farklılaşabileceği için güncel durumu gib.gov.tr üzerinden doğrulayın."}},{"@type":"Question","name":"Brüt kiradan net kira nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Brüt kirayı 0,80 ile çarparsınız (yüzde 20 stopajda). Örneğin 20.000 ₺ brüt kirada stopaj 4.000 ₺, net kira 16.000 ₺'dir. Araç bu işlemi oran kutusundaki değere göre otomatik yapar."}},{"@type":"Question","name":"Netten brüt kira nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Net kirayı 0,80'e bölersiniz. 16.000 ₺ net kira için 16.000 ÷ 0,80 = 20.000 ₺ brüt kira gerekir. Stopaj brüt tutarın yüzde 20'si olduğundan \"net × 1,20\" yazmak yanlış sonuç verir; araç doğru bölme işlemini uygular."}},{"@type":"Question","name":"KDV stopaj matrahına dahil mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Stopaj, KDV hariç kira bedeli üzerinden hesaplanır. KDV ayrıca faturada gösterilir ve kiracı tarafından kiraya verene ödenir; stopaj kesintisi KDV tutarını azaltmaz."}},{"@type":"Question","name":"Konut kirasında stopaj kesilir mi?","acceptedAnswer":{"@type":"Answer","text":"Genel olarak konut olarak kiralanan ve konut olarak kullanılan taşınmazlarda kiracı stopaj yapmaz; stopaj iş yeri kiralarına ilişkindir. Konutun iş yeri olarak kullanılması gibi özel durumlarda hüküm değişebilir; emin değilseniz mali müşavirinize danışın."}},{"@type":"Question","name":"Kiracı stopajı ne zaman ve nasıl öder?","acceptedAnswer":{"@type":"Answer","text":"Kiracı, kesilen stopajı muhtasar ve prim hizmet beyannamesiyle bildirir. Genel kural olarak ödemenin yapıldığı ayı izleyen ayın 26. günü akşamına kadar beyan ve ödeme yapılır. Koşulları sağlayan mükelleflerde üç aylık beyan dönemi uygulanabilir; tarihleri GİB duyurularından kontrol edin."}},{"@type":"Question","name":"Kiraya veren kurumsa stopaj yapılır mı?","acceptedAnswer":{"@type":"Answer","text":"Kiraya veren kurumlar vergisi mükellefi (örneğin limited ya da anonim şirket) ise bu kira ödemesinde gelir vergisi stopajı genellikle yapılmaz; gerçek kişi kiraya verenler için uygulanır. Ticari işletmesine dahil taşınmazını kiralayan kişiler gibi istisnalar da vardır. Kesin durum için sözleşmeye ve mükellefiyet türüne bakın."}},{"@type":"Question","name":"Hesaplanan sonuç resmî beyan yerine geçer mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç aritmetik bir yardımcıdır. Beyannameler, istisnalar ve muafiyetler için mali müşavirinize veya vergi dairesine başvurun. Bu sayfadaki bilgiler mali tavsiye değildir."}},{"@type":"Question","name":"Girdiğim kira tutarları saklanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplar tarayıcınızda yapılır; tutarlar sunucuya gönderilmez, çerez veya izleme kodu yoktur. Sayfa açıldıktan sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Kira Stopajı Hesaplama – İş Yeri Brüt Net Kira</h1>
+      <p class="lead">İş yeri kirasında brüt kiradan net kirayı ya da netten brüt kirayı hesaplayın; yüzde 20 stopajı, KDV'yi ve aylık-yıllık toplamları görün. Rakamlar tarayıcınızda işlenir. Sonuçlar bilgilendirme amaçlıdır, mali tavsiye değildir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form-stopaj" class="kdv-form" novalidate>
+        <div class="ba-field"><span>Hangi tutarı biliyorsunuz?</span>
+          <div class="kdv-modes">
+            <label><input type="radio" name="mode" value="brut" checked> Brüt kira (net kirayı bul)</label>
+            <label><input type="radio" name="mode" value="net"> Net kira (brüt kirayı bul)</label>
+          </div>
+        </div>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="f-amount" id="amount-label">Brüt kira tutarı (₺)</label><input id="f-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 20.000,00"><div class="hint">Virgül ondalık ayırıcıdır; binlik noktası yazabilirsiniz.</div></div>
+          <div class="ba-field"><label for="f-rate">Stopaj oranı (%)</label><input id="f-rate" type="text" inputmode="decimal" autocomplete="off" value="20"><div class="hint">İş yeri kirasında genel oran 20'dir.</div></div>
+        </div>
+        <div class="ba-field"><span>Girdiğiniz tutar hangi döneme ait?</span>
+          <div class="kdv-modes">
+            <label><input type="radio" name="period" value="aylik" checked> Aylık</label>
+            <label><input type="radio" name="period" value="yillik"> Yıllık</label>
+          </div>
+        </div>
+        <div class="ba-field"><label><input id="f-kdv" type="checkbox"> Kira KDV'li (KDV'yi de göster)</label></div>
+        <div class="ba-field" id="kdv-wrap" hidden><label for="f-kdv-rate">KDV oranı (%)</label><input id="f-kdv-rate" type="text" inputmode="decimal" autocomplete="off" value="20"><div class="hint">İş yeri kirasında genel oran 20'dir; kiraya verenin durumuna göre KDV uygulanmayabilir.</div></div>
+        <button type="submit" class="visually-hidden">Hesapla</button>
+      </form>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite"><h3>Sonuç</h3><dl class="kdv-results" id="r-rows"></dl><p class="kdv-note" id="r-note"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Parametreler <strong id="params-updated">…</strong> tarihinde güncellendi · Bilgilendirme amaçlıdır, mali tavsiye değildir. Güncel oranlar için <a href="https://www.gib.gov.tr/" rel="noopener">gib.gov.tr</a> adresine bakın.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="kira-stopaj-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Elinizdeki tutarın brüt mü yoksa net mi olduğunu seçin. Kira sözleşmesinde "aylık net 16.000 ₺" yazıyorsa net, "aylık 20.000 ₺ + stopaj" yazıyorsa brüt kiradır.</li>
+        <li>Tutarı yazın. Türkçe biçim kullanabilirsiniz: <code>20.000,00</code>. Tutarın aylık mı yıllık mı olduğunu ayrıca işaretleyin.</li>
+        <li>Stopaj oranını kontrol edin. İş yeri kirasında genel oran yüzde 20'dir; sayfa bu değeri parametre dosyasından okur ve güncelleme tarihini gösterir.</li>
+        <li>Kira KDV'liyse kutuyu işaretleyin. Araç KDV'yi brüt kira üzerinden ekler ve kiracının toplam maliyetini ayrıca gösterir.</li>
+        <li>Sonuçları kopyalayın. Aylık girdiyseniz yıllık toplam, yıllık girdiyseniz aylık ortalama da otomatik hesaplanır.</li>
+      </ol>
+
+      <h2>Kira stopajı nedir?</h2>
+      <p>Kira stopajı, Gelir Vergisi Kanunu'nun 94. maddesi kapsamında kira ödemesinden yapılan vergi kesintisidir. Bir işletme, kurum ya da vergi mükellefi gerçek kişiden iş yeri kiraladığında, kira bedelini kiraya verene tam olarak ödemez; belirli bir oranda vergi keserek bunu kiraya veren adına vergi dairesine yatırır. Genel oran yüzde 20'dir. Kiraya verene ödenen tutara <strong>net kira</strong>, stopaj kesilmeden önceki tutara <strong>brüt kira</strong> denir.</p>
+      <p>Stopaj ek bir maliyet gibi görünse de kiraya veren açısından peşin ödenmiş gelir vergisidir. Kiraya veren, yıllık beyannamede kira gelirini gösterirken kesilen stopajı hesaplanan vergiden mahsup edebilir. Bu nedenle stopaj, kiracının "ceza" ödemesi değil, verginin kaynağında toplanmasıdır. Beyan şartları ve mahsup ayrıntıları kişiden kişiye değiştiği için mali müşavirinize danışmanız gerekir.</p>
+
+      <h2>Brüt kiradan net kira, netten brüt kira formülü</h2>
+      <p>Hesap iki basit formüle dayanır. Yüzde 20 stopajda:</p>
+      <ul>
+        <li><strong>Brüt → net:</strong> Stopaj = brüt × 0,20; net = brüt − stopaj = brüt × 0,80.</li>
+        <li><strong>Net → brüt:</strong> Brüt = net ÷ 0,80; stopaj = brüt − net.</li>
+      </ul>
+      <p>Örnek: Brüt kira 20.000 ₺ ise stopaj 4.000 ₺, kiraya verene ödenen net tutar 16.000 ₺ olur. Tersinden, kiraya veren "elime net 16.000 ₺ geçsin" diyorsa sözleşmedeki brüt tutar 16.000 ÷ 0,80 = 20.000 ₺ olmalıdır. Sık yapılan hata, net tutara yüzde 20 eklemektir: 16.000 × 1,20 = 19.200 ₺ sonucu eksik kalır, çünkü yüzde 20 netin değil brütün yüzdesidir. Pazarlıkta "net anlaştık" denildiğinde bu fark kiracıya yıllık binlerce lira yük bindirebilir; bu yüzden sözleşmede brüt ve net tutarı birlikte yazmak sağlıklıdır.</p>
+
+      <div class="ba-ad" data-slot="kira-stopaj-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>KDV'li iş yeri kirası nasıl hesaplanır?</h2>
+      <p>İş yeri kirası genel olarak KDV'ye tabi bir hizmettir ve genel oran yüzde 20'dir. Kiraya veren KDV mükellefiyse fatura veya gider belgesinde kira bedeli ile KDV ayrı gösterilir. Stopaj matrahı KDV hariç kira bedelidir: yani 20.000 ₺ brüt kirada stopaj 4.000 ₺'dir ve KDV de ayrıca 4.000 ₺ (yüzde 20) olur. Kiracının kiraya verene fiilen ödediği tutar net kira + KDV, yani 16.000 + 4.000 = 20.000 ₺'dir; stopaj ise kiracı tarafından vergi dairesine yatırılır. Kiracının toplam maliyeti brüt kira + KDV = 24.000 ₺'dir.</p>
+      <p>Her kiraya veren KDV mükellefi olmayabilir. Bazı kiraya verenler KDV istisnası ya da muafiyetinden yararlanabilir veya farklı bir vergilendirme usulüne tabi olabilir. Bu tür durumlarda faturaya KDV eklenmez; araçtaki KDV kutusunu işaretlemeyerek yalnızca stopaj hesabı yapabilirsiniz. Hangi durumda KDV'nin hesaplanacağı, sözleşme ve mükellefiyet türüne bağlıdır.</p>
+
+      <h2>Kiracının muhtasar beyanname yükümlülüğü ve ödeme takvimi</h2>
+      <p>Stopaj yapan kiracı, kesintiyi <strong>muhtasar ve prim hizmet beyannamesi</strong> ile bildirir. Genel kural olarak beyan ve ödeme, ödemenin yapıldığı ayı izleyen ayın 26. günü akşamına kadar yapılır; bu süre içinde verilmeyen beyannamelere usulsüzlük ve gecikme faizi uygulanabilir. Çalışanı bulunmayan ve yalnızca belirli stopaj ödemeleri yapan bazı mükellefler için üç aylık beyan dönemi uygulanabilir; bu durumda dönemi izleyen ayın 26. günü esas alınır. Hangi mükellefin aylık, hangisinin üç aylık beyan vereceği değişebildiği için GİB duyurularını ve mali müşavirinizin görüşünü esas alın.</p>
+      <p>Pratikte kiracı, her ay kirayı öderken stopajı ayırır, ayın sonunda muhasebesine bildirir ve kesinti tutarını vergi dairesine yatırır. Kiraya veren de kesinti tutarını gösteren dekontu ya da muhasebe kaydını kiracıdan isteyebilir. Ödemelerin banka üzerinden yapılması, hem kira gelirinin kanıtlanmasını hem de kiracının gider yazmasını kolaylaştırır.</p>
+
+      <h2>Konut kirasında stopaj yok</h2>
+      <p>Stopaj uygulaması iş yeri kiralarına yöneliktir. Genel olarak konut olarak kiralanan ve konut olarak kullanılan taşınmazlarda kiracı stopaj kesmez; kiraya veren kira gelirini kendi yıllık beyannamesinde değerlendirir ve istisna tutarı aşarsa vergi öder. Bir taşınmazın konut olarak kiralanıp iş yeri gibi kullanılması ya da tam tersi gibi karma durumlarda uygulama değişebilir. Sözleşmedeki kullanım amacı ve fiili kullanım birlikte değerlendirildiğinden bu konuda kesin yargıya varmadan mali müşavire danışın.</p>
+
+      <h2>Yıllık hesap: 12 aylık kira ve stopaj</h2>
+      <p>Araç aylık tutarı yıllığa, yıllık tutarı aylık ortalamaya çevirir. 20.000 ₺ aylık brüt kira yıllık 240.000 ₺, stopaj 48.000 ₺, net 192.000 ₺ eder. Kira artış oranı uygulanan sözleşmelerde her ay farklı tutar çıkabilir; bu durumda her dönemi ayrı hesaplayıp toplamak daha doğrudur. Kira artışını belirlemek için sitemizdeki kira artış hesaplayıcısından yararlanabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Kira tutarlarınız tarayıcınızdan çıkmaz; kayıt, çerez ve izleme yoktur.</li>
+        <li><strong>İki yönlü hesap.</strong> Brüt kiradan net, netten brüt; yönü tek tıkla değiştirirsiniz.</li>
+        <li><strong>Şeffaf formül.</strong> Sonucun altında kullanılan işlem yazar; stopaj matrahı KDV hariç tutardır.</li>
+        <li><strong>Güncel parametre.</strong> Oranlar ayrı bir dosyada tutulur ve güncelleme tarihi sayfada görünür.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişlikte çalışır, tüm alanlara klavyeyle ulaşılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kira stopajı nedir, oranı kaçtır?</summary><p>Kira stopajı (kira tevkifatı), gerçek kişiden kiralanan iş yeri gibi taşınmazlar için kiracının, kira bedelinden vergi keserek kiraya veren adına vergi dairesine ödemesidir. Genel oran yüzde 20'dir ve KDV hariç brüt kira üzerinden hesaplanır. Oran mevzuat değişikliğiyle farklılaşabileceği için güncel durumu gib.gov.tr üzerinden doğrulayın.</p></details>
+        <details><summary>Brüt kiradan net kira nasıl bulunur?</summary><p>Brüt kirayı 0,80 ile çarparsınız (yüzde 20 stopajda). Örneğin 20.000 ₺ brüt kirada stopaj 4.000 ₺, net kira 16.000 ₺'dir. Araç bu işlemi oran kutusundaki değere göre otomatik yapar.</p></details>
+        <details><summary>Netten brüt kira nasıl hesaplanır?</summary><p>Net kirayı 0,80'e bölersiniz. 16.000 ₺ net kira için 16.000 ÷ 0,80 = 20.000 ₺ brüt kira gerekir. Stopaj brüt tutarın yüzde 20'si olduğundan "net × 1,20" yazmak yanlış sonuç verir; araç doğru bölme işlemini uygular.</p></details>
+        <details><summary>KDV stopaj matrahına dahil mi?</summary><p>Hayır. Stopaj, KDV hariç kira bedeli üzerinden hesaplanır. KDV ayrıca faturada gösterilir ve kiracı tarafından kiraya verene ödenir; stopaj kesintisi KDV tutarını azaltmaz.</p></details>
+        <details><summary>Konut kirasında stopaj kesilir mi?</summary><p>Genel olarak konut olarak kiralanan ve konut olarak kullanılan taşınmazlarda kiracı stopaj yapmaz; stopaj iş yeri kiralarına ilişkindir. Konutun iş yeri olarak kullanılması gibi özel durumlarda hüküm değişebilir; emin değilseniz mali müşavirinize danışın.</p></details>
+        <details><summary>Kiracı stopajı ne zaman ve nasıl öder?</summary><p>Kiracı, kesilen stopajı muhtasar ve prim hizmet beyannamesiyle bildirir. Genel kural olarak ödemenin yapıldığı ayı izleyen ayın 26. günü akşamına kadar beyan ve ödeme yapılır. Koşulları sağlayan mükelleflerde üç aylık beyan dönemi uygulanabilir; tarihleri GİB duyurularından kontrol edin.</p></details>
+        <details><summary>Kiraya veren kurumsa stopaj yapılır mı?</summary><p>Kiraya veren kurumlar vergisi mükellefi (örneğin limited ya da anonim şirket) ise bu kira ödemesinde gelir vergisi stopajı genellikle yapılmaz; gerçek kişi kiraya verenler için uygulanır. Ticari işletmesine dahil taşınmazını kiralayan kişiler gibi istisnalar da vardır. Kesin durum için sözleşmeye ve mükellefiyet türüne bakın.</p></details>
+        <details><summary>Hesaplanan sonuç resmî beyan yerine geçer mi?</summary><p>Hayır. Araç aritmetik bir yardımcıdır. Beyannameler, istisnalar ve muafiyetler için mali müşavirinize veya vergi dairesine başvurun. Bu sayfadaki bilgiler mali tavsiye değildir.</p></details>
+        <details><summary>Girdiğim kira tutarları saklanıyor mu?</summary><p>Hayır. Hesaplar tarayıcınızda yapılır; tutarlar sunucuya gönderilmez, çerez veya izleme kodu yoktur. Sayfa açıldıktan sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bu araç vergi danışmanlığı değildir.</strong> Hesaplar girdiğiniz oran ve tutara göre yapılan aritmetiktir; mali tavsiye değildir. İstisna, muafiyet, beyan ve ödeme tarihleri için mali müşavirinize ya da vergi dairenize danışın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../kira-artis-hesapla/">Kira Artış Hesaplama</a></li>
+        <li><a href="../damga-vergisi-hesapla/">Damga Vergisi Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Ön muhasebe ya da özel hesaplama yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kira-stopaj-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

@@ -29,3 +29,4 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | turndown | 7.2.0 | MIT | HTML Markdown Dönüştürücü |
 | turndown-plugin-gfm | 1.0.2 | MIT | HTML Markdown Dönüştürücü |
 | turkish-wordlist (kelimeler.txt) | 1.0.1 | MIT (VikiSözlük madde başlıklarından derlenmiş; ~44.7 bin kelimeye süzüldü; ayrıntı LICENSE-kelimeler.txt) | Kelime Bulucu |
+| great-vibes / dancing-script / pacifico / caveat | latin + latin-ext woff2 | OFL-1.1 | Davetiye ve Kutlama Kartı Oluşturucu |

@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vade Farkı Hesaplama – Vadeli Fiyat, Taksit ve Çek Senet İskonto Hesaplayıcı</title>
+  <meta name="description" content="Peşin fiyata vade farkı ekleyin (basit ve bileşik), taksit tutarını ve aylık oranı bulun; çek ve senet kırdırmada bugünkü değeri hesaplayın. Ücretsiz, kayıt yok, veriler tarayıcıdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/vade-farki-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; padding: 0; list-style: none; border-bottom: 1px solid var(--ba-border); }
+    .kdv-tabs button { font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; border: 1px solid transparent; border-bottom: 0; border-radius: var(--ba-radius-sm) var(--ba-radius-sm) 0 0; background: transparent; color: var(--ba-text-2); cursor: pointer; margin-bottom: -1px; }
+    .kdv-tabs button:hover { color: var(--ba-primary); }
+    .kdv-tabs button[aria-selected="true"] { background: var(--ba-surface); border-color: var(--ba-border); border-bottom: 1px solid var(--ba-surface); color: var(--ba-primary); }
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    details.kdv-adv { margin-top: 18px; border-top: 1px solid var(--ba-border); padding-top: 6px; }
+    details.kdv-adv summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .inv-row { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; padding: 12px; margin-bottom: 10px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); align-items: end; }
+    .inv-row label span, .inv-line span { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; }
+    .inv-row label:first-child { grid-column: 1 / -1; }
+    .inv-line output { display: block; font-family: var(--ba-mono); min-height: 44px; line-height: 44px; }
+    .inv-del { justify-self: end; }
+    @media (min-width: 720px) { .inv-row { grid-template-columns: 2fr .8fr 1.2fr .9fr 1.2fr auto; } .inv-row label:first-child { grid-column: auto; } }
+    .inv-totals { margin-top: 14px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .pct-block { padding: 14px 16px; margin-bottom: 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .pct-block h3 { margin: 0 0 10px; font-size: 1rem; }
+    .pct-out { margin: 10px 0 0; font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 700; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+      .vf-caption { text-align: left; font-weight: 600; padding: 6px 0; caption-side: top; }
+    #r-table { margin-top: 14px; }
+    #r-table table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    #r-table th, #r-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--ba-border); font-variant-numeric: tabular-nums; }
+    #r-table th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Vade Farkı Hesaplama – Bilişim Ajans","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/vade-farki-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Vade farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Vade farkı, bir malın ya da hizmetin bedelinin peşin yerine ileri bir tarihte ödenmesi karşılığında peşin fiyata eklenen tutardır. Paranın zaman değerini, yani bekleme süresinin maliyetini yansıtır. Vadeli fiyat ile peşin fiyat arasındaki fark vade farkıdır."}},{"@type":"Question","name":"Basit ve bileşik vade farkı arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Basit yöntemde oran yalnızca peşin fiyata uygulanır: peşin × (1 + oran × dönem). Bileşik yöntemde her dönemin farkı bir sonraki dönemde de faiz işler: peşin × (1 + oran)^dönem. 10.000 ₺, aylık %3 ve 3 ay için basit yöntem 10.900 ₺, bileşik yöntem 10.927,27 ₺ verir. Hangi yöntemin uygulanacağı satıcı ile alıcı arasındaki sözleşmeye bağlıdır."}},{"@type":"Question","name":"Vadeli fiyattan aylık oran nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Ters hesap modunda peşin fiyat, vadeli fiyat ve vadeyi yazarsınız. Basit yöntemde oran = (vadeli ÷ peşin − 1) ÷ ay sayısıdır; bileşikte (vadeli ÷ peşin)^(1 ÷ ay sayısı) − 1 formülü kullanılır. Böylece \"peşin 10.000, 3 ayda 10.900\" teklifinin aylık %3 basit orana denk geldiğini görürsünüz."}},{"@type":"Question","name":"Çek veya senet kırdırma nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Kırdırma, vadesi gelmemiş bir alacağın bugünkü değerine satılmasıdır. Bu araçta bugünkü değer = nominal ÷ (1 + yıllık oran × gün ÷ 365) formülüyle bulunur. Örneğin 100.000 ₺ nominal, 90 gün ve yıllık %40 için bugünkü değer yaklaşık 91.022,44 ₺'dir. Bankalar ve finans kuruluşları komisyon, BSMV gibi ek kalemler de uygulayabilir; kesin tutar için kurumun teklifine bakın."}},{"@type":"Question","name":"365 ve 360 gün bazı arasında ne fark var?","acceptedAnswer":{"@type":"Answer","text":"Yıllık oranı güne çevirirken yıl 365 ya da 360 gün kabul edilebilir. 360 gün bazı aynı yıllık oranda günlük faizi biraz yükselttiği için kırdırma tutarını bir miktar düşürür. Sözleşmede ya da kurum teklifinde hangi baz yazıyorsa onu seçin; çoğu ticari hesapta 365 kullanılır."}},{"@type":"Question","name":"Gün olarak girilen vade nasıl aya çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Aylık orana göre hesaplarken gün sayısı 30'a bölünerek ay karşılığı bulunur (90 gün = 3 ay). Yıllık orana göre hesapta gün sayısı seçtiğiniz gün bazına (365 ya da 360) bölünür. Tam takvim ayları için vadeyi \"ay\" birimiyle girmeniz daha doğrudur."}},{"@type":"Question","name":"Taksit tutarı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Taksit modunda peşin fiyat, aylık oran ve taksit sayısını girersiniz. Basit ve bileşik seçeneklerde toplam vadeli fiyat bulunur ve taksit sayısına bölünür. Eşit taksit (anüite) seçeneğinde ise her ay kalan borca faiz işlenir; taksit = peşin × i ÷ (1 − (1 + i)^−n) formülüyle hesaplanır ve toplam ödeme genellikle daha düşük çıkar."}},{"@type":"Question","name":"Bu araçtaki sonuçlar yasal faiz sınırı ya da finansal tavsiye midir?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç yalnızca matematiksel hesap yapar ve finansal tavsiye değildir. Tüketici kredileri, taksitli satışlar ve ticari işlemlerde uygulanabilecek azami oranlar mevzuatla sınırlanmış olabilir; güncel sınırlar için ilgili kurumun duyurularına ve mali müşavirinize başvurun."}},{"@type":"Question","name":"Girdiğim tutarlar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesap tarayıcınızda yapılır; tutarlar sunucuya gitmez, çerez veya izleme kodu kullanılmaz. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1>Vade Farkı Hesaplama – Vadeli Fiyat, Taksit, Senet İskontosu</h1>
+      <p class="lead">Peşin fiyata vade farkı ekleyin, taksit tutarını bulun, teklifteki gizli aylık oranı çıkarın ya da çek ve senedin bugünkü değerini hesaplayın. Rakamlar tarayıcınızda işlenir. Yalnızca matematiksel hesaptır, finansal tavsiye değildir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form-vade" class="kdv-form" novalidate>
+        <div class="ba-field"><span>Ne hesaplamak istiyorsunuz?</span>
+          <div class="kdv-modes">
+            <label><input type="radio" name="mode" value="fiyat" checked> Vadeli fiyat</label>
+            <label><input type="radio" name="mode" value="taksit"> Taksit planı</label>
+            <label><input type="radio" name="mode" value="ters"> Oranı bul (ters hesap)</label>
+            <label><input type="radio" name="mode" value="iskonto"> Çek / senet iskontosu</label>
+          </div>
+        </div>
+        <div class="kdv-grid">
+          <div class="ba-field" data-modes="fiyat taksit ters"><label for="f-pesin">Peşin fiyat (₺)</label><input id="f-pesin" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 10.000,00"></div>
+          <div class="ba-field" data-modes="ters" hidden><label for="f-vadeli">Vadeli fiyat (₺)</label><input id="f-vadeli" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 10.900,00"></div>
+          <div class="ba-field" data-modes="fiyat taksit"><label for="f-oran" id="f-oran-label">Vade farkı oranı (%)</label><input id="f-oran" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 3"></div>
+          <div class="ba-field" data-modes="fiyat"><label for="f-oran-unit">Oran dönemi</label><select id="f-oran-unit"><option value="aylik" selected>Aylık</option><option value="yillik">Yıllık</option></select></div>
+          <div class="ba-field" data-modes="fiyat ters"><label for="f-vade">Vade</label><input id="f-vade" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 3"></div>
+          <div class="ba-field" data-modes="fiyat ters"><label for="f-vade-unit">Vade birimi</label><select id="f-vade-unit"><option value="ay" selected>Ay</option><option value="gun">Gün</option></select></div>
+          <div class="ba-field" data-modes="taksit" hidden><label for="f-taksit">Taksit sayısı</label><input id="f-taksit" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 6"></div>
+          <div class="ba-field" data-modes="fiyat ters"><label for="f-yontem">Yöntem</label><select id="f-yontem"><option value="basit" selected>Basit</option><option value="bilesik">Bileşik</option></select></div>
+          <div class="ba-field" data-modes="taksit" hidden><label for="f-yontem-t">Yöntem</label><select id="f-yontem-t"><option value="basit" selected>Basit (toplam ÷ taksit)</option><option value="bilesik">Bileşik (toplam ÷ taksit)</option><option value="anuite">Eşit taksit (anüite)</option></select></div>
+          <div class="ba-field" data-modes="iskonto" hidden><label for="f-nominal">Nominal tutar (₺)</label><input id="f-nominal" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 100.000,00"></div>
+          <div class="ba-field" data-modes="iskonto" hidden><label for="f-gun">Vadeye kalan gün</label><input id="f-gun" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 90"></div>
+          <div class="ba-field" data-modes="iskonto" hidden><label for="f-yillik">Yıllık iskonto oranı (%)</label><input id="f-yillik" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 40"></div>
+          <div class="ba-field" data-modes="fiyat ters iskonto"><label for="f-basis">Gün bazı (yıl)</label><select id="f-basis"><option value="365" selected>365 gün</option><option value="360">360 gün</option></select></div>
+        </div>
+        <button type="submit" class="visually-hidden">Hesapla</button>
+      </form>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite"><h3>Sonuç</h3><dl class="kdv-results" id="r-rows"></dl><p class="kdv-note" id="r-note"></p>
+        <div id="r-table"></div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Parametreler <strong id="params-updated">…</strong> tarihinde güncellendi · Yalnızca matematiksel hesaptır, finansal tavsiye değildir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="vade-farki-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki dört moddan birini seçin: vadeli fiyat, taksit planı, oranı bulma ya da çek/senet iskontosu.</li>
+        <li>Tutarları Türkçe biçimle yazın: <code>10.000,00</code>. Oranı yüzde işareti olmadan girin; yüzde 3 için <code>3</code> yeterlidir.</li>
+        <li>Vadeyi ay ya da gün olarak verin. Gün girerseniz aylık oranda 30 gün bir ay sayılır; yıllık oran ve iskontoda 365 ya da 360 gün bazını siz seçersiniz.</li>
+        <li>Basit ya da bileşik yöntemi seçin. Sonuç siz yazarken güncellenir, formül ve tablo sonucun altında görünür.</li>
+        <li>Sonucu kopyalayıp teklif ya da sözleşme taslağınıza ekleyin; bağlayıcı tutarlar için karşı tarafın yazılı teklifine bakın.</li>
+      </ol>
+
+      <h2>Vade farkı nedir, nasıl hesaplanır?</h2>
+      <p>Vade farkı, bir bedelin peşin yerine ileri bir tarihte ödenmesinin karşılığı olarak fiyata eklenen tutardır. Satıcı malı bugün teslim edip parayı üç ay sonra alıyorsa, bu üç ayın finansman maliyetini fiyata yansıtır. Peşin fiyat ile vadeli fiyat arasındaki fark vade farkıdır. Faturalarda, taksitli satış tekliflerinde, toptan ticarette "30-60-90 gün vadeli" fiyat listelerinde ve geç ödeme durumlarında karşınıza çıkar.</p>
+      <p>Hesabın temelinde oran, süre ve yöntem vardır. <strong>Basit yöntemde</strong> oran sadece peşin fiyata uygulanır: vadeli fiyat = peşin × (1 + aylık oran × ay sayısı). 10.000 ₺ peşin fiyat, aylık yüzde 3 ve 3 ay için 10.000 × (1 + 0,03 × 3) = 10.900 ₺ olur. <strong>Bileşik yöntemde</strong> her ayın vade farkı bir sonraki ay da faiz işler: vadeli fiyat = peşin × (1 + oran)^ay sayısı. Aynı örnekte 10.000 × 1,03³ = 10.927,27 ₺ çıkar. Süre uzadıkça iki yöntem arasındaki fark büyür; 12 ayda aylık yüzde 3 için basit yöntem 13.600 ₺, bileşik yöntem yaklaşık 14.257,61 ₺ verir.</p>
+
+      <h2>Taksit tutarı: toplam ödeme ve aylık taksit</h2>
+      <p>Taksit modunda peşin fiyat, aylık vade farkı oranı ve taksit sayısı girilir. Basit ve bileşik seçeneklerde araç önce n. ayda ödenseydi oluşacak vadeli toplamı bulur ve taksit sayısına böler. Bu, satış tekliflerinde sık kullanılan sade bir yaklaşımdır. Eşit taksit (anüite) seçeneğinde ise her ay kalan borca faiz işler ve taksit sabittir; formül taksit = peşin × i ÷ (1 − (1 + i)^−n) şeklindedir. Anüitede borç her taksitle azaldığı için toplam ödeme, tüm tutarın sonda ödendiği varsayımına göre daha düşük çıkar. Tablodaki taksit planı, kalan borcu satır satır gösterir.</p>
+
+      <div class="ba-ad" data-slot="vade-farki-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Ters hesap: teklifteki gizli oranı bulun</h2>
+      <p>Bir satıcı "peşin 10.000 ₺, üç ay vadeli 10.900 ₺" dediğinde bu teklifin aylık oranı nedir? Ters hesap modu bunu çözer. Basit yöntemde oran = (vadeli ÷ peşin − 1) ÷ ay sayısıdır; örnekte (1,09 − 1) ÷ 3 = yüzde 3. Bileşik yöntemde oran = (vadeli ÷ peşin)^(1 ÷ ay) − 1 olur. Araç yıllık karşılığı da gösterir; böylece vade farkını banka kredisi ya da mevduat faiziyle aynı ölçüde kıyaslayabilirsiniz. Taksitli alışverişte "vade farkı yok" diye sunulan bir fiyat bile nakit indirimi gizliyor olabilir: peşin fiyatla vadeli fiyatı karşılaştırıp oranı hesaplamak bu yüzden değerlidir.</p>
+
+      <h2>Çek ve senet kırdırma: bugünkü değer</h2>
+      <p>Elinizdeki çek ya da senet vadesi gelmeden nakde çevrilmek istendiğinde kırdırma yapılır. Burada soru "vade tarihinde alacağım tutar bugün kaç lira eder?" sorusudur. Araç, yıllık iskonto oranı ile nominal tutarı bugünkü değere indirir: bugünkü değer = nominal ÷ (1 + yıllık oran × gün ÷ gün bazı). 100.000 ₺ nominal, 90 gün ve yıllık yüzde 40 (365 gün bazı) için 100.000 ÷ (1 + 0,40 × 90 ÷ 365) ≈ 91.022,44 ₺ bulunur; yani yaklaşık 8.977,56 ₺ iskonto uygulanır. Karşılaştırma satırında bankacı iskontosu da görünür: kesinti doğrudan nominal üzerinden alındığında bugünkü değer biraz daha düşük çıkar (aynı örnekte yaklaşık 90.136,99 ₺). Gerçek bir kırdırmada komisyon, BSMV ve masraflar da eklenebilir; kesin tutar için kurumun yazılı teklifini isteyin.</p>
+
+      <h2>365 mi 360 mı?</h2>
+      <p>Yıllık oranı güne çevirmek için bir yılın kaç gün sayılacağı önemlidir. Pek çok ticari hesapta 365 kullanılır; bazı finans kuruluşları 360 gün bazını tercih eder. 360 bazında günlük faiz biraz yüksektir; bu nedenle aynı yıllık oranda bugünkü değer daha düşük çıkar. Araçta gün bazı seçimi vardır: sözleşmenizde ya da teklifte hangisi yazıyorsa onu seçin. Yazmıyorsa 365 makul varsayımdır, ama bunu karşı tarafla netleştirmek en doğrusudur.</p>
+
+      <h2>Hangi yöntemi seçmeliyim?</h2>
+      <p>Basit yöntem kısa vadelerde ve sözleşmede "aylık yüzde 3 vade farkı" gibi sade ifadelerin geçtiği durumlarda yaygındır; hesabı elle doğrulamak da kolaydır. Bileşik yöntem ise uzun vadelerde ve faizin faize işlediği finansman ürünlerinde kullanılır. İki tarafın aynı yöntemi kabul ettiğinden emin olun; aksi halde sonuç arasındaki fark ödeme zamanında anlaşmazlık yaratabilir. Araçta iki yöntemi art arda seçip sonucu karşılaştırmanız, pazarlıkta elinizi güçlendirir.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Aylık ve yıllık oranı karıştırmak.</strong> Aylık yüzde 3, yıllık yüzde 36 (basit) ya da yaklaşık yüzde 42,58 (bileşik) demektir.</li>
+        <li><strong>Gün sayısını ay sayısı sanmak.</strong> 90 gün = 3 ay (30 günlük ay kabulüyle); birimi doğru seçin.</li>
+        <li><strong>İskontoyu nominale eklemek.</strong> Kırdırmada nominalden düşersiniz; "yüzde 40 yıllık" demek 90 günde nominalin yüzde 40'ı kesilir demek değildir.</li>
+        <li><strong>Taksit toplamını kontrol etmemek.</strong> Peşin fiyat ile taksitlerin toplamı arasındaki farkı yıllık orana çevirip bakın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Tutarlarınız tarayıcınızdan çıkmaz; kayıt, çerez ve izleme yoktur.</li>
+        <li><strong>Dört araç bir arada.</strong> Vadeli fiyat, taksit, ters oran ve iskonto aynı sayfada.</li>
+        <li><strong>Şeffaf formül.</strong> Sonucun altında kullanılan formül ve karşılaştırma tablosu yazar.</li>
+        <li><strong>Türkçe sayı biçimi.</strong> 10.000,00 yazarsınız, 10.000,00 okursunuz.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişlikte çalışır, tüm alanlara klavyeyle ulaşılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Vade farkı nedir?</summary><p>Vade farkı, bir malın ya da hizmetin bedelinin peşin yerine ileri bir tarihte ödenmesi karşılığında peşin fiyata eklenen tutardır. Paranın zaman değerini, yani bekleme süresinin maliyetini yansıtır. Vadeli fiyat ile peşin fiyat arasındaki fark vade farkıdır.</p></details>
+        <details><summary>Basit ve bileşik vade farkı arasındaki fark nedir?</summary><p>Basit yöntemde oran yalnızca peşin fiyata uygulanır: peşin × (1 + oran × dönem). Bileşik yöntemde her dönemin farkı bir sonraki dönemde de faiz işler: peşin × (1 + oran)^dönem. 10.000 ₺, aylık %3 ve 3 ay için basit yöntem 10.900 ₺, bileşik yöntem 10.927,27 ₺ verir. Hangi yöntemin uygulanacağı satıcı ile alıcı arasındaki sözleşmeye bağlıdır.</p></details>
+        <details><summary>Vadeli fiyattan aylık oran nasıl bulunur?</summary><p>Ters hesap modunda peşin fiyat, vadeli fiyat ve vadeyi yazarsınız. Basit yöntemde oran = (vadeli ÷ peşin − 1) ÷ ay sayısıdır; bileşikte (vadeli ÷ peşin)^(1 ÷ ay sayısı) − 1 formülü kullanılır. Böylece "peşin 10.000, 3 ayda 10.900" teklifinin aylık %3 basit orana denk geldiğini görürsünüz.</p></details>
+        <details><summary>Çek veya senet kırdırma nasıl hesaplanır?</summary><p>Kırdırma, vadesi gelmemiş bir alacağın bugünkü değerine satılmasıdır. Bu araçta bugünkü değer = nominal ÷ (1 + yıllık oran × gün ÷ 365) formülüyle bulunur. Örneğin 100.000 ₺ nominal, 90 gün ve yıllık %40 için bugünkü değer yaklaşık 91.022,44 ₺'dir. Bankalar ve finans kuruluşları komisyon, BSMV gibi ek kalemler de uygulayabilir; kesin tutar için kurumun teklifine bakın.</p></details>
+        <details><summary>365 ve 360 gün bazı arasında ne fark var?</summary><p>Yıllık oranı güne çevirirken yıl 365 ya da 360 gün kabul edilebilir. 360 gün bazı aynı yıllık oranda günlük faizi biraz yükselttiği için kırdırma tutarını bir miktar düşürür. Sözleşmede ya da kurum teklifinde hangi baz yazıyorsa onu seçin; çoğu ticari hesapta 365 kullanılır.</p></details>
+        <details><summary>Gün olarak girilen vade nasıl aya çevrilir?</summary><p>Aylık orana göre hesaplarken gün sayısı 30'a bölünerek ay karşılığı bulunur (90 gün = 3 ay). Yıllık orana göre hesapta gün sayısı seçtiğiniz gün bazına (365 ya da 360) bölünür. Tam takvim ayları için vadeyi "ay" birimiyle girmeniz daha doğrudur.</p></details>
+        <details><summary>Taksit tutarı nasıl hesaplanır?</summary><p>Taksit modunda peşin fiyat, aylık oran ve taksit sayısını girersiniz. Basit ve bileşik seçeneklerde toplam vadeli fiyat bulunur ve taksit sayısına bölünür. Eşit taksit (anüite) seçeneğinde ise her ay kalan borca faiz işlenir; taksit = peşin × i ÷ (1 − (1 + i)^−n) formülüyle hesaplanır ve toplam ödeme genellikle daha düşük çıkar.</p></details>
+        <details><summary>Bu araçtaki sonuçlar yasal faiz sınırı ya da finansal tavsiye midir?</summary><p>Hayır. Araç yalnızca matematiksel hesap yapar ve finansal tavsiye değildir. Tüketici kredileri, taksitli satışlar ve ticari işlemlerde uygulanabilecek azami oranlar mevzuatla sınırlanmış olabilir; güncel sınırlar için ilgili kurumun duyurularına ve mali müşavirinize başvurun.</p></details>
+        <details><summary>Girdiğim tutarlar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; tutarlar sunucuya gitmez, çerez veya izleme kodu kullanılmaz. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bu araç finansal tavsiye değildir.</strong> Sonuçlar girdiğiniz oran ve sürelere göre yapılan matematiksel hesaptır; yasal azami oranları, komisyon ve vergileri kapsamaz. Karar vermeden önce karşı tarafın yazılı teklifini ve mali müşavirinizin görüşünü alın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../faiz-hesapla/">Faiz Hesaplama</a></li>
+        <li><a href="../kredi-hesapla/">Kredi Hesaplama</a></li>
+        <li><a href="../tarih-farki/">Tarih Farkı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Ön muhasebe ya da özel hesaplama yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="vade-farki-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>
