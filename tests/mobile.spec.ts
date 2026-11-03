@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const pages = ['/', '/resimden-pdfe/', '/pdf-birlestir/', '/pdf-bol/', '/pdfden-resme/'];
+const pages = ['/', '/resimden-pdfe/', '/pdf-birlestir/', '/pdf-bol/', '/pdfden-resme/', '/pdf-kucult/', '/pdfden-worde/', '/wordden-pdfe/', '/resim-kucult/', '/zip/', '/qr-kod/', '/sifre-uret/', '/metin-araclari/'];
 
 for (const path of pages) {
   test(`mobilde yatay kaydırma yok: ${path}`, async ({ page }) => {

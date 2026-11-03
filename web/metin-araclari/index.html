@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metin Araçları – Kelime Sayacı, Büyük/Küçük Harf, Türkçe Karakter Temizle, URL Slug</title>
+  <meta name="description" content="Kelime ve karakter sayacı, Türkçe uyumlu büyük/küçük harf çevirici, Türkçe karakter temizleme, URL slug oluşturucu, satır sıralama, Base64 ve URL kodlama. Ücretsiz, kayıt yok, metniniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/metin-araclari/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <style>
+    /* Sayfaya özel: metin alanı, sayaç tablosu ve işlem grupları (tema token'larını kullanır). */
+    .ta-textarea { width: 100%; min-height: 220px; padding: 12px 14px; font: inherit; font-size: 1rem; line-height: 1.5; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; }
+    .ta-textarea:focus { border-color: var(--ba-primary); }
+    .ta-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+    .ta-stats li { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; }
+    .ta-stats strong { display: block; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+    .ta-stats span { font-size: .8rem; color: var(--ba-text-muted); }
+    .ta-group { margin-top: 18px; }
+    .ta-group h3 { font-size: .9rem; color: var(--ba-text-muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+    .ta-group .ba-actions { margin-top: 0; }
+    .ta-group .ba-btn { min-height: 44px; padding: 8px 14px; font-size: .95rem; }
+    .ta-top { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .ta-top .ba-btn { min-height: 40px; padding: 6px 12px; font-size: .9rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Metin Araçları – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/metin-araclari/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><a href="https://bilisimajans.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>bilisimajans.com'a dön</a><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Metin</a></li></ol>
+      <h1>Metin Araçları – Kelime Sayacı, Harf Çevirici, Slug Oluşturucu</h1>
+      <p class="lead">Metninizi yapıştırın; kelime ve karakter sayısını anında görün, Türkçe'ye uygun büyük/küçük harf çevirin, Türkçe karakterleri temizleyin, URL slug'ı üretin, satırları sıralayın. Metniniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="ta-top">
+        <label for="input"><strong>Metin</strong></label>
+        <div class="ba-actions" style="margin:0">
+          <button id="paste" class="ba-btn" type="button">Panodan yapıştır</button>
+          <button id="undo" class="ba-btn" type="button" disabled>Geri al</button>
+          <button id="clear" class="ba-btn" type="button">Temizle</button>
+        </div>
+      </div>
+      <textarea id="input" class="ta-textarea" spellcheck="false" placeholder="Metninizi buraya yazın ya da yapıştırın…" aria-describedby="stats"></textarea>
+
+      <ul id="stats" class="ta-stats" aria-label="Metin istatistikleri" aria-live="polite">
+        <li><strong id="stat-words">0</strong><span>kelime</span></li>
+        <li><strong id="stat-chars">0</strong><span>karakter</span></li>
+        <li><strong id="stat-chars-ns">0</strong><span>boşluksuz karakter</span></li>
+        <li><strong id="stat-sentences">0</strong><span>cümle</span></li>
+        <li><strong id="stat-paragraphs">0</strong><span>paragraf</span></li>
+        <li><strong id="stat-lines">0</strong><span>satır</span></li>
+        <li><strong id="stat-reading">0 dk</strong><span>okuma süresi</span></li>
+        <li><strong id="stat-bytes">0 B</strong><span>UTF-8 boyut</span></li>
+      </ul>
+
+      <div class="ta-group" role="group" aria-labelledby="g-case">
+        <h3 id="g-case">Harf dönüşümü (Türkçe uyumlu)</h3>
+        <div class="ba-actions">
+          <button id="op-upper" class="ba-btn" type="button" data-op="upper">BÜYÜK HARF</button>
+          <button id="op-lower" class="ba-btn" type="button" data-op="lower">küçük harf</button>
+          <button id="op-title" class="ba-btn" type="button" data-op="title">Başlık Durumu</button>
+          <button id="op-sentence" class="ba-btn" type="button" data-op="sentence">Cümle durumu</button>
+        </div>
+      </div>
+
+      <div class="ta-group" role="group" aria-labelledby="g-tr">
+        <h3 id="g-tr">Türkçe karakter ve URL</h3>
+        <div class="ba-actions">
+          <button id="op-strip-tr" class="ba-btn" type="button" data-op="strip-tr">Türkçe karakterleri temizle</button>
+          <button id="op-slug" class="ba-btn" type="button" data-op="slug">URL slug oluştur</button>
+          <button id="op-url-encode" class="ba-btn" type="button" data-op="url-encode">URL kodla</button>
+          <button id="op-url-decode" class="ba-btn" type="button" data-op="url-decode">URL çöz</button>
+        </div>
+      </div>
+
+      <div class="ta-group" role="group" aria-labelledby="g-lines">
+        <h3 id="g-lines">Satır işlemleri</h3>
+        <div class="ba-actions">
+          <button id="op-sort-az" class="ba-btn" type="button" data-op="sort-az">Sırala A→Z</button>
+          <button id="op-sort-za" class="ba-btn" type="button" data-op="sort-za">Sırala Z→A</button>
+          <button id="op-dedupe" class="ba-btn" type="button" data-op="dedupe">Tekrarları sil</button>
+          <button id="op-remove-empty" class="ba-btn" type="button" data-op="remove-empty">Boş satırları sil</button>
+          <button id="op-trim-spaces" class="ba-btn" type="button" data-op="trim-spaces">Boşlukları sadeleştir</button>
+        </div>
+      </div>
+
+      <div class="ta-group" role="group" aria-labelledby="g-enc">
+        <h3 id="g-enc">Kodlama ve diğer</h3>
+        <div class="ba-actions">
+          <button id="op-base64-encode" class="ba-btn" type="button" data-op="base64-encode">Base64 kodla</button>
+          <button id="op-base64-decode" class="ba-btn" type="button" data-op="base64-decode">Base64 çöz</button>
+          <button id="op-reverse" class="ba-btn" type="button" data-op="reverse">Metni ters çevir</button>
+        </div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <div class="ba-actions" id="actions" hidden>
+        <button id="copy" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Kopyala</button>
+        <button id="download" class="ba-btn ba-btn-success ba-btn-lg" type="button">.txt olarak indir</button>
+      </div>
+      <div id="live" class="visually-hidden" aria-live="polite"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="metin-araclari-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Metninizi yukarıdaki alana yazın, yapıştırın ya da "Panodan yapıştır" düğmesine basın. Kelime, karakter, cümle, paragraf sayısı ve tahmini okuma süresi siz yazdıkça güncellenir.</li>
+        <li>Uygulamak istediğiniz işlemin düğmesine tıklayın: büyük/küçük harf, Türkçe karakter temizleme, slug, satır sıralama, Base64 ya da URL kodlama. Sonuç aynı alanda görünür; işlemleri art arda zincirleyebilirsiniz.</li>
+        <li>Beğenmediyseniz "Geri al" ile önceki durumuna dönün (son 20 adım saklanır).</li>
+        <li>"Kopyala" ile panoya alın ya da ".txt olarak indir" ile dosya olarak kaydedin.</li>
+      </ol>
+
+      <h2>Bu araç ne işe yarar?</h2>
+      <p>Günlük işlerde metinle uğraşırken küçük ama can sıkıcı sorunlar çıkar: bir başlığın tamamını büyük harfe çevirmek istersiniz, Word "istanbul" kelimesini "ISTANBUL" yapar; bir ürün adını web adresine dönüştürmeniz gerekir, Türkçe harfler adresin içinde <code>%C5%9F</code> gibi anlaşılmaz kodlara dönüşür; bir e-posta listesinde tekrar eden satırları ayıklamak için Excel'e taşımak zorunda kalırsınız. Bu sayfa, tam da bu tür işleri tek bir metin kutusunda, programsız ve kayıtsız halletmeniz için hazırlandı.</p>
+      <p>Aracın en belirgin özelliği, <strong>Türkçe'nin kurallarını bilmesidir</strong>. Birçok çevrimiçi araç İngilizce kurallarıyla çalıştığı için "ı" harfini "I" yerine "İ"ye, "i" harfini "İ" yerine "I"ya çevirir. Burada dönüşümler Türkçe yerel ayarıyla yapılır: "istanbul" → "İSTANBUL", "ığdır" → "IĞDIR", "İZMİR" → "izmir". Başlık durumu ve cümle durumu da aynı kuralla çalışır; "diyarbakır ve iğdır" ifadesi "Diyarbakır Ve İğdır" olur.</p>
+      <p>Her işlem tarayıcınızın içinde, JavaScript ile yapılır. Yazdığınız metin ne bir sunucuya gönderilir ne de kaydedilir; sayfayı kapattığınızda silinir. Bu yüzden sözleşme taslağı, müşteri listesi ya da henüz yayımlanmamış bir yazı gibi hassas içerikleri rahatça işleyebilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="metin-araclari-b" aria-label="Reklam"></div>
+
+      <h2>Kelime ve karakter sayacı nasıl sayar?</h2>
+      <p>Kelime sayımı, harf ya da rakam içeren her parçayı bir kelime kabul eder; "e-posta", "Ahmet'in" ve "3.5" tek kelime sayılır, yalnızca noktalama olan parçalar sayılmaz. Karakter sayısı Unicode kod noktalarına göre hesaplanır; yani "ş" ve "ğ" gibi harfler, bazı araçların yaptığı gibi iki karakter değil bir karakter sayılır. "Boşluksuz karakter" değeri, sosyal medya ve SMS sınırlarını hesaplarken işe yarar. Cümle sayısı nokta, soru ve ünlem işaretlerine göre; paragraf sayısı ise boş satırlarla ayrılmış bloklara göre belirlenir. Okuma süresi, dakikada 200 kelime hızı varsayılarak hesaplanır; bu, Türkçe için yaygın kabul gören ortalama bir değerdir.</p>
+      <p>Alt sıradaki "UTF-8 boyut" değeri metnin dosya olarak kaplayacağı yerdir. Türkçe harfler UTF-8'de iki bayt tuttuğu için bu sayı karakter sayısından büyük olabilir; bir alanın "en fazla 255 bayt" gibi sınırı varsa bu değere bakmanız gerekir.</p>
+
+      <h2>URL slug nedir, neden gerekir?</h2>
+      <p>Slug, bir web sayfasının adresinde görünen kısa, okunabilir kısımdır: <code>bilisimajans.com/<strong>web-tasarim-fiyatlari</strong></code>. Arama motorları ve kullanıcılar için anlaşılır olması, yalnızca küçük harf, rakam ve tire içermesi beklenir. Türkçe bir başlığı doğrudan adrese koyarsanız tarayıcılar "ş", "ğ", "ı" gibi harfleri yüzde kodlarına çevirir; adres hem uzar hem de paylaşırken bozulur. "URL slug oluştur" düğmesi Türkçe harfleri Latin karşılığına çevirir, tüm harfleri küçültür, noktalama ve boşlukları tek tireye indirger: "İstanbul'da Web Tasarım Fiyatları 2026" → <code>istanbul-da-web-tasarim-fiyatlari-2026</code>. WordPress, Shopify, Wix ya da kendi yazdığınız bir sistemde kalıcı bağlantı belirlerken bunu kullanabilirsiniz.</p>
+
+      <h2>Türkçe karakter sorunu ve çözümü</h2>
+      <p>Bazı sistemler Türkçe harfleri hâlâ doğru işleyemez: eski muhasebe programları, banka havale açıklamaları, bazı havayolu ve kargo formları, dosya adlarında sorun çıkaran FTP sunucuları, SMS gönderim panelleri (Türkçe karakterli mesaj daha az karakter sığdırır ve iki katı ücretlendirilir), e-fatura entegrasyonları ve kullanıcı adı alanları. "Türkçe karakterleri temizle" düğmesi ş→s, ğ→g, ı→i, İ→I, ö→o, ü→u, ç→c dönüşümünü yapar; büyük/küçük ayrımı korunur. Aynı işlem Almanca, Fransızca gibi dillerdeki aksanlı harfleri de sadeleştirir (é→e, ä→a).</p>
+      <p>Tersine, Türkçe karakterleri bozulmuş bir metni (örneğin "Ã§" ya da "Ä±" gibi görünen) bu araç otomatik olarak onaramaz; bu tür bozulmalar kaynağın yanlış kodlamada kaydedilmesinden gelir ve dosyayı UTF-8 olarak yeniden açmak gerekir.</p>
+
+      <h2>Satır işlemleri ve kodlama düğmeleri</h2>
+      <p><strong>Sırala A→Z / Z→A</strong> satırları Türkçe alfabe sırasına göre dizer; "ç" harfi "c"den sonra, "ş" harfi "s"den sonra gelir. <strong>Tekrarları sil</strong> birebir aynı satırların ilkini bırakır; e-posta ya da anahtar kelime listelerini temizlemek için uygundur. <strong>Boş satırları sil</strong> ve <strong>Boşlukları sadeleştir</strong> (satır başı/sonu boşluklarını kırpar, art arda gelen boşlukları teke indirir) kopyala-yapıştırla gelen dağınık metinleri toparlar.</p>
+      <p><strong>Base64</strong> kodlama, metni yalnızca ASCII karakterlerden oluşan bir biçime çevirir; e-posta ekleri, API anahtarları ve veri URL'lerinde kullanılır. Bu araç Base64'ü UTF-8 üzerinden yapar; dolayısıyla Türkçe karakterler bozulmadan gidip gelir (<code>btoa</code> fonksiyonunun verdiği hatayı almazsınız). <strong>URL kodla/çöz</strong>, metni bağlantı parametrelerinde güvenle taşınacak biçime (<code>%20</code>, <code>%C3%BC</code>) çevirir ve geri alır. <strong>Metni ters çevir</strong> karakter sırasını tersine çevirir; emoji ve Türkçe harfler bölünmeden korunur.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Metin yüklenmez.</strong> Sunucumuz yok; site statik yayınlanır. Yazdıklarınız yalnızca sizin tarayıcınızda işlenir.</li>
+        <li><strong>Türkçe doğru çalışır.</strong> Büyük İ / küçük ı ayrımı, Türkçe alfabe sıralaması ve UTF-8 güvenli Base64.</li>
+        <li><strong>Kayıt ve limit yok.</strong> Karakter sınırı, günlük işlem sınırı ya da "premium" özellik yok.</li>
+        <li><strong>Klavyeyle ve telefonda kullanılır.</strong> Tüm düğmeler sekme tuşuyla erişilebilir; 360 piksel genişlikte sorunsuz çalışır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yazdığım metin bir yere gönderiliyor mu?</summary><p>Hayır. Tüm işlemler tarayıcınızın içinde çalışan JavaScript ile yapılır. Sayfa yüklendikten sonra internet bağlantısı gerekmez; Wi-Fi'yi kapatıp denemeniz mümkündür.</p></details>
+        <details><summary>"i" harfi neden "İ" oluyor, "I" olması gerekmez mi?</summary><p>Türkçede noktalı "i"nin büyüğü noktalı "İ", noktasız "ı"nın büyüğü noktasız "I"dır. İngilizce kurallarıyla çalışan araçlar bu ayrımı bilmediği için "istanbul"u "ISTANBUL" yapar. Bu araç Türkçe yerel ayarıyla çalışır ve doğru sonucu ("İSTANBUL") verir. İngilizce metin için de sonuç çoğu durumda aynıdır; yalnızca "i" içeren İngilizce kelimeler "İ" ile büyütülür.</p></details>
+        <details><summary>Kelime sayısı Word'den farklı çıkıyor, neden?</summary><p>Her program kelimeyi biraz farklı tanımlar. Word boşlukla ayrılmış her parçayı sayar; dolayısıyla tek başına duran bir tire ya da "–" işareti de kelime olur. Bu araç yalnızca harf ya da rakam içeren parçaları sayar. Fark genellikle yüzde birin altındadır.</p></details>
+        <details><summary>Slug'da kesme işareti neden tire oldu?</summary><p>Web adreslerinde yalnızca harf, rakam ve tire kullanmak en güvenli yoldur. "İstanbul'da" ifadesi bu yüzden "istanbul-da" biçimine çevrilir. Tireyi kaldırmak isterseniz sonucu düzenleyebilirsiniz; "istanbulda" da geçerli bir slug'dır.</p></details>
+        <details><summary>Base64 çözerken hata alıyorum.</summary><p>Metnin tamamını kopyaladığınızdan emin olun; Base64 dizisi eksik kalırsa çözülemez. Dizide Base64'e ait olmayan karakterler (tırnak, noktalı virgül) varsa bunları silin. Çözülen veri metin değil de resim ya da PDF gibi ikili bir dosya ise araç "UTF-8 metin değil" uyarısı verir; bu durumda veriyi bir dosya olarak kaydetmek gerekir.</p></details>
+        <details><summary>Çok uzun metinlerde çalışır mı?</summary><p>Evet; birkaç yüz sayfalık metin bile anlık işlenir. 2 MB'ın üzerindeki metinlerde tarayıcının yavaşlayabileceğine dair uyarı gösterilir. Böyle bir durumda metni parçalara ayırmanızı öneririz.</p></details>
+        <details><summary>Yanlışlıkla bir işlem uyguladım, geri alabilir miyim?</summary><p>Evet. "Geri al" düğmesi son 20 işlemi sırayla geri alır. Ayrıca metin alanında klavyenin Ctrl+Z kısayolu da kendi yazdıklarınız için çalışır.</p></details>
+        <details><summary>Masaüstü ya da çevrimdışı sürümü var mı?</summary><p>Hazırlanıyor. Aynı araç Windows ve Mac uygulaması olarak ana sayfadan sunulacak; o sürümlerde reklam bulunmayacak. Bu arada sayfayı tarayıcıda açık tutarsanız çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../pdfden-worde/">PDF'den Word'e</a></li>
+        <li><a href="../resimden-pdfe/">Resimden PDF'e</a></li>
+        <li><a href="../pdf-birlestir/">PDF Birleştir</a></li>
+      </ul>
+      <p class="ba-note">Web siteniz için SEO uyumlu içerik, adres yapısı ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="metin-araclari-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>
