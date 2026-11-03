@@ -1,6 +1,6 @@
-# Bilişim Ajansı Ücretsiz Araçlar — Ürün, Menü, Reklam ve Trafik Planı
+# Bilişim Ajans Ücretsiz Araçlar — Ürün, Menü, Reklam ve Trafik Planı
 
-Tarih: 2026-11-03. Sahip: Bilişim Ajansı (bilisimajans.com).
+Tarih: 2026-11-03. Sahip: Bilişim Ajans (bilisimajans.com).
 
 ## 1. Strateji özeti
 
@@ -68,7 +68,7 @@ gizlilik vaadi, araç kartları (alt alana bağlantı), ajans hizmetleri CTA'sı
 
 ## 5. Araçlar sitesi tasarımı (araclar.bilisimajans.com)
 
-- **Hub sayfası:** üstte logo + "Bilişim Ajansı Ücretsiz Araçlar", bir cümle vaat, arama kutusu,
+- **Hub sayfası:** üstte logo + "Bilişim Ajans Ücretsiz Araçlar", bir cümle vaat, arama kutusu,
   kategori sekmeleri (PDF / Dönüştür / Resim / Dosya / Metin), araç kartları (ikon, ad, tek satır
   açıklama, "Çevrimdışı sürüm" rozeti). Altta "Nasıl çalışır?" (3 adım), gizlilik bloğu, SSS,
   ajans CTA'sı, altbilgi (Gizlilik, İletişim, Hakkımızda, GitHub).

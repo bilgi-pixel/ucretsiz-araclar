@@ -1,4 +1,4 @@
-# Bilişim Ajansı Ücretsiz Araçlar
+# Bilişim Ajans Ücretsiz Araçlar
 
 bilisimajans.com'un "Ücretsiz Programlar" menüsü altında sunulan araçlar. İki katman, tek kod:
 
@@ -46,7 +46,7 @@ site/                         # WordPress'e yapıştırılacak menü/sayfa metin
 3. **İçerik:** her araç sayfası = araç + en az 800 kelime özgün TR metin (nasıl kullanılır, SSS ≥ 6,
    gizlilik notu, ilgili araçlar). Sadece araç olan sayfa yayınlanmaz (ince içerik → AdSense reddi).
 4. **Erişilebilirlik ve mobil:** 360px genişlikte çalışır, klavyeyle kullanılabilir, kontrast AA.
-5. **Marka:** her sayfada "Bilişim Ajansı" logosu ve "%100 ücretsiz · kayıt yok · dosya yüklenmez"
+5. **Marka:** her sayfada "Bilişim Ajans" logosu ve "%100 ücretsiz · kayıt yok · dosya yüklenmez"
    satırı. Sahte "Premium" tuzağı, sahte geri sayım, yanıltıcı buton yok.
 6. **Dil:** arayüz metinleri HTML içinde TR; EN sayfalar ayrı dosya. Kodda Türkçe yorum, İngilizce
    tanımlayıcı.

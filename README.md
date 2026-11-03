@@ -1,4 +1,4 @@
-# Bilişim Ajansı Ücretsiz Araçlar
+# Bilişim Ajans Ücretsiz Araçlar
 
 [bilisimajans.com](https://bilisimajans.com) tarafından sunulan, tamamen ücretsiz online araçlar
 ve bunların Windows/macOS sürümleri. **Dosyalar sunucuya yüklenmez** — her şey tarayıcıda çalışır.
@@ -32,4 +32,4 @@ Proje kuralları: [CLAUDE.md](CLAUDE.md). Katkı için önce bir issue açın.
 ## Lisans
 
 Kod MIT ([LICENSE](LICENSE)). Üçüncü parti bileşenler: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-"Bilişim Ajansı" adı ve logosu tescilli markadır; çatallarda (fork) kullanılamaz.
+"Bilişim Ajans" adı ve logosu tescilli markadır; çatallarda (fork) kullanılamaz.

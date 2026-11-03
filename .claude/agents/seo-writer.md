@@ -9,9 +9,9 @@ reddine takılmayan, gerçekten faydalı sayfalar. Tıklama tuzağı, abartı ve
 
 Araç sayfası metni (HTML içindeki `<section class="ba-content">`, en az 800 kelime):
 1. H1: "<İşlev> – Ücretsiz Online <Araç>" (örn. "Resimden PDF'e – Ücretsiz Online Dönüştürücü").
-2. Giriş: ne yapar, kimin için, neden ücretsiz (Bilişim Ajansı'nın topluluk projesi).
+2. Giriş: ne yapar, kimin için, neden ücretsiz (Bilişim Ajans'ın topluluk projesi).
 3. "Nasıl kullanılır" — 3-5 numaralı adım, her adım bir cümle.
-4. "Neden Bilişim Ajansı aracı?" — dosya yüklenmez, kayıt yok, sınırsız, reklam dışında ücret yok.
+4. "Neden Bilişim Ajans aracı?" — dosya yüklenmez, kayıt yok, sınırsız, reklam dışında ücret yok.
 5. SSS ≥ 6 (güvenli mi, dosyam nereye gidiyor, boyut sınırı, mobilde çalışır mı, kalite düşer mi,
    çevrimdışı sürüm var mı).
 6. İlgili araçlar (3 bağlantı) ve ajans hizmetlerine tek cümlelik yönlendirme.

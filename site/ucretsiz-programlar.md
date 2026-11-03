@@ -1,8 +1,8 @@
-# Ücretsiz Programlar — Bilişim Ajansı'ndan Herkese Açık Araçlar
+# Ücretsiz Programlar — Bilişim Ajans'tan Herkese Açık Araçlar
 
 *(WordPress sayfası: /ucretsiz-programlar — başlık H1, aşağısı içerik)*
 
-Bilişim Ajansı olarak yıllardır kurumsal web ve yazılım projeleri geliştiriyoruz. Bu süreçte
+Bilişim Ajans olarak yıllardır kurumsal web ve yazılım projeleri geliştiriyoruz. Bu süreçte
 hemen her gün ihtiyaç duyduğumuz küçük ama kritik işler var: birkaç fotoğrafı tek PDF yapmak,
 PDF'i e-Devlet'in kabul ettiği boyuta düşürmek, bir belgeyi Word'e çevirmek, dosyaları
 sıkıştırmak. Bu işler için internette bulunan araçların çoğu ya dosyanızı kendi sunucusuna
