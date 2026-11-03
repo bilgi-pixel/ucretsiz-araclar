@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Haftanın Kaçıncı Haftası? Yılın Kaçıncı Günü? – ISO Hafta Numarası Hesaplama</title>
+  <meta name="description" content="Bugün yılın kaçıncı haftası ve kaçıncı günü? Seçtiğiniz tarihin ISO 8601 hafta numarasını, yılın gün sayısını, kalan günü ve çeyreği öğrenin. Hafta numaralı yıl takvimi ve haftadan tarih bulma. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/hafta-numarasi/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .wk-form .ba-field { margin-bottom: 12px; }
+    .wk-form input[type="date"], .wk-form input[type="number"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .wk-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .wk-grid { grid-template-columns: 1fr 1fr; } }
+    .wk-results { margin: 0; display: grid; gap: 6px; }
+    .wk-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .wk-row:last-child { border-bottom: 0; }
+    .wk-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .wk-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; }
+    .wk-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .wk-today { padding: 12px 14px; border-left: 4px solid var(--ba-primary); background: var(--ba-surface); margin: 0 0 16px; font-weight: 600; }
+    .wk-sec { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--ba-border); }
+    .wk-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .wk-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .wk-scroll { overflow-x: auto; }
+    .wk-table { width: 100%; border-collapse: collapse; font-size: .9rem; text-align: center; }
+    .wk-table th, .wk-table td { padding: 5px 6px; border: 1px solid var(--ba-border); white-space: nowrap; }
+    .wk-table tbody th { background: var(--ba-surface); font-family: var(--ba-mono); }
+    .wk-table td.wk-out { color: var(--ba-text-muted); background: rgba(0, 0, 0, .04); }
+    .wk-table td.wk-today { background: var(--ba-primary); color: #fff; font-weight: 700; }
+    .wk-table tr.wk-now th { outline: 2px solid var(--ba-primary); }
+    #w-days { margin: 8px 0 0; padding-left: 20px; }
+    @media print {
+      body.print-cal .ba-topbar, body.print-cal .ba-header, body.print-cal .ba-hero, body.print-cal .ba-footer,
+      body.print-cal .ba-ad, body.print-cal .ba-content, body.print-cal .no-print-cal, body.print-cal .cal-controls { display: none !important; }
+      body.print-cal .ba-tool { border: 0; box-shadow: none; padding: 0; }
+      body.print-cal .wk-sec { border: 0; margin: 0; padding: 0; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hafta Numarası ve Yılın Kaçıncı Günü – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/hafta-numarasi/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Haftanın Kaçıncı Haftası, Yılın Kaçıncı Günü?</span></h1>
+      <p class="lead">Bugünün ya da seçtiğiniz herhangi bir tarihin ISO 8601 hafta numarasını, yılın kaçıncı günü olduğunu, yıldan kaç gün kaldığını ve hangi çeyrekte yer aldığını öğrenin. Hafta numaralı yıl takvimini yazdırın, hafta numarasından tarih aralığını bulun. Girdiğiniz tarihler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="no-print-cal">
+      <p id="today" class="wk-today" aria-live="polite"></p>
+      <form id="form" class="wk-form" novalidate>
+        <div class="ba-field"><label for="d">Tarih seçin</label><input id="d" type="date" min="1900-01-01" max="2200-12-31"><div class="hint">Gün, ay ve yıl olarak seçin; varsayılan bugündür.</div></div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hafta numarasını bul</button><button id="today-btn" class="ba-btn" type="button">Bugün</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="wk-big" id="r-big"></p>
+        <dl class="wk-results">
+          <div class="wk-row"><dt>ISO hafta numarası</dt><dd id="r-week"></dd></div>
+          <div class="wk-row"><dt>Haftanın günü</dt><dd id="r-weekday"></dd></div>
+          <div class="wk-row"><dt>Yılın günü</dt><dd id="r-doy"></dd></div>
+          <div class="wk-row"><dt>Yıldan kalan gün</dt><dd id="r-left"></dd></div>
+          <div class="wk-row"><dt>Yılın tamamlanan kısmı</dt><dd id="r-pct"></dd></div>
+          <div class="wk-row"><dt>Çeyrek</dt><dd id="r-quarter"></dd></div>
+          <div class="wk-row"><dt>Haftanın tarih aralığı</dt><dd id="r-range"></dd></div>
+          <div class="wk-row"><dt>Yılın hafta sayısı</dt><dd id="r-wcount"></dd></div>
+        </dl>
+        <p class="wk-note" id="r-note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="wk-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <div class="wk-sec">
+        <h3>Hafta numarasından tarih bulma</h3>
+        <form id="w-form" class="wk-form" novalidate>
+          <div class="wk-grid">
+            <div class="ba-field"><label for="w-year">Yıl</label><input id="w-year" type="number" min="1583" max="9998" step="1"></div>
+            <div class="ba-field"><label for="w-week">Hafta numarası</label><input id="w-week" type="number" min="1" max="53" step="1" value="12"></div>
+          </div>
+          <div class="ba-actions"><button id="w-calc" class="ba-btn ba-btn-primary" type="submit">Tarihleri göster</button></div>
+        </form>
+        <div id="w-error" class="ba-error" role="alert"></div>
+        <div id="w-result" aria-live="polite" hidden>
+          <p><strong id="w-out"></strong></p>
+          <ul id="w-days"></ul>
+        </div>
+      </div>
+      </div>
+
+      <div class="wk-sec" id="cal-section">
+        <h3>Hafta numaralı yıl takvimi</h3>
+        <form id="c-form" class="wk-form cal-controls" novalidate>
+          <div class="ba-field"><label for="c-year">Yıl</label><input id="c-year" type="number" min="1583" max="9998" step="1"></div>
+          <div class="ba-actions"><button id="c-show" class="ba-btn ba-btn-primary" type="submit">Takvimi göster</button><button id="c-print" class="ba-btn" type="button">Yazdır</button></div>
+        </form>
+        <div id="c-error" class="ba-error" role="alert"></div>
+        <div id="c-wrap">
+          <p><strong id="c-title"></strong></p>
+          <div class="wk-scroll"><table class="wk-table"><thead id="c-head"></thead><tbody id="c-body"></tbody></table></div>
+          <p class="wk-note">Soluk gün numaraları komşu yıla aittir. Koyu dolgulu gün bugündür.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="hafta-numarasi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Sayfa açıldığında en üstte "bugün hangi haftadayız" cümlesini görürsünüz. Bugünün hafta numarasını, yılın kaçıncı günü olduğunu ve yıldan kaç gün kaldığını bu cümleden okuyabilirsiniz.</li>
+        <li>Başka bir tarihi merak ediyorsanız "Tarih seçin" alanına gün, ay ve yılı girin ve "Hafta numarasını bul"a basın. Sonuç; ISO hafta numarası, haftanın günü, yılın gün sırası, kalan gün, çeyrek ve haftanın başlangıç-bitiş tarihlerini içerir.</li>
+        <li>Bir hafta numarasının hangi günlere denk geldiğini bulmak için "Hafta numarasından tarih bulma" bölümüne yıl ve hafta yazın. Örneğin 2026 yılı 12. hafta, 16 Mart Pazartesi ile 22 Mart Pazar arasıdır.</li>
+        <li>Yıllık planlama için "Hafta numaralı yıl takvimi"nden yılı seçin; her satır bir ISO haftasını gösterir. "Yazdır" düğmesi yalnızca takvimi yazıcıya gönderir.</li>
+        <li>"Sonucu kopyala" ile özet metni panoya alıp e-postaya, proje planına ya da mesaja yapıştırabilirsiniz.</li>
+      </ol>
+
+      <h2>Bugün yılın kaçıncı haftası? Hangi haftadayız?</h2>
+      <p>"Hangi haftadayız?" sorusunun tek bir yanıtı yoktur; çünkü hafta numaralandırmanın birden çok yöntemi vardır. Türkiye'de iş hayatı, okullar, fabrikalar ve lojistik şirketleri çoğunlukla uluslararası standart olan ISO 8601'i kullanır. Bu standartta hafta Pazartesi günü başlar, Pazar günü biter ve yılın ilk haftası, yılın ilk Perşembesini içeren haftadır. Başka bir deyişle 4 Ocak her zaman 1. haftanın içindedir. Bu araç yalnızca bu kuralı uygular ve sayfa açıldığı anda cihazınızın tarihine göre bugünün hafta numarasını gösterir.</p>
+      <p>ABD ve Kanada'da, bazı takvim uygulamalarında ve Excel'in varsayılan işlevlerinde hafta Pazar günü başlar ve 1 Ocak'ı içeren hafta 1. hafta sayılır. Bu yüzden aynı gün için iki farklı hafta numarası görmeniz mümkündür. Müşterinizle ya da tedarikçinizle "15. hafta teslim" diye anlaştıysanız hangi sistemi kastettiğinizi bir kez teyit etmek, ay sonu karışıklıklarını önler.</p>
+
+      <h2>ISO 8601 hafta numarası nasıl hesaplanır?</h2>
+      <p>Hesap üç adımdan oluşur. Önce verilen tarihin bulunduğu haftanın Perşembe günü bulunur; çünkü ISO standardında hafta, çoğunluğunun (en az dört gününün) hangi yılda olduğuna göre o yıla ait sayılır ve Perşembe her zaman bu çoğunluğun içindedir. Sonra o Perşembenin yılı "ISO yılı" olur. Son olarak Perşembenin yılın kaçıncı günü olduğu 7'ye bölünür ve yukarı yuvarlanır.</p>
+      <p>Örnek: 1 Ocak 2026 Perşembe gününe denk gelir. Bu gün aynı zamanda haftanın Perşembesi olduğundan 2026'nın 1. haftasındadır ve hafta 29 Aralık 2025 Pazartesi ile 4 Ocak 2026 Pazar arasındadır. Yani 29, 30 ve 31 Aralık 2025 günleri takvim olarak 2025'e ait olsa da ISO hafta sistemine göre 2026'nın 1. haftasındadır. Tersi de olur: 1 Ocak 2027 Cuma günü olduğu için 2026'nın 53. haftasında sayılır.</p>
+
+      <div class="ba-ad" data-slot="hafta-numarasi-b" aria-label="Reklam"></div>
+
+      <h2>Bir yılda 52 mi 53 mü hafta vardır?</h2>
+      <p>Bir yıl 365 gün ise 52 tam hafta (364 gün) ve 1 fazladan gün, artık yıl ise 366 gün olduğundan 52 hafta ve 2 gün içerir. Fazla günler birikir ve belli yıllarda 53. bir haftaya dönüşür. ISO kuralına göre bir yıl; 1 Ocak'ı Perşembe olan yıllarda ya da artık yıl olup 1 Ocak'ı Çarşamba olan yıllarda 53 haftadır. Diğer tüm yıllar 52 haftadır. Yakın zamandaki 53 haftalık yıllar 2015, 2020 ve 2026'dır; sonraki 2032'dir. Dolayısıyla 31 Aralık 2026 Perşembe günü yılın 53. haftasındadır.</p>
+      <p>Aracın "Yılın hafta sayısı" satırı seçtiğiniz tarihin ISO yılı için 52 ya da 53 değerini gösterir. Haftalık planlama yaparken, bütçe dönemleri hesaplarken ya da haftalık üretim raporu hazırlarken yılın 53 hafta olup olmadığı karşılaştırmaları etkiler; 53 haftalı bir yıl, 52 haftalı bir yılla kıyaslanırken fazladan bir hafta içerir.</p>
+
+      <h2>Yılın gün numarası ve kalan gün</h2>
+      <p>Yılın günü, 1 Ocak'ın 1 sayılmasıyla bulunan sıra numarasıdır. 1 Mart normal yılda 60., artık yılda 61. gündür. Bu sayı, ordinal tarih ya da "Julian tarihi" adıyla bilinir; üretim partilerinin etiketlerinde, gıda son kullanma kodlarında, yazılım günlüklerinde ve tarım takvimlerinde kullanılır. Kalan gün ise yılın toplam günü (365 ya da 366) ile bu sıra numarası arasındaki farktır. Yıl sonuna kalan süreyi hedef planlarken, "yılın yüzde kaçını geride bıraktık?" diye bakarken ya da abonelik ve sözleşme yıldönümlerini hesaplarken işe yarar.</p>
+
+      <h2>Çeyrek (üç aylık dönem) nedir?</h2>
+      <p>Takvim yılı dört çeyreğe bölünür: Ocak-Mart, Nisan-Haziran, Temmuz-Eylül ve Ekim-Aralık. Şirketler finansal raporlarını, satış hedeflerini ve bütçelerini bu dönemlere göre hazırlar. Araç, seçtiğiniz tarihin hangi çeyrekte olduğunu belirtir. Mali yılı takvim yılından farklı olan kurumlar için çeyrek tanımı değişebilir; bu durumda şirketinizin kendi takvimini esas alın.</p>
+
+      <h2>Hafta numarası nerelerde kullanılır?</h2>
+      <ul>
+        <li><strong>Proje yönetimi:</strong> Sprint ve teslim takvimleri "H12" ya da "W12" gibi hafta kodlarıyla paylaşılır. Kodu tarihe çevirmek için hafta bulucu bölümünü kullanın.</li>
+        <li><strong>Üretim ve lojistik:</strong> Sevkiyat, üretim partisi ve garanti etiketleri sıklıkla yıl-hafta (örneğin 2612) biçiminde basılır.</li>
+        <li><strong>Eğitim:</strong> Okullarda ve kurslarda ders programı, deneme sınavı ve ödev takvimi hafta numarasına göre düzenlenir.</li>
+        <li><strong>Muhasebe ve insan kaynakları:</strong> Haftalık mesai raporları, izin planları ve bordro dönemleri hafta bazında izlenir.</li>
+        <li><strong>Spor ve diyet planları:</strong> "12 haftalık program" gibi hedeflerde hangi haftada olduğunuzu bilmek motivasyon sağlar.</li>
+        <li><strong>Gebelik ve gelişim takibi:</strong> Hafta sayımı takvim haftasından farklı, kendi kurallarına göre yapılır; bu araç yalnızca takvim haftasını gösterir ve tıbbi bir hesap değildir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesaplar tarayıcınızda yapılır; tarihleriniz hiçbir sunucuya iletilmez, çerezle izlenmez.</li>
+        <li><strong>Doğru ISO kuralı.</strong> Yıl başı ve yıl sonundaki komşu yıl haftaları, 52/53 ayrımı ve artık yıllar doğru işlenir.</li>
+        <li><strong>Saat dilimi kayması yok.</strong> Hesap takvim gün numarasıyla yapılır; gece yarısı geçişlerinde bir gün eksik ya da fazla çıkmaz.</li>
+        <li><strong>Yazdırılabilir takvim.</strong> Hafta numaralı yıl takvimi tek tıkla temiz bir çıktı olarak alınır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Bugün yılın kaçıncı haftası?</summary><p>Sayfanın en üstündeki cümle, cihazınızın bugünkü tarihine göre ISO 8601 hafta numarasını ve yılın gün sırasını gösterir. Gece yarısını geçtiğinde bilgi güncellenir.</p></details>
+        <details><summary>ISO 8601'de yılın ilk haftası nasıl belirlenir?</summary><p>Yılın ilk Perşembesini içeren hafta 1. haftadır. Aynı kuralın eşdeğeri 4 Ocak'ı içeren haftanın 1. hafta olmasıdır. Hafta Pazartesi başlar, Pazar biter.</p></details>
+        <details><summary>1 Ocak neden bazen 52. ya da 53. haftada çıkıyor?</summary><p>1 Ocak Cuma, Cumartesi ya da Pazar ise o gün, bir önceki yılın son haftasına aittir; çünkü haftanın dört günden fazlası eski yıldadır. Örneğin 1 Ocak 2027 Cuma, 2026'nın 53. haftasındadır.</p></details>
+        <details><summary>2026 yılında kaç hafta var?</summary><p>2026'nın ilk günü Perşembe olduğu için ISO takvimine göre 53 haftası vardır. 31 Aralık 2026 Perşembe günü 53. haftanın içindedir ve 2027'nin 1. haftası 4 Ocak 2027 Pazartesi başlar.</p></details>
+        <details><summary>Excel'deki HAFTASAY işlevi neden farklı sonuç veriyor?</summary><p>Excel'in varsayılan hafta sayımı 1 Ocak'ı içeren haftayı 1. hafta sayar ve haftayı Pazar başlatır. ISO sonucu için ISOHAFTASAY işlevi ya da hafta türü olarak 21 kullanılır. Bu araç doğrudan ISO kuralını uygular.</p></details>
+        <details><summary>Hafta numarasından tarihi nasıl bulurum?</summary><p>"Hafta numarasından tarih bulma" bölümüne yılı ve hafta numarasını yazın. Araç haftanın Pazartesi ile Pazar tarihlerini ve yedi günün tek tek adını gösterir. Örneğin 2026 yılı 12. hafta 16 Mart ile 22 Mart arasındadır.</p></details>
+        <details><summary>Yılın günü (Julian günü) nedir?</summary><p>1 Ocak'tan itibaren geçen gün sayısıdır; 1 Ocak 1, normal yılda 31 Aralık 365'tir. Etiketlerde ve yazılım kayıtlarında sıkça kullanılır. Gök bilimdeki "Julian gün sayısı" ise farklı bir kavramdır.</p></details>
+        <details><summary>Geçersiz tarih hatası alıyorum, ne yapmalıyım?</summary><p>Tarih alanının gün, ay ve yılı eksiksiz olmalıdır; 30 Şubat gibi var olmayan tarihler ve 1583 öncesi yıllar kabul edilmez. Alanı temizleyip tarihi takvimden yeniden seçin. Hafta bulucuda hafta numarası 1 ile yılın hafta sayısı (52 ya da 53) arasında olmalıdır.</p></details>
+        <details><summary>Takvimi nasıl yazdırırım?</summary><p>"Hafta numaralı yıl takvimi" bölümünde yılı seçip "Yazdır"a basın. Tarayıcının yazdırma penceresinde yalnızca takvim görünür; PDF olarak kaydetmek için yazıcı yerine "PDF olarak kaydet" seçeneğini kullanabilirsiniz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar ISO 8601 takvim aritmetiğidir. Kurumunuz farklı bir hafta sayımı kullanıyorsa resmî takvimini esas alın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../kac-gun-kaldi/">Kaç Gün Kaldı</a></li>
+        <li><a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a></li>
+        <li><a href="../takvim-olustur/">Takvim Oluştur</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="hafta-numarasi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

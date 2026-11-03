@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Elektrik ve Doğalgaz Tüketimi Hesaplama – Fatura, kWh, Klima ve Kombi Maliyeti</title>
+  <meta name="description" content="Cihazların watt değeri ve kullanım saatiyle günlük ve aylık kWh tüketimini, elektrik faturasını, doğalgaz m³ maliyetini, kombi saatlik tüketimini ve klima saatlik maliyetini hesaplayın. Ücretsiz, kayıt yok, veriler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/elektrik-tuketim-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+      .yk-modes { margin-bottom: 14px; }
+    .yk-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .yk-table th, .yk-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); }
+    .yk-table td.n { font-family: var(--ba-mono); white-space: nowrap; }
+    .yk-table .ba-btn { min-height: 40px; padding: 6px 12px; }
+    .ba-field input[type="text"] { width: 100%; }
+  
+    .dev-row { display: grid; gap: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); }
+    .dev-row .ba-field { margin: 0; }
+    @media (min-width: 700px) { .dev-row { grid-template-columns: 2fr 1fr 1fr 80px auto; align-items: end; } }
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
+    .el-pie { width: 100%; max-width: 260px; margin: 8px auto; }
+    .el-tablewrap { overflow-x: auto; }
+    .el-params { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .el-sub { margin: 0 0 6px; font-weight: 600; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Elektrik ve Doğalgaz Tüketimi Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/elektrik-tuketim-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Aylık elektrik tüketimi (kWh) nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Cihazın gücünü (W) günlük kullanım süresiyle (saat) çarpıp 1000'e bölerek günlük kWh bulursunuz. Ardından ayın gün sayısıyla çarparsınız. Örneğin 2000 W cihaz günde 5 saat, ayda 30 gün çalışırsa 300 kWh tüketir; 3 TL/kWh fiyatla 900 TL eder."}},{"@type":"Question","name":"Elektrik ve doğalgaz birim fiyatı neden hazır gelmiyor?","acceptedAnswer":{"@type":"Answer","text":"Tarifeler dönemsel olarak değişir ve aboneliğe göre farklılaşabilir. Eskimiş bir fiyat sonucu yanıltacağı için sayfaya fiyat gömmedik. Faturanızdaki güncel birim fiyatı ya da toplam tutarı kWh'ye bölerek bulduğunuz efektif fiyatı girin."}},{"@type":"Question","name":"Cihazların watt değerleri kesin mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır, listedeki değerler yaklaşık ortalamalardır. Kendi cihazınızın etiketindeki ya da kullanım kılavuzundaki gücü yazmak en doğru sonucu verir. Buzdolabı, klima ve kombi gibi değişken çalışan cihazlarda ortalama çekiş kullanılır."}},{"@type":"Question","name":"Klima aylık ne kadar elektrik harcar?","acceptedAnswer":{"@type":"Answer","text":"Klimanın BTU değerini, COP'unu ve günlük çalışma süresini girerek hesaplayın. 12000 BTU'luk ve COP'u 3 olan klima yaklaşık 1,17 kW çeker; günde 8 saat ve 30 gün çalışırsa aylık yaklaşık 281 kWh eder. Inverter modellerde gerçek değer çoğunlukla daha düşüktür."}},{"@type":"Question","name":"Kombi saatte kaç m³ doğalgaz yakar?","acceptedAnswer":{"@type":"Answer","text":"Kombinin kW gücünü verime (yaklaşık 0,9) ve doğalgazın ısıl değerine (yaklaşık 9,2 kWh/m³) bölerek tam yükteki saatlik tüketimi tahmin edebilirsiniz. 24 kW için yaklaşık 2,9 m³/saat çıkar. Gerçek tüketim yüke, yalıtıma ve hava sıcaklığına bağlı olarak daha düşüktür."}},{"@type":"Question","name":"Sonuç faturamla neden birebir tutmuyor?","acceptedAnswer":{"@type":"Answer","text":"Faturada enerji bedeline ek olarak dağıtım bedeli, vergi, fon ve sabit kalemler bulunur. Ayrıca listeye eklemediğiniz cihazlar ve süre tahminleri farkı oluşturur. Araç tahmini enerji maliyetini gösterir; resmî fatura tutarının yerine geçmez."}},{"@type":"Question","name":"BTU nedir, kW'ye nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"BTU/saat bir ısı gücü birimidir. 1 BTU/saat yaklaşık 0,293 W eder. 12000 BTU/saat yaklaşık 3,5 kW soğutma gücüne eşittir. Bu, harcanan elektrik değil, klimanın sağladığı soğutmadır; elektrik girişi COP'a bölünerek bulunur."}},{"@type":"Question","name":"Pasta grafik neyi gösteriyor?","acceptedAnswer":{"@type":"Answer","text":"Her dilim bir cihazın aylık kWh tüketiminin toplam içindeki payını gösterir. Altındaki tabloda aynı bilgi sayı olarak, ayrıca günlük ve aylık maliyetle birlikte yer alır; böylece grafiği göremeyenler de tüm veriye ulaşır."}},{"@type":"Question","name":"Girdiğim bilgiler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; cihaz listesi, fiyat ve tüketim bilgileri sunucuya gönderilmez, saklanmaz; çerez ya da analiz kodu kullanılmaz."}},{"@type":"Question","name":"\"Güç boş\" ya da \"geçersiz\" hatası alıyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Alanlara yalnızca rakam ve virgül yazın (örn. 1500 ya da 3,5). Harf, para birimi simgesi, sıfır ve eksi değerler kabul edilmez. Günlük saat 24'ü aşamaz. İlgili alanı düzeltip yeniden \"Hesapla\"ya basın."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Elektrik ve Doğalgaz Tüketimi, Fatura Hesaplama</span></h1>
+      <p class="lead">Evinizdeki cihazları ekleyin, güçlerini ve günlük kullanım saatlerini girin; aylık kWh tüketiminizi, elektrik faturanıza etkisini ve hangi cihazın ne kadar pay aldığını görün. Aynı sayfada doğalgaz m³ maliyetini, kombinin saatlik tüketim tahminini ve klimanın BTU değerinden saatlik maliyetini de hesaplayabilirsiniz. Birim fiyatı siz girersiniz; girdileriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="kdv-modes yk-modes" style="border:0;padding:0;margin:0 0 14px">
+          <legend class="visually-hidden">Hesaplama türü</legend>
+          <label><input type="radio" name="mode" value="devices" checked> Cihaz listesi (elektrik)</label>
+          <label><input type="radio" name="mode" value="gas"> Doğalgaz</label>
+          <label><input type="radio" name="mode" value="ac"> Klima (BTU)</label>
+        </fieldset>
+
+        <div data-panel="devices">
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="preset">Hazır cihaz seç</label><select id="preset"><option>Yükleniyor…</option></select><div class="hint">Güçler yaklaşıktır; etiketinizdeki değere göre düzeltin.</div></div>
+            <div class="ba-field"><label>&nbsp;</label><button id="add-preset" class="ba-btn" type="button">Ekle</button></div>
+          </div>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="c-name">Özel cihaz adı</label><input id="c-name" type="text" autocomplete="off" placeholder="Elektrikli süpürge"></div>
+            <div class="ba-field"><label for="c-watt">Özel cihaz gücü (W)</label><input id="c-watt" type="text" inputmode="decimal" autocomplete="off" placeholder="1800"></div>
+          </div>
+          <div class="ba-actions" style="margin:0 0 14px"><button id="add-custom" class="ba-btn" type="button">Özel cihaz ekle</button></div>
+          <p id="dev-empty" class="kdv-note">Henüz cihaz eklenmedi. Yukarıdan hazır cihaz seçin ya da özel cihaz tanımlayın.</p>
+          <div id="devlist"></div>
+        </div>
+
+        <div data-panel="gas" hidden>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="g-m3">Aylık doğalgaz tüketimi (m³)</label><input id="g-m3" type="text" inputmode="decimal" autocomplete="off" placeholder="120"><div class="hint">Faturanızdaki tüketim değeri. Boşsa kombi tahmini yapılır.</div></div>
+            <div class="ba-field"><label for="gprice">Doğalgaz birim fiyatı (TL/m³)</label><input id="gprice" type="text" inputmode="decimal" autocomplete="off" placeholder="faturanızdaki güncel tarifeyi girin"><div class="hint">Güncel tarifeyi faturadan girin; sayfa fiyat tutmaz.</div></div>
+            <div class="ba-field"><label for="g-kw">Kombi gücü (kW, isteğe bağlı)</label><input id="g-kw" type="text" inputmode="decimal" autocomplete="off" placeholder="24"><div class="hint">Kombi etiketindeki nominal ısıtma gücü.</div></div>
+            <div class="ba-field"><label for="g-hours">Kombi günlük çalışma saati</label><input id="g-hours" type="text" inputmode="decimal" autocomplete="off" placeholder="8"><div class="hint">Kombi gücü girdiyseniz zorunludur.</div></div>
+            <div class="ba-field"><label for="g-load">Ortalama yük (%)</label><input id="g-load" type="text" inputmode="decimal" autocomplete="off" value="50"><div class="hint">Çalışırken tam yükün yüzde kaçı kullanılıyor.</div></div>
+          </div>
+        </div>
+
+        <div data-panel="ac" hidden>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="a-btu">Klima kapasitesi (BTU/saat)</label><input id="a-btu" type="text" inputmode="decimal" autocomplete="off" placeholder="12000"><div class="hint">9000, 12000, 18000 gibi.</div></div>
+            <div class="ba-field"><label for="a-cop">Verimlilik (COP)</label><input id="a-cop" type="text" inputmode="decimal" autocomplete="off" value="3"><div class="hint">Cihaz etiketinde yazar; bilmiyorsanız 3 bırakın.</div></div>
+            <div class="ba-field"><label for="a-hours">Günlük çalışma saati (isteğe bağlı)</label><input id="a-hours" type="text" inputmode="decimal" autocomplete="off" placeholder="8"></div>
+          </div>
+        </div>
+
+        <div class="kdv-grid" style="margin-top:6px">
+          <div class="ba-field" id="price-wrap"><label for="price">Elektrik birim fiyatı (TL/kWh)</label><input id="price" type="text" inputmode="decimal" autocomplete="off" placeholder="faturanızdaki güncel tarifeyi girin"><div class="hint">Güncel tarifeyi faturanızdan girin; sayfa fiyat tutmaz.</div></div>
+          <div class="ba-field"><label for="days">Aydaki gün sayısı</label><input id="days" type="text" inputmode="numeric" autocomplete="off" value="30"></div>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="rows"></dl>
+        <div id="breakdown" hidden>
+          <h4 class="el-sub">Cihaz bazında dağılım</h4>
+          <canvas id="pie" class="el-pie" width="260" height="260" role="img" aria-label="Aylık tüketim payları"></canvas>
+          <div class="el-tablewrap"><table class="yk-table"><thead><tr><th scope="col">Cihaz</th><th scope="col">Günlük</th><th scope="col">Aylık</th><th scope="col">Aylık maliyet</th><th scope="col">Pay</th></tr></thead><tbody id="tbl"></tbody></table></div>
+        </div>
+        <p class="kdv-note" id="r-notes"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="el-params">Parametreler <span id="param-date">4 Kasım 2026</span> tarihinde güncellendi; değerler yaklaşıktır.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="elektrik-tuketim-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki üç seçenekten birini işaretleyin: elektrik için cihaz listesi, doğalgaz ya da klima.</li>
+        <li>Cihaz listesinde açılır menüden bir cihaz seçip "Ekle"ye basın. Güç (W), günlük kullanım saati ve adet alanlarını kendi evinize göre düzeltin. Listede olmayan cihaz için adını ve gücünü yazıp "Özel cihaz ekle"yi kullanın.</li>
+        <li>Faturanızdaki güncel kWh birim fiyatını girin. Fiyatı boş bırakırsanız yalnızca kWh hesaplanır. Ayın gün sayısı varsayılan olarak 30'dur.</li>
+        <li>"Hesapla"ya basın: günlük, aylık ve yıllık tüketim, maliyet, cihaz bazında tablo ve pasta grafik görünür. "Sonucu kopyala" ile özeti panoya alın.</li>
+      </ol>
+
+      <h2>Elektrik tüketimi kWh olarak nasıl hesaplanır?</h2>
+      <p>Elektrik faturanız kilovatsaat (kWh) üzerinden kesilir. Bir cihazın tükettiği enerji, gücü ile çalışma süresinin çarpımıdır. Watt cinsinden gücü saatle çarpıp 1000'e bölerseniz kWh bulursunuz. Örneğin 2000 W gücündeki bir elektrikli ısıtıcı günde 5 saat çalışırsa günlük tüketimi 2000 × 5 ÷ 1000 = 10 kWh olur. Ayda 30 gün kullanılırsa bu 300 kWh eder. Birim fiyat 3 TL/kWh ise yalnızca bu ısıtıcının aylık maliyeti 900 TL'dir. Araç tam olarak bu hesabı her cihaz için yapar ve toplar.</p>
+      <p>Bu basit formülün en önemli kısmı güç ve süre değerlerinin gerçeğe yakın olmasıdır. Güç bilgisi cihazın arkasındaki ya da altındaki etiketten okunur; etikette genellikle W ya da kW yazar. Süre ise tahmindir: televizyon açık kaldığı saat, bilgisayarın çalıştığı saat, lambaların yandığı saat gibi. Kullanım alışkanlığınızı birkaç gün gözlemleyip ortalamayı girmek sonucu belirgin biçimde iyileştirir.</p>
+
+      <h2>Klima, buzdolabı ve kombi için neden "ortalama" güç kullanılır?</h2>
+      <p>Isıtıcı ya da ütü gibi cihazlar çalışırken neredeyse hep aynı gücü çeker. Buzdolabı, klima ve kombi ise böyle değildir. Buzdolabı kompresörü sürekli çalışmaz; ısı düşünce durur, yükselince yeniden başlar. Bu yüzden etiketteki anlık güç yerine günlük ortalama çekiş kullanılır, hazır listedeki 50 W gibi değerler bu mantıkla seçilmiştir. Etiketteki yıllık kWh değerini 365'e bölüp 24'e bölerseniz kendi buzdolabınızın ortalama gücünü daha doğru bulabilirsiniz. Inverter klimalar da hedef sıcaklığa ulaşınca gücü düşürür; bu nedenle listedeki değer yaklaşık bir ortalamadır.</p>
+      <p>Kombide elektrik tüketimi ile doğalgaz tüketimi ayrı kalemlerdir. Kombinin elektrikle çalışan kısmı fan, pompa ve kontrol kartıdır ve yüzlerce watt değil, genellikle yüz watt civarındadır. Asıl maliyet doğalgazdadır; bunu da aracın "Doğalgaz" sekmesinde hesaplarsınız.</p>
+
+      <h2>Doğalgaz tüketimi ve kombi saatlik tüketim tahmini</h2>
+      <p>Doğalgaz faturası metreküp (m³) üzerinden hesaplanır. Aylık m³ değerini ve birim fiyatı girerseniz aracın hesabı basittir: tüketim × fiyat. Bunun yanında kombinin kapasitesinden tahmini saatlik tüketim de bulunabilir. Mantık şöyledir: kombinin etiketteki ısıtma gücü kW cinsindendir; cihazın verimi yaklaşık yüzde 90 olduğundan yaktığı gazın enerjisi bu değerin biraz üstündedir. Bir metreküp doğalgaz yaklaşık 9,2 kWh enerji içerir. Örneğin 24 kW'lık bir kombi tam yükte saatte yaklaşık 24 ÷ 0,9 ÷ 9,2 ≈ 2,9 m³ gaz yakar. Kombi çoğu zaman tam yükte çalışmadığı için ortalama yükü (örneğin yüzde 50) ve günlük çalışma süresini girmeniz gerekir.</p>
+      <p>Bu tahmin yalıtım, dış hava sıcaklığı, termostat ayarı ve cihaz modeline göre ciddi sapabilir. Tahmini sonuçla faturanızdaki gerçek m³ değerini karşılaştırarak yük yüzdesini kendi evinize göre ayarlayabilirsiniz.</p>
+
+      <h2>Klima BTU değerinden kW ve saatlik maliyet</h2>
+      <p>Klima kapasitesi çoğunlukla BTU/saat ile anılır: 9000, 12000, 18000 gibi. Bir BTU/saat yaklaşık 0,293 watt ısı gücüne denk gelir. Dolayısıyla 12000 BTU'luk bir klima yaklaşık 3,5 kW soğutma gücü sağlar. Ancak klima bu gücü elektrikten üretmez, ısıyı taşır; bu yüzden harcadığı elektrik soğutma gücünden çok daha azdır. Aradaki oran COP (verimlilik katsayısı) ile ifade edilir. COP 3 ise 3,5 kW soğutma için yaklaşık 1,17 kW elektrik çekilir. Saatlik maliyet de bu kW değeri ile elektrik birim fiyatının çarpımıdır. Aracın "Klima" sekmesi bu zinciri tek adımda kurar.</p>
+
+    </article>
+
+    <div class="ba-ad" data-slot="elektrik-tuketim-hesapla-b" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Hangi cihaz faturayı en çok şişirir?</h2>
+      <p>Pasta grafik, aylık tüketimin cihazlar arasında nasıl dağıldığını gösterir. Çoğu evde ilk sıralarda ısıtma ve soğutma yapan cihazlar yer alır: elektrikli ısıtıcılar, klimalar, su ısıtıcıları ve fırınlar. Buzdolabı gücü düşük olsa da gün boyu çalıştığı için dikkate değer bir pay alır. Aydınlatma ve elektronik cihazların payı genellikle daha küçüktür ama LED'e geçmemiş evlerde ampuller sürpriz yapabilir. Grafiğe bakıp en büyük dilimden başlamak, tasarruf için en verimli yöntemdir.</p>
+
+      <h2>Tasarruf ipuçları</h2>
+      <ul>
+        <li><strong>Hazır bekleme (stand-by) tüketimini kesin.</strong> Televizyon, kutu, şarj aletleri ve bilgisayar çevre birimleri kapalı görünürken bile az da olsa enerji çeker. Düğmeli prizler işe yarar.</li>
+        <li><strong>Klimada ayarı ılımlı tutun.</strong> Soğutmada her bir derece daha düşük sıcaklık tüketimi gözle görülür artırır. Filtreleri düzenli temizleyin.</li>
+        <li><strong>Buzdolabını doğru yerleştirin.</strong> Fırın ya da kaloriferin yanına koymayın, arkasında hava dolaşımı bırakın, kapak contasını kontrol edin.</li>
+        <li><strong>Çamaşır makinesini dolu çalıştırın.</strong> Düşük sıcaklık programları ısıtma enerjisinden büyük tasarruf sağlar.</li>
+        <li><strong>LED aydınlatmaya geçin.</strong> Aynı ışığı eski akkor ampullerin yaklaşık altıda biri enerjiyle verir.</li>
+        <li><strong>Kombide termostat kullanın.</strong> Oda sıcaklığını bir derece düşürmek doğalgaz faturasını belirgin biçimde etkiler; yalıtım ve pencere contaları da önemlidir.</li>
+        <li><strong>Gün içi tarife seçeneklerini araştırın.</strong> Sayacınız ve aboneliğiniz uygunsa, tarife seçenekleri için dağıtım şirketinizin güncel bilgisine bakın.</li>
+      </ul>
+
+      <h2>Faturanızla sonucu nasıl karşılaştırırsınız?</h2>
+      <p>Aracın verdiği toplam kWh değerini faturanızdaki tüketimle karşılaştırın. Fark büyükse üç olası neden vardır: listede olmayan cihazlar (şofben, süpürge, saç kurutma makinesi gibi), süre tahminlerinin gerçekten uzak olması ya da faturada kWh dışında kalemlerin (dağıtım bedeli, enerji fonu, vergiler, sayaç okuma ve sabit bedeller) bulunması. Bu araç yalnızca enerji tüketim maliyetini birim fiyat üzerinden hesaplar; faturanın bütün vergi ve kalemlerini kapsamaz. Bu yüzden toplam fatura tutarı için birim fiyatı, vergiler ve bedeller dahil efektif fiyatı girmeniz daha gerçekçi sonuç verir: faturadaki toplam tutarı toplam kWh değerine bölerek kendi efektif birim fiyatınızı bulabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Girdiğiniz tutarlar ve değerler tarayıcınızda işlenir; hiçbir sunucuya gitmez, kaydedilmez.</li>
+        <li><strong>Gömülü fiyat ve oran yok.</strong> Güncel değeri siz yazarsınız; eskimiş bir tarife sizi yanıltmaz.</li>
+        <li><strong>Reklam düğmelerden uzaktadır.</strong> Reklam alanları yalnızca araç kutusunun altında ve içerik arasında yer alır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Aylık elektrik tüketimi (kWh) nasıl hesaplanır?</summary><p>Cihazın gücünü (W) günlük kullanım süresiyle (saat) çarpıp 1000'e bölerek günlük kWh bulursunuz. Ardından ayın gün sayısıyla çarparsınız. Örneğin 2000 W cihaz günde 5 saat, ayda 30 gün çalışırsa 300 kWh tüketir; 3 TL/kWh fiyatla 900 TL eder.</p></details>
+        <details><summary>Elektrik ve doğalgaz birim fiyatı neden hazır gelmiyor?</summary><p>Tarifeler dönemsel olarak değişir ve aboneliğe göre farklılaşabilir. Eskimiş bir fiyat sonucu yanıltacağı için sayfaya fiyat gömmedik. Faturanızdaki güncel birim fiyatı ya da toplam tutarı kWh'ye bölerek bulduğunuz efektif fiyatı girin.</p></details>
+        <details><summary>Cihazların watt değerleri kesin mi?</summary><p>Hayır, listedeki değerler yaklaşık ortalamalardır. Kendi cihazınızın etiketindeki ya da kullanım kılavuzundaki gücü yazmak en doğru sonucu verir. Buzdolabı, klima ve kombi gibi değişken çalışan cihazlarda ortalama çekiş kullanılır.</p></details>
+        <details><summary>Klima aylık ne kadar elektrik harcar?</summary><p>Klimanın BTU değerini, COP'unu ve günlük çalışma süresini girerek hesaplayın. 12000 BTU'luk ve COP'u 3 olan klima yaklaşık 1,17 kW çeker; günde 8 saat ve 30 gün çalışırsa aylık yaklaşık 281 kWh eder. Inverter modellerde gerçek değer çoğunlukla daha düşüktür.</p></details>
+        <details><summary>Kombi saatte kaç m³ doğalgaz yakar?</summary><p>Kombinin kW gücünü verime (yaklaşık 0,9) ve doğalgazın ısıl değerine (yaklaşık 9,2 kWh/m³) bölerek tam yükteki saatlik tüketimi tahmin edebilirsiniz. 24 kW için yaklaşık 2,9 m³/saat çıkar. Gerçek tüketim yüke, yalıtıma ve hava sıcaklığına bağlı olarak daha düşüktür.</p></details>
+        <details><summary>Sonuç faturamla neden birebir tutmuyor?</summary><p>Faturada enerji bedeline ek olarak dağıtım bedeli, vergi, fon ve sabit kalemler bulunur. Ayrıca listeye eklemediğiniz cihazlar ve süre tahminleri farkı oluşturur. Araç tahmini enerji maliyetini gösterir; resmî fatura tutarının yerine geçmez.</p></details>
+        <details><summary>BTU nedir, kW'ye nasıl çevrilir?</summary><p>BTU/saat bir ısı gücü birimidir. 1 BTU/saat yaklaşık 0,293 W eder. 12000 BTU/saat yaklaşık 3,5 kW soğutma gücüne eşittir. Bu, harcanan elektrik değil, klimanın sağladığı soğutmadır; elektrik girişi COP'a bölünerek bulunur.</p></details>
+        <details><summary>Pasta grafik neyi gösteriyor?</summary><p>Her dilim bir cihazın aylık kWh tüketiminin toplam içindeki payını gösterir. Altındaki tabloda aynı bilgi sayı olarak, ayrıca günlük ve aylık maliyetle birlikte yer alır; böylece grafiği göremeyenler de tüm veriye ulaşır.</p></details>
+        <details><summary>Girdiğim bilgiler kaydediliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; cihaz listesi, fiyat ve tüketim bilgileri sunucuya gönderilmez, saklanmaz; çerez ya da analiz kodu kullanılmaz.</p></details>
+        <details><summary>"Güç boş" ya da "geçersiz" hatası alıyorum, ne yapmalıyım?</summary><p>Alanlara yalnızca rakam ve virgül yazın (örn. 1500 ya da 3,5). Harf, para birimi simgesi, sıfır ve eksi değerler kabul edilmez. Günlük saat 24'ü aşamaz. İlgili alanı düzeltip yeniden "Hesapla"ya basın.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar girdiğiniz değerlere ve yaklaşık cihaz güçlerine dayanan tahminlerdir; resmî fatura tutarı yerine geçmez. Tarifeler, vergiler ve bedeller değişebilir; kesin bilgi için dağıtım şirketinizin ve faturanızın güncel verilerine bakın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../zam-orani-hesapla/">Zam Oranı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="elektrik-tuketim-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

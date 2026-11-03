@@ -84,8 +84,9 @@ for (const file of walk(join(root, 'web'))) {
   }
   const isHub = file === join(root, 'web', 'index.html');
   if (isHub && !h.includes('ba-typer')) {
-    h = h.replace('<h1>Ücretsiz online araçlar — dosyanız bilgisayarınızdan çıkmaz</h1>',
-      `<h1>Ücretsiz online araçlar,<br><span class="ba-grad">dosyanız bilgisayarınızdan çıkmaz.</span></h1>${nl}      <p class="ba-typer"><span class="pre">Tek tıkla:</span> <span class="ba-type" data-words="${TYPER_WORDS}">PDF birleştir</span></p>`);
+    // Eski ve sayaçlı (main) başlık biçimlerinin ikisi de tanınır: "… — dosyanız bilgisayarınızdan çıkmaz"
+    h = h.replace(/<h1>((?:Ücretsiz online araçlar)|(?:<span id="ba-count">\d+<\/span> ücretsiz online araç)) — dosyanız bilgisayarınızdan çıkmaz<\/h1>/,
+      `<h1>$1,<br><span class="ba-grad">dosyanız bilgisayarınızdan çıkmaz.</span></h1>${nl}      <p class="ba-typer"><span class="pre">Tek tıkla:</span> <span class="ba-type" data-words="${TYPER_WORDS}">PDF birleştir</span></p>`);
   }
   if (isHub && !h.includes('ba-dia')) {
     // Hub hero'su iki sütun: metin (.ba-hl) + ana sitedeki gibi hareketli ağ şeması

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kelime Bulucu – Harflerden Kelime Türetme, Joker ve Wordle Yardımcısı (Türkçe)</title>
+  <meta name="description" content="Elinizdeki harflerden Türkçe kelime türetin: joker (?) desteği, harf sayısı filtresi, başlayan/biten/içeren kalıp arama ve Wordle ipucu (yeşil, sarı, gri) yardımcısı. Ücretsiz, kayıt yok, veri gönderilmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kelime-bulucu/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .kb-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 14px; padding: 0; border: 0; }
+    .kb-modes legend { font-weight: 600; font-size: .9rem; margin-bottom: 6px; padding: 0; }
+    .kb-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; cursor: pointer; }
+    .kb-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kb-form input[type="text"], .kb-form input[type="number"], .kb-form select { width: 100%; min-height: 44px; }
+    .kb-big { font-size: 1.25rem; letter-spacing: .12em; }
+    .kb-row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    #yellow-slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(52px, 1fr)); gap: 6px; }
+    #yellow-slots input { text-align: center; min-width: 0; padding-left: 4px; padding-right: 4px; }
+    .kb-status { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; margin: 18px 0 8px; }
+    .kb-status strong { font-size: 1.1rem; }
+    .kb-status span { color: var(--ba-text-muted); font-size: .85rem; }
+    .kb-group h3 { font-size: 1rem; margin: 14px 0 6px; }
+    .kb-words { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; }
+    .kb-words li { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 6px; padding: 5px 9px; font-size: 1rem; }
+    .kb-words small { margin-left: 6px; color: var(--ba-text-muted); font-size: .75rem; }
+    .kb-empty, .kb-more, #hint { color: var(--ba-text-muted); font-size: .95rem; }
+    .kb-points { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 10px 0; }
+    .kb-points li { border: 1px solid var(--ba-border); border-radius: 6px; padding: 3px 8px; background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kelime Bulucu – Bilişim Ajans","applicationCategory":"GameApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kelime-bulucu/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kelime Bulucu hangi kelime listesini kullanır?","acceptedAnswer":{"@type":"Answer","text":"Açık lisanslı (MIT) bir Türkçe kelime listesinden süzülmüş yaklaşık 44 bin kelime kullanılır. Liste tam bir sözlük değildir; çekimli biçimlerin hepsini içermez."}},
+  {"@type":"Question","name":"Joker nasıl kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Harf kutusuna soru işareti yazın. Her soru işareti herhangi bir harfin yerine geçer ve 0 puan verir."}},
+  {"@type":"Question","name":"Wordle yardımcısı nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Yeşil harfleri kalıba, sarı harfleri bulundukları konumun kutusuna, gri harfleri ise gri kutusuna yazın; araç bu ipuçlarına uyan kelimeleri listeler."}},
+  {"@type":"Question","name":"Yazdığım harfler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Arama tamamen tarayıcınızda yapılır."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Yardımcı Araçlar</a></li></ol>
+      <h1><span class="ba-grad">Kelime Bulucu</span>: Harflerden Kelime Türetme ve Wordle Yardımcısı</h1>
+      <p class="lead">Elinizdeki harflerle kurulabilecek Türkçe kelimeleri bulun; joker (?) kullanın, harf sayısına göre süzün, belirli harfle başlayan, biten ya da içeren kelimeleri arayın. Wordle benzeri oyunlar için yeşil, sarı ve gri ipuçlarına uyan kelimeleri listeleyin. Yazdıklarınız tarayıcınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool kb-form" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+
+      <fieldset class="kb-modes">
+        <legend>Ne arıyorsunuz?</legend>
+        <label><input type="radio" name="mode" value="anagram" checked> Harflerden kelime türet</label>
+        <label><input type="radio" name="mode" value="pattern"> Kalıpla ara</label>
+        <label><input type="radio" name="mode" value="wordle"> Wordle yardımcısı</label>
+      </fieldset>
+
+      <div id="panel-anagram" class="ba-options">
+        <div class="ba-field"><label for="f-letters">Elinizdeki harfler</label>
+          <input id="f-letters" class="kb-live kb-big" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="a r a b ?">
+          <div class="hint">Harfleri bitişik, boşluklu ya da virgüllü yazabilirsiniz. Her <strong>?</strong> bir joker harftir.</div></div>
+        <div class="ba-field"><label><input id="f-exact" class="kb-live-change" type="checkbox"> Yalnızca tüm harfleri kullanan kelimeler (anagram)</label></div>
+      </div>
+
+      <div id="panel-pattern" class="ba-options" hidden>
+        <div class="ba-field"><label for="f-pattern">Kalıp</label>
+          <input id="f-pattern" class="kb-live kb-big" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="a_a_a">
+          <div class="hint">Bilinmeyen harf için <strong>_</strong> ya da <strong>?</strong>, uzunluğu belirsiz boşluk için <strong>*</strong> yazın. Örnek: <code>k__a_</code>, <code>*lik</code>.</div></div>
+      </div>
+
+      <div id="panel-wordle" class="ba-options" hidden>
+        <div class="ba-field"><label for="f-wlen">Kelime uzunluğu</label>
+          <select id="f-wlen" class="kb-live-change"><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></div>
+        <div class="ba-field"><label for="f-green">Yeşil harfler (doğru yerde)</label>
+          <input id="f-green" class="kb-live kb-big" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="_____">
+          <div class="hint">Bilinen harfi yerine, bilinmeyenleri <strong>_</strong> ile yazın: <code>a_a_a</code></div></div>
+        <div class="ba-field"><span id="l-yellow">Sarı harfler (kelimede var ama bu konumda değil)</span>
+          <div id="yellow-slots" role="group" aria-labelledby="l-yellow"></div>
+          <div class="hint">Sarı çıkan harfi, çıktığı konumun kutusuna yazın.</div></div>
+        <div class="ba-field"><label for="f-gray">Gri harfler (kelimede yok)</label>
+          <input id="f-gray" class="kb-live" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="k l m">
+          <div class="hint">Yeşil ya da sarı olarak da geçen bir harf gri ise kelimede o harften yalnızca daha az bulunduğunu gösterir; araç böyle harfleri güvenli tarafta kalarak elemez.</div></div>
+      </div>
+
+      <div class="ba-options">
+        <div class="ba-field"><label for="f-min">En az harf</label><input id="f-min" class="kb-live" type="number" inputmode="numeric" min="2" max="12" placeholder="örn. 5"></div>
+        <div class="ba-field"><label for="f-max">En çok harf</label><input id="f-max" class="kb-live" type="number" inputmode="numeric" min="2" max="12" placeholder="örn. 5"></div>
+        <div class="ba-field"><label for="f-starts">Şu harflerle başlasın</label><input id="f-starts" class="kb-live" type="text" autocomplete="off" spellcheck="false" placeholder="ör. ka"></div>
+        <div class="ba-field"><label for="f-ends">Şu harflerle bitsin</label><input id="f-ends" class="kb-live" type="text" autocomplete="off" spellcheck="false" placeholder="ör. lik"></div>
+        <div class="ba-field"><label for="f-contains">Şu harfleri içersin</label><input id="f-contains" class="kb-live" type="text" autocomplete="off" spellcheck="false" placeholder="ör. ş"></div>
+        <div class="ba-field"><label for="f-sort">Sıralama</label>
+          <select id="f-sort" class="kb-live-change"><option value="length" selected>Uzunluğa göre gruplu</option><option value="score">Puana göre</option><option value="alpha">Alfabetik</option></select></div>
+      </div>
+
+      <div class="ba-actions"><button id="clear" class="ba-btn" type="button">Alanları temizle</button></div>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div class="kb-status" aria-live="polite"><strong id="count">Liste yükleniyor…</strong><span>Liste: <span id="list-info">…</span> · kapsamı sınırlıdır, tam sözlük değildir</span></div>
+      <p id="hint">Harflerinizi yazın; sonuçlar siz yazdıkça listelenir. Rakamlar ve noktalama işaretleri yok sayılır.</p>
+      <div id="results"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="kelime-bulucu-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Kelime Bulucu nedir, kimler için?</h2>
+      <p>Kelime oyunlarında en sinir bozucu an, elinizdeki yedi sekiz harfle bir türlü anlamlı bir sözcük kuramadığınız andır. Bulmaca çözerken iki harfi belli, üç harfi belirsiz bir kelimeyi aramak ya da her gün yeni bir bilmece sunan Wordle benzeri oyunlarda son hakkınızda doğru kelimeyi kovalamak da aynı türden bir tıkanmadır. Kelime Bulucu bu anlarda yanınızda duran basit bir yardımcıdır: harfleri yazarsınız, tarayıcınız anında kurulabilen Türkçe kelimeleri uzunluklarına göre gruplayarak sıralar. Öğretmenler harf oyunları için örnek kelime bulmakta, ebeveynler çocuklarıyla kelime türetme etkinliği yapmakta, bulmaca meraklıları da takıldıkları yerde ipucu aramakta kullanır.</p>
+      <p>Araç üç ayrı çalışma biçimi sunar. <strong>Harflerden kelime türet</strong> modunda elinizdeki harfleri girersiniz; araç bu harflerin bir kısmıyla ya da tamamıyla yazılabilen kelimeleri bulur. <strong>Kalıpla ara</strong> modunda bilinen harfleri yerlerine, bilinmeyenleri alt çizgiyle yazarsınız. <strong>Wordle yardımcısı</strong> modunda ise yeşil, sarı ve gri ipuçlarınızı girip bunlara uyan tüm adayları görürsünüz. Üç modun da altında ortak süzgeçler bulunur: en az ve en çok harf sayısı, belirli harflerle başlama, bitme ve içerme. Böylece "beş harfli, k ile başlayan ve içinde r geçen" gibi çok katmanlı bir isteği tek ekranda karşılayabilirsiniz.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Modu seçin.</strong> Harflerden kelime kurmak istiyorsanız birinci, belli bir kalıbı arıyorsanız ikinci, Wordle çözüyorsanız üçüncü seçeneği işaretleyin.</li>
+        <li><strong>Harfleri yazın.</strong> Harfleri bitişik, aralarında boşluk ya da virgül bırakarak yazabilirsiniz; <code>a, r, a, b</code> ile <code>arab</code> aynı sonucu verir. Büyük harfle yazmanız sorun olmaz: Türkçe kurala göre "I" harfi "ı"ya, "İ" harfi "i"ye dönüştürülür.</li>
+        <li><strong>Jokeri kullanın.</strong> Elinizde boş taş, yani istediğiniz harfin yerine geçen bir joker varsa harf kutusuna soru işareti ekleyin. Kalıp modunda aynı işaret herhangi bir tek harf anlamına gelir.</li>
+        <li><strong>Süzgeçlerle daraltın.</strong> Sonuç listesi çok uzunsa harf sayısını, başlangıç ya da bitişi belirtin. Sonuçlar siz yazdıkça yenilenir, bir düğmeye basmanız gerekmez.</li>
+        <li><strong>Sonucu okuyun.</strong> Her kelimenin yanındaki küçük sayı, aşağıdaki tabloya göre hesaplanan "kelime oyunları için" puandır. Sıralamayı uzunluğa, puana ya da alfabeye göre değiştirebilirsiniz.</li>
+      </ol>
+
+      <h2>Joker ve anagram nasıl çalışır?</h2>
+      <p>Bir kelimenin elinizdeki harflerle yazılabilmesi için her harften, kelimede geçtiği sayıdan az olmaması gerekir. Örneğin "araba" kelimesi üç tane "a", bir "r" ve bir "b" ister. Elinizde yalnızca <code>a r a b</code> varsa bu kelime kurulamaz, çünkü ikinci bir "a" daha gerekir; ama <code>a r a b ?</code> yazarsanız joker eksik harfin yerini tutar ve "araba" listede görünür. Araç jokerleri en gerekli yerde kullanır ve puan hesabında joker yerine geçen harfi 0 sayar; bu da gerçek oyunlardaki boş taş mantığıyla uyumludur.</p>
+      <p>"Yalnızca tüm harfleri kullanan kelimeler" kutusunu işaretlerseniz araç saf anagram arar: girdiğiniz bütün harfler, ne eksik ne fazla, kelimenin içinde yer alır. Bu seçenek, "bu karışık harfler hangi kelimeyi oluşturuyor?" tipi bulmacalar için idealdir. Seçili değilken ise araç daha kısa kelimeleri de gösterir; bu, harf taşlarıyla oynanan oyunlarda en iyi hamleyi aramak için gereken davranıştır.</p>
+
+      <div class="ba-ad" data-slot="kelime-bulucu-b" aria-label="Reklam"></div>
+
+      <h2>Wordle yardımcısı: yeşil, sarı ve gri harfler</h2>
+      <p>Wordle türü oyunlarda her tahminden sonra harfler renk alır. Yeşil, harfin doğru yerde olduğunu; sarı, harfin kelimede bulunduğunu ama yanlış konumda durduğunu; gri ise harfin kelimede hiç olmadığını söyler. Yardımcı bu üç bilgiyi ayrı ayrı alır. Yeşil kutuya bildiğiniz harfi yerine yazarsınız (<code>a_a_a</code> gibi). Sarı harfleri, hangi sütunda sarı çıktıysa o sütunun kutusuna yazarsınız; araç bu harfin kelimede bulunması gerektiğini ama o konumda olmaması gerektiğini bilir. Gri kutuya ise elenen harfleri yazarsınız.</p>
+      <p>Küçük bir ayrıntı: bir harf bir tahminde hem yeşil/sarı hem gri görünebilir. Bu, kelimede o harften tahmindekinden daha az bulunduğu anlamına gelir. Araç böyle durumlarda o harfi tamamen elemez; yeşil ya da sarı olarak girdiğiniz harf gri kutuda da yazılıysa hâlâ aday sayılır. Bu tercih, yanlışlıkla doğru cevabı listeden atmaktansa listeyi biraz uzun bırakır. Liste çok uzarsa birkaç tahmin daha yapıp ipuçlarını güncelleyin; her yeni ipucu adayları hızla azaltır.</p>
+      <p>Önemli bir uyarı: Wordle benzeri oyunlar kelimeyi kendi listesinden seçer. Bizim listemiz bağımsız ve sınırlı bir kaynaktan geldiği için oyunun hedef kelimesi burada bulunmayabilir. Araç bir "cevap kâğıdı" değil, aklınızı açmaya yarayan bir ipucu aracıdır; eğlenceyi kaçırmamak için önce kendiniz denemenizi öneririz.</p>
+
+      <h2>Kelime oyunları için puan tablosu</h2>
+      <p>Sonuçlardaki küçük sayılar, kendi tanımladığımız ve herhangi bir oyunun resmî tablosuyla ilgisi olmayan basit bir harf puanına dayanır. Sık kullanılan harfler az, nadir harfler çok puan getirir. Amaç, farklı kelimeleri kabaca karşılaştırabilmenizdir; oynadığınız oyunun kendi puanlaması farklıysa sıralamayı alfabetik ya da uzunluğa göre yapıp puana bakmayabilirsiniz.</p>
+      <ul class="kb-points" aria-label="Harf puanları">
+        <li>1 puan: a e i n r l k</li><li>2 puan: d m t u ı s o</li><li>3 puan: y b ü ş</li><li>4 puan: z c ç</li><li>5 puan: h g p</li><li>7 puan: f v ö</li><li>8 puan: ğ</li><li>10 puan: j</li><li>Joker (?): 0 puan</li>
+      </ul>
+
+      <h2>Türkçe harflere dikkat</h2>
+      <p>Türkçede noktalı "i" ile noktasız "ı" farklı harflerdir; bu yüzden yazılışa dikkat etmek gerekir. "kırık" ile "kirik" aynı kelime değildir ve araç da bu ikisini ayrı harfler olarak görür. Aynı şekilde ç, ğ, ö, ş ve ü harfleri ayrı birer harftir; klavyenizde yoksa kopyalayıp yapıştırabilirsiniz. Kelime listesinde bu harfli sözcükler eksiksiz bulunur. Şapkalı harfler (â, î, û) içeren kelimeler ise listeye alınmamıştır, çünkü kelime oyunlarının çoğu bunları sade harfle yazar.</p>
+
+      <h2>Listenin kaynağı ve sınırları</h2>
+      <p>Araç, Vikisözlük madde başlıklarından derlenmiş ve MIT lisansıyla paylaşılan açık bir kelime listesini temel alır. Bu listeden özel adlar, çok sözcüklü ifadeler ve alışılmadık karakterli başlıklar çıkarılmış, geriye yaklaşık 44 bin kelime kalmıştır. Liste, resmî bir sözlüğün yerini tutmaz ve kapsamı sınırlıdır: bazı yaygın sözcükler, özellikle çekimli biçimler (evlerimizden, gidiyorlardı gibi) bulunmayabilir; buna karşılık nadir kullanılan bazı sözcükler bulunabilir. Bir kelimenin oyununuzda geçerli olup olmadığına son kararı oyunun kendi sözlüğü verir. Kullanılan listenin lisans bilgisi sayfa klasöründeki <code>LICENSE-kelimeler.txt</code> dosyasında yer alır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Yazdığınız harfler ve kalıplar hiçbir sunucuya gönderilmez; arama tamamen tarayıcınızda çalışır.</li>
+        <li><strong>Hızlı.</strong> Kırk bin kelimelik liste bir kez yüklenir; her tuş vuruşunda sonuç anında güncellenir.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, günlük sınır, filigran ve sahte "premium" yok.</li>
+        <li><strong>Mobil uyumlu.</strong> Telefondan oyun oynarken yan sekmede rahatça kullanabilirsiniz; klavyeyle de tam çalışır.</li>
+        <li><strong>Dürüst kapsam.</strong> Listenin sınırlarını açıkça yazarız; "her kelimeyi bilir" iddiası yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yazdığım harfler bir sunucuya gönderiliyor mu?</summary><p>Hayır. Kelime listesi sayfayla birlikte tarayıcınıza inir ve arama orada yapılır. Hiçbir harf, kalıp ya da sonuç ağa çıkmaz; sayfa yüklendikten sonra internetinizi kapatsanız bile araç çalışmaya devam eder.</p></details>
+        <details><summary>Hangi kelime listesi kullanılıyor, güvenilir mi?</summary><p>MIT lisanslı, Vikisözlük başlıklarından derlenmiş bir liste kullanılıyor ve yaklaşık 44 bin kelimeye süzülüyor. Resmî sözlük değildir; kapsamı sınırlıdır. Bir kelimenin geçerliliği konusunda oyununuzun kendi sözlüğü esastır.</p></details>
+        <details><summary>"araba" neden bazen çıkmıyor?</summary><p>"araba" için üç "a" gerekir. <code>a r a b</code> yazarsanız yalnızca iki "a" vardır. Beşinci bir harf olarak <code>a</code> ekleyin ya da soru işaretiyle joker kullanın.</p></details>
+        <details><summary>Joker kaç tane kullanılabilir?</summary><p>İstediğiniz kadar soru işareti yazabilirsiniz. Çok joker, sonuç listesini çok büyütür; bu durumda harf sayısı ya da başlangıç/bitiş süzgeciyle daraltmanızı öneririz. İlk 600 sonuç gösterilir.</p></details>
+        <details><summary>Wordle yardımcısında gri harfi nasıl yazmalıyım?</summary><p>Kelimede olmadığı belli olan harfleri gri kutuya boşlukla ya da bitişik yazın. Aynı harf aynı tahminde yeşil ya da sarı olarak da çıkmışsa o harf elenmez, çünkü bu durumda kelimede daha az sayıda bulunuyor demektir.</p></details>
+        <details><summary>Büyük harf ya da İ/ı farkı sonucu etkiler mi?</summary><p>Büyük yazabilirsiniz; araç Türkçe kurala göre çevirir ("I" → "ı", "İ" → "i"). Ancak noktalı i ile noktasız ı ayrı harflerdir; "kirik" yazarsanız "kırık" bulunmaz.</p></details>
+        <details><summary>Çekimli kelimeler (evlerimiz, gidiyor) neden yok?</summary><p>Kullandığımız liste ağırlıklı olarak sözlük maddelerinden oluşur; ekli biçimlerin çoğu yer almaz. Bu bir sınırlamadır ve sayfada açıkça belirtilir. Ek gereken oyunlarda kökü bulup eki kendiniz eklemeniz gerekebilir.</p></details>
+        <details><summary>Kelimeler neden kısa ya da tuhaf görünüyor?</summary><p>Liste açık bir kaynaktan geldiği için eski ya da nadir sözcükler içerebilir. Puanı ve uzunluğu görerek en uygun adayı seçebilirsiniz. Eksik gördüğünüz kelimeyi bize iletebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../kelime-bulutu/">Kelime Bulutu Oluşturucu</a></li>
+        <li><a href="../rastgele-sayi/">Rastgele Sayı Üretici</a></li>
+      </ul>
+      <p class="ba-note">Eğitim kurumunuz ya da markanız için özel oyun, test ya da web aracı geliştirmek isterseniz <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="kelime-bulucu-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

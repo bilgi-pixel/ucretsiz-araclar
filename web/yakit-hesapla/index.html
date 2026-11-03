@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Yakıt Hesaplama – Yol Masrafı, Benzin Dizel Tüketimi ve Elektrikli Araç Maliyeti</title>
+  <meta name="description" content="Mesafe, 100 km tüketim ve yakıt fiyatıyla yol masrafını, kişi başı payı ve yıllık yakıt giderini hesaplayın. Tüketim hesabı, depo menzili ve elektrikli araç modu. Ücretsiz, kayıt yok, veriler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/yakit-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+      .yk-modes { margin-bottom: 14px; }
+    .yk-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .yk-table th, .yk-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); }
+    .yk-table td.n { font-family: var(--ba-mono); white-space: nowrap; }
+    .yk-table .ba-btn { min-height: 40px; padding: 6px 12px; }
+    .ba-field input[type="text"] { width: 100%; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Yakıt Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/yakit-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Yakıt maliyeti nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Mesafeyi 100'e bölüp 100 km tüketimle çarparak litreyi, litreyi birim fiyatla çarparak maliyeti bulursunuz. Örneğin 450 km, 7 L/100 km ve 45 TL/L için 31,5 litre ve 1.417,50 TL çıkar. Araç bu işlemi sizin yerinize yapar."}},{"@type":"Question","name":"Yakıt fiyatı neden hazır gelmiyor?","acceptedAnswer":{"@type":"Answer","text":"Pompa fiyatları sık değiştiği için sayfaya sabit bir değer gömmedik; eskimiş bir fiyat yanıltıcı olurdu. Güncel fiyatı istasyon tabelasından ya da uygulamanızdan girin. Fiyat boş bırakılırsa yalnızca litre hesaplanır."}},{"@type":"Question","name":"100 km'deki tüketimimi nasıl öğrenirim?","acceptedAnswer":{"@type":"Answer","text":"Araç belgesindeki değer genelde laboratuvar ölçümüdür. Gerçek değer için \"Tüketim hesapla\" modunu kullanın: iki dolum arasında yaptığınız kilometreyi ve ikinci dolumdaki litreyi girin. Birkaç dolumun ortalaması daha doğrudur."}},{"@type":"Question","name":"Gidiş-dönüş nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"\"Gidiş-dönüş\" kutusunu işaretlerseniz girdiğiniz mesafe iki katına çıkarılır; litre ve maliyet buna göre hesaplanır. Dönüş farklı bir güzergâhtansa mesafeyi elle toplayıp kutuyu boş bırakın."}},{"@type":"Question","name":"Kişi başı pay nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Toplam maliyet kişi sayısına bölünür. Kişi sayısını 1 ile 99 arasında girebilirsiniz. Araç sahibinin payını nasıl böleceğiniz size kalmıştır; hesap yalnızca eşit paylaşımı gösterir."}},{"@type":"Question","name":"Elektrikli araç maliyeti nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Elektrikli modda mesafe ve kWh/100 km tüketimiyle toplam kWh bulunur, birim kWh fiyatıyla çarpılarak maliyet çıkar. Evde ve hızlı şarj fiyatı farklı olduğundan fiyatı kendi kullanımınıza göre girin."}},{"@type":"Question","name":"Şehirler arası mesafeler kesin mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır, karayolu üzerinden yaklaşık değerlerdir. Güzergâh, otoyol tercihi ve başlangıç noktasına göre değişir. Kesin yol uzunluğu için navigasyon uygulamasını kullanın ve mesafeyi forma elle yazın."}},{"@type":"Question","name":"\"Mesafe boş\" ya da \"geçersiz\" hatası alıyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Alanlara yalnızca rakam ve virgül yazın (örn. 450 ya da 7,5). Harf, para birimi simgesi ya da sıfır ve eksi değerler kabul edilmez. Alanı temizleyip değeri yeniden girin."}},{"@type":"Question","name":"Girdiğim bilgiler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; mesafe, tüketim ve fiyat bilgisi sunucuya gönderilmez, saklanmaz ve çerez ya da analiz kodu kullanılmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Yakıt Tüketimi ve Yol Masrafı Hesaplama</span></h1>
+      <p class="lead">Gideceğiniz mesafeyi, aracınızın 100 km tüketimini ve güncel yakıt fiyatını girin; toplam litreyi, yol masrafını ve kişi başı payı görün. Aynı araçla depo menzilini, iki dolum arası gerçek tüketimi, elektrikli araç maliyetini ve aylık ile yıllık yakıt giderini de hesaplayabilirsiniz. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="kdv-modes yk-modes" style="border:0;padding:0;margin:0 0 14px">
+          <legend class="visually-hidden">Hesaplama türü</legend>
+          <label><input type="radio" name="mode" value="cost" checked> Yol maliyeti</label>
+          <label><input type="radio" name="mode" value="range"> Depo ile menzil</label>
+          <label><input type="radio" name="mode" value="consume"> Tüketim hesapla</label>
+          <label><input type="radio" name="mode" value="ev"> Elektrikli araç</label>
+        </fieldset>
+
+        <div data-panel="cost">
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="c-km">Mesafe (km)</label><input id="c-km" type="text" inputmode="decimal" autocomplete="off" placeholder="450" ><div class="hint">Örnek: 450</div></div>
+            <div class="ba-field"><label for="c-cons">100 km'de tüketim (L)</label><input id="c-cons" type="text" inputmode="decimal" autocomplete="off" placeholder="7" ><div class="hint">Araç belgesindeki ya da gerçek tüketim.</div></div>
+            <div class="ba-field"><label for="c-price">Yakıt fiyatı (TL/L)</label><input id="c-price" type="text" inputmode="decimal" autocomplete="off" placeholder="güncel pompa fiyatını girin" ><div class="hint">Güncel pompa fiyatını siz girin (TL/L); sayfa fiyat tutmaz.</div></div>
+            <div class="ba-field"><label for="c-people">Kişi sayısı</label><input id="c-people" type="text" inputmode="decimal" autocomplete="off" placeholder="1" value="1"><div class="hint">Masrafı paylaşacak kişi sayısı.</div></div>
+          </div>
+          <div class="kdv-modes"><label><input type="checkbox" id="c-round"> Gidiş-dönüş (mesafeyi iki kat say)</label></div>
+          <div class="ba-field"><label for="c-monthly">Aylık gidilen yol (km, isteğe bağlı)</label><input id="c-monthly" type="text" inputmode="decimal" autocomplete="off" placeholder="1500" ><div class="hint">Aylık ve yıllık yakıt gideri projeksiyonu için.</div></div>
+        </div>
+
+        <div data-panel="ev" hidden>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="e-km">Mesafe (km)</label><input id="e-km" type="text" inputmode="decimal" autocomplete="off" placeholder="300" ><div class="hint">Örnek: 300</div></div>
+            <div class="ba-field"><label for="e-cons">100 km'de tüketim (kWh)</label><input id="e-cons" type="text" inputmode="decimal" autocomplete="off" placeholder="17,5" ><div class="hint">Örnek: 17,5</div></div>
+            <div class="ba-field"><label for="e-price">kWh fiyatı (TL/kWh)</label><input id="e-price" type="text" inputmode="decimal" autocomplete="off" placeholder="güncel fiyatı girin" ><div class="hint">Evde ya da şarj istasyonunda ödediğiniz güncel birim fiyat.</div></div>
+            <div class="ba-field"><label for="e-people">Kişi sayısı</label><input id="e-people" type="text" inputmode="decimal" autocomplete="off" placeholder="1" value="1"><div class="hint">Masrafı paylaşacak kişi sayısı.</div></div>
+          </div>
+          <div class="kdv-modes"><label><input type="checkbox" id="e-round"> Gidiş-dönüş (mesafeyi iki kat say)</label></div>
+          <div class="ba-field"><label for="e-monthly">Aylık gidilen yol (km, isteğe bağlı)</label><input id="e-monthly" type="text" inputmode="decimal" autocomplete="off" placeholder="1500" ><div class="hint">Aylık ve yıllık enerji gideri için.</div></div>
+        </div>
+
+        <div data-panel="range" hidden>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="r-tank">Depodaki yakıt (L)</label><input id="r-tank" type="text" inputmode="decimal" autocomplete="off" placeholder="45" ><div class="hint">Depo hacmi ya da alacağınız litre.</div></div>
+            <div class="ba-field"><label for="r-cons">100 km'de tüketim (L)</label><input id="r-cons" type="text" inputmode="decimal" autocomplete="off" placeholder="7" ><div class="hint">Örnek: 7</div></div>
+            <div class="ba-field"><label for="r-price">Yakıt fiyatı (TL/L, isteğe bağlı)</label><input id="r-price" type="text" inputmode="decimal" autocomplete="off" placeholder="güncel pompa fiyatını girin" ><div class="hint">Güncel pompa fiyatını siz girin (TL/L); sayfa fiyat tutmaz.</div></div>
+          </div>
+        </div>
+
+        <div data-panel="consume" hidden>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="k-liters">İkinci dolumda alınan yakıt (L)</label><input id="k-liters" type="text" inputmode="decimal" autocomplete="off" placeholder="38,5" ><div class="hint">Depoyu tekrar doldururken pompanın yazdığı litre.</div></div>
+            <div class="ba-field"><label for="k-km">İki dolum arası yol (km)</label><input id="k-km" type="text" inputmode="decimal" autocomplete="off" placeholder="520" ><div class="hint">İki doldurma arasında kilometre saatinin farkı.</div></div>
+            <div class="ba-field"><label for="k-price">Yakıt fiyatı (TL/L, isteğe bağlı)</label><input id="k-price" type="text" inputmode="decimal" autocomplete="off" placeholder="güncel pompa fiyatını girin" ><div class="hint">Güncel pompa fiyatını siz girin (TL/L); sayfa fiyat tutmaz.</div></div>
+          </div>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="rows"></dl>
+        <p class="kdv-note" id="r-notes"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="yakit-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki dört seçenekten birini işaretleyin: yol maliyeti, depo ile menzil, tüketim hesaplama ya da elektrikli araç.</li>
+        <li>Yol maliyetinde mesafeyi, aracınızın 100 km tüketimini ve bugünkü pompa fiyatını yazın. Fiyatı sayfa bilmez; güncel değeri sizin girmeniz sonucu gerçeğe en yakın tutar.</li>
+        <li>Yolculuğu birkaç kişiyle paylaşıyorsanız kişi sayısını girin; gidiş-dönüş için kutuyu işaretleyin. Aylık gidilen km eklerseniz aylık ve yıllık gider de görünür.</li>
+        <li>"Hesapla" düğmesine basın; toplam litre, toplam maliyet, kişi başı pay ve kilometre başına maliyet listelenir. "Sonucu kopyala" ile özeti panoya alın.</li>
+        <li>Aşağıdaki mesafe tablosundan şehirler arası yaklaşık yol uzunluğunu "Kullan" ile forma aktarabilirsiniz.</li>
+      </ol>
+
+      <h2>Yakıt maliyeti nasıl hesaplanır?</h2>
+      <p>Yol masrafı hesabı üç basit çarpmadan oluşur. Önce gidilecek mesafeyi 100'e bölüp 100 kilometredeki tüketimle çarparsınız; bu, yolculuk için gereken litredir. Sonra litreyi birim fiyatla çarparsınız; bu, toplam maliyettir. Son adımda toplam maliyeti yolculuğa katılan kişi sayısına bölerek kişi başı payı bulursunuz. Örnek: 450 km yol, 7 L/100 km tüketim ve litresi 45 TL olan yakıt için 450 × 7 / 100 = 31,5 litre gerekir; 31,5 × 45 = 1.417,50 TL tutar. Üç kişi paylaşırsa kişi başı 472,50 TL düşer. Gidiş-dönüş yapıyorsanız mesafe iki katına çıkar ve maliyet de iki katı olur.</p>
+      <p>Kilometre başına maliyet, yalnızca toplam maliyeti toplam mesafeye bölerek bulunur ve araçlar ya da güzergâhlar arasında kıyas yapmayı kolaylaştırır. Örneğin 7 L/100 km tüketen bir aracın km başı maliyeti, litresi 45 TL iken 3,15 TL'dir; 5 L/100 km'lik bir aracınki 2,25 TL'dir. Yılda 20.000 km yapan biri için bu fark yıllık on binlerce lirayı bulabilir.</p>
+
+      <h2>Gerçek tüketimi nasıl ölçersiniz?</h2>
+      <p>Araç broşüründeki tüketim değerleri laboratuvar koşullarına göredir; gerçek yaşamda trafik, hız, yük, hava ve sürüş tarzıyla değişir. Kendi aracınızın gerçek tüketimini "Tüketim hesapla" modunda bulabilirsiniz. Yöntem şudur: depoyu otomatik durmaya kadar doldurun, kilometre sayacını not edin ya da sıfırlayın, bir süre normal kullanın, sonra aynı biçimde tekrar doldurun. İkinci dolumda pompanın yazdığı litre, iki dolum arasında gittiğiniz yolda harcadığınız yakıttır. Litreyi yola bölüp 100 ile çarparsanız L/100 km değerini elde edersiniz. Tek ölçüm yanıltıcı olabilir; üç dört dolumun ortalaması daha güvenilirdir.</p>
+
+      <h2>Depo ile ne kadar yol gidilir?</h2>
+      <p>"Depo ile menzil" modu, depodaki ya da alacağınız litreyi 100 km tüketimine bölerek yaklaşık yolu verir: 45 litre ve 7 L/100 km için yaklaşık 643 km. Yakıt fiyatını da girerseniz depoyu doldurma maliyeti ve km başı maliyet görünür. Uzun yolda deponun tamamını sıfıra kadar kullanmak önerilmez; rezerv ışığı yandığında kalan menzil sürüşe bağlı olarak kısalabilir. Hesabı biraz kısa tutmak güvenli taraftır.</p>
+
+      <div class="ba-ad" data-slot="yakit-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Elektrikli araç maliyeti</h2>
+      <p>Elektrikli araçlarda tüketim kWh/100 km olarak ifade edilir; birçok model 14 ile 22 kWh arasında tüketir. Elektrikli modda hesap aynı mantıkla yapılır: mesafe × tüketim / 100 toplam kWh'yi, kWh × birim fiyat maliyeti verir. Evde şarj ile hızlı şarj istasyonu fiyatları çok farklı olabildiğinden, fiyatı kendi kullanımınıza göre girin. Karışık kullanıyorsanız ortalama bir değer yazabilir ya da iki hesabı ayrı ayrı yapabilirsiniz. Şarj kayıpları nedeniyle prizden çektiğiniz enerji, araç ekranındaki tüketimden biraz yüksektir; tüketim değeri olarak şebekeden çekilen miktarı kullanırsanız sonuç daha gerçekçi olur.</p>
+
+      <h2>Aylık ve yıllık yakıt gideri</h2>
+      <p>Aylık gidilen km alanını doldurursanız araç, aynı tüketim ve fiyatla aylık yakıt gideri ile yıllık giderin on iki katını verir. Bu bir projeksiyondur: yakıt fiyatları değişir, mevsime göre tüketim artar ya da azalır. Yine de araç almadan önce işe gidiş-geliş maliyetini, toplu taşıma ya da başka bir araçla karşılaştırmak için çok işe yarar. Şirket aracı, taksi ya da kurye gibi ticari kullanımda km başı maliyet fiyatlandırmanın temelidir.</p>
+
+      <h2>Popüler şehirler arası yaklaşık mesafeler</h2>
+      <p>Aşağıdaki mesafeler karayolu üzerinden <strong>yaklaşık</strong> değerlerdir; güzergâha, otoyol ya da eski yol tercihine ve şehir merkezlerine göre değişir. Kesin mesafe için navigasyon uygulamanızı kullanın. "Kullan" düğmesi mesafeyi forma aktarır.</p>
+      <table class="yk-table">
+        <thead><tr><th scope="col">Güzergâh</th><th scope="col">Yaklaşık mesafe</th><th scope="col"><span class="visually-hidden">İşlem</span></th></tr></thead>
+        <tbody>
+          <tr><td>İstanbul – Ankara</td><td class="n">≈ 450 km</td><td><button type="button" class="ba-btn" data-km="450" aria-label="İstanbul – Ankara mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İstanbul – İzmir</td><td class="n">≈ 480 km</td><td><button type="button" class="ba-btn" data-km="480" aria-label="İstanbul – İzmir mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İstanbul – Bursa</td><td class="n">≈ 155 km</td><td><button type="button" class="ba-btn" data-km="155" aria-label="İstanbul – Bursa mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İstanbul – Edirne</td><td class="n">≈ 235 km</td><td><button type="button" class="ba-btn" data-km="235" aria-label="İstanbul – Edirne mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İstanbul – Antalya</td><td class="n">≈ 700 km</td><td><button type="button" class="ba-btn" data-km="700" aria-label="İstanbul – Antalya mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İstanbul – Trabzon</td><td class="n">≈ 1.020 km</td><td><button type="button" class="ba-btn" data-km="1020" aria-label="İstanbul – Trabzon mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İstanbul – Çanakkale</td><td class="n">≈ 340 km</td><td><button type="button" class="ba-btn" data-km="340" aria-label="İstanbul – Çanakkale mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – İzmir</td><td class="n">≈ 580 km</td><td><button type="button" class="ba-btn" data-km="580" aria-label="Ankara – İzmir mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Antalya</td><td class="n">≈ 540 km</td><td><button type="button" class="ba-btn" data-km="540" aria-label="Ankara – Antalya mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Konya</td><td class="n">≈ 260 km</td><td><button type="button" class="ba-btn" data-km="260" aria-label="Ankara – Konya mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Samsun</td><td class="n">≈ 410 km</td><td><button type="button" class="ba-btn" data-km="410" aria-label="Ankara – Samsun mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Kayseri</td><td class="n">≈ 320 km</td><td><button type="button" class="ba-btn" data-km="320" aria-label="Ankara – Kayseri mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Eskişehir</td><td class="n">≈ 235 km</td><td><button type="button" class="ba-btn" data-km="235" aria-label="Ankara – Eskişehir mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Trabzon</td><td class="n">≈ 780 km</td><td><button type="button" class="ba-btn" data-km="780" aria-label="Ankara – Trabzon mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Diyarbakır</td><td class="n">≈ 910 km</td><td><button type="button" class="ba-btn" data-km="910" aria-label="Ankara – Diyarbakır mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Ankara – Erzurum</td><td class="n">≈ 870 km</td><td><button type="button" class="ba-btn" data-km="870" aria-label="Ankara – Erzurum mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İzmir – Antalya</td><td class="n">≈ 460 km</td><td><button type="button" class="ba-btn" data-km="460" aria-label="İzmir – Antalya mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>İzmir – Bursa</td><td class="n">≈ 330 km</td><td><button type="button" class="ba-btn" data-km="330" aria-label="İzmir – Bursa mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Adana – Gaziantep</td><td class="n">≈ 220 km</td><td><button type="button" class="ba-btn" data-km="220" aria-label="Adana – Gaziantep mesafesini forma aktar">Kullan</button></td></tr>
+          <tr><td>Diyarbakır – Şanlıurfa</td><td class="n">≈ 190 km</td><td><button type="button" class="ba-btn" data-km="190" aria-label="Diyarbakır – Şanlıurfa mesafesini forma aktar">Kullan</button></td></tr>
+        </tbody>
+      </table>
+
+      <h2>Yakıt tasarrufu için pratik ipuçları</h2>
+      <ul>
+        <li><strong>Lastik basıncı:</strong> Düşük basınç direnci artırır; ayda bir kontrol etmek tüketimi gözle görülür biçimde azaltabilir.</li>
+        <li><strong>Sabit ve ılımlı hız:</strong> Ani hızlanma ve fren yakıtı artırır; yüksek hızda hava direnci hızla büyür.</li>
+        <li><strong>Gereksiz yük:</strong> Bagajdaki ve çatıdaki ağırlık ile çatı kutuları tüketimi yükseltir.</li>
+        <li><strong>Bakım:</strong> Hava filtresi, yağ ve buji gibi bakımlar motorun verimini korur.</li>
+        <li><strong>Güzergâh planı:</strong> Kısa ve akıcı bir rota, uzun ama boş yoldan daha masraflı olabilir; hesabı iki rota için de yapın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Mesafe, tüketim ve fiyat bilgisi tarayıcınızda işlenir; hiçbir sunucuya gitmez.</li>
+        <li><strong>Gömülü fiyat yok.</strong> Eski ya da yanlış yakıt fiyatıyla yanıltılmazsınız; güncel değeri siz yazarsınız.</li>
+        <li><strong>Dört araç bir arada.</strong> Maliyet, menzil, gerçek tüketim ve elektrikli araç hesabı aynı sayfada.</li>
+        <li><strong>Türkçe sayı biçimi.</strong> 1.417,50 gibi nokta ve virgül kullanımı doğal çalışır; virgüllü girişler kabul edilir.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yakıt maliyeti nasıl hesaplanır?</summary><p>Mesafeyi 100'e bölüp 100 km tüketimle çarparak litreyi, litreyi birim fiyatla çarparak maliyeti bulursunuz. Örneğin 450 km, 7 L/100 km ve 45 TL/L için 31,5 litre ve 1.417,50 TL çıkar. Araç bu işlemi sizin yerinize yapar.</p></details>
+        <details><summary>Yakıt fiyatı neden hazır gelmiyor?</summary><p>Pompa fiyatları sık değiştiği için sayfaya sabit bir değer gömmedik; eskimiş bir fiyat yanıltıcı olurdu. Güncel fiyatı istasyon tabelasından ya da uygulamanızdan girin. Fiyat boş bırakılırsa yalnızca litre hesaplanır.</p></details>
+        <details><summary>100 km'deki tüketimimi nasıl öğrenirim?</summary><p>Araç belgesindeki değer genelde laboratuvar ölçümüdür. Gerçek değer için "Tüketim hesapla" modunu kullanın: iki dolum arasında yaptığınız kilometreyi ve ikinci dolumdaki litreyi girin. Birkaç dolumun ortalaması daha doğrudur.</p></details>
+        <details><summary>Gidiş-dönüş nasıl hesaplanır?</summary><p>"Gidiş-dönüş" kutusunu işaretlerseniz girdiğiniz mesafe iki katına çıkarılır; litre ve maliyet buna göre hesaplanır. Dönüş farklı bir güzergâhtansa mesafeyi elle toplayıp kutuyu boş bırakın.</p></details>
+        <details><summary>Kişi başı pay nasıl bulunur?</summary><p>Toplam maliyet kişi sayısına bölünür. Kişi sayısını 1 ile 99 arasında girebilirsiniz. Araç sahibinin payını nasıl böleceğiniz size kalmıştır; hesap yalnızca eşit paylaşımı gösterir.</p></details>
+        <details><summary>Elektrikli araç maliyeti nasıl hesaplanır?</summary><p>Elektrikli modda mesafe ve kWh/100 km tüketimiyle toplam kWh bulunur, birim kWh fiyatıyla çarpılarak maliyet çıkar. Evde ve hızlı şarj fiyatı farklı olduğundan fiyatı kendi kullanımınıza göre girin.</p></details>
+        <details><summary>Şehirler arası mesafeler kesin mi?</summary><p>Hayır, karayolu üzerinden yaklaşık değerlerdir. Güzergâh, otoyol tercihi ve başlangıç noktasına göre değişir. Kesin yol uzunluğu için navigasyon uygulamasını kullanın ve mesafeyi forma elle yazın.</p></details>
+        <details><summary>"Mesafe boş" ya da "geçersiz" hatası alıyorum, ne yapmalıyım?</summary><p>Alanlara yalnızca rakam ve virgül yazın (örn. 450 ya da 7,5). Harf, para birimi simgesi ya da sıfır ve eksi değerler kabul edilmez. Alanı temizleyip değeri yeniden girin.</p></details>
+        <details><summary>Girdiğim bilgiler kaydediliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; mesafe, tüketim ve fiyat bilgisi sunucuya gönderilmez, saklanmaz ve çerez ya da analiz kodu kullanılmaz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar girdiğiniz değerlere dayanan tahminlerdir; gerçek maliyet trafik, yol, sürüş tarzı ve fiyat değişimleriyle farklılaşabilir. Şehirler arası mesafeler yaklaşıktır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kredi-hesapla/">Kredi Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="yakit-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

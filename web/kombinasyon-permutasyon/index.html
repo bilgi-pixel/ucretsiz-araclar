@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kombinasyon, Permütasyon ve Faktöriyel Hesaplama – Adım Adım, Ücretsiz</title>
+  <meta name="description" content="C(n,r) kombinasyon, P(n,r) permütasyon, tekrarlı permütasyon ve kombinasyon, faktöriyel ve olasılık hesabı; tam sonuç (BigInt), adım adım çözüm ve Pascal üçgeni. Ücretsiz, veri yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kombinasyon-permutasyon/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kp-grid { display: grid; gap: 12px; margin-top: 12px; }
+    @media (min-width: 600px) { .kp-grid { grid-template-columns: 1fr 1fr; } }
+    .kp-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .kp-box:not(.is-active) { display: none; }
+    .kp-box h3 { margin: 0 0 6px; font-size: 1rem; font-family: var(--ba-mono); font-weight: 600; }
+    .kp-main { margin: 0 0 8px; font-family: var(--ba-mono); font-weight: 700; font-size: 1.5rem; color: var(--ba-text); overflow-wrap: anywhere; word-break: break-all; max-height: 11em; overflow: auto; }
+    .kp-results { margin: 0; display: grid; gap: 2px; }
+    .kp-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kp-row:last-child { border-bottom: 0; }
+    .kp-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kp-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; }
+    .kp-steps { margin: 12px 0 0; padding-left: 22px; font-family: var(--ba-mono); font-size: .86rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .kp-steps li { margin: 4px 0; }
+    .kp-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kp-pascal-wrap { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--ba-border); }
+    .kp-pascal-wrap h3 { margin: 0 0 4px; font-size: 1.1rem; }
+    .kp-pascal { overflow-x: auto; padding: 8px 0; text-align: center; }
+    .kp-prow { display: flex; justify-content: center; gap: 4px; margin: 3px 0; width: max-content; min-width: 100%; }
+    .kp-plabel { flex: none; width: 3.2em; text-align: right; color: var(--ba-text-muted); font-size: .75rem; padding-right: 6px; align-self: center; position: sticky; left: 0; background: var(--ba-bg); }
+    .kp-pcell { flex: none; min-width: 2.6em; padding: 3px 6px; font-family: var(--ba-mono); font-size: .85rem; border: 1px solid var(--ba-border); border-radius: 4px; background: var(--ba-surface); }
+    .kp-pcell.is-hit { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; font-weight: 700; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kombinasyon, Permütasyon ve Faktöriyel Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kombinasyon-permutasyon/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kombinasyon ile permütasyon arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Permütasyonda seçilenlerin sırası önemlidir, kombinasyonda önemli değildir. C(n, r) = P(n, r) / r! ilişkisi vardır. Örneğin 5 kişiden 2 kişilik komite C(5, 2) = 10, aynı iki kişiye başkan ve yardımcısı görevi vermek P(5, 2) = 20 yoldur."}},{"@type":"Question","name":"C(49, 6) nasıl hesaplanır ve sonucu nedir?","acceptedAnswer":{"@type":"Answer","text":"C(49, 6) = 49! / (6! × 43!) = (49 × 48 × 47 × 46 × 45 × 44) / (6 × 5 × 4 × 3 × 2 × 1) = 13.983.816'dır. Araç bu işlemi adım adım gösterir; \"Örnek: 49'da 6 olasılığı\" düğmesi aynı sayıdan olasılığı da verir."}},{"@type":"Question","name":"Faktöriyel en fazla kaça kadar hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Araç 1000'e kadar faktöriyeli BigInt ile tüm basamaklarıyla hesaplar; 1000! yaklaşık 2.568 basamaklıdır. Bu sınır tarayıcınızı yavaşlatmamak için konmuştur."}},{"@type":"Question","name":"0! neden 1'dir?","acceptedAnswer":{"@type":"Answer","text":"Hiçbir nesnenin dizilişi tek bir şekilde, yani boş dizilim olarak yapılabilir. Bu tanım, C(n, 0) = 1 ve C(n, n) = 1 gibi formüllerin tutarlı çalışmasını da sağlar."}},{"@type":"Question","name":"Tekrarlı permütasyon ile aynı elemanlı permütasyon aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tekrarlı permütasyon (n^r), her konumda aynı seçeneğin yeniden kullanılabildiği durumdur, örneğin 4 haneli PIN. Aynı elemanlı permütasyon ise elinizdeki nesnelerin bazılarının birbirinin aynısı olduğu durumdur, örneğin MISSISSIPPI harflerinin dizilimi; n! değeri tekrar sayılarının faktöriyellerine bölünür."}},{"@type":"Question","name":"Tekrarlı kombinasyon formülü nedir?","acceptedAnswer":{"@type":"Answer","text":"n türden, tekrara izin vererek ve sırayı önemsemeden r tane seçmenin yollarının sayısı C(n + r − 1, r)'dir. Örneğin 3 çeşit dondurmadan 5 top seçmek C(7, 5) = 21 yoldur."}},{"@type":"Question","name":"Olasılık modunda \"k\" kutusu ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"N sayılık havuzdan r tane çekildiğini ve sizin de r tane sayı seçtiğinizi varsayar; k, tam olarak kaç tanesinin çekilenlerle eşleşmesini istediğinizi gösterir. Boş bırakırsanız k = r alınır, yani hepsinin tutması olasılığı hesaplanır."}},{"@type":"Question","name":"Girdiğim sayılar sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bütün hesap tarayıcınızda JavaScript ile yapılır; hiçbir değer sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+    <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Kombinasyon, Permütasyon ve Faktöriyel Hesaplama</span></h1>
+      <p class="lead">C(n, r) kombinasyonu, P(n, r) permütasyonu, tekrarlı permütasyon ve kombinasyonu, faktöriyeli ve olasılığı tam sonuçla ve adım adım çözümle hesaplayın. 1000'e kadar faktöriyel, tüm basamaklarıyla. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="ba-field"><label for="mode">Hesap türü</label>
+        <select id="mode">
+          <option value="comb" selected>Kombinasyon C(n, r)</option>
+          <option value="perm">Permütasyon P(n, r)</option>
+          <option value="permrep">Tekrarlı permütasyon (n üzeri r)</option>
+          <option value="permsame">Aynı elemanlı permütasyon (kelime / tekrar sayıları)</option>
+          <option value="combrep">Tekrarlı kombinasyon</option>
+          <option value="fact">Faktöriyel n!</option>
+          <option value="prob">Olasılık: N sayıdan r seç (örn. 49'da 6)</option>
+        </select>
+      </div>
+      <div class="kp-grid">
+        <div class="ba-field" id="w-n"><label for="f-n" id="l-n">Eleman sayısı (n)</label><input id="f-n" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 49"></div>
+        <div class="ba-field" id="w-r"><label for="f-r" id="l-r">Seçilecek eleman sayısı (r)</label><input id="f-r" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 6"></div>
+        <div class="ba-field" id="w-k" hidden><label for="f-k" id="l-k">Tutturulması istenen adet (k)</label><input id="f-k" type="text" inputmode="numeric" autocomplete="off" placeholder="boşsa r kullanılır"></div>
+        <div class="ba-field" id="w-text" hidden><label for="f-text">Kelime ya da tekrar sayıları</label><input id="f-text" type="text" autocomplete="off" placeholder="örn. MISSISSIPPI ya da 4,4,2,1"><div class="hint">Harf yazarsanız aynı harfler gruplanır; rakam yazarsanız her sayı bir grubun tekrar adedidir.</div></div>
+      </div>
+      <div class="hint" style="font-size:.85rem;color:var(--ba-text-muted);margin-top:6px">Tam sayı yazın; en fazla 1.000. Binlik nokta kabul edilir (1.000).</div>
+      <div class="ba-actions"><button id="lotto" class="ba-btn" type="button">Örnek: 49'da 6 olasılığı</button></div>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="kp-box" aria-live="polite">
+        <h3 id="r-title">Sonuç</h3>
+        <p class="kp-main" id="r-main"></p>
+        <dl class="kp-results" id="r-rows"></dl>
+        <h4 style="margin:14px 0 0;font-size:.95rem">Adım adım çözüm</h4>
+        <ol class="kp-steps" id="steps"></ol>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kp-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <div class="kp-pascal-wrap">
+        <h3>Pascal üçgeni (ilk 15 satır)</h3>
+        <p class="hint" style="font-size:.9rem;color:var(--ba-text-muted);margin:0">Satır n, sütun r konumundaki sayı C(n, r) değeridir; ilk satır n = 0'dır. n 14 veya küçükse kombinasyon sonucunuz üçgende renkli gösterilir. Geniş satırlar için yana kaydırın.</p>
+        <div class="kp-pascal" id="pascal" role="group" aria-label="Pascal üçgeni"></div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="kombinasyon-permutasyon-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Hesap türü" listesinden yapmak istediğiniz hesabı seçin: kombinasyon, permütasyon, tekrarlı seçenekler, faktöriyel ya da olasılık. Seçime göre alt kısımdaki kutular otomatik değişir.</li>
+        <li>n ve r değerlerini tam sayı olarak yazın. Sonuç siz yazarken anında belirir; "Hesapla" tuşuna basmanız gerekmez. Aynı elemanlı permütasyonda bir kelime (örneğin MISSISSIPPI) ya da tekrar sayılarını (4,4,2,1) yazın.</li>
+        <li>Sonucun altındaki "Adım adım çözüm" bölümü formülde sizin sayılarınızı gösterir. Sonucu "Sonucu kopyala" ile panoya alabilirsiniz. Çok büyük sonuçlarda bilimsel gösterim ve basamak sayısı da verilir.</li>
+        <li>Olasılık modunda havuzdaki sayı adedini (N), çekilen adedi (r) ve tutturmak istediğiniz adedi (k) girin. "49'da 6" düğmesi ünlü piyango örneğini tek tıkla yükler.</li>
+      </ol>
+
+      <h2>Faktöriyel nedir?</h2>
+      <p>n sayısının faktöriyeli, 1'den n'e kadar olan tüm doğal sayıların çarpımıdır ve n! diye yazılır. 5! = 5 × 4 × 3 × 2 × 1 = 120'dir. Faktöriyel, n farklı nesnenin kaç farklı sırayla dizilebileceğini verir: 8 kişi bir sıraya 8! = 40.320 farklı biçimde oturabilir. Tanım gereği 0! = 1 kabul edilir; bunun nedeni, hiç nesneyi dizmenin tam bir yolu (boş dizilim) olmasıdır ve formüllerin tutarlı çalışmasını sağlar. Faktöriyel çok hızlı büyür: 10! = 3.628.800, 20! = 2.432.902.008.176.640.000 olur. 20!'i aşan değerler sıradan bir hesap makinesinin ve JavaScript'in normal sayı türünün güvenle tutabileceği tam sayı sınırını geçer. Bu araç BigInt kullandığı için 1000! gibi 2.568 basamaklı bir sayıyı bile tüm basamaklarıyla verir.</p>
+
+      <h2>Permütasyon: sıranın önemli olduğu seçim</h2>
+      <p>Permütasyon, n elemandan r tanesini sıralı olarak seçmenin yollarının sayısıdır. Sıra önemlidir; yani ABC ile CBA farklı sayılır. Formül P(n, r) = n! / (n − r)! şeklindedir. Pratikte bu, ilk terimden başlayıp r tane azalan sayıyı çarpmak demektir: P(5, 2) = 5 × 4 = 20. Beş kişilik bir gruptan bir başkan ve bir başkan yardımcısı seçerseniz 20 farklı sonuç vardır, çünkü iki göreve iki kişiyi sırayla atıyorsunuz. Tüm elemanları dizerseniz r = n olur ve P(n, n) = n! sonucunu bulursunuz.</p>
+
+      <h2>Kombinasyon: sıranın önemsiz olduğu seçim</h2>
+      <p>Kombinasyonda yalnızca kimlerin seçildiğine bakılır, sıraya bakılmaz. Formül C(n, r) = n! / (r! × (n − r)!) olarak yazılır ve permütasyonun r!'e bölünmüş hâlidir; çünkü seçilen r elemanın kendi aralarındaki r! sıralaması aynı grubu verir. 10 kişilik bir topluluktan 3 kişilik bir komite seçmek C(10, 3) = 120 yoldur. Aynı komiteyi başkan, sekreter ve üye olarak görevlendirmeniz gerekseydi sıra önemli olurdu ve P(10, 3) = 720 sonucuna ulaşırdınız. Ayrıca C(n, r) = C(n, n − r) simetrisi vardır: 10 kişiden 3'ünü seçmek, 7'sini dışarıda bırakmakla aynıdır. Araç bu simetriyi kullanıp daha az terimle çalışır.</p>
+      <table>
+        <thead><tr><th scope="col">Hesap</th><th scope="col">Formül</th><th scope="col">Örnek</th></tr></thead>
+        <tbody>
+          <tr><td>Permütasyon</td><td>n! / (n − r)!</td><td>P(5, 2) = 20</td></tr>
+          <tr><td>Kombinasyon</td><td>n! / (r! (n − r)!)</td><td>C(5, 2) = 10</td></tr>
+          <tr><td>Tekrarlı permütasyon</td><td>n^r</td><td>4 haneli PIN: 10^4 = 10.000</td></tr>
+          <tr><td>Aynı elemanlı permütasyon</td><td>n! / (n₁! n₂! …)</td><td>MISSISSIPPI: 11! / (4! 4! 2!) = 34.650</td></tr>
+          <tr><td>Tekrarlı kombinasyon</td><td>C(n + r − 1, r)</td><td>3 çeşitten 5 top: C(7, 5) = 21</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Tekrarlı seçimler</h2>
+      <p>Bazı problemlerde aynı eleman birden çok kez kullanılabilir. Dört haneli bir şifrede her hane için 10 rakam seçeneği vardır ve rakamlar tekrar edebilir; bu yüzden 10 × 10 × 10 × 10 = 10.000 olasılık bulunur. Bu, tekrarlı permütasyondur ve n^r ile hesaplanır. Aynı elemanların bulunduğu bir kümeyi dizmek ise başka bir sorudur: MISSISSIPPI kelimesindeki 11 harfin 4'ü I, 4'ü S, 2'si P, 1'i M olduğundan, birbirinden ayırt edilemeyen harflerin kendi aralarındaki yer değişimleri tekrar saymamak için n! değeri n₁! × n₂! × … ile bölünür ve 34.650 farklı dizilim çıkar. Son olarak tekrarlı kombinasyon, sırasız ve tekrara izin veren seçimdir: bir dondurmacıda 3 çeşit varken 5 top almanın yolu "yıldız ve çubuklar" yöntemiyle C(3 + 5 − 1, 5) = C(7, 5) = 21'dir.</p>
+
+      <div class="ba-ad" data-slot="kombinasyon-permutasyon-b" aria-label="Reklam"></div>
+
+      <h2>Pascal üçgeni ve binom katsayıları</h2>
+      <p>Pascal üçgeninin her sayısı, üstündeki iki sayının toplamıdır ve n. satırdaki sayılar C(n, 0), C(n, 1), …, C(n, n) değerleridir. Bu sayılara binom katsayıları denir; çünkü (a + b)^n açılımının katsayılarıdır: (a + b)^4 = a⁴ + 4a³b + 6a²b² + 4ab³ + b⁴. Üçgenin simetrik oluşu C(n, r) = C(n, n − r) kuralının görsel hâlidir. Satırların toplamı 2^n'dir; bu, n elemanlı bir kümenin 2^n alt kümesi olduğunu söyler. Sayfadaki üçgende ilk 15 satırı görebilir, kombinasyon sonucunuzun üçgendeki yerini renkli olarak izleyebilirsiniz.</p>
+
+      <h2>Olasılık: "49'da 6" örneği</h2>
+      <p>Olasılık hesabı çoğu zaman uygun durumların sayısını tüm durumların sayısına bölmektir ve her ikisi de kombinasyonla bulunur. Havuzda 49 sayı olduğunu ve bunlardan 6'sının çekildiğini düşünün. Altı sayının tamamını doğru bilmek için tüm olası çekilişlerin sayısı C(49, 6) = 13.983.816'dır; bir kolon doldurduğunuzda doğru olan tek bir kombinasyon olduğundan olasılık 1 / 13.983.816, yani yaklaşık yüzde 0,00000715'tir. Altıdan beşini tutturmak için C(6, 5) × C(43, 1) = 258 uygun durum vardır; olasılık yaklaşık 54.200'de 1'dir. Araç, "tutturulması istenen adet" kutusu sayesinde bu ara durumları da hesaplar. Bu sayılar yalnızca matematiksel bir bilgidir; kumar ya da şans oyunlarına teşvik amacı taşımaz ve herhangi bir oyunun kazanç garantisi değildir.</p>
+
+      <h2>Günlük hayattan örnekler</h2>
+      <ul>
+        <li><strong>Poker eli.</strong> 52 kartlık desteden 5 kart çekmek C(52, 5) = 2.598.960 farklı eldir; kartların geliş sırası önemli olmadığı için kombinasyon kullanılır.</li>
+        <li><strong>Yarış sıralaması.</strong> 8 yarışmacı arasından ilk 3'ün sıralı belirlenmesi P(8, 3) = 336 sonuç verir.</li>
+        <li><strong>Takım kurmak.</strong> 12 oyuncudan 5 kişilik bir takım C(12, 5) = 792 farklı biçimde kurulur.</li>
+        <li><strong>Bilgisayar şifresi.</strong> 26 harfli 6 karakterlik küçük harf şifresi 26^6 = 308.915.776 olasılık sunar; bu, tekrarlı permütasyondur.</li>
+        <li><strong>Oturma düzeni.</strong> Yuvarlak masa gibi özel durumlarda sayım farklıdır (n − 1)!; araçtaki n! doğrusal dizilim içindir.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Sıranın önemini gözden kaçırmak.</strong> "Seçmek" için kombinasyon, "sıralamak ya da görev dağıtmak" için permütasyon kullanın. Emin olamıyorsanız "iki seçim sıra farkıyla farklı sayılır mı?" diye sorun.</li>
+        <li><strong>r değerini n'den büyük girmek.</strong> Tekrarsız seçimde mümkün değildir; araç bu durumda hata verir. Tekrarlı seçeneklerde r, n'den büyük olabilir.</li>
+        <li><strong>0! değerini 0 sanmak.</strong> 0! = 1'dir.</li>
+        <li><strong>Aynı elemanları ayrı saymak.</strong> Kelimedeki tekrar eden harfler ayırt edilemiyorsa n!'i tekrar sayılarının faktöriyelleriyle bölmeniz gerekir.</li>
+        <li><strong>Büyük sayıları ondalık hesap makinesiyle bulmak.</strong> 20!'ten sonra yuvarlama kayıpları başlar; bu araç tam sonuç verir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Değerleriniz yalnızca tarayıcınızda işlenir; hiçbir sunucuya gönderilmez.</li>
+        <li><strong>Tam ve doğru sonuç.</strong> BigInt sayesinde yuvarlama olmaz; sonuç Türkçe binlik noktalarla yazılır.</li>
+        <li><strong>Adım adım çözüm.</strong> Formül sizin sayılarınızla gösterilir; ödev ve sınav hazırlığı için uygundur.</li>
+        <li><strong>Hepsi bir arada.</strong> Kombinasyon, permütasyon, tekrarlı seçimler, faktöriyel, olasılık ve Pascal üçgeni tek sayfada.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span>Sonuçlar bilgilendirme ve eğitim amaçlıdır. Olasılık değerleri şans oyunlarında kazanç anlamına gelmez; oyun oynama kararınızı bu hesaba dayandırmayın.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kombinasyon ile permütasyon arasındaki fark nedir?</summary><p>Permütasyonda seçilenlerin sırası önemlidir, kombinasyonda önemli değildir. C(n, r) = P(n, r) / r! ilişkisi vardır. Örneğin 5 kişiden 2 kişilik komite C(5, 2) = 10, aynı iki kişiye başkan ve yardımcısı görevi vermek P(5, 2) = 20 yoldur.</p></details>
+        <details><summary>C(49, 6) nasıl hesaplanır ve sonucu nedir?</summary><p>C(49, 6) = 49! / (6! × 43!) = (49 × 48 × 47 × 46 × 45 × 44) / (6 × 5 × 4 × 3 × 2 × 1) = 13.983.816'dır. Araç bu işlemi adım adım gösterir; "Örnek: 49'da 6 olasılığı" düğmesi aynı sayıdan olasılığı da verir.</p></details>
+        <details><summary>Faktöriyel en fazla kaça kadar hesaplanır?</summary><p>Araç 1000'e kadar faktöriyeli BigInt ile tüm basamaklarıyla hesaplar; 1000! yaklaşık 2.568 basamaklıdır. Bu sınır tarayıcınızı yavaşlatmamak için konmuştur.</p></details>
+        <details><summary>0! neden 1'dir?</summary><p>Hiçbir nesnenin dizilişi tek bir şekilde, yani boş dizilim olarak yapılabilir. Bu tanım, C(n, 0) = 1 ve C(n, n) = 1 gibi formüllerin tutarlı çalışmasını da sağlar.</p></details>
+        <details><summary>Tekrarlı permütasyon ile aynı elemanlı permütasyon aynı şey mi?</summary><p>Hayır. Tekrarlı permütasyon (n^r), her konumda aynı seçeneğin yeniden kullanılabildiği durumdur, örneğin 4 haneli PIN. Aynı elemanlı permütasyon ise elinizdeki nesnelerin bazılarının birbirinin aynısı olduğu durumdur, örneğin MISSISSIPPI harflerinin dizilimi; n! değeri tekrar sayılarının faktöriyellerine bölünür.</p></details>
+        <details><summary>Tekrarlı kombinasyon formülü nedir?</summary><p>n türden, tekrara izin vererek ve sırayı önemsemeden r tane seçmenin yollarının sayısı C(n + r − 1, r)'dir. Örneğin 3 çeşit dondurmadan 5 top seçmek C(7, 5) = 21 yoldur.</p></details>
+        <details><summary>Olasılık modunda "k" kutusu ne işe yarar?</summary><p>N sayılık havuzdan r tane çekildiğini ve sizin de r tane sayı seçtiğinizi varsayar; k, tam olarak kaç tanesinin çekilenlerle eşleşmesini istediğinizi gösterir. Boş bırakırsanız k = r alınır, yani hepsinin tutması olasılığı hesaplanır.</p></details>
+        <details><summary>Girdiğim sayılar sunucuya gönderiliyor mu?</summary><p>Hayır. Bütün hesap tarayıcınızda JavaScript ile yapılır; hiçbir değer sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul>
+        <li><a href="../istatistik-hesapla/">Ortalama, Medyan, Mod, Standart Sapma</a> — veri kümesi istatistikleri</li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a> — oran ve yüzde işlemleri</li>
+        <li><a href="../rastgele-sayi/">Rastgele Sayı Üretici</a> — çekiliş ve rastgele seçim</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Özel hesaplama aracı ya da kurumsal web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kombinasyon-permutasyon-c" aria-label="Reklam"></div>
+    </div>
+
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

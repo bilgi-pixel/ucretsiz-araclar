@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Ölü Piksel Testi – Ekran Testi, Piksel Sıkışması ve Ghosting Kontrolü (Ücretsiz)</title>
+  <meta name="description" content="Ölü piksel testi: tam ekran siyah, beyaz, kırmızı, yeşil, mavi renklerle ekranınızı deneyin. Gradyan, ızgara, hareket ve kontrast testleri ile piksel sıkışması aracı. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/olu-piksel-testi/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .op-block { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; margin: 0 0 18px; background: var(--ba-surface); }
+    .op-block h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .op-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 12px; }
+    .op-row .ba-field { flex: 1 1 180px; min-width: 0; }
+    .op-note { font-size: .9rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .op-warn { margin: 0 0 12px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .93rem; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .op-warn { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; } }
+
+    /* Tam ekran katmanı: sayfadaki her şeyin (reklam dahil) üstünü kaplar. */
+    #px-stage { position: fixed; inset: 0; z-index: 2147483000; background: #000; outline: none; overflow: hidden; cursor: pointer; }
+    #px-content { position: absolute; inset: 0; }
+    #px-hint { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); max-width: 92vw; padding: 8px 14px; border-radius: 8px; background: rgba(0,0,0,.75); color: #fff; font-size: .95rem; text-align: center; opacity: 0; transition: opacity .3s; pointer-events: none; border: 1px solid rgba(255,255,255,.4); }
+    #px-hint.is-visible { opacity: 1; }
+    #px-fixbox { position: absolute; background: #f00; }
+    #px-fixbox::after { content: attr(data-left); position: absolute; left: 0; top: 100%; margin-top: 4px; color: #888; font: .85rem monospace; }
+    .px-contrast { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 12px; padding: 16px; }
+    .px-contrast div { width: 80px; height: 80px; display: grid; place-items: center; color: #444; font: .8rem monospace; }
+    .px-motion-box { position: absolute; top: 40%; left: 0; width: 120px; height: 120px; background: #fff; border: 4px solid #000; }
+    /* Tam ekran testi sırasında reklamlar görünmez. */
+    body.px-full .ba-ad, body.px-full .ba-topbar, body.px-full header, body.px-full main, body.px-full footer { visibility: hidden; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Ölü Piksel ve Ekran Testi – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/olu-piksel-testi/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#donustur" class="ba-nav-optional">Dönüştür</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1><span class="ba-grad">Ölü Piksel Testi ve Ekran Testi</span></h1>
+      <p class="lead">Ekranınızı tam ekran tek renklerle, gradyan ve ızgara desenleriyle, hareket ve kontrast sınamalarıyla kontrol edin; ölü, sıkışmış ya da parlak piksel varsa bulun. Tüm testler tarayıcınızda çalışır, hiçbir veri toplanmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+
+      <div class="op-block" aria-labelledby="h-colors">
+        <h3 id="h-colors">1. Renk döngüsü (ölü piksel testi)</h3>
+        <p class="op-note" style="margin-top:0">Siyah, beyaz, kırmızı, yeşil, mavi ve üç gri ton sırayla tam ekran gösterilir. Tıklayın veya sağ/sol ok tuşuyla geçin; ESC ile çıkın. Her renkte ekranı dikkatle tarayın.</p>
+        <div class="ba-actions"><button class="ba-btn ba-btn-primary" type="button" data-mode="colors" id="start-colors">Renk döngüsünü başlat</button></div>
+      </div>
+
+      <div class="op-block" aria-labelledby="h-patterns">
+        <h3 id="h-patterns">2. Desen testleri</h3>
+        <div class="op-row">
+          <div class="ba-field"><label for="motion-speed">Hareket hızı</label>
+            <select id="motion-speed"><option value="300">Yavaş</option><option value="600" selected>Orta</option><option value="1200">Hızlı</option></select></div>
+        </div>
+        <div class="ba-actions" style="margin-top:0">
+          <button class="ba-btn" type="button" data-mode="gradient" id="start-gradient">Gradyan (banding)</button>
+          <button class="ba-btn" type="button" data-mode="grid" id="start-grid">Izgara</button>
+          <button class="ba-btn" type="button" data-mode="contrast" id="start-contrast">Kontrast (koyu gri)</button>
+          <button class="ba-btn" type="button" data-mode="motion" id="start-motion">Hareket (ghosting)</button>
+        </div>
+      </div>
+
+      <div class="op-block" aria-labelledby="h-fix">
+        <h3 id="h-fix">3. Piksel sıkışması düzeltme aracı</h3>
+        <p class="op-warn"><strong>Işığa duyarlılık uyarısı:</strong> Bu araç seçilen bölgede renkleri hızla değiştirir. Epilepsi veya ışığa duyarlılık öykünüz varsa kullanmayın. Garanti yoktur; sorun donanım arızasıysa düzelmez.</p>
+        <div class="op-row">
+          <div class="ba-field"><label for="fix-size">Bölge boyutu</label>
+            <select id="fix-size"><option value="100">100 × 100 piksel</option><option value="200" selected>200 × 200 piksel</option><option value="400">400 × 400 piksel</option></select></div>
+          <div class="ba-field"><label for="fix-minutes">Süre</label>
+            <select id="fix-minutes"><option value="1">1 dakika</option><option value="5" selected>5 dakika</option><option value="10">10 dakika</option><option value="30">30 dakika</option></select></div>
+        </div>
+        <div class="ba-field"><label><input type="checkbox" id="fix-ack"> Uyarıyı okudum; ışığa duyarlı değilim ve garanti olmadığını anlıyorum.</label></div>
+        <div id="fix-error" class="ba-error" role="alert"></div>
+        <div class="ba-actions"><button class="ba-btn" type="button" data-mode="fixer" id="start-fixer">Düzeltmeyi başlat</button></div>
+        <p class="op-note">Başladıktan sonra renkli kutuyu sıkışan pikselin üstüne taşımak için ekrana tıklayın. ESC ile her an durdurabilirsiniz.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="olu-piksel-testi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Ölü piksel testi nasıl yapılır?</h2>
+      <ol class="ba-steps">
+        <li>Ekranı temizleyin: kuru, tiftiksiz bir bezle toz ve parmak izlerini silin. Aksi hâlde toz zerreleri ölü piksel gibi görünebilir.</li>
+        <li>Odayı biraz loşlaştırın ve ekran parlaklığını yüksek bir seviyeye getirin. "Renk döngüsünü başlat" düğmesine basın; sayfa tam ekrana geçer.</li>
+        <li>Siyah ekranda parlak noktalara, beyaz ekranda koyu noktalara, kırmızı, yeşil ve mavi ekranlarda ise rengi tutmayan noktalara bakın. Gerekirse yüzünüzü ekrana yaklaştırın.</li>
+        <li>Sağ ok tuşu ya da tıklamayla bir sonraki renge geçin; sol ok geri döner. İşiniz bitince ESC ile çıkın.</li>
+        <li>Şüpheli bir nokta bulduysanız yerini not edin ya da telefonla fotoğraflayın; garanti başvurusunda işinize yarar.</li>
+      </ol>
+
+      <h2>Ölü, sıkışmış ve parlak piksel arasındaki fark</h2>
+      <p>Bir ekran milyonlarca küçük noktadan oluşur ve her nokta kırmızı, yeşil ve mavi üç alt pikselden meydana gelir. Bu alt piksellerin her biri küçük bir transistörle kontrol edilir. Transistör bozulduğunda ya da hiç çalışmadığında farklı görünümler ortaya çıkar. <strong>Ölü piksel</strong> hiç ışık vermez ve tüm renklerde siyah bir nokta olarak görünür; beyaz ekranda en rahat fark edilir. <strong>Sıkışmış piksel</strong> ise tek bir renkte takılı kalır; örneğin hep yeşil ya da hep kırmızı yanar, diğer renklerde farklı görünür. <strong>Parlak piksel</strong> sürekli beyaz yanar ve siyah ekranda ışıklı bir nokta gibi göze çarpar. Bu üç durumu ayırt etmenin yolu, ekranı sırayla farklı renklere boyamaktır; testin tam olarak yaptığı da budur.</p>
+      <p>Siyah ekran parlak ve sıkışmış piksellerin, beyaz ekran ölü piksellerin, kırmızı yeşil ve mavi ekranlar ise tek alt pikselin arızasının ortaya çıktığı yerdir. Üç gri ton ise bazı panellerde görülen leke ve eşitsizliklerin fark edilmesini kolaylaştırır.</p>
+
+      <h2>Gradyan, ızgara, hareket ve kontrast testleri</h2>
+      <p>Piksel arızası dışında ekranlar başka kusurlar da gösterebilir ve bu desenler onları bulmanıza yardım eder. <strong>Gradyan testi</strong> siyahtan beyaza ya da bir renge yumuşak geçiş çizer. Geçiş pürüzsüz değil de belirgin bantlar hâlinde görünüyorsa buna banding denir; ucuz paneller ve düşük renk derinliği bunun nedenidir. Gradyanda renk ağırlıklı bir leke ya da bir kenarın daha aydınlık olması ise panelin tekdüze aydınlatılmadığını gösterir.</p>
+      <p><strong>Izgara testi</strong> ekrana ince, düzenli çizgiler çizer. Çizgilerin kalınlığı bazı bölgelerde değişiyor, bükülüyor ya da titriyorsa ölçekleme veya geometri sorunu olabilir. Monitörün kendi ayar menüsünde "otomatik ayar" varsa bu testten sonra denemeye değer.</p>
+      <p><strong>Hareket testi</strong> ortada ekranı geçen bir kutuyu hareket ettirir. Kutunun arkasında soluk bir iz ya da gölge kalıyorsa panelin tepki süresi yetersiz demektir; buna hayalet görüntü (ghosting) denir ve özellikle oyun oynarken rahatsız eder. Hız seçeneğini değiştirerek izin ne kadar belirginleştiğini inceleyin. <strong>Kontrast testi</strong> ise siyah zemin üzerinde siyaha çok yakın gri kutular gösterir. Numaralı kutulardan hangisinden itibaren zeminden ayırt edebildiğinizi not edin; ilk birkaç kutuyu seçebiliyorsanız panelin karanlık ayrıntı yeteneği iyidir. Hiçbirini göremiyorsanız parlaklık, kontrast ya da gama ayarınızı gözden geçirin.</p>
+
+      <div class="ba-ad" data-slot="olu-piksel-testi-b" aria-label="Reklam"></div>
+
+      <h2>Piksel sıkışması düzeltme aracı gerçekten işe yarar mı?</h2>
+      <p>Bu sayfadaki düzeltme aracı, seçtiğiniz bölgede kırmızı, yeşil, mavi, beyaz ve siyahı hızla art arda göstererek sıkışmış alt pikselin "silkelenmesini" amaçlar. Mantık şudur: Bazen bir alt piksel, sürekli aynı gerilimde kaldığı için takılı kalır ve yoğun renk değişimi onu serbest bırakabilir. Bu yöntem yazılımla uygulanabilen tek müdahaledir ve bazı kullanıcılar için işe yaramıştır; ancak <strong>hiçbir garanti yoktur</strong>. Piksel fiziksel olarak bozulmuşsa, yani transistör ya da bağlantı kopuksa, hiçbir yazılım onu onaramaz. Ölü pikselin düzelme ihtimali sıkışmış pikselinkinden çok daha düşüktür.</p>
+      <p>Kullanım adımları kısadır: bölge boyutunu ve süreyi seçin, uyarıyı onaylayın, düzeltmeyi başlatın ve renkli kutuyu sorunlu pikselin üzerine taşıyın. Süre dolunca ekran siyaha döner; ardından renk döngüsüyle sonucu yeniden kontrol edin. Çok uzun süre çalıştırmak gerekmez; çoğu zaman on dakikadan sonra fark görülmüyorsa devam etmenin yararı yoktur. Hızlı renk değişimi ışığa duyarlı kişilerde nöbet tetikleyebileceği için uyarıyı ciddiye alın; araç bu yüzden saniyede yaklaşık on beş değişim yapacak biçimde yavaşlatılmıştır ve sizden açık onay ister. Ekrana bastırarak ya da sert nesnelerle masaj yaparak düzeltme yöntemlerini önermiyoruz; panele kalıcı zarar verebilir.</p>
+
+      <h2>Ölü piksel garanti kapsamı</h2>
+      <p>Ölü piksel bulduğunuzda ilk soru, üreticinin bunu garanti kapsamında kabul edip etmeyeceğidir. Cevap markaya ve modele göre değişir. Birçok üretici ISO 9241-307 standardındaki piksel hatası sınıflarına benzer bir politika uygular: Sınıf I paneller hiç hatalı piksele izin vermez, Sınıf II paneller ise milyon piksel başına belirli sayıda ölü, parlak ya da sıkışmış pikseli kabul edilebilir sayar. Bu nedenle tek bir ölü piksel çoğu zaman garantiyi doğurmaz; sınır aşıldığında ya da piksel ekranın merkezine yakın olduğunda değişim hakkı doğabilir.</p>
+      <p>Satın aldığınız mağazanın ve üreticinin garanti belgesinde "piksel politikası" bölümüne bakın. Türkiye'de tüketici hakları açısından ayıplı mal hükümleri de devrededir; teslimden itibaren belirli bir süre içinde ayıp bildirimi yapılırsa onarım, değişim ya da bedel iadesi talep edilebilir. Sürelerin ve koşulların güncel hâli için Ticaret Bakanlığı ve tüketici hakem heyeti duyurularına bakın; bu sayfadaki bilgiler hukuki tavsiye değildir. Yeni bir monitör ya da dizüstü bilgisayar alırsanız, iade süresi dolmadan ekranı bu testle mutlaka kontrol edin; çoğu satıcı ilk günlerde değişimi çok daha kolay kabul eder. Başvuruda ekranın fotoğrafını, seri numarasını ve fatura bilgisini hazır bulundurun.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Hiçbir şey kaydedilmez.</strong> Testler yalnızca ekranınızı boyar; sunucu, çerez ya da analiz yoktur.</li>
+        <li><strong>Tam ekran, reklamsız test.</strong> Test başladığında reklamlar görünmez, ekranın tamamı size aittir.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet gerekmez.</li>
+        <li><strong>Dürüst bilgi.</strong> Düzeltme aracının sınırlarını açıkça yazıyoruz; sahte vaat vermiyoruz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Ölü piksel testi nasıl yapılır?</summary><p>Tam ekran renk döngüsünü başlatın ve siyah, beyaz, kırmızı, yeşil ve mavi ekranlarda sırayla ekranı gözle tarayın. Beyaz ekranda koyu nokta ölü piksele, siyah ekranda parlak nokta parlak piksele işaret eder. Tek bir renkte farklı görünen nokta sıkışmış pikseldir.</p></details>
+        <details><summary>Bu test telefonda ve tablette de çalışır mı?</summary><p>Evet. Telefonda ekrana dokunarak renkleri değiştirirsiniz. Çıkmak için tarayıcının geri hareketini ya da tam ekran çıkış yöntemini kullanın; klavyesi olan cihazlarda ESC yeterlidir. Parlaklığı yükseltmeyi unutmayın.</p></details>
+        <details><summary>Sıkışmış pikseli bu araç düzeltir mi?</summary><p>Garanti edilemez. Hızlı renk değişimi bazı sıkışmış alt pikselleri serbest bırakabilir, ancak donanım arızasını gideremez. Denemek zarar vermez ama kalıcı sonuç beklemeyin.</p></details>
+        <details><summary>Düzeltme aracı ekrana zarar verir mi?</summary><p>Normal kullanımda vermez; ekran zaten saniyede onlarca kez farklı görüntü çizmek için tasarlanmıştır. Yine de çok uzun süre çalıştırmayın, parlaklığı makul tutun ve araç çalışırken ekrana dokunmayın ya da bastırmayın.</p></details>
+        <details><summary>Işığa duyarlıysam bu sayfayı kullanabilir miyim?</summary><p>Renk döngüsü, gradyan, ızgara ve kontrast testlerinde hızlı yanıp sönme yoktur. Hareket testi ve özellikle düzeltme aracında hızlı değişim vardır. Epilepsi ya da ışığa duyarlılık öykünüz varsa bu iki testi kullanmayın ve doktorunuza danışın.</p></details>
+        <details><summary>Testten nasıl çıkarım?</summary><p>Klavyede ESC tuşuna basın. Tarayıcının kendi tam ekran çıkışı da testi kapatır. Çıkınca odak başlattığınız düğmeye geri döner, böylece kaldığınız yerden devam edebilirsiniz.</p></details>
+        <details><summary>Tek bir ölü piksel için ekranı değiştirtebilir miyim?</summary><p>Üreticinin piksel politikasına bağlıdır. Birçok marka belirli sayıda hatalı pikseli kabul edilebilir sayar. Garanti belgesini ve mağazanın iade koşullarını kontrol edin; yeni aldıysanız hemen başvurmak işinizi kolaylaştırır.</p></details>
+        <details><summary>Ekranda leke ya da sızıntı görürsem ne yapmalıyım?</summary><p>Siyah ekranda köşelerden gelen ışık sızıntısı (backlight bleeding) ve gradyanda lekelenme, panel kalitesiyle ilgilidir. Parlaklığı düşürüp sorunun azalıp azalmadığına bakın; belirgin ise garanti kapsamında değerlendirilebilir, bu konuda satıcıyla iletişime geçin.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../ekran-cozunurlugu/">Ekran Çözünürlüğü ve Tarayıcı Bilgisi</a></li>
+        <li><a href="../kamera-test/">Kamera ve Mikrofon Testi</a></li>
+        <li><a href="../renk-secici/">Renk Seçici</a></li>
+      </ul>
+      <p class="ba-note">Ekipman seçimi, kurulum ya da kurumsal bilişim desteği için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibiyle görüşebilirsiniz.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="olu-piksel-testi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <!-- Tam ekran test katmanı: yalnızca test sırasında görünür; reklam içermez. -->
+  <div id="px-stage" tabindex="-1" role="dialog" aria-label="Tam ekran ekran testi. Sonraki için tıklayın veya ok tuşlarını kullanın, çıkmak için ESC" hidden>
+    <div id="px-content"></div>
+    <div id="px-fixbox" hidden></div>
+    <div id="px-hint" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
