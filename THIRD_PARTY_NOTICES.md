@@ -17,3 +17,4 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | tesseract.js-core | 7.0.0 | Apache-2.0 | Resimden Yazıya (OCR) |
 | tessdata_fast (tur, eng) | 4.1.0 | Apache-2.0 | Resimden Yazıya (OCR) |
 | jsQR | 1.4.0 | Apache-2.0 | QR Kod Okuyucu |
+| IBM Plex Sans / Mono | 2023 (Google Fonts kopyası) | SIL OFL 1.1 | Tüm sayfalar (tema yazı tipi) |

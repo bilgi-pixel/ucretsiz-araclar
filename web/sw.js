@@ -2,10 +2,12 @@
    Amaç: kurulu uygulama (PWA) çevrimdışı çalışsın. Ağ varsa her zaman ağdan alır (güncel içerik),
    ağ yoksa önbellekten sunar. Hiçbir kullanıcı dosyası önbelleğe girmez; yalnızca sitenin kendi
    HTML/CSS/JS/vendor dosyaları saklanır. Reklam istekleri (googlesyndication) hiç önbelleklenmez. */
-const VERSION = 'ba-v2';
+const VERSION = 'ba-v3';
 const ROOT = new URL('./', self.location.href).pathname;
 const SHELL = ['', 'index.html', 'assets/css/ba.css', 'assets/js/ba.js', 'assets/js/hub.js', 'assets/js/ads.js',
-  'assets/js/pwa.js', 'assets/img/logo.png', 'assets/img/favicon.svg', '404.html', 'cevrimdisi.html']
+  'assets/js/pwa.js', 'assets/img/logo.png', 'assets/img/favicon.svg', '404.html', 'cevrimdisi.html',
+  'vendor/fonts/ibm-plex/IBM-Plex-Sans-latin.woff2', 'vendor/fonts/ibm-plex/IBM-Plex-Sans-latin-ext.woff2',
+  'vendor/fonts/ibm-plex/IBM-Plex-Mono-400-latin.woff2', 'vendor/fonts/ibm-plex/IBM-Plex-Mono-400-latin-ext.woff2']
   .map((p) => ROOT + p);
 
 self.addEventListener('install', (e) => {
