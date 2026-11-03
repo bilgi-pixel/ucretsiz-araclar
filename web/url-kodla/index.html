@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL Kodla / Çöz ve Metin Kodlama – HTML Entity, Unicode, UTM, Slug (Ücretsiz)</title>
+  <meta name="description" content="URL kodlama ve çözme (encodeURIComponent, encodeURI), HTML entity, Unicode kaçış, URL ayrıştırıcı, UTM oluşturucu ve Türkçe slug aracı. Ücretsiz, kayıt yok, metin yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/url-kodla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .uk-area label { display: block; font-weight: 600; margin: 16px 0 6px; }
+    .uk-area input[type=text], .uk-area input[type=number], .uk-area textarea, .uk-area select { width: 100%; font-family: var(--ba-mono); font-size: .92rem; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: inherit; }
+    .uk-area textarea { min-height: 120px; line-height: 1.5; resize: vertical; }
+    .uk-area input:focus, .uk-area textarea:focus, .uk-area select:focus { border-color: var(--ba-primary); }
+    .uk-area label.uk-check { display: flex; align-items: center; gap: 8px; font-weight: 400; margin: 12px 0 0; min-height: 32px; }
+    .uk-area label.uk-check input { width: auto; }
+    .uk-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--ba-border); }
+    .uk-tabs button { background: none; border: 1px solid transparent; border-bottom: 0; padding: 10px 14px; min-height: 44px; font: inherit; font-weight: 600; color: var(--ba-text-2); cursor: pointer; border-radius: var(--ba-radius-sm) var(--ba-radius-sm) 0 0; }
+    .uk-tabs button[aria-selected=true] { color: var(--ba-primary); border-color: var(--ba-border); background: var(--ba-surface); margin-bottom: -1px; }
+    .uk-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+    .uk-btns .ba-btn { min-height: 44px; }
+    #copied { color: var(--ba-success); font-weight: 600; font-size: .9rem; }
+    .uk-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 8px; margin-top: 8px; }
+    .uk-row input { min-width: 0; }
+    @media (max-width: 480px) { .uk-row { grid-template-columns: 1fr; } }
+    .uk-parts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 12px 0; font-size: .92rem; }
+    .uk-parts dt { font-weight: 600; color: var(--ba-text-2); }
+    .uk-parts dd { margin: 0; font-family: var(--ba-mono); overflow-wrap: anywhere; }
+    .uk-note { font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .uk-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .92rem; }
+    .uk-table th, .uk-table td { border: 1px solid var(--ba-border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+    .uk-table code { font-family: var(--ba-mono); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"URL Kodla / Çöz ve Metin Kodlama Araçları – Bilişim Ajans","applicationCategory":"DeveloperApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/url-kodla/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1>URL Kodla / Çöz ve Metin Kodlama Araçları</h1>
+      <p class="lead">URL kodlama ve çözme, HTML entity, Unicode kaçış, adres ayrıştırma, UTM bağlantısı ve URL dostu slug. Altı küçük araç tek sayfada, Türkçe karakterlerle sorunsuz çalışır. Metniniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool uk-area" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="uk-tabs" role="tablist" aria-label="Araç seçimi">
+        <button id="tab-url" role="tab" type="button" aria-selected="true" aria-controls="panel-url">URL kodla/çöz</button>
+        <button id="tab-html" role="tab" type="button" aria-selected="false" aria-controls="panel-html" tabindex="-1">HTML entity</button>
+        <button id="tab-uni" role="tab" type="button" aria-selected="false" aria-controls="panel-uni" tabindex="-1">Unicode kaçış</button>
+        <button id="tab-parse" role="tab" type="button" aria-selected="false" aria-controls="panel-parse" tabindex="-1">URL ayrıştır</button>
+        <button id="tab-utm" role="tab" type="button" aria-selected="false" aria-controls="panel-utm" tabindex="-1">UTM</button>
+        <button id="tab-slug" role="tab" type="button" aria-selected="false" aria-controls="panel-slug" tabindex="-1">Slug</button>
+      </div>
+
+      <div id="panel-url" role="tabpanel" aria-labelledby="tab-url">
+        <label for="u-in">Metin ya da kodlanmış metin</label>
+        <textarea id="u-in" spellcheck="false" placeholder="örnek: çay &amp; şeker"></textarea>
+        <label class="uk-check"><input type="checkbox" id="u-plus"> Boşluk + işaretiyle yazılsın / + işareti boşluk sayılsın (form kodlaması)</label>
+        <div class="uk-btns" role="group" aria-label="İşlemler">
+          <button id="u-enc" class="ba-btn ba-btn-primary" type="button">Kodla (encodeURIComponent)</button>
+          <button id="u-encuri" class="ba-btn" type="button">Kodla (encodeURI)</button>
+          <button id="u-dec" class="ba-btn" type="button">Çöz</button>
+        </div>
+        <label for="u-out">Sonuç</label>
+        <textarea id="u-out" readonly spellcheck="false"></textarea>
+        <div class="uk-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="u-out">Kopyala</button></div>
+        <p class="uk-note"><strong>encodeURIComponent</strong> parça kodlar: ? &amp; = / # gibi ayraçlar da kodlanır (parametre değerleri için). <strong>encodeURI</strong> tam adres kodlar: ayraçlar korunur, yalnızca boşluk ve Türkçe karakterler gibi geçersiz karakterler kodlanır.</p>
+      </div>
+
+      <div id="panel-html" role="tabpanel" aria-labelledby="tab-html" hidden>
+        <label for="h-in">Metin ya da entity içeren metin</label>
+        <textarea id="h-in" spellcheck="false" placeholder="örnek: &lt;b&gt;Çay &amp; Şeker&lt;/b&gt;"></textarea>
+        <label class="uk-check"><input type="checkbox" id="h-all"> Türkçe karakterler dahil ASCII dışı her karakteri de kodla (&amp;#231; biçiminde)</label>
+        <div class="uk-btns" role="group" aria-label="İşlemler">
+          <button id="h-enc" class="ba-btn ba-btn-primary" type="button">Entity'ye çevir</button>
+          <button id="h-dec" class="ba-btn" type="button">Entity'yi çöz</button>
+        </div>
+        <label for="h-out">Sonuç</label>
+        <textarea id="h-out" readonly spellcheck="false"></textarea>
+        <div class="uk-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="h-out">Kopyala</button></div>
+      </div>
+
+      <div id="panel-uni" role="tabpanel" aria-labelledby="tab-uni" hidden>
+        <label for="x-in">Metin ya da \uXXXX kaçışlı metin</label>
+        <textarea id="x-in" spellcheck="false" placeholder="örnek: çay şeker  ya da  çay şeker"></textarea>
+        <label class="uk-check"><input type="checkbox" id="x-all"> ASCII karakterleri de kaçır</label>
+        <div class="uk-btns" role="group" aria-label="İşlemler">
+          <button id="x-enc" class="ba-btn ba-btn-primary" type="button">Metin → \u kaçış</button>
+          <button id="x-dec" class="ba-btn" type="button">\u kaçış → metin</button>
+        </div>
+        <label for="x-out">Sonuç</label>
+        <textarea id="x-out" readonly spellcheck="false"></textarea>
+        <div class="uk-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="x-out">Kopyala</button></div>
+      </div>
+
+      <div id="panel-parse" role="tabpanel" aria-labelledby="tab-parse" hidden>
+        <label for="p-in">Tam adres</label>
+        <input id="p-in" type="text" spellcheck="false" autocomplete="off" placeholder="https://ornek.com/ara?q=%C3%A7ay&amp;sayfa=2#sonuc">
+        <div class="uk-btns"><button id="p-go" class="ba-btn ba-btn-primary" type="button">Ayrıştır</button></div>
+        <div id="p-box" hidden>
+          <dl id="p-parts" class="uk-parts" aria-label="Adres parçaları"></dl>
+          <div class="ba-field"><strong id="p-lbl">Sorgu parametreleri</strong></div>
+          <div id="p-rows" role="group" aria-labelledby="p-lbl"></div>
+          <p id="p-empty" class="uk-note" hidden>Bu adreste sorgu parametresi yok. "Parametre ekle" ile yenisini oluşturabilirsiniz.</p>
+          <div class="uk-btns"><button id="p-add" class="ba-btn" type="button">Parametre ekle</button></div>
+          <label for="p-new">Yeni adres</label>
+          <textarea id="p-new" readonly spellcheck="false" style="min-height:80px"></textarea>
+          <div class="uk-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="p-new">Kopyala</button></div>
+        </div>
+      </div>
+
+      <div id="panel-utm" role="tabpanel" aria-labelledby="tab-utm" hidden>
+        <label for="m-url">Sayfa adresi</label>
+        <input id="m-url" type="text" spellcheck="false" autocomplete="off" placeholder="https://ornek.com/kampanya">
+        <label for="m-source">Kaynak (utm_source) *</label>
+        <input id="m-source" type="text" autocomplete="off" placeholder="google, bulten, instagram">
+        <label for="m-medium">Ortam (utm_medium) *</label>
+        <input id="m-medium" type="text" autocomplete="off" placeholder="cpc, eposta, sosyal">
+        <label for="m-campaign">Kampanya (utm_campaign) *</label>
+        <input id="m-campaign" type="text" autocomplete="off" placeholder="yaz-indirimi">
+        <label for="m-term">Anahtar kelime (utm_term, isteğe bağlı)</label>
+        <input id="m-term" type="text" autocomplete="off">
+        <label for="m-content">İçerik (utm_content, isteğe bağlı)</label>
+        <input id="m-content" type="text" autocomplete="off" placeholder="mavi-buton">
+        <label class="uk-check"><input type="checkbox" id="m-norm" checked> Değerleri düzenle: küçük harf, boşluk yerine tire, Türkçe karakterler ASCII</label>
+        <label for="m-out">UTM'li adres</label>
+        <textarea id="m-out" readonly spellcheck="false" style="min-height:80px"></textarea>
+        <div class="uk-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="m-out">Kopyala</button></div>
+      </div>
+
+      <div id="panel-slug" role="tabpanel" aria-labelledby="tab-slug" hidden>
+        <label for="s-in">Başlık ya da metin</label>
+        <input id="s-in" type="text" autocomplete="off" placeholder="örnek: Çocuklar İçin Şeker Hastalığı Rehberi">
+        <label for="s-sep">Ayraç</label>
+        <select id="s-sep"><option value="-" selected>Tire (-)</option><option value="_">Alt çizgi (_)</option></select>
+        <label for="s-max">En çok uzunluk (0 = sınırsız)</label>
+        <input id="s-max" type="number" min="0" max="200" value="0" inputmode="numeric">
+        <label class="uk-check"><input type="checkbox" id="s-and" checked> "&amp;" işaretini "ve" yap</label>
+        <label for="s-out">Slug</label>
+        <input id="s-out" type="text" readonly>
+        <div class="uk-btns"><button class="ba-btn ba-btn-primary" type="button" data-copy="s-out">Kopyala</button></div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <span id="copied" role="status"></span>
+    </section>
+
+    <div class="ba-ad" data-slot="url-kodla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>URL kodlama nedir, neden gerekir?</h2>
+      <p>İnternet adresleri yalnızca sınırlı bir karakter kümesiyle yazılabilir: harfler, rakamlar ve birkaç işaret. Boşluk, Türkçe karakterler, emoji ya da &amp; ve ? gibi adreste özel anlamı olan işaretler bir adresin içinde olduğu gibi yer alamaz. Bu karakterler "yüzde kodlaması" (percent-encoding) denen yöntemle, önce UTF-8 baytlarına çevrilip her bayt %XX biçiminde yazılarak adrese eklenir. Örneğin "çay" sözcüğü <code>%C3%A7ay</code> olur; çünkü "ç" harfi UTF-8'de iki bayttır (C3 A7). Tarayıcıların adres çubuğunda Türkçe karakterleri okunur gösterdiğini görürsünüz, ama arka planda gönderilen adres kodlanmış hâldedir.</p>
+      <p>Bir sorgu parametresine değer eklerken kodlamayı atlarsanız adres bozulabilir. "çay &amp; şeker" değerini <code>?q=çay &amp; şeker</code> diye yazarsanız sunucu "&amp;" işaretini yeni bir parametrenin başlangıcı sayar ve "şeker" ayrı bir parametre olarak okunur. Doğru yazım <code>?q=%C3%A7ay%20%26%20%C5%9Feker</code> biçimindedir. Bu sayfadaki araç bu işi tek tıkla yapar ve ters yönde de çözer.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki sekmelerden ihtiyacınız olan aracı seçin: URL kodla/çöz, HTML entity, Unicode kaçış, URL ayrıştır, UTM ya da Slug. Sekmeler klavyede sağ ve sol ok tuşlarıyla da gezilir.</li>
+        <li>Metni kutuya yazın ya da yapıştırın. URL ayrıştırıcı, UTM ve slug araçları yazdıkça canlı çalışır; kodlama araçlarında işlem düğmesine basarsınız.</li>
+        <li>Sonuç alttaki kutuda görünür. "Kopyala" düğmesiyle panoya alıp kodunuza, e-posta bülteninize ya da reklam panelinize yapıştırın.</li>
+        <li>Bir hata olursa kırmızı uyarıda ne yanlış olduğu ve nasıl düzelteceğiniz yazar. Örneğin geçersiz bir % dizisi, protokolü olmayan adres ya da eksik UTM alanı.</li>
+      </ol>
+
+      <h2>encodeURIComponent ve encodeURI farkı</h2>
+      <p>JavaScript'te iki ayrı kodlama işlevi vardır ve karıştırmak yaygın bir hatadır. <strong>encodeURIComponent</strong> adresin bir parçasını, örneğin tek bir parametre değerini kodlamak içindir. Adreste özel anlamı olan <code>; , / ? : @ &amp; = + $ #</code> karakterlerini de kodlar. <strong>encodeURI</strong> ise elinizdeki tam adresi kodlamak içindir; adres yapısını bozmamak için bu ayraçları olduğu gibi bırakır ve yalnızca boşluk, Türkçe harf gibi adreste bulunamayacak karakterleri dönüştürür.</p>
+      <table class="uk-table">
+        <thead><tr><th scope="col">Girdi</th><th scope="col">encodeURIComponent</th><th scope="col">encodeURI</th></tr></thead>
+        <tbody>
+          <tr><td><code>çay &amp; şeker</code></td><td><code>%C3%A7ay%20%26%20%C5%9Feker</code></td><td><code>%C3%A7ay%20&amp;%20%C5%9Feker</code></td></tr>
+          <tr><td><code>https://ornek.com/a b?x=1</code></td><td><code>https%3A%2F%2Fornek.com%2Fa%20b%3Fx%3D1</code></td><td><code>https://ornek.com/a%20b?x=1</code></td></tr>
+        </tbody>
+      </table>
+      <p>Kısa kural: parametre değeri ya da yol parçası kodluyorsanız encodeURIComponent, hazır bir adresin tamamını düzeltiyorsanız encodeURI kullanın. Form gönderimlerinde boşluk geleneksel olarak <code>+</code> ile yazılır; bunun için "Boşluk + olsun" seçeneğini işaretleyebilirsiniz. Çözerken de bu seçenek "+" işaretini boşluk sayar.</p>
+
+      <div class="ba-ad" data-slot="url-kodla-b" aria-label="Reklam"></div>
+
+      <h2>HTML entity ve Unicode kaçış</h2>
+      <p>HTML belgesinde <code>&lt;</code> ve <code>&amp;</code> gibi karakterler işaretleme dilinin parçasıdır. Bunları metin olarak göstermek için <code>&amp;lt;</code> ve <code>&amp;amp;</code> gibi "entity"ler kullanılır. Kullanıcıdan gelen metni bir sayfaya eklemeden önce bu karakterleri kodlamak, kod enjeksiyonunu (XSS) önlemenin temel adımlarından biridir. Türkçe karakterler modern UTF-8 sayfalarda doğrudan yazılabilir; ancak eski sistemlere ya da ASCII bekleyen e-posta şablonlarına gönderirken <code>&amp;#231;</code> (ç) ya da <code>&amp;#351;</code> (ş) gibi sayısal entity'ler işe yarar. Araçtaki seçeneği işaretlediğinizde ASCII dışı her karakter bu biçime çevrilir.</p>
+      <p>Unicode kaçış ise JavaScript, JSON ve Java gibi dillerde kaynak kodu yalnızca ASCII tutmak için kullanılır. "ç" karakteri <code>ç</code> biçiminde yazılır. Emoji gibi 16 bitten büyük karakterler iki parçaya (vekil çift) bölünür: <code>😀</code>. Araç ters yönde <code>\u{1F600}</code> ve <code>\x41</code> biçimlerini de çözer. JSON dosyanızda Türkçe karakterlerin kaçışlı göründüğü bir yanıt aldıysanız, burada çözerek okunur hâle getirebilirsiniz.</p>
+
+      <h2>URL ayrıştırıcı ve UTM oluşturucu</h2>
+      <p>Uzun bir bağlantının içinde hangi parametrelerin gizli olduğunu görmek için ayrıştırıcıyı kullanın. Adres protokol, ana bilgisayar, port, yol, sorgu ve parça (hash) olarak ayrılır; sorgu parametreleri ise düzenlenebilir bir listede gösterilir. Değer çözülmüş hâlde görünür, yani <code>%C3%A7ay</code> yerine "çay" yazar. Bir değeri değiştirebilir, parametre silebilir ya da yenisini ekleyebilirsiniz; alttaki "Yeni adres" kutusu doğru kodlanmış bağlantıyı üretir.</p>
+      <p>UTM parametreleri, bir bağlantıya tıklayan ziyaretçinin hangi kampanyadan geldiğini analiz araçlarının anlamasını sağlar. <code>utm_source</code> trafiğin geldiği yeri (google, bülten, instagram), <code>utm_medium</code> kanalı (cpc, eposta, sosyal), <code>utm_campaign</code> kampanya adını belirtir; <code>utm_term</code> ve <code>utm_content</code> isteğe bağlıdır. Tutarlılık için değerleri küçük harfle ve boşluksuz yazmak önemlidir; çünkü analiz araçları "Bulten" ile "bulten"i iki ayrı kaynak sayar. Aracımız varsayılan olarak değerleri küçük harfe çevirir, boşlukları tireye dönüştürür ve Türkçe karakterleri ASCII'ye çevirir. Adreste zaten sorgu parametresi varsa korunur, çakışan UTM değerleri yenisiyle değiştirilir.</p>
+
+      <h2>Slug oluşturucu</h2>
+      <p>Slug, bir sayfanın adresinde yer alan okunur adıdır: <code>/blog/cocuklar-icin-seker-hastaligi-rehberi</code>. Arama motorları ve kullanıcılar kısa, anlamlı ve ASCII bir adresi daha güvenle paylaşır. Araç Türkçe karakterleri (ç, ğ, ı, İ, ö, ş, ü) ASCII karşılıklarına çevirir, harf dışı karakterleri ayraçla değiştirir, baştaki ve sondaki ayraçları siler. Ayraç olarak tire önerilir; arama motorları tireyi kelime ayırıcı sayar. İsterseniz en çok uzunluk belirleyebilirsiniz; kesme işlemi sondaki ayracı temizler.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Metin yüklenmez.</strong> Adresler, parametreler ve kampanya bilgileri tarayıcınızdan çıkmaz; sayfa çevrimdışı da çalışır.</li>
+        <li><strong>Türkçe karakter desteği.</strong> UTF-8 kodlama, entity ve ASCII dönüşümü Türkçe harflerle test edilmiştir.</li>
+        <li><strong>Altı araç tek yerde.</strong> Kodlama, çözme, ayrıştırma, UTM ve slug için ayrı siteler gezmeniz gerekmez.</li>
+        <li><strong>Anlaşılır hata mesajı.</strong> Hatanın nedeni ve düzeltme yolu Türkçe yazılır.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sınır ve "premium" tuzağı yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Metnim bir sunucuya gönderiliyor mu?</summary><p>Hayır. Bütün dönüşümler tarayıcınızda yapılır; hiçbir ağ isteği yapılmaz. Sayfa yüklendikten sonra internetinizi kesseniz de araç çalışır.</p></details>
+        <details><summary>Boşluk neden bazen %20 bazen + olarak görünür?</summary><p>Adres yolunda ve modern uygulamalarda boşluk %20 olarak yazılır. HTML formlarının eski "application/x-www-form-urlencoded" biçimi ise boşluğu + ile gösterir. Sunucunuz hangisini bekliyorsa onu seçin; emin değilseniz %20 her yerde çalışır.</p></details>
+        <details><summary>"Geçersiz % dizisi" hatası ne demek?</summary><p>Çözülecek metinde % işaretinden sonra iki onaltılık rakam yok ya da bayt dizisi geçerli bir UTF-8 karakteri oluşturmuyor. Metnin kesilmediğinden emin olun. Düz yüzde işareti kodlanmış metinde %25 olarak yazılmalıdır.</p></details>
+        <details><summary>Bir adresi iki kez kodlarsam ne olur?</summary><p>"%" işareti de kodlandığı için %C3%A7 değeri %25C3%25A7 olur ve sunucu ilk çözmede yine kodlu metin görür. Çift kodlama sık görülen bir hatadır; adres zaten kodluysa yeniden kodlamayın ya da önce çözün.</p></details>
+        <details><summary>UTM parametrelerinde Türkçe karakter kullanabilir miyim?</summary><p>Teknik olarak kodlanarak kullanılabilir, ancak raporlarda "Yaz İndirimi" ile "yaz-indirimi" ayrı kampanya sayılır. Tutarlılık için küçük harf, tire ve ASCII önerilir; araç bunu varsayılan olarak yapar.</p></details>
+        <details><summary>Slug'da neden Türkçe karakter yerine ASCII kullanılıyor?</summary><p>Türkçe karakterli adresler paylaşıldığında %C3%A7 gibi uzun kodlara dönüşebilir ve bazı sistemlerde bozulur. ASCII slug daha kısa, okunur ve her ortamda güvenlidir. "İ" harfi "i", "ı" harfi "i" olur.</p></details>
+        <details><summary>HTML entity çözerken kod çalışır mı?</summary><p>Hayır. Metin güvenli bir metin alanı üzerinden çözülür; <code>&lt;script&gt;</code> gibi etiketler yalnızca metin olarak gelir ve çalıştırılmaz.</p></details>
+        <details><summary>URL ayrıştırıcı neden "protokolle başlamalı" diyor?</summary><p>Tarayıcının adres çözücüsü https:// ya da http:// gibi bir şemaya ihtiyaç duyar. Adresin başına şemayı ekleyin. UTM aracında ise protokol yazmazsanız https:// otomatik eklenir.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../regex-test/">Regex Test Aracı</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir ve Doğrula</a></li>
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../qr-kod/">QR Kod Oluşturucu</a></li>
+      </ul>
+      <p class="ba-note">Web sitenizin bağlantı yapısı ve kampanya takibi için profesyonel destek gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="url-kodla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

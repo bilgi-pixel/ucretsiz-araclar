@@ -24,8 +24,13 @@
   s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`;
   document.head.appendChild(s);
 
+  // Sayfalardaki data-slot değeri "<araç>-a|b|c" biçimindedir; harf, AdSense'te oluşturulan
+  // görüntülü reklam biriminin kimliğine eşlenir (A: araç kutusu altı, B: içerik ortası, C: sayfa sonu).
+  const UNITS = { a: '2025098263', b: '4120953573', c: '6555545229' };
   slots.forEach((el) => {
-    const slot = el.dataset.slot || '';
+    const raw = el.dataset.slot || '';
+    const key = (raw.match(/-([abc])$/) || [])[1] || (/^\d+$/.test(raw) ? raw : '');
+    const slot = UNITS[key] || key;
     el.innerHTML = '<span class="ba-ad-label">Reklam</span>';
     const ins = document.createElement('ins');
     ins.className = 'adsbygoogle';

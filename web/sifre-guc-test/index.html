@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Şifre Güvenlik Testi – Şifrem Ne Kadar Güçlü? Entropi ve Kırılma Süresi</title>
+  <meta name="description" content="Şifrenizin gücünü test edin: entropi (bit), yaygın Türkçe kalıp ve kelime denetimi, tahmini kırılma süresi ve iyileştirme önerileri. Şifre ağa gitmez, tarayıcıda kalır. Ücretsiz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/sifre-guc-test/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .sg-input { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sg-input input { flex: 1 1 220px; min-width: 0; font: inherit; font-family: var(--ba-mono); font-size: 1.1rem; padding: 12px 14px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); color: var(--ba-text); }
+    .sg-input input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .sg-privacy { margin: 14px 0 0; padding: 12px 14px; border-radius: var(--ba-radius); border: 1px solid var(--ba-success); border-left-width: 4px; background: var(--ba-success-soft); color: var(--ba-text-2); font-size: .92rem; }
+    .sg-meter { height: 14px; border-radius: 7px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); overflow: hidden; margin: 8px 0 4px; }
+    .sg-fill { height: 100%; width: 0; transition: width .2s; }
+    .sg-fill.l0 { background: #b3261e; } .sg-fill.l1 { background: #c2410c; } .sg-fill.l2 { background: #a16207; } .sg-fill.l3 { background: #4d7c0f; } .sg-fill.l4 { background: #15803d; }
+    .sg-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .sg-head strong { font-size: 2rem; line-height: 1; }
+    .sg-head span { font-size: 1.15rem; font-weight: 700; }
+    .sg-grid { display: grid; gap: 10px; margin: 16px 0; }
+    @media (min-width: 600px) { .sg-grid { grid-template-columns: 1fr 1fr; } }
+    .sg-grid div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 10px 14px; }
+    .sg-grid dt { font-size: .8rem; color: var(--ba-text-muted); font-weight: 600; }
+    .sg-grid dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+    .sg-list { padding-left: 20px; margin: 6px 0 14px; }
+    .sg-list li { margin-bottom: 6px; }
+    .sg-report h3 { margin: 18px 0 4px; font-size: 1.05rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Şifre Güvenlik Testi – Bilişim Ajans","applicationCategory":"SecurityApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/sifre-guc-test/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#pdf" class="ba-nav-optional">PDF</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1>Şifre Güvenlik Testi</h1>
+      <p class="lead">Şifrenizin gerçekte ne kadar güçlü olduğunu görün: entropi (bit), karakter seti, yaygın Türkçe kelime ve kalıp denetimi, tahmini kırılma süresi ve somut öneriler. Yazdığınız şifre bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Şifre ağa gitmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="ba-field">
+        <label for="pw">Test etmek istediğiniz şifre</label>
+        <div class="sg-input">
+          <input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="256" aria-describedby="privacy">
+          <button id="toggle" class="ba-btn" type="button" aria-pressed="false">Göster</button>
+          <button id="clear" class="ba-btn" type="button">Temizle</button>
+        </div>
+        <p id="trunc" class="hint" hidden>Çok uzun şifrelerde yalnızca ilk 128 karakter analiz edilir.</p>
+      </div>
+      <p id="privacy" class="sg-privacy"><strong>Şifreniz ağa gitmez.</strong> Analiz tamamen bu sayfadaki JavaScript ile bilgisayarınızda yapılır; şifre hiçbir sunucuya gönderilmez, saklanmaz, kaydedilmez. Yine de gerçek ve kullandığınız bir şifreyi herhangi bir sitede denemek istemezseniz, benzer yapıda bir örnek yazabilirsiniz.</p>
+
+      <p id="empty" class="hint">Bir şifre yazın; sonuç yazdıkça anında güncellenir.</p>
+      <div id="report" class="sg-report" hidden>
+        <div class="sg-head" aria-live="polite"><strong id="score">0</strong><span>/ 100 puan · <span id="label"></span></span></div>
+        <div id="meter" class="sg-meter" role="meter" aria-label="Şifre gücü" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="meter-fill" class="sg-fill"></div></div>
+        <dl class="sg-grid">
+          <div><dt>Etkin entropi (kalıplar düşüldükten sonra)</dt><dd id="bits"></dd></div>
+          <div><dt>Saf entropi (her karakter rastgele varsayılırsa)</dt><dd id="naive"></dd></div>
+          <div><dt>Uzunluk</dt><dd id="len"></dd></div>
+          <div><dt>Karakter seti</dt><dd id="charset"></dd></div>
+          <div><dt>Çevrimdışı saldırı (saniyede 10 milyar tahmin)</dt><dd id="offline"></dd></div>
+          <div><dt>Çevrimiçi saldırı (saniyede 100 deneme)</dt><dd id="online"></dd></div>
+        </dl>
+        <h3>Bulgular</h3>
+        <ul id="findings" class="sg-list"></ul>
+        <h3>Öneriler</h3>
+        <ul id="suggestions" class="sg-list"></ul>
+        <p class="ba-note">Süreler ortalama tahmindir ve bilgilendirme amaçlıdır; gerçek saldırı hızı donanıma ve sitenin şifreyi nasıl sakladığına göre çok değişir. <a href="../sifre-uret/">Güçlü bir şifre üretmek için Şifre Üretici'yi kullanın.</a></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="sifre-guc-test-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Şifre gücü nasıl ölçülür?</h2>
+      <p>Çoğumuz şifremizin "yeterince güçlü" olup olmadığını büyük harf, rakam ve simge içerip içermediğine bakarak değerlendiririz. Oysa saldırganlar şifreleri alfabe sırasıyla değil, insanların gerçekte seçtiği kalıplara göre dener. "Galatasaray1905" on beş karakterdir, büyük harf ve rakam içerir, ama bir saldırgan için neredeyse hiç direnç göstermez: bir takım adı ile o takımın kuruluş yılı, ilk denenen birleşimlerden biridir. Bu araç, şifreyi sadece karakter sayarak değil, tahmin edilebilir parçalarına ayırarak değerlendirir ve size bunu açıkça gösterir.</p>
+      <p>Ölçü birimi <strong>entropi</strong> ve birimi <strong>bit</strong>tir. Bir şifrenin entropisi n bit ise, saldırganın doğru şifreyi bulmak için ortalama 2 üzeri (n-1) deneme yapması gerekir. Her ek bit, aranacak alanı iki katına çıkarır. 40 bit, bir ev bilgisayarının saatler içinde aşabileceği bir sınırdır; 80 bit ve üstü, bugünkü donanımlarla pratikte kırılamaz kabul edilir.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Şifrenizi kutuya yazın ya da yapıştırın. Varsayılan olarak noktalarla gizlenir; yazım hatası yapmamak için "Göster" düğmesine basabilirsiniz.</li>
+        <li>Yazdıkça puan, seviye (Çok zayıf'tan Çok güçlü'ye) ve entropi anında güncellenir. "Etkin entropi", bulunan kalıplar düşüldükten sonraki gerçek değerdir; "Saf entropi" ise her karakterin rastgele seçildiği varsayılan ideal değerdir. İkisi arasındaki fark büyükse şifreniz tahmin edilebilir parçalar içeriyor demektir.</li>
+        <li>"Bulgular" bölümünde şifrenizde tespit edilen yaygın kelime, ardışık dizi, klavye yürüyüşü, tekrar ve yıl gibi kalıpları okuyun.</li>
+        <li>"Öneriler" bölümündeki adımları uygulayın; ardından yeni şifreyi aynı kutuda yeniden deneyerek gelişmeyi izleyin. Gerçek şifrenizi kullanmak istemezseniz aynı yapıda (uzunluk, harf düzeni) bir örnekle deneme yapabilirsiniz.</li>
+      </ol>
+
+      <h2>Şifreniz sunucuya gönderiliyor mu?</h2>
+      <p>Hayır. Bu, aracın en önemli özelliğidir: şifre hiçbir yere gönderilmez. Analiz sayfanın kendi JavaScript kodu tarafından tarayıcınızın belleğinde yapılır; şifre bir ağ isteğine eklenmez, çerezde ya da yerel depolamada saklanmaz, günlüğe yazılmaz. Sayfanın yalnızca bir kez, aynı adresten indirdiği yaygın kelime listesi vardır; bu liste sayfaya iner, şifreniz listeye çıkmaz. Bunu kendiniz doğrulayabilirsiniz: tarayıcınızın geliştirici araçlarında "Network" sekmesini açıp bir şifre yazın, hiçbir istek oluşmadığını göreceksiniz. İnternet bağlantınızı kesseniz de araç çalışmaya devam eder.</p>
+      <p>Bilinçli bir tercih olarak "şifreniz daha önce veri sızıntılarında göründü mü?" sorgusunu bu araca eklemedik, çünkü bu tür sorgular bir ağ isteği gerektirir. Bu sayfa tamamen çevrimdışı çalışsın ve şifre bilgisi sınırları dışına çıkmasın istedik. Sızıntı kontrolü için bilinen, güvenilir hizmetleri kullanabilirsiniz; ancak oraya da asıl şifrenizi yazmak yerine yalnızca hizmetin sağladığı güvenli yöntemleri kullanın.</p>
+
+      <h2>Hangi kalıpları arıyoruz?</h2>
+      <p>Araç, şifreyi olası en ucuz parçalanma biçimiyle açıklamaya çalışır. Bulduğu kalıp ne kadar yaygınsa o parçanın bit değeri o kadar küçük sayılır. Aranan kalıplar şunlardır:</p>
+      <ul>
+        <li><strong>En sık şifreler ve yaygın Türkçe kelimeler:</strong> "123456", "sifre", "password", "istanbul", "galatasaray", "fenerbahce", il adları, yaygın erkek ve kadın isimleri, aile yakınlığı sözcükleri, aylar, günler, renkler ve sevgi sözcükleri gibi yaklaşık bin dört yüz girişlik bir liste. Liste sıklığa göre sıralanmıştır; listede ne kadar önde olursa o kadar zayıf sayılır. Büyük harfle başlamak ya da "a" yerine "@", "i" yerine "1" yazmak gibi basit değişiklikler, küçük bir bit ilavesi dışında anlamlı koruma sağlamaz; Türkçe karakterler (ç, ğ, ı, ö, ş, ü) de karşılık gelen düz harflere indirilerek aranır.</li>
+        <li><strong>Ardışık diziler:</strong> "1234", "abcd", "9876", "dcba" gibi tek adımla artan ya da azalan karakterler.</li>
+        <li><strong>Klavye yürüyüşleri:</strong> "qwerty", "asdfgh", "zxcvbn", "1qaz2wsx", "qazwsx" gibi tuşların yan yana basılmasıyla oluşan dizilerin ileri ve geri hâlleri, Türkçe Q düzenindeki ğ ü ş i ö ç tuşlarını da kapsar.</li>
+        <li><strong>Tekrarlar:</strong> "aaaaaa", "abab", "123123" gibi bir karakterin ya da bir öbeğin yinelenmesi.</li>
+        <li><strong>Yıl ve tarih:</strong> 1900-2099 arası dört haneli yıllar ile gün-ay-yıl biçimli sekiz haneli tarihler; doğum ve evlilik tarihleri saldırganların favorisidir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="sifre-guc-test-b" aria-label="Reklam"></div>
+
+      <h2>Kırılma süresi senaryoları ne anlama gelir?</h2>
+      <p>İki ayrı saldırı senaryosu hesaplanır. <strong>Çevrimdışı saldırı</strong>, bir sitenin şifre veritabanı sızdırıldığında ortaya çıkar. Saldırgan elinde şifre özetlerini (hash) bilgisayarında sınırsızca deneyebilir; burada saniyede on milyar tahmin hızı varsayılır. Bu, güçlü bir ekran kartı kümesine karşılık gelen, ama özellikle hızlı özet algoritmalarında (MD5, SHA-1 gibi) mümkün olan gerçekçi bir hızdır. Modern siteler bcrypt, scrypt ya da Argon2 gibi yavaş algoritmalar kullanır ve bu hız çok düşer; ancak hangi algoritmanın kullanıldığını siz bilemezsiniz, bu yüzden temkinli varsayım yapılır.</p>
+      <p><strong>Çevrimiçi saldırı</strong> ise saldırganın giriş formuna teker teker deneme yapmasıdır. Siteler hesabı kilitleyerek ya da yavaşlatarak bu hızı sınırlar; saniyede yüz deneme cömert bir varsayımdır. Çevrimiçi senaryoda zayıf şifreler bile saatler sürebilir, ama "123456" ya da bir takım adı ilk birkaç yüz denemede bulunur. Gerçek hayatta tehlikenin büyük kısmı, farklı sitelerde aynı şifrenin kullanılmasından ve sızıntı listelerinden gelir; bu yüzden "çevrimiçi süre uzun" olması sizi rahatlatmamalıdır.</p>
+      <p>Sonuç, ortalama süredir: bütün olasılıkların yarısını denemek ortalama olarak şifreyi bulur. "Evrenin yaşından uzun" gibi ifadeler, hesaplanan sürenin bugünkü teknolojiyle pratikte aşılamaz olduğunu belirtir; elbette kuantum bilgisayarlar ve beklenmeyen zayıflıklar bu tabloyu değiştirebilir, o yüzden önemli hesaplarda iki adımlı doğrulama da kullanın.</p>
+
+      <h2>Güçlü şifre için pratik öneriler</h2>
+      <p><strong>Uzunluk, karmaşıklıktan daha önemlidir.</strong> Yirmi karakterlik, birbiriyle ilgisiz dört beş kelimeden oluşan bir parola cümlesi ("mavi-bulut-tren-kaplan-orman" tarzı, kelimelerin gerçekten rastgele seçilmesi şartıyla) ezberlemesi kolay ve kırması çok zordur. Sekiz karakterlik, her türden karakter içeren bir şifre ise modern donanımla saatler içinde aşılabilir. Kelime seçerken şarkı sözü, atasözü ya da sevdiğiniz bir cümleyi kullanmayın; saldırganlar bunları da sözlüklere eklemiştir.</p>
+      <p><strong>Her hesap için farklı şifre kullanın.</strong> Bir sitenin sızıntısı, aynı şifreyi kullandığınız bütün hesapları tehlikeye atar. Bunu yönetmenin kolay yolu bir şifre yöneticisidir: yalnızca bir güçlü ana parolayı ezberler, geri kalan her şeyi yönetici üretir ve saklar. Bu sitedeki <a href="../sifre-uret/">Şifre Üretici</a> rastgele ve uzun şifreleri tarayıcınızda, güvenli rastgele sayı üretecini kullanarak oluşturur.</p>
+      <p><strong>İki adımlı doğrulama açın.</strong> Şifreniz ele geçirilse bile ikinci adım hesabınızı korur. SMS yerine mümkünse bir doğrulayıcı uygulama ya da güvenlik anahtarı tercih edin.</p>
+      <p><strong>Kişisel bilgiyi kullanmayın.</strong> Adınız, çocuğunuzun adı, doğum yılı, plaka, telefon numarası, takım ve memleket adı sosyal medyada ya da başka kaynaklarda bulunabilir. Kasıtlı saldırılarda bunlar tek tek denenir.</p>
+
+      <h2>Bu araç neyi yapmaz?</h2>
+      <p>Bu sayfa şifrenizin gücü hakkında dürüst bir tahmin verir, ama mutlak bir garanti vermez. Gerçek bir saldırganın elindeki sözlük bizimkinden çok daha geniş olabilir; bu yüzden "çok güçlü" sonucu bile şifreyi başka bir yerde kullanmayı güvenli kılmaz. Araç kimsenin şifresini kırmaz, kayıtlı şifrelere erişemez ve başka hesapların güvenliğini sınamak için tasarlanmamıştır. Yalnızca kendi şifrelerinizi, kendi bilginizle test edin.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Şifre ağa gitmez.</strong> Analiz tarayıcıda yapılır; çevrimdışı da çalışır ve bunu "Network" sekmesinden doğrulayabilirsiniz.</li>
+        <li><strong>Türkçe bağlam.</strong> Türkçe şifre alışkanlıklarına (takım adları, il adları, Türkçe isimler, Türkçe karakter ve l33t hileleri) göre hazırlanmış kalıp listesi.</li>
+        <li><strong>Açıklayan sonuç.</strong> Yalnızca "zayıf" demez; hangi parçanın neden tahmin edilebilir olduğunu ve nasıl düzelteceğinizi yazar.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, e-posta ve sahte uyarılar yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yazdığım şifre bir yere gönderiliyor mu?</summary><p>Hayır. Şifre yalnızca tarayıcınızın belleğinde, sayfanın kendi kodu tarafından işlenir. Ağ isteği oluşmaz, çerez ya da yerel depolama kullanılmaz. Geliştirici araçlarının Network sekmesinden kendiniz doğrulayabilirsiniz.</p></details>
+        <details><summary>Entropi (bit) ne demek?</summary><p>Şifrenin tahmin edilmesi için gereken belirsizliğin ölçüsüdür. n bit, ortalama 2 üzeri (n-1) denemeyi gösterir. Her ek bit, kırma işini iki katına çıkarır. 80 bit ve üstü bugün için çok güçlü kabul edilir.</p></details>
+        <details><summary>"Etkin" ve "saf" entropi arasındaki fark nedir?</summary><p>Saf entropi, şifredeki her karakterin rastgele seçildiğini varsayar. Etkin entropi ise bulunan kalıpları (kelime, dizi, yıl vb.) tahmin edilebilir sayarak gerçekçi bir değer verir. İkisi arasındaki fark büyükse şifre sanıldığından zayıftır.</p></details>
+        <details><summary>Neden "galatasaray1905" gibi uzun bir şifre zayıf çıkıyor?</summary><p>Çünkü iki yaygın parçanın birleşimidir: takım adı sözlük listesindedir ve 1905 geçerli bir yıldır. Saldırganlar bunları ve benzer birleşimleri hızlıca dener. Uzunluk tek başına yetmez; parçaların rastgele olması gerekir.</p></details>
+        <details><summary>Şifremin sızıntıda olup olmadığını kontrol ediyor musunuz?</summary><p>Hayır. Bu kontrol bir ağ isteği gerektirir ve bu aracın temel sözü şifrenin bilgisayarınızdan çıkmamasıdır. Bu nedenle sızıntı sorgusu bilinçli olarak eklenmemiştir.</p></details>
+        <details><summary>En güvenli şifre nasıl olur?</summary><p>Uzun (en az 14-16 karakter), her hesapta farklı, rastgele üretilmiş ve bir şifre yöneticisinde saklanan şifre. Kolay hatırlanacak bir parola için birbirinden bağımsız 4-5 rastgele kelimeden oluşan bir cümle de iyi sonuç verir. Bunlara iki adımlı doğrulamayı ekleyin.</p></details>
+        <details><summary>Gerçek şifremi bu araca yazmalı mıyım?</summary><p>Analiz bilgisayarınızda yapıldığı için yazabilirsiniz; yine de ihtiyatlı olmak isterseniz aynı uzunluk ve yapıda bir örnek şifre deneyin. Başkasının şifresini ya da yetkiniz olmayan bir hesabın şifresini test etmeyin.</p></details>
+        <details><summary>Büyük harf, rakam ve simge eklemek yeterli değil mi?</summary><p>Tek başına değil. Sona "1" ya da "!" eklemek, baş harfi büyük yapmak ya da "a" yerine "@" yazmak saldırganların bildiği hilelerdir ve çok az güvenlik katar. Asıl kazanç uzunluktan ve rastgelelikten gelir.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sifre-uret/">Şifre Üretici</a></li>
+        <li><a href="../pdf-sifre-ekle/">PDF Şifre Ekle</a></li>
+        <li><a href="../dosya-hash/">Dosya Hash Hesaplayıcı</a></li>
+      </ul>
+      <p class="ba-note">Kurumunuz için güvenlik farkındalığı ya da şifre politikası desteği gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="sifre-guc-test-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

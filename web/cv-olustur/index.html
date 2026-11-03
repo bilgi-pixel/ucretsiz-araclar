@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CV Oluşturucu – Ücretsiz Özgeçmiş Hazırlama, PDF İndir (Kayıtsız)</title>
+  <meta name="description" content="Ücretsiz CV / özgeçmiş oluşturucu: formu doldurun, üç şablondan birini seçin, canlı önizlemeyi görün ve Türkçe karakterli A4 PDF olarak indirin. Fotoğraf ve bilgileriniz bilgisayarınızdan çıkmaz, kayıt gerekmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/cv-olustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .cv-form fieldset { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 16px 16px; margin: 0 0 18px; min-width: 0; }
+    .cv-form legend { font-weight: 700; padding: 0 8px; }
+    .cv-form input[type="text"], .cv-form input[type="email"], .cv-form input[type="tel"], .cv-form select, .cv-form textarea { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .cv-form textarea { resize: vertical; line-height: 1.5; }
+    .cv-form input:focus, .cv-form select:focus, .cv-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .cv-grid { display: grid; gap: 12px; }
+    @media (min-width: 640px) { .cv-grid { grid-template-columns: 1fr 1fr; } .cv-wide { grid-column: 1 / -1; } }
+    .cv-row { border: 1px dashed var(--ba-border); border-radius: var(--ba-radius-sm); padding: 12px; margin-bottom: 12px; background: var(--ba-surface-2); }
+    .cv-remove { margin-top: 10px; min-height: 40px; }
+    .cv-tpls { display: grid; gap: 10px; }
+    @media (min-width: 640px) { .cv-tpls { grid-template-columns: repeat(3, 1fr); } }
+    .cv-tpls label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 12px; cursor: pointer; min-height: 44px; background: var(--ba-surface); }
+    .cv-tpls input { width: 20px; height: 20px; accent-color: var(--ba-primary); margin-top: 2px; flex: none; }
+    .cv-tpls small { display: block; color: var(--ba-text-muted); font-weight: 400; }
+    .cv-tpls label:has(input:checked) { border-color: var(--ba-primary); box-shadow: 0 0 0 1px var(--ba-primary); }
+    .cv-photo-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .cv-photo-row img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--ba-border); }
+    .cv-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .cv-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .cv-status { font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; min-height: 1.3em; }
+    .cv-file-btn { position: relative; overflow: hidden; }
+    .cv-file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+    .cv-file-btn:focus-within { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .cv-preview-wrap { margin-top: 12px; overflow-x: auto; background: #d9dbdf; padding: 14px; border-radius: var(--ba-radius); }
+    /* Önizleme her temada kâğıt gibi beyaz zeminde, koyu yazıyla görünür. */
+    .cv-sheet { background: #fff; color: #1a1a1a; min-width: 520px; max-width: 760px; margin: 0 auto; padding: 28px 30px; font-size: 13px; line-height: 1.45; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+    .cv-sheet h3 { margin: 0; font-size: 26px; line-height: 1.15; color: #1a1a1a; }
+    .cv-sheet h4 { margin: 14px 0 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #1a1a1a; }
+    .cv-sheet p, .cv-sheet ul { margin: 0 0 6px; }
+    .cv-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+    .cv-title { color: #55575c; font-size: 15px; margin-top: 2px; }
+    .cv-contact { font-size: 12px; margin-top: 6px; }
+    .cv-photo { width: 84px; height: 84px; object-fit: cover; flex: none; }
+    .cv-item { margin-bottom: 9px; } .cv-meta { color: #55575c; font-size: 12px; }
+    .cv-desc { white-space: pre-line; margin: 0 0 4px; }
+    .cv-list { padding-left: 18px; }
+    .t-klasik .cv-head { border-bottom: 2px solid #7b2331; padding-bottom: 12px; }
+    .t-klasik h4 { border-bottom: 1px solid #b5b6bb; padding-bottom: 3px; }
+    .t-modern { display: grid; grid-template-columns: 190px 1fr; padding: 0; }
+    .t-modern .cv-side { background: #7b2331; color: #fff; padding: 24px 20px; font-size: 12px; }
+    .t-modern .cv-side h4 { color: #fff; border-bottom: 1px solid #e6b8c1; padding-bottom: 3px; }
+    .t-modern .cv-side .cv-photo { display: block; width: 112px; height: 112px; margin: 0 auto 8px; }
+    .t-modern .cv-main { padding: 24px 24px; }
+    .t-modern h3 { color: #7b2331; } .t-modern .cv-main h4 { color: #7b2331; border-bottom: 1px solid #7b2331; padding-bottom: 3px; }
+    .t-ats { font-family: Arial, Helvetica, sans-serif; } .t-ats h3 { font-size: 21px; }
+    .t-ats h4 { border: 0; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"CV Oluşturucu – Bilişim Ajans","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/cv-olustur/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#pdf">PDF ve Belge</a></li></ol>
+      <h1>CV Oluşturucu – Özgeçmişinizi PDF Olarak Hazırlayın</h1>
+      <p class="lead">Formu doldurun, şablonunuzu seçin, canlı önizlemede CV'nizin nasıl göründüğünü izleyin ve Türkçe karakterleri tam basılmış A4 PDF'inizi indirin. Fotoğrafınız ve bilgileriniz bilgisayarınızdan çıkmaz; taslağınızı isterseniz kendi bilgisayarınıza .json olarak kaydedersiniz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <p class="ba-note" style="margin-top:0"><span aria-hidden="true">🔒</span><span><strong>Hiçbir veri sunucuya gitmez.</strong> Yazdıklarınız, fotoğrafınız ve oluşan PDF yalnızca bu sekmede, tarayıcınızda işlenir. Taslağınız bu tarayıcıda otomatik saklanır; ortak bir bilgisayardaysanız işiniz bitince "Taslağı sil" düğmesine basın.</span></p>
+      <form id="form" class="cv-form" novalidate>
+        <fieldset>
+          <legend>Şablon</legend>
+          <div class="cv-tpls">
+            <label><input type="radio" name="tpl" id="tpl-klasik" value="klasik" checked><span><strong>Klasik</strong><small>Tek sütun, başlıklı bölümler, isteğe bağlı fotoğraf.</small></span></label>
+            <label><input type="radio" name="tpl" id="tpl-modern" value="modern"><span><strong>Modern</strong><small>İki sütun, bordo kenar çubuğu; iletişim ve beceriler solda.</small></span></label>
+            <label><input type="radio" name="tpl" id="tpl-ats" value="ats"><span><strong>Sade (ATS uyumlu)</strong><small>Süssüz tek sütun; işe alım yazılımlarının okuması kolay. Fotoğraf eklenmez.</small></span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Kişisel bilgiler</legend>
+          <div class="cv-grid">
+            <div class="ba-field"><label for="f-name">Ad soyad</label><input id="f-name" type="text" maxlength="80" autocomplete="name"></div>
+            <div class="ba-field"><label for="f-title">Unvan / hedef pozisyon</label><input id="f-title" type="text" maxlength="100" autocomplete="organization-title" placeholder="Örn. Muhasebe Uzmanı"></div>
+            <div class="ba-field"><label for="f-email">E-posta</label><input id="f-email" type="email" maxlength="100" autocomplete="email"></div>
+            <div class="ba-field"><label for="f-phone">Telefon</label><input id="f-phone" type="tel" maxlength="30" autocomplete="tel"></div>
+            <div class="ba-field"><label for="f-city">Şehir</label><input id="f-city" type="text" maxlength="60" autocomplete="address-level2"></div>
+            <div class="ba-field"><label for="f-link">LinkedIn / web sitesi (isteğe bağlı)</label><input id="f-link" type="text" maxlength="120" autocomplete="url"></div>
+          </div>
+          <div class="ba-field" style="margin-top:12px">
+            <label for="f-photo">Fotoğraf (isteğe bağlı)</label>
+            <div class="cv-photo-row">
+              <input id="f-photo" type="file" accept="image/*">
+              <img id="photo-preview" alt="Seçilen fotoğraf önizlemesi" hidden>
+              <button id="photo-remove" class="ba-btn" type="button" hidden>Fotoğrafı kaldır</button>
+            </div>
+            <div class="hint">Ortadan kare kırpılır. Sade (ATS) şablonda kullanılmaz. Fotoğraf yalnızca tarayıcınızda işlenir.</div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Özet</legend>
+          <div class="ba-field"><label for="f-summary">Kısa tanıtım (2–4 cümle)</label><textarea id="f-summary" rows="4" maxlength="1500" placeholder="Kim olduğunuzu, deneyiminizi ve hedefinizi anlatın."></textarea></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>İş deneyimi</legend>
+          <div id="list-exp"></div>
+          <button type="button" class="ba-btn" data-add="exp">Deneyim ekle</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Eğitim</legend>
+          <div id="list-edu"></div>
+          <button type="button" class="ba-btn" data-add="edu">Eğitim ekle</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Beceriler</legend>
+          <div class="ba-field"><label for="f-skills">Becerileriniz</label><textarea id="f-skills" rows="2" maxlength="1000" placeholder="Excel, Logo Tiger, Müşteri iletişimi, Takım çalışması"></textarea><div class="hint">Virgül ya da yeni satırla ayırın.</div></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Yabancı diller</legend>
+          <div id="list-lang"></div>
+          <button type="button" class="ba-btn" data-add="lang">Dil ekle</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Sertifikalar ve kurslar</legend>
+          <div id="list-cert"></div>
+          <button type="button" class="ba-btn" data-add="cert">Sertifika ekle</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Referanslar</legend>
+          <label class="cv-check"><input id="f-refs" type="checkbox"> "Referanslar: İstek üzerine sunulur" satırını ekle</label>
+        </fieldset>
+      </form>
+
+      <h3>Taslak</h3>
+      <div class="ba-actions" style="margin-top:8px">
+        <button id="json-save" class="ba-btn" type="button">Taslağı .json olarak kaydet</button>
+        <label class="ba-btn cv-file-btn">Taslak yükle (.json)<input id="json-input" type="file" accept=".json,application/json"></label>
+        <button id="draft-clear" class="ba-btn" type="button">Taslağı sil</button>
+      </div>
+      <p id="draft-status" class="cv-status" aria-live="polite"></p>
+
+      <h3 style="margin-top:22px">Canlı önizleme</h3>
+      <div class="cv-preview-wrap" tabindex="0" role="region" aria-label="CV önizlemesi (yatay kaydırılabilir)"><div id="preview"></div></div>
+      <p id="preview-note" class="cv-status" hidden>Sade (ATS) şablonda fotoğraf kullanılmaz; PDF'e eklenmeyecek.</p>
+
+      <div class="ba-actions">
+        <button id="make-pdf" class="ba-btn ba-btn-primary ba-btn-lg" type="button">PDF indir</button>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result">
+        <h3>PDF hazır</h3>
+        <p id="result-info"></p>
+        <div class="ba-actions"><button id="download" class="ba-btn ba-btn-success" type="button">PDF'i yeniden indir</button></div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="cv-olustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Önce şablonunuzu seçin. Klasik şablon çoğu sektör için güvenli bir tercihtir; modern şablon tasarım, pazarlama ve iletişim gibi görsel sektörlerde öne çıkar; sade (ATS uyumlu) şablon ise büyük şirketlerin başvuru sistemlerine yüklenecek CV'ler için en güvenlisidir.</li>
+        <li>Kişisel bilgilerinizi yazın: ad soyad, hedef unvan, e-posta, telefon ve şehir. İsterseniz vesikalık tarzı bir fotoğraf ekleyin; fotoğraf ortadan kare kırpılır ve yalnızca tarayıcınızda işlenir.</li>
+        <li>Kısa özetinizi, iş deneyimlerinizi, eğitiminizi, becerilerinizi, dillerinizi ve sertifikalarınızı girin. "Deneyim ekle" gibi düğmelerle istediğiniz kadar satır açabilir, gereksiz satırları "Bu satırı sil" ile kaldırabilirsiniz. Görev tanımlarında her satır bir madde olur.</li>
+        <li>Formu doldurdukça aşağıdaki canlı önizleme güncellenir. Şablonu değiştirerek aynı bilgilerin üç farklı görünümde nasıl durduğunu karşılaştırabilirsiniz.</li>
+        <li>Memnun kaldığınızda "PDF indir" düğmesine basın. Türkçe karakterleri eksiksiz basılmış A4 PDF'iniz bilgisayarınıza iner. Daha sonra devam etmek isterseniz "Taslağı .json olarak kaydet" ile bilgilerinizi kendi bilgisayarınızda saklayın.</li>
+      </ol>
+
+      <h2>İyi bir CV nasıl yazılır?</h2>
+      <p>İşe alım uzmanları bir CV'ye ortalama yarım dakika ile bir dakika arasında bakar. Bu kısa sürede dikkat çekmek için belgenizin hızlı taranabilir olması gerekir. En önemli bilgileri üstte, en güncel deneyimden başlayarak ters kronolojik sırayla verin. Hedeflediğiniz pozisyonla ilgisi olmayan eski ve kısa süreli işleri kısaltın ya da çıkarın. Türkiye'de CV'nin ideal uzunluğu, ilk yıllarında bir sayfa, deneyim biriktikçe en fazla iki sayfadır.</p>
+      <p>Özet bölümü CV'nin vitrinidir. İki ile dört cümleyle kim olduğunuzu, kaç yıllık deneyiminiz olduğunu ve hangi alanda değer üretebileceğinizi anlatın. "Çalışkan, dürüst, takım çalışmasına yatkın" gibi herkesin yazabileceği sıfat dizileri yerine somut bir cümle seçin: "Beş yıllık muhasebe deneyimiyle aylık kapanış sürelerini üç güne indirmiş, e-defter geçişini yönetmiş bir mali işler uzmanıyım." Bu cümle hem sektörü hem de ölçülebilir bir başarıyı gösterir.</p>
+      <p>İş deneyimi bölümünde yalnızca görev listesi yazmak yerine sonuçları öne çıkarın. "Müşteri ilişkilerinden sorumluydum" demek yerine "Yıllık 120 kurumsal müşteriyle ilişkileri yürüttüm, yenileme oranını yüzde 78'den yüzde 91'e çıkardım" yazmak çok daha etkilidir. Mümkün olduğunca sayı, yüzde ve süre kullanın. Her maddeyi güçlü bir eylemle başlatın: yönettim, geliştirdim, azalttım, kurdum, eğittim. Bir deneyim için üç ile altı madde genellikle yeterlidir.</p>
+
+      <h2>Hangi şablonu seçmeliyim?</h2>
+      <p><strong>Klasik şablon</strong> bankacılık, hukuk, kamu, eğitim ve sağlık gibi geleneksel alanlar için uygundur. Tek sütunlu düzeni sayesinde yukarıdan aşağıya doğal bir okuma akışı sunar; isterseniz sağ üst köşeye fotoğraf koyabilirsiniz. <strong>Modern şablon</strong> bordo bir kenar çubuğunda iletişim, beceri ve dil bilgilerini toplar; ana sütunu ise özet, deneyim ve eğitime ayırır. Kısa bir bakışta beceri ve iletişim bilgilerine ulaşılmasını sağlar, görsel sektörlerde daha canlı bir izlenim bırakır.</p>
+      <p><strong>Sade (ATS uyumlu) şablon</strong> ise süslemeden uzaktır. ATS, yani aday takip sistemi, büyük şirketlerin başvuruları otomatik tarayan yazılımıdır. Bu yazılımlar sütunlu düzenleri, görselleri ve karmaşık tasarımları yanlış yorumlayabilir; bölümlerin karışmasına ya da bilgilerin kaybolmasına yol açabilir. Sade şablon tek sütun, standart başlıklar ve düz metin kullanır; fotoğraf eklemez. Online başvuru portallarına yüklenecek CV'lerde bu şablonu seçmenizi öneririz.</p>
+
+      <div class="ba-ad" data-slot="cv-olustur-b" aria-label="Reklam"></div>
+
+      <h2>Fotoğraf eklemeli miyim?</h2>
+      <p>Türkiye'de CV'ye fotoğraf koymak yaygın bir alışkanlıktır ancak zorunlu değildir. Fotoğraf eklemeye karar verirseniz düz arka planlı, iyi aydınlatılmış, yüzünüzün net göründüğü ve kıyafetinizin sektörünüze uygun olduğu bir görüntü seçin. Tatil ya da sosyal medya fotoğrafları profesyonel bir izlenim bırakmaz. Yurt dışındaki bazı ülkelerde ayrımcılığı önlemek için fotoğraf istenmediğini, bu nedenle uluslararası başvurularda ve ATS sistemlerinde fotoğrafsız CV'nin tercih edildiğini unutmayın. Bu araç fotoğrafı ortadan kare kırpar ve 400 piksele küçültür; böylece PDF'iniz hafif kalır.</p>
+
+      <h2>Taslağınız nerede saklanır?</h2>
+      <p>CV hazırlamak çoğu zaman tek oturuşta bitmez. Bu yüzden araç, yazdıklarınızı bu tarayıcının yerel depolamasına otomatik olarak kaydeder; sayfayı kapatıp açtığınızda kaldığınız yerden devam edersiniz. Bu kayıt yalnızca bu cihazdaki bu tarayıcıda durur, hiçbir sunucuya gönderilmez. Başka bir bilgisayarda ya da tarayıcıda çalışmak isterseniz "Taslağı .json olarak kaydet" düğmesiyle bir dosya indirin ve diğer cihazda "Taslak yükle" ile açın. Ortak ya da halka açık bir bilgisayar kullandıysanız işiniz bittiğinde mutlaka "Taslağı sil" düğmesine basın; bu işlem hem formu hem tarayıcıdaki kaydı temizler.</p>
+
+      <h2>CV'de sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Yazım ve noktalama hataları:</strong> Tek bir yazım hatası bile dikkatsizlik izlenimi verir. PDF'i indirmeden önce metinleri bir kez yüksek sesle okuyun ya da bir arkadaşınıza kontrol ettirin.</li>
+        <li><strong>Fazla uzunluk:</strong> Her işi ve her kursu yazmak zorunda değilsiniz. Hedef pozisyonla ilgisi olanları seçin.</li>
+        <li><strong>Genel e-posta adresleri:</strong> Ad soyadınızı içeren sade bir e-posta adresi kullanın. Eski takma adlı adresler profesyonel görünmez.</li>
+        <li><strong>Tutarsız tarih biçimleri:</strong> Dönemleri hep aynı biçimde yazın; örneğin "2019 – 2022" ya da "Mart 2019 – Haziran 2022". Boşlukları dürüstçe ve kısaca açıklayın.</li>
+        <li><strong>Gereksiz kişisel bilgi:</strong> T.C. kimlik numarası, banka bilgileri ve açık adres CV'de yer almaz. Şehir bilgisi çoğu zaman yeterlidir.</li>
+        <li><strong>Her başvuruda aynı CV:</strong> İlan metnindeki anahtar kelimeleri, kendi deneyiminizle örtüştüğü ölçüde özet ve beceri bölümüne yansıtın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Verileriniz sizde kalır.</strong> Ad, telefon, fotoğraf ve iş geçmişi gibi hassas bilgiler hiçbir sunucuya yüklenmez; PDF tarayıcınızda üretilir.</li>
+        <li><strong>Türkçe karakterler tam.</strong> ç, ğ, ı, ö, ş, ü ile büyük İ ve I harfleri PDF'te doğru basılır; metin seçilebilir ve aranabilir kalır.</li>
+        <li><strong>Üç şablon, tek form.</strong> Bilgileri bir kez girer, görünümü dilediğiniz gibi değiştirirsiniz.</li>
+        <li><strong>Kayıt, filigran, "Premium" tuzağı yok.</strong> PDF'in üzerinde logomuz ya da reklamımız bulunmaz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>CV'min bilgileri bir yere gönderiliyor mu?</summary><p>Hayır. Form, önizleme ve PDF üretimi tamamen tarayıcınızda çalışır. Ad, telefon, fotoğraf ve diğer bilgiler hiçbir sunucuya iletilmez. Sayfada çerez ya da izleme kodu da yoktur.</p></details>
+        <details><summary>Taslağım otomatik olarak nerede saklanıyor?</summary><p>Yazdıklarınız bu tarayıcının yerel depolamasına (localStorage) kaydedilir. Başka cihazlara ya da kullanıcılara gitmez. Tarayıcı verilerini temizlerseniz ya da "Taslağı sil" düğmesine basarsanız silinir. Kalıcı bir yedek için .json dosyasını indirin.</p></details>
+        <details><summary>Daha önce kaydettiğim .json taslağını nasıl açarım?</summary><p>"Taslak yükle (.json)" düğmesine basıp bu sayfadan indirdiğiniz dosyayı seçin. Form, önizleme ve fotoğraf dosyadaki bilgilerle dolar. Başka bir kaynaktan gelen ya da elle bozulmuş dosyalar için anlaşılır bir uyarı gösterilir.</p></details>
+        <details><summary>PDF'te Türkçe karakterler doğru çıkıyor mu?</summary><p>Evet. Araç, Türkçe karakterleri destekleyen DejaVu Sans yazı tipini PDF'e gömer. Metin görüntü değil gerçek metin olarak yazıldığı için seçilebilir ve aranabilir. Yazı tipinde bulunmayan emoji gibi karakterler "?" ile değiştirilir ve size bildirilir.</p></details>
+        <details><summary>ATS uyumlu CV ne demek?</summary><p>ATS (aday takip sistemi), şirketlerin başvuruları otomatik tarayan yazılımıdır. Sütunlu düzen, tablo ve görsellerle sorun yaşayabilir. Sade şablon tek sütun, standart başlık ve düz metin kullandığı için bu sistemlerde bilgilerinizin doğru okunma olasılığı daha yüksektir.</p></details>
+        <details><summary>CV'm iki sayfadan uzun olursa ne olur?</summary><p>İçerik otomatik olarak yeni sayfaya taşar; bölümler sayfa sonunda kesilmeden devam eder. Yine de çoğu başvuru için bir ya da iki sayfa önerilir. Önizlemede uzunluğu görüp gereksiz maddeleri çıkarabilirsiniz.</p></details>
+        <details><summary>Fotoğraf eklersem PDF çok büyür mü?</summary><p>Hayır. Fotoğraf ortadan kare kırpılır ve en fazla 400 × 400 piksele küçültülüp JPEG olarak gömülür; PDF genellikle birkaç yüz kilobayt kadar olur.</p></details>
+        <details><summary>"Dosya bir resim değil" ya da "taslak geçerli değil" uyarısı alıyorum, ne yapmalıyım?</summary><p>Fotoğraf alanına yalnızca JPG, PNG ya da WebP seçin. Taslak alanına ise yalnızca bu sayfadan indirdiğiniz .json dosyasını yükleyin. Dosya bozulmuşsa tarayıcıdaki otomatik taslak ya da başka bir yedek kullanılabilir.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç yalnızca kendi bilgilerinizi düzenli bir belgeye dönüştürür. CV'nizde yer alan bilgilerin doğruluğundan siz sorumlusunuz; gerçeğe aykırı beyan işe alım sürecinde ve sonrasında ciddi sonuçlar doğurabilir.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dilekce-olustur/">Dilekçe Oluşturucu</a></li>
+        <li><a href="../resimden-pdfe/">Resimden PDF'e</a></li>
+        <li><a href="../pdf-birlestir/">PDF Birleştir</a></li>
+        <li><a href="../biyometrik-fotograf/">Biyometrik Fotoğraf Hazırla</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kurumunuza özel belge üretimi ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="cv-olustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+</body>
+</html>

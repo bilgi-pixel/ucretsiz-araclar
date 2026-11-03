@@ -37,9 +37,9 @@ function ageAt(birth, t) {
   return a;
 }
 
-/** n tam hizmet yılı için temel gün (md. 53): 1-5 yıl (5 dahil) 14, 6-15 yıl 20, 16+ yıl 26. */
+/** n tam hizmet yılı için temel gün (md. 53): 1-5 yıl (5 dahil) 14, 5'ten fazla 15'ten az 20, 15 yıl (dahil) ve fazlası 26. */
 export function baseDays(n, p = params) {
-  for (const k of p.kademeler) if (k.yil_max === null || n <= k.yil_max) return k.gun;
+  for (const [i, k] of p.kademeler.entries()) if (k.yil_max === null || (i === 0 ? n <= k.yil_max : n < k.yil_max)) return k.gun;
   return p.kademeler[p.kademeler.length - 1].gun;
 }
 

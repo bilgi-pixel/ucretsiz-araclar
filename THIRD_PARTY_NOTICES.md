@@ -22,3 +22,7 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | @jspawn/qpdf-wasm | 0.0.2 | Apache-2.0 | PDF'e Şifre Ekle, PDF Şifre Kaldır |
 | jsbarcode | 3.12.1 | MIT | Barkod Oluşturucu |
 | marked | 15.0.7 | MIT | Markdown Editör ve Önizleme |
+| Dancing Script (yazı tipi) | v29 | OFL-1.1 | Online İmza Oluşturucu |
+| Great Vibes (yazı tipi) | v21 | OFL-1.1 | Online İmza Oluşturucu |
+| Caveat (yazı tipi) | v23 | OFL-1.1 | Online İmza Oluşturucu |
+| Pacifico (yazı tipi) | v23 | OFL-1.1 | Online İmza Oluşturucu |
