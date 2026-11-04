@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Online Alarm Kur – Tarayıcıda Ücretsiz Alarm Saati (Sesli, Ertelemeli)</title>
+  <meta name="description" content="Online alarm kur: saati seçin, 4 melodiden birini belirleyin; tam ekran uyarı, titreşim, ertele ve birden çok alarm. Ücretsiz, kayıt yok. Sekme açık ve cihaz uyanık olmalı.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/online-alarm/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema tokenları ba.css'ten gelir. */
+    .al-warn { margin: 0 0 16px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: var(--ba-primary-soft); border: 1px solid var(--ba-border-hover); border-left: 4px solid var(--ba-primary); color: var(--ba-text); font-size: .95rem; }
+    .al-warn p { margin: 0; }
+    .al-warn p + p { margin-top: 6px; }
+    .al-screen { text-align: center; padding: 18px 10px; margin-bottom: 14px; border-radius: var(--ba-radius); background: var(--ba-surface-2); border: 1px solid var(--ba-border); }
+    .al-sub { margin: 0 0 4px; font-weight: 600; color: var(--ba-text-2); overflow-wrap: anywhere; min-height: 1.5em; }
+    .al-digits { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-weight: 500; font-size: clamp(2.2rem, 12vw, 4.5rem); line-height: 1.1; letter-spacing: -.02em; color: var(--ba-text); white-space: nowrap; }
+    .ba-field input[type="time"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .ba-field input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--ba-primary); }
+    .al-sound-row { display: flex; gap: 8px; }
+    .al-sound-row select { flex: 1 1 auto; min-width: 0; }
+    .al-sound-row .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .al-presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .al-presets .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .al-presets-label { margin: 0 0 6px; font-weight: 600; font-size: .9rem; }
+    .al-check { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-weight: 500; }
+    .al-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); flex: none; }
+    .al-note { margin: 10px 0 0; font-size: .88rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .al-note:empty { display: none; }
+    .al-list-h { margin: 22px 0 8px; font-size: 1.1rem; }
+    .al-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 10px; }
+    .al-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; align-items: center; margin: 0; padding: 12px 14px; border: 1px solid var(--ba-border); border-left-width: 4px; border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .al-clock { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-size: 1.7rem; font-weight: 500; line-height: 1.1; }
+    .al-meta { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+    .al-name { overflow-wrap: anywhere; }
+    .al-when, .al-left { font-size: .88rem; color: var(--ba-text-2); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .al-left:empty { display: none; }
+    .al-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+    .al-actions .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .al-item.is-on { border-left-color: var(--ba-success); }
+    .al-item.is-off .al-clock { color: var(--ba-text-muted); }
+    .al-item.is-missed { border-left-color: var(--ba-danger); }
+    .al-item.is-ringing { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+
+    /* Alarm çalarken tam ekran uyarı; renkler temadan bağımsız sabit tutulur (kontrast için). */
+    html.ao-lock { overflow: hidden; }
+    .ao-ring { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; background: #5e1a25; color: #fff; overflow: auto; }
+    .ao-ring h2 { margin: 0; color: #fff; font-size: clamp(1.4rem, 6vw, 2.2rem); letter-spacing: .14em; }
+    .ao-ring-time { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-size: clamp(3.4rem, 22vw, 9rem); line-height: 1; margin: 0; }
+    .ao-ring-name { margin: 0; max-width: 100%; font-size: clamp(1.2rem, 5vw, 2rem); font-weight: 600; overflow-wrap: anywhere; }
+    .ao-ring-more, .ao-ring-audio { margin: 0; max-width: 34rem; font-size: .95rem; color: #fff; overflow-wrap: anywhere; }
+    .ao-ring-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: min(100%, 520px); margin-top: 10px; }
+    .ao-ring .ba-btn { flex: 1 1 200px; min-height: 60px; font-size: 1.15rem; background: #fff; color: #5e1a25; border-color: #fff; }
+    .ao-ring .ba-btn:hover { background: #f6e9ec; color: #5e1a25; border-color: #f6e9ec; }
+    .ao-ring .ba-btn.ao-alt { background: transparent; color: #fff; }
+    .ao-ring .ba-btn.ao-alt:hover { background: rgba(255, 255, 255, .16); color: #fff; border-color: #fff; }
+    .ao-ring :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .ao-ring-time { animation: aoPulse 1s ease-in-out infinite; }
+      @keyframes aoPulse { 50% { transform: scale(1.04); } }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Online Alarm Kur – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/online-alarm/","inLanguage":"tr","description":"Tarayıcıda çalışan ücretsiz online alarm: dört melodi, tam ekran uyarı, titreşim, ertele ve birden çok alarm. Alarmlar yalnızca bu tarayıcıda saklanır; sekme açık ve cihaz uyanık olmalıdır."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Online alarm tarayıcı ya da sekme kapalıyken çalar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Alarm sayfanın içinde çalışan bir zamanlayıcıyla kontrol edilir; sekmeyi ya da tarayıcıyı kapatırsanız alarm çalmaz. Sayfayı yeniden açtığınızda zamanı geçmiş alarmlar \"Kaçırıldı\" olarak listelenir. Güvenmeniz gereken durumlarda cihazınızın kendi alarm uygulamasını da kurun."}},
+  {"@type":"Question","name":"Bilgisayar uyku modundayken alarm çalar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilgisayar ya da telefon uyku moduna geçtiğinde tarayıcı da duraklar ve alarm çalamaz. Alarm kurduktan sonra cihazın uyumayacağından emin olun; güç ayarlarından uyku süresini uzatabilir ya da cihazı şarjda ve ekranı açık bırakabilirsiniz."}},
+  {"@type":"Question","name":"Alarm sesi neden çıkmıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcılar, kullanıcı sayfayla etkileşim kurmadan ses çalmayı engeller. Alarmı kur düğmesine basmak sesi hazırlar; sayfayı yeniledikten sonra bir kez tıklamak gerekir. Ayrıca cihazın sesinin açık olduğunu, sekmenin sessize alınmadığını ve ses düzeyi çubuğunun sıfırda olmadığını kontrol edin. Ses engellense bile tam ekran uyarı ve sekme başlığı çalışmaya devam eder."}},
+  {"@type":"Question","name":"Alarmlarım nerede saklanıyor, bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Alarmlar yalnızca bu tarayıcının yerel depolamasında (localStorage) saklanır ve hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz ya da gizli pencere kullanırsanız kalıcı olmaz. Alarm adları ve saatleri bizim için görünmezdir."}},
+  {"@type":"Question","name":"Sekme arka plandayken alarm tam saatinde çalar mı?","acceptedAnswer":{"@type":"Answer","text":"Genellikle evet, ancak tarayıcılar arka plandaki sekmelerin zamanlayıcılarını enerji tasarrufu için sınırlayabilir. Bu yüzden alarm birkaç saniye, uzun süre arka planda kalmış sekmelerde ise nadiren bir dakikaya kadar gecikebilir. Daha güvenilir olması için sekmeyi sabitleyin ya da alarm saatine yakın sekmeye bakın."}},
+  {"@type":"Question","name":"Ertele düğmesi nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"\"Ertele 5 dk\" çalan alarmı susturur ve aynı alarmı 5 dakika sonrasına taşır. İstediğiniz kadar tekrar erteleyebilirsiniz. \"Kapat\" ise alarmı tamamen susturur; alarm listede kapalı olarak kalır ve istediğinizde \"Aç\" düğmesiyle bir sonraki o saate yeniden kurulur."}},
+  {"@type":"Question","name":"Telefonda kullanabilir miyim, kilit ekranında çalar mı?","acceptedAnswer":{"@type":"Answer","text":"Telefonda tarayıcıdan kullanabilirsiniz, ancak ekran kilitlenince birçok mobil tarayıcı sekmeyi askıya alır ve alarm çalmayabilir. Telefonda uyanmak gibi önemli işler için telefonun yerleşik alarm uygulamasını kullanın; bu sayfa bilgisayar başında ya da ekranı açık kalan cihazlar için uygundur."}},
+  {"@type":"Question","name":"Kaç alarm kurabilirim, alarmlar her gün tekrar eder mi?","acceptedAnswer":{"@type":"Answer","text":"En fazla 20 alarm kurabilirsiniz. Alarmlar tek seferliktir: çaldıktan ve kapatıldıktan sonra listede kapalı kalır. Aynı saate tekrar kurmak için listedeki \"Aç\" düğmesine basmanız yeterlidir."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Yardımcı</a></li></ol>
+      <h1><span class="ba-grad">Online Alarm Kur</span>: Tarayıcıda Çalışan Ücretsiz Alarm Saati</h1>
+      <p class="lead">Saati seçin, alarmı kurun. Sekme açık ve cihazınız uyanık olduğu sürece belirlediğiniz saatte tam ekran uyarı, melodi, titreşim ve yanıp sönen sekme başlığıyla haber verir. Dört melodi, ertele düğmesi ve birden çok alarm. Alarmlarınız yalnızca bu tarayıcıda saklanır, hiçbir yere gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" id="al-box" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Alarm kur</h2>
+      <div class="al-warn" role="note">
+        <p><strong>Önemli:</strong> Alarmın çalması için bu sekmenin açık, cihazın da uyanık olması gerekir. Bilgisayar ya da telefon uyku moduna geçerse veya sekmeyi ya da tarayıcıyı kapatırsanız alarm çalmaz.</p>
+        <p>Tarayıcı kuralı gereği ses, sayfayla bir kez etkileşim kurduktan sonra çalar; "Alarmı kur" düğmesine basmak bunu sağlar. Uçuş, sınav ya da randevu gibi kaçırılmaması gereken saatler için cihazınızın kendi alarmını da kurun.</p>
+      </div>
+
+      <div class="al-screen">
+        <p class="al-sub" id="al-next" aria-live="polite">Kurulu alarm yok</p>
+        <div class="al-digits" id="al-countdown" role="timer" aria-label="Sonraki alarma kalan süre">--:--:--</div>
+      </div>
+
+      <form id="al-form" novalidate>
+        <div class="ba-options">
+          <div class="ba-field"><label for="al-time">Alarm saati</label><input id="al-time" type="time"></div>
+          <div class="ba-field"><label for="al-name">Alarm adı (isteğe bağlı)</label><input id="al-name" type="text" maxlength="40" placeholder="Örn. Toplantı" autocomplete="off"></div>
+          <div class="ba-field"><label for="al-sound">Alarm sesi</label>
+            <div class="al-sound-row"><select id="al-sound"></select><button id="al-preview" class="ba-btn" type="button">Dinle</button></div>
+          </div>
+          <div class="ba-field"><label for="al-volume">Ses düzeyi <output id="al-volume-out" for="al-volume">%70</output></label><input id="al-volume" type="range" min="0" max="100" step="5" value="70"></div>
+        </div>
+
+        <p class="al-presets-label" id="al-presets-h">Hızlı seçenekler</p>
+        <div class="al-presets" role="group" aria-labelledby="al-presets-h">
+          <button type="button" class="ba-btn" data-add="5" aria-label="5 dakika sonrasına ayarla">+5 dk</button>
+          <button type="button" class="ba-btn" data-add="10" aria-label="10 dakika sonrasına ayarla">+10 dk</button>
+          <button type="button" class="ba-btn" data-add="30" aria-label="30 dakika sonrasına ayarla">+30 dk</button>
+          <button type="button" class="ba-btn" data-time="06:00">06:00</button>
+          <button type="button" class="ba-btn" data-time="07:00">07:00</button>
+          <button type="button" class="ba-btn" data-time="08:00">08:00</button>
+        </div>
+
+        <div class="al-check"><input type="checkbox" id="al-notify"><label for="al-notify">Alarm çalınca tarayıcı bildirimi de göster (isteğe bağlı)</label></div>
+        <p class="al-note" id="al-notify-info"></p>
+
+        <div class="ba-actions">
+          <button id="al-add" class="ba-btn ba-btn-primary ba-btn-lg" type="submit">Alarmı kur</button>
+        </div>
+      </form>
+
+      <p class="al-note" id="al-audio">Ses: henüz etkin değil. Sayfaya bir kez tıklayın ya da dokunun; tarayıcılar sesi ancak bundan sonra çalmaya izin verir.</p>
+      <p class="al-note" id="al-info" role="status" aria-live="polite"></p>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <h3 class="al-list-h">Alarmlarınız</h3>
+      <p class="al-note" id="al-empty">Henüz alarm kurmadınız. Saati seçip "Alarmı kur" düğmesine basın.</p>
+      <ul id="al-list" class="al-list" aria-label="Kurulu alarmlar"></ul>
+    </section>
+
+    <div class="ba-ad" data-slot="online-alarm-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Online alarm kur: tarayıcınızda çalışan ücretsiz alarm saati</h2>
+      <p>Toplantıya girmeden önce, fırındaki yemeği çıkarmak için, ders çalışırken mola vermek için ya da sabah erken kalkmak için bir alarma ihtiyaç duyarsınız. Bu sayfa, bilgisayarınızın tarayıcısını bir alarm saatine çevirir. Saati seçer, isterseniz alarma bir ad verir, dört melodiden birini belirler ve "Alarmı kur" düğmesine basarsınız. Saat geldiğinde ekran tam boyutlu bir uyarıyla dolar, seçtiğiniz melodi çalar, desteklenen cihazlarda telefon titrer ve sekme başlığı yanıp söner. Hesap açmanız ya da bir uygulama kurmanız gerekmez.</p>
+      <p>Alarmlar yalnızca sizin tarayıcınızda tutulur. Saatleriniz, alarm adlarınız ve ses seçimleriniz hiçbir sunucuya gönderilmez; sayfa çevrimdışıyken bile çalışır. Alarmlarınız tarayıcının yerel depolamasında saklandığı için sayfayı yenileseniz ya da sekmeyi kapatıp açsanız da listeniz yerinde durur.</p>
+
+      <h2>Önemli: alarmın çalması için bilmeniz gerekenler</h2>
+      <p>Tarayıcıda çalışan bir alarm, telefonunuzdaki yerleşik alarm uygulamasıyla aynı şey değildir. Neyin mümkün olduğunu baştan bilmek, kritik bir saati kaçırmanızı önler:</p>
+      <ul>
+        <li><strong>Sekme açık olmalı.</strong> Alarm, sayfanın içinde çalışan bir zamanlayıcıyla denetlenir. Sekmeyi ya da tarayıcıyı kapatırsanız alarm çalmaz. Sekme başka bir pencerenin arkasında ya da arka planda olabilir; yine de açık kalmalıdır.</li>
+        <li><strong>Cihaz uyanık olmalı.</strong> Bilgisayar ya da telefon uyku moduna geçerse tarayıcı da durur ve alarm çalamaz. Güç ayarlarından uyku süresini uzatın ya da cihazı şarjda ve ekranı açık bırakın.</li>
+        <li><strong>Ses, etkileşimden sonra çalar.</strong> Tarayıcıların otomatik oynatma kuralı gereği, sayfayla hiç etkileşim kurulmamışsa ses çalınamaz. "Alarmı kur" düğmesine bastığınızda ses motoru hazırlanır. Sayfayı yeniledikten sonra ise bir kez tıklamanız gerekir; sayfa bunu size ses durum satırında hatırlatır.</li>
+      </ul>
+      <p>Bu sınırlar yüzünden uçuş, sınav, randevu gibi kaçırılması maliyetli olan saatlerde bu aracı tek başına kullanmayın; telefonunuzun kendi alarmını yedek olarak kurun.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Saati seçin.</strong> Alarm saati kutusuna saat ve dakikayı girin. Daha hızlı olsun diye "+5 dk", "+10 dk", "+30 dk" düğmeleri şu andan itibaren o kadar sonrasını, 06:00, 07:00 ve 08:00 düğmeleri sabah saatlerini seçer. Seçtiğiniz saat bugün geçtiyse alarm yarına kurulur.</li>
+        <li><strong>Adı ve sesi belirleyin.</strong> İsterseniz "Toplantı" ya da "Çamaşır" gibi bir ad yazın; çalma ekranında bu ad görünür. Sesi listeden seçin, "Dinle" ile önizleyin ve ses düzeyini ayarlayın.</li>
+        <li><strong>Alarmı kurun.</strong> "Alarmı kur" düğmesine basın. Alarm listeye eklenir, üstteki sayaç sonraki alarma kalan süreyi gösterir ve sekme başlığında da kalan süreyi görürsünüz.</li>
+        <li><strong>Sekmeyi açık bırakın.</strong> Başka işlerle uğraşabilirsiniz; yalnızca sekmeyi kapatmayın ve cihazın uyumasına izin vermeyin.</li>
+        <li><strong>Alarm çaldığında.</strong> "Ertele 5 dk" alarmı 5 dakika sonraya taşır, "Kapat" susturur. Klavyede Esc tuşu da alarmı kapatır.</li>
+      </ol>
+
+      <h2>Dört alarm sesi: hepsi tarayıcıda üretilir</h2>
+      <p>Alarm sesleri bir ses dosyası değildir; tarayıcının ses motoru (Web Audio) tarafından o anda üretilir. Bu sayede sayfa küçük kalır, internet bağlantısı gerekmez ve hiçbir yerden bir şey indirilmez. Dört seçenek vardır:</p>
+      <ul>
+        <li><strong>Klasik zil:</strong> iki tonlu, kısa ve tiz bir "ring ring" sesi. Dikkat çekmesi en kolay olandır.</li>
+        <li><strong>Yumuşak melodi:</strong> yükselen ve alçalan bir nota dizisi. Uyanırken daha nazik bir başlangıç isteyenler için.</li>
+        <li><strong>Dijital bip:</strong> hızlı ardışık bip sesleri; sessiz ortamlarda ya da mutfak zamanlayıcısı gibi kullanımda uygundur.</li>
+        <li><strong>Uyandırıcı siren:</strong> yükselip alçalan keskin bir ses. Derin uykuda bile fark edilmesi için tasarlandı; ses düzeyini kısarak başlamanızı öneririz.</li>
+      </ul>
+      <p>Alarm kapatılana ya da ertelenene kadar seçilen desen aralıklarla tekrarlanır. "Dinle" düğmesi melodiyi bir kez çalar; böylece alarm kurmadan önce sesi ve ses düzeyini deneyebilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="online-alarm-b" aria-label="Reklam"></div>
+
+      <h2>Çalma ekranı: tam ekran uyarı, titreşim ve sekme başlığı</h2>
+      <p>Saat geldiğinde sayfanın tamamı koyu renkli bir uyarı katmanıyla örtülür. Katmanda alarmın saati ve adı büyük harflerle görünür; arkadaki sayfa etkileşime kapatılır, böylece yanlışlıkla başka bir yere dokunmazsınız. Odak doğrudan "Kapat" düğmesine gider; klavyeyle Enter, Boşluk ya da Esc ile kapatabilirsiniz. Aynı anda birden fazla alarm çalarsa katman sırayla gösterilir ve kaç alarm daha çaldığı belirtilir.</p>
+      <p>Cihazınız destekliyorsa titreşim de kullanılır. Titreşim desteği tarayıcıya bağlıdır: Android'deki Chrome gibi tarayıcılarda çalışır, iPhone'daki Safari bu özelliği sunmaz. Sekme başka bir pencerenin arkasındaysa sekme başlığı alarm adıyla saniyede bir yanıp söner; tarayıcı çubuğuna ya da görev çubuğuna bakan biri uyarıyı yine de fark eder.</p>
+
+      <h2>Birden çok alarm, ertele ve kapat</h2>
+      <p>Aynı sayfada en fazla 20 alarm kurabilirsiniz. Liste, çalmaya en yakın alarmı en üstte gösterir; her satırda saat, ad, gün (bugün ya da yarın), ses adı ve kalan süre bulunur. "Kapat" düğmesi alarmı pasif yapar ama listeden silmez, böylece aynı alarmı yarın tekrar "Aç"abilirsiniz. "Sil" alarmı tamamen kaldırır. Alarmlar tek seferliktir; her gün tekrar etmez.</p>
+      <p>Çalarken "Ertele 5 dk" düğmesine bastığınızda alarm susar ve 5 dakika sonrasına taşınır; listede "ertelendi" etiketiyle görünür. İstediğiniz kadar erteleyebilirsiniz. Sayfa kapalıyken zamanı gelen bir alarm çalamayacağı için, sayfayı yeniden açtığınızda "Kaçırıldı" olarak işaretlenir ve tek tıkla yeniden kurabilirsiniz.</p>
+
+      <h2>Tarayıcı bildirimi: isteğe bağlı ek uyarı</h2>
+      <p>"Alarm çalınca tarayıcı bildirimi de göster" kutusunu işaretlerseniz tarayıcınız bildirim izni ister. İzin verirseniz alarm çaldığında işletim sisteminin bildirim alanında da bir mesaj görürsünüz; bu, sekme başka bir pencerenin arkasında kaldığında işe yarar. İzin yalnızca siz kutuyu işaretlediğinizde istenir, sayfa açılırken sorulmaz. İzin vermezseniz ya da daha önce engellediyseniz alarm sorunsuz çalışmaya devam eder; yalnızca bildirim gösterilmez.</p>
+
+      <h2>Daha güvenilir kullanım için ipuçları</h2>
+      <ul>
+        <li>Alarm kurduktan sonra cihazın uyku süresini uzatın ya da şarja takın.</li>
+        <li>Sekmeyi sabitleyin (sağ tıklayıp "Sekmeyi sabitle") ve yanlışlıkla kapatmayın.</li>
+        <li>Cihazın sesinin açık ve sekmenin sessize alınmamış olduğundan emin olun; "Dinle" ile önceden deneyin.</li>
+        <li>Sayfayı yeniledikten sonra bir kez tıklayarak sesi yeniden etkinleştirin.</li>
+        <li>Kaçırılmaması gereken saatlerde cihazınızın kendi alarmını yedek olarak kurun.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans alarm saati?</h2>
+      <ul>
+        <li><strong>Gizli kalır.</strong> Alarmlarınız yalnızca tarayıcınızda saklanır; hiçbir sunucuya gönderilmez, takip edilmez.</li>
+        <li><strong>Sınırlarını açıkça söyler.</strong> Sekme açık ve cihaz uyanık olmalı; bunu sayfanın en üstünde yazıyoruz, sürpriz yok.</li>
+        <li><strong>Dosya ve uygulama gerekmez.</strong> Sesler tarayıcıda üretilir; kurulum, hesap ya da izin zorunluluğu yoktur.</li>
+        <li><strong>Erişilebilir.</strong> Klavyeyle tam kullanılır, çalma ekranı yüksek kontrastlıdır, ekran okuyucu uyumlu etiketler içerir.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sahte "premium" ya da yanıltıcı düğme yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Online alarm tarayıcı ya da sekme kapalıyken çalar mı?</summary><p>Hayır. Alarm sayfanın içinde çalışan bir zamanlayıcıyla kontrol edilir; sekmeyi ya da tarayıcıyı kapatırsanız alarm çalmaz. Sayfayı yeniden açtığınızda zamanı geçmiş alarmlar "Kaçırıldı" olarak listelenir. Güvenmeniz gereken durumlarda cihazınızın kendi alarm uygulamasını da kurun.</p></details>
+        <details><summary>Bilgisayar uyku modundayken alarm çalar mı?</summary><p>Hayır. Bilgisayar ya da telefon uyku moduna geçtiğinde tarayıcı da duraklar ve alarm çalamaz. Alarm kurduktan sonra cihazın uyumayacağından emin olun; güç ayarlarından uyku süresini uzatabilir ya da cihazı şarjda ve ekranı açık bırakabilirsiniz.</p></details>
+        <details><summary>Alarm sesi neden çıkmıyor?</summary><p>Tarayıcılar, kullanıcı sayfayla etkileşim kurmadan ses çalmayı engeller. "Alarmı kur" düğmesine basmak sesi hazırlar; sayfayı yeniledikten sonra bir kez tıklamak gerekir. Ayrıca cihazın sesinin açık olduğunu, sekmenin sessize alınmadığını ve ses düzeyi çubuğunun sıfırda olmadığını kontrol edin. Ses engellense bile tam ekran uyarı ve sekme başlığı çalışmaya devam eder.</p></details>
+        <details><summary>Alarmlarım nerede saklanıyor, bir yere gönderiliyor mu?</summary><p>Alarmlar yalnızca bu tarayıcının yerel depolamasında (localStorage) saklanır ve hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz ya da gizli pencere kullanırsanız kalıcı olmaz. Alarm adları ve saatleri bizim için görünmezdir.</p></details>
+        <details><summary>Sekme arka plandayken alarm tam saatinde çalar mı?</summary><p>Genellikle evet, ancak tarayıcılar arka plandaki sekmelerin zamanlayıcılarını enerji tasarrufu için sınırlayabilir. Bu yüzden alarm birkaç saniye, uzun süre arka planda kalmış sekmelerde ise nadiren bir dakikaya kadar gecikebilir. Daha güvenilir olması için sekmeyi sabitleyin ya da alarm saatine yakın sekmeye bakın.</p></details>
+        <details><summary>Ertele düğmesi nasıl çalışır?</summary><p>"Ertele 5 dk" çalan alarmı susturur ve aynı alarmı 5 dakika sonrasına taşır. İstediğiniz kadar tekrar erteleyebilirsiniz. "Kapat" ise alarmı tamamen susturur; alarm listede kapalı olarak kalır ve istediğinizde "Aç" düğmesiyle bir sonraki o saate yeniden kurulur.</p></details>
+        <details><summary>Telefonda kullanabilir miyim, kilit ekranında çalar mı?</summary><p>Telefonda tarayıcıdan kullanabilirsiniz, ancak ekran kilitlenince birçok mobil tarayıcı sekmeyi askıya alır ve alarm çalmayabilir. Telefonda uyanmak gibi önemli işler için telefonun yerleşik alarm uygulamasını kullanın; bu sayfa bilgisayar başında ya da ekranı açık kalan cihazlar için uygundur.</p></details>
+        <details><summary>Kaç alarm kurabilirim, alarmlar her gün tekrar eder mi?</summary><p>En fazla 20 alarm kurabilirsiniz. Alarmlar tek seferliktir: çaldıktan ve kapatıldıktan sonra listede kapalı kalır. Aynı saate tekrar kurmak için listedeki "Aç" düğmesine basmanız yeterlidir.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../zamanlayici/">Zamanlayıcı: Geri Sayım ve Pomodoro</a></li>
+        <li><a href="../kronometre/">Online Kronometre</a></li>
+        <li><a href="../uyku-hesapla/">Uyku Saati Hesaplama</a></li>
+        <li><a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a></li>
+        <li><a href="../kac-gun-kaldi/">Kaç Gün Kaldı?</a></li>
+      </ul>
+      <p class="ba-note">Kurumunuza özel yazılım ya da web çözümü gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="online-alarm-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <!-- Alarm çalma ekranı: sayfanın geri kalanı etkileşime kapatılır; reklam içermez. -->
+  <div id="ring" class="ao-ring" role="alertdialog" aria-modal="true" aria-labelledby="ring-title" aria-describedby="ring-name" data-sound="" hidden>
+    <h2 id="ring-title">ALARM</h2>
+    <p class="ao-ring-time" id="ring-time">00:00</p>
+    <p class="ao-ring-name" id="ring-name">Alarm</p>
+    <p class="ao-ring-more" id="ring-more"></p>
+    <div class="ao-ring-actions">
+      <button id="ring-snooze" class="ba-btn ao-alt" type="button">Ertele 5 dk</button>
+      <button id="ring-close" class="ba-btn" type="button">Kapat</button>
+    </div>
+    <p class="ao-ring-audio" id="ring-audio" aria-live="polite"></p>
+  </div>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

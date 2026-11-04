@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Tavla Oyna – Ücretsiz Online Tavla (kurulumsuz)</title>
+  <meta name="description" content="Online tavla oyna: bilgisayara karşı üç zorluk seviyesinde ya da aynı cihazda iki kişilik. Türk tavlası kuralları, mars, kırma ve taş toplama, sürükle-bırak, geri al, 3 ve 5 puanlık maç. Ücretsiz, kayıtsız, kurulumsuz; para ve bahis yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/tavla/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .tv-layout { display: grid; gap: 20px; }
+    @media (min-width: 960px) { .tv-layout { grid-template-columns: minmax(0, 700px) minmax(0, 1fr); align-items: start; } }
+    .tv-boardcol, .tv-side { min-width: 0; }
+    .tv-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .tv-status.is-warn { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .tv-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .tv-msg { margin: 0 0 10px; min-height: 1.3em; font-size: .88rem; color: var(--ba-text-muted); line-height: 1.35; }
+    .tv-boardwrap { position: relative; max-width: 700px; margin: 0 auto; }
+    .tv-svg { display: block; width: 100%; height: auto; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; border-radius: 12px; box-shadow: 0 4px 14px rgba(30, 33, 38, .25); }
+    .tv-frame { fill: #5b3d26; }
+    .tv-field { fill: #e8d6ad; }
+    .tv-bar { fill: #4a3120; }
+    .tri-a { fill: #8d3b2b; }
+    .tri-b { fill: #c79a5c; }
+    .tray-bg { fill: #46301f; stroke: #2e1f14; stroke-width: 2; }
+    .tv-num { fill: #f3e7cf; font-size: 12px; font-family: var(--ba-mono); }
+    .pt { cursor: pointer; outline: none; }
+    .pt .hit { fill: transparent; stroke: none; }
+    .pt .hl { fill: none; stroke: none; pointer-events: none; }
+    .pt.is-last .hl { fill: rgba(240, 200, 40, .28); }
+    .pt.is-sel .hl { fill: rgba(241, 221, 145, .6); stroke: #0b5d33; stroke-width: 3; }
+    .pt.is-dest .hl { fill: rgba(30, 160, 90, .38); stroke: #0b5d33; stroke-width: 3; }
+    .pt.is-hit .hl { fill: rgba(200, 40, 30, .4); stroke: #a3271f; stroke-width: 3; }
+    .tv-hints .pt.is-src .ck:last-of-type, .tv-hints .pt.is-src .ck { stroke-dasharray: 5 3; }
+    .pt:focus-visible .hit { stroke: #1d4ed8; stroke-width: 4; fill: rgba(29, 78, 216, .1); }
+    .ck { stroke-width: 2; }
+    .ck-w { fill: #f7f0dc; stroke: #6b5530; }
+    .ck-b { fill: #2b2b31; stroke: #000; }
+    .ck-in { fill: none; stroke-width: 1.5; }
+    .ck-in-w { stroke: #d2c093; }
+    .ck-in-b { stroke: #5a5a64; }
+    .ck-n { font-size: 17px; font-weight: 700; font-family: var(--ba-mono); pointer-events: none; }
+    .ck-n-w { fill: #3b2e14; }
+    .ck-n-b { fill: #f1e9d2; }
+    .dest-dot { fill: #0b5d33; opacity: .85; pointer-events: none; }
+    .pt.is-hit .dest-dot { fill: #a3271f; }
+    @media (max-width: 460px) { .tv-num { display: none; } }
+    .tv-diceRow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 14px 0 0; }
+    .tv-dice { display: flex; gap: 8px; align-items: center; min-height: 48px; flex: 1 1 160px; }
+    .tv-die { display: block; width: 44px; height: 44px; }
+    .tv-die svg { display: block; width: 100%; height: 100%; }
+    .tv-die rect { fill: #fffdf6; stroke: #3b2e14; stroke-width: 2; }
+    .tv-die circle { fill: #231b12; }
+    .tv-die.is-used { opacity: .3; }
+    .is-rolling .tv-die { animation: tv-roll .3s ease-out; }
+    @keyframes tv-roll { from { transform: rotate(-120deg) scale(.7); } to { transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .is-rolling .tv-die { animation: none; } }
+    .tv-die-empty { color: var(--ba-text-muted); font-size: .9rem; }
+    .tv-diceRow .ba-btn { flex: 0 1 auto; min-width: 110px; }
+    .tv-ghost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; border-radius: 50%; border: 2px solid #000; box-shadow: 0 5px 8px rgba(0, 0, 0, .45); will-change: transform; }
+    .tv-ghost.is-w { background: #f7f0dc; border-color: #6b5530; }
+    .tv-ghost.is-b { background: #2b2b31; }
+    .tv-result { position: absolute; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(92%, 380px); padding: 14px; text-align: center; background: var(--ba-surface); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+    .tv-result[hidden] { display: none; }
+    .tv-result h3 { margin: 0 0 6px; font-size: 1.15rem; color: var(--ba-text); }
+    .tv-result p { margin: 0 0 10px; font-size: .9rem; color: var(--ba-text); }
+    .tv-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .tv-note { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .tv-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .tv-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .tv-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .tv-field select:focus-visible { border-color: var(--ba-primary); }
+    .tv-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .tv-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .tv-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .tv-actions .ba-btn { flex: 1 1 130px; }
+    .tv-score { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 8px; }
+    .tv-sc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 8px 10px; }
+    .tv-sc strong { display: flex; align-items: center; gap: 8px; font-size: .95rem; }
+    .tv-sc .chip { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #6b5530; flex: none; }
+    .tv-sc .chip-w { background: #f7f0dc; }
+    .tv-sc .chip-b { background: #2b2b31; border-color: #000; }
+    .tv-sc .num { display: block; font-family: var(--ba-mono); font-size: 1.5rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .tv-sc small { color: var(--ba-text-muted); font-size: .8rem; }
+    .tv-matchinfo { margin: 0 0 14px; font-size: .88rem; color: var(--ba-text-muted); }
+    .tv-stats { margin: 0 0 8px; font-size: .85rem; color: var(--ba-text-muted); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.tv-ad-a { margin-top: 56px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Tavla – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz tavla: bilgisayara karşı üç zorluk seviyesi veya aynı cihazda iki kişilik. Para ve bahis içermez.","inLanguage":"tr","genre":["Masa oyunu","Zar oyunu","Strateji"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/tavla/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Tavlada iki zarı da oynamak zorunlu mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Mümkünse iki zarın sayısını da oynamalısınız. Yalnızca birini oynayabiliyorsanız ve ikisi farklıysa büyük zarı oynamanız gerekir. Oyun geçersiz hamleleri zaten seçtirmez."}},
+  {"@type":"Question","name":"Çift zar gelirse ne olur?","acceptedAnswer":{"@type":"Answer","text":"Çift zarda zarın sayısını dört kez oynarsınız. Örneğin 3-3 atarsanız dört ayrı hamle yapar, her biri 3 hane ilerler. Taşları farklı taşlarla ya da aynı taşla oynayabilirsiniz."}},
+  {"@type":"Question","name":"Mars nedir, kaç puan eder?","acceptedAnswer":{"@type":"Answer","text":"Rakibiniz hiç taş toplayamadan siz 15 taşınızı da toplarsanız mars yaparsınız. Bu oyunda mars 2 puandır, normal galibiyet 1 puandır. Çift küp kullanılmaz."}},
+  {"@type":"Question","name":"Kırık taş ne demek, ne zaman girer?","acceptedAnswer":{"@type":"Answer","text":"Rakip tek kalmış taşınıza basarsa taşınız kırılır ve orta çubuğa gider. Çubukta taşınız varken başka hiçbir taşı oynayamazsınız; önce o taşı rakibin ev bölgesine geri sokmanız gerekir."}},
+  {"@type":"Question","name":"Taşları ne zaman toplayabilirim?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca 15 taşınızın hepsi ev bölgenizde olduğunda ve çubukta taşınız yokken toplama başlar. Tam zarla ya da en uzak taştan daha büyük zarla taş toplanır."}},
+  {"@type":"Question","name":"Bilgisayara karşı kaç zorluk seviyesi var?","acceptedAnswer":{"@type":"Answer","text":"Kolay, Orta ve Zor olmak üzere üç seviye var. Kolay rastgele geçerli hamle oynar, Orta tüm hamleleri değerlendirir, Zor ise rakibin olası bütün zarlarını da hesaba katarak en iyi adaylar arasından seçer."}},
+  {"@type":"Question","name":"Bu oyunda para, bahis ya da ödül var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfada para yatırma, bahis, ödül ya da kazanç yoktur. Tavla burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir masa oyunudur."}},
+  {"@type":"Question","name":"Aynı cihazda iki kişi oynayabilir miyim, hamlelerim saklanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet, oyun türünden İki kişilik seçeneğini seçin. Oyun tamamen tarayıcınızda çalışır; hamleler hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı galibiyet, yenilgi ve mars sayınız bu cihazda tutulur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Tavla Oyna</span> – Ücretsiz Online Tavla</h1>
+      <p class="lead">Bilgisayara karşı ya da aynı cihazda arkadaşınızla tavla oynayın. Zar atın, taşlarınızı kırın, kapı yapın, taşlarınızı toplayın; kurallar otomatik denetlenir ve geçerli hamleler tahtada gösterilir. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz. Oyunda para, bahis ya da ödül yoktur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="tv-box" class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Tavla oyunu</h2>
+      <div class="tv-layout">
+        <div class="tv-boardcol">
+          <p id="tv-status" class="tv-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <p id="tv-msg" class="tv-msg"></p>
+          <div class="tv-boardwrap">
+            <svg id="tv-board" class="tv-svg" viewBox="0 0 600 440" role="group" aria-label="Tavla tahtası, 24 hane"></svg>
+            <div id="tv-result" class="tv-result" role="dialog" aria-labelledby="tv-result-title" hidden>
+              <h3 id="tv-result-title">Oyun bitti</h3>
+              <p id="tv-result-text"></p>
+              <button id="tv-next" class="ba-btn ba-btn-primary" type="button">Sonraki oyun</button>
+            </div>
+          </div>
+          <div class="tv-diceRow">
+            <div id="tv-dice" class="tv-dice" aria-live="off"></div>
+            <button id="tv-roll" class="ba-btn ba-btn-primary" type="button">Zar at (Z)</button>
+            <button id="tv-undo" class="ba-btn" type="button" disabled>Geri al (U)</button>
+          </div>
+          <p class="tv-help">Taşa dokunun, sonra ışıklı haneye dokunun ya da taşı sürükleyip bırakın. Her zar ayrı oynanır. Beyaz taşlar 24'ten 1'e gider, evleri sağ alttır; siyah taşlar 1'den 24'e gider, evleri sağ üsttür. Klavyede ok tuşları, Enter, Z (zar at) ve U (geri al) çalışır.</p>
+        </div>
+        <div class="tv-side">
+          <div class="tv-controls">
+            <div class="tv-field"><label for="tv-mode">Oyun türü</label><select id="tv-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişilik (aynı cihaz)</option></select></div>
+            <div class="tv-field"><label for="tv-level">Zorluk</label><select id="tv-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+            <div class="tv-field"><label for="tv-color">Taş rengi</label><select id="tv-color"><option value="w">Beyaz</option><option value="b">Siyah</option></select></div>
+            <div class="tv-field"><label for="tv-match">Maç uzunluğu</label><select id="tv-match"><option value="1">Tek oyun</option><option value="3">3 puanlık maç</option><option value="5">5 puanlık maç</option></select></div>
+            <label class="tv-check"><input type="checkbox" id="tv-hints" checked> Oynayabilen taşları işaretle</label>
+          </div>
+          <div class="tv-actions"><button id="tv-new" class="ba-btn" type="button">Yeni oyun</button><button id="tv-full" class="ba-btn" type="button">Tam ekran</button></div>
+          <div class="tv-score" aria-label="Skor ve pip sayısı">
+            <div class="tv-sc"><strong><span class="chip chip-w" aria-hidden="true"></span>Beyaz</strong><span class="num" id="tv-score-w">0</span><small>pip: <span id="tv-pips-w">167</span></small></div>
+            <div class="tv-sc"><strong><span class="chip chip-b" aria-hidden="true"></span>Siyah</strong><span class="num" id="tv-score-b">0</span><small>pip: <span id="tv-pips-b">167</span></small></div>
+          </div>
+          <p id="tv-match-info" class="tv-matchinfo">Tek oyun</p>
+          <div id="tv-stats-wrap"><p id="tv-stats" class="tv-stats"></p><button id="tv-stats-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button></div>
+          <p class="tv-note">Bu oyun yalnızca eğlence içindir: para, bahis ve ödül yoktur.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad tv-ad-a" data-slot="oyun-tavla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Tavla nedir? Kısaca Türk tavlası</h2>
+      <p>Tavla, iki oyuncunun on beşer taşla ve iki zarla oynadığı, hem şansa hem de hesaba dayanan bir masa oyunudur. Dünyada "backgammon" adıyla bilinir; Türkiye'de kahvehanelerde, evlerde, sahil kıyılarında ve turnuvalarda yüzlerce yıldır oynanır. Zarlar hamlenizi belirler, ama o hamleyi nasıl kullandığınız sonucu belirler: aynı zarla biri kolayca tehlikeye girer, öteki sağlam bir kapı kurar. Bu sayfada tavlayı ücretsiz, kurulum yapmadan ve kayıt olmadan, bilgisayara karşı ya da aynı cihazda bir arkadaşınızla oynayabilirsiniz. Oyunun kökenine dair ayrıntılar tarihçiler arasında tartışmalıdır; benzer zar ve yarış oyunlarının binlerce yıl öncesine uzandığı bilinir.</p>
+
+      <h2>Tahta ve başlangıç dizilimi</h2>
+      <p>Tahtada 24 hane (üçgen) vardır. Haneler dört bölgeye ayrılır: her oyuncunun bir ev bölgesi (altı hane) ve bir dış bölgesi (altı hane). Ortada, iki yarıyı ayıran çubuk bulunur; kırılan taşlar buraya gider. Bu sayfada hane numaraları beyazın bakışıyla verilir: beyazın evi 1-6. haneler (sağ alt), siyahın evi 19-24. haneler (sağ üst) olur. Beyaz taşlar 24'ten 1'e doğru, siyah taşlar 1'den 24'e doğru yürür. Siyah olarak oynarsanız tahta size göre çevrilir ve numaralar sizin bakışınızdan yazılır.</p>
+      <p>Başlangıçta her oyuncunun taşları şöyle dizilir (beyaz için): 24. hanede 2, 13. hanede 5, 8. hanede 3 ve 6. hanede 5 taş. Siyah aynı dizilimi tahtanın karşı tarafında kurar. Toplam pip sayısı, yani bütün taşların eve girmek için gereken zar sayısı, her iki tarafta da 167'dir. Pip sayıları sağ paneldeki skor kutularında canlı olarak görünür; yarışta kimin önde olduğunu hızlıca anlamanın en iyi yolu budur.</p>
+
+      <h2>Tavla nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Açılış zarı.</strong> Oyun başında her oyuncu bir zar atar. Büyük atan başlar ve ilk hamlesini bu iki zarla oynar. Zarlar eşit gelirse yeniden atılır. Oyun bunu sizin yerinize yapar ve kimin başladığını yazar.</li>
+        <li><strong>Zar atma ve hamle.</strong> Her sırada iki zar atılır. Her zar ayrı bir hamledir: 5 ve 3 atarsanız bir taşı 5, bir taşı 3 hane ilerletirsiniz ya da tek taşı toplam 8 hane yürütürsünüz. Taşlar hep kendi yönünüzde, ileri gider.</li>
+        <li><strong>Kapalı haneler.</strong> Rakibin iki ya da daha fazla taşının bulunduğu haneye inemezsiniz. Boş, kendi taşlarınızın olduğu ya da rakibin tek taşının olduğu haneye inebilirsiniz.</li>
+        <li><strong>Kırma.</strong> Rakibin tek kalmış taşının üstüne inerseniz o taş kırılır ve orta çubuğa gider. Rakip, kırık taşını geri sokana kadar başka taş oynayamaz.</li>
+        <li><strong>Taş toplama.</strong> Bütün taşlarınız ev bölgenize girince taşları tahtadan çıkarmaya başlarsınız. İlk 15 taşını toplayan oyunu kazanır.</li>
+      </ol>
+
+      <h2>Hamle zorunlulukları</h2>
+      <p>Tavlada çoğu zaman serbest görünen şey, aslında kurallarla sınırlıdır. Oyun bu zorunlulukları otomatik uygular; geçersiz bir taşı seçemez ya da geçersiz haneye bırakamazsınız.</p>
+      <ul>
+        <li><strong>İki zarı da oynayın.</strong> Mümkünse iki zarın sayısını da kullanmak zorundasınız. İki zarı birlikte oynatan bir yol varsa, yalnızca bir zarı oynatan yolu seçemezsiniz.</li>
+        <li><strong>Büyük zar kuralı.</strong> İki zardan yalnızca biri oynanabiliyorsa ve zarlar farklıysa büyük zarı oynamanız gerekir. Örneğin 6 ve 1 atıp yalnızca birini oynayabiliyorsanız 6'yı oynarsınız.</li>
+        <li><strong>Çift zar dört hamledir.</strong> 4-4 atarsanız dört kez 4 hane oynarsınız. Dördünü de oynayamıyorsanız, oynanabildiği kadarını oynarsınız.</li>
+        <li><strong>Kırık taş önce girer.</strong> Çubukta taşınız varsa önce onu rakibin ev bölgesine sokmanız gerekir. Giriş yapılacak hane rakibin kapısıysa o zar kullanılamaz. Giremiyorsanız sıra geçer.</li>
+        <li><strong>Pas.</strong> Hiçbir zar oynanamıyorsa sıra otomatik olarak rakibe geçer. Oyun bunu bir uyarıyla gösterir ve kısa bir beklemeden sonra devam eder.</li>
+        <li><strong>Toplama koşulu.</strong> Yalnızca bütün taşlarınız ev bölgesindeyken ve çubukta taşınız yokken taş toplanır. Zar tam eşleşiyorsa o haneden taş çıkar. Zar daha büyükse ve daha uzak hanede taşınız yoksa en uzak taş çıkar.</li>
+      </ul>
+
+      <h2>Kırma, kapı ve açık taş</h2>
+      <p>Aynı hanede iki ya da daha fazla taşınız varsa buna kapı denir. Kapı hem taşlarınızı korur hem de rakibin geçişini engeller. Tek kalmış taşa açık taş denir; rakip tam zarla ulaşırsa kırılır ve çubuğa gider. Kırılmak çoğu zaman yalnızca bir hamle kaybı değil, kat ettiğiniz mesafeyi de kaybetmektir. Çubuktaki taş en baştan, 25 pip uzaktan başlar. Üst üste dizilmiş altı kapı, "set" ya da "prime" oluşturur ve arkasındaki rakip taşlarını neredeyse hapsedebilir. Bu nedenle deneyimli oyuncular açık taş bırakmamaya, bırakacaksa riski en düşük yere bırakmaya çalışır.</p>
+
+      <div class="ba-ad" data-slot="oyun-tavla-b" aria-label="Reklam"></div>
+
+      <h2>Mars ve puanlama</h2>
+      <p>Bu oyunda Türk tavlası kuralları uygulanır: çift küp (doubling cube) yoktur, yani puanı ikiye katlayan bir teklif mekanizması bulunmaz. Normal bir galibiyet 1 puandır. Rakip siz 15 taşı da toplamadan hiç taş toplayamamışsa buna mars denir ve 2 puan eder. Bu sayfa üçlü mars gibi ek puanlamaları ayrıca saymaz; kendi çevrenizde farklı bir uygulama varsa oyundan önce karşılıklı kararlaştırın.</p>
+      <p>Oyun uzunluğunu sağ panelden seçebilirsiniz: tek oyun, 3 puanlık maç ya da 5 puanlık maç. Maçta bir oyun bitince skor eklenir; hedef puana ilk ulaşan maçı kazanır. Mars yaparsanız iki puan birden alırsınız, bu yüzden 3 puanlık bir maçta tek mars ile maça çok yaklaşabilirsiniz. Her oyunun başında yeniden açılış zarı atılır.</p>
+
+      <h2>Açılış hamleleri tablosu</h2>
+      <p>İlk zar atışında en çok kullanılan hamleler aşağıdadır. Numaralar beyaz için hane numaralarıdır; "13/11" ifadesi 13. haneden 11. haneye bir taş oynamak demektir. Kaynaklara göre küçük farklılıklar olabilir; bu tablo bir başlangıç rehberidir.</p>
+      <table>
+        <thead><tr><th scope="col">Zar</th><th scope="col">Yaygın hamle</th><th scope="col">Amaç</th></tr></thead>
+        <tbody>
+          <tr><td>3-1</td><td>8/5, 6/5</td><td>5. haneyi kapı yapmak</td></tr>
+          <tr><td>4-2</td><td>8/4, 6/4</td><td>4. haneyi kapı yapmak</td></tr>
+          <tr><td>5-3</td><td>8/3, 6/3</td><td>3. haneyi kapı yapmak</td></tr>
+          <tr><td>6-1</td><td>13/7, 8/7</td><td>bar noktası (7) kapısı</td></tr>
+          <tr><td>6-5</td><td>24/13</td><td>arka taşı kaçırmak</td></tr>
+          <tr><td>6-4</td><td>24/14 ya da 24/18, 13/9</td><td>arka taşı ilerletmek</td></tr>
+          <tr><td>6-3</td><td>24/18, 13/10</td><td>arka taşı öne çıkarmak</td></tr>
+          <tr><td>6-2</td><td>24/18, 13/11</td><td>arka taşı öne çıkarmak</td></tr>
+          <tr><td>5-4</td><td>24/20, 13/8</td><td>dengeli gelişme</td></tr>
+          <tr><td>5-2</td><td>13/8, 13/11</td><td>orta taşları indirmek</td></tr>
+          <tr><td>4-3</td><td>24/20, 13/10</td><td>dengeli gelişme</td></tr>
+          <tr><td>3-2</td><td>24/21, 13/11</td><td>gelişme</td></tr>
+          <tr><td>2-1</td><td>13/11, 6/5</td><td>gelişme</td></tr>
+          <tr><td>1-1</td><td>8/7 (2 taş), 6/5 (2 taş)</td><td>iki kapı birden</td></tr>
+          <tr><td>2-2</td><td>13/11 (2 taş), 6/4 (2 taş)</td><td>4. haneyi kapatmak</td></tr>
+          <tr><td>3-3</td><td>8/5 (2 taş), 6/3 (2 taş)</td><td>iki güçlü kapı</td></tr>
+          <tr><td>4-4</td><td>24/20 (2 taş), 13/9 (2 taş)</td><td>arka taşları ilerletmek</td></tr>
+          <tr><td>5-5</td><td>13/3 (2 taş)</td><td>3. hanede kapı</td></tr>
+          <tr><td>6-6</td><td>24/18 (2 taş), 13/7 (2 taş)</td><td>güçlü set başlangıcı</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Zar at düğmesine basın. Taşı olan haneye ya da orta çubuğa dokunun; gidebileceği haneler yeşil, rakip taşını kıracak haneler kırmızı görünür. Hedefe dokununca hamle oynanır. Toplama için taşı kendi toplama alanına götürün.</li>
+        <li><strong>Sürükle-bırak:</strong> Taşı basılı tutup hedef haneye sürükleyin. Dokunmatik ekranlarda da çalışır.</li>
+        <li><strong>Klavye:</strong> Ok tuşlarıyla haneler arasında gezin, Enter ya da Boşluk ile seçin ve hedefte yine Enter'a basın. Z zar atar, U son hamleyi geri alır, Esc seçimi iptal eder.</li>
+        <li><strong>Geri al:</strong> Aynı sırada yaptığınız hamleleri tek tek geri alır. Sıra rakibe geçtikten sonra geri alma yoktur.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tam ekran modunda reklam gösterilmez.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünür?</h2>
+      <p>Bilgisayar, o atışla yapılabilecek bütün geçerli hamle dizilerini üretir ve her sonuç konumunu puanlar. Puanlama pip farkını, kapıları ve ardışık kapı uzunluğunu, açık taşların rakip tarafından vurulma olasılığını, kırık taşları ve ev bölgesindeki taşları hesaba katar. Hesap, arayüzü dondurmamak için ayrı bir işçi iş parçacığında yapılır ve en fazla birkaç saniye sürer.</p>
+      <ul>
+        <li><strong>Kolay:</strong> Geçerli hamle dizilerinden birini rastgele seçer. Kuralları yeni öğrenenler için uygundur.</li>
+        <li><strong>Orta:</strong> Bütün geçerli dizileri değerlendirir ve en iyi puanlıyı oynar. Rakibin cevabını düşünmez.</li>
+        <li><strong>Zor:</strong> En iyi adayları seçer, rakibin 21 farklı zar atışını ve her birine en iyi cevabını hesaplar, beklenen değeri en yüksek hamleyi oynar.</li>
+      </ul>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Erken kapı kurun.</strong> Ev bölgenizdeki 5., 4. ve bar hanelerini kapı yapmak, rakibin taşlarını rahatsız eder.</li>
+        <li><strong>Açık taşı riske göre bırakın.</strong> Rakibin taşları uzaktaysa açık taş az riskli, hemen arkasındaysa çok risklidir. Rakibin vurma olasılığını hanelerin uzaklığına bakarak tahmin edin.</li>
+        <li><strong>Arka taşları unutmayın.</strong> En arkadaki iki taş rakibin set kurmasıyla hapsolabilir. Yarışta gerideyseniz onları rakibin ev bölgesinde tutmak vuruş şansı verir, öndeyseniz erken kaçırın.</li>
+        <li><strong>Pip sayısına bakın.</strong> Taşlar birbirini geçtikten sonra tavla saf bir yarışa döner; pip farkı kimin önde olduğunu söyler.</li>
+        <li><strong>Toplama sırasında boşluk bırakmayın.</strong> Taşları ev bölgesine dengeli yayın; boş hanelerde zarlar boşa gidebilir.</li>
+        <li><strong>Mars riskini hesaba katın.</strong> Çok geride kalıyorsanız en az bir taşı toplayabilmeyi hedefleyin; marstan kaçınmak 1 puan kurtarır.</li>
+      </ul>
+
+      <h2>Kumar ya da bahis değildir</h2>
+      <p>Tavla, bazı çevrelerde para ile oynanmasıyla anılır. Bu sayfada ise hiçbir koşulda para, bahis, ödül, kazanç ya da bunlara yönlendiren bir bağlantı yoktur. Skorlar yalnızca bu cihazın tarayıcısında tutulan sayılardır ve hiçbir değeri yoktur. Oyunu eğlence, zihin egzersizi ve kural öğrenmek için kullanın. Reşit olmayanlara ve oyun bağımlılığı riski taşıyanlara bu tür oyunların para ile oynanmasını önermiyoruz.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da oyun sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır. Hamleleriniz bir sunucuya iletilmez; yalnızca galibiyet, yenilgi ve mars sayınız bu cihazda tutulur.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da oyun çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile tahta sığar; dokunma, sürükleme ve klavye desteklenir.</li>
+        <li><strong>Ses yok.</strong> Oyun sessiz çalışır; ortak ortamlarda rahatça oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Tavlada iki zarı da oynamak zorunlu mu?</summary><p>Evet. Mümkünse iki zarın sayısını da oynamalısınız. Yalnızca birini oynayabiliyorsanız ve ikisi farklıysa büyük zarı oynamanız gerekir. Oyun geçersiz hamleleri zaten seçtirmez.</p></details>
+        <details><summary>Çift zar gelirse ne olur?</summary><p>Çift zarda zarın sayısını dört kez oynarsınız. Örneğin 3-3 atarsanız dört ayrı hamle yapar, her biri 3 hane ilerler. Taşları farklı taşlarla ya da aynı taşla oynayabilirsiniz.</p></details>
+        <details><summary>Mars nedir, kaç puan eder?</summary><p>Rakibiniz hiç taş toplayamadan siz 15 taşınızı da toplarsanız mars yaparsınız. Bu oyunda mars 2 puandır, normal galibiyet 1 puandır. Çift küp kullanılmaz.</p></details>
+        <details><summary>Kırık taş ne demek, ne zaman girer?</summary><p>Rakip tek kalmış taşınıza basarsa taşınız kırılır ve orta çubuğa gider. Çubukta taşınız varken başka hiçbir taşı oynayamazsınız; önce o taşı rakibin ev bölgesine geri sokmanız gerekir.</p></details>
+        <details><summary>Taşları ne zaman toplayabilirim?</summary><p>Yalnızca 15 taşınızın hepsi ev bölgenizde olduğunda ve çubukta taşınız yokken toplama başlar. Tam zarla ya da en uzak taştan daha büyük zarla taş toplanır.</p></details>
+        <details><summary>Bilgisayara karşı kaç zorluk seviyesi var?</summary><p>Kolay, Orta ve Zor olmak üzere üç seviye var. Kolay rastgele geçerli hamle oynar, Orta tüm hamleleri değerlendirir, Zor ise rakibin olası bütün zarlarını da hesaba katarak en iyi adaylar arasından seçer.</p></details>
+        <details><summary>Bu oyunda para, bahis ya da ödül var mı?</summary><p>Hayır. Sayfada para yatırma, bahis, ödül ya da kazanç yoktur. Tavla burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir masa oyunudur.</p></details>
+        <details><summary>Aynı cihazda iki kişi oynayabilir miyim, hamlelerim saklanır mı?</summary><p>Evet, oyun türünden "İki kişilik" seçeneğini seçin. Oyun tamamen tarayıcınızda çalışır; hamleler hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı galibiyet, yenilgi ve mars sayınız bu cihazda tutulur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../satranc/">Satranç</a></li>
+        <li><a href="../zar-at/">Zar At</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-tavla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

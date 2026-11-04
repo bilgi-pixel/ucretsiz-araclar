@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hızlı Okuma Aracı ve Okuma Hızı Testi – Kelime/Dakika Ölçün (Ücretsiz)</title>
+  <meta name="description" content="Hızlı okuma aracı: metni kelime kelime ortada okuyun, hızı 100-1000 kelime/dk ayarlayın. 200 kelimelik testle okuma hızınızı ve anlama oranınızı ölçün. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/hizli-okuma/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema tokenları ba.css'ten gelir. */
+    .rs-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+    .rs-tabs button { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ba-border-hover); background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 600; cursor: pointer; }
+    .rs-tabs button[aria-selected="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .rs-textarea { width: 100%; min-height: 150px; padding: 12px 14px; font: inherit; font-size: 1rem; line-height: 1.5; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; }
+    .rs-textarea:focus { border-color: var(--ba-primary); }
+    .rs-top { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .rs-top .ba-btn { min-height: 40px; padding: 6px 12px; font-size: .9rem; }
+    .rs-stage { --rs-base: 32px; --rs-scale: 1; --rs-orp: var(--ba-danger); position: relative; margin: 16px 0 8px; height: 150px; overflow: hidden; display: grid; align-items: center; border-radius: var(--ba-radius); border: 1px solid var(--ba-border); background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; }
+    .rs-stage.is-dark { background: #14161a; color: #f2f2f2; border-color: #3d4046; --rs-orp: #ff6b5e; }
+    .rs-stage::before, .rs-stage::after { content: ""; position: absolute; left: 50%; width: 2px; height: 16px; margin-left: -1px; background: var(--ba-text-muted); opacity: .6; }
+    .rs-stage.is-dark::before, .rs-stage.is-dark::after { background: #a6a8ad; }
+    .rs-stage::before { top: 12px; }
+    .rs-stage::after { bottom: 12px; }
+    .rs-word { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: baseline; font-size: calc(var(--rs-base) * var(--rs-scale)); font-weight: 500; line-height: 1.2; white-space: pre; padding: 0 12px; }
+    .rs-word .l { text-align: right; overflow: hidden; }
+    .rs-word .r { text-align: left; overflow: hidden; }
+    .rs-word .orp { color: var(--rs-orp); font-weight: 700; }
+    .rs-stage:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .rs-pos { width: 100%; min-height: 44px; accent-color: var(--ba-primary); }
+    .rs-info { margin: 0; font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-muted); }
+    .rs-status { margin: 8px 0 0; font-weight: 600; color: var(--ba-text-2); min-height: 1.5em; }
+    .ba-field input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--ba-primary); }
+    .rs-check { display: flex; align-items: center; gap: 8px; font-weight: 500; min-height: 44px; }
+    .rs-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .rs-kbd { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .rt-passage { white-space: pre-wrap; line-height: 1.8; font-size: 1.05rem; padding: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); overflow-wrap: anywhere; }
+    .rt-q { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 10px 14px 12px; margin: 0 0 12px; min-width: 0; }
+    .rt-q legend { font-weight: 600; padding: 0 6px; }
+    .rt-q label { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+    .rt-q input { width: 20px; height: 20px; accent-color: var(--ba-primary); flex: none; }
+    .rt-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 12px 0; padding: 0; list-style: none; }
+    .rt-stats li { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 12px; margin: 0; }
+    .rt-stats strong { display: block; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+    .rt-stats span { font-size: .8rem; color: var(--ba-text-muted); }
+    .rt-history { margin: 8px 0 0; padding-left: 20px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hızlı Okuma Aracı ve Okuma Hızı Testi – Bilişim Ajans","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/hizli-okuma/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Yapıştırdığım metin bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Metin ve .txt dosyaları yalnızca tarayıcınızın belleğinde işlenir. Tek saklanan şey, okuma hızı testinin son beş sonucudur (tarih, kelime/dakika ve anlama oranı); metin ve cevaplar kaydedilmez, geçmişi tek tıkla silebilirsiniz."}},{"@type":"Question","name":"ORP (kırmızı harf) nedir, neden kullanılıyor?","acceptedAnswer":{"@type":"Answer","text":"ORP, optimal tanıma noktası demektir. Bir kelimeye bakarken gözün sabitlendiği ve kelimenin en hızlı tanındığı harf kelimenin tam ortası değil, biraz soluna yakındır. Araç her kelimeyi bu harf hep aynı yerde duracak biçimde hizalar; böylece göz hiç oynamadan kelimeleri okuyabilir."}},{"@type":"Question","name":"Hangi hızla başlamalıyım?","acceptedAnswer":{"@type":"Answer","text":"Önce okuma hızı testini yapın ve KPM sonucunuzu görün. Okuyucuda bu değerin biraz üstünde, örneğin 50 kelime/dk fazlasıyla başlayın. Anlamayı koruyorsanız hızı kademeli artırın; kaçırdığınızı hissederseniz bir basamak geri dönün."}},{"@type":"Question","name":"Parça parça modu ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Bu modda iki ya da üç kelime birlikte gösterilir. Kelime grubunu tek bakışta okumak doğal okumaya daha yakındır ve içsesi azaltabilir. Özellikle uzun cümlelerde anlam bağını korumak kolaylaşır."}},{"@type":"Question","name":"Test sonucum neden kaydedilmedi?","acceptedAnswer":{"@type":"Answer","text":"Okuma süresi 10 saniyeden kısaysa metin baştan sona okunmamış sayılır ve sonuç saklanmaz. Metni dikkatle okuyup testi yeniden yapın. Tarayıcınız yerel depolamayı engelliyorsa (örneğin bazı özel gezinme modları) sonuç ekranda görünür ama geçmişe yazılamaz."}},{"@type":"Question","name":"Hangi dosyaları açabilirim?","acceptedAnswer":{"@type":"Answer","text":"Düz metin (.txt) dosyalarını, en fazla 2 MB. UTF-8 ve eski Türkçe kodlamayla (Windows-1254) kaydedilmiş dosyalar doğru okunur. Word ya da PDF belgesindeki metni kopyalayıp kutuya yapıştırabilirsiniz."}},{"@type":"Question","name":"Hızlı okuma anlamayı düşürür mü?","acceptedAnswer":{"@type":"Answer","text":"Hız arttıkça anlama düşebilir; özellikle zor ve yeni bilgiler içeren metinlerde. Bu yüzden test sonucunda etkin hız gösterilir. Hedef yalnızca hızlı değil, anlayarak hızlı okumaktır. Öğrenme amaçlı metinlerde daha düşük hız seçmek akıllıca olur."}},{"@type":"Question","name":"Sekmeyi değiştirdiğimde okuma neden duruyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcılar arka plandaki sekmelerde zamanlayıcıları yavaşlatır; kelimeler kaçmasın diye okuma otomatik duraklatılır. Sekmeye döndüğünüzde \"Oynat\" ile devam edebilirsiniz."}}]}
+  </script>
+</head>
+<body>
+    <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+    <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Yardımcı</a></li></ol>
+      <h1><span class="ba-grad">Hızlı Okuma</span> Aracı ve Okuma Hızı Testi</h1>
+      <p class="lead">Metni yapıştırın, kelimeler tek tek ekranın ortasında belirsin. Hızı dakikada 100 ile 1000 kelime arasında ayarlayın. Ayrıca 200 kelimelik testle okuma hızınızı ve anlama oranınızı ölçün. Her şey tarayıcınızda çalışır, metniniz gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" id="rs-box" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="rs-tabs" role="tablist" aria-label="Hızlı okuma bölümleri">
+        <button type="button" role="tab" id="tab-reader" aria-controls="panel-reader" aria-selected="true">Hızlı okuma</button>
+        <button type="button" role="tab" id="tab-test" aria-controls="panel-test" aria-selected="false" tabindex="-1">Okuma hızı testi</button>
+      </div>
+
+      <div id="panel-reader" role="tabpanel" aria-labelledby="tab-reader">
+        <div class="rs-top">
+          <label for="rs-text"><strong>Okunacak metin</strong></label>
+          <div class="ba-actions" style="margin:0">
+            <button id="rs-sample" class="ba-btn" type="button">Örnek metin</button>
+            <button id="rs-file-btn" class="ba-btn" type="button">.txt dosyası aç</button>
+            <input id="rs-file" type="file" accept=".txt,text/plain" hidden>
+            <button id="rs-clear" class="ba-btn" type="button">Temizle</button>
+          </div>
+        </div>
+        <textarea id="rs-text" class="rs-textarea" spellcheck="false" placeholder="Okumak istediğiniz metni buraya yapıştırın…"></textarea>
+
+        <div id="rs-stage" class="rs-stage" tabindex="0" role="group" aria-label="Kelime gösterim alanı. Başlatmak veya duraklatmak için tıklayın ya da Boşluk tuşuna basın.">
+          <div class="rs-word" id="rs-word"><span class="l" id="rs-l"></span><span class="orp" id="rs-o"></span><span class="r" id="rs-r"></span></div>
+        </div>
+        <label for="rs-pos" class="visually-hidden">Okuma konumu</label>
+        <input id="rs-pos" class="rs-pos" type="range" min="0" max="0" step="1" value="0">
+        <p id="rs-info" class="rs-info">Metin yok</p>
+        <p id="rs-status" class="rs-status" role="status" aria-live="polite">Metin bekleniyor</p>
+
+        <div class="ba-actions">
+          <button id="rs-back" class="ba-btn" type="button">&laquo; 10 kelime geri</button>
+          <button id="rs-play" class="ba-btn ba-btn-primary ba-btn-lg" type="button" aria-pressed="false">Oynat</button>
+          <button id="rs-fwd" class="ba-btn" type="button">10 kelime ileri &raquo;</button>
+        </div>
+
+        <div class="ba-options">
+          <div class="ba-field"><label for="rs-wpm">Hız: <output id="rs-wpm-out" for="rs-wpm">300 kelime/dk</output></label><input id="rs-wpm" type="range" min="100" max="1000" step="5" value="300"></div>
+          <div class="ba-field"><label for="rs-chunk">Gösterim</label><select id="rs-chunk"><option value="1">Tek kelime (ORP vurgulu)</option><option value="2">Parça parça: 2 kelime</option><option value="3">Parça parça: 3 kelime</option></select></div>
+          <div class="ba-field"><label class="rs-check" for="rs-dark"><input id="rs-dark" type="checkbox"> Karanlık arka plan</label></div>
+        </div>
+        <p class="rs-kbd">Kısayollar: <kbd>Boşluk</kbd> oynat / duraklat, <kbd>&larr;</kbd> <kbd>&rarr;</kbd> 10 kelime geri / ileri (<kbd>Shift</kbd> ile 1 kelime), <kbd>&uarr;</kbd> <kbd>&darr;</kbd> hızı 25 kelime/dk artır / azalt. Kırmızı harf, gözünüzün sabitleneceği noktadır.</p>
+      </div>
+
+      <div id="panel-test" role="tabpanel" aria-labelledby="tab-test" hidden>
+        <div id="rt-intro">
+          <p><strong>Okuma hızı testi:</strong> 200 kelimelik kısa bir hikâyeyi her zamanki gibi, anlayarak okuyun. Başla düğmesine basınca süre başlar; bitirince "Okumayı bitirdim" düğmesine basın. Metin kaybolur ve beş anlama sorusu gelir. Sonuçta dakikadaki kelime sayınız (KPM) ve anlama yüzdeniz görünür.</p>
+          <div class="ba-actions"><button id="rt-start" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Testi başlat</button></div>
+        </div>
+        <div id="rt-reading" hidden>
+          <div id="rt-passage" class="rt-passage" tabindex="0" aria-label="Test metni"></div>
+          <div class="ba-actions"><button id="rt-done" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Okumayı bitirdim</button></div>
+        </div>
+        <div id="rt-quiz" hidden>
+          <p>Metni görmeden yanıtlayın. Emin değilseniz en yakın seçeneği işaretleyin.</p>
+          <form id="rt-form" onsubmit="return false"></form>
+          <div class="ba-actions"><button id="rt-submit" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Sonucu göster</button></div>
+        </div>
+        <div id="rt-result" hidden>
+          <h3>Sonucunuz</h3>
+          <ul class="rt-stats" aria-label="Test sonucu">
+            <li><strong id="rt-kpm">0</strong><span>kelime/dakika (KPM)</span></li>
+            <li><strong id="rt-acc">%0</strong><span>anlama oranı</span></li>
+            <li><strong id="rt-eff">0</strong><span>etkin hız (KPM × anlama)</span></li>
+            <li><strong id="rt-time">0 sn</strong><span>okuma süresi</span></li>
+          </ul>
+          <p id="rt-comment"></p>
+          <div class="ba-actions"><button id="rt-retry" class="ba-btn" type="button">Testi yeniden yap</button></div>
+        </div>
+        <div id="rt-history-box" hidden>
+          <h3>Son sonuçlarınız</h3>
+          <p class="rs-info">Yalnızca bu tarayıcıda, son 5 sonuç saklanır. Metin kaydedilmez.</p>
+          <ol id="rt-history" class="rt-history"></ol>
+          <div class="ba-actions"><button id="rt-clear-history" class="ba-btn" type="button">Geçmişi sil</button></div>
+        </div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="hizli-okuma-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Hızlı okuma aracı: kelimeler gözünüze gelsin</h2>
+      <p>Normal okurken gözleriniz satır boyunca küçük sıçramalarla ilerler, her sıçramada birkaç kelimeye bakar, sonra bir sonraki satırın başına döner. Bu hareketler zaman alır ve dikkatinizi dağıtabilir. Hızlı okuma aracı, bu sıçramaları ortadan kaldıran basit bir fikre dayanır: kelimeler ekranın aynı noktasında peş peşe gösterilir, siz de gözünüzü hiç oynatmadan okursunuz. Bu yöntemin bilimsel adı hızlı seri görsel sunumdur (RSVP). Kelimenin içindeki kırmızı harf optimal tanıma noktasıdır; beyin kelimeyi en kolay bu harfe bakarak tanır, bu yüzden her kelimede aynı harfi aynı yere yerleştiriyoruz.</p>
+      <p>Aracı kullanmak için bir makale, ders notu ya da kitaptan bir bölüm yapıştırmanız yeterli. Hızı dakikada 100 ile 1000 kelime arasında seçersiniz; varsayılan 300'dür. Virgülde kısa, nokta ve soru işaretinde daha uzun bir duraklama yapılır, uzun kelimeler biraz daha uzun gösterilir. Böylece okuma monoton bir akış yerine doğal bir ritme sahip olur.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Metni ekleyin.</strong> Kutuya yapıştırın, .txt dosyası açın ya da "Örnek metin" düğmesiyle aracı hemen deneyin. Dosya yalnızca tarayıcınızda açılır, hiçbir yere gönderilmez.</li>
+        <li><strong>Hızı seçin.</strong> Rahat okuyabildiğiniz bir hızla başlayın; 250-350 kelime/dk çoğu kişi için iyi bir başlangıçtır. Okurken ok tuşlarıyla hızı değiştirebilirsiniz.</li>
+        <li><strong>Oynatın.</strong> "Oynat" düğmesine, gösterim alanına ya da Boşluk tuşuna basın. Anlamadığınız bir yer olursa duraklatın, 10 kelime geri gidin ve devam edin.</li>
+        <li><strong>Alıştıkça zorlayın.</strong> İsterseniz "Parça parça" modunda iki ya da üç kelimeyi birlikte görün. Hızınızı kademeli artırın ve her seferinde anlama düzeyinizi gözden geçirin.</li>
+      </ol>
+
+      <h2>Okuma hızı testi nasıl çalışır?</h2>
+      <p>Test sekmesinde 200 kelimelik özgün bir hikâye bulunur. "Testi başlat" dediğinizde süre başlar, "Okumayı bitirdim" dediğinizde durur. Okuma hızınız, kelime sayısının dakikaya oranıyla hesaplanır; buna kısaca KPM (kelime/dakika) diyoruz. Ardından metin kaybolur ve metinle ilgili beş soru sorulur. Her doğru cevap anlama oranınıza yüzde yirmi ekler.</p>
+      <p>Yalnızca hız yeterli bir ölçüt değildir; çünkü hiç anlamadan çok hızlı geçmek mümkündür. Bu yüzden sonuç ekranında etkin hız da gösterilir: KPM değeri anlama oranıyla çarpılır. Örneğin dakikada 300 kelime okuyup soruların yüzde 80'ini doğru yanıtladıysanız etkin hızınız 240'tır. Süre 10 saniyeden kısaysa metin baştan sona okunmamış kabul edilir ve sonuç kaydedilmez. Son beş sonucunuz yalnızca bu tarayıcıda tutulur; metinler ve cevaplarınız saklanmaz, istediğiniz zaman geçmişi silebilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="hizli-okuma-b" aria-label="Reklam"></div>
+
+      <h2>Hızlı okuma gerçekten işe yarar mı?</h2>
+      <p>Dürüst bir cevap vermek gerekirse: kısmen. Göz araştırmaları, okurken zamanın bir kısmının geriye dönmeye ve satır başı aramaya harcandığını gösterir. RSVP bu kayıpları keser ve özellikle ekran başında uzun metinleri taramak, çalışma notlarını gözden geçirmek ya da tanıdık içerikleri hızlıca okumak için işe yarar. Öte yandan, bilimsel çalışmalar çok yüksek hızlarda anlamanın düştüğünü, karmaşık metinlerde ise hız arttıkça kavrama kaybının belirginleştiğini bildirir. "Bir günde kitap bitirme" gibi vaatler gerçekçi değildir.</p>
+      <p>Bu araç bir mucize sunmaz; amacı hızınızı ölçmeniz, farklı hızları denemeniz ve kendi sınırınızı bulmanızdır. Çoğu yetişkin için tipik okuma hızı dakikada yaklaşık 200 ile 300 kelime civarındadır, ancak bu değer metnin zorluğuna, konuya aşinalığa ve dile göre değişir. Sizin için iyi hız, anlamayı koruyabildiğiniz en yüksek hızdır.</p>
+
+      <h2>Hızınızı artırmak için ipuçları</h2>
+      <ul>
+        <li><strong>Önce anlayarak okuyun.</strong> Her seferinde yalnızca 25-50 kelime/dk artırın ve anlamanız düşmüyorsa devam edin.</li>
+        <li><strong>İçsesi kısmen bırakın.</strong> Kelimeleri kafanızda tek tek telaffuz etmek hızı sınırlar; parça parça modu bu alışkanlığı kırmaya yardım eder.</li>
+        <li><strong>Gözü dinlendirin.</strong> Uzun süre aynı noktaya bakmak yorar; 10 dakikalık oturumlar ve aralarda mola idealdir. Karanlık arka plan seçeneği gece okumalarında göz yorgunluğunu azaltabilir.</li>
+        <li><strong>Metne göre ayarlayın.</strong> Roman gibi akıcı metinlerde yüksek, ders kitabı ya da hukuki metinlerde düşük hız kullanın.</li>
+        <li><strong>Testi düzenli tekrar edin.</strong> Aynı koşullarda, aynı saatte yapılan testler ilerlemenizi daha net gösterir.</li>
+      </ul>
+
+      <h2>Kimler için uygun?</h2>
+      <p>Sınavlara hazırlanan öğrenciler, çok sayıda rapor okuyan çalışanlar, uzun makaleleri taramak isteyen araştırmacılar ve kendi okuma hızını merak eden herkes aracı kullanabilir. Okuma güçlüğü yaşayanlar için tek noktaya odaklanan gösterim kimi zaman yardımcı olabilir, kimi zaman ise rahatsız edici gelebilir; kendi deneyiminizi denemek en doğrusudur. Gözleriniz ya da dikkatiniz konusunda sağlık sorununuz varsa bir uzmana danışın; bu araç tıbbi bir değerlendirme yapmaz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Metniniz cihazınızda kalır.</strong> Yüklenen dosya ve yapıştırılan metin hiçbir sunucuya gitmez; çerez ve izleme yoktur.</li>
+        <li><strong>Sade ve kontrollü.</strong> Hız, gösterim biçimi, konum ve renk tamamen sizin elinizde; klavyeyle de kullanılır.</li>
+        <li><strong>Ölçüm de var.</strong> Yalnızca hızlı gösterim değil, anlamayı da denetleyen bir test sunar.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa yüklendikten sonra internet gerekmez.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sahte "premium" ya da süre sınırı yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yapıştırdığım metin bir yere gönderiliyor mu?</summary><p>Hayır. Metin ve .txt dosyaları yalnızca tarayıcınızın belleğinde işlenir. Tek saklanan şey, okuma hızı testinin son beş sonucudur (tarih, kelime/dakika ve anlama oranı); metin ve cevaplar kaydedilmez, geçmişi tek tıkla silebilirsiniz.</p></details>
+        <details><summary>ORP (kırmızı harf) nedir, neden kullanılıyor?</summary><p>ORP, optimal tanıma noktası demektir. Bir kelimeye bakarken gözün sabitlendiği ve kelimenin en hızlı tanındığı harf kelimenin tam ortası değil, biraz soluna yakındır. Araç her kelimeyi bu harf hep aynı yerde duracak biçimde hizalar; böylece göz hiç oynamadan kelimeleri okuyabilir.</p></details>
+        <details><summary>Hangi hızla başlamalıyım?</summary><p>Önce okuma hızı testini yapın ve KPM sonucunuzu görün. Okuyucuda bu değerin biraz üstünde, örneğin 50 kelime/dk fazlasıyla başlayın. Anlamayı koruyorsanız hızı kademeli artırın; kaçırdığınızı hissederseniz bir basamak geri dönün.</p></details>
+        <details><summary>Parça parça modu ne işe yarar?</summary><p>Bu modda iki ya da üç kelime birlikte gösterilir. Kelime grubunu tek bakışta okumak doğal okumaya daha yakındır ve içsesi azaltabilir. Özellikle uzun cümlelerde anlam bağını korumak kolaylaşır.</p></details>
+        <details><summary>Test sonucum neden kaydedilmedi?</summary><p>Okuma süresi 10 saniyeden kısaysa metin baştan sona okunmamış sayılır ve sonuç saklanmaz. Metni dikkatle okuyup testi yeniden yapın. Tarayıcınız yerel depolamayı engelliyorsa (örneğin bazı özel gezinme modları) sonuç ekranda görünür ama geçmişe yazılamaz.</p></details>
+        <details><summary>Hangi dosyaları açabilirim?</summary><p>Düz metin (.txt) dosyalarını, en fazla 2 MB. UTF-8 ve eski Türkçe kodlamayla (Windows-1254) kaydedilmiş dosyalar doğru okunur. Word ya da PDF belgesindeki metni kopyalayıp kutuya yapıştırabilirsiniz.</p></details>
+        <details><summary>Hızlı okuma anlamayı düşürür mü?</summary><p>Hız arttıkça anlama düşebilir; özellikle zor ve yeni bilgiler içeren metinlerde. Bu yüzden test sonucunda etkin hız gösterilir. Hedef yalnızca hızlı değil, anlayarak hızlı okumaktır. Öğrenme amaçlı metinlerde daha düşük hız seçmek akıllıca olur.</p></details>
+        <details><summary>Sekmeyi değiştirdiğimde okuma neden duruyor?</summary><p>Tarayıcılar arka plandaki sekmelerde zamanlayıcıları yavaşlatır; kelimeler kaçmasın diye okuma otomatik duraklatılır. Sekmeye döndüğünüzde "Oynat" ile devam edebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yaziyi-sese-cevir/">Yazıyı Sese Çevir</a></li>
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../kelime-bulutu/">Kelime Bulutu</a></li>
+        <li><a href="../oyunlar/yazma-hizi-testi/">Yazma Hızı Testi</a></li>
+      </ul>
+      <p class="ba-note">Kurumunuza özel yazılım ya da web çözümü gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="hizli-okuma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

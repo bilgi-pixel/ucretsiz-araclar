@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Online Kronometre – Tur Kaydeden Ücretsiz Kronometre (Tam Ekran, CSV)</title>
+  <meta name="description" content="Online kronometre: yüzde saniye hassasiyet, tur (lap) listesi, en hızlı ve en yavaş tur vurgusu, tam ekran, CSV ve metin dışa aktarma. Ücretsiz, kayıt yok, çevrimdışı çalışır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kronometre/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema tokenları ba.css'ten gelir. */
+    .kr-screen { text-align: center; padding: 22px 10px; margin-bottom: 14px; border-radius: var(--ba-radius); background: var(--ba-surface-2); border: 1px solid var(--ba-border); }
+    .kr-digits { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-weight: 500; font-size: clamp(2rem, 11.5vw, 5.5rem); line-height: 1.1; letter-spacing: -.02em; color: var(--ba-text); white-space: nowrap; }
+    .kr-cs { font-size: .62em; color: var(--ba-text-2); }
+    .kr-sub { margin: 6px 0 0; color: var(--ba-text-2); font-weight: 600; min-height: 1.5em; font-variant-numeric: tabular-nums; }
+    .kr-sub + .kr-sub { margin-top: 2px; font-family: var(--ba-mono); font-weight: 400; }
+    .kr-summary { margin: 16px 0 8px; color: var(--ba-text-2); font-weight: 600; min-height: 1.5em; }
+    .kr-summary:empty { display: none; }
+    .kr-laps { margin: 0; padding: 0; list-style: none; max-height: 300px; overflow: auto; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .kr-head, .kr-laps li { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px 12px; margin: 0; font-variant-numeric: tabular-nums; }
+    .kr-head { font-size: .8rem; font-weight: 700; color: var(--ba-text-muted); text-transform: uppercase; letter-spacing: .04em; padding-left: 13px; }
+    .kr-laps li { border-bottom: 1px solid var(--ba-border); border-left: 4px solid transparent; font-family: var(--ba-mono); }
+    .kr-laps li:last-child { border-bottom: 0; }
+    .kr-laps li.is-fast { background: var(--ba-success-soft); border-left-color: var(--ba-success); }
+    .kr-laps li.is-slow { background: var(--ba-danger-soft); border-left-color: var(--ba-danger); }
+    .kr-n { font-family: var(--ba-font); font-weight: 600; overflow-wrap: anywhere; }
+    .kr-tag { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; vertical-align: 1px; }
+    .is-fast .kr-tag { color: var(--ba-success); border: 1px solid var(--ba-success); }
+    .is-slow .kr-tag { color: var(--ba-danger); border: 1px solid var(--ba-danger); }
+    .kr-split, .kr-total { overflow-wrap: anywhere; }
+    .kr-export { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+    .kr-note { min-height: 1.4em; margin: 8px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    .kr-kbd { font-size: .85rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .ba-tool:fullscreen { overflow: auto; padding: 24px; background: var(--ba-bg); display: flex; flex-direction: column; justify-content: center; }
+    .ba-tool:fullscreen .kr-digits { font-size: clamp(3rem, 17vw, 11rem); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Online Kronometre – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kronometre/","inLanguage":"tr","description":"Yüzde saniye hassasiyetli online kronometre: tur kaydı, en hızlı ve en yavaş tur, tam ekran, CSV ve metin dışa aktarma. Tarayıcıda çalışır, veri göndermez."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Online kronometre ne kadar hassas?","acceptedAnswer":{"@type":"Answer","text":"Ekranda saniyenin yüzde biri (10 milisaniye) görünür. Süre, tarayıcının hassas zaman saatinden (performance.now) hesaplanır; yani doğruluk ekran yenileme hızına bağlı değildir. Elle ölçümde asıl sapma, düğmeye basma refleksinizden ve cihazın dokunma gecikmesinden gelir ve genellikle birkaç on milisaniyeyi bulur."}},
+  {"@type":"Question","name":"Sekme arka plandayken kronometre doğru sayar mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Kronometre saniyeleri tek tek saymaz; başlangıç anını kaydeder ve her çizimde şimdiki zamanla farkı gösterir. Sekme arka plandayken ekran daha seyrek yenilense de sekmeye döndüğünüzde ya da tur aldığınızda gerçek süre görünür. Bilgisayar uyku moduna geçerse tarayıcı da duracağı için uzun ölçümlerde cihazın uyanık kalmasını sağlayın."}},
+  {"@type":"Question","name":"Sayfayı yenilersem ya da kapatırsam turlar kaybolur mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Hiçbir veri sunucuya gönderilmez ve tarayıcıya da kaydedilmez; bu gizlilik için bilinçli bir tercihtir. Kronometre çalışırken sayfayı kapatmaya kalkarsanız tarayıcı uyarı gösterir. Turlarınızı saklamak istiyorsanız sıfırlamadan önce kopyalayın ya da CSV veya metin dosyası olarak indirin."}},
+  {"@type":"Question","name":"En hızlı ve en yavaş tur ne zaman işaretlenir?","acceptedAnswer":{"@type":"Answer","text":"En az iki tur kaydedildiğinde en kısa tur süresi \"en hızlı\", en uzun tur süresi \"en yavaş\" olarak işaretlenir. İşaret hem renkle hem yazıyla verilir. Tüm turların süresi birebir aynıysa hiçbiri vurgulanmaz."}},
+  {"@type":"Question","name":"Turları Excel ya da Google E-Tablolar'a nasıl aktarırım?","acceptedAnswer":{"@type":"Answer","text":"\"Turları kopyala\" düğmesi listeyi sekmeyle ayrılmış metin olarak panoya alır; Excel ya da E-Tablolar'a yapıştırdığınızda tur numarası, tur süresi ve toplam süre ayrı sütunlara oturur. İsterseniz \"CSV indir\" ile noktalı virgülle ayrılmış, Türkçe karakterlerle uyumlu bir dosya indirip çift tıklayarak da açabilirsiniz."}},
+  {"@type":"Question","name":"Kronometre telefonda çalışır mı, ekran kilitlenince durur mu?","acceptedAnswer":{"@type":"Answer","text":"Telefonda tarayıcıdan sorunsuz çalışır; büyük rakamlar ve dokunmaya uygun düğmeler mobil için tasarlandı. Bazı telefonlarda ekran kilitlenince tarayıcı askıya alınır ve ölçüm bu sırada geride kalabilir. Kritik ölçümlerde ekranı açık tutun."}},
+  {"@type":"Question","name":"Aynı anda birden fazla kronometre kullanabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Her tarayıcı sekmesi ya da penceresi bağımsız bir kronometredir. Birden fazla kişiyi ya da işi aynı anda ölçmek için sayfayı yeni sekmelerde açıp her birini ayrı başlatabilirsiniz."}},
+  {"@type":"Question","name":"Kronometre ile zamanlayıcı arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Kronometre sıfırdan yukarı sayar ve geçen süreyi ölçer. Zamanlayıcı belirlediğiniz süreden geriye sayar ve süre dolunca sizi uyarır. Belirli bir saatte uyarı almak istiyorsanız online alarm aracını kullanın."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Yardımcı</a></li></ol>
+      <h1><span class="ba-grad">Online Kronometre</span>: Tur Kaydeden, Yüzde Saniye Hassasiyetli</h1>
+      <p class="lead">Başlatın, tur alın, durdurun. Saat, dakika, saniye ve saniyenin yüzde biri büyük rakamlarla görünür; her turun süresi, toplam süre, en hızlı ve en yavaş tur otomatik hesaplanır. Listeyi kopyalayın ya da CSV ve metin olarak indirin. Her şey tarayıcınızda çalışır, hiçbir veri gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" id="kr-box" aria-labelledby="h-tool" data-state="idle">
+      <h2 id="h-tool" class="visually-hidden">Kronometre</h2>
+      <div class="kr-screen">
+        <div class="kr-digits" id="kr-display" role="timer" aria-label="Geçen süre"><span id="kr-main">00:00:00</span><span id="kr-cs" class="kr-cs">.00</span></div>
+        <p class="kr-sub" id="kr-status" aria-live="polite">Hazır</p>
+        <p class="kr-sub" id="kr-current">Tur 1: 00:00.00</p>
+      </div>
+      <div class="ba-actions">
+        <button id="kr-start" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Başlat</button>
+        <button id="kr-lap" class="ba-btn" type="button" disabled>Tur</button>
+        <button id="kr-reset" class="ba-btn" type="button">Sıfırla</button>
+        <button id="kr-fs" class="ba-btn" type="button">Tam ekran</button>
+      </div>
+      <p class="kr-kbd">Kısayollar: <kbd>Boşluk</kbd> başlat/durdur, <kbd>L</kbd> tur, <kbd>R</kbd> sıfırla, <kbd>F</kbd> tam ekran. Sekme arka plandayken de süre doğru ilerler.</p>
+
+      <div id="kr-laps-wrap" hidden>
+        <p class="kr-summary" id="kr-summary"></p>
+        <div class="kr-head" aria-hidden="true"><span>Tur</span><span>Tur süresi</span><span>Toplam</span></div>
+        <ol id="kr-laps" class="kr-laps" aria-label="Tur listesi (en yeni üstte)"></ol>
+        <div class="kr-export" role="group" aria-label="Turları dışa aktar">
+          <button id="kr-copy" class="ba-btn" type="button" disabled>Turları kopyala</button>
+          <button id="kr-csv" class="ba-btn" type="button" disabled>CSV indir</button>
+          <button id="kr-txt" class="ba-btn" type="button" disabled>Metin indir</button>
+        </div>
+        <p class="kr-note" id="kr-note" aria-live="polite"></p>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="kronometre-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Online kronometre: yüzde saniye hassasiyet, tur kaydı ve dışa aktarma</h2>
+      <p>Bir koşunun bölümlerini, bir sunumun her slaytını, mutfakta bir tarifin aşamalarını ya da bir işin gerçekte ne kadar sürdüğünü ölçmek istediğinizde ihtiyaç duyduğunuz şey sade ama güvenilir bir kronometredir. Bu sayfadaki online kronometre saat, dakika, saniye ve saniyenin yüzde birini (10 milisaniye) büyük rakamlarla gösterir. "Tur" düğmesiyle istediğiniz kadar ara süre kaydeder, turları en hızlı ve en yavaş olarak işaretler ve listeyi tek tıkla kopyalamanıza ya da CSV ve metin dosyası olarak indirmenize olanak tanır. Uygulama kurmanız, hesap açmanız ya da bir izin vermeniz gerekmez; sayfayı açıp Başlat'a basmanız yeterlidir.</p>
+      <p>Kronometre tamamen tarayıcınızda çalışır. Turlarınız ve süreleriniz hiçbir sunucuya gönderilmez, çerezle ya da yerel depolamayla da kaydedilmez; sayfayı kapattığınızda silinir. Bu yüzden kişisel antrenman verilerinizi ya da iş süresi ölçümlerinizi rahatça tutabilirsiniz. İsterseniz sayfayı tarayıcınızdan uygulama olarak yükleyip internet olmadan da kullanabilirsiniz.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlatın.</strong> "Başlat" düğmesine ya da klavyede Boşluk tuşuna basın. Sayaç hemen çalışmaya başlar; sekme başlığında da geçen süreyi görürsünüz, böylece başka bir sekmedeyken bile süreyi takip edebilirsiniz.</li>
+        <li><strong>Tur alın.</strong> Her ara noktada "Tur" düğmesine ya da L tuşuna basın. Sayaç durmaz; o turun süresi ve başlangıçtan beri toplam süre listeye eklenir. Ekranın altındaki "Tur 3" gibi satır, o an devam eden turun süresini canlı gösterir.</li>
+        <li><strong>Durdurun ve devam edin.</strong> "Durdur" ölçümü dondurur ve düğme "Devam" olur. Devam'a bastığınızda süre kaldığı yerden sürer; durduğunuz aralık sayılmaz.</li>
+        <li><strong>Sonucu inceleyin.</strong> İki ya da daha fazla tur olduğunda en hızlı tur yeşil, en yavaş tur kırmızı çerçeveyle ve yazıyla işaretlenir; turların ortalaması listenin üstündeki özet satırında yer alır.</li>
+        <li><strong>Dışa aktarın ya da sıfırlayın.</strong> "Turları kopyala", "CSV indir" ya da "Metin indir" ile listeyi alın. "Sıfırla" süreyi ve tüm turları temizleyip yeni bir ölçüme hazırlar.</li>
+      </ol>
+
+      <h2>Tur süresi ile toplam süre arasındaki fark</h2>
+      <p>Kronometrelerde iki ayrı süre vardır. <strong>Toplam süre</strong>, başlattığınız andan tur düğmesine bastığınız ana kadar geçen süredir. <strong>Tur süresi</strong> ise bir önceki tur düğmesine basışınızdan bu yana geçen süredir. Küçük bir örnek verelim: bir pistte dört tur atıyorsunuz ve düğmeye sırasıyla 1:20, 2:35, 4:05 ve 5:10 değerlerinde basıyorsunuz. Toplam süreler bu dört değerdir; tur süreleri ise 1:20, 1:15, 1:30 ve 1:05 olur. Aradaki çıkarma işlemini kronometre sizin yerinize yapar ve iki sütunu yan yana gösterir.</p>
+      <p>Bu ayrım özellikle tempo analizinde önemlidir. Toplam süre size hedefe ne kadar yaklaştığınızı, tur süresi ise o bölümü ne kadar hızlı geçtiğinizi söyler. Canlı "geçerli tur" satırı da bir sonraki turu ne zaman almanız gerektiğini ve o bölümde hedef sürenizin altında kalıp kalmadığınızı anında görmenizi sağlar.</p>
+
+      <h2>En hızlı ve en yavaş tur nasıl belirlenir?</h2>
+      <p>En az iki tur kaydedildiğinde araç tur sürelerini karşılaştırır. En kısa tur "en hızlı", en uzun tur "en yavaş" olarak işaretlenir. İşaret yalnızca renkle değil yazıyla da verilir; böylece renkleri ayırt etmekte zorlananlar ve ekran okuyucu kullananlar da farkı anlayabilir. Tüm turların süresi birebir aynıysa hiçbir tur vurgulanmaz. Listenin üstündeki özet satırı tur sayısını, ortalama tur süresini ve en hızlı ile en yavaş turun numarasını tek bakışta verir.</p>
+      <p>İyi bir tempo, turların birbirine yakın olmasıdır. En hızlı ile en yavaş tur arasındaki fark büyükse, ilk turlarda gereğinden hızlı başlayıp sonra yavaşlamış ya da bir bölümde beklenmedik biçimde takılmış olabilirsiniz. Koşucular ve yüzücüler bu farkı antrenman planlarını ayarlamak için, sunum yapanlar ise hangi bölümün planlanandan uzun sürdüğünü bulmak için kullanır.</p>
+
+      <div class="ba-ad" data-slot="kronometre-b" aria-label="Reklam"></div>
+
+      <h2>Turları kopyalama, CSV ve metin olarak indirme</h2>
+      <p>"Turları kopyala" düğmesi listeyi sekmeyle ayrılmış metin olarak panoya alır. Excel, Google E-Tablolar ya da bir not defterine yapıştırdığınızda tur numarası, tur süresi ve toplam süre ayrı sütunlara oturur. "CSV indir" noktalı virgülle ayrılmış, UTF-8 kodlu ve Türkçe karakterlerle uyumlu bir dosya üretir; Türkçe sürüm Excel'de çift tıklayınca sütunlara bölünmüş olarak açılır. "Metin indir" aynı bilgiyi okunaklı bir .txt dosyası olarak verir ve en hızlı ile en yavaş tur satırlarını da içerir.</p>
+      <p>Dosyalar tarayıcınızda oluşturulur ve doğrudan bilgisayarınıza ya da telefonunuza iner; hiçbir yere yüklenmez. Liste kalıcı olarak saklanmadığı için ölçümü sıfırlamadan önce dışa aktarmayı unutmayın.</p>
+
+      <h2>Klavye kısayolları ve tam ekran</h2>
+      <ul>
+        <li><strong>Boşluk:</strong> başlatır, çalışırken durdurur, durmuşken devam ettirir.</li>
+        <li><strong>L:</strong> tur alır. Tuşu basılı tutmak art arda tur eklemez.</li>
+        <li><strong>R:</strong> süreyi ve tüm turları sıfırlar.</li>
+        <li><strong>F:</strong> tam ekran moduna geçer, tekrar basınca çıkar. Esc tuşu da tam ekrandan çıkarır.</li>
+      </ul>
+      <p>Tam ekran modunda rakamlar ekranı kaplayacak kadar büyür. Spor salonunda, sınıfta ya da atölyede kronometreyi birkaç metre öteden okumak, projeksiyonla bir grubun önünde süre göstermek için kullanışlıdır. Bazı telefon tarayıcıları tam ekranı desteklemez; bu durumda araç normal görünümde çalışmaya devam eder ve bir uyarı gösterir.</p>
+
+      <h2>Sekme arka plandayken kronometre doğru sayar mı?</h2>
+      <p>Evet. Basit sayaçlar her saniye "bir ekle" mantığıyla çalışır ve tarayıcı arka plandaki sekmeleri yavaşlattığında geride kalır. Bu kronometre süreyi saymaz, ölçer: Başlat'a bastığınız anda tarayıcının hassas zaman saatinin değeri kaydedilir ve ekran her yenilendiğinde şimdiki değerle arasındaki fark gösterilir. Sekme gizliyken ekranın yenilenmesi yavaşlayabilir, ancak gösterilen süre sekmeye döndüğünüzde ya da bir tur aldığınızda gerçek değere atlar. Sistem saatini değiştirmeniz sonucu etkilemez.</p>
+      <p>Bilinmesi gereken tek sınır, bilgisayarın uyku moduna geçmesidir; bu durumda tarayıcı da duraklar. Uzun ölçümlerde cihazınızın uyanık kalmasını sağlayın. Kronometre çalışırken sayfayı yanlışlıkla kapatmaya ya da yenilemeye kalkarsanız tarayıcı sizi uyarır.</p>
+
+      <h2>Kronometre nerelerde işe yarar?</h2>
+      <ul>
+        <li><strong>Koşu, yüzme ve bisiklet:</strong> tur tur tempo ölçmek, bölümlerin birbirine göre hızını görmek.</li>
+        <li><strong>Sunum ve konuşma provası:</strong> her slayta ne kadar süre ayırdığınızı ve toplam süreyi ölçmek.</li>
+        <li><strong>Deneme sınavı çalışması:</strong> soru ya da bölüm başına harcanan süreyi izlemek.</li>
+        <li><strong>Mutfak ve üretim:</strong> bir tarifin ya da bir işlemin aşama sürelerini kaydetmek.</li>
+        <li><strong>İş ve yazılım:</strong> bir görevin ya da toplantının ne kadar sürdüğünü kabaca takip etmek.</li>
+        <li><strong>Oyun ve hız denemeleri:</strong> bulmaca çözme, el becerisi ya da hafıza oyunlarında rekor denemek.</li>
+        <li><strong>Ders ve deneyler:</strong> sarkaç periyodu, reaksiyon ya da tepkime süresi gibi basit ölçümler.</li>
+      </ul>
+      <p>Elle başlatılıp durdurulan her kronometrede olduğu gibi sonuçta sizin tepki süreniz de vardır. Resmî müsabaka sonuçları ya da bilimsel ölçümler için sertifikalı ekipman kullanılmalıdır; bu araç antrenman ve günlük ölçümler içindir.</p>
+
+      <h2>Neden Bilişim Ajans kronometresi?</h2>
+      <ul>
+        <li><strong>Veri toplamaz.</strong> Süreler ve turlar yalnızca sayfada durur; hiçbir yere gönderilmez ve kaydedilmez.</li>
+        <li><strong>Doğru süre.</strong> Zaman, hassas saat farkından hesaplanır; ekran yavaşlasa ya da sekme arka planda kalsa da sayaç şaşmaz.</li>
+        <li><strong>Tur analizi hazır.</strong> En hızlı, en yavaş ve ortalama tur sizin yerinize bulunur; listeyi tek tıkla aktarabilirsiniz.</li>
+        <li><strong>Okunaklı ve erişilebilir.</strong> Büyük rakamlar, tam ekran, klavye kısayolları ve ekran okuyucu uyumlu etiketler.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez yüklendikten sonra internet gerekmez; uygulama olarak yüklenebilir.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sahte "premium" ya da yanıltıcı düğme yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Online kronometre ne kadar hassas?</summary><p>Ekranda saniyenin yüzde biri (10 milisaniye) görünür. Süre, tarayıcının hassas zaman saatinden (performance.now) hesaplanır; yani doğruluk ekranın ne sıklıkta yenilendiğine bağlı değildir. Elle ölçümde asıl sapma, düğmeye basma refleksinizden ve cihazın dokunma gecikmesinden gelir ve genellikle birkaç on milisaniyeyi bulur.</p></details>
+        <details><summary>Sekme arka plandayken kronometre doğru sayar mı?</summary><p>Evet. Kronometre saniyeleri tek tek saymaz; başlangıç anını kaydeder ve her çizimde şimdiki zamanla farkı gösterir. Sekme arka plandayken ekran daha seyrek yenilense de sekmeye döndüğünüzde ya da tur aldığınızda gerçek süre görünür. Bilgisayar uyku moduna geçerse tarayıcı da duracağı için uzun ölçümlerde cihazın uyanık kalmasını sağlayın.</p></details>
+        <details><summary>Sayfayı yenilersem ya da kapatırsam turlar kaybolur mu?</summary><p>Evet. Hiçbir veri sunucuya gönderilmez ve tarayıcıya da kaydedilmez; bu, gizlilik için bilinçli bir tercihtir. Kronometre çalışırken sayfayı kapatmaya kalkarsanız tarayıcı uyarı gösterir. Turlarınızı saklamak istiyorsanız sıfırlamadan önce kopyalayın ya da CSV veya metin dosyası olarak indirin.</p></details>
+        <details><summary>En hızlı ve en yavaş tur ne zaman işaretlenir?</summary><p>En az iki tur kaydedildiğinde en kısa tur süresi "en hızlı", en uzun tur süresi "en yavaş" olarak işaretlenir. İşaret hem renkle hem yazıyla verilir. Tüm turların süresi birebir aynıysa hiçbiri vurgulanmaz.</p></details>
+        <details><summary>Turları Excel ya da Google E-Tablolar'a nasıl aktarırım?</summary><p>"Turları kopyala" düğmesi listeyi sekmeyle ayrılmış metin olarak panoya alır; Excel ya da E-Tablolar'a yapıştırdığınızda tur numarası, tur süresi ve toplam süre ayrı sütunlara oturur. İsterseniz "CSV indir" ile noktalı virgülle ayrılmış, Türkçe karakterlerle uyumlu bir dosya indirip çift tıklayarak da açabilirsiniz.</p></details>
+        <details><summary>Kronometre telefonda çalışır mı, ekran kilitlenince durur mu?</summary><p>Telefonda tarayıcıdan sorunsuz çalışır; büyük rakamlar ve dokunmaya uygun düğmeler mobil için tasarlandı. Bazı telefonlarda ekran kilitlenince tarayıcı askıya alınır ve ölçüm bu sırada geride kalabilir. Kritik ölçümlerde ekranı açık tutun.</p></details>
+        <details><summary>Aynı anda birden fazla kronometre kullanabilir miyim?</summary><p>Evet. Her tarayıcı sekmesi ya da penceresi bağımsız bir kronometredir. Birden fazla kişiyi ya da işi aynı anda ölçmek için sayfayı yeni sekmelerde açıp her birini ayrı başlatabilirsiniz.</p></details>
+        <details><summary>Kronometre ile zamanlayıcı arasındaki fark nedir?</summary><p>Kronometre sıfırdan yukarı sayar ve geçen süreyi ölçer. Zamanlayıcı belirlediğiniz süreden geriye sayar ve süre dolunca sizi uyarır. Belirli bir saatte uyarı almak istiyorsanız online alarm aracını kullanın.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../zamanlayici/">Zamanlayıcı: Geri Sayım ve Pomodoro</a></li>
+        <li><a href="../online-alarm/">Online Alarm Kur</a></li>
+        <li><a href="../metronom/">Online Metronom</a></li>
+        <li><a href="../tarih-farki/">Tarih Farkı Hesapla</a></li>
+      </ul>
+      <p class="ba-note">Kurumunuza özel yazılım ya da web çözümü gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="kronometre-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

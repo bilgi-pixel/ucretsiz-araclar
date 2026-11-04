@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Renk Kontrast Hesaplama – WCAG Kontrast Oranı Kontrolü (AA / AAA, Ücretsiz)</title>
+  <meta name="description" content="Yazı ve arka plan rengi arasındaki WCAG kontrast oranını hesaplayın: AA/AAA sonuçları, canlı önizleme, otomatik düzeltme önerisi ve renk körlüğü simülasyonu. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/renk-kontrast-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .kc-colors { display: grid; gap: 12px; align-items: end; }
+    @media (min-width: 640px) { .kc-colors { grid-template-columns: 1fr auto 1fr; } }
+    .kc-pick { display: flex; gap: 8px; align-items: stretch; }
+    .kc-pick input[type="color"] { flex: none; width: 56px; min-height: 44px; padding: 2px; border: 1px solid var(--ba-border); border-radius: 8px; background: var(--ba-surface); cursor: pointer; }
+    .kc-pick input[type="text"] { flex: 1; min-width: 0; font-family: var(--ba-mono); }
+    .ba-field input[aria-invalid="true"] { border-color: var(--ba-danger); }
+    .kc-swap { min-height: 44px; white-space: nowrap; }
+    .kc-hint { margin: 8px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .kc-grid { display: grid; gap: 18px; margin-top: 18px; }
+    @media (min-width: 760px) { .kc-grid { grid-template-columns: 1fr 1fr; } }
+    .kc-label { margin: 0 0 4px; font-size: .85rem; font-weight: 600; color: var(--ba-text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .kc-ratio { font-size: 2.6rem; font-weight: 700; line-height: 1.1; font-family: var(--ba-mono); }
+    .kc-verdict { margin: 6px 0 12px; color: var(--ba-text-2); }
+    .kc-badges { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+    .kc-badges li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--ba-border); border-radius: 8px; background: var(--ba-surface-2); font-size: .92rem; }
+    .kc-badges small { display: block; color: var(--ba-text-muted); font-size: .8rem; }
+    .kc-state { font-weight: 700; white-space: nowrap; }
+    .kc-badges li[data-pass="1"] .kc-state { color: var(--ba-success); }
+    .kc-badges li[data-pass="0"] .kc-state { color: var(--ba-danger); }
+    .kc-preview { padding: 18px; border-radius: var(--ba-radius); border: 1px solid var(--ba-border); }
+    .kc-preview p { margin: 0 0 10px; }
+    .kc-pv-h { font-size: 1.5rem; font-weight: 700; line-height: 1.25; }
+    .kc-pv-link { text-decoration: underline; }
+    .kc-pv-btn, .kc-pv-outline { display: inline-block; margin: 4px 8px 4px 0; padding: 10px 16px; border-radius: 8px; font-weight: 600; border: 2px solid currentColor; }
+    .kc-block { margin-top: 24px; }
+    .kc-block h3 { font-size: 1.05rem; margin: 0 0 10px; }
+    .kc-fixes { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+    .kc-fix { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: 8px; background: var(--ba-surface-2); }
+    .kc-fix .kc-fix-text { flex: 1; min-width: 160px; display: grid; gap: 2px; }
+    .kc-sw { flex: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--ba-border-hover); }
+    .kc-share { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+    .kc-share .ba-field { flex: 1; min-width: 200px; }
+    .kc-status { min-height: 1.4em; margin: 8px 0 0; font-size: .9rem; color: var(--ba-success); }
+    .kc-cb { margin-top: 24px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .kc-cb > summary { cursor: pointer; padding: 12px 16px; min-height: 48px; font-weight: 600; display: flex; align-items: center; }
+    .kc-cb-body { padding: 0 16px 16px; }
+    .kc-cb-grid { display: grid; gap: 12px; margin: 12px 0 0; }
+    @media (min-width: 560px) { .kc-cb-grid { grid-template-columns: 1fr 1fr; } }
+    .kc-cb-grid figure { margin: 0; }
+    .kc-cb-sample { padding: 14px; border-radius: 8px; border: 1px solid var(--ba-border); font-weight: 600; }
+    .kc-cb-grid figcaption { margin-top: 6px; font-size: .88rem; color: var(--ba-text-2); }
+    .kc-pairs { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .kc-pairs th, .kc-pairs td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: middle; }
+    .kc-pairs th { font-size: .82rem; color: var(--ba-text-muted); font-weight: 600; }
+    .kc-pair-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 10px 4px 4px; border: 1px solid var(--ba-border-hover); border-radius: 8px; background: var(--ba-surface); color: var(--ba-text); font: inherit; text-align: left; cursor: pointer; }
+    .kc-pair-btn:hover { border-color: var(--ba-primary); }
+    .kc-pair-aa { flex: none; display: inline-grid; place-items: center; width: 40px; height: 36px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(128, 128, 128, .45); }
+    .kc-pair-name small { display: block; color: var(--ba-text-muted); font-family: var(--ba-mono); font-size: .76rem; }
+    .kc-ok { color: var(--ba-success); font-weight: 700; } .kc-bad { color: var(--ba-danger); font-weight: 700; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Renk Kontrast Hesaplama – Bilişim Ajans","applicationCategory":"DesignApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/renk-kontrast-hesapla/"}
+  </script>
+  <script type="application/ld+json" id="faq-ld">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"4,5:1 kontrast oranı ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"WCAG'de normal boyutlu metin için AA düzeyinin alt sınırıdır. Oran, yazı ile zeminin göreli parlaklıklarından (L1 + 0,05) / (L2 + 0,05) formülüyle bulunur. 4,5:1 ve üzeri, çoğu kullanıcı için rahat okunabilir demektir; altındaki değerler düşük görme, yorgun göz ya da parlak ortamda okumayı zorlaştırır."}},{"@type":"Question","name":"AA ile AAA arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"AA, çoğu yasal düzenlemenin ve kurumsal şartnamenin istediği makul düzeydir: normal metinde 4,5:1, büyük metinde 3:1. AAA daha sıkıdır: normal metinde 7:1, büyük metinde 4,5:1. Her sitenin her bölümünü AAA yapmak genellikle zordur; WCAG de bunu genel bir zorunluluk olarak önermez. Uzun metinlerin ve kritik bilgilerin AAA'ya yaklaşması ise iyi bir hedeftir."}},{"@type":"Question","name":"Hangi metin \"büyük metin\" sayılır?","acceptedAnswer":{"@type":"Answer","text":"WCAG'e göre 18 punto (24 CSS pikseli) ve üzeri normal kalınlıktaki yazı ya da 14 punto (yaklaşık 18,7 piksel) ve üzeri kalın yazı büyük metindir. Bu ölçülerin altındaki her şey normal metindir. Tarayıcıda 16 piksellik gövde metni normal metin sayılır."}},{"@type":"Question","name":"Logo, süs öğesi ve devre dışı düğmeler için kontrast gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Logolar ve salt süsleme amaçlı öğeler ile devre dışı bırakılmış denetimler metin kontrastı eşiklerinin dışındadır. Buna karşılık bilgi taşıyan simgeler, grafik çizgileri, form alanı kenarlıkları ve yer tutucu metinler muaf değildir. Bir şeyi anlamak için görmek gerekiyorsa kontrastı olmalıdır."}},{"@type":"Question","name":"Düğme ve form kenarlığı için kaç oran gerekir?","acceptedAnswer":{"@type":"Answer","text":"WCAG 2.1 ile gelen 1.4.11 maddesi, arayüz bileşenlerinin durumunu ve sınırını anlamaya yarayan görsel öğeler için bitişik renklere karşı en az 3:1 ister. Yani bir giriş alanının kenarlığı ya da düğmenin zemini, sayfa zeminine göre 3:1'i geçmelidir. Araçtaki \"Arayüz bileşeni ve grafik\" rozeti bunu gösterir."}},{"@type":"Question","name":"Düzelt önerisi rengimi çok değiştirir mi?","acceptedAnswer":{"@type":"Answer","text":"Araç ton ve doygunluğu sabit tutar, yalnızca açıklığı değiştirir ve eşiği geçen en yakın tonu önerir. Sonuç, marka renginizin biraz daha koyu ya da açık hâli olur. Yine de öneriyi önizlemede kontrol edin ve gerekirse hangi rengi ayarlayacağınızı (yazı ya da zemin) değiştirin."}},{"@type":"Question","name":"Renk körlüğü simülasyonu ne kadar doğrudur?","acceptedAnswer":{"@type":"Answer","text":"Simülasyon, Machado ve arkadaşlarının 2009'da yayımladığı fizyolojik modele dayanan matrisleri doğrusal RGB üzerinde uygular ve tam (şiddeti 1,0) eksiklik varsayar. Gerçekte birçok kişi kısmi renk körlüğüne sahiptir ve ekran ayarları sonucu etkiler. Bu yüzden simülasyonu kesin bir ölçüm değil, risk göstergesi olarak kullanın."}},{"@type":"Question","name":"Girdiğim renkler bir yere gönderiliyor mu? Bağlantıdaki ?fg= ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır, hiçbir ağ isteği oluşmaz. Adres çubuğundaki ?fg=...&bg=... parametreleri yalnızca bağlantıyı paylaştığınızda alıcının aynı renkleri görmesi içindir; sayfa bunları kendi tarayıcınızda okur."}},{"@type":"Question","name":"Resim ya da gradyan üzerindeki yazının kontrastını nasıl ölçerim?","acceptedAnswer":{"@type":"Answer","text":"WCAG, arka planın değiştiği alanlarda en kötü durumu esas almanızı önerir. Yazının altında kalan en açık ve en koyu noktalar için ayrı ölçüm yapın; ya da yazının arkasına tek renkli, yarı saydam bir şerit koyup kontrastı o renkle hesaplayın. Resimden renk almak için Resimden Renk Paleti aracındaki damlalığı kullanabilirsiniz."}}]}</script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#donustur" class="ba-nav-optional">Dönüştür</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#donustur">Dönüştürücüler</a></li></ol>
+      <h1><span class="ba-grad">Renk Kontrast Hesaplama</span> – WCAG Kontrast Oranı Kontrolü</h1>
+      <p class="lead">Yazı ve arka plan rengini girin; WCAG 2.1 kontrast oranını, AA ile AAA sonuçlarını, canlı önizlemeyi ve gerekirse en yakın okunur rengi anında görün. Renkler yalnızca tarayıcınızda hesaplanır, hiçbir şey gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Kontrast hesaplama aracı</h2>
+
+      <div class="kc-colors">
+        <div class="ba-field">
+          <label for="fg-hex">Ön plan (yazı) rengi</label>
+          <div class="kc-pick">
+            <input id="fg-color" type="color" value="#6b7280" aria-label="Ön plan rengini renk seçiciden seç">
+            <input id="fg-hex" type="text" value="#6B7280" autocomplete="off" spellcheck="false" aria-describedby="hex-hint">
+          </div>
+        </div>
+        <button id="swap" class="ba-btn kc-swap" type="button" aria-label="Ön plan ve arka plan renklerini takas et"><span aria-hidden="true">⇄</span> Takas et</button>
+        <div class="ba-field">
+          <label for="bg-hex">Arka plan rengi</label>
+          <div class="kc-pick">
+            <input id="bg-color" type="color" value="#ffffff" aria-label="Arka plan rengini renk seçiciden seç">
+            <input id="bg-hex" type="text" value="#FFFFFF" autocomplete="off" spellcheck="false" aria-describedby="hex-hint">
+          </div>
+        </div>
+      </div>
+      <p id="hex-hint" class="kc-hint">HEX kodunu #RRGGBB ya da #RGB biçiminde yazın (örnek: #1a73e8). # işareti isteğe bağlıdır.</p>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div class="kc-grid">
+        <div>
+          <p class="kc-label" id="cr-label">Kontrast oranı</p>
+          <div id="cr-ratio" class="kc-ratio" role="status" aria-labelledby="cr-label" data-ratio="">–</div>
+          <p id="cr-verdict" class="kc-verdict"></p>
+          <ul id="badges" class="kc-badges" aria-label="WCAG sonuçları">
+            <li id="b-aa-n" data-pass=""><span>AA · normal metin<small>en az 4,5:1</small></span><strong class="kc-state"></strong></li>
+            <li id="b-aa-l" data-pass=""><span>AA · büyük metin<small>en az 3:1</small></span><strong class="kc-state"></strong></li>
+            <li id="b-aaa-n" data-pass=""><span>AAA · normal metin<small>en az 7:1</small></span><strong class="kc-state"></strong></li>
+            <li id="b-aaa-l" data-pass=""><span>AAA · büyük metin<small>en az 4,5:1</small></span><strong class="kc-state"></strong></li>
+            <li id="b-ui" data-pass=""><span>Arayüz bileşeni ve grafik<small>en az 3:1 (WCAG 1.4.11)</small></span><strong class="kc-state"></strong></li>
+          </ul>
+        </div>
+        <div>
+          <p class="kc-label">Canlı önizleme</p>
+          <div id="preview" class="kc-preview">
+            <p class="kc-pv-h">Büyük başlık örneği</p>
+            <p>Normal boyutlu metin örneği: Bilişim Ajans ücretsiz araçları dosyanızı sunucuya göndermeden tarayıcınızda çalışır.</p>
+            <p><span class="kc-pv-link">Altı çizili bağlantı örneği</span></p>
+            <span class="kc-pv-btn">Düğme örneği</span><span class="kc-pv-outline">Kenarlıklı alan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kc-block" id="fix-block">
+        <h3>Düzelt önerisi</h3>
+        <div class="ba-field"><label for="fix-target">Hangi rengi ayarlayalım?</label>
+          <select id="fix-target"><option value="fg" selected>Ön plan (yazı) rengi</option><option value="bg">Arka plan rengi</option></select>
+          <div class="hint">Ton ve doygunluk korunur, yalnızca açıklık değiştirilir; eşiği geçen en yakın ton aranır.</div></div>
+        <ul class="kc-fixes">
+          <li class="kc-fix" id="fix-aa"><span id="fix-aa-sw" class="kc-sw" aria-hidden="true"></span><div class="kc-fix-text"><strong>AA için (4,5:1)</strong><span id="fix-aa-text"></span></div><button id="fix-aa-apply" class="ba-btn" type="button">Uygula</button></li>
+          <li class="kc-fix" id="fix-aaa"><span id="fix-aaa-sw" class="kc-sw" aria-hidden="true"></span><div class="kc-fix-text"><strong>AAA için (7:1)</strong><span id="fix-aaa-text"></span></div><button id="fix-aaa-apply" class="ba-btn" type="button">Uygula</button></li>
+        </ul>
+      </div>
+
+      <details class="kc-cb" id="cb">
+        <summary>Renk körlüğü simülasyonu (isteğe bağlı)</summary>
+        <div class="kc-cb-body">
+          <p class="kc-hint">Aynı renk çiftinin üç görme türünde nasıl göründüğünü ve oranın nasıl değiştiğini gösterir. Yaklaşık bir modeldir (Machado ve ark., 2009; tam renk körlüğü varsayımı).</p>
+          <div id="cb-grid" class="kc-cb-grid"></div>
+        </div>
+      </details>
+
+      <div class="kc-block">
+        <h3>Bu renk çiftini paylaş</h3>
+        <div class="kc-share">
+          <div class="ba-field"><label for="share-url">Bağlantı (?fg= ve ?bg= ile)</label><input id="share-url" type="text" readonly></div>
+          <button id="copy-link" class="ba-btn ba-btn-primary" type="button">Bağlantıyı kopyala</button>
+        </div>
+        <p id="copy-status" class="kc-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="kc-block">
+        <h3>Hazır renk çiftleri</h3>
+        <p class="kc-hint" style="margin:0 0 8px">Yaygın çerçeve ve palet varsayılanları ile sık yapılan hatalar. Bir satıra tıklayınca renkler yukarıya yüklenir; oranlar şimdi hesaplanır.</p>
+        <table class="kc-pairs" id="pairs">
+          <thead><tr><th scope="col">Çift (ön plan / arka plan)</th><th scope="col">Oran</th><th scope="col">AA normal</th></tr></thead>
+          <tbody id="pairs-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="renk-kontrast-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Renk kontrast oranı nedir ve neden ölçülür?</h2>
+      <p>Kontrast oranı, iki rengin parlaklığı arasındaki farkı 1:1 ile 21:1 arasında tek bir sayıya çeviren ölçüdür. Aynı iki renk 1:1 verir; saf siyah ile saf beyaz ise ulaşılabilecek en yüksek oran olan 21:1'i verir. Bir sitenin okunabilir olup olmadığı çoğu zaman "güzel görünüyor mu?" sorusuna bırakılır. Oysa tasarım programında şık duran açık gri bir yazı; güneş altında telefon kullanan, ekran parlaklığını kısmış, gözleri yorulmuş ya da görme keskinliği azalmış birinin gözünde zeminle birlikte silinip gider. Web İçeriği Erişilebilirlik Yönergeleri (WCAG) bu yüzden metin ile zemin arasında asgari bir oran şart koşar. Bu sayfa aynı formülü kullanır: iki rengi girersiniz, oran, geçti ya da kaldı sonuçları ve gerekirse düzeltme önerisi anında ekrana gelir.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Renkleri girin.</strong> Ön plan (yazı) ve arka plan için renk seçiciye tıklayın ya da HEX kodunu yazın. Üç haneli kısa yazım (#fff) de kabul edilir, # işareti zorunlu değildir.</li>
+        <li><strong>Oranı ve rozetleri okuyun.</strong> Büyük rakam kontrast oranıdır. Yanındaki beş rozet AA ve AAA düzeylerinin normal ve büyük metin için geçip geçmediğini, arayüz bileşeni eşiğini ayrıca gösterir.</li>
+        <li><strong>Önizlemeye bakın.</strong> Başlık, paragraf, bağlantı ve düğme örnekleri seçtiğiniz renklerle çizilir; sayı kadar gözünüzün de onayı önemlidir.</li>
+        <li><strong>Gerekirse düzeltin.</strong> "Düzelt önerisi" bölümü, eşiği geçen en yakın tonu bulur. "Uygula" ile renk yerine yazılır; hangi rengin ayarlanacağını (yazı ya da zemin) siz seçersiniz.</li>
+        <li><strong>Paylaşın.</strong> Adres çubuğundaki bağlantı renk çiftini taşır. Bağlantıyı kopyalayıp ekip arkadaşınıza ya da müşterinize gönderebilirsiniz; tıkladığında aynı renkleri görür.</li>
+      </ol>
+
+      <h2>WCAG eşikleri: AA ve AAA ne demek?</h2>
+      <p>WCAG üç uyum düzeyi tanımlar: A, AA ve AAA. Metin kontrastı için A düzeyinde bir sayısal eşik yoktur; pratikte hedeflenen düzey AA'dır ve birçok kurum ile ihale şartnamesi AA uyumunu ister. Eşikler şöyledir:</p>
+      <ul>
+        <li><strong>AA, normal metin:</strong> en az 4,5:1. Gövde metni, menüler, form etiketleri ve çoğu yazı bu gruptadır.</li>
+        <li><strong>AA, büyük metin:</strong> en az 3:1. Büyük metin, 24 piksel (18 punto) ve üstü yazıyı ya da kalın yazıda yaklaşık 18,7 piksel (14 punto) ve üstünü kapsar.</li>
+        <li><strong>AAA, normal metin:</strong> en az 7:1. Daha zor ama daha kapsayıcı bir hedeftir; düşük görme için özellikle değerlidir.</li>
+        <li><strong>AAA, büyük metin:</strong> en az 4,5:1.</li>
+        <li><strong>Arayüz bileşenleri ve grafik nesneler:</strong> en az 3:1 (WCAG 2.1, madde 1.4.11). Düğme ya da giriş alanı kenarlığı, grafik çizgileri ve anlam taşıyan simgeler için geçerlidir.</li>
+      </ul>
+      <p>Logolar, salt süsleme amaçlı öğeler ve devre dışı (disabled) denetimler bu eşiklerin dışında tutulur. Ancak yer tutucu (placeholder) metni ya da bilgi taşıyan bir simge muaf değildir; kullanıcı onu okuyabilmelidir. Pratik bir hatırlatma: beyaz zeminde AA'yı geçen en açık gri #767676'dır (oran 4,54:1); bundan daha açık her gri normal metinde kalır.</p>
+
+      <div class="ba-ad" data-slot="renk-kontrast-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Kontrast oranı nasıl hesaplanır?</h2>
+      <p>Hesap iki adımdır. Önce her renk için "göreli parlaklık" bulunur. Kırmızı, yeşil ve mavi kanal 0–255 aralığından 0–1 aralığına çevrilir, sRGB'nin gama eğrisi geri alınarak doğrusal ışık değerine dönüştürülür ve kanallar insan gözünün duyarlılığına göre ağırlıklandırılıp toplanır: L = 0,2126 × R + 0,7152 × G + 0,0722 × B. Yeşil ağırlığın büyük bölümünü taşır; mavi çok az katkı verir. Bu yüzden saf mavi (#0000ff) beyaz zeminde 8,59:1 gibi yüksek bir oran verirken saf yeşil (#00ff00) beyaz üzerinde yaklaşık 1,37:1 ile okunmaz.</p>
+      <p>İkinci adımda açık rengin parlaklığına 0,05 eklenir, koyu rengin parlaklığına da 0,05 eklenir ve ikisi birbirine bölünür: oran = (L1 + 0,05) / (L2 + 0,05). Yani hangi rengin ön planda olduğu fark etmez; yazıyı açık, zemini koyu da yapsanız sonuç aynıdır. Araç bu hesabı bire bir uygular ve eşik kararını yuvarlanmamış değer üzerinden verir. Örneğin gerçek oranı 4,499 olan bir çift ekranda "4,50" diye yuvarlanıp yanlışlıkla geçmiş görünmez; bu durumda araç üç ondalık gösterir ve kaldığını belirtir.</p>
+
+      <h2>Düşük kontrastı düzeltmenin yolları</h2>
+      <p>Kontrastı artırmanın üç temel yolu vardır: yazıyı koyulaştırmak, zemini açmak ya da ikisini birlikte yapmak. Marka renginiz değişmeyecekse genellikle yazıyı ya da düğme zeminini aynı tonun biraz koyusuna çekmek yeterlidir. Düzelt önerisi bunu otomatik yapar: rengin HSL gösterimindeki ton ve doygunluğunu sabit tutar, açıklığı adım adım artırıp azaltır ve eşiği ilk geçen tonu bulur. Hem açık hem koyu yönde arar ve markanızın görünümünü en az bozan, yani açıklıkta en küçük değişimi gerektiren sonucu önerir.</p>
+      <p>Bazı çiftlerde tek renkle çözüm bulunamaz. Orta tonda bir gri zeminde, yalnızca yazıyı değiştirerek AAA'ya ulaşmak mümkün değildir; çünkü siyah da beyaz da yeterli farkı vermez. Araç bu durumda bunu açıkça söyler ve diğer rengi de ayarlamanızı önerir. Fotoğraf ya da gradyan üzerindeki yazılarda en güvenli yol yazının arkasına yarı saydam bir koyu şerit koymak ve kontrastı o şeritle ölçmektir.</p>
+
+      <h2>Renk körlüğü simülasyonu ne işe yarar?</h2>
+      <p>Erkeklerin yaklaşık yüzde 8'i ve kadınların yüzde 0,5'i kırmızı ile yeşili ayırt etmekte zorlanır (Kuzey Avrupa kökenli topluluklarda yapılan ölçümler; oran bölgeye göre değişir). Protanopide kırmızıya duyarlı koni, döteranopide yeşile duyarlı koni çalışmaz; tritanopi ise mavi-sarı ekseninde ve çok daha nadirdir. Kırmızı ile yeşili tek başına "hata" ve "başarılı" göstergesi olarak kullanan bir arayüz bu kullanıcılar için anlamsız hâle gelebilir. Simülasyon bölümü, renk çiftinizin her görme türünde nasıl göründüğünü ve oranın ne olduğunu gösterir. Oran belirgin biçimde düşüyorsa rengin yanına simge, metin ya da desen eklemek iyi bir güvencedir. Renk tek başına anlam taşımamalıdır; WCAG'in 1.4.1 maddesi tam olarak bunu söyler.</p>
+
+      <h2>Tasarım ve geliştirme ekipleri için pratik ipuçları</h2>
+      <ul>
+        <li>Düğme metni ile düğme zeminini, bağlantı rengi ile çevresindeki gövde metnini ve form kenarlığı ile sayfa zeminini ayrı ayrı ölçün. En sık hata, "ikincil" metinlerin (tarih, yardım metni, yer tutucu) çok açık griyle yazılmasıdır.</li>
+        <li>Koyu tema ayrı bir tasarım işidir. Açık temada geçen bir renk çifti, koyu temada başka renklerle yeniden doğrulanmalıdır.</li>
+        <li>Marka paletiniz için kontrast tablosu çıkarın: hangi renk hangi zeminde hangi metin boyutuyla kullanılabilir, bir kez belgeleyin. Bu sayfanın "Hazır renk çiftleri" tablosu böyle bir tablonun nasıl görüneceğine örnektir.</li>
+        <li>Odak (focus) halkasının da en az 3:1 kontrastı olmalıdır; klavyeyle gezinen kullanıcı nerede olduğunu görebilmelidir.</li>
+        <li>Sonucu yalnızca sayıya bırakmayın. Çok ince fontlarda ya da küçük boyutlarda 4,5:1 bile yorucu olabilir; önizlemeye bakın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri göndermez.</strong> Tüm hesap tarayıcınızda yapılır; renk kodlarınız hiçbir sunucuya gitmez. Sayfa yüklendikten sonra internet bağlantısı olmadan da çalışır.</li>
+        <li><strong>Yalnızca sayı değil, çözüm de verir.</strong> Kaldıysa en yakın geçen tonu bulur ve tek tıkla uygular.</li>
+        <li><strong>Paylaşması kolay.</strong> Renk çifti bağlantıya yazılır; hesap makinesine yeniden girmeye gerek kalmaz.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, sınır ya da gizli paket yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>4,5:1 kontrast oranı ne anlama gelir?</summary><p>WCAG'de normal boyutlu metin için AA düzeyinin alt sınırıdır. Oran, yazı ile zeminin göreli parlaklıklarından (L1 + 0,05) / (L2 + 0,05) formülüyle bulunur. 4,5:1 ve üzeri, çoğu kullanıcı için rahat okunabilir demektir; altındaki değerler düşük görme, yorgun göz ya da parlak ortamda okumayı zorlaştırır.</p></details>
+        <details><summary>AA ile AAA arasındaki fark nedir?</summary><p>AA, çoğu yasal düzenlemenin ve kurumsal şartnamenin istediği makul düzeydir: normal metinde 4,5:1, büyük metinde 3:1. AAA daha sıkıdır: normal metinde 7:1, büyük metinde 4,5:1. Her sitenin her bölümünü AAA yapmak genellikle zordur; WCAG de bunu genel bir zorunluluk olarak önermez. Uzun metinlerin ve kritik bilgilerin AAA'ya yaklaşması ise iyi bir hedeftir.</p></details>
+        <details><summary>Hangi metin "büyük metin" sayılır?</summary><p>WCAG'e göre 18 punto (24 CSS pikseli) ve üzeri normal kalınlıktaki yazı ya da 14 punto (yaklaşık 18,7 piksel) ve üzeri kalın yazı büyük metindir. Bu ölçülerin altındaki her şey normal metindir. Tarayıcıda 16 piksellik gövde metni normal metin sayılır.</p></details>
+        <details><summary>Logo, süs öğesi ve devre dışı düğmeler için kontrast gerekir mi?</summary><p>Logolar ve salt süsleme amaçlı öğeler ile devre dışı bırakılmış denetimler metin kontrastı eşiklerinin dışındadır. Buna karşılık bilgi taşıyan simgeler, grafik çizgileri, form alanı kenarlıkları ve yer tutucu metinler muaf değildir. Bir şeyi anlamak için görmek gerekiyorsa kontrastı olmalıdır.</p></details>
+        <details><summary>Düğme ve form kenarlığı için kaç oran gerekir?</summary><p>WCAG 2.1 ile gelen 1.4.11 maddesi, arayüz bileşenlerinin durumunu ve sınırını anlamaya yarayan görsel öğeler için bitişik renklere karşı en az 3:1 ister. Yani bir giriş alanının kenarlığı ya da düğmenin zemini, sayfa zeminine göre 3:1'i geçmelidir. Araçtaki "Arayüz bileşeni ve grafik" rozeti bunu gösterir.</p></details>
+        <details><summary>Düzelt önerisi rengimi çok değiştirir mi?</summary><p>Araç ton ve doygunluğu sabit tutar, yalnızca açıklığı değiştirir ve eşiği geçen en yakın tonu önerir. Sonuç, marka renginizin biraz daha koyu ya da açık hâli olur. Yine de öneriyi önizlemede kontrol edin ve gerekirse hangi rengi ayarlayacağınızı (yazı ya da zemin) değiştirin.</p></details>
+        <details><summary>Renk körlüğü simülasyonu ne kadar doğrudur?</summary><p>Simülasyon, Machado ve arkadaşlarının 2009'da yayımladığı fizyolojik modele dayanan matrisleri doğrusal RGB üzerinde uygular ve tam (şiddeti 1,0) eksiklik varsayar. Gerçekte birçok kişi kısmi renk körlüğüne sahiptir ve ekran ayarları sonucu etkiler. Bu yüzden simülasyonu kesin bir ölçüm değil, risk göstergesi olarak kullanın.</p></details>
+        <details><summary>Girdiğim renkler bir yere gönderiliyor mu? Bağlantıdaki ?fg= ne işe yarar?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır, hiçbir ağ isteği oluşmaz. Adres çubuğundaki ?fg=...&amp;bg=... parametreleri yalnızca bağlantıyı paylaştığınızda alıcının aynı renkleri görmesi içindir; sayfa bunları kendi tarayıcınızda okur.</p></details>
+        <details><summary>Resim ya da gradyan üzerindeki yazının kontrastını nasıl ölçerim?</summary><p>WCAG, arka planın değiştiği alanlarda en kötü durumu esas almanızı önerir. Yazının altında kalan en açık ve en koyu noktalar için ayrı ölçüm yapın; ya da yazının arkasına tek renkli, yarı saydam bir şerit koyup kontrastı o renkle hesaplayın. Resimden renk almak için <a href="../resimden-renk-paleti/">Resimden Renk Paleti</a> aracındaki damlalığı kullanabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../renk-secici/">Renk Seçici ve Dönüştürücü</a></li>
+        <li><a href="../resimden-renk-paleti/">Resimden Renk Paleti</a></li>
+        <li><a href="../css-gradient/">CSS Gradient Oluşturucu</a></li>
+        <li><a href="../favicon-olustur/">Favicon Oluştur</a></li>
+      </ul>
+      <p class="ba-note">Erişilebilir ve hızlı web siteleri için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur. Bu araç bilgilendirme amaçlıdır; resmî bir erişilebilirlik denetimi yerine geçmez.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="renk-kontrast-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
