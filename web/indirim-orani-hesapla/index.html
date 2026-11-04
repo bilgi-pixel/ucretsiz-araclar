@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İndirim Oranı Hesaplama – Yüzde İndirim, İndirimli Fiyat ve Ardışık İndirim</title>
+  <meta name="description" content="Eski ve yeni fiyattan indirim yüzdesini bulun, fiyata % indirim uygulayın, ardışık indirimleri (%20 + %10 = %28) birleştirin ve sahte indirimi kontrol edin. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/indirim-orani-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/indirim-orani-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/indirim-orani-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .age-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .ba-field input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+  
+    .kdv-form fieldset { border: 0; margin: 0 0 12px; padding: 0; }
+    .kdv-form legend { font-weight: 600; margin-bottom: 4px; padding: 0; }
+    .kdv-sub { font-size: .95rem; font-weight: 600; margin: 14px 0 8px; }
+    
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"İndirim Oranı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/indirim-orani-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İndirim oranı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Eski fiyattan yeni fiyatı çıkarın, farkı eski fiyata bölün ve 100 ile çarpın. 1.000 TL'den 800 TL'ye düşen ürünün indirimi (1.000 − 800) ÷ 1.000 × 100 = %20'dir."}},{"@type":"Question","name":"İndirimli fiyat nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Fiyatı (1 − indirim oranı ÷ 100) ile çarpın. 1.000 TL'ye %20 indirim, 1.000 × 0,80 = 800 TL eder."}},{"@type":"Question","name":"%20 ve %10 indirim neden %30 etmiyor?","acceptedAnswer":{"@type":"Answer","text":"İkinci indirim, ilk indirimden sonra kalan fiyata uygulanır. 1.000 TL önce 800 TL, sonra 720 TL olur; toplam indirim %28'dir. Oranları toplamak gerçek indirimi olduğundan yüksek gösterir."}},{"@type":"Question","name":"Sahte indirim nedir?","acceptedAnswer":{"@type":"Answer","text":"Fiyatın önce yükseltilip sonra \"indirimli\" gösterilmesi ya da hiç uygulanmamış bir eski fiyatın etikette yer almasıdır. Gerçek karşılaştırma için ürünün son 30 günde gördüğünüz en düşük fiyatına bakılır."}},{"@type":"Question","name":"Sahte indirim kontrolünde sonuç kesin midir?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sonuç, girdiğiniz üç fiyata dayalı bir ipucudur. Hukuki bir tespit için Ticaret Bakanlığı'na veya Tüketici Hakem Heyeti'ne başvurabilirsiniz."}},{"@type":"Question","name":"İndirim oranı %100'den büyük olabilir mi?","acceptedAnswer":{"@type":"Answer","text":"İndirim oranı en fazla %100 olur (ürün bedava). Yeni fiyat eski fiyattan yüksekse araç bunu indirim olarak değil, fiyat artışı olarak gösterir."}},{"@type":"Question","name":"Hangi indirim daha avantajlı, %50 mi yoksa iki kez %30 mu?","acceptedAnswer":{"@type":"Answer","text":"İki kez %30 indirim, 1 − 0,7 × 0,7 = %51 eder; yani %50'den biraz daha avantajlıdır. Ardışık seçeneğiyle farklı kombinasyonları deneyebilirsiniz."}},{"@type":"Question","name":"Girdiğim fiyatlar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; fiyat ve oranlar sunucuya iletilmez, saklanmaz ve çerez ya da analiz koduyla izlenmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">İndirim Oranı Hesaplama</span> – Yüzde, Fiyat, Ardışık</h1>
+      <p class="lead">Dört işlemi tek sayfada yapın: eski ve yeni fiyattan indirim yüzdesi, fiyat ve yüzdeden indirimli fiyat, ardışık indirimlerin gerçek toplamı ve etiketteki "indirimin" gerçek olup olmadığının kontrolü. Rakamlarınız bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="ba-field"><label for="mode">Ne hesaplamak istiyorsunuz?</label>
+          <select id="mode">
+            <option value="oran">İndirim yüzdesini bul (eski ve yeni fiyat)</option>
+            <option value="fiyat">İndirimli fiyatı bul (fiyat ve yüzde)</option>
+            <option value="ardisik">Ardışık indirimleri birleştir</option>
+            <option value="sahte">Sahte indirim kontrolü</option>
+          </select></div>
+        <div data-panel="oran" class="kdv-grid">
+          <div class="ba-field"><label for="o-old">Eski fiyat (TL)</label><input id="o-old" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.250,00"></div>
+          <div class="ba-field"><label for="o-new">Yeni fiyat (TL)</label><input id="o-new" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 999,90"></div>
+        </div>
+        <div data-panel="fiyat" class="kdv-grid" hidden>
+          <div class="ba-field"><label for="f-price">Fiyat (TL)</label><input id="f-price" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.000"></div>
+          <div class="ba-field"><label for="f-pct">İndirim oranı (%)</label><input id="f-pct" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 20"></div>
+        </div>
+        <div data-panel="ardisik" hidden>
+          <div class="ba-field"><label for="c-price">Fiyat (TL, isteğe bağlı)</label><input id="c-price" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.000"><div class="hint">Girerseniz son fiyat da hesaplanır.</div></div>
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="c-1">1. indirim (%)</label><input id="c-1" type="text" inputmode="decimal" autocomplete="off" placeholder="20"></div>
+            <div class="ba-field"><label for="c-2">2. indirim (%)</label><input id="c-2" type="text" inputmode="decimal" autocomplete="off" placeholder="10"></div>
+            <div class="ba-field"><label for="c-3">3. indirim (%)</label><input id="c-3" type="text" inputmode="decimal" autocomplete="off" placeholder="isteğe bağlı"></div>
+          </div>
+        </div>
+        <div data-panel="sahte" hidden>
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="s-claimed">Etiketteki eski fiyat (TL)</label><input id="s-claimed" type="text" inputmode="decimal" autocomplete="off" placeholder="1.000"></div>
+            <div class="ba-field"><label for="s-sale">İndirimli fiyat (TL)</label><input id="s-sale" type="text" inputmode="decimal" autocomplete="off" placeholder="800"></div>
+            <div class="ba-field"><label for="s-low">Son 30 günün en düşük fiyatı (TL)</label><input id="s-low" type="text" inputmode="decimal" autocomplete="off" placeholder="700"><div class="hint">Fiyat geçmişi sitelerinden veya kendi notlarınızdan.</div></div>
+          </div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="age-big" id="r-head"></p>
+        <dl class="kdv-results" id="r-rows"></dl>
+      </div>
+      <p class="kdv-rates" id="params-line"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="indirim-orani-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Ne hesaplamak istiyorsunuz?" listesinden işleminizi seçin: indirim yüzdesi, indirimli fiyat, ardışık indirim ya da sahte indirim kontrolü.</li>
+        <li>Seçtiğiniz işleme ait alanları doldurun. Ondalık için virgül kullanabilirsiniz; binlik ayırıcı olarak nokta da kabul edilir.</li>
+        <li>"Hesapla" düğmesine basın. Sonuç büyük puntoyla ve ayrıntılı satırlarla gösterilir.</li>
+        <li>Başka bir işlem için listeden yeni seçim yapın; araç sayfayı yenilemeden çalışır.</li>
+      </ol>
+
+      <h2>İndirim oranı nasıl hesaplanır?</h2>
+      <p>İndirim yüzdesi, fiyat farkının eski fiyata bölünmesiyle bulunur: (eski fiyat − yeni fiyat) ÷ eski fiyat × 100. Örneğin 1.250 TL'lik bir ürün 999,90 TL'ye düştüyse fark 250,10 TL'dir ve indirim oranı yaklaşık yüzde 20'dir. Dikkat edilmesi gereken nokta, bölenin her zaman eski fiyat olmasıdır. Yeni fiyata bölerseniz "ne kadar ucuzladı" yerine "yeni fiyat eskisine göre ne kadar yüksek" gibi farklı bir sayı elde edersiniz.</p>
+
+      <h2>Fiyata yüzde indirim uygulamak</h2>
+      <p>Bu işlem daha basittir: indirimli fiyat = fiyat × (1 − oran ÷ 100). 1.000 TL'lik bir ürüne yüzde 20 indirim uygulanırsa 800 TL'ye iner. Bunu akılda hesaplamak için "yüzde 20 indirim, fiyatın yüzde 80'ini ödemek demektir" düşüncesi işe yarar. Araç hem indirimli fiyatı hem tasarruf tutarını hem de ödediğiniz oranı birlikte gösterir.</p>
+
+      <h2>Ardışık indirimler neden toplanmaz?</h2>
+      <p>Bir mağaza "yüzde 20 indirim, üstüne sepette ekstra yüzde 10" derse toplam indirim yüzde 30 değil, yüzde 28'dir. Çünkü ikinci indirim ilk indirimden sonra kalan fiyata uygulanır: 1.000 TL → 800 TL → 720 TL. Toplam tasarruf 280 TL, yani yüzde 28'dir. Ardışık indirimleri toplamak her zaman gerçek indirimi olduğundan yüksek gösterir; fark, oranlar büyüdükçe artar. Örneğin yüzde 50 ve yüzde 50 ardışık indirim yüzde 100 değil, yüzde 75 eder. Aracın "Ardışık indirimleri birleştir" seçeneği üç indirime kadar bunu doğru hesaplar ve toplama yöntemiyle farkı da ayrıca gösterir.</p>
+
+      <div class="ba-ad" data-slot="indirim-orani-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Sahte indirim nasıl anlaşılır?</h2>
+      <p>Kampanya dönemlerinde bazı satıcılar fiyatı önce yükseltip sonra "indirimli" göstererek tüketiciyi yanıltabilir. Bu uygulamaya sahte indirim denir. Tüketici mevzuatı yanıltıcı fiyat ve indirim beyanlarını kabul etmez; ayrıntılar ve yaptırımlar için Ticaret Bakanlığı'nın güncel düzenlemelerine bakın. Sahte indirimi fark etmenin pratik yolu, ürünün son 30 günde gördüğünüz en düşük fiyatını bilmektir. Aracımızın "Sahte indirim kontrolü" seçeneği üç fiyat ister: etiketteki eski fiyat, şimdiki indirimli fiyat ve son 30 günün en düşük fiyatı.</p>
+      <p>Mantık şöyledir: Gerçek karşılaştırma, indirimli fiyatı etiketteki eski fiyatla değil, ürünün yakın geçmişte satıldığı en düşük fiyatla yapar. İndirimli fiyat en düşük fiyattan yüksekse gerçek bir indirim yoktur. Etiketteki eski fiyat en düşük fiyattan belirgin biçimde yüksekse ve iddia edilen indirimle gerçek fark arasında büyük bir açık varsa fiyat "şişirilmiş" olabilir. Araç bu durumu ayrı bir uyarıyla işaretler. Sonuç bir hüküm değil, karar vermenize yardımcı bir ipucudur.</p>
+
+      <h2>Alışverişte indirimi doğru okumak için ipuçları</h2>
+      <ul>
+        <li><strong>Son fiyatı karşılaştırın.</strong> Yüzde yerine ödeyeceğiniz TL tutarına bakın; küçük bir indirim büyük puntoyla yazılmış olabilir.</li>
+        <li><strong>Kargo ve taksit etkisini unutmayın.</strong> Ücretsiz kargo ya da taksit farkı, indirimin gerçek değerini değiştirir.</li>
+        <li><strong>Fiyat geçmişine bakın.</strong> Birçok fiyat takip sitesi, bir ürünün son aylardaki fiyatını gösterir.</li>
+        <li><strong>Sepet indirimlerini sırayla hesaplayın.</strong> Önce hangi indirimin uygulandığı sonucu değiştirmez ama sabit tutarlı kupon ile yüzde indirimin sırası farkı değiştirir.</li>
+        <li><strong>İhtiyacınız olup olmadığını sorun.</strong> İndirim, gereksiz bir ürünü pahalı yapan en sinsi tuzaktır.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Fiyatlar ve oranlar tarayıcınızda hesaplanır; hiçbir bilgi sunucuya gitmez.</li>
+        <li><strong>Dört işlem bir arada.</strong> Yüzde bulma, indirimli fiyat, ardışık indirim ve sahte indirim kontrolü ayrı sayfalara bölünmez.</li>
+        <li><strong>Yanlış yöntemi de gösterir.</strong> Ardışık indirimlerde toplama ile gerçek sonuç arasındaki farkı görürsünüz.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> Alışveriş sırasında telefonunuzdan rahatça kullanabilirsiniz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>İndirim hesabında sık yapılan hatalar</h2>
+      <p>İlk hata, yüzdeyi yanlış tabana uygulamaktır. Yüzde 25 zam yapılıp ardından yüzde 25 indirim yapılırsa fiyat eski seviyesine dönmez; çünkü indirim artık yükselmiş fiyata uygulanır. 100 TL önce 125 TL, sonra 93,75 TL olur. İkinci hata, ardışık indirimleri toplamaktır. Üçüncü hata, indirimi yalnızca yüzdeyle değerlendirmektir; yüksek yüzdeli bir indirim, düşük fiyatlı üründe çok az tasarruf sağlayabilir. Dördüncü hata, KDV'nin indirimden önce mi sonra mı uygulandığını gözden kaçırmaktır; etiket fiyatlarının çoğu KDV dahildir ve indirim bu toplam üzerinden hesaplanır. Aracımız bu hataların çoğunu görünür kılmak için sonucu ayrıntılı satırlarla gösterir.</p>
+      <h2>Gizlilik notu</h2>
+      <p>Bu sayfada girdiğiniz fiyatlar yalnızca tarayıcınızın belleğinde işlenir. Hiçbir bilgi sunucuya gönderilmez, kaydedilmez ve izleme amaçlı çerezle takip edilmez. Sayfayı kapattığınızda girdiğiniz değerler silinir; "Temizle" düğmesi de alanları anında boşaltır.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>İndirim oranı nasıl hesaplanır?</summary><p>Eski fiyattan yeni fiyatı çıkarın, farkı eski fiyata bölün ve 100 ile çarpın. 1.000 TL'den 800 TL'ye düşen ürünün indirimi (1.000 − 800) ÷ 1.000 × 100 = %20'dir.</p></details>
+        <details><summary>İndirimli fiyat nasıl bulunur?</summary><p>Fiyatı (1 − indirim oranı ÷ 100) ile çarpın. 1.000 TL'ye %20 indirim, 1.000 × 0,80 = 800 TL eder.</p></details>
+        <details><summary>%20 ve %10 indirim neden %30 etmiyor?</summary><p>İkinci indirim, ilk indirimden sonra kalan fiyata uygulanır. 1.000 TL önce 800 TL, sonra 720 TL olur; toplam indirim %28'dir. Oranları toplamak gerçek indirimi olduğundan yüksek gösterir.</p></details>
+        <details><summary>Sahte indirim nedir?</summary><p>Fiyatın önce yükseltilip sonra "indirimli" gösterilmesi ya da hiç uygulanmamış bir eski fiyatın etikette yer almasıdır. Gerçek karşılaştırma için ürünün son 30 günde gördüğünüz en düşük fiyatına bakılır.</p></details>
+        <details><summary>Sahte indirim kontrolünde sonuç kesin midir?</summary><p>Hayır. Sonuç, girdiğiniz üç fiyata dayalı bir ipucudur. Hukuki bir tespit için Ticaret Bakanlığı'na veya Tüketici Hakem Heyeti'ne başvurabilirsiniz.</p></details>
+        <details><summary>İndirim oranı %100'den büyük olabilir mi?</summary><p>İndirim oranı en fazla %100 olur (ürün bedava). Yeni fiyat eski fiyattan yüksekse araç bunu indirim olarak değil, fiyat artışı olarak gösterir.</p></details>
+        <details><summary>Hangi indirim daha avantajlı, %50 mi yoksa iki kez %30 mu?</summary><p>İki kez %30 indirim, 1 − 0,7 × 0,7 = %51 eder; yani %50'den biraz daha avantajlıdır. Ardışık seçeneğiyle farklı kombinasyonları deneyebilirsiniz.</p></details>
+        <details><summary>Girdiğim fiyatlar bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; fiyat ve oranlar sunucuya iletilmez, saklanmaz ve çerez ya da analiz koduyla izlenmez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sahte indirim kontrolü bilgilendirme amaçlıdır, hukuki tespit değildir. Fiyatlar mağazadan mağazaya ve gün içinde değişebilir.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../zam-orani-hesapla/">Zam Oranı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="indirim-orani-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
