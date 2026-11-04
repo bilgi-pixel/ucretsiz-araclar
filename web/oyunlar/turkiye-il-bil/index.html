@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Türkiye İl Bil Oyna – Ücretsiz 81 İl, Plaka Kodu ve Bölge Bilmece Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz Türkiye 81 il bilmece oyunu: plaka kodundan il, ilden plaka kodu, ilin coğrafi bölgesi ve komşu il soruları. 4 şık, süreli mod, bölge filtresi ve skor. Kayıt yok, kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/turkiye-il-bil/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyun kutusu ortak düzen */
+    .game-box { padding: 16px; }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 48px; }
+    .gb-wrap { max-width: 680px; margin: 0 auto; }
+    .gb-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-hint { margin: 6px 0 14px; font-size: .92rem; color: var(--ba-text-2); }
+    .gb-warn { margin: 10px 0 0; min-height: 1.2em; font-size: .92rem; color: var(--ba-danger); font-weight: 600; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 24px 16px; display: flex; flex-direction: column; justify-content: center; border: 0; border-radius: 0; }
+    .game-box h3 { margin: 18px 0 8px; font-size: 1.05rem; }
+    .gb-top .ba-icon-btn { min-height: 36px; font-size: .85rem; padding: 0 12px; }
+    #ekran-yukleniyor p { margin: 24px 0; text-align: center; color: var(--ba-text-2); }
+
+    /* Durum satırı */
+    .bg-status { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .92rem; color: var(--ba-text-2); margin-bottom: 12px; }
+    .bg-status b { color: var(--ba-text); font-variant-numeric: tabular-nums; }
+    .bg-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-weight: 600; font-size: .82rem; }
+    .bg-level { font-family: var(--ba-mono); letter-spacing: .12em; color: var(--ba-text-muted); font-size: .85rem; }
+    .bg-practice { background: var(--ba-surface-2); color: var(--ba-text-2); border: 1px solid var(--ba-border); }
+
+    /* Süre çubuğu */
+    .bg-time { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bg-time .bar { flex: 1; height: 8px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 999px; overflow: hidden; }
+    .bg-time .bar > span { display: block; height: 100%; width: 100%; background: var(--ba-primary); transition: width .1s linear; }
+    .bg-time .bar > span.is-low { background: var(--ba-danger); }
+    .bg-time output { min-width: 2.2ch; text-align: right; font-family: var(--ba-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) { .bg-time .bar > span { transition: none; } }
+
+    /* Soru ve şıklar */
+    .bg-q { margin: 0 0 14px; font-size: 1.2rem; line-height: 1.45; font-weight: 600; color: var(--ba-text); overflow-wrap: anywhere; }
+    .bg-q:focus { outline: none; }
+    .bg-q:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 4px; border-radius: 4px; }
+    .bg-opts { display: grid; gap: 10px; }
+    .bg-opt { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 10px 14px; text-align: left; font: inherit; font-weight: 500; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); cursor: pointer; transition: border-color .15s, background-color .15s; }
+    .bg-opt:hover:not(:disabled) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .bg-opt .bg-n { flex: none; display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); font-family: var(--ba-mono); font-size: .85rem; font-weight: 600; }
+    .bg-opt .bg-t { flex: 1; overflow-wrap: anywhere; }
+    .bg-opt:disabled { cursor: default; color: var(--ba-text); opacity: 1; }
+    .bg-opt.is-correct { border-color: var(--ba-success); background: var(--ba-success-soft); }
+    .bg-opt.is-wrong { border-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .bg-opt.is-correct::after { content: "✓ Doğru"; flex: none; font-weight: 700; color: var(--ba-success); font-size: .85rem; }
+    .bg-opt.is-wrong::after { content: "✗ Yanlış"; flex: none; font-weight: 700; color: var(--ba-danger); font-size: .85rem; }
+    .bg-tools { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .bg-tools .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .bg-feedback { min-height: 1.5em; margin: 14px 0 0; font-weight: 600; }
+    .bg-feedback.is-ok { color: var(--ba-success); }
+    .bg-feedback.is-bad { color: var(--ba-danger); }
+    .bg-next { margin-top: 12px; }
+
+    /* Sonuç ekranı */
+    #sonuc-baslik { margin: 0 0 6px; font-size: 1.3rem; }
+    #sonuc-baslik:focus { outline: none; }
+    .bg-big { margin: 0; font-size: 2.6rem; line-height: 1.1; font-weight: 700; color: var(--ba-primary); font-variant-numeric: tabular-nums; }
+    .bg-big small { font-size: 1rem; font-weight: 600; color: var(--ba-text-2); margin-left: 6px; }
+    .bg-record { display: inline-block; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success); font-weight: 700; }
+    #sonuc-ozet, #sonuc-yorum, #sonuc-en-yuksek { margin: 8px 0 0; }
+    #yanlislar { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 12px; }
+    #yanlislar li strong { display: block; overflow-wrap: anywhere; }
+    #yanlislar .bg-you { display: block; color: var(--ba-danger); font-size: .92rem; }
+    #yanlislar .bg-right { display: block; color: var(--ba-success); font-size: .92rem; font-weight: 600; }
+
+    /* İstatistik */
+    .gb-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 0; }
+    @media (min-width: 560px) { .gb-stats { grid-template-columns: repeat(5, 1fr); } }
+    .gb-stats div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; }
+    .gb-stats dt { font-size: .75rem; color: var(--ba-text-muted); }
+    .gb-stats dd { margin: 2px 0 0; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+    .gb-cats { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+    .gb-cats li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .9rem; }
+    .gb-cats i { grid-column: 1 / -1; display: block; height: 6px; border-radius: 999px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); position: relative; overflow: hidden; }
+    .gb-cats i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--ba-primary); }
+    .gb-last { margin: 10px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    #ist-sifirla { margin-top: 12px; min-height: 40px; padding: 6px 14px; font-size: .88rem; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-content kbd, .gb-hint kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+    /* Bayrak kutusu */
+    .bb-flag { display: flex; justify-content: center; margin: 0 0 16px; }
+    .bb-flag img { display: block; width: 240px; max-width: 100%; height: auto; aspect-ratio: 4 / 3; border: 1px solid var(--ba-border); border-radius: 6px; background: var(--ba-surface-2); box-shadow: 0 2px 8px rgba(30, 33, 38, .18); object-fit: contain; }
+    .bb-mini { display: block; margin: 6px 0; width: 60px; height: auto; border: 1px solid var(--ba-border); border-radius: 3px; }
+    .bb-credit { margin: 14px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+  
+    .il-study { margin: 16px 0 0; }
+    .il-study summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .il-study ol { margin: 8px 0 0; padding: 0; list-style: none; columns: 2 200px; column-gap: 18px; font-size: .9rem; }
+    .il-study li { break-inside: avoid; padding: 2px 0; overflow-wrap: anywhere; }
+    .il-info { margin: 12px 0 0; padding: 10px 14px; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-size: .95rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Türkiye İl Bil – 81 İl, Plaka Kodu ve Bölge Bilmece Oyunu","description":"Tarayıcıda oynanan ücretsiz Türkiye il bilmece oyunu: plaka kodu, coğrafi bölge ve komşu il soruları, 4 şık, süreli mod ve skor.","inLanguage":"tr","genre":["Bilgi yarışması","Coğrafya","Eğitim"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","url":"https://araclar.bilisimajans.com/oyunlar/turkiye-il-bil/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Türkiye İl Bil oyunu ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir ve kayıt gerektirmez. Modu ve bölgeyi seçip \"Başla\" düğmesine basmanız yeterlidir. Hesap, e-posta ya da uygulama yüklemesi istenmez."}},{"@type":"Question","name":"Oyunda kaç il var?","acceptedAnswer":{"@type":"Answer","text":"Oyunda Türkiye'nin 81 ilinin tamamı vardır. İller plaka kodu sırasına göre kaydedilmiştir ve ayar ekranındaki çalışma listesinde plaka sırasıyla görebilirsiniz."}},{"@type":"Question","name":"Hangi soru türleri var?","acceptedAnswer":{"@type":"Answer","text":"Dört tür vardır: plaka kodundan il bulma, ilden plaka kodu bulma, ilin coğrafi bölgesini bulma ve sınır komşusu olan ili bulma. \"Karışık\" modu bu dört türü rastgele sıralar."}},{"@type":"Question","name":"Süreli modda süre dolarsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Süreli modda her soru için 15 saniyeniz vardır. Süre dolarsa soru yanlış sayılır, doğru cevap gösterilir ve seriniz sıfırlanır. Hızlı verdiğiniz doğru cevaplar kalan saniyeye göre en çok 10 bonus puan kazandırır. Sekmeyi arka plana alırsanız süre durur."}},{"@type":"Question","name":"Komşu il sorularında deniz komşuluğu sayılıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Yalnızca kara sınırı olan iller komşu sayılır. Aynı denizin karşı kıyısındaki ya da boğazla ayrılan iller komşu kabul edilmez. Yanlış şıklar sınırdaş olmayan illerden seçilir."}},{"@type":"Question","name":"Coğrafi bölgeler kaynağa göre değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Coğrafi bölge sınırları idari il sınırlarıyla birebir örtüşmediği için bazı illerin hangi bölgeye yazıldığı kaynağa göre farklılık gösterebilir. Oyunda Türkçe kaynaklarda yaygın olan sınıflandırma kullanılır. Hata ya da önerileriniz için bilgi@bilisimajans.com adresine yazabilirsiniz."}},{"@type":"Question","name":"Skorlarım nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"En yüksek puanlarınız, doğruluk oranınız ve son turlarınız yalnızca tarayıcınızın localStorage alanında tutulur; sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli sekmede oynarsanız kayıtlar kaybolur. Ayar ekranındaki düğmeyle kendiniz de silebilirsiniz."}},{"@type":"Question","name":"Telefonda ve klavyesiz oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Düğmeler parmakla rahatça dokunulacak boyuttadır ve oyun 360 piksel genişliğindeki ekranlarda çalışır. Klavyeniz varsa 1, 2, 3 ve 4 tuşları şıkları seçer."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Türkiye İl Bil Oyna</span>: 81 İl, Plaka Kodu ve Bölge Bilmecesi</h1><p class="lead">Türkiye'nin 81 ilini ne kadar tanıyorsunuz? Plaka kodundan ili, ilden plaka kodunu, ilin coğrafi bölgesini ve sınır komşusu olan ili bulun. Dört şıklı sorular, isteğe bağlı süreli mod ve bölge filtresiyle kendi hızınızda çalışın. Kurulum ve kayıt yok; skorlarınız yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="ayar" aria-label="Türkiye İl Bil oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Türkiye İl Bil</p><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <div id="ekran-ayar">
+          <div class="ba-options">
+            <div class="ba-field"><label for="mod">Oyun modu</label><select id="mod"></select></div>
+            <div class="ba-field"><label for="kapsam">Bölge</label><select id="kapsam"><option value="hepsi">Tüm Türkiye</option></select></div>
+            <div class="ba-field"><label for="soru-sayisi">Tur uzunluğu</label><select id="soru-sayisi"><option value="10">10 soru</option><option value="20">20 soru</option></select></div>
+            <div class="ba-field"><label for="sure">Süre</label><select id="sure"><option value="klasik">Süresiz</option><option value="sureli">Süreli (soru başına 15 sn)</option></select></div>
+          </div>
+          <p class="gb-hint">Havuzda <b id="havuz-sayisi">81</b> il var. Şıklar için <kbd>1</kbd>–<kbd>4</kbd> tuşlarını kullanabilirsiniz.</p>
+          <div class="ba-actions"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="baslat">Başla</button></div>
+          <p id="ayar-uyari" class="gb-warn" role="status"></p>
+          <details class="il-study"><summary>81 ilin çalışma listesi (plaka sırasıyla)</summary><ol id="il-liste"></ol></details>
+
+          <div id="istatistik" hidden>
+            <h3>İstatistikleriniz</h3>
+            <dl class="gb-stats">
+              <div><dt>Oynanan tur</dt><dd id="ist-tur">0</dd></div>
+              <div><dt>Cevaplanan soru</dt><dd id="ist-soru">0</dd></div>
+              <div><dt>Doğruluk</dt><dd id="ist-dogruluk">—</dd></div>
+              <div><dt>En yüksek puan</dt><dd id="ist-puan">0</dd></div>
+              <div><dt>En uzun seri</dt><dd id="ist-seri">0</dd></div>
+            </dl>
+            <p class="gb-last">Son turların puanı: <span id="ist-son">—</span></p>
+            <button type="button" class="ba-btn" id="ist-sifirla">İstatistikleri sıfırla</button>
+          </div>
+        </div>
+
+        <div id="ekran-oyun" hidden>
+          <div class="bg-status">
+            <span>Soru <b id="sira">1</b>/<b id="toplam">10</b></span>
+            <span>Puan <b id="puan">0</b></span>
+            <span>Seri <b id="seri">0</b></span>
+            <span class="bg-chip" id="mod-etiket"></span>
+          </div>
+          <div class="bg-time" id="sure-kutu" hidden><div class="bar" aria-hidden="true"><span id="sure-bar"></span></div><output id="sure-yazi" role="timer" aria-label="Kalan süre, saniye">15</output></div>
+          <p class="bg-q" id="soru-metin" tabindex="-1"></p>
+          <div class="bg-opts" id="siklar" role="group" aria-label="Cevap şıkları">
+            <button type="button" class="bg-opt" aria-keyshortcuts="1"><span class="bg-n" aria-hidden="true">1</span><span class="bg-t"></span></button>
+            <button type="button" class="bg-opt" aria-keyshortcuts="2"><span class="bg-n" aria-hidden="true">2</span><span class="bg-t"></span></button>
+            <button type="button" class="bg-opt" aria-keyshortcuts="3"><span class="bg-n" aria-hidden="true">3</span><span class="bg-t"></span></button>
+            <button type="button" class="bg-opt" aria-keyshortcuts="4"><span class="bg-n" aria-hidden="true">4</span><span class="bg-t"></span></button>
+          </div>
+          <p class="bg-feedback" id="geri-bildirim" role="status" aria-live="polite"></p>
+          <p class="il-info" id="bilgi" hidden></p>
+          <div class="bg-tools"><button type="button" class="ba-btn" id="birak">Turu bırak</button></div>
+          <div class="bg-next"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="sonraki" hidden>Sonraki soru</button></div>
+        </div>
+
+        <div id="ekran-sonuc" hidden>
+          <h3 id="sonuc-baslik" tabindex="-1">Tur bitti</h3>
+          <p class="bg-big"><span id="sonuc-puan">0</span><small>puan</small></p>
+          <p class="bg-record" id="sonuc-rekor" hidden>Yeni en yüksek puan!</p>
+          <p id="sonuc-ozet"></p>
+          <p id="sonuc-yorum"></p>
+          <p id="sonuc-en-yuksek"></p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="tekrar">Yeni tur başlat</button>
+            <button type="button" class="ba-btn" id="ayara-don">Ayarları değiştir</button>
+          </div>
+          <h3 id="yanlis-baslik" hidden>Yanlışları gözden geçirin</h3>
+          <p id="yanlis-yok" hidden>Bu turda hiç yanlışınız yok. Tebrikler!</p>
+          <ol id="yanlislar" hidden></ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-turkiye-il-bil-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Türkiye İl Bil nasıl bir oyun?</h2>
+      <p>Türkiye İl Bil, ülkemizin 81 ilini plaka kodları, coğrafi bölgeleri ve sınır komşuluklarıyla birlikte öğrenmeniz için hazırlanmış ücretsiz bir bilmece oyunudur. Her soruda dört şık çıkar. Bazen "34 plaka kodu hangi ile aittir?" diye sorulur, bazen bir ilin hangi coğrafi bölgede olduğu ya da hangi ille sınır komşusu olduğu sorulur. Doğru cevap verdikçe puan ve seri bonusu kazanır, cevaptan sonra çıkan kısa not sayesinde bilgiyi hemen pekiştirirsiniz.</p>
+      <p>Oyunda harita yoktur; bunun yerine soru türleri bilgiyi ezber yerine bağlantılarla öğretecek biçimde kurgulanmıştır. Oyunu oynamak için hesap açmanız, uygulama indirmeniz ya da bir dosya yüklemeniz gerekmez. Sayfa açıldığında il verisi tarayıcınıza gelir ve oyunun tamamı cihazınızda çalışır. İsterseniz ayar ekranındaki "81 ilin çalışma listesi"ni açıp plaka sırasıyla illeri ve bölgelerini gözden geçirebilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Oyun modunu seçin: "Plakadan il", "İlden plaka", "İlin bölgesi", "Komşu il" ya da dört türü karıştıran "Karışık".</li>
+        <li>İsterseniz yalnızca bir coğrafi bölgeyi seçin; örneğin sadece Ege Bölgesi'ndeki illerle çalışabilirsiniz. Tur uzunluğunu (10 veya 20 soru) belirleyin, istiyorsanız soru başına 15 saniyelik süreli modu açın.</li>
+        <li>"Başla" düğmesine basın. Soruyu okuyun ve dört şıktan doğru olduğunu düşündüğünüze tıklayın ya da klavyede 1, 2, 3 veya 4 tuşuna basın.</li>
+        <li>Cevabınız hemen değerlendirilir: doğru şık yeşil, yanlış seçiminiz kırmızı olur. Altta çıkan bilgi kutusu ilin plaka kodunu, bölgesini ya da komşularını gösterir. "Sonraki soru" düğmesiyle devam edin.</li>
+        <li>Tur sonunda puanınızı, doğru sayınızı ve yanlış yaptığınız soruların doğru cevaplarını görürsünüz. Rekorunuz tarayıcınıza kaydedilir.</li>
+      </ol>
+
+      <h2>Oyun modları</h2>
+      <ul>
+        <li><strong>Plakadan il:</strong> Bir plaka kodu verilir, hangi ile ait olduğunu seçersiniz. Yanlış şıkların bir kısmı aynı bölgeden seçilir; yani "41" için üç Marmara ilini görebilirsiniz.</li>
+        <li><strong>İlden plaka:</strong> İlin adı verilir, plaka kodunu bulursunuz. Yön tersine döndüğü için aynı bilgiyi farklı bir bellek yolundan pekiştirir.</li>
+        <li><strong>İlin bölgesi:</strong> Bir ilin yedi coğrafi bölgeden hangisinde olduğunu seçersiniz. Marmara, Ege, Akdeniz, İç Anadolu, Karadeniz, Doğu Anadolu ve Güneydoğu Anadolu şıklardan dördü olarak gelir.</li>
+        <li><strong>Komşu il:</strong> Bir ilin adı verilir ve onunla kara sınırı olan ili bulmanız istenir. Yanlış şıklar sınırdaş olmayan illerden seçilir ve çoğu zaman bir ya da iki il ötedeki illerden gelir; bu yüzden harita bilginizi gerçekten sınar.</li>
+      </ul>
+
+      <h2>Plaka kodları nasıl çalışır?</h2>
+      <p>Türkiye'de araç plakalarının ilk iki hanesi, aracın kayıtlı olduğu ilin kodudur. İlk yetmişe yakın il kodu büyük oranda alfabetik sıraya göre verilmiştir: 01 Adana, 02 Adıyaman, 03 Afyonkarahisar ve 06 Ankara gibi. Bu sıralamada zamanla küçük sapmalar oluşmuştur; örneğin Mersin eski adı olan İçel'e göre 33, Kahramanmaraş eski adı olan Maraş'a göre 46 koduyla alfabetik sıranın dışında kalmıştır. 68'den 81'e kadar olan kodlar ise 1980'lerin sonundan 1999'a kadar il statüsü kazanan Aksaray, Bayburt, Karaman, Kırıkkale, Batman, Şırnak, Bartın, Ardahan, Iğdır, Yalova, Karabük, Kilis, Osmaniye ve Düzce'ye verilmiştir.</p>
+      <p>Plaka kodlarını öğrenmenin pratik yolu, önce en sık duyduklarınızla başlamaktır: 06 Ankara, 07 Antalya, 16 Bursa, 34 İstanbul, 35 İzmir, 42 Konya. Sonra kendi bölgenizdeki illeri, ardından çevre illeri ekleyin. Oyunda bölge filtresini kullanarak bir bölgenin plaka kodlarını birlikte çalışmak da etkili bir yöntemdir.</p>
+
+      <h2>Yedi coğrafi bölge</h2>
+      <p>Türkiye, 1941'de toplanan Birinci Coğrafya Kongresi'nde yedi coğrafi bölgeye ayrılmıştır: Marmara, Ege, Akdeniz, İç Anadolu, Karadeniz, Doğu Anadolu ve Güneydoğu Anadolu. Oyunda kullanılan bölge dağılımı şöyledir: Marmara 11, Ege 8, Akdeniz 8, İç Anadolu 13, Karadeniz 18, Doğu Anadolu 14 ve Güneydoğu Anadolu 9 il. Coğrafi bölgeler idari sınırlarla birebir örtüşmez; bazı illerin toprakları birden fazla bölgeye uzanır. Bu yüzden oyun, illeri yaygın olarak kabul edilen bölgesine göre sınıflandırır. Farklı kaynaklarda küçük farklılıklar görebilirsiniz.</p>
+
+      <h2>Puanlama ve seri</h2>
+      <p>Her doğru cevap 10 puan verir. Art arda doğru cevaplarda seri bonusu devreye girer: ikinci doğruda 5, üçüncüde 10 puan eklenir ve bonus 25 puana kadar çıkar. Süreli modda kalan her saniye için bir puan daha kazanırsınız; bu bonus en çok 10 puandır. Yanlış cevap ya da süre dolması seriyi sıfırlar. En yüksek puanınız mod ve tur uzunluğuna göre ayrı saklanır; böylece 10 soruluk "Plakadan il" rekoruyla 20 soruluk "Karışık" rekoru birbirine karışmaz.</p>
+
+      <div class="ba-ad" data-slot="oyun-turkiye-il-bil-b" aria-label="Reklam"></div>
+
+      <h2>İlleri akılda tutma yöntemleri</h2>
+      <ul>
+        <li><strong>Bölge bölge ilerleyin.</strong> Önce 11 ilden oluşan Marmara ya da 8 ilden oluşan Ege gibi küçük bir bölgeyle başlayıp bölge filtresinde yüzde 90 üzerine çıkın, sonra diğer bölgeye geçin. Karadeniz ve Doğu Anadolu daha kalabalık olduğu için sona bırakılabilir.</li>
+        <li><strong>Komşuluk zincirleri kurun.</strong> Bir ili komşularıyla birlikte düşünmek, hem harita zihninizi hem de il listesini güçlendirir. Örneğin Ankara'dan başlayıp saat yönünde Eskişehir, Bolu, Çankırı, Kırıkkale, Kırşehir, Aksaray ve Konya'yı sayın.</li>
+        <li><strong>Plaka kodlarını gruplayın.</strong> 01-10 arası, 11-20 arası gibi onluk gruplarla çalışın. Alfabetik sıra, ilk altmış yedi ilde büyük bir ipucudur.</li>
+        <li><strong>Zor çiftleri ayrı çalışın.</strong> Bitlis ile Bingöl, Kırklareli ile Kırıkkale, Karaman ile Kahramanmaraş gibi adları birbirine benzeyen illeri yan yana düşünüp farkı not edin.</li>
+        <li><strong>Yanlışları aynı gün tekrar edin.</strong> Tur sonundaki "Yanlışları gözden geçirin" listesi, hangi ilin eksik olduğunu gösterir. Aynı bölgeyi ertesi gün yeniden oynamak kalıcı öğrenmeyi güçlendirir.</li>
+      </ul>
+
+      <h2>Kimler için uygun?</h2>
+      <p>Oyun; ilkokul ve ortaokul öğrencileri, coğrafya dersine hazırlananlar, KPSS, AGS ve benzeri sınavlarda genel kültür bölümüne çalışanlar, plaka kodu ezberlemeyi sevenler ve yalnızca memleketi hakkında daha fazlasını bilmek isteyenler için uygundur. Öğretmenler dersin başında beş dakikalık bir ısınma etkinliği olarak kullanabilir; aileler araba yolculuğunda "plaka oyunu" yerine telefonda yarışabilir. Oyundaki bilgiler genel kültür amaçlıdır; resmî idari bilgi, ulaşım ya da hukuki işlem için ilgili kurumların güncel kaynaklarına bakmanız gerekir.</p>
+
+      <h2>Veri hakkında not</h2>
+      <p>Komşuluk bilgisi yalnızca kara sınırlarını esas alır; denizden komşuluk (örneğin Marmara Denizi'nin karşı kıyıları) sayılmaz. İl adları ve plaka sırası Türkiye'nin güncel il listesine göre verilmiştir. Bir ilin bölge ya da komşuluk bilgisinde hata görürseniz bilgi@bilisimajans.com adresine yazabilirsiniz; veri düzenli olarak gözden geçirilir.</p>
+
+      <h2>Gizlilik: hesap yok, takip yok</h2>
+      <p>Oyunun kendisinde hesap, analiz ya da izleme kodu yoktur. Cevaplarınız, puanlarınız ve istatistikleriniz hiçbir yere gönderilmez; yalnızca tarayıcınızın localStorage alanında saklanır. Başka bir cihaza taşınmaz ve tarayıcı verilerini silerseniz kaybolur. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Türkiye İl Bil oyunu ücretsiz mi, kayıt gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir ve kayıt gerektirmez. Modu ve bölgeyi seçip "Başla" düğmesine basmanız yeterlidir. Hesap, e-posta ya da uygulama yüklemesi istenmez.</p></details>
+      <details><summary>Oyunda kaç il var?</summary><p>Oyunda Türkiye'nin 81 ilinin tamamı vardır. İller plaka kodu sırasına göre kaydedilmiştir ve ayar ekranındaki çalışma listesinde plaka sırasıyla görebilirsiniz.</p></details>
+      <details><summary>Hangi soru türleri var?</summary><p>Dört tür vardır: plaka kodundan il bulma, ilden plaka kodu bulma, ilin coğrafi bölgesini bulma ve sınır komşusu olan ili bulma. "Karışık" modu bu dört türü rastgele sıralar.</p></details>
+      <details><summary>Süreli modda süre dolarsa ne olur?</summary><p>Süreli modda her soru için 15 saniyeniz vardır. Süre dolarsa soru yanlış sayılır, doğru cevap gösterilir ve seriniz sıfırlanır. Hızlı verdiğiniz doğru cevaplar kalan saniyeye göre en çok 10 bonus puan kazandırır. Sekmeyi arka plana alırsanız süre durur.</p></details>
+      <details><summary>Komşu il sorularında deniz komşuluğu sayılıyor mu?</summary><p>Hayır. Yalnızca kara sınırı olan iller komşu sayılır. Aynı denizin karşı kıyısındaki ya da boğazla ayrılan iller komşu kabul edilmez. Yanlış şıklar sınırdaş olmayan illerden seçilir.</p></details>
+      <details><summary>Coğrafi bölgeler kaynağa göre değişir mi?</summary><p>Coğrafi bölge sınırları idari il sınırlarıyla birebir örtüşmediği için bazı illerin hangi bölgeye yazıldığı kaynağa göre farklılık gösterebilir. Oyunda Türkçe kaynaklarda yaygın olan sınıflandırma kullanılır. Hata ya da önerileriniz için bilgi@bilisimajans.com adresine yazabilirsiniz.</p></details>
+      <details><summary>Skorlarım nerede saklanıyor?</summary><p>En yüksek puanlarınız, doğruluk oranınız ve son turlarınız yalnızca tarayıcınızın localStorage alanında tutulur; sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli sekmede oynarsanız kayıtlar kaybolur. Ayar ekranındaki düğmeyle kendiniz de silebilirsiniz.</p></details>
+      <details><summary>Telefonda ve klavyesiz oynayabilir miyim?</summary><p>Evet. Düğmeler parmakla rahatça dokunulacak boyuttadır ve oyun 360 piksel genişliğindeki ekranlarda çalışır. Klavyeniz varsa 1, 2, 3 ve 4 tuşları şıkları seçer.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../bayrak-bil/">Bayrak Bil</a></li>
+        <li><a href="../bilgi-yarismasi/">Bilgi Yarışması</a></li>
+        <li><a href="../dogru-mu-yanlis-mi/">Doğru mu Yanlış mı</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-turkiye-il-bil-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

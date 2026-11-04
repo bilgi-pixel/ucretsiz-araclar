@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İngilizce Kelime Eşleştir Oyna – Ücretsiz Online İngilizce Kelime Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz İngilizce kelime oyunu: A1-B2 seviyelerinde 500'den fazla sık kullanılan kelimeyi eşleştirme kartları, 4 şıklı test ve yazarak modla öğrenin. Seviye filtresi, yanlışları tekrar, skor. Kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/ingilizce-kelime-eslestir/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyun kutusu ortak düzen */
+    .game-box { padding: 16px; }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 48px; }
+    .gb-wrap { max-width: 680px; margin: 0 auto; }
+    .gb-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-hint { margin: 6px 0 14px; font-size: .92rem; color: var(--ba-text-2); }
+    .gb-warn { margin: 10px 0 0; min-height: 1.2em; font-size: .92rem; color: var(--ba-danger); font-weight: 600; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 24px 16px; display: flex; flex-direction: column; justify-content: center; border: 0; border-radius: 0; }
+    .game-box h3 { margin: 18px 0 8px; font-size: 1.05rem; }
+    .gb-top .ba-icon-btn { min-height: 36px; font-size: .85rem; padding: 0 12px; }
+    #ekran-yukleniyor p { margin: 24px 0; text-align: center; color: var(--ba-text-2); }
+
+    /* Durum satırı */
+    .bg-status { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .92rem; color: var(--ba-text-2); margin-bottom: 12px; }
+    .bg-status b { color: var(--ba-text); font-variant-numeric: tabular-nums; }
+    .bg-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-weight: 600; font-size: .82rem; }
+    .bg-level { font-family: var(--ba-mono); letter-spacing: .12em; color: var(--ba-text-muted); font-size: .85rem; }
+    .bg-practice { background: var(--ba-surface-2); color: var(--ba-text-2); border: 1px solid var(--ba-border); }
+
+    /* Süre çubuğu */
+    .bg-time { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bg-time .bar { flex: 1; height: 8px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 999px; overflow: hidden; }
+    .bg-time .bar > span { display: block; height: 100%; width: 100%; background: var(--ba-primary); transition: width .1s linear; }
+    .bg-time .bar > span.is-low { background: var(--ba-danger); }
+    .bg-time output { min-width: 2.2ch; text-align: right; font-family: var(--ba-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) { .bg-time .bar > span { transition: none; } }
+
+    /* Soru ve şıklar */
+    .bg-q { margin: 0 0 14px; font-size: 1.2rem; line-height: 1.45; font-weight: 600; color: var(--ba-text); overflow-wrap: anywhere; }
+    .bg-q:focus { outline: none; }
+    .bg-q:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 4px; border-radius: 4px; }
+    .bg-opts { display: grid; gap: 10px; }
+    .bg-opt { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 10px 14px; text-align: left; font: inherit; font-weight: 500; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); cursor: pointer; transition: border-color .15s, background-color .15s; }
+    .bg-opt:hover:not(:disabled) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .bg-opt .bg-n { flex: none; display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); font-family: var(--ba-mono); font-size: .85rem; font-weight: 600; }
+    .bg-opt .bg-t { flex: 1; overflow-wrap: anywhere; }
+    .bg-opt:disabled { cursor: default; color: var(--ba-text); opacity: 1; }
+    .bg-opt.is-correct { border-color: var(--ba-success); background: var(--ba-success-soft); }
+    .bg-opt.is-wrong { border-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .bg-opt.is-correct::after { content: "✓ Doğru"; flex: none; font-weight: 700; color: var(--ba-success); font-size: .85rem; }
+    .bg-opt.is-wrong::after { content: "✗ Yanlış"; flex: none; font-weight: 700; color: var(--ba-danger); font-size: .85rem; }
+    .bg-tools { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .bg-tools .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .bg-feedback { min-height: 1.5em; margin: 14px 0 0; font-weight: 600; }
+    .bg-feedback.is-ok { color: var(--ba-success); }
+    .bg-feedback.is-bad { color: var(--ba-danger); }
+    .bg-next { margin-top: 12px; }
+
+    /* Sonuç ekranı */
+    #sonuc-baslik { margin: 0 0 6px; font-size: 1.3rem; }
+    #sonuc-baslik:focus { outline: none; }
+    .bg-big { margin: 0; font-size: 2.6rem; line-height: 1.1; font-weight: 700; color: var(--ba-primary); font-variant-numeric: tabular-nums; }
+    .bg-big small { font-size: 1rem; font-weight: 600; color: var(--ba-text-2); margin-left: 6px; }
+    .bg-record { display: inline-block; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success); font-weight: 700; }
+    #sonuc-ozet, #sonuc-yorum, #sonuc-en-yuksek { margin: 8px 0 0; }
+    #yanlislar { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 12px; }
+    #yanlislar li strong { display: block; overflow-wrap: anywhere; }
+    #yanlislar .bg-you { display: block; color: var(--ba-danger); font-size: .92rem; }
+    #yanlislar .bg-right { display: block; color: var(--ba-success); font-size: .92rem; font-weight: 600; }
+
+    /* İstatistik */
+    .gb-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 0; }
+    @media (min-width: 560px) { .gb-stats { grid-template-columns: repeat(5, 1fr); } }
+    .gb-stats div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; }
+    .gb-stats dt { font-size: .75rem; color: var(--ba-text-muted); }
+    .gb-stats dd { margin: 2px 0 0; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+    .gb-cats { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+    .gb-cats li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .9rem; }
+    .gb-cats i { grid-column: 1 / -1; display: block; height: 6px; border-radius: 999px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); position: relative; overflow: hidden; }
+    .gb-cats i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--ba-primary); }
+    .gb-last { margin: 10px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    #ist-sifirla { margin-top: 12px; min-height: 40px; padding: 6px 14px; font-size: .88rem; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-content kbd, .gb-hint kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+    /* Bayrak kutusu */
+    .bb-flag { display: flex; justify-content: center; margin: 0 0 16px; }
+    .bb-flag img { display: block; width: 240px; max-width: 100%; height: auto; aspect-ratio: 4 / 3; border: 1px solid var(--ba-border); border-radius: 6px; background: var(--ba-surface-2); box-shadow: 0 2px 8px rgba(30, 33, 38, .18); object-fit: contain; }
+    .bb-mini { display: block; margin: 6px 0; width: 60px; height: auto; border: 1px solid var(--ba-border); border-radius: 3px; }
+    .bb-credit { margin: 14px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+  
+    .ke-board { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+    .ke-col { display: grid; gap: 8px; align-content: start; }
+    .ke-card { min-height: 52px; padding: 8px 10px; font: inherit; font-weight: 500; text-align: center; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); cursor: pointer; overflow-wrap: anywhere; transition: border-color .15s, background-color .15s; }
+    .ke-card:hover:not(:disabled) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .ke-card.is-sel { border-color: var(--ba-primary); background: var(--ba-primary-soft); box-shadow: 0 0 0 2px var(--ba-primary-soft); }
+    .ke-card.is-matched { border-color: var(--ba-success); background: var(--ba-success-soft); color: var(--ba-text); opacity: 1; cursor: default; }
+    .ke-card.is-wrong { border-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .ke-col-h { margin: 0 0 4px; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ba-text-muted); text-align: center; }
+    .ke-type { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 6px 0 0; }
+    .ke-type input { flex: 1 1 180px; min-height: 52px; padding: 8px 12px; font: inherit; font-size: 1.1rem; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .ke-type input:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    .ke-type .ba-btn { min-height: 52px; }
+    #yanlis-calis { margin-top: 12px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"İngilizce Kelime Eşleştir – Online Kelime Öğrenme Oyunu","description":"Tarayıcıda oynanan ücretsiz İngilizce-Türkçe kelime oyunu: A1-B2 seviyeli 500'den fazla kelime, eşleştirme kartları, 4 şıklı test, yazarak mod, yanlışları tekrar ve skor.","inLanguage":"tr","genre":["Kelime oyunu","Dil öğrenme","Eğitim"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","url":"https://araclar.bilisimajans.com/oyunlar/ingilizce-kelime-eslestir/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İngilizce Kelime Eşleştir oyunu ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir ve kayıt gerektirmez. Modu ve seviyeyi seçip \"Başla\" düğmesine basmanız yeterlidir. Hesap, e-posta ya da uygulama yüklemesi istenmez."}},{"@type":"Question","name":"Oyunda kaç kelime var ve seviyeler nasıl belirlendi?","acceptedAnswer":{"@type":"Answer","text":"Havuzda A1, A2, B1 ve B2 seviyelerinde toplam 500'den fazla İngilizce-Türkçe kelime çifti bulunur. Seviyeler, kelimenin günlük kullanımdaki sıklığı ve anlam zorluğu dikkate alınarak yaklaşık olarak belirlenmiştir; resmî bir seviye tespiti değildir."}},{"@type":"Question","name":"Eşleştirme kartları nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Solda İngilizce, sağda Türkçe kelimeler karışık sırayla durur. Bir İngilizce kelimeye, sonra Türkçe karşılığına tıklarsınız. Doğruysa iki kart yeşil olup kilitlenir; yanlışsa kısa süre kırmızı yanar ve seriniz sıfırlanır. Klavyeyle Tab ve Enter tuşlarını kullanabilirsiniz."}},{"@type":"Question","name":"Yazarak modda büyük küçük harf önemli mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Cevabınızın baş ve sonundaki boşluklar ile büyük küçük harf farkı önemsenmez. Ancak yazım doğru olmalıdır; örneğin \"neighbour\" kelimesi İngiliz yazımıyla verilmiştir."}},{"@type":"Question","name":"Yanlışları tekrar nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Yanlış yaptığınız kelimeler tarayıcınıza kaydedilir. Tur sonunda \"Yanlışları tekrar et\" ile yalnızca o turun yanlışlarını, ana ekranda \"Kayıtlı yanlışlarımı çalış\" ile de önceki turlardan kalan tüm eksiklerinizi yeniden çalışabilirsiniz. Bir kelimeyi sonraki turda doğru bilirseniz listeden çıkar."}},{"@type":"Question","name":"Bir kelimenin birden fazla anlamı varsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Oyunda her kelime için en yaygın tek anlam kullanılır ve aynı Türkçe karşılığı paylaşan iki kelime yoktur. Bu yüzden bir soruda birden fazla doğru cevap çıkmaz. Daha geniş anlam çeşitliliği için bir sözlükten yararlanmanızı öneririz."}},{"@type":"Question","name":"Skorlarım nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"En yüksek puanlarınız, doğruluk oranınız, son turlarınız ve yanlış kelimeleriniz yalnızca tarayıcınızın localStorage alanında tutulur; sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli sekmede oynarsanız kayıtlar kaybolur. Ayar ekranındaki düğmeyle kendiniz de silebilirsiniz."}},{"@type":"Question","name":"Telefonda ve klavyesiz oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Kartlar ve düğmeler parmakla rahatça dokunulacak boyuttadır ve oyun 360 piksel genişliğindeki ekranlarda çalışır. Klavyeniz varsa 4 şıklı testte 1, 2, 3 ve 4 tuşları şıkları seçer."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">İngilizce Kelime Eşleştir</span>: Kelime Öğrenme Oyunu</h1><p class="lead">A1'den B2'ye 500'den fazla sık kullanılan İngilizce kelimeyi oyun oynayarak öğrenin. Eşleştirme kartlarıyla İngilizce ve Türkçe karşılıkları buluşturun, 4 şıklı testle hızlanın ya da kelimeyi yazarak pekiştirin. Seviyenizi seçin, yanlışlarınızı tekrar edin. Kurulum ve kayıt yok; ilerlemeniz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="ayar" aria-label="İngilizce Kelime Eşleştir oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">İngilizce Kelime Eşleştir</p><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <div id="ekran-ayar">
+          <div class="ba-options">
+            <div class="ba-field"><label for="mod">Oyun modu</label><select id="mod"></select></div>
+            <div class="ba-field"><label for="seviye">Seviye</label><select id="seviye"><option value="hepsi">Tüm seviyeler</option></select></div>
+            <div class="ba-field"><label for="soru-sayisi">Tur uzunluğu</label><select id="soru-sayisi"><option value="10">10 kelime</option><option value="20">20 kelime</option></select></div>
+            <div class="ba-field"><label for="yon">Yön (4 şıklı test)</label><select id="yon"><option value="en-tr">İngilizce → Türkçe</option><option value="tr-en">Türkçe → İngilizce</option></select></div>
+          </div>
+          <p class="gb-hint">Havuzda <b id="havuz-sayisi">500</b> kelime var. 4 şıklı testte <kbd>1</kbd>–<kbd>4</kbd> tuşlarını kullanabilirsiniz.</p>
+          <div class="ba-actions"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="baslat">Başla</button></div>
+          <button type="button" class="ba-btn" id="yanlis-calis" hidden>Kayıtlı yanlışlarımı çalış (<span id="yanlis-sayi">0</span>)</button>
+          <p id="ayar-uyari" class="gb-warn" role="status"></p>
+
+          <div id="istatistik" hidden>
+            <h3>İstatistikleriniz</h3>
+            <dl class="gb-stats">
+              <div><dt>Oynanan tur</dt><dd id="ist-tur">0</dd></div>
+              <div><dt>Cevap sayısı</dt><dd id="ist-soru">0</dd></div>
+              <div><dt>Doğruluk</dt><dd id="ist-dogruluk">—</dd></div>
+              <div><dt>En yüksek puan</dt><dd id="ist-puan">0</dd></div>
+              <div><dt>En uzun seri</dt><dd id="ist-seri">0</dd></div>
+            </dl>
+            <p class="gb-last">Son turların puanı: <span id="ist-son">—</span></p>
+            <button type="button" class="ba-btn" id="ist-sifirla">İstatistikleri sıfırla</button>
+          </div>
+        </div>
+
+        <div id="ekran-oyun" hidden>
+          <div class="bg-status">
+            <span><span id="sira-etiket">Soru</span> <b id="sira">1</b>/<b id="toplam">10</b></span>
+            <span>Puan <b id="puan">0</b></span>
+            <span>Seri <b id="seri">0</b></span>
+            <span class="bg-chip" id="mod-etiket"></span>
+          </div>
+          <p class="bg-q" id="soru-metin" tabindex="-1"></p>
+
+          <div id="panel-kart" hidden>
+            <div class="ke-board">
+              <div><p class="ke-col-h">İngilizce</p><div class="ke-col" id="kart-en"></div></div>
+              <div><p class="ke-col-h">Türkçe</p><div class="ke-col" id="kart-tr"></div></div>
+            </div>
+          </div>
+
+          <div id="panel-sik" hidden>
+            <div class="bg-opts" id="siklar" role="group" aria-label="Cevap şıkları">
+              <button type="button" class="bg-opt" aria-keyshortcuts="1"><span class="bg-n" aria-hidden="true">1</span><span class="bg-t"></span></button>
+              <button type="button" class="bg-opt" aria-keyshortcuts="2"><span class="bg-n" aria-hidden="true">2</span><span class="bg-t"></span></button>
+              <button type="button" class="bg-opt" aria-keyshortcuts="3"><span class="bg-n" aria-hidden="true">3</span><span class="bg-t"></span></button>
+              <button type="button" class="bg-opt" aria-keyshortcuts="4"><span class="bg-n" aria-hidden="true">4</span><span class="bg-t"></span></button>
+            </div>
+          </div>
+
+          <div id="panel-yaz" hidden>
+            <form class="ke-type" id="yaz-form" autocomplete="off">
+              <label class="sr-only" for="yaz-girdi" style="position:absolute;left:-9999px">İngilizce karşılığı</label>
+              <input type="text" id="yaz-girdi" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="İngilizcesini yazın">
+              <button type="submit" class="ba-btn ba-btn-primary" id="yaz-gonder">Kontrol et</button>
+            </form>
+          </div>
+
+          <p class="bg-feedback" id="geri-bildirim" role="status" aria-live="polite"></p>
+          <div class="bg-tools"><button type="button" class="ba-btn" id="birak">Turu bırak</button></div>
+          <div class="bg-next"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="sonraki" hidden>Sonraki soru</button></div>
+        </div>
+
+        <div id="ekran-sonuc" hidden>
+          <h3 id="sonuc-baslik" tabindex="-1">Tur bitti</h3>
+          <p class="bg-big"><span id="sonuc-puan">0</span><small>puan</small></p>
+          <p class="bg-record" id="sonuc-rekor" hidden>Yeni en yüksek puan!</p>
+          <p id="sonuc-ozet"></p>
+          <p id="sonuc-yorum"></p>
+          <p id="sonuc-en-yuksek"></p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="tekrar">Yeni tur başlat</button>
+            <button type="button" class="ba-btn" id="yanlis-tekrar" hidden>Yanlışları tekrar et</button>
+            <button type="button" class="ba-btn" id="ayara-don">Ayarları değiştir</button>
+          </div>
+          <h3 id="yanlis-baslik" hidden>Yanlış yaptığınız kelimeler</h3>
+          <p id="yanlis-yok" hidden>Bu turda hiç yanlışınız yok. Tebrikler!</p>
+          <ol id="yanlislar" hidden></ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-ingilizce-kelime-eslestir-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>İngilizce Kelime Eşleştir nasıl bir oyun?</h2>
+      <p>İngilizce Kelime Eşleştir, günlük hayatta en sık karşınıza çıkan İngilizce kelimeleri oyunla öğrenmeniz için hazırlanmış ücretsiz bir kelime oyunudur. Oyunun havuzunda A1'den B2'ye kadar dört seviyede 500'den fazla İngilizce-Türkçe kelime çifti vardır. Hepsi bu proje için özgün olarak seçildi; hiçbir ders kitabından ya da uygulamadan kopyalanmadı. Üç ayrı oyun modu aynı kelimeleri farklı beceri yollarıyla çalıştırır: tanımak, seçmek ve hatırlayıp yazmak.</p>
+      <p>Oyunu oynamak için hesap açmanız, uygulama indirmeniz ya da bir şey yüklemeniz gerekmez. Sayfa açıldığında kelime listesi tarayıcınıza gelir ve oyunun geri kalanı tamamen cihazınızda çalışır. Telefon, tablet ve bilgisayarda aynı şekilde oynanır. İlerlemeniz, rekorlarınız ve yanlış yaptığınız kelimeler yalnızca tarayıcınızın yerel depolama alanında saklanır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Oyun modunu seçin: "Eşleştirme kartları", "4 şıklı test" ya da "Yazarak". İlk kez oynuyorsanız eşleştirme kartlarıyla başlamak rahat bir giriştir.</li>
+        <li>Seviyenizi seçin. A1 başlangıç, A2 temel, B1 orta, B2 ortanın üstü kelimeleri içerir. Emin değilseniz "Tüm seviyeler" ile başlayıp zorlandığınız seviyeye geri dönebilirsiniz. Tur uzunluğu olarak 10 ya da 20 kelime seçin.</li>
+        <li>"Başla" düğmesine basın. Eşleştirme modunda soldaki İngilizce kelimeye ve sağdaki Türkçe karşılığına sırayla tıklayın; 4 şıklı testte doğru şıkkı seçin; yazarak modda İngilizcesini yazıp "Kontrol et" düğmesine basın ya da Enter tuşuna basın.</li>
+        <li>Doğru cevap puan ve seri bonusu kazandırır, yanlış cevap seriyi sıfırlar ve doğru karşılığı gösterir. Her cevabın ardından sonraki soruya geçersiniz.</li>
+        <li>Tur sonunda puanınızı ve yanlış yaptığınız kelimeleri görürsünüz. "Yanlışları tekrar et" düğmesi yalnızca bu kelimelerle yeni bir tur başlatır; ayrıca ana ekranda "Kayıtlı yanlışlarımı çalış" düğmesiyle daha önceki turlardan kalan eksiklerinize dönebilirsiniz.</li>
+      </ol>
+
+      <h2>Oyun modları</h2>
+      <ul>
+        <li><strong>Eşleştirme kartları:</strong> Her tahtada beş İngilizce kelime solda, Türkçe karşılıkları karışık sırayla sağda durur. Birini seçip diğer sütundan karşılığını seçersiniz. Doğru eşleşen kartlar yeşil olur ve kilitlenir. Yanlış eşleşme seriyi bozar ama sizi cezalandırmaz; yeniden deneyebilirsiniz. Tahtadaki tüm çiftler bitince sonraki tahtaya geçilir.</li>
+        <li><strong>4 şıklı test:</strong> Bir kelime verilir, dört şıktan doğru karşılığı seçersiniz. Yönü ayarlardan değiştirebilirsiniz: İngilizce'den Türkçe'ye çevirmek anlamayı, Türkçe'den İngilizce'ye çevirmek aktif kullanımı çalıştırır. Yanlış şıklar mümkün olduğunca aynı seviyedeki kelimelerden seçilir.</li>
+        <li><strong>Yazarak:</strong> Türkçe karşılığı verilen kelimenin İngilizcesini kendiniz yazarsınız. En zor ama en kalıcı moddur; çünkü şık görmeden kelimeyi bellekten çıkarmanız gerekir. Büyük küçük harf ve baştaki sondaki boşluklar önemsenmez.</li>
+      </ul>
+
+      <h2>Seviyeler ne anlama geliyor?</h2>
+      <p>A1, A2, B1 ve B2, Avrupa Diller İçin Ortak Başvuru Çerçevesi'nde (CEFR) kullanılan seviye adlarıdır. Oyundaki seviye etiketleri bu çerçeveye yaklaşık bir rehberlik sağlar; resmî bir sınav sonucu ya da kesin bir seviye tespiti değildir. A1 seviyesinde aile üyeleri, yiyecekler, renkler, sayılar ve temel fiiller bulunur. A2'de seyahat, alışveriş, hava durumu, iş ve günlük rutinle ilgili kelimeler yer alır. B1'de davranış, duygu, toplum ve kişisel gelişimle ilgili daha soyut kelimeler, B2'de ise akademik ve resmî metinlerde sık geçen, daha ince anlam farkları taşıyan kelimeler bulunur.</p>
+      <p>Bir kelimeyi bir seviyeye koymak her zaman net değildir; farklı ders kitapları aynı kelimeyi farklı seviyelerde verebilir. Bu yüzden seviye etiketini mutlak bir ölçü değil, çalışma sırası önerisi olarak görmenizi öneririz.</p>
+
+      <h2>Puanlama ve seri</h2>
+      <p>Her doğru cevap 10 puan getirir. Art arda doğru cevap verirseniz seri bonusu başlar: ikinci doğruda 5, üçüncüde 10 puan eklenir ve bonus 25 puana kadar çıkar. Yanlış cevap seriyi sıfırlar. En yüksek puanınız mod ve tur uzunluğuna göre ayrı saklanır; böylece eşleştirme kartlarındaki 10 kelimelik rekorunuzla yazarak moddaki 20 kelimelik rekorunuz birbirine karışmaz. Yanlışları tekrar turları rekor sayılmaz, çünkü bu turlar yalnızca eksikleri kapatmak içindir.</p>
+
+      <div class="ba-ad" data-slot="oyun-ingilizce-kelime-eslestir-b" aria-label="Reklam"></div>
+
+      <h2>Kelime öğrenmenin etkili yolları</h2>
+      <ul>
+        <li><strong>Az ama sık çalışın.</strong> Günde 10 dakikalık bir tur, haftada bir saatlik maratondan daha kalıcıdır. Bellek, aralıklı tekrarla güçlenir; bu yüzden aynı kelimeleri birkaç gün arayla görmek önemlidir.</li>
+        <li><strong>Yanlışlarınızı hemen tekrar edin.</strong> Yanlış yaptığınız kelimeleri aynı gün yeniden çalışmak, onları kısa süreli bellekten uzun süreli belleğe taşımanın en hızlı yoludur. Oyundaki "Yanlışları tekrar et" düğmesi tam bunun için vardır.</li>
+        <li><strong>Üç modu sırayla kullanın.</strong> Önce eşleştirme kartlarıyla kelimeyi tanıyın, sonra 4 şıklı testle hızlanın, en sonunda yazarak modla kesinleştirin. Aynı kelimeyi üç farklı yoldan görmek hafızada daha çok iz bırakır.</li>
+        <li><strong>Kelimeyi cümle içinde düşünün.</strong> Oyun tek kelimelerle çalışır, ancak her yeni kelimeyle kendi cümlenizi kurmak anlamı pekiştirir. "borrow" öğrendiyseniz "Can I borrow your pen?" gibi basit bir cümle kurun.</li>
+        <li><strong>Benzer kelimeleri karıştırmayın.</strong> "borrow" ödünç almak, "lend" ödünç vermek demektir; "bring" getirmek, "carry" taşımak demektir. Benzer çiftleri yan yana düşünüp farkı not almak yanlışları azaltır.</li>
+        <li><strong>Telaffuzu da söyleyin.</strong> Kelimeyi sessizce okumak yerine yüksek sesle söylemek, hem yazımı hem söylenişi hatırlamanıza yardım eder.</li>
+      </ul>
+
+      <h2>Kimler için uygun?</h2>
+      <p>Oyun, İngilizce öğrenmeye yeni başlayanlardan sınavlara hazırlananlara, yurt dışına gitmeden önce temel kelimeleri tazelemek isteyenlerden çocuğuna yardım eden velilere kadar geniş bir kitleye hitap eder. Öğretmenler dersin başında beş dakikalık bir ısınma ya da ders sonunda bir pekiştirme etkinliği olarak kullanabilir. Aileler, çocuklarla birlikte eşleştirme kartlarını oynayıp kimin daha hızlı eşleştirdiğini görebilir. Bununla birlikte oyun bir kurs ya da öğretmen yerine geçmez; dilbilgisi, dinleme ve konuşma pratiğini tamamlayıcı bir kelime çalışması olarak düşünülmelidir.</p>
+
+      <h2>Kelime havuzu hakkında</h2>
+      <p>Her kelime için tek bir Türkçe karşılık verilmiştir. Gerçekte birçok İngilizce kelimenin birden fazla anlamı vardır; örneğin "light" hem ışık hem hafif anlamına gelebilir, "close" hem kapatmak hem yakın olabilir. Oyunda karışıklığı önlemek için her kelimenin en sık kullanılan anlamı seçildi ve havuzda aynı Türkçe karşılığı paylaşan iki kelime bırakılmadı. Böylece bir şıkta iki doğru cevap çıkmaz. Fiillerde Türkçe karşılık mastar biçiminde verilir (örneğin "go" için "gitmek"). Havuzda bir hata ya da daha iyi bir karşılık önerisi görürseniz bilgi@bilisimajans.com adresine yazabilirsiniz.</p>
+
+      <h2>Gizlilik: hesap yok, takip yok</h2>
+      <p>Oyunun kendisinde hesap, analiz ya da izleme kodu yoktur. Cevaplarınız, puanlarınız ve yanlış yaptığınız kelimeler hiçbir yere gönderilmez; yalnızca tarayıcınızın localStorage alanında saklanır. Başka bir cihaza taşınmaz ve tarayıcı verilerini silerseniz kaybolur. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>İngilizce Kelime Eşleştir oyunu ücretsiz mi, kayıt gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir ve kayıt gerektirmez. Modu ve seviyeyi seçip "Başla" düğmesine basmanız yeterlidir. Hesap, e-posta ya da uygulama yüklemesi istenmez.</p></details>
+      <details><summary>Oyunda kaç kelime var ve seviyeler nasıl belirlendi?</summary><p>Havuzda A1, A2, B1 ve B2 seviyelerinde toplam 500'den fazla İngilizce-Türkçe kelime çifti bulunur. Seviyeler, kelimenin günlük kullanımdaki sıklığı ve anlam zorluğu dikkate alınarak yaklaşık olarak belirlenmiştir; resmî bir seviye tespiti değildir.</p></details>
+      <details><summary>Eşleştirme kartları nasıl çalışır?</summary><p>Solda İngilizce, sağda Türkçe kelimeler karışık sırayla durur. Bir İngilizce kelimeye, sonra Türkçe karşılığına tıklarsınız. Doğruysa iki kart yeşil olup kilitlenir; yanlışsa kısa süre kırmızı yanar ve seriniz sıfırlanır. Klavyeyle Tab ve Enter tuşlarını kullanabilirsiniz.</p></details>
+      <details><summary>Yazarak modda büyük küçük harf önemli mi?</summary><p>Hayır. Cevabınızın baş ve sonundaki boşluklar ile büyük küçük harf farkı önemsenmez. Ancak yazım doğru olmalıdır; örneğin "neighbour" kelimesi İngiliz yazımıyla verilmiştir.</p></details>
+      <details><summary>Yanlışları tekrar nasıl çalışır?</summary><p>Yanlış yaptığınız kelimeler tarayıcınıza kaydedilir. Tur sonunda "Yanlışları tekrar et" ile yalnızca o turun yanlışlarını, ana ekranda "Kayıtlı yanlışlarımı çalış" ile de önceki turlardan kalan tüm eksiklerinizi yeniden çalışabilirsiniz. Bir kelimeyi sonraki turda doğru bilirseniz listeden çıkar.</p></details>
+      <details><summary>Bir kelimenin birden fazla anlamı varsa ne olur?</summary><p>Oyunda her kelime için en yaygın tek anlam kullanılır ve aynı Türkçe karşılığı paylaşan iki kelime yoktur. Bu yüzden bir soruda birden fazla doğru cevap çıkmaz. Daha geniş anlam çeşitliliği için bir sözlükten yararlanmanızı öneririz.</p></details>
+      <details><summary>Skorlarım nerede saklanıyor?</summary><p>En yüksek puanlarınız, doğruluk oranınız, son turlarınız ve yanlış kelimeleriniz yalnızca tarayıcınızın localStorage alanında tutulur; sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli sekmede oynarsanız kayıtlar kaybolur. Ayar ekranındaki düğmeyle kendiniz de silebilirsiniz.</p></details>
+      <details><summary>Telefonda ve klavyesiz oynayabilir miyim?</summary><p>Evet. Kartlar ve düğmeler parmakla rahatça dokunulacak boyuttadır ve oyun 360 piksel genişliğindeki ekranlarda çalışır. Klavyeniz varsa 4 şıklı testte 1, 2, 3 ve 4 tuşları şıkları seçer.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../adam-asmaca/">Adam Asmaca</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../bilgi-yarismasi/">Bilgi Yarışması</a></li>
+        <li><a href="../bayrak-bil/">Bayrak Bil</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-ingilizce-kelime-eslestir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
