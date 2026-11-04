@@ -10,7 +10,7 @@ const round2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
 // parametreler.json yüklenemezse kullanılacak varsayılanlar.
 let params = {
   guncelleme: '2026-11-04',
-  asgari_brut: 33030, ust_katsayi: 7.5, oran_yuzde: 34.5, indirim_puan: 5, gun_aylik: 30,
+  asgari_brut: 33030, ust_katsayi: 9, oran_yuzde: 35.75, indirim_puan: 5, gun_aylik: 30,
   emeklilik_prim_gun: { genel: 9000 },
   statuler: [{ id: 'esnaf', ad: 'Esnaf / sanatkâr (4/b)' }],
 };
