@@ -48,13 +48,19 @@ function compute() {
   const tytRows = readCourses('tyt', P.tyt.dersler);
   const tyt = tytScore(tytRows);
   const out = { tytRows, tyt, ayt: null, aytRows: [], obp: null, notes: [] };
+  // Kılavuz: A-TYT için Temel Matematik veya Türkçe testinden en az 0,5 ham puan (net). Baraj puanı yoktur.
+  out.tytOk = tytRows.some((x) => (x.id === "turkce" || x.id === "mat") && x.net >= P.kurallar.min_ham_puan);
+  if (!out.tytOk) out.notes.push("TYT puanı hesaplanması için Türkçe veya Temel Matematik testinden en az 0,5 net gerekir; bu şart sağlanmadığında ÖSYM TYT puanı hesaplamaz.");
 
   const alan = $('alan').value;
   if (alan) {
     out.aytRows = readCourses('ayt', P.ayt.alanlar[alan].dersler);
     out.alan = P.ayt.alanlar[alan].ad;
-    if (tyt.puan < P.baraj.tyt_ham) {
-      out.notes.push(`TYT ham puanınız yaklaşık ${nf.format(tyt.puan)}; AYT puanının hesaplanması için gereken ${P.baraj.tyt_ham} barajının altında göründüğü için AYT puanı gösterilmedi.`);
+    // ÖSYM 2026 Kılavuzu 3.10.1 ve Tablo 1D: TYT puanı hesaplanmış olmalı ve ilgili AYT testlerinin en az birinden 0,5 veya daha fazla ham puan (net) alınmalı.
+    if (!out.tytOk) {
+      out.notes.push("TYT puanı hesaplanabilmesi için Türkçe veya Temel Matematik testinden en az 0,5 net gerekir; bu şart sağlanmadığı için AYT puanı gösterilmedi.");
+    } else if (!out.aytRows.some((x) => x.net >= P.kurallar.min_ham_puan)) {
+      out.notes.push("AYT puanının hesaplanması için ilgili AYT testlerinin en az birinden 0,5 net gerekir; bu şart sağlanmadığı için AYT puanı gösterilmedi.");
     } else {
       out.ayt = aytScore(tyt.sum, out.aytRows);
     }
@@ -91,7 +97,7 @@ function render(r) {
   $('row-ayt').hidden = !hasAyt;
   if (hasAyt) {
     $('r-ayt-net').textContent = nf.format(r.aytRows.reduce((s, x) => s + x.net, 0));
-    $('r-ayt').textContent = r.ayt === null ? 'Hesaplanmadı (TYT barajı)' : `${nf.format(r.ayt)} (${r.alan})`;
+    $('r-ayt').textContent = r.ayt === null ? 'Hesaplanmadı (0,5 net şartı)' : `${nf.format(r.ayt)} (${r.alan})`;
   }
   $('row-obp').hidden = !r.obp;
   $('row-place').hidden = !r.obp;
@@ -101,11 +107,7 @@ function render(r) {
     const parts = [`TYT ≈ ${nf.format(r.tyt.puan + r.obp.katki)}`];
     if (r.ayt !== null) parts.push(`${r.alan.match(/\((.+)\)/)[1]} ≈ ${nf.format(r.ayt + r.obp.katki)}`);
     $('r-place').textContent = parts.join(' · ');
-    if (r.ayt !== null && r.ayt + r.obp.katki < P.baraj.yerlestirme) notes.push(`Yerleştirme puanı ${P.baraj.yerlestirme} değerinin altında görünüyor; ${P.baraj.yil} yerleştirme barajı için ${P.baraj.not}`);
-  } else if (r.ayt !== null && r.ayt < P.baraj.yerlestirme) {
-    notes.push(`AYT puanı ${P.baraj.yerlestirme} değerinin altında görünüyor; ${P.baraj.yil} yerleştirme barajı için ${P.baraj.not}`);
   }
-  if (r.tyt.puan < P.baraj.tyt_ham) notes.push(`TYT ham puanı ${P.baraj.tyt_ham} değerinin altında görünüyor (baraj ${P.baraj.yil}: ${P.baraj.not}).`);
   $('r-notes').textContent = notes.join(' ');
   $('result').hidden = false; $('result').classList.add('is-active');
 }
@@ -161,7 +163,7 @@ async function init() {
   }
   buildRows($('tyt-rows'), 'tyt', P.tyt.dersler);
   $('params-date').textContent = new Date(P.guncelleme + 'T00:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-  $('baraj-info').textContent = `Baraj değerleri (${P.baraj.yil}): TYT ham puanı ${P.baraj.tyt_ham}, yerleştirme için ${P.baraj.yerlestirme}. ${P.baraj.not}`;
+  $('baraj-info').textContent = `${P.kurallar.yil} YKS Kılavuzu: sabit baraj puanı yoktur; TYT puanı için Türkçe veya Temel Matematik testinden, AYT puanı için ilgili AYT testlerinden en az 0,5 net gerekir.`;
   const sel = $('alan');
   for (const [k, v] of Object.entries(P.ayt.alanlar)) { const o = document.createElement('option'); o.value = k; o.textContent = v.ad; sel.append(o); }
   sel.addEventListener('change', () => {

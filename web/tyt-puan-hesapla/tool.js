@@ -50,8 +50,9 @@ function compute() {
   }
 
   const need = P.min_net_sart;
-  const low = rows.filter((r) => need.ders.includes(r.id) && r.net < need.net).map((r) => r.ad);
-  if (low.length) out.notes.push(`${low.join(' ve ')} testinde net ${need.net} değerinin altında görünüyor. ${need.not}`);
+  // Kılavuz: Türkçe VEYA Temel Matematik testlerinin en az birinden 0,5 net yeterli; ikisi de altındaysa uyarı.
+  const tested = rows.filter((r) => need.ders.includes(r.id));
+  if (tested.length && tested.every((r) => r.net < need.net)) out.notes.push(`Türkçe ve Temel Matematik testlerinin ikisinde de net ${need.net} değerinin altında görünüyor. ${need.not}`);
   return out;
 }
 
