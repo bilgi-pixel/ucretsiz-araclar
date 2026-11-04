@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Nonogram Oyna – Ücretsiz Online Nonogram (kurulumsuz)</title>
+  <meta name="description" content="Nonogram (resim bulmaca) oyna: 5×5, 10×10 ve 15×15 boyutlar, 30 hazır desen ve sınırsız rastgele bulmaca, hata kontrolü, ipucu, en iyi süre. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/nonogram/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. Hücre boyutu game.js'ten (--cell) gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .ng-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 520px; margin: 0 auto 12px; }
+    .ng-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .ng-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .ng-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; }
+    .ng-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 0 auto 12px; }
+    .ng-tools .lbl { font-size: .88rem; font-weight: 600; color: var(--ba-text-2); margin-right: 2px; }
+    .ng-tool { font: inherit; font-size: .92rem; font-weight: 600; min-height: 40px; padding: 6px 16px; border-radius: var(--ba-radius); border: 1px solid var(--ba-border-hover); background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: inline-flex; align-items: center; gap: 8px; }
+    .ng-tool i { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--ba-border-hover); background: var(--ba-surface); flex: none; }
+    .ng-tool i.f { background: var(--ba-primary); border-color: var(--ba-primary); }
+    .ng-tool i.x { background-image: linear-gradient(45deg, transparent calc(50% - 1px), var(--ba-text-muted) calc(50% - 1px), var(--ba-text-muted) calc(50% + 1px), transparent calc(50% + 1px)), linear-gradient(-45deg, transparent calc(50% - 1px), var(--ba-text-muted) calc(50% - 1px), var(--ba-text-muted) calc(50% + 1px), transparent calc(50% + 1px)); }
+    .ng-tool[aria-pressed="true"] { border-color: var(--ba-primary); background: var(--ba-primary-soft); box-shadow: 0 0 0 1px var(--ba-primary) inset; }
+    .ng-tool:hover { border-color: var(--ba-primary); }
+
+    .ng-wrap { overflow-x: auto; max-width: 100%; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; }
+    .ng-board { --n: 5; --cell: 40px; --font: 12px; --rw: 60px; --ch: 50px; display: grid; width: max-content; margin: 0 auto; grid-template-columns: var(--rw) repeat(var(--n), var(--cell)); grid-template-rows: var(--ch) repeat(var(--n), var(--cell)); font-family: var(--ba-mono); -webkit-user-select: none; user-select: none; touch-action: manipulation; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+    .ng-row { display: contents; }
+    .ng-cc, .ng-rc { font-size: var(--font); font-weight: 500; color: var(--ba-text); line-height: 1.25; min-width: 0; min-height: 0; transition: opacity .2s; }
+    .ng-cc { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 3px; }
+    .ng-rc { display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 5px; padding-right: 5px; }
+    .ng-cc.alt, .ng-rc.alt { background: var(--ba-surface-2); }
+    .ng-cc.done, .ng-rc.done { opacity: .32; }
+    .ng-cell { box-sizing: border-box; width: var(--cell); height: var(--cell); border-right: 1px solid var(--ba-border-hover); border-bottom: 1px solid var(--ba-border-hover); background: var(--ba-surface); display: flex; align-items: center; justify-content: center; font-size: calc(var(--cell) * .6); line-height: 1; cursor: pointer; position: relative; outline: none; }
+    .ng-cell[data-c="0"] { border-left: 1px solid var(--ba-border-hover); }
+    .ng-cell[data-r="0"] { border-top: 1px solid var(--ba-border-hover); }
+    .ng-cell[data-br="1"] { border-right: 2px solid var(--ba-text-muted); }
+    .ng-cell[data-bb="1"] { border-bottom: 2px solid var(--ba-text-muted); }
+    .ng-cell:not(.f):hover { background: var(--ba-primary-soft); }
+    .ng-cell.f { background: var(--ba-primary); }
+    .ng-cell.x { background-image: linear-gradient(45deg, transparent calc(50% - 1px), var(--ba-text-muted) calc(50% - 1px), var(--ba-text-muted) calc(50% + 1px), transparent calc(50% + 1px)), linear-gradient(-45deg, transparent calc(50% - 1px), var(--ba-text-muted) calc(50% - 1px), var(--ba-text-muted) calc(50% + 1px), transparent calc(50% + 1px)); background-size: 62% 62%; background-position: center; background-repeat: no-repeat; }
+    .ng-cell.hint { box-shadow: inset 0 0 0 2px var(--ba-accent); }
+    .ng-cell.wrong { box-shadow: inset 0 0 0 2px var(--ba-danger); background-color: var(--ba-danger-soft); }
+    .ng-cell.wrong::before { content: "!"; color: var(--ba-danger); font-weight: 700; }
+    .ng-cell.f.wrong { background-color: var(--ba-danger); }
+    .ng-cell.f.wrong::before { color: #fff; }
+    .ng-cell:focus-visible { box-shadow: inset 0 0 0 2px var(--ba-surface), inset 0 0 0 4px var(--ba-text); z-index: 1; }
+    .ng-board.won .ng-cell { cursor: default; }
+    .ng-board.won .ng-cell.f { background: var(--ba-primary-strong); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ng-board.won .ng-cell.f { background: var(--ba-accent); } }
+    :root[data-theme="dark"] .ng-board.won .ng-cell.f { background: var(--ba-accent); }
+
+    .ng-msg { max-width: 560px; margin: 12px auto 0; min-height: 1.5em; font-size: .9rem; color: var(--ba-text-muted); text-align: center; }
+    .ng-result { max-width: 560px; margin: 12px auto 0; padding: 14px 16px; border: 1px solid var(--ba-success); background: var(--ba-success-soft); border-radius: var(--ba-radius); text-align: center; }
+    .ng-result strong { display: block; font-size: 1.1rem; color: var(--ba-text); margin-bottom: 4px; }
+    .ng-result p { margin: 0 0 10px; color: var(--ba-text); font-size: .95rem; }
+    .game-box .ba-actions { justify-content: center; }
+    .game-box .ba-options { max-width: 640px; margin-left: auto; margin-right: auto; }
+    .ng-keys { max-width: 560px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Nonogram – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz nonogram (resim bulmaca): 5×5, 10×10 ve 15×15 boyutlar, 30 hazır desen, tek çözümlü rastgele bulmacalar, hata kontrolü, ipucu ve en iyi süre.","applicationCategory":"Game","genre":"Puzzle","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/nonogram/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Nonogram nedir, nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Nonogram, satır ve sütunların başındaki sayılara bakarak ızgaradaki hücreleri boyadığınız ve sonunda gizli bir piksel resmin ortaya çıktığı mantık bulmacasıdır. Sayılar, o çizgideki ardışık dolu hücre öbeklerinin uzunluğunu verir."}},
+  {"@type":"Question","name":"Satır ve sütun başındaki sayılar ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Her sayı, ardışık dolu hücrelerden oluşan bir öbeği gösterir. \"3 1\" yazıyorsa o çizgide önce üç, sonra bir dolu hücre vardır ve iki öbeğin arasında en az bir boş hücre kalır. Sayıların sırası soldan sağa ya da yukarıdan aşağıya doğrudur."}},
+  {"@type":"Question","name":"Telefonda ya da sağ tık olmadan çarpı nasıl koyarım?","acceptedAnswer":{"@type":"Answer","text":"Hücreye yarım saniye basılı tutun; hücreye çarpı konur. Alternatif olarak tahtanın üstündeki Çarpı aracını seçip hücrelere dokunabilirsiniz. Klavyede X tuşu da aynı işi yapar."}},
+  {"@type":"Question","name":"Hata kontrolü seçeneği ne yapar?","acceptedAnswer":{"@type":"Answer","text":"Açıkken yanlış doldurduğunuz ya da yanlış çarpı koyduğunuz hücre kırmızı çerçeve ve ünlem işaretiyle gösterilir ve Hata kutusu yanlış hücre sayısını verir. Kapalıyken oyun hata bildirmez; bulmacayı kendi mantığınızla çözersiniz."}},
+  {"@type":"Question","name":"İpucu düğmesi nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"İpucu tek bir hücreyi açar. Önce yanlış işaretlediğiniz bir hücre varsa onu düzeltir, yoksa doğru bir dolu hücreyi doldurur. Her ipucu süreye 30 saniye ekler."}},
+  {"@type":"Question","name":"Rastgele bulmacalar tek çözümlü mü?","acceptedAnswer":{"@type":"Answer","text":"Evet. Rastgele üretilen her bulmaca, sayıların satır ve sütun mantığıyla tahmin yürütmeden tek bir resme çözülebildiği doğrulanarak sunulur. 30 hazır desenin tamamı da aynı denetimden geçmiştir."}},
+  {"@type":"Question","name":"İlerlemem ve en iyi sürem kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, sayfayı kapatsanız bile yarım bırakılan bulmaca, geçen süre ve her boyut için en iyi süre tarayıcınızın yerel depolama alanında (localStorage) saklanır. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, internet olmadan oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt, indirme veya eklenti gerekmez. Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez; siteyi uygulama olarak kurarsanız çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Nonogram Oyna – Ücretsiz Online Resim Bulmaca</h1>
+      <p class="lead">Satır ve sütun başındaki sayılara bakarak ızgarayı boyayın, gizli piksel resmi ortaya çıkarın. 5×5, 10×10 ve 15×15 boyutlar, elle çizilmiş 30 desen ve her seferinde yeni, tek çözümlü rastgele bulmacalar; kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Nonogram bulmaca alanı</h2>
+      <div class="ng-hud" aria-label="Oyun bilgileri">
+        <div class="ng-stat"><span>Süre</span><strong id="time">0:00</strong></div>
+        <div class="ng-stat"><span>En iyi</span><strong id="best">–</strong></div>
+        <div class="ng-stat"><span>İpucu</span><strong id="hints">0</strong></div>
+        <div class="ng-stat"><span>Hata</span><strong id="errors">–</strong></div>
+      </div>
+
+      <div class="ng-tools" role="group" aria-label="Hücre aracı">
+        <span class="lbl">Araç:</span>
+        <button type="button" class="ng-tool" id="tool-fill" aria-pressed="true"><i class="f" aria-hidden="true"></i>Doldur</button>
+        <button type="button" class="ng-tool" id="tool-cross" aria-pressed="false"><i class="x" aria-hidden="true"></i>Çarpı</button>
+      </div>
+
+      <div class="ng-wrap" id="board-wrap">
+        <div class="ng-board" id="board" role="grid" aria-label="Nonogram tahtası" aria-describedby="keys-help" data-state="hazirlaniyor"></div>
+      </div>
+
+      <p id="msg" class="ng-msg" role="status" aria-live="polite">Bulmaca hazırlanıyor…</p>
+
+      <div class="ng-result" id="result" hidden>
+        <strong id="result-title">Tebrikler!</strong>
+        <p id="result-text"></p>
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-next">Yeni bulmaca</button>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-new">Yeni bulmaca</button>
+        <button type="button" class="ba-btn" id="btn-hint">İpucu (+30 sn)</button>
+        <button type="button" class="ba-btn" id="btn-reset">Baştan başla</button>
+      </div>
+
+      <div class="ba-options">
+        <div class="ba-field"><label for="opt-size">Boyut</label>
+          <select id="opt-size"><option value="5" selected>5×5 (kolay)</option><option value="10">10×10 (orta)</option><option value="15">15×15 (zor)</option></select></div>
+        <div class="ba-field"><label for="opt-source">Bulmaca kaynağı</label>
+          <select id="opt-source"><option value="hazir" selected>Hazır desen (adı çözünce görünür)</option><option value="rastgele">Rastgele (tek çözümlü)</option></select></div>
+        <div class="ba-field"><label for="opt-errors"><input type="checkbox" id="opt-errors">Hataları anında göster</label>
+          <div class="hint">Yanlış işaretler kırmızı çerçeve ve ünlemle belirir.</div></div>
+      </div>
+      <p class="ng-keys" id="keys-help">Sol tık ya da dokunma: seçili araç. Sağ tık, Shift+tık veya yarım saniye basılı tutma: çarpı. Fareyle sürükleyerek birden çok hücre boyayabilirsiniz. Klavye: ok tuşlarıyla gezin, Boşluk/Enter ile işaretle, X çarpı, Backspace temizler. Boyutu ya da kaynağı değiştirmek yeni bulmaca başlatır; ilerleme bu tarayıcıda otomatik kaydedilir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-nonogram-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Nonogram nedir?</h2>
+      <p>Nonogram, ızgaranın kenarlarındaki sayılardan yola çıkarak hücreleri boyadığınız ve çözüm tamamlandığında gizli bir piksel resmin belirdiği bir mantık bulmacasıdır. Türkçede çoğunlukla "resim bulmaca" ya da "piksel bulmaca" diye anılır. Şans ya da tahmin gerekmez: her hücrenin dolu mu boş mu olduğu, sayıların verdiği bilgiyle adım adım çıkarılabilir. Bu yüzden hem sakin bir zihin egzersizi hem de çözdükçe ortaya çıkan küçük resimle ödüllendiren bir oyundur.</p>
+      <p>Bu sayfadaki nonogramı hiçbir şey indirmeden, üye olmadan ve e-posta adresi vermeden doğrudan tarayıcınızda oynayabilirsiniz. Oyun tamamen bilgisayarınızda ya da telefonunuzda çalışır; ilerlemeniz ve en iyi süreleriniz yalnızca tarayıcınızın yerel depolama alanında durur. Oyun alanı reklamsızdır, sayfadaki reklamlar yalnızca oyun kutusunun dışında yer alır.</p>
+
+      <h2>Nonogram nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Boyutu ve kaynağı seçin.</strong> İlk oyun için 5×5 ve hazır desen idealdir. Hazır desenlerde resmin adı bulmacayı çözene kadar gizli kalır; rastgele kaynakta her seferinde yepyeni bir bulmaca üretilir.</li>
+        <li><strong>Sayıları okuyun.</strong> Her satırın solundaki ve her sütunun üstündeki sayılar, o çizgideki dolu hücre öbeklerinin uzunluğunu sırayla verir. "0" yazan çizgi tamamen boştur.</li>
+        <li><strong>Kesin hücreleri doldurun.</strong> Sayılar çizgiyi neredeyse tamamen kaplıyorsa dolu olması kesin olan hücreler vardır. Bu hücrelere dokunup boyayın; ilk hamlenizde süre başlar.</li>
+        <li><strong>Boş olduğunu bildiğiniz hücrelere çarpı koyun.</strong> Çarpı, "burası kesinlikle boş" notudur. Çarpılar çözümü etkilemez, ama sonraki satır ve sütunlarda yeni çıkarımlar yapmanıza yardım eder.</li>
+        <li><strong>Çizgileri çapraz kontrol edin.</strong> Bir satırda öğrendiğiniz şey o satırın hücrelerinin bulunduğu sütunları da etkiler. Satırdan sütuna, sütundan satıra geçerek ilerleyin. Bir çizginin tüm öbekleri tamamlanınca ipucu sayıları soluklaşır.</li>
+        <li><strong>Resmi tamamlayın.</strong> Tüm satır ve sütun sayıları sağlandığında bulmaca çözülür, süre durur, hazır desenin adı görünür ve süreniz en iyi sürenizle karşılaştırılır.</li>
+      </ol>
+
+      <h2>Sayıları okumak</h2>
+      <p>Bir satırın başında "3 1" yazdığını düşünün. Bu, o satırda önce üç ardışık dolu hücre, ardından en az bir boş hücre, sonra bir tek dolu hücre bulunduğu anlamına gelir. Öbeklerin sırası her zaman satırlarda soldan sağa, sütunlarda yukarıdan aşağıya doğrudur; ama öbeklerin tam konumunu sayılar vermez, onu çıkarmak sizin işiniz. Tek bir "5" yazan bir 5×5 satırı tamamen doludur; "1 1 1" yazan bir 5×5 satırı ise yalnızca birinci, üçüncü ve beşinci hücreleri doldurmanıza izin verir. Sayıların toplamına öbekler arasındaki zorunlu boşlukları eklediğinizde çizginin ne kadar "sıkı" olduğunu görürsünüz; boşluk payı ne kadar azsa çözüm o kadar kolaydır.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> Sol tık seçili aracı uygular (varsayılan Doldur); aynı hücreye yeniden tıklamak işareti geri alır. Sağ tık ya da Shift basılıyken tık çarpı koyar. Tuşu basılı tutarak fareyi sürüklerseniz yol üzerindeki boş hücreler aynı işaretle boyanır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Kısa dokunuş seçili aracı uygular. Bir hücreye yarım saniye basılı tutarsanız çarpı konur. Alternatif olarak tahtanın üstündeki Çarpı düğmesine basıp dokunuşları çarpıya çevirebilirsiniz. Sayfayı kaydırmak için parmağınızı tahtanın dışında ya da hücreler üzerinde kaydırmanız yeterlidir; kaydırma bir hamle sayılmaz.</li>
+        <li><strong>Klavye:</strong> Ok tuşlarıyla hücreler arasında gezinin; Home ve End satırın başına ve sonuna, Page Up ve Page Down sütunun başına ve sonuna götürür. Boşluk ya da Enter seçili aracı uygular, X çarpı koyar, F doldurur, Backspace ve Delete hücreyi temizler.</li>
+        <li><strong>Düğmeler:</strong> Yeni bulmaca seçili boyutta ve kaynakta yeni bir oyun başlatır, İpucu bir hücreyi açar, Baştan başla tahtayı ve süreyi sıfırlar.</li>
+      </ul>
+
+      <h2>Boyutlar ve bulmaca kaynakları</h2>
+      <h3>5×5, 10×10 ve 15×15</h3>
+      <p>5×5 bulmacalar birkaç dakikada çözülür ve kuralları öğrenmek için idealdir. 10×10 bulmacalar daha fazla çapraz kontrol ister ve ortalama bir oyuncu için on-yirmi dakika sürer. 15×15 bulmacalar ise sabır ve sistematik çalışma gerektirir; küçük ekranlarda hücreler küçüleceği için çarpı koymak için yarım saniyelik basışı ya da Çarpı aracını kullanmak daha rahattır.</p>
+      <h3>Hazır desenler</h3>
+      <p>Hazır kaynakta elle çizilmiş 30 piksel desen bulunur: 5×5 boyutta on, 10×10 boyutta on iki, 15×15 boyutta sekiz desen. Her desenin tek bir çözümü olduğu çözücüyle doğrulandı; ayrıca önce henüz çözmediğiniz desenler seçilir. Desenin adı ancak bulmacayı çözdüğünüzde görünür, böylece resmi önceden tahmin edip çözümü bozmazsınız.</p>
+      <h3>Rastgele bulmacalar</h3>
+      <p>Rastgele kaynakta oyun, rastgele bir resim üretir ve bir çözücüyle sayıların resmi tahmin yürütmeden tek bir biçimde belirlediğini sınar. Sınavı geçemeyen resimler atılır; böylece her bulmaca adil ve çözülebilirdir. Üretim genellikle bir saniyenin çok altında biter.</p>
+
+      <h2>Hata kontrolü, ipucu ve süre</h2>
+      <p>"Hataları anında göster" seçeneği açıkken yanlış doldurduğunuz ya da yanlış yere çarpı koyduğunuz hücre kırmızı çerçeve ve ünlem işaretiyle belirir; üstteki Hata kutusu da yanlış hücre sayısını gösterir. Seçenek kapalıyken oyun hata bildirmez ve resmi tamamen kendi mantığınızla çözersiniz; bu, sürekli bir sınav gibi hissetmek istemeyenler için varsayılan seçimdir.</p>
+      <p>İpucu düğmesi tek bir hücreyi açar. Yanlış işaretlenmiş bir hücre varsa önce onu düzeltir, yoksa doğru bir dolu hücreyi doldurur. Her ipucu süreye 30 saniye ekler, böylece en iyi süre listesi dürüst kalır. Süre ilk hamlenizde başlar, bulmaca çözülünce durur; sekmeyi arka plana aldığınızda da durur ve geri döndüğünüzde kaldığı yerden devam eder. En iyi süre her boyut için ayrı tutulur.</p>
+
+      <div class="ba-ad" data-slot="oyun-nonogram-b" aria-label="Reklam"></div>
+
+      <h2>Nonogram çözme teknikleri</h2>
+      <ul>
+        <li><strong>Çakışma yöntemi.</strong> Bir çizgideki öbekleri en sola ve en sağa dayayıp karşılaştırın; iki yerleşimde de dolu kalan hücreler kesin olarak doludur. 10 hücrelik bir satırda "7" yazıyorsa dördüncü ile yedinci hücre arası kesindir.</li>
+        <li><strong>Kenar kuralı.</strong> Bir kenara dolu hücre koyduysanız ve ilk öbek "3" ise, o öbek kenardan başlar ve dördüncü hücre kesinlikle boştur. Çarpı koymak sonraki adımı açar.</li>
+        <li><strong>Tamamlanmış öbekleri kapatın.</strong> Bir öbeğin tüm hücrelerini doldurduğunuzda iki yanına çarpı koyun. Bu çarpılar komşu çizgilerde yeni çıkarımlara yol açar.</li>
+        <li><strong>Boş çizgileri hemen çarpılayın.</strong> "0" yazan satır ya da sütundaki bütün hücreleri çarpılayın; bu çok büyük bir bilgi kazancıdır ve sıkça unutulur.</li>
+        <li><strong>Büyük sayılarla başlayın.</strong> Çizgi uzunluğuna yakın toplamı olan satır ve sütunlar en çok kesin hücreyi verir; küçük sayılı çizgilerle başlamak yerine önce bunlara bakın.</li>
+        <li><strong>Çizgiyi bölün.</strong> Çarpılar bir çizgiyi bağımsız parçalara ayırır; her parçayı ayrı küçük bulmaca gibi çözebilirsiniz.</li>
+        <li><strong>Tahmin yürütmeyin.</strong> Bu sayfadaki tüm bulmacalar tahmin gerektirmeden çözülür. Bir çıkarım yapamıyorsanız başka bir çizgiye geçin; çoğu zaman çözüm orada bekliyordur.</li>
+        <li><strong>Soluk ipuçlarını izleyin.</strong> Bir ipucunun soluklaşması, o çizgideki dolu hücrelerin sayıyla uyuştuğunu gösterir. Soluk olmayan sayılar hâlâ ilgilenmeniz gereken çizgileri işaret eder.</li>
+      </ul>
+
+      <h2>Nonogramın kısa tarihi</h2>
+      <p>Nonogram, 1980'lerin sonunda Japonya'da birbirinden bağımsız olarak geliştirilen bir bulmaca türüdür. Adının, geliştiricilerinden biri olan Non Ishida'dan geldiği söylenir. Önce bulmaca dergilerinde yayımlandı, 1990'larda gazete ve dergi eklerinde Batı'ya yayıldı, ardından bilgisayar ve cep telefonu oyunlarıyla çok daha geniş bir kitleye ulaştı. Dünyada Hanjie, "sayılarla boyama" ve benzeri adlarla da bilinir. Kuralları birkaç cümleyle anlatılabilen, ama çözümü saatlerce sürebilen bu tür; her yaştan oyuncuya sakin bir meydan okuma sunduğu için hâlâ sevilir.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı. Hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor; bu sayede çok hızlı yükleniyor ve çevrimdışı da çalışabiliyor.</p>
+
+      <h2>Neden Bilişim Ajans nonogramı?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, ilk hücreye dokunun; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişliğindeki telefonlarda da sığar; dokunma, uzun basış ve klavye birlikte çalışır.</li>
+        <li><strong>Adil bulmacalar.</strong> Hazır ve rastgele tüm bulmacalar tahmin yürütmeden çözülebilir; "belki şöyledir" diye şansa kalmazsınız.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; bulmaca tahtasının ve düğmelerin yanında asla görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. İlerlemeniz ve süreleriniz kendi cihazınızda saklanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Nonogram nedir, nasıl oynanır?</summary><p>Nonogram, satır ve sütunların başındaki sayılara bakarak ızgaradaki hücreleri boyadığınız ve sonunda gizli bir piksel resmin ortaya çıktığı mantık bulmacasıdır. Sayılar, o çizgideki ardışık dolu hücre öbeklerinin uzunluğunu verir; öbekler arasında en az bir boş hücre bulunur.</p></details>
+        <details><summary>Satır ve sütun başındaki sayılar ne anlama gelir?</summary><p>Her sayı, ardışık dolu hücrelerden oluşan bir öbeği gösterir. "3 1" yazıyorsa o çizgide önce üç, sonra bir dolu hücre vardır ve iki öbeğin arasında en az bir boş hücre kalır. Sayılar satırlarda soldan sağa, sütunlarda yukarıdan aşağıya okunur. "0" tamamen boş çizgi demektir.</p></details>
+        <details><summary>Telefonda ya da sağ tık olmadan çarpı nasıl koyarım?</summary><p>Hücreye yarım saniye basılı tutun; hücreye çarpı konur. Dilerseniz tahtanın üstündeki Çarpı aracını seçip dokunuşlarınızı çarpıya çevirebilirsiniz. Klavyede X tuşu, farede sağ tık ya da Shift basılıyken tık da aynı işi yapar.</p></details>
+        <details><summary>Hata kontrolü seçeneği ne yapar?</summary><p>Açıkken yanlış doldurduğunuz ya da yanlış çarpı koyduğunuz hücre kırmızı çerçeve ve ünlem işaretiyle gösterilir ve Hata kutusu yanlış hücre sayısını verir. Kapalıyken oyun hata bildirmez; bulmacayı kendi mantığınızla çözersiniz. Seçeneği istediğiniz an açıp kapatabilirsiniz.</p></details>
+        <details><summary>İpucu düğmesi nasıl çalışır, süreyi etkiler mi?</summary><p>İpucu tek bir hücreyi açar. Yanlış işaretlediğiniz bir hücre varsa önce onu düzeltir, yoksa doğru bir dolu hücreyi doldurur. Her ipucu süreye 30 saniye ekler; bulmaca sonunda süreniz ve kaç ipucu kullandığınız birlikte gösterilir.</p></details>
+        <details><summary>Rastgele bulmacalar tek çözümlü mü?</summary><p>Evet. Rastgele üretilen her bulmaca, sayıların satır ve sütun mantığıyla tahmin yürütmeden tek bir resme çözülebildiği doğrulanarak sunulur. Elle çizilmiş 30 hazır desenin tamamı da aynı denetimden geçmiştir; yani bulmacada "iki farklı doğru cevap" ya da şansa kalan bir durum yoktur.</p></details>
+        <details><summary>İlerlemem ve en iyi sürem kaydediliyor mu?</summary><p>Evet. Sayfayı kapatsanız bile yarım bırakılan bulmaca, geçen süre, ipucu sayısı ve her boyut için en iyi süre tarayıcınızın yerel depolama alanında (localStorage) saklanır ve sayfayı açtığınızda kaldığınız yerden devam edersiniz. Bu bilgiler hiçbir sunucuya gönderilmez, başka cihazlarla eşitlenmez ve tarayıcı verilerini temizlerseniz silinir.</p></details>
+        <details><summary>Tahtayı ekranıma sığdıramıyorum, ne yapmalıyım?</summary><p>Hücreler kullanılabilir genişliğe göre otomatik küçülür. 15×15 bulmaca dar bir telefonda yine de sığmazsa tahta yatay kaydırılır. Daha rahat çözmek için telefonu yan çevirebilir ya da 10×10 boyutunu seçebilirsiniz.</p></details>
+        <details><summary>Oyun ücretsiz mi, internet olmadan oynanır mı?</summary><p>Tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez; siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Bulmaca ilerlemeniz ve süreleriniz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../labirent/">Labirent</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-nonogram-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

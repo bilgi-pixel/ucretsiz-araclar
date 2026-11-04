@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Uçan Kuş Oyunu Oyna – Ücretsiz Online Uçan Kuş (kurulumsuz)</title>
+  <meta name="description" content="Uçan kuş oyununu tarayıcıda hemen oynayın: tıkla, dokun ya da Boşluk'a bas, borular arasından geç. Üç zorluk seviyesi, gündüz ve gece teması, en yüksek skor. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/ucan-kus/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .kus-hud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 400px; margin: 0 auto 12px; }
+    .kus-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .kus-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .kus-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; }
+    .kus-stage { position: relative; width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 2 / 3; border-radius: var(--ba-radius); overflow: hidden; background: #2c3a6e; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+    .kus-stage:focus-visible { outline: 3px solid var(--ba-accent); outline-offset: 2px; }
+    .kus-stage canvas { width: 100%; height: 100%; display: block; }
+    .kus-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(20, 22, 26, .84); color: #fff; cursor: default; }
+    .kus-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .kus-overlay p { margin: 0; color: #d7d8db; max-width: 36ch; font-size: .95rem; line-height: 1.5; }
+    .kus-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kus-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .kus-overlay .ba-btn-primary { color: #1a0d10; }
+    .game-box .ba-actions { justify-content: center; margin-top: 14px; }
+    .game-box .ba-options { max-width: 640px; margin-left: auto; margin-right: auto; }
+    .kus-hint { max-width: 400px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .kus-stage { max-width: min(100%, max(200px, calc((100vh - 300px) * 2 / 3))); }
+    /* Oyun sayfasında kahraman alanı sıkıştırılır: oyun ilk ekranda görünsün. */
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Uçan Kuş Oyunu – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz uçan kuş oyunu: tıkla, dokun ya da Boşluk'a bas, borular arasından geç; üç zorluk seviyesi, gündüz ve gece teması, en yüksek skor.","applicationCategory":"Game","genre":"Arcade","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/ucan-kus/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Uçan kuş oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanına tıklayın, dokunun ya da Boşluk tuşuna basın; kuş her seferinde bir kez zıplar, aksi hâlde yere doğru düşer. Borular arasındaki boşluktan geçtikçe puan kazanırsınız. Bir boruya ya da yere çarparsanız oyun biter."}},
+  {"@type":"Question","name":"Hangi tuşlarla zıplarım?","acceptedAnswer":{"@type":"Answer","text":"Boşluk, yukarı ok ve W tuşları kuşu zıplatır. Fareyle oyun alanına tıklayabilir ya da telefonda ekrana dokunabilirsiniz. P tuşu oyunu duraklatır ve devam ettirir."}},
+  {"@type":"Question","name":"Telefonda uçan kuş oyununu nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanının herhangi bir yerine dokunmanız yeterlidir. Her dokunuş bir zıplamadır; parmağınızı basılı tutmak ek bir etki yapmaz. Oyun alanı ekran genişliğine uyar ve sayfa oyun sırasında kaymaz."}},
+  {"@type":"Question","name":"Zorluk seviyeleri neyi değiştirir?","acceptedAnswer":{"@type":"Answer","text":"Yavaş seviyede borular daha geniş aralıklı, daha yavaş ve daha seyrek gelir; Normal seviye dengelidir; Hızlı seviyede aralık daralır, borular hızlanır ve sık gelir. Kuşun zıplama gücü ve yerçekimi her seviyede aynıdır."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın yerel depolama alanında (localStorage), her zorluk seviyesi için ayrı tutulur. Hiçbir sunucuya gönderilmez, başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz sıfırlanır."}},
+  {"@type":"Question","name":"Gündüz ve gece teması oyunu etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır, yalnızca görünümü değiştirir. Boruların, kuşun ve fiziğin davranışı iki temada da aynıdır. Gece teması gözünüzü yoruyorsa akşam saatlerinde daha rahat bir seçenek olabilir."}},
+  {"@type":"Question","name":"Hareket azaltma ayarı bu oyunda ne yapar?","acceptedAnswer":{"@type":"Answer","text":"Cihazınızda ya da tarayıcınızda hareket azaltma tercihi açıksa arka plandaki tepelerin, bulutların ve zeminin kayması kapanır. Borular oyunun parçası olduğu için yine hareket eder."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, bir şey yüklemem gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfayı açıp Başlat düğmesine basmanız yeterlidir."}},
+  {"@type":"Question","name":"İnternet olmadan oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez. Siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Uçan Kuş Oyunu Oyna – Ücretsiz Online Uçan Kuş</h1>
+      <p class="lead">Tek dokunuşla oynanan uçan kuş oyununu kurulum, üyelik ve indirme olmadan doğrudan tarayıcınızda oynayın. Tıklayın, dokunun ya da Boşluk tuşuna basın; kuşu borular arasındaki boşluktan geçirin. Zorluğu ve gündüz ya da gece temasını siz seçin, en yüksek skorunuz bu cihazda saklansın.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Uçan kuş oyunu alanı</h2>
+      <div class="kus-hud" aria-label="Oyun bilgileri">
+        <div class="kus-stat"><span>Skor</span><strong id="score">0</strong></div>
+        <div class="kus-stat"><span>En yüksek</span><strong id="best">0</strong></div>
+        <div class="kus-stat"><span>Zorluk</span><strong id="levelx">Normal</strong></div>
+      </div>
+
+      <div class="kus-stage" id="stage" tabindex="0" role="group" aria-label="Uçan kuş oyunu alanı. Zıplamak için tıklayın, dokunun, Boşluk, yukarı ok ya da W tuşuna basın. Duraklatmak için P tuşunu kullanın.">
+        <canvas id="board" width="400" height="600" role="img" aria-label="Boru aralıklarından geçmeye çalışan kuş"></canvas>
+        <div class="kus-overlay" id="overlay">
+          <h3 id="overlay-title">Uçan Kuş</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+
+      <div class="ba-options">
+        <div class="ba-field"><label for="opt-level">Zorluk</label>
+          <select id="opt-level"><option value="slow">Yavaş (geniş aralık)</option><option value="normal" selected>Normal</option><option value="fast">Hızlı (dar aralık)</option></select></div>
+        <div class="ba-field"><label for="opt-theme">Tema</label>
+          <select id="opt-theme"><option value="gunduz" selected>Gündüz</option><option value="gece">Gece</option></select></div>
+      </div>
+      <p class="kus-hint">Zorluk oyun sürerken kilitlidir; duraklatıp değiştirirseniz oyun yeni ayarla baştan başlar. En yüksek skor, her zorluk için ayrı ve yalnızca bu tarayıcıda saklanır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-ucan-kus-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Uçan kuş oyunu nedir?</h2>
+      <p>Uçan kuş oyunu, tek bir tuşla ya da tek bir dokunuşla oynanan, kuralları saniyeler içinde öğrenilen ama ustalaşması sabır isteyen bir beceri oyunudur. Kuş kendiliğinden ileri doğru uçar; siz yalnızca ne zaman zıplayacağını belirlersiniz. Zıplamazsanız yerçekimi kuşu aşağı çeker, zıplarsanız kuş kısa bir süre yükselir. Amaç, ekranın sağından gelen borular arasındaki boşluktan çarpmadan geçmek ve olabildiğince çok puan toplamaktır. Bu sayfadaki uçan kuş oyununu hiçbir şey indirmeden, üye olmadan ve e-posta adresi vermeden doğrudan tarayıcınızda oynayabilirsiniz.</p>
+      <p>Oyun tamamen bilgisayarınızda ya da telefonunuzda çalışır. Skorunuz ve ayarlarınız yalnızca tarayıcınızın yerel depolama alanında tutulur; sunucumuza hiçbir bilgi gönderilmez. Kuş, borular, tepeler ve bulutlar bu sayfa için sıfırdan çizildi; oyunda ses yoktur, bu yüzden toplantı arasında, derste ya da sessiz bir ortamda rahatça açabilirsiniz. Oyun alanı reklamsızdır, sayfadaki reklamlar yalnızca oyun kutusunun dışında yer alır.</p>
+
+      <h2>Uçan kuş oyunu nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Zorluğu ve temayı seçin.</strong> İlk oyun için "Normal" iyi bir başlangıçtır; geniş aralık isteyenler "Yavaş", meydan okuma arayanlar "Hızlı" seviyesini seçebilir. Gündüz ya da gece teması yalnızca görünümü değiştirir.</li>
+        <li><strong>Başlat'a basın.</strong> Kuş ekranın solunda hafifçe havada süzülür ve sizi bekler. Henüz düşmez, borular da gelmez.</li>
+        <li><strong>İlk zıplamayla oyunu başlatın.</strong> Oyun alanına tıklayın, dokunun ya da Boşluk tuşuna basın. İlk zıplamayla birlikte yerçekimi devreye girer ve borular ekrana girmeye başlar.</li>
+        <li><strong>Ritmi yakalayın.</strong> Kuş her zıplamada belirli bir miktar yükselir ve ardından düşmeye başlar. Boşluğa yaklaşırken tek tek, düzenli dokunuşlarla yüksekliği ayarlayın.</li>
+        <li><strong>Borular arasından geçin.</strong> Bir boruyu geçtiğiniz anda skorunuz bir artar. Boruya ya da zemine çarparsanız oyun biter; "Tekrar oyna" ile hemen yeniden deneyebilirsiniz. Tavana çarpmak oyunu bitirmez, kuş yalnızca tavanda durur.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Boşluk, yukarı ok ve W tuşları kuşu zıplatır. Tuşu basılı tutmanın ek bir etkisi yoktur; her basış bir zıplamadır. P tuşu oyunu duraklatır ve devam ettirir.</li>
+        <li><strong>Fare:</strong> Oyun alanının herhangi bir yerine tıklamak zıplamadır. Başlat, Duraklat, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Oyun alanına dokunmak zıplamadır; parmağınızı kaydırmanız gerekmez. Oyun sırasında oyun alanı sayfanın kaymasına neden olmaz.</li>
+        <li><strong>Duraklatma:</strong> Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar. Geri döndüğünüzde "Devam et" ile sürdürebilirsiniz.</li>
+      </ul>
+      <p>Oyun bittiğinde Tekrar oyna düğmesi kısa bir süre (yaklaşık yedi onda bir saniye) kapalı kalır. Bunun nedeni, son anlarda Boşluk tuşuna hızlıca basarken yeni bir oyunu kazara başlatmanızı önlemektir.</p>
+
+      <h2>Zorluk seviyeleri</h2>
+      <h3>Yavaş</h3>
+      <p>Borular arasındaki boşluk kuşun boyunun yaklaşık yedi katıdır ve borular ekranı yaklaşık 3,4 saniyede geçer. Yeni başlayanlar, çocuklar ve ritim duygusunu oturtmak isteyenler için uygundur. İki boru arasındaki mesafe uzun olduğundan her boşluktan sonra düzeltme yapmaya zamanınız kalır.</p>
+      <h3>Normal</h3>
+      <p>Boşluk kuşun boyunun yaklaşık beş buçuk katıdır; borular ekranı yaklaşık 2,7 saniyede geçer. Dengeli ve çoğu oyuncu için en keyifli seviyedir. Birkaç boruyu geçtikten sonra tempo kendiliğinden oturur.</p>
+      <h3>Hızlı</h3>
+      <p>Boşluk dardır ve borular ekranı yaklaşık 2,1 saniyede geçer; iki boru arasındaki süre de kısalır. Zıplama zamanlaması çok daha hassas hâle gelir, her hata bedeli ağır olur. Rekor denemeleri ve refleks çalışması için idealdir. Kuşun zıplama gücü ve yerçekimi tüm seviyelerde aynıdır; fark yalnızca boruların aralığında, hızında ve sıklığındadır.</p>
+
+      <h2>Skor ve en yüksek skor</h2>
+      <p>Her boruyu geçtiğinizde skorunuz bir artar. Zorluk seviyesi puanı değiştirmez; ancak en yüksek skor her seviye için ayrı tutulur, çünkü yavaş seviyede otuz puan ile hızlı seviyede otuz puan aynı değerde değildir. Rekorunuz ve ayarlarınız tarayıcınızın localStorage alanına yazılır. Bu alan yalnızca sizin cihazınızdadır; başka bir tarayıcıya ya da cihaza taşınmaz ve tarayıcı verilerini temizlediğinizde silinir.</p>
+
+      <h2>Gündüz, gece ve hareket azaltma</h2>
+      <p>Tema seçeneği gökyüzünün, tepelerin ve boruların renklerini değiştirir. Gündüz temasında güneş ve bulutlar, gece temasında ay ve yıldızlar görünür. Oyun kuralları, fizik ve zorluk iki temada da birebir aynıdır. Cihazınızda "hareketi azalt" tercihi açıksa arka plandaki tepelerin, bulutların ve zeminin kayması kapatılır; yalnızca borular ve kuş hareket eder. Bu, hareket hassasiyeti olan kullanıcılar için ekranı daha sakin hâle getirir.</p>
+
+      <div class="ba-ad" data-slot="oyun-ucan-kus-b" aria-label="Reklam"></div>
+
+      <h2>Uçan kuş oyununda strateji ipuçları</h2>
+      <ul>
+        <li><strong>Bir sonraki boşluğa bakın.</strong> Gözünüzü kuşa değil, gelmekte olan boşluğa dikin. Kuşun yüksekliği zaten elinizin altında; asıl bilgi boşluğun nerede olduğudur.</li>
+        <li><strong>Küçük ve düzenli dokunun.</strong> Her dokunuş kuşu sabit bir miktar yükselttiği için kararlı bir ritim kurmak, art arda hızlı dokunmaktan çok daha güvenlidir.</li>
+        <li><strong>Boşluğun ortasını hedefleyin.</strong> Kenara yakın geçmeye çalışmak hata payınızı azaltır. Mümkün olduğunca boşluğun tam ortasından geçin.</li>
+        <li><strong>Yüksek boşluğa erken tırmanın.</strong> Bir sonraki boru yukarıdaysa, mevcut boruyu geçer geçmez ritmi biraz sıklaştırın; son anda üst üste zıplamak kuşu tavana ya da borunun üst köşesine çarptırır.</li>
+        <li><strong>Alçak boşlukta zıplamayı seyrekleştirin.</strong> Aşağıdaki bir boşluk için birkaç dokunuşu atlayıp kuşun doğal olarak alçalmasına izin verin.</li>
+        <li><strong>Tavandan kaçının.</strong> Tavana çok yakın uçmak sizi boruların üst başlığına çarpma riskine sokar. Ekranın ortasında kalmak her iki yönde de esneklik sağlar.</li>
+        <li><strong>Sakin kalın.</strong> Hata genellikle panikle arka arkaya dokunmaktan çıkar. Gerginleştiğinizde P tuşuyla duraklatın ve bir soluk alın.</li>
+        <li><strong>Yavaş seviyeyle ısının.</strong> Zamanlamayı oturtmak için önce yavaş seviyede birkaç tur oynayıp sonra normal ve hızlıya geçmek, rekorları daha çabuk getirir.</li>
+      </ul>
+
+      <h2>Oyun fiziği: neden her cihazda aynı hissettiriyor?</h2>
+      <p>Oyunun fiziği, ekranın kaç kare hızla çizildiğinden bağımsızdır. Kuşun konumu ve hızı, saniyenin 120'de biri uzunluğundaki sabit adımlarla hesaplanır; çizim ise tarayıcının ekran yenileme hızına göre ayrıca yapılır. Bu yaklaşıma sabit zaman adımı denir. Sonuç olarak 60 hertzlik bir ekranda da, 144 hertzlik bir oyuncu monitöründe de kuşun zıplama yüksekliği ve düşüş hızı aynıdır; kasan bir telefon da oyunun kurallarını değiştirmez, yalnızca çizimi daha az akıcı gösterir.</p>
+      <p>Her zıplama, kuşun dikey hızını yukarı yönde sabit bir değere ayarlar. Yerçekimi bu hızı her adımda azaltır; kuş tepe noktasına ulaşır ve düşmeye başlar. Bir zıplama kuşu yaklaşık olarak oyun alanı yüksekliğinin yüzde on biri kadar yükseltir. Düşüş hızı belirli bir sınıra kadar artar, ardından sabit kalır; bu sayede uzun bir düşüşten sonra bile tepki vermek için zamanınız olur.</p>
+
+      <h2>Bu tür oyunların kısa tarihi</h2>
+      <p>Tek dokunuşla oynanan, "bas ve yüksel" mantığındaki oyunlar uzun zamandır vardır; ancak akıllı telefonların yaygınlaşmasıyla birlikte bu tür özellikle popüler oldu. Basit kuralları, ekranda yalnızca bir parmakla oynanabilmesi, çok kısa turları ve "bir kez daha" dedirten zorluğu, oyunu on yıllar boyunca sevilen bir tür hâline getirdi. Birçok geliştirici aynı fikri farklı karakterler ve çizimlerle yeniden yorumladı. Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı; hiçbir dış kütüphane, görsel ya da ses dosyası kullanılmadığı için çok hızlı yüklenir ve çevrimdışı da çalışabilir.</p>
+
+      <h2>Neden Bilişim Ajans uçan kuş oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişliğindeki telefonlarda da sığar; dokunma, fare ve klavye birlikte çalışır.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun alanının ve düğmelerin yanında asla görünmez. Tam ekran modunda hiçbir reklam görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca rekorunuz ve ayarlarınız kendi cihazınızda saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da oynayabilirsiniz; siteyi uygulama olarak kurmak da mümkündür.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Uçan kuş oyunu nasıl oynanır?</summary><p>Oyun alanına tıklayın, dokunun ya da Boşluk tuşuna basın; kuş her seferinde bir kez zıplar, aksi hâlde yere doğru düşer. Borular arasındaki boşluktan geçtikçe puan kazanırsınız. Bir boruya ya da yere çarparsanız oyun biter.</p></details>
+        <details><summary>Hangi tuşlarla zıplarım?</summary><p>Boşluk, yukarı ok ve W tuşları kuşu zıplatır. Fareyle oyun alanına tıklayabilir ya da telefonda ekrana dokunabilirsiniz. P tuşu oyunu duraklatır ve devam ettirir.</p></details>
+        <details><summary>Telefonda uçan kuş oyununu nasıl oynarım?</summary><p>Oyun alanının herhangi bir yerine dokunmanız yeterlidir. Her dokunuş bir zıplamadır; parmağınızı basılı tutmak ek bir etki yapmaz. Oyun alanı ekran genişliğine uyar ve oyun sırasında sayfa kaymaz; sayfayı kaydırmak için oyun alanının dışına dokunun.</p></details>
+        <details><summary>Zorluk seviyeleri neyi değiştirir?</summary><p>Yavaş seviyede borular daha geniş aralıklı, daha yavaş ve daha seyrek gelir; Normal seviye dengelidir; Hızlı seviyede aralık daralır, borular hızlanır ve sık gelir. Kuşun zıplama gücü ve yerçekimi her seviyede aynıdır.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor, silinir mi?</summary><p>Tarayıcınızın yerel depolama alanında (localStorage), her zorluk seviyesi için ayrı tutulur. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız skor kalıcı olmaz.</p></details>
+        <details><summary>Gündüz ve gece teması oyunu etkiler mi?</summary><p>Hayır, yalnızca görünümü değiştirir. Boruların, kuşun ve fiziğin davranışı iki temada da aynıdır. Gece teması akşam saatlerinde gözünüzü daha az yorabilir.</p></details>
+        <details><summary>Hareket azaltma ayarı bu oyunda ne yapar?</summary><p>Cihazınızda ya da tarayıcınızda hareket azaltma tercihi açıksa arka plandaki tepelerin, bulutların ve zeminin kayması kapanır. Borular oyunun parçası olduğu için yine hareket eder.</p></details>
+        <details><summary>Oyun ücretsiz mi, bir şey yüklemem gerekir mi?</summary><p>Tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Bilişim Ajans'ın topluluk projesi olarak sunulur ve giderler yalnızca sayfadaki reklamlarla karşılanır.</p></details>
+        <details><summary>İnternet olmadan oynayabilir miyim?</summary><p>Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez. Siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Skorunuz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a></li>
+        <li><a href="../online-piyano/">Online Piyano</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-ucan-kus-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

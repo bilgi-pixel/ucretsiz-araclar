@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hedef Nabız Hesaplama – Maksimum Kalp Atış Hızı ve Nabız Bölgeleri (Karvonen)</title>
+  <meta name="description" content="Yaşınıza göre maksimum kalp atış hızınızı ve 5 nabız bölgesini (ısınma, yağ yakımı, aerobik, anaerobik, maksimum) hesaplayın; dinlenme nabzınızı girerek Karvonen yöntemini kullanın. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/nabiz-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; min-width: 0; }
+    .kdv-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .88rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kal-warn { font-weight: 600; color: var(--ba-text); }
+    .kal-h4 { font-size: 1rem; margin: 18px 0 6px; }
+    .nb-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .nb-table th, .nb-table td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px dashed var(--ba-border); }
+    .nb-table td:nth-child(2) { white-space: nowrap; }
+    .nb-nw { white-space: nowrap; }
+    #r-disclaimer { font-weight: 400; font-size: .92rem; margin-top: 12px; }
+    .nb-table thead th { color: var(--ba-text-2); font-weight: 600; font-size: .85rem; }
+    .nb-table tbody th { font-weight: 600; color: var(--ba-text); }
+    .nb-table tbody tr:last-child th, .nb-table tbody tr:last-child td { border-bottom: 0; }
+    .nb-table td:last-child { font-family: var(--ba-mono); }
+    .nb-sub { display: block; font-size: .8rem; font-weight: 400; color: var(--ba-text-2); margin-top: 2px; }
+    .nb-simple, .nb-karv { display: block; }
+    .nb-simple { white-space: nowrap; }
+    .nb-karv { font-size: .85rem; color: var(--ba-text-2); margin-top: 2px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hedef Nabız Hesaplama – Bilişim Ajans","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/nabiz-hesapla/","inLanguage":"tr","description":"Yaştan maksimum kalp atış hızını (220 − yaş ya da Tanaka formülü) ve beş nabız bölgesini hesaplar; dinlenme nabzı girilirse Karvonen yöntemini de uygular. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Maksimum kalp atış hızı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"En bilinen yöntem 220 eksi yaştır; örneğin 40 yaşındaki biri için 180 atım/dk. Tanaka formülü 208 eksi 0,7 çarpı yaş şeklindedir ve 40 yaş için yine 180 verir. İkisi de ortalama tahmindir; gerçek değer kişiden kişiye farklı olabilir."}},
+  {"@type":"Question","name":"Nabız bölgeleri ne anlama geliyor?","acceptedAnswer":{"@type":"Answer","text":"Maksimum nabzın yüzdelerine göre beş eforu anlatan aralıktır: yüzde 50-60 ısınma, 60-70 yağ yakımı, 70-80 aerobik, 80-90 anaerobik ve 90-100 maksimum. Bölge adları eforu tarif eder; bir egzersiz önerisi değildir."}},
+  {"@type":"Question","name":"Karvonen yöntemi nedir, neden farklı sonuç verir?","acceptedAnswer":{"@type":"Answer","text":"Karvonen, hedef nabzı dinlenme nabzı + (maksimum nabız eksi dinlenme nabzı) çarpı yüzde olarak hesaplar. Dinlenme nabzı kondisyonu yansıttığı için sonuç, yalnızca maksimumun yüzdesini almaktan daha kişisel olur. Örneğin maksimum 180, dinlenme 60, yüzde 70 için hedef 144 atım/dk çıkar."}},
+  {"@type":"Question","name":"220 eksi yaş mı Tanaka mı daha doğru?","acceptedAnswer":{"@type":"Answer","text":"İkisi de istatistiksel tahmindir. Tanaka formülü daha geniş bir veri kümesine dayanır ve ileri yaşlarda daha gerçekçi sonuç verme eğilimindedir. Genç yetişkinlerde Tanaka daha düşük, ileri yaşlarda klasik formülden daha yüksek çıkar. Araç ikisini de gösterir."}},
+  {"@type":"Question","name":"Nabzımı elle nasıl ölçerim?","acceptedAnswer":{"@type":"Answer","text":"İşaret ve orta parmağınızı bileğin başparmak tarafındaki damara hafifçe koyun, saniye gösteren bir saatle 15 saniye atımları sayıp dörtle çarpın. Başparmağınızla ölçmeyin; kendi nabzınızı hissedebilir."}},
+  {"@type":"Question","name":"Dinlenme nabzımı ne zaman ölçmeliyim?","acceptedAnswer":{"@type":"Answer","text":"En uygunu sabah uyanır uyanmaz, yataktan kalkmadan ve birkaç gün üst üste ölçüp ortalama almaktır. Kafein, stres, ağır egzersiz ya da hastalık değeri yükseltebilir."}},
+  {"@type":"Question","name":"Kalp hastalığı olan ya da ilaç kullanan biri bu hesabı kullanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Egzersiz yoğunluğunu bu araca göre belirlemeyin. Kalp-damar hastalığı, yüksek tansiyon, ritim sorunu varsa ya da nabzı etkileyen ilaç kullanıyorsanız hedef nabız aralığını yalnızca hekiminiz belirleyebilir."}},
+  {"@type":"Question","name":"Bu hesap 18 yaş altında kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Formüller yetişkin verilerine dayanır; çocuk ve ergenlerde güvenilir değildir. 18 yaşın altını girerseniz hesap yapılmaz; antrenörünüze ya da hekiminize başvurun."}},
+  {"@type":"Question","name":"Girdiğim bilgiler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; yaş ve nabız değerleri sunucuya iletilmez ve saklanmaz."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Hedef Nabız</span> Hesaplama: Kalp Atış Hızı Bölgeleri</h1>
+      <p class="lead">Yaşınızı girin; maksimum kalp atış hızınızı ve beş nabız bölgesinin alt ile üst sınırını görün. İsterseniz dinlenme nabzınızı ekleyip Karvonen yöntemiyle daha kişisel bir hedef nabız hesaplayın. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <p class="kal-warn" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Kalp hastalığınız varsa ya da nabzı etkileyen ilaç kullanıyorsanız hedef nabız aralığını yalnızca hekiminiz belirleyebilir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="age">Yaş</label><input id="age" type="text" inputmode="numeric" autocomplete="off" placeholder="40"><div class="hint">18–100 arası, tam sayı olarak.</div></div>
+          <div class="ba-field"><label for="formula">Maksimum nabız formülü</label>
+            <select id="formula"><option value="classic" selected>Klasik: 220 − yaş</option><option value="tanaka">Tanaka: 208 − 0,7 × yaş</option></select>
+            <div class="hint">Diğer formülün değeri sonuçta karşılaştırma olarak gösterilir.</div></div>
+          <div class="ba-field"><label for="rest">Dinlenme nabzı (atım/dk, isteğe bağlı)</label><input id="rest" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 60"><div class="hint">Girerseniz Karvonen yöntemi de hesaplanır. Sabah uyanınca ölçülmüş değer idealdir.</div></div>
+          <div class="ba-field"><label for="intensity">Tek bir yoğunluk için yüzde (isteğe bağlı)</label><input id="intensity" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 70"><div class="hint">Örneğin 70 yazarsanız %70 yoğunluktaki hedef nabız ayrıca gösterilir.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hedef nabzı hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Kullanılan formül</dt><dd id="r-formula"></dd></div>
+          <div class="kdv-row is-strong"><dt>Maksimum nabız</dt><dd id="r-max"></dd></div>
+          <div class="kdv-row"><dt id="r-other-l">Karşılaştırma</dt><dd id="r-other"></dd></div>
+          <div class="kdv-row" id="row-rest" hidden><dt>Dinlenme nabzı</dt><dd id="r-rest"></dd></div>
+          <div class="kdv-row" id="row-reserve" hidden><dt>Nabız rezervi (maksimum − dinlenme)</dt><dd id="r-reserve"></dd></div>
+          <div class="kdv-row" id="row-target-simple" hidden><dt id="r-target-simple-l">Hedef nabız</dt><dd id="r-target-simple"></dd></div>
+          <div class="kdv-row is-strong" id="row-target-karv" hidden><dt id="r-target-karv-l">Hedef nabız, Karvonen</dt><dd id="r-target-karv"></dd></div>
+        </dl>
+        <h4 class="kal-h4">Nabız bölgeleri</h4>
+        <p class="kdv-note" id="r-method" style="margin-top:0"></p>
+        <table class="nb-table" aria-label="Nabız bölgeleri">
+          <thead><tr><th scope="col">Bölge</th><th scope="col">Yüzde</th><th scope="col">Atım/dk</th></tr></thead>
+          <tbody id="zones"></tbody>
+        </table>
+        <p class="kdv-note" id="r-zone-note" hidden>Her bölgede üstteki aralık maksimum nabzın yüzdesine, "Karvonen" satırı ise dinlenme nabzınıza göre hesaplanmıştır.</p>
+        <p class="kdv-note">Komşu bölgelerin sınırları aynı değerde birleşir. Formüller ortalama tahmindir; gerçek maksimum nabzınız bunun 10 atım ve üzeri altında ya da üstünde olabilir. Efor düzeyini nabızla birlikte nefes alışınıza ve genel hâlinize bakarak değerlendirin.</p>
+        <p class="kal-warn" id="r-disclaimer" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Kalp-damar hastalığınız varsa, nabzı etkileyen ilaç kullanıyorsanız ya da egzersiz sırasında göğüs ağrısı, çarpıntı, baş dönmesi veya nefes darlığı yaşarsanız bu sonuca göre egzersiz yapmayın; durun ve bir sağlık profesyonelinden yardım alın. Bu sonuç tanı, tedavi, ilaç ya da kişisel egzersiz programı önerisi içermez.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="nabiz-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Yaşınızı tam sayı olarak yazın. Araç 18 ile 100 yaş arasındaki yetişkinler için tasarlanmıştır; çocuk ve ergenlerde bu formüller güvenilir olmadığı için daha küçük bir yaş girerseniz hesap yapılmaz.</li>
+        <li>Maksimum nabız formülünü seçin. Varsayılan en bilinen "220 − yaş" yöntemidir; "Tanaka" seçeneği daha yeni bir formülü kullanır. Hangisini seçerseniz seçin, diğerinin değeri sonuçta karşılaştırma için de gösterilir.</li>
+        <li>Dinlenme nabzınızı biliyorsanız yazın. Bu alan isteğe bağlıdır; doldurursanız araç Karvonen yöntemini de uygular ve her bölge için ikinci bir aralık gösterir. Nasıl ölçüleceğini aşağıdaki bölümde bulabilirsiniz.</li>
+        <li>İsterseniz tek bir yoğunluk yüzdesi (örneğin 70) girin. Araç bu yüzdeye karşılık gelen hedef nabzı ayrıca bir satır olarak verir.</li>
+        <li>"Hedef nabzı hesapla" düğmesine basın. Maksimum nabız, beş bölgenin alt ve üst sınırları ve varsa Karvonen değerleri görünür. "Sonucu kopyala" ile özeti panoya alabilirsiniz.</li>
+      </ol>
+
+      <h2>Maksimum kalp atış hızı nedir?</h2>
+      <p>Maksimum kalp atış hızı, kalbinizin bir dakikada en fazla kaç kez atabileceğini anlatan kabaca bir üst sınırdır. Gerçek değeri ancak laboratuvarda, hekim gözetiminde yapılan bir efor testiyle ölçmek mümkündür. Günlük hayatta ise yaşa dayalı formüllerle tahmin edilir; çünkü maksimum nabız yaşla birlikte ortalama olarak düşer. Bu araçta iki formül bulunur.</p>
+      <p><strong>Klasik formül (220 − yaş)</strong> en yaygın bilinendir ve 1970'lerin başında yayımlanan sınırlı verilere dayandığı söylenir. Basitliği nedeniyle çok popüler olmuştur; ancak bilimsel olarak bireysel doğruluğu sınırlıdır. 40 yaşındaki biri için sonuç 220 − 40 = 180 atım/dk olur. <strong>Tanaka formülü (208 − 0,7 × yaş)</strong> ise yaklaşık on sekiz bin kişilik verinin incelendiği 2001 tarihli bir çalışmaya dayanır. Aynı 40 yaş için 208 − 28 = 180 atım/dk verir; yani bu yaşta iki formül örtüşür. Genç yaşta Tanaka daha düşük (20 yaş için 194, klasik formülde 200), ileri yaşta daha yüksek sonuç (60 yaş için 166, klasik formülde 160) verir.</p>
+      <p>İki formül de ortalama bir kişiyi anlatır. Aynı yaştaki iki sağlıklı insanın gerçek maksimum nabzı 10 atım ve daha fazla farklı olabilir; kondisyon, genetik ve kullanılan ilaçlar bu farkı etkiler. Bu yüzden sonucu kesin bir sınır değil, makul bir başlangıç noktası olarak okuyun.</p>
+
+      <h2>Nabız bölgeleri ve anlamları</h2>
+      <p>Nabız bölgeleri, maksimum nabzın yüzdelerine göre eforu beş basamağa ayırır. Bu adlandırma yaygın kullanılan bir sınıflandırmadır; bir egzersiz reçetesi değildir. Örneğin maksimum nabzı 180 olan biri için aralıklar şöyle hesaplanır:</p>
+      <ul>
+        <li><strong>Bölge 1 – Isınma (%50–60):</strong> 90–108 atım/dk. Çok hafif efor; rahatça konuşabilirsiniz. Isınma, soğuma ve toparlanma için kullanılan düzeydir.</li>
+        <li><strong>Bölge 2 – Yağ yakımı (%60–70):</strong> 108–126 atım/dk. Hafif efor; tam cümlelerle konuşabilirsiniz. Uzun ve rahat yürüyüş ya da hafif bisiklet bu aralıkta kalır.</li>
+        <li><strong>Bölge 3 – Aerobik (%70–80):</strong> 126–144 atım/dk. Orta efor; konuşabilirsiniz ama kısa cümlelerle. Dayanıklılık çalışmalarının ana bölgesi olarak anılır.</li>
+        <li><strong>Bölge 4 – Anaerobik (%80–90):</strong> 144–162 atım/dk. Ağır efor; konuşmak zorlaşır. Yalnızca kısa süreler için sürdürülebilir.</li>
+        <li><strong>Bölge 5 – Maksimum (%90–100):</strong> 162–180 atım/dk. Çok ağır efor; ancak çok kısa süre dayanılır ve konuşmak neredeyse imkânsızdır.</li>
+      </ul>
+      <p>"Yağ yakımı" adı yaygın kullanımdan gelir: düşük ve orta yoğunlukta harcanan enerjinin daha büyük bölümü yağdan karşılanır. Ancak kilo vermek ya da vermemek, günün toplam enerji dengesine bağlıdır; yalnızca bu bölgede kalmak bir sonuç garantisi vermez. Bölge adları ve yüzdeler bir yol göstericidir; size uygun egzersiz yoğunluğu yaşınıza, sağlığınıza ve hedefinize göre değişir.</p>
+
+      <h2>Karvonen yöntemi: dinlenme nabzını hesaba katmak</h2>
+      <p>Yalnızca maksimum nabzın yüzdesini almak, herkesi aynı başlangıç noktasından başlatır. Oysa kondisyonu yüksek birinin dinlenme nabzı düşüktür ve egzersiz sırasında bu "boşluktan" daha fazla yararlanır. Fin fizyolog Martti Karvonen'in 1950'lerde tanımladığı yöntem bunu hesaba katar: <strong>hedef nabız = dinlenme nabzı + (maksimum nabız − dinlenme nabzı) × yüzde</strong>. Maksimum ile dinlenme arasındaki farka nabız rezervi denir.</p>
+      <p>Örneğin maksimum nabzı 180, dinlenme nabzı 60 olan birinin nabız rezervi 120'dir. %70 yoğunlukta hedef nabız 60 + 120 × 0,70 = 144 atım/dk olur; oysa yalnızca maksimumun %70'ini alsaydınız 126 bulurdunuz. Aynı kişi için bölge 2 (%60–70) Karvonen yöntemiyle 132–144 atım/dk eder. Dinlenme nabzı yüksek olan biri için fark küçülür, düşük olan için büyür. Karvonen de bir tahmindir ama dinlenme nabzı kişisel bir veri içerdiği için genellikle daha anlamlı bulunur.</p>
+
+      <div class="ba-ad" data-slot="nabiz-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Nabzı elle nasıl ölçersiniz? (15 sn × 4)</h2>
+      <p>Nabız ölçmek için cihaz şart değildir; bir saat ya da saniye gösteren bir telefon yeterlidir. En yaygın nokta bileğin başparmak tarafındaki damardır (radyal arter).</p>
+      <ol class="ba-steps">
+        <li>Oturun ve birkaç dakika dinlenin; kolunuzu rahat bir yüzeye koyun.</li>
+        <li>İşaret ve orta parmağınızın uçlarını, diğer elinizin bileğinde, avuç içine bakan tarafta başparmağa yakın çukura hafifçe yerleştirin. Başparmağınızı kullanmayın; kendi nabzını hissedip sayımı şaşırtabilir. Çok sert bastırmayın.</li>
+        <li>Atımı hissedince saniye gösteren saate bakıp tam 15 saniye boyunca sayın.</li>
+        <li>Sayıyı dörtle çarpın: 15 saniyede 18 atım saydıysanız nabzınız dakikada 18 × 4 = 72'dir. Daha dikkatli olmak için 30 saniye sayıp ikiyle de çarpabilirsiniz.</li>
+        <li>Düzensiz hissediyorsanız ya da sayamıyorsanız hesabı zorlamayın; sürekli düzensiz atım, çarpıntı veya baş dönmesi için bir hekime başvurun.</li>
+      </ol>
+      <p><strong>Dinlenme nabzını</strong> en doğru biçimde sabah uyanır uyanmaz, yataktan kalkmadan ve birkaç gün üst üste ölçerek bulursunuz; ortalamayı alın. Kafein, stres, kötü uyku, ağır bir antrenman, ısı ve hastalık değeri yükseltebilir. Yetişkinler için genel olarak 60–100 atım/dk aralığı "tipik" kabul edilir; düzenli egzersiz yapanlarda bu değer daha düşük olabilir. Boynun yan tarafından (karotis) ölçmek de mümkündür, ancak bu noktada yalnızca bir tarafa ve çok hafif dokunun; boynun iki yanına birden bastırmayın. Spor saatleri ve bilekliklerin nabız ölçümü hareket sırasında sapabilir; hızlı bir kontrol için elle sayım iyi bir yoldur.</p>
+
+      <h2>Nabız tek ölçüt değildir</h2>
+      <p>Nabız yararlı bir göstergedir ama her durumda yanıltıcı olabilir. Sıcak havada, susuzlukta, uykusuzlukta ya da stresliyken aynı efor daha yüksek nabızla yaşanır. Kafein ve bazı ilaçlar nabzı değiştirir. Bu yüzden nabzı, "konuşma testi" ve eforu nasıl hissettiğinizle birlikte değerlendirmek daha güvenlidir: egzersiz sırasında cümle kurabiliyorsanız efor genellikle hafif ya da orta düzeydedir; yalnızca birkaç kelime söyleyebiliyorsanız yüksek yoğunluktasınızdır. Kendinizi kötü hissediyorsanız nabız hedefinizi kovalamayın, yavaşlayın ya da durun.</p>
+
+      <h2>Kimler hekime danışmalı?</h2>
+      <ul>
+        <li>Bilinen bir kalp-damar hastalığı, yüksek tansiyon ya da ritim bozukluğu olanlar.</li>
+        <li>Nabzı etkileyen ilaç kullananlar; çünkü ilaç hem dinlenme hem maksimum nabzı değiştirebilir ve yaşa dayalı formüller bu durumda geçerli olmayabilir.</li>
+        <li>Uzun süre hareketsiz kaldıktan sonra yoğun egzersize başlamak isteyenler ve hamile olanlar.</li>
+        <li>Egzersiz sırasında göğüs ağrısı, çarpıntı, aşırı nefes darlığı ya da baş dönmesi yaşayanlar: egzersizi bırakın ve tıbbi yardım alın.</li>
+      </ul>
+      <p>Bu liste tam değildir. Sağlıkla ilgili şüpheniz varsa hedef nabız aralığını kendi başınıza belirlemek yerine bir hekime ya da yetkili bir egzersiz uzmanına danışın.</p>
+
+      <h2>Hesabın sınırları</h2>
+      <ul>
+        <li><strong>Formüller tahmindir.</strong> Gerçek maksimum nabız ancak gözetimli bir efor testiyle ölçülür; aynı yaştaki kişiler arasında büyük farklar olabilir.</li>
+        <li><strong>İlaçlar ve hastalıklar kapsam dışıdır.</strong> Nabzı etkileyen durumlarda sonuçlar geçerli olmayabilir.</li>
+        <li><strong>Çocuk ve ergenlere uygun değildir.</strong> 18 yaş altı için araç hesap yapmaz.</li>
+        <li><strong>Dinlenme nabzı günden güne değişir.</strong> Tek bir ölçüm yerine birkaç günün ortalamasını kullanmak daha tutarlıdır.</li>
+        <li><strong>Bölge adları bir öneri değildir.</strong> Hangi bölgede ne kadar egzersiz yapılacağı, kişinin sağlığına ve hedefine göre bir uzmanla belirlenmelidir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Yaş ve nabız değerleri tarayıcınızda işlenir; sunucuya iletilmez, saklanmaz.</li>
+        <li><strong>Açık formül.</strong> Kullanılan her denklem bu sayfada yazılıdır; kara kutu yoktur.</li>
+        <li><strong>İki formül, iki yöntem.</strong> Klasik ve Tanaka maksimum değerleri yan yana, yüzde yöntemi ve Karvonen aynı tabloda görünür.</li>
+        <li><strong>Abartısız.</strong> Mucize vaadi, ürün yönlendirmesi, takviye ya da ilaç önerisi yok.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; telefonda rahat okunur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Maksimum kalp atış hızı nasıl hesaplanır?</summary><p>En bilinen yöntem 220 − yaştır; örneğin 40 yaşındaki biri için 180 atım/dk. Tanaka formülü 208 − 0,7 × yaş şeklindedir ve 40 yaş için yine 180 verir. İkisi de ortalama tahmindir; gerçek değer kişiden kişiye farklı olabilir ve yalnızca gözetimli bir efor testiyle ölçülür.</p></details>
+        <details><summary>Nabız bölgeleri ne anlama geliyor?</summary><p>Maksimum nabzın yüzdelerine göre beş eforu anlatan aralıklardır: %50–60 ısınma, %60–70 yağ yakımı, %70–80 aerobik, %80–90 anaerobik ve %90–100 maksimum. Adlar eforu tarif eder; bir egzersiz önerisi ya da program değildir.</p></details>
+        <details><summary>Karvonen yöntemi nedir, neden farklı sonuç verir?</summary><p>Karvonen, hedef nabzı dinlenme nabzı + (maksimum nabız − dinlenme nabzı) × yüzde olarak hesaplar. Dinlenme nabzı kondisyonu yansıttığı için sonuç, yalnızca maksimumun yüzdesini almaktan daha kişisel olur. Maksimum 180, dinlenme 60 ve %70 için hedef 144 atım/dk çıkar; yalnızca yüzde alınırsa 126 bulunur.</p></details>
+        <details><summary>220 − yaş mı, Tanaka mı daha doğru?</summary><p>İkisi de istatistiksel tahmindir. Tanaka formülü daha geniş bir veri kümesine dayanır ve ileri yaşlarda daha gerçekçi sonuç verme eğilimindedir. Genç yetişkinlerde Tanaka klasik formülden daha düşük, ileri yaşta daha yüksek çıkar. Araç ikisini de gösterir; hangisinin sizin için uygun olduğunu bir uzman değerlendirebilir.</p></details>
+        <details><summary>Nabzımı elle nasıl ölçerim?</summary><p>İşaret ve orta parmağınızı bileğin başparmak tarafındaki damara hafifçe koyun, saniye gösteren bir saatle 15 saniye atımları sayıp dörtle çarpın. Başparmağınızla ölçmeyin; kendi nabzını hissedebilir. Ayrıntılı adımlar sayfanın ortasındaki bölümde anlatılmıştır.</p></details>
+        <details><summary>Dinlenme nabzımı ne zaman ölçmeliyim?</summary><p>En uygunu sabah uyanır uyanmaz, yataktan kalkmadan ve birkaç gün üst üste ölçüp ortalama almaktır. Kafein, stres, kötü uyku, ağır egzersiz ya da hastalık değeri yükseltebilir. Araç dinlenme nabzı için 30–120 atım/dk aralığını kabul eder.</p></details>
+        <details><summary>Kalp hastalığı olan ya da ilaç kullanan biri bu hesabı kullanabilir mi?</summary><p>Egzersiz yoğunluğunu bu araca göre belirlemeyin. Kalp-damar hastalığı, yüksek tansiyon, ritim sorunu varsa ya da nabzı etkileyen ilaç kullanıyorsanız hedef nabız aralığını yalnızca hekiminiz belirleyebilir. Araç yalnızca sağlıklı yetişkinler için genel bir bilgilendirmedir.</p></details>
+        <details><summary>Bu hesap 18 yaş altında kullanılabilir mi?</summary><p>Hayır. Formüller yetişkin verilerine dayanır; çocuk ve ergenlerde güvenilir değildir. 18 yaşın altını girerseniz hesap yapılmaz; antrenörünüze ya da hekiminize başvurun.</p></details>
+        <details><summary>Girdiğim bilgiler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Sayfa yaş ve nabız değerlerini bir sunucuya iletmez, kaydetmez ve çerez ya da analiz kodu içermez.</p></details>
+        <details><summary>"Yaş 18–100 arasında olmalıdır" ya da "Dinlenme nabzı 30–120" hatası alıyorum, ne yapmalıyım?</summary><p>Yaşı tam sayı olarak 18 ile 100 arasında girin. Dinlenme nabzını dakikadaki atım sayısı olarak, 30 ile 120 arasında ve maksimum nabzın altında yazın; bilmiyorsanız alanı boş bırakın. Yoğunluk yüzdesi için 30–100 arası bir sayı kullanın, yüzde işareti yazmayın.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sayfa tanı, tedavi, ilaç, takviye ya da kişisel egzersiz programı önerisi sunmaz. Sağlığınızla ilgili endişeleriniz için bir sağlık profesyoneline başvurun.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../adim-hesapla/">Adım Sayısı Hesaplama (Km ve Kalori)</a></li>
+        <li><a href="../kalori-hesapla/">Günlük Kalori İhtiyacı Hesaplama</a></li>
+        <li><a href="../vki-hesapla/">VKİ Hesaplama (Vücut Kitle İndeksi)</a></li>
+        <li><a href="../kronometre/">Kronometre</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="nabiz-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

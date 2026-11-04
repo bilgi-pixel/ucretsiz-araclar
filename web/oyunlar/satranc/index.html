@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Satranç Oyna – Ücretsiz Online Satranç (kurulumsuz)</title>
+  <meta name="description" content="Satranç oyna: bilgisayara karşı üç zorluk seviyesinde ya da aynı cihazda iki kişilik. Rok, geçerken alma ve piyon terfisi dahil tüm kurallar, sürükle-bırak, geri al, FEN ve PGN desteği. Ücretsiz, kayıtsız, kurulumsuz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/satranc/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .sa-layout { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .sa-layout { grid-template-columns: minmax(0, 580px) minmax(0, 1fr); align-items: start; } }
+    .sa-boardcol, .sa-side { min-width: 0; }
+    .sa-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .sa-status.is-check { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .sa-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .sa-msg { margin: 0 0 10px; min-height: 1.3em; font-size: .88rem; color: var(--ba-text-muted); line-height: 1.35; }
+    .sa-boardwrap { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 18px; max-width: 580px; margin: 0 auto; }
+    .sa-ranks { grid-column: 1; grid-row: 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px 0; }
+    .sa-files { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat(8, 1fr); padding: 0 6px; }
+    .sa-ranks span, .sa-files span { display: flex; align-items: center; justify-content: center; font-size: .72rem; color: var(--ba-text-muted); font-family: var(--ba-mono); }
+    .sa-board { grid-column: 2; grid-row: 1; width: 100%; aspect-ratio: 1 / 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px; box-sizing: border-box; background: #5b3d26; border-radius: 8px; box-shadow: 0 4px 14px rgba(30, 33, 38, .25); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    .sa-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); min-height: 0; }
+    .sq { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; background-color: #f0e2c4; font: inherit; cursor: pointer; border-radius: 0; -webkit-tap-highlight-color: transparent; }
+    .sa-row:nth-child(odd) .sq:nth-child(even), .sa-row:nth-child(even) .sq:nth-child(odd) { background-color: #b08560; }
+    .sq:focus-visible { outline: 3px solid #1d4ed8; outline-offset: -3px; z-index: 3; }
+    .sq.is-last { background-image: linear-gradient(rgba(240, 200, 40, .55), rgba(240, 200, 40, .55)); }
+    .sq.is-selected { background-image: linear-gradient(rgba(60, 170, 90, .5), rgba(60, 170, 90, .5)); box-shadow: inset 0 0 0 3px #0b5d33; }
+    .sq.is-check { background-image: radial-gradient(circle at 50% 50%, rgba(220, 30, 30, .95) 0%, rgba(220, 30, 30, .55) 48%, rgba(220, 30, 30, 0) 78%); }
+    .sq.is-check.is-last { background-image: radial-gradient(circle at 50% 50%, rgba(220, 30, 30, .95) 0%, rgba(220, 30, 30, .55) 48%, rgba(220, 30, 30, 0) 78%), linear-gradient(rgba(240, 200, 40, .55), rgba(240, 200, 40, .55)); }
+    .sq.is-dest::after, .sq.is-dest-cap::after { content: ""; position: absolute; z-index: 2; border-radius: 50%; pointer-events: none; }
+    .sq.is-dest::after { width: 28%; height: 28%; background: rgba(11, 93, 51, .78); }
+    .sq.is-dest-cap::after { width: 86%; height: 86%; border: 4px solid rgba(163, 39, 31, .85); background: transparent; }
+    .sa-pc { position: relative; z-index: 1; display: block; width: 88%; height: 88%; pointer-events: none; }
+    .sa-pc svg, .sa-ghost svg { display: block; width: 100%; height: 100%; overflow: visible; fill: var(--pf); stroke: var(--ps); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+    .sa-pc.is-w, .sa-ghost.is-w, .sa-promo-btn.is-w { --pf: #fbf8ef; --ps: #231b12; --pd: #231b12; }
+    .sa-pc.is-b, .sa-ghost.is-b, .sa-promo-btn.is-b { --pf: #3a332c; --ps: #0b0907; --pd: #ece3d0; }
+    .sa-pc svg .d, .sa-ghost svg .d, .sa-promo-btn svg .d { fill: none; stroke: var(--pd); stroke-width: 2.4; }
+    .sa-pc svg .dot, .sa-ghost svg .dot, .sa-promo-btn svg .dot { fill: var(--pd); stroke: none; }
+    .sq.is-dragsrc .sa-pc { opacity: .3; }
+    .sa-ghost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .45)); will-change: transform; }
+    .sa-promo { position: absolute; z-index: 20; inset: 0 0 18px 16px; display: flex; align-items: center; justify-content: center; padding: 8px; background: rgba(20, 16, 12, .62); border-radius: 8px; }
+    .sa-promo[hidden] { display: none; }
+    .sa-promo-box { width: 100%; max-width: 360px; padding: 12px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .35); text-align: center; }
+    .sa-promo-box h3 { margin: 0 0 10px; font-size: 1rem; color: var(--ba-text); }
+    .sa-promo-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .sa-promo-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; min-height: 44px; padding: 6px 2px; font: inherit; font-size: .85rem; font-weight: 600; color: var(--ba-text); background: var(--ba-surface-2); border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .sa-promo-btn:hover { border-color: var(--ba-primary); }
+    .sa-promo-btn:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 1px; }
+    .sa-promo-btn .pic { display: block; width: 100%; max-width: 56px; aspect-ratio: 1; background: #f0e2c4; border-radius: 6px; }
+    .sa-promo-btn svg { display: block; width: 100%; height: 100%; fill: var(--pf); stroke: var(--ps); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+    .sa-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .sa-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .sa-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .sa-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .sa-field select:focus-visible { border-color: var(--ba-primary); }
+    .sa-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .sa-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .sa-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .sa-actions .ba-btn { flex: 1 1 130px; }
+    .sa-think { margin: 0 0 12px; font-size: .85rem; color: var(--ba-text-muted); min-height: 1.3em; }
+    .sa-side h3 { margin: 0 0 8px; font-size: 1rem; }
+    .sa-stat-table { width: 100%; border-collapse: collapse; margin: 0 0 8px; font-size: .88rem; }
+    .sa-stat-table th, .sa-stat-table td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--ba-border); }
+    .sa-stat-table th:first-child, .sa-stat-table td:first-child { text-align: left; }
+    .sa-stat-table td { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .sa-stat-note { margin: 0 0 14px; font-size: .8rem; color: var(--ba-text-muted); }
+    .sa-history { margin: 0 0 12px; padding: 6px 8px; max-height: 190px; overflow-y: auto; list-style: none; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text); }
+    .sa-history li { display: grid; grid-template-columns: 3.4ch minmax(0, 1fr) minmax(0, 1fr); gap: 6px; padding: 2px 0; }
+    .sa-history li .n { color: var(--ba-text-muted); }
+    .sa-history li.is-empty { display: block; font-family: var(--ba-font); color: var(--ba-text-muted); }
+    .sa-io-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 10px; }
+    .sa-io-actions .ba-btn { flex: 1 1 130px; }
+    .sa-io summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .sa-io textarea { width: 100%; min-height: 96px; margin: 6px 0 8px; padding: 8px 10px; font-family: var(--ba-mono); font-size: .82rem; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; box-sizing: border-box; }
+    .sa-io-msg { margin: 6px 0 0; font-size: .85rem; color: var(--ba-text-muted); min-height: 1.3em; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.sa-ad-a { margin-top: 56px; }
+    @media (prefers-reduced-motion: reduce) { .sa-ghost { will-change: auto; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Satranç – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz satranç: bilgisayara karşı üç zorluk seviyesi veya aynı cihazda iki kişilik.","inLanguage":"tr","genre":["Masa oyunu","Strateji"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/satranc/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Satrançta rok nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Şahınızı seçin ve iki kare kale tarafına gidebileceğiniz kareye dokunun. Rok yalnızca şah ile ilgili kale daha önce hiç oynamadıysa, aralarında taş yoksa, şah şahta değilse ve şahın geçeceği karelerde rakip tehdidi yoksa mümkündür. Oyun, rok mümkün olduğunda hedef kareyi kendiliğinden gösterir."}},
+  {"@type":"Question","name":"Geçerken alma (en passant) nedir?","acceptedAnswer":{"@type":"Answer","text":"Rakip piyonu başlangıç karesinden iki kare ilerleyip sizin piyonunuzun hemen yanına gelirse, hemen sonraki hamlenizde onu bir kare ilerlemiş gibi çapraz alabilirsiniz. Bu hak yalnızca o hamlede geçerlidir. Oyun bu hamleyi mümkün olduğunda otomatik gösterir."}},
+  {"@type":"Question","name":"Piyon son sıraya ulaşınca ne olur?","acceptedAnswer":{"@type":"Answer","text":"Piyon terfi eder. Oyun size vezir, kale, fil ve at seçeneklerini gösteren bir pencere açar; seçtiğiniz taş piyonun yerini alır. Çoğu durumda en güçlü taş olan vezir seçilir; bazen at tercih edilir çünkü hemen şah çekebilir."}},
+  {"@type":"Question","name":"Bilgisayarın üç seviyesi arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviye yalnızca bir yarım hamle ilerisini görür ve arada rastgele hamle yapar. Orta seviye iki, Zor seviye üç yarım hamle ilerisini hesaplar ve almaların sonucunu da biraz daha uzatarak inceler. Zor seviyede hesaplama süresi en fazla yaklaşık üç saniyedir. Bu bir profesyonel satranç motoru değil; başlangıç ve orta düzey oyunculara uygun bir rakiptir."}},
+  {"@type":"Question","name":"Hamlemi geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Geri al düğmesi bilgisayara karşı oynarken sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda tek hamle geri alınır. Bilgisayar düşünürken de geri alabilirsiniz, hesaplama iptal edilir."}},
+  {"@type":"Question","name":"Aynı cihazda iki kişi oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun türü listesinden İki kişilik seçeneğini seçin. Beyaz ve siyah sırayla aynı tahtada oynar. İsterseniz her hamleden sonra tahtanın sıradaki oyuncuya göre çevrilmesini açabilirsiniz; telefon veya tableti iki oyuncu arasında paylaşmak için kullanışlıdır."}},
+  {"@type":"Question","name":"Oyun neden berabere bitti?","acceptedAnswer":{"@type":"Answer","text":"Dört durumda oyun otomatik berabere biter: sıradaki oyuncunun şahı tehdit altında olmadığı hâlde hiç yasal hamlesi kalmamışsa (pat), aynı konum üçüncü kez ortaya çıkarsa, elli hamle boyunca taş alınmaz ve piyon oynanmazsa ya da tahtada mat yapmaya yetecek taş kalmamışsa."}},
+  {"@type":"Question","name":"Hamlelerim kaydediliyor mu, oyun internet gerektirir mi?","acceptedAnswer":{"@type":"Answer","text":"Oyun sayfa yüklendikten sonra tamamen tarayıcınızda çalışır; hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı kazanma, kaybetme ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur ve istediğiniz an sıfırlayabilirsiniz."}},
+  {"@type":"Question","name":"FEN ve PGN nedir, ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"FEN, tahtadaki tek bir konumu satır olarak anlatan standart bir metindir. PGN ise oyunun tüm hamlelerini kaydeden standart bir biçimdir. Bu sayfadan her ikisini kopyalayabilir, başka bir satranç programına aktarabilir veya kendi FEN ya da PGN metninizi yapıştırıp konumu yükleyebilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Satranç Oyna</span> – Ücretsiz Online Satranç</h1>
+      <p class="lead">Bilgisayara karşı üç seviyede ya da aynı cihazda arkadaşınızla satranç oynayın. Rok, geçerken alma, piyon terfisi, pat ve üçlü tekrar dahil tüm kurallar otomatik denetlenir; geçerli hamleler tahtada görünür. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="sa-box" class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Satranç oyunu</h2>
+      <div class="sa-layout">
+        <div class="sa-boardcol">
+          <p id="sa-status" class="sa-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <p id="sa-msg" class="sa-msg" role="status" aria-live="polite"></p>
+          <div class="sa-boardwrap">
+            <div id="sa-ranks" class="sa-ranks" aria-hidden="true"></div>
+            <div id="sa-board" class="sa-board" role="grid" aria-label="Satranç tahtası, 8 x 8"></div>
+            <div id="sa-files" class="sa-files" aria-hidden="true"></div>
+            <div id="sa-promo" class="sa-promo" role="dialog" aria-modal="true" aria-labelledby="sa-promo-h" hidden>
+              <div class="sa-promo-box">
+                <h3 id="sa-promo-h">Piyon terfisi: hangi taş olsun?</h3>
+                <div class="sa-promo-list" id="sa-promo-list"></div>
+              </div>
+            </div>
+          </div>
+          <p class="sa-help">Taşa dokunup ışıklı kareye dokunun ya da taşı sürükleyip bırakın. Klavyede ok tuşlarıyla gezin, Enter ile seçin ve oynayın; Esc seçimi iptal eder.</p>
+        </div>
+        <div class="sa-side">
+          <div class="sa-controls">
+            <div class="sa-field"><label for="sa-mode">Oyun türü</label><select id="sa-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişilik (aynı cihaz)</option></select></div>
+            <div class="sa-field" id="sa-level-field"><label for="sa-level">Zorluk</label><select id="sa-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+            <div class="sa-field" id="sa-color-field"><label for="sa-color">Taş rengi (beyaz önce başlar)</label><select id="sa-color"><option value="w">Beyaz</option><option value="b">Siyah</option></select></div>
+            <label class="sa-check" id="sa-autoflip-field"><input type="checkbox" id="sa-autoflip"> Her hamlede tahtayı sıradaki oyuncuya çevir</label>
+          </div>
+          <div class="sa-actions">
+            <button id="sa-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button>
+            <button id="sa-undo" class="ba-btn" type="button" disabled>Geri al</button>
+            <button id="sa-flip" class="ba-btn" type="button" aria-pressed="false">Tahtayı çevir</button>
+            <button id="sa-full" class="ba-btn" type="button">Tam ekran</button>
+          </div>
+          <p id="sa-think" class="sa-think"></p>
+          <div id="sa-stats-wrap">
+            <h3 id="sa-stat-h">Skor tablosu (bilgisayara karşı)</h3>
+            <table class="sa-stat-table" aria-labelledby="sa-stat-h">
+              <thead><tr><th scope="col">Seviye</th><th scope="col">Kazanma</th><th scope="col">Kaybetme</th><th scope="col">Berabere</th></tr></thead>
+              <tbody>
+                <tr data-level="kolay"><td>Kolay</td><td class="w">0</td><td class="l">0</td><td class="d">0</td></tr>
+                <tr data-level="orta"><td>Orta</td><td class="w">0</td><td class="l">0</td><td class="d">0</td></tr>
+                <tr data-level="zor"><td>Zor</td><td class="w">0</td><td class="l">0</td><td class="d">0</td></tr>
+              </tbody>
+            </table>
+            <p class="sa-stat-note">Skorlar yalnızca bu tarayıcıda saklanır. <button id="sa-stats-reset" class="ba-btn" type="button">Skorları sıfırla</button></p>
+          </div>
+          <h3 id="sa-hist-h">Hamle listesi</h3>
+          <ol id="sa-history" class="sa-history" aria-labelledby="sa-hist-h"></ol>
+          <div class="sa-io-actions">
+            <button id="sa-copy-fen" class="ba-btn" type="button">FEN kopyala</button>
+            <button id="sa-copy-pgn" class="ba-btn" type="button">PGN kopyala</button>
+          </div>
+          <details class="sa-io" id="sa-io">
+            <summary>Konum yükle (FEN veya PGN yapıştır)</summary>
+            <label class="visually-hidden" for="sa-io-text">FEN veya PGN metni</label>
+            <textarea id="sa-io-text" spellcheck="false" autocomplete="off" placeholder="FEN: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&#10;ya da PGN: 1. e4 e5 2. Nf3 Nc6"></textarea>
+            <button id="sa-load" class="ba-btn" type="button">Konumu yükle</button>
+            <p id="sa-io-msg" class="sa-io-msg" role="status" aria-live="polite"></p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad sa-ad-a" data-slot="oyun-satranc-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Satranç nedir? Kısaca satrancın hikâyesi</h2>
+      <p>Satranç, 8 x 8 kareli bir tahtada iki oyuncunun on altışar taşla oynadığı, şansa yer bırakmayan bir strateji oyunudur. Amaç, rakibin şahını kurtulamayacağı biçimde tehdit etmek, yani şah mat yapmaktır. Oyunun kökeni genellikle altıncı yüzyıl dolaylarında Hindistan'da oynanan çaturanga oyununa dayandırılır; oyun İran'da şatranç adıyla gelişmiş, Arap dünyası ve İspanya üzerinden Avrupa'ya yayılmıştır. "Şah mat" sözünün Farsça kökenli olduğu ve "şah çaresiz kaldı" anlamına geldiği söylenir. Bugünkü kuralların, özellikle vezirin ve filin tahtanın uzağına kadar gidebilmesinin, on beşinci yüzyılın sonunda Avrupa'da yerleştiği kabul edilir. Bilgisayarlar da satrancın tarihinde ayrı bir yer tutar: 1997'de Deep Blue adlı bilgisayar, dünya şampiyonu Garry Kasparov'u bir maçta yenerek çok konuşuldu ve o günden sonra satranç, yapay zekâ araştırmalarının en bilinen sınav alanlarından biri oldu.</p>
+      <p>Bu sayfada satrancı ücretsiz, kurulum yapmadan ve üye olmadan, istediğiniz zaman bilgisayara karşı ya da aynı cihazda bir arkadaşınızla oynayabilirsiniz. Rok, geçerken alma, piyon terfisi, pat, üçlü tekrar ve elli hamle kuralı gibi ayrıntılar otomatik denetlenir; geçersiz bir hamle oynamanız mümkün değildir. Kural bilmeyenler için geçerli kareler tahtada işaretlenir, bilenler için ise sürükle-bırak, klavye desteği, FEN ve PGN aktarımı gibi pratik araçlar vardır.</p>
+
+      <h2>Satranç nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Tahta ve dizilim.</strong> Tahta, her oyuncunun sağ alt köşesi açık renkli kare olacak biçimde yerleştirilir. Beyaz taşlar 1. ve 2. sıraya dizilir: arka sırada soldan sağa kale, at, fil, vezir, şah, fil, at, kale; önünde sekiz piyon. Vezir kendi rengindeki kareye oturur, yani beyaz vezir açık renkli karede, siyah vezir koyu renkli karede başlar. Siyah taşlar tahtanın karşı tarafında aynı düzeni tekrarlar. Oyuna beyaz başlar ve sırayla birer hamle yapılır.</li>
+        <li><strong>Taşların hareketi.</strong> Kale yatay ve dikey, fil çapraz ilerler; vezir bu iki hareketi birleştirir. Şah her yöne yalnızca bir kare gider. At, "L" biçiminde (iki kare düz, bir kare yana) hareket eder ve diğer taşların üzerinden atlayabilir. Piyon ileri doğru bir kare gider, ilk hamlesinde isterse iki kare gidebilir; ama taşı çapraz ileride tek kare alır. Bir taşı almak için kendi taşınızı rakibin taşının bulunduğu kareye götürürsünüz; alınan taş tahtadan çıkar.</li>
+        <li><strong>Şah ve şah mat.</strong> Şahınız tehdit altındaysa buna şah denir ve o hamlede şahı kurtarmanız zorunludur: şahı kaçırabilir, tehdit eden taşı alabilir ya da araya taş koyabilirsiniz (at gibi atlayan taşa karşı araya girilemez). Kurtulmanın hiçbir yolu kalmamışsa şah mat olmuştur ve oyun biter. Oyun, şahınızı tehdit altında bırakacak hamleye zaten izin vermez.</li>
+        <li><strong>Özel hamleler.</strong> Rok, şahı ve bir kaleyi aynı hamlede oynamaktır: şah kaleye doğru iki kare gider, kale şahın üzerinden atlayıp yanına oturur. Şah ile kale daha önce hiç hamle yapmamış, aralarında taş olmamalı, şah şahta olmamalı ve geçtiği karelerde tehdit altında bulunmamalıdır. Geçerken alma (en passant), rakip piyonu ilk hamlesinde iki kare ilerleyip piyonunuzun yanına gelirse onu hemen sonraki hamlenizde sanki bir kare ilerlemiş gibi çapraz almanızdır. Terfi, piyonunuz son sıraya ulaştığında vezir, kale, fil ya da ata dönüşmesidir; oyun bir seçim penceresi açar.</li>
+        <li><strong>Beraberlik.</strong> Şahınız tehdit altında olmadığı hâlde hiçbir yasal hamleniz kalmadıysa buna pat denir ve oyun berabere biter. Aynı konum üçüncü kez ortaya çıkarsa, elli hamle boyunca taş alınmaz ve piyon oynanmazsa ya da tahtada mat yapmaya yetecek taş kalmazsa (örneğin yalnızca şah, şah ile fil veya şah ile at) oyun yine berabere sayılır. Bu oyunda bu durumların hepsi otomatik uygulanır.</li>
+        <li><strong>Kazanmak.</strong> Rakibin şahına mat yaparsanız oyunu kazanırsınız. Taş sayısı üstünlüğü kazanmak için yeterli değildir; önemli olan şahı kıstırmaktır. Bu yüzden tek bir vezirle bile oyun kaybedilebilir, az taşla da kazanılabilir.</li>
+      </ol>
+
+      <h2>Taşların değeri</h2>
+      <p>Takas yaparken hangi taşın ne kadar değerli olduğunu bilmek karar vermeyi kolaylaştırır. Yaygın olarak kullanılan yaklaşık değerler şöyledir: piyon 1, at 3, fil 3, kale 5, vezir 9 puan. Şahın değeri ölçülmez, çünkü onu kaybeden oyunu kaybeder. Bir kale yaklaşık bir hafif taş ile bir piyon kadar değerlidir; iki hafif taş (fil ve at) çoğu zaman bir kaleden ve piyondan daha güçlüdür. Bilgisayar rakip de benzer bir malzeme değerlendirmesi kullanır; ayrıca taşların tahtadaki konumuna küçük puanlar ekler: merkezdeki at, açık hatta duran kale ya da güvenli köşede duran şah daha iyi sayılır.</p>
+      <ul>
+        <li><strong>Piyon:</strong> Tek kare ileri, ilk hamlede iki kare ileri; çapraz ileri alır. Son sıraya ulaşınca terfi eder.</li>
+        <li><strong>At:</strong> "L" biçiminde hareket eder, diğer taşların üzerinden atlar; kapalı konumlarda çok güçlüdür.</li>
+        <li><strong>Fil:</strong> Yalnızca kendi renkli karelerinde çapraz gider; açık konumlarda uzun menzillidir.</li>
+        <li><strong>Kale:</strong> Açık sütunlarda ve oyun sonunda en etkili taşlardan biridir; rok yaparken şahı korur.</li>
+        <li><strong>Vezir:</strong> Kale ve filin birleşimidir; en güçlü taş olduğu için erken çıkarılırsa rakip tempo kazanır.</li>
+        <li><strong>Şah:</strong> Her yöne bir kare gider; oyun başında korunmalı, oyun sonunda ise aktif kullanılmalıdır.</li>
+      </ul>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Tıkla-tıkla:</strong> Taşa tıklayın ya da dokunun; gidebileceği kareler yeşil nokta, alabileceği taşlar kırmızı halka ile belirir. Işıklı kareye tıklayınca hamle oynanır. Başka bir kendi taşınıza tıklarsanız seçim o taşa geçer.</li>
+        <li><strong>Sürükle-bırak:</strong> Taşı fare ile ya da parmağınızla tutup hedef kareye bırakabilirsiniz. Taş bırakılmadan önce geçerli kareler gösterilir; geçersiz yere bırakırsanız taş yerinde kalır ve nedeni yazılır.</li>
+        <li><strong>Klavye:</strong> Ok tuşlarıyla tahtada gezin, Enter veya Boşluk ile taşı seçin, hedef karede yine Enter'a basın. Esc seçimi iptal eder. Her karenin ekran okuyucu etiketi "e4, beyaz piyon" gibidir.</li>
+        <li><strong>Piyon terfisi:</strong> Piyon son sıraya gidince vezir, kale, fil ve at seçenekleri gösterilir. Esc ile vazgeçip başka bir hamle seçebilirsiniz.</li>
+        <li><strong>Geri al:</strong> Bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda tek hamle geri gider.</li>
+        <li><strong>Tahtayı çevir:</strong> Siyah oynarken tahta kendiliğinden size göre çevrilir. İsterseniz düğmeyle istediğiniz an çevirebilirsiniz.</li>
+        <li><strong>Hamle listesi:</strong> Oynanan her hamle standart cebirsel gösterimle (örneğin Nf3, exd5, O-O, e8=Q+) listelenir.</li>
+        <li><strong>FEN ve PGN:</strong> FEN kopyala, tahtadaki konumu; PGN kopyala, tüm oyunu panonuza alır. "Konum yükle" bölümüne bir FEN ya da PGN yapıştırarak konumdan devam edebilirsiniz.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tarayıcınız desteklemiyorsa düğme gizlenir.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünür? Seviyeler arasındaki fark</h2>
+      <p>Bilgisayar rakip, alfa-beta budamalı minimax adı verilen klasik bir yöntemle çalışır. Bu yöntem, her iki tarafın da en iyi cevabı verdiğini varsayarak hamle ağacını belli bir derinliğe kadar gezer, sonunda ulaşılan konumları puanlar ve en yüksek puanı getiren hamleyi seçer. Puanlama, taşların değerine ve onların tahtadaki konumuna dayanır. Almalar zincirleme sürdüğü için hesap, "taş alma" hamlelerinde birkaç adım daha uzatılır; böylece bilgisayar bir taşı karşılıksız vermez. Tüm hesap ayrı bir işçi (Web Worker) içinde yapılır, bu sayede düşünürken sayfa donmaz ve geri al, yeni oyun gibi düğmeler çalışmaya devam eder.</p>
+      <ul>
+        <li><strong>Kolay:</strong> Yalnızca bir yarım hamle ileriyi görür, almaların devamını incelemez ve ara sıra rastgele bir hamle oynar. Kuralları yeni öğrenenler ve çocuklar için uygundur; basit tuzaklara düşer.</li>
+        <li><strong>Orta:</strong> İki yarım hamle ileriyi hesaplar; taş asmaz, basit takasları ve tek hamlelik mat tehditlerini görür. Düzenli oynayan bir amatörün rahatça pratik yapabileceği düzeydir.</li>
+        <li><strong>Zor:</strong> Üç yarım hamle ileriyi hesaplar ve alma zincirlerini daha derin inceler. Hesaplama süresi yaklaşık üç saniyeyi geçmez; yavaş bir cihazda süre dolarsa bir önceki derinliğin sonucu kullanılır. Bu seviye bile profesyonel bir satranç motoru değildir; uzun vadeli planlarda yenilebilir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-satranc-b" aria-label="Reklam"></div>
+
+      <h2>Açılış ipuçları</h2>
+      <p>Açılış, oyunun ilk on beş yirmi hamlesidir. Binlerce kuramsal varyant olsa da yeni başlayanlar için birkaç ilke yeterlidir:</p>
+      <ul>
+        <li><strong>Merkezi ele geçirin.</strong> e4 ya da d4 ile bir piyonu merkeze sürmek taşlarınıza alan açar ve rakibin merkezdeki hareketini kısıtlar.</li>
+        <li><strong>Hafif taşları çıkarın.</strong> At ve filleri erken geliştirin; at için genellikle merkeze bakan kareler (c3, f3, c6, f6), fil için açık çaprazlar iyidir.</li>
+        <li><strong>Erken rok yapın.</strong> Şahınızı güvenli bir köşeye alıp kaleyi merkeze yaklaştırır. Çoğu oyuncu ilk on hamle içinde rok yapar.</li>
+        <li><strong>Vezirle acele etmeyin.</strong> Vezir erken çıkarsa rakip hafif taşlarla onu kovalayarak tempo kazanır.</li>
+        <li><strong>Aynı taşı tekrar tekrar oynamayın.</strong> Açılışta her hamle yeni bir taşı geliştirmelidir; gerekçesiz piyon hamleleri de geri kalmanıza neden olur.</li>
+        <li><strong>Her hamleden önce rakibin tehdidine bakın.</strong> Son hamlesinin neyi tehdit ettiğini sormak, başlangıç düzeyindeki hataların büyük kısmını önler.</li>
+      </ul>
+      <p>Hamle listesinde ve bu yazıdaki örneklerde taş adları uluslararası gösterimle yazılır: N at, B fil, R kale, Q vezir, K şah; piyonun harfi yoktur. Kitaplarda ve satranç programlarında da aynı gösterim kullanılır. Bilinen açılış adlarını da tanıyın: <strong>İtalyan Oyunu</strong> (1.e4 e5 2.Nf3 Nc6 3.Bc4) hızlı gelişim ve merkez kontrolüne dayanır. <strong>İspanyol Oyunu</strong> (Ruy Lopez, 3.Bb5) at üzerinde baskı kurar. <strong>Sicilya Savunması</strong> (1.e4 c5), siyahın dengesiz ve keskin oyun aradığı yaygın bir cevaptır. <strong>Vezir Gambiti</strong> (1.d4 d5 2.c4) beyazın merkez için bir piyon teklif ettiği klasik bir sistemdir.</p>
+
+      <h2>Çoban matı ve korunma yolu</h2>
+      <p>Çoban matı, en kısa mat yollarından biridir: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#. Beyaz, vezir ve fili f7 karesine yönelterek siyahın en zayıf noktasını hedef alır. Korunmak kolaydır: 3...g6 ile veziri kovmak ya da 3...Qe7 gibi f7'yi koruyan bir hamle yapmak yeterlidir. Orta ve Zor seviyedeki bilgisayar tek hamlelik matı gördüğü için bu tuzağa düşmez; Kolay seviye düşebilir. Bu mat öncesi konumu denemek isterseniz "Konum yükle" bölümüne şu FEN metnini yapıştırabilirsiniz: r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4.</p>
+
+      <h2>Orta oyun taktikleri ve oyun sonu</h2>
+      <ul>
+        <li><strong>Çatal:</strong> Tek bir taşla iki ya da daha fazla taşa aynı anda saldırmak. Atın çatalı en bilinenidir; vezir ve kalenin de çatalı olur.</li>
+        <li><strong>Çivileme:</strong> Bir taşı, arkasındaki daha değerli taşın (çoğu zaman şahın) önünde sabitlemek; çivilenmiş taş hareket ederse arkasındaki taş açıkta kalır.</li>
+        <li><strong>Şiş:</strong> Çivilemenin tersi: değerli bir taşı tehdit edip kaçmaya zorlamak ve arkasındaki taşı almak.</li>
+        <li><strong>Keşif şahı:</strong> Bir taşı oynayıp arkasındaki başka taşın şah çekmesini sağlamak; oynanan taşla ikinci bir tehdit kurmak çok güçlüdür.</li>
+        <li><strong>Oyun sonunda şahı aktif kullanın.</strong> Taşlar azaldığında şah savunulacak bir hedef olmaktan çıkar, güçlü bir saldırı taşına dönüşür. Bu yüzden değerlendirme de şahı oyun sonunda merkeze çeker.</li>
+        <li><strong>Geçer piyonu itin.</strong> Önünde ve yan sütunlarda rakip piyon bulunmayan piyon, oyun sonunda terfiye gidebilir; rakibi onu durdurmaya mecbur bırakır.</li>
+        <li><strong>Karşıtlık:</strong> Şah ve piyon oyun sonlarında, şahlar karşı karşıya geldiğinde sırası gelenin geri çekilmek zorunda kalması karşıtlık (opposition) denen önemli bir kavramdır.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da hamle sınırı yok; tam ekran modunda da reklam göstermiyoruz.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır; hamleleriniz bir sunucuya iletilmez. Yalnızca bilgisayara karşı skorunuz bu cihazda saklanır.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da oyun çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile tahta sığar; dokunma, sürükleme ve klavye ile oynanır.</li>
+        <li><strong>Kurallar eksiksiz.</strong> Rok, geçerken alma, terfi, pat, üçlü tekrar ve elli hamle kuralı güvenilir bir açık kaynak satranç kütüphanesiyle (chess.js, BSD-2 lisanslı) denetlenir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Satrançta rok nasıl yapılır?</summary><p>Şahınızı seçin ve iki kare kale tarafına gidebileceğiniz kareye dokunun. Rok yalnızca şah ile ilgili kale daha önce hiç oynamadıysa, aralarında taş yoksa, şah şahta değilse ve şahın geçeceği karelerde rakip tehdidi yoksa mümkündür. Oyun, rok mümkün olduğunda hedef kareyi kendiliğinden gösterir.</p></details>
+        <details><summary>Geçerken alma (en passant) nedir?</summary><p>Rakip piyonu başlangıç karesinden iki kare ilerleyip sizin piyonunuzun hemen yanına gelirse, hemen sonraki hamlenizde onu bir kare ilerlemiş gibi çapraz alabilirsiniz. Bu hak yalnızca o hamlede geçerlidir. Oyun bu hamleyi mümkün olduğunda otomatik gösterir.</p></details>
+        <details><summary>Piyon son sıraya ulaşınca ne olur?</summary><p>Piyon terfi eder. Oyun size vezir, kale, fil ve at seçeneklerini gösteren bir pencere açar; seçtiğiniz taş piyonun yerini alır. Çoğu durumda en güçlü taş olan vezir seçilir; bazen at tercih edilir çünkü hemen şah çekebilir.</p></details>
+        <details><summary>Bilgisayarın üç seviyesi arasındaki fark nedir?</summary><p>Kolay seviye yalnızca bir yarım hamle ilerisini görür ve arada rastgele hamle yapar. Orta seviye iki, Zor seviye üç yarım hamle ilerisini hesaplar ve almaların sonucunu da biraz daha uzatarak inceler. Zor seviyede hesaplama süresi en fazla yaklaşık üç saniyedir. Bu bir profesyonel satranç motoru değil; başlangıç ve orta düzey oyunculara uygun bir rakiptir.</p></details>
+        <details><summary>Hamlemi geri alabilir miyim?</summary><p>Evet. Geri al düğmesi bilgisayara karşı oynarken sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda tek hamle geri alınır. Bilgisayar düşünürken de geri alabilirsiniz, hesaplama iptal edilir.</p></details>
+        <details><summary>Aynı cihazda iki kişi oynayabilir miyim?</summary><p>Evet. Oyun türü listesinden "İki kişilik" seçeneğini seçin. Beyaz ve siyah sırayla aynı tahtada oynar. İsterseniz her hamleden sonra tahtanın sıradaki oyuncuya göre çevrilmesini açabilirsiniz; telefon veya tableti iki oyuncu arasında paylaşmak için kullanışlıdır.</p></details>
+        <details><summary>Oyun neden berabere bitti?</summary><p>Dört durumda oyun otomatik berabere biter: sıradaki oyuncunun şahı tehdit altında olmadığı hâlde hiç yasal hamlesi kalmamışsa (pat), aynı konum üçüncü kez ortaya çıkarsa, elli hamle boyunca taş alınmaz ve piyon oynanmazsa ya da tahtada mat yapmaya yetecek taş kalmamışsa.</p></details>
+        <details><summary>Hamlelerim kaydediliyor mu, oyun internet gerektirir mi?</summary><p>Oyun sayfa yüklendikten sonra tamamen tarayıcınızda çalışır; hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı kazanma, kaybetme ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur ve istediğiniz an sıfırlayabilirsiniz.</p></details>
+        <details><summary>FEN ve PGN nedir, ne işe yarar?</summary><p>FEN, tahtadaki tek bir konumu satır olarak anlatan standart bir metindir. PGN ise oyunun tüm hamlelerini kaydeden standart bir biçimdir. Bu sayfadan her ikisini kopyalayabilir, başka bir satranç programına aktarabilir veya kendi FEN ya da PGN metninizi yapıştırıp konumu yükleyebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-satranc-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

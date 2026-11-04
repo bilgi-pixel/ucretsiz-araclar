@@ -32,3 +32,4 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | great-vibes / dancing-script / pacifico / caveat | latin + latin-ext woff2 | OFL-1.1 | Davetiye ve Kutlama Kartı Oluşturucu |
 | xlsx (SheetJS CE) | 0.20.3 | Apache-2.0 | Excel'i PDF'e Çevir |
 | lucide-static | 0.468.0 | ISC | Ücretsiz Logo Oluşturucu |
+| chess.js | 1.4.0 | BSD-2-Clause | Satranç |

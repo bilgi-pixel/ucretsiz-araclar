@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>DPI Hesaplama – Piksel cm Çevirme, PPI ve Baskı Boyutu Hesaplayıcı</title>
+  <meta name="description" content="DPI hesaplama: pikseli cm'ye, cm'yi piksele çevirin; ekran PPI'ını hesaplayın. A4, A5, 10x15 için gereken piksel tablosu. Ücretsiz, kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/dpi-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .dpi-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; border: 0; padding: 0; margin: 0 0 14px; }
+    .dpi-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .dpi-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .dpi-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .dpi-grid { grid-template-columns: 1fr 1fr; } .dpi-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .dpi-grid .ba-field { margin: 0; }
+    .dpi-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .dpi-chip { min-height: 40px; padding: 6px 14px; font: inherit; font-weight: 600; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: 999px; cursor: pointer; }
+    .dpi-chip:hover, .dpi-chip:focus-visible { border-color: var(--ba-primary); }
+    .dpi-chip[aria-pressed="true"] { border: 2px solid var(--ba-primary); background: var(--ba-primary-soft); padding: 5px 13px; }
+    .dpi-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .dpi-box h3 { margin: 0 0 8px; font-size: 1rem; }
+    .dpi-results { margin: 0; display: grid; gap: 4px; }
+    .dpi-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .dpi-row:last-child { border-bottom: 0; }
+    .dpi-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .dpi-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; }
+    .dpi-row.is-strong dd { font-weight: 700; font-size: 1.15rem; color: var(--ba-text); }
+    .conv-line { font-family: var(--ba-mono); font-size: .95rem; margin: 12px 0 0; overflow-wrap: anywhere; color: var(--ba-text-2); }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .dpi-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .dpi-sec { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--ba-border); }
+    .dpi-sec h3 { margin: 0 0 4px; font-size: 1.1rem; }
+    .dpi-sec h4 { margin: 14px 0 4px; font-size: .95rem; }
+    .dpi-small { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+    .ba-tool table, .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 8px; font-size: .95rem; }
+    .ba-tool th, .ba-tool td, .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: middle; }
+    .ba-tool th, .ba-content th { background: var(--ba-surface-2); }
+    .ba-tool td { white-space: nowrap; }
+    /* Dar ekranda örnek ekran tablosu satır kartına dönüşür: "Uygula" düğmesi yatay kaydırma gerektirmeden görünür. */
+    @media (max-width: 640px) {
+      .dpi-print th, .dpi-print td { padding: 6px 5px; font-size: .85rem; }
+      #devices-wrap table, #devices-wrap tbody { display: block; }
+      #devices-wrap thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      #devices-wrap tr { display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--ba-border); }
+      #devices-wrap td { padding: 2px 0; border: 0; white-space: nowrap; font-size: .9rem; }
+      #devices-wrap td:nth-of-type(1) { grid-column: 1 / 4; grid-row: 1; font-weight: 600; white-space: normal; font-size: 1rem; }
+      #devices-wrap td:nth-of-type(2) { grid-column: 1; grid-row: 2; }
+      #devices-wrap td:nth-of-type(3) { grid-column: 2; grid-row: 2; }
+      #devices-wrap td:nth-of-type(4) { grid-column: 3; grid-row: 2; }
+      #devices-wrap td:nth-of-type(4)::after { content: " PPI"; }
+      #devices-wrap td:nth-of-type(5) { grid-column: 4; grid-row: 1 / span 2; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"DPI Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/dpi-hesapla/"}
+  </script>
+  <script type="application/ld+json" id="faq-ld">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"3000 piksel 300 DPI'da kaç cm eder?","acceptedAnswer":{"@type":"Answer","text":"25,4 santimetre eder. 3000 pikseli 300'e bölünce 10 inç bulunur, 10 inç de 2,54 ile çarpılınca 25,4 cm olur. Aynı fotoğraf 150 DPI'da basılırsa boyut iki katına çıkar, yani 50,8 cm olur; ancak baskı daha yumuşak görünür."}},{"@type":"Question","name":"A4 baskı için kaç piksel gerekir?","acceptedAnswer":{"@type":"Answer","text":"300 DPI'da 2480 × 3508 piksel, 150 DPI'da 1240 × 1754 piksel gerekir. A4 21 × 29,7 cm olduğu için 21 cm'yi 2,54'e bölüp DPI ile çarparsınız. Kenarlara taşma payı eklenecekse ebadı o kadar büyük girin."}},{"@type":"Question","name":"DPI ile PPI arasında fark var mı?","acceptedAnswer":{"@type":"Answer","text":"Kavram olarak vardır: DPI yazıcının bir inçe bastığı nokta sayısı, PPI ise bir görüntünün ya da ekranın bir inçindeki piksel sayısıdır. Pratikte ikisi birbirinin yerine kullanılır ve piksel-santimetre hesabında aynı formül işler."}},{"@type":"Question","name":"150 DPI baskı için yeterli mi?","acceptedAnswer":{"@type":"Answer","text":"Poster, el ilanı ve duvar baskıları gibi biraz uzaktan bakılan işlerde çoğunlukla yeterlidir. Elde tutulan fotoğraf, kitap ve broşürde 300 DPI daha güvenli sonuç verir. Yazıcı ve kâğıt türüne göre değişebileceği için emin olmadığınızda matbaaya sorun."}},{"@type":"Question","name":"Düşük çözünürlüklü fotoğrafın DPI değerini değiştirerek büyütebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Dosyadaki DPI etiketini değiştirmek piksel eklemez; baskı boyutu büyüdükçe pikseller seyrelir ve görüntü bulanıklaşır. Yapay büyütme yöntemleri pikselleri çoğaltabilir ama gerçek detay üretemez. En iyi çözüm daha yüksek çözünürlüklü kaynak dosyayı bulmaktır."}},{"@type":"Question","name":"27 inç Full HD monitör kaç PPI eder?","acceptedAnswer":{"@type":"Answer","text":"Yaklaşık 81,59 PPI. Hesap, 1920 × 1080 çözünürlüğün köşegenindeki 2202,9 pikselin 27 inçe bölünmesiyle bulunur. Aynı çözünürlük 24 inçte yaklaşık 91,79 PPI verir; ekran küçüldükçe görüntü keskinleşir."}},{"@type":"Question","name":"Bir dosyanın DPI değerini nasıl görürüm?","acceptedAnswer":{"@type":"Answer","text":"Bu araç dosya okumaz, yalnızca hesap yapar. Windows'ta dosyaya sağ tıklayıp Özellikler, Ayrıntılar sekmesine baktığınızda yatay ve dikey çözünürlük değerlerini görebilirsiniz. Piksel boyutunu değiştirmek isterseniz Resim Boyutlandır aracını kullanabilirsiniz."}},{"@type":"Question","name":"Ondalıkları virgülle mi noktayla mı yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Virgül kullanın (25,4). Araç nokta işaretini binlik ayırıcı olarak yorumlar; yani \"3.000\" üç bin sayılır. İki alanda da yalnızca rakam ve virgül yazın, birim ya da harf eklemeyin."}},{"@type":"Question","name":"Girdiğim değerler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; değerler sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}</script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">DPI Hesaplama</span> (Piksel – cm Dönüştürücü)</h1>
+      <p class="lead">Pikseli santimetreye, santimetreyi piksele çevirin; fotoğrafınızın kaç cm basılacağını ve A4, A5, 10×15 gibi ebatlar için kaç piksel gerektiğini görün. Ekran PPI hesabı da dahil. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+
+      <fieldset class="dpi-modes">
+        <legend class="visually-hidden">Hesap türü</legend>
+        <label><input type="radio" name="mode" id="m-a" value="a" checked> Piksel → cm / inç</label>
+        <label><input type="radio" name="mode" id="m-b" value="b"> cm / mm / inç → piksel</label>
+        <label><input type="radio" name="mode" id="m-c" value="c"> Ekran PPI</label>
+      </fieldset>
+
+      <div id="panel-a">
+        <div class="dpi-grid c3">
+          <div class="ba-field"><label for="a-w">Genişlik (piksel)</label><input id="a-w" type="text" inputmode="decimal" autocomplete="off" value="3000"></div>
+          <div class="ba-field"><label for="a-h">Yükseklik (piksel, isteğe bağlı)</label><input id="a-h" type="text" inputmode="decimal" autocomplete="off" value="2000"></div>
+          <div class="ba-field"><label for="a-dpi">DPI</label><input id="a-dpi" type="text" inputmode="decimal" autocomplete="off" value="300">
+            <div class="dpi-chips" role="group" aria-label="Hızlı DPI seçimi" data-target="a-dpi">
+              <button type="button" class="dpi-chip" data-dpi="72" aria-pressed="false">72 DPI</button><button type="button" class="dpi-chip" data-dpi="96" aria-pressed="false">96 DPI</button><button type="button" class="dpi-chip" data-dpi="150" aria-pressed="false">150 DPI</button><button type="button" class="dpi-chip" data-dpi="300" aria-pressed="true">300 DPI</button>
+            </div></div>
+        </div>
+      </div>
+
+      <div id="panel-b" hidden>
+        <div class="dpi-grid c3">
+          <div class="ba-field"><label for="b-w">Genişlik</label><input id="b-w" type="text" inputmode="decimal" autocomplete="off" value="21"></div>
+          <div class="ba-field"><label for="b-h">Yükseklik (isteğe bağlı)</label><input id="b-h" type="text" inputmode="decimal" autocomplete="off" value="29,7"></div>
+          <div class="ba-field"><label for="b-unit">Birim</label><select id="b-unit"><option value="cm" selected>santimetre (cm)</option><option value="mm">milimetre (mm)</option><option value="in">inç</option></select></div>
+        </div>
+        <div class="dpi-grid" style="margin-top:12px">
+          <div class="ba-field"><label for="b-dpi">DPI</label><input id="b-dpi" type="text" inputmode="decimal" autocomplete="off" value="300">
+            <div class="dpi-chips" role="group" aria-label="Hızlı DPI seçimi" data-target="b-dpi">
+              <button type="button" class="dpi-chip" data-dpi="72" aria-pressed="false">72 DPI</button><button type="button" class="dpi-chip" data-dpi="96" aria-pressed="false">96 DPI</button><button type="button" class="dpi-chip" data-dpi="150" aria-pressed="false">150 DPI</button><button type="button" class="dpi-chip" data-dpi="300" aria-pressed="true">300 DPI</button>
+            </div></div>
+        </div>
+      </div>
+
+      <div id="panel-c" hidden>
+        <div class="dpi-grid c3">
+          <div class="ba-field"><label for="c-w">Genişlik (piksel)</label><input id="c-w" type="text" inputmode="decimal" autocomplete="off" value="1920"></div>
+          <div class="ba-field"><label for="c-h">Yükseklik (piksel)</label><input id="c-h" type="text" inputmode="decimal" autocomplete="off" value="1080"></div>
+          <div class="ba-field"><label for="c-d">Köşegen (inç)</label><input id="c-d" type="text" inputmode="decimal" autocomplete="off" value="27"></div>
+        </div>
+      </div>
+
+      <p class="dpi-note">Ondalık için virgül kullanın (25,4); nokta binlik ayırıcı sayılır (3.000). 1 inç = 2,54 cm kabul edilir.</p>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="dpi-box" aria-live="polite" hidden>
+        <h3 id="r-title">Sonuç</h3>
+        <dl class="dpi-results" id="r-rows"></dl>
+        <p class="conv-line" id="r-line"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <div id="devices-wrap" class="dpi-sec" hidden>
+        <h3>Örnek ekranlar ve PPI değerleri</h3>
+        <p class="dpi-note" style="margin-top:0">Tipik cihaz sınıfları. "Uygula" düğmesi değerleri yukarıdaki forma yazar.</p>
+        <table>
+          <thead><tr><th scope="col">Cihaz</th><th scope="col">Çözünürlük</th><th scope="col">Köşegen</th><th scope="col">PPI</th><th scope="col">İşlem</th></tr></thead>
+          <tbody id="devices"></tbody>
+        </table>
+      </div>
+
+      <div class="dpi-sec">
+        <h3>Hızlı cevap: fotoğrafım X piksel, kaç cm basılır?</h3>
+        <p class="dpi-note" style="margin-top:0">Fotoğrafın piksel boyutunu yazın; farklı baskı kalitelerinde ve standart ebatlarda ne olacağını görün.</p>
+        <div class="dpi-grid">
+          <div class="ba-field"><label for="q-w">Fotoğraf genişliği (piksel)</label><input id="q-w" type="text" inputmode="decimal" autocomplete="off" value="3000"></div>
+          <div class="ba-field"><label for="q-h">Fotoğraf yüksekliği (piksel)</label><input id="q-h" type="text" inputmode="decimal" autocomplete="off" value="2000"></div>
+        </div>
+        <div id="q-error" class="ba-error" role="alert"></div>
+        <div id="q-result" class="dpi-box" aria-live="polite" hidden>
+          <h3>Basılabilecek boyut</h3>
+          <dl class="dpi-results" id="q-rows"></dl>
+          <div>
+            <h4>Standart ebatlara kırparak doldurma</h4>
+            <dl class="dpi-results" id="q-papers"></dl>
+          </div>
+          <p class="conv-line" id="q-line"></p>
+          <div class="ba-actions"><button id="q-copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+          <p class="kdv-status" id="q-status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="dpi-sec">
+        <h3>Baskı için hazır tablo: gereken piksel</h3>
+        <p class="dpi-note" style="margin-top:0">Görselin genişlik × yükseklik piksel değerleri; kısa kenar önce yazılmıştır. Yatay baskıda sayıları ters çevirin.</p>
+        <table class="dpi-print">
+          <thead><tr><th scope="col">Baskı boyutu</th><th scope="col">150 DPI</th><th scope="col">300 DPI</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">A3 (29,7 × 42 cm)</th><td>1754 × 2480</td><td>3508 × 4961</td></tr>
+            <tr><th scope="row">A4 (21 × 29,7 cm)</th><td>1240 × 1754</td><td>2480 × 3508</td></tr>
+            <tr><th scope="row">A5 (14,8 × 21 cm)</th><td>874 × 1240</td><td>1748 × 2480</td></tr>
+            <tr><th scope="row">10 × 15 cm</th><td>591 × 886</td><td>1181 × 1772</td></tr>
+            <tr><th scope="row">13 × 18 cm</th><td>768 × 1063</td><td>1535 × 2126</td></tr>
+            <tr><th scope="row">Vesikalık (4,5 × 6 cm)</th><td>266 × 354</td><td>531 × 709</td></tr>
+            <tr><th scope="row">Biyometrik (5 × 6 cm)</th><td>295 × 354</td><td>591 × 709</td></tr>
+          </tbody>
+        </table>
+        <p class="dpi-note">Matbaalar çoğunlukla kenarlara 3 mm taşma payı ister; böyle bir iş için ebadı 6 mm büyük girin. Vesikalık ve biyometrik ölçüler kurumdan kuruma değişebilir, başvuracağınız yerin güncel şartını kontrol edin.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="dpi-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki üç seçenekten ihtiyacınıza uygun olanı seçin. "Piksel → cm / inç" fotoğrafın kaç santimetre basılacağını, "cm / mm / inç → piksel" belirli bir baskı ebadı için kaç piksel gerektiğini, "Ekran PPI" ise monitör, telefon ya da televizyonun piksel yoğunluğunu hesaplar.</li>
+        <li>Değerleri yazın. Piksel modunda genişliği, istiyorsanız yüksekliği girin; DPI için 72, 96, 150 ya da 300 düğmelerinden birine basın veya kendi değerinizi yazın. Yükseklik boş bırakılırsa yalnızca genişlik hesaplanır.</li>
+        <li>Sonuç siz yazdıkça altta belirir, ayrıca bir hesapla düğmesine basmanız gerekmez. Ölçüler santimetre, milimetre ve inç olarak birlikte gösterilir. "Sonucu kopyala" düğmesi tek cümlelik bir özeti panoya alır; bunu iş emrine ya da matbaaya yazdığınız e-postaya yapıştırabilirsiniz.</li>
+        <li>Elinizdeki fotoğrafın baskıya yetip yetmeyeceğini merak ediyorsanız "Hızlı cevap" kutusuna piksel boyutunu yazın. 300, 200 ve 150 DPI'daki baskı ölçüleri ile A4, A5, 10×15 gibi standart ebatlar için etkin DPI değeri listelenir.</li>
+        <li>Ondalık ayırıcı virgüldür (25,4). Nokta binlik ayırıcı sayılır; "3.000" yazarsanız üç bin okunur. Hatalı bir değer girerseniz sayfa neyin yanlış olduğunu ve nasıl düzelteceğinizi yazar.</li>
+      </ol>
+
+      <h2>DPI, PPI ve piksel nedir?</h2>
+      <p>Piksel, dijital bir görüntünün en küçük birimidir; her biri tek bir renk taşıyan küçük bir kare düşünebilirsiniz. Bir fotoğrafın boyutu "3000 × 2000 piksel" diye yazılıyorsa görüntü yatayda 3000, dikeyde 2000 noktadan oluşur ve toplamda altı milyon piksel, yani 6 megapiksel eder. DPI, "dots per inch" ifadesinin kısaltmasıdır ve bir inçlik uzunluğa kaç nokta sığdırıldığını anlatır. Yazıcı ve matbaa dünyasının dilidir. PPI ise "pixels per inch" demektir ve ekranda ya da dijital dosyada bir inçe düşen piksel sayısını ifade eder. Günlük kullanımda ikisi sık sık birbirinin yerine geçer; matematikleri aynıdır. Bu araç baskı hesaplarında DPI, ekran hesabında PPI sözcüğünü kullanır.</p>
+      <p>En çok karıştırılan nokta şudur: DPI, dosyanın içindeki piksel sayısını değiştirmez. 3000 × 2000 piksellik bir fotoğraf her zaman 6 megapikseldir. DPI yalnızca bu pikselleri kâğıda hangi sıklıkla yayacağınızı belirler. Yüksek DPI'da pikseller sıkı dizilir ve baskı küçük ama keskin olur; düşük DPI'da seyrek dizilir ve baskı büyür ama yumuşar. Dosyaya yazılmış DPI değeri ise yalnızca bir önerilen baskı yoğunluğu etiketidir; görüntü düzenleyicilerde "yeniden örnekleme" kapalıyken bu etiketi değiştirmek hiçbir pikseli değiştirmez.</p>
+
+      <h2>Piksel ile santimetre arasındaki formül</h2>
+      <p>Dönüşüm yalnızca üç adımlık bir hesaptır. Pikseli DPI'a bölerek inç, inci 2,54 ile çarparak santimetre elde edersiniz. Tersi için santimetreyi 2,54'e böler, DPI ile çarparsınız. Ekran yoğunluğunda ise çözünürlüğün köşegenindeki piksel sayısını, ekranın inç cinsinden köşegen ölçüsüne bölersiniz.</p>
+      <ul>
+        <li><strong>Piksel → cm:</strong> cm = piksel ÷ DPI × 2,54. Örnek: 3000 piksel, 300 DPI'da 10 inçtir; 10 × 2,54 = 25,4 cm.</li>
+        <li><strong>cm → piksel:</strong> piksel = cm ÷ 2,54 × DPI. Örnek: 21 cm, 300 DPI'da 8,268 inç eder; 8,268 × 300 = 2480,3, yani 2480 piksel gerekir.</li>
+        <li><strong>Ekran PPI:</strong> PPI = √(genişlik² + yükseklik²) ÷ köşegen. Örnek: 1920 × 1080 çözünürlüklü 27 inçlik monitörde köşegen piksel sayısı 2202,9'dur; 2202,9 ÷ 27 = 81,59 PPI.</li>
+      </ul>
+
+      <h2>Baskı için kaç DPI gerekir?</h2>
+      <p>Cevap, görsele ne kadar yakından bakılacağına bağlıdır. Kitap, broşür, kartvizit ve fotoğraf baskısı gibi elde tutulan işlerde 300 DPI yaygın kabul gören hedeftir; bu yoğunlukta gözün tek tek nokta seçmesi zordur. Poster, el ilanı ve duvara asılan orta boy baskılarda 150 DPI çoğu zaman yeterli görünür. Branda, billboard ve vitrin gibi uzaktan okunan işlerde 100 DPI'ın altı bile kabul edilebilir, çünkü izleyici metrelerce uzaktadır. Ekran ve web için 72 ya da 96 DPI sözü eski alışkanlıktan kalmadır; tarayıcı DPI etiketine bakmaz, yalnızca piksel sayısı önemlidir. Bunlar genel kabullerdir; yazıcınızın, kâğıdınızın ve matbaanızın istediği değer farklı olabilir, iş vermeden önce sorun.</p>
+
+      <div class="ba-ad" data-slot="dpi-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Ekran PPI'ı ne anlatır?</h2>
+      <p>Aynı çözünürlük farklı boyutlu ekranlarda farklı keskinlik verir. 24 inçlik bir Full HD monitör yaklaşık 92 PPI, 27 inçlik Full HD monitör yaklaşık 82 PPI, 27 inçlik 4K monitör ise yaklaşık 163 PPI yoğunluğundadır. Telefonlarda bu değer 400'ün üzerine çıkar; bu yüzden küçük ekranda bile yazılar tırtıksız görünür. "Ekran PPI" modundaki örnek tablo tipik cihaz sınıflarını gösterir; kendi cihazınız için çözünürlüğü ve köşegen ölçüsünü yazmanız yeterlidir. Üreticiler köşegeni yuvarladığı için gerçek değer bir iki PPI sapabilir. Windows'taki yüzde 125 ya da 150 ölçeklendirme ayarı PPI'ı değiştirmez; yalnızca arayüz öğelerinin ekranda ne kadar büyük çizileceğini belirler.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>72 DPI'lık görseli 300 DPI yapmak.</strong> Yeniden örnekleme yeni detay üretmez; var olan pikselleri yalnızca çoğaltıp yumuşatır. Baskıda keskinlik istiyorsanız en baştan yeterli piksele sahip kaynak dosya kullanın.</li>
+        <li><strong>Web görseli için DPI düşünmek.</strong> 1200 piksel genişliğindeki görsel, dosyasındaki DPI etiketi ne olursa olsun tarayıcıda aynı boyutta görünür.</li>
+        <li><strong>Ekran görüntüsünü doğrudan baskıya göndermek.</strong> 1920 × 1080 piksellik bir ekran görüntüsü 300 DPI'da yalnızca 16,3 × 9,1 cm eder.</li>
+        <li><strong>Yatay ve dikey ebadı karıştırmak.</strong> A4 dikeyde 21 × 29,7 cm'dir; yatay baskıda iki ölçü yer değiştirir ve gereken piksel sayıları da ters döner.</li>
+        <li><strong>Taşma payını unutmak.</strong> Kesim yapılan matbaa işlerinde genellikle her kenara 3 mm taşma payı gerekir. A4 için bu pay eklendiğinde 300 DPI'da yaklaşık 2551 × 3579 piksel gerekir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; yazdığınız değerler hiçbir sunucuya iletilmez, çerez ya da analiz kodu kullanılmaz.</li>
+        <li><strong>Üç hesap bir arada.</strong> Piksel-cm dönüşümü, ters yön ve ekran PPI'ı ayrı sayfalar arasında dolaşmadan tek yerde.</li>
+        <li><strong>Baskıcı gözüyle sonuç.</strong> Hazır ebat tablosu ve "fotoğrafım kaç cm basılır" kutusu, hesabı sizin yerinize standart ebatlara uygular.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>3000 piksel 300 DPI'da kaç cm eder?</summary><p>25,4 santimetre eder. 3000 pikseli 300'e bölünce 10 inç bulunur, 10 inç de 2,54 ile çarpılınca 25,4 cm olur. Aynı fotoğraf 150 DPI'da basılırsa boyut iki katına çıkar, yani 50,8 cm olur; ancak baskı daha yumuşak görünür.</p></details>
+        <details><summary>A4 baskı için kaç piksel gerekir?</summary><p>300 DPI'da 2480 × 3508 piksel, 150 DPI'da 1240 × 1754 piksel gerekir. A4 21 × 29,7 cm olduğu için 21 cm'yi 2,54'e bölüp DPI ile çarparsınız. Kenarlara taşma payı eklenecekse ebadı o kadar büyük girin.</p></details>
+        <details><summary>DPI ile PPI arasında fark var mı?</summary><p>Kavram olarak vardır: DPI yazıcının bir inçe bastığı nokta sayısı, PPI ise bir görüntünün ya da ekranın bir inçindeki piksel sayısıdır. Pratikte ikisi birbirinin yerine kullanılır ve piksel-santimetre hesabında aynı formül işler.</p></details>
+        <details><summary>150 DPI baskı için yeterli mi?</summary><p>Poster, el ilanı ve duvar baskıları gibi biraz uzaktan bakılan işlerde çoğunlukla yeterlidir. Elde tutulan fotoğraf, kitap ve broşürde 300 DPI daha güvenli sonuç verir. Yazıcı ve kâğıt türüne göre değişebileceği için emin olmadığınızda matbaaya sorun.</p></details>
+        <details><summary>Düşük çözünürlüklü fotoğrafın DPI değerini değiştirerek büyütebilir miyim?</summary><p>Dosyadaki DPI etiketini değiştirmek piksel eklemez; baskı boyutu büyüdükçe pikseller seyrelir ve görüntü bulanıklaşır. Yapay büyütme yöntemleri pikselleri çoğaltabilir ama gerçek detay üretemez. En iyi çözüm daha yüksek çözünürlüklü kaynak dosyayı bulmaktır.</p></details>
+        <details><summary>27 inç Full HD monitör kaç PPI eder?</summary><p>Yaklaşık 81,59 PPI. Hesap, 1920 × 1080 çözünürlüğün köşegenindeki 2202,9 pikselin 27 inçe bölünmesiyle bulunur. Aynı çözünürlük 24 inçte yaklaşık 91,79 PPI verir; ekran küçüldükçe görüntü keskinleşir.</p></details>
+        <details><summary>Bir dosyanın DPI değerini nasıl görürüm?</summary><p>Bu araç dosya okumaz, yalnızca hesap yapar. Windows'ta dosyaya sağ tıklayıp Özellikler, Ayrıntılar sekmesine baktığınızda yatay ve dikey çözünürlük değerlerini görebilirsiniz. Piksel boyutunu değiştirmek isterseniz Resim Boyutlandır aracını kullanabilirsiniz.</p></details>
+        <details><summary>Ondalıkları virgülle mi noktayla mı yazmalıyım?</summary><p>Virgül kullanın (25,4). Araç nokta işaretini binlik ayırıcı olarak yorumlar; yani "3.000" üç bin sayılır. İki alanda da yalnızca rakam ve virgül yazın, birim ya da harf eklemeyin.</p></details>
+        <details><summary>Girdiğim değerler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; değerler sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar matematiksel hesaptır ve 1 inç = 2,54 cm tanımına dayanır. Baskı kalitesi yazıcı, kâğıt ve izleme mesafesine göre değişir; iş vermeden önce matbaanın istediği çözünürlüğü ve taşma payını sorun.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../resim-boyutlandir/">Resim Boyutlandır</a></li>
+        <li><a href="../biyometrik-fotograf/">Biyometrik Fotoğraf Hazırlama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../en-boy-orani-hesapla/">En Boy Oranı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="dpi-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>En Boy Oranı Hesaplama – 16:9, 4:3, 4:5 Oran, Yeni Boyut ve Kırpma Hesabı</title>
+  <meta name="description" content="En boy oranı hesaplama: 1920x1080 kaç oran? Oranı koruyarak yeni boyutu bulun, görseli 4:5'e kırpınca kalan boyutu görün. Ücretsiz, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en-boy-orani-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .eb-sec { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--ba-border); }
+    .eb-sec:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+    .eb-sec h3 { margin: 0 0 4px; font-size: 1.1rem; }
+    .eb-sec h4 { margin: 14px 0 6px; font-size: .95rem; }
+    .eb-hint { font-size: .88rem; color: var(--ba-text-muted); margin: 0 0 12px; }
+    .eb-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .eb-grid { grid-template-columns: 1fr 1fr; } }
+    .eb-grid .ba-field { margin: 0; }
+    .eb-split { display: grid; gap: 16px; margin-top: 14px; }
+    @media (min-width: 760px) { .eb-split { grid-template-columns: 1fr 1fr; align-items: start; } }
+    .eb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .eb-chip { min-height: 44px; min-width: 56px; padding: 6px 14px; font: inherit; font-weight: 600; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: 999px; cursor: pointer; }
+    .eb-chip:hover, .eb-chip:focus-visible { border-color: var(--ba-primary); }
+    .eb-chip[aria-pressed="true"] { border: 2px solid var(--ba-primary); background: var(--ba-primary-soft); padding: 5px 13px; }
+    .eb-box { margin-top: 14px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .eb-box h4 { margin: 0 0 6px; }
+    .eb-big { margin: 0 0 6px; font-family: var(--ba-mono); font-size: 2rem; font-weight: 700; color: var(--ba-primary); line-height: 1.2; overflow-wrap: anywhere; }
+    .eb-results { margin: 0; display: grid; gap: 4px; }
+    .eb-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .eb-row:last-child { border-bottom: 0; }
+    .eb-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .eb-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; }
+    .eb-row.is-strong dd { font-weight: 700; font-size: 1.15rem; color: var(--ba-text); }
+    .eb-line { font-family: var(--ba-mono); font-size: .95rem; margin: 10px 0 0; overflow-wrap: anywhere; color: var(--ba-text-2); min-height: 1.3em; }
+    .eb-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .eb-figure { margin: 0; padding: 8px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .eb-figure svg { display: block; width: 100%; height: auto; max-height: 220px; }
+    .eb-figure figcaption { font-size: .85rem; color: var(--ba-text-muted); text-align: center; margin-top: 4px; }
+    .eb-outer { fill: rgba(123, 35, 49, .1); stroke: var(--ba-primary); stroke-width: 2; }
+    .eb-crop { fill: rgba(123, 35, 49, .28); stroke: var(--ba-primary); stroke-width: 2; stroke-dasharray: 6 4; }
+    .eb-text { fill: var(--ba-text); font-size: 16px; font-weight: 700; }
+    .eb-sizes { display: flex; flex-wrap: wrap; gap: 6px 8px; list-style: none; padding: 0; margin: 0; }
+    .eb-sizes li { margin: 0; padding: 4px 10px; border: 1px solid var(--ba-border); border-radius: 999px; font-family: var(--ba-mono); font-size: .88rem; }
+    .eb-small { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+    .ba-tool table, .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 8px; font-size: .95rem; }
+    .ba-tool th, .ba-tool td, .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: middle; }
+    .ba-tool th, .ba-content th { background: var(--ba-surface-2); }
+    /* Dar ekranda boyut tablosu satır kartına dönüşür: "Hesapla" düğmesi yatay kaydırma gerektirmeden görünür. */
+    @media (max-width: 640px) {
+      #sec-table table, #sec-table tbody { display: block; }
+      #sec-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      #sec-table tr { display: grid; grid-template-columns: auto 1fr auto; column-gap: 14px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--ba-border); }
+      #sec-table th, #sec-table td { padding: 2px 0; border: 0; background: none; }
+      #sec-table tbody th { grid-column: 1 / 3; grid-row: 1; }
+      #sec-table td:nth-of-type(1) { grid-column: 1; grid-row: 2; }
+      #sec-table td:nth-of-type(2) { grid-column: 2; grid-row: 2; }
+      #sec-table td:nth-of-type(3) { grid-column: 3; grid-row: 1 / span 2; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"En Boy Oranı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/en-boy-orani-hesapla/"}
+  </script>
+  <script type="application/ld+json" id="faq-ld">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"1920x1080 kaç orandır?","acceptedAnswer":{"@type":"Answer","text":"16:9'dur. 1920 ve 1080 sayıları en büyük ortak bölenleri olan 120'ye bölününce 16 ve 9 çıkar. Ondalık karşılığı 1,78'dir. Aynı oran 1280 × 720, 2560 × 1440 ve 3840 × 2160 çözünürlüklerinde de geçerlidir."}},{"@type":"Question","name":"16:9 oranında genişlik 1280 ise yükseklik kaç olur?","acceptedAnswer":{"@type":"Answer","text":"720 olur. Hesap 1280 × 9 ÷ 16 formülüyle yapılır. Araçta 16:9 düğmesine basıp yeni genişliğe 1280 yazarsanız yükseklik alanı otomatik olarak 720'yi gösterir."}},{"@type":"Question","name":"Instagram gönderi ve hikaye boyutu nedir?","acceptedAnswer":{"@type":"Answer","text":"Kare gönderiler için 1080 × 1080 (1:1), dikey gönderiler için 1080 × 1350 (4:5) yaygın kullanılır. Story ve Reels için 1080 × 1920 (9:16) önerilir. Platform boyutları değiştirebildiği için yayın öncesi güncel yardım sayfasına bakın."}},{"@type":"Question","name":"Görseli oranını bozmadan nasıl küçültürüm?","acceptedAnswer":{"@type":"Answer","text":"Önce oranı bu araçta bulun, sonra yeni genişliği yazıp aracın hesapladığı yüksekliği kullanın. Boyutlandırma için Resim Boyutlandır aracını açıp iki ölçüyü girerek dosyanızı oranı bozmadan küçültebilirsiniz."}},{"@type":"Question","name":"4000x3000'lik fotoğrafı 4:5'e kırpınca boyut ne olur?","acceptedAnswer":{"@type":"Answer","text":"2400 × 3000 piksel kalır. Fotoğraf hedeften daha geniş olduğu için yükseklik (3000) korunur, genişlik 3000 × 4 ÷ 5 = 2400 olur. Toplam 1600 piksel atılır; ortalı kırpmada her kenardan 800 piksel gider."}},{"@type":"Question","name":"1366x768 neden tam 16:9 değil?","acceptedAnswer":{"@type":"Answer","text":"Çünkü 1366 sayısı 16'ya tam bölünmez ve 768 ile ortak böleni yalnızca 2'dir; sadeleşmiş oran 683:384 çıkar. 16:9 ile aradaki fark yüzde 0,05 olduğu için günlük kullanımda yine de 16:9 kabul edilir. Araç hem gerçek orana hem de \"yaklaşık 16:9\" notuna yer verir."}},{"@type":"Question","name":"YouTube küçük resim boyutu nedir?","acceptedAnswer":{"@type":"Answer","text":"Yaygın öneri 1280 × 720 pikseldir ve oranı 16:9'dur. Küçük resim mobilde çok küçük görüneceği için yazıyı iri ve kontrastlı tutmanız iyi olur. Güncel sınırlar için YouTube yardım sayfasına bakın."}},{"@type":"Question","name":"Ondalıkları virgülle mi noktayla mı yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Virgül kullanın (29,7). Araç nokta işaretini binlik ayırıcı olarak yorumlar; yani \"1.920\" bin dokuz yüz yirmi sayılır. Alanlara yalnızca rakam ve virgül yazın, birim ya da harf eklemeyin."}},{"@type":"Question","name":"Girdiğim değerler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; değerler sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}</script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">En Boy Oranı Hesaplama</span></h1>
+      <p class="lead">Genişlik ve yüksekliği yazın; sadeleştirilmiş oranı (16:9 gibi), ondalık karşılığını ve en yakın bilinen oranı görün. Oranı koruyarak yeni boyut bulun, görseli 4:5 gibi bir orana kırpınca kalan boyutu öğrenin. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+
+      <div class="eb-sec" id="sec-ratio">
+        <h3>1. Oranı bul</h3>
+        <p class="eb-hint">Görselin, videonun ya da ekranın genişliğini ve yüksekliğini yazın. Ondalık için virgül kullanın (29,7); nokta binlik ayırıcı sayılır (1.920).</p>
+        <div class="eb-grid">
+          <div class="ba-field"><label for="r-w">Genişlik</label><input id="r-w" type="text" inputmode="decimal" autocomplete="off" value="1920"></div>
+          <div class="ba-field"><label for="r-h">Yükseklik</label><input id="r-h" type="text" inputmode="decimal" autocomplete="off" value="1080"></div>
+        </div>
+        <div id="r-error" class="ba-error" role="alert"></div>
+        <div id="r-result" class="eb-box" aria-live="polite" hidden>
+          <h4>Oran</h4>
+          <p class="eb-big" id="r-big"></p>
+          <dl class="eb-results" id="r-rows"></dl>
+          <p class="eb-line" id="r-line"></p>
+          <div class="ba-actions"><button id="r-copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+          <p class="eb-status" id="r-copy-status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="eb-sec" id="sec-new">
+        <h3>2. Oranı koruyarak yeni boyut</h3>
+        <p class="eb-hint">Hazır bir oran seçin ya da seçmeyin; seçmezseniz yukarıda yazdığınız oran kullanılır. Genişliği yazınca yükseklik, yüksekliği yazınca genişlik hesaplanır.</p>
+        <div class="eb-chips" id="chips" role="group" aria-label="Hazır oranlar">
+          <button type="button" class="eb-chip" data-a="16" data-b="9" aria-pressed="false">16:9</button>
+          <button type="button" class="eb-chip" data-a="4" data-b="3" aria-pressed="false">4:3</button>
+          <button type="button" class="eb-chip" data-a="1" data-b="1" aria-pressed="false">1:1</button>
+          <button type="button" class="eb-chip" data-a="9" data-b="16" aria-pressed="false">9:16</button>
+          <button type="button" class="eb-chip" data-a="21" data-b="9" aria-pressed="false">21:9</button>
+          <button type="button" class="eb-chip" data-a="3" data-b="2" aria-pressed="false">3:2</button>
+          <button type="button" class="eb-chip" data-a="4" data-b="5" aria-pressed="false">4:5</button>
+        </div>
+        <p class="eb-hint" id="active-label" aria-live="polite"></p>
+        <div class="eb-split">
+          <div>
+            <div class="eb-grid">
+              <div class="ba-field"><label for="n-w">Yeni genişlik</label><input id="n-w" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1280"></div>
+              <div class="ba-field"><label for="n-h">Yeni yükseklik</label><input id="n-h" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 720"></div>
+            </div>
+            <div id="n-error" class="ba-error" role="alert"></div>
+            <p class="eb-line" id="n-line" aria-live="polite"></p>
+            <h4>Sık kullanılan boyutlar</h4>
+            <ul class="eb-sizes" id="size-list" aria-label="Aktif orana göre sık kullanılan boyutlar"></ul>
+          </div>
+          <figure class="eb-figure">
+            <svg id="preview" viewBox="0 0 320 200" role="img" aria-label="Önizleme yok"></svg>
+            <figcaption id="preview-cap"></figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="eb-sec" id="sec-crop">
+        <h3>3. Kırpma hesabı</h3>
+        <p class="eb-hint">Mevcut görselin boyutunu yazın ve hedef oranı seçin; kırpma sonrası kalan boyutu ve kırpmadan sığdırmak için gereken tuvali görün.</p>
+        <div class="eb-grid">
+          <div class="ba-field"><label for="k-w">Görsel genişliği (piksel)</label><input id="k-w" type="text" inputmode="decimal" autocomplete="off" value="4000"></div>
+          <div class="ba-field"><label for="k-h">Görsel yüksekliği (piksel)</label><input id="k-h" type="text" inputmode="decimal" autocomplete="off" value="3000"></div>
+          <div class="ba-field"><label for="k-preset">Hedef oran</label>
+            <select id="k-preset">
+              <option value="4:5" selected>4:5 (Instagram dikey)</option>
+              <option value="1:1">1:1 (kare)</option>
+              <option value="16:9">16:9 (yatay video)</option>
+              <option value="9:16">9:16 (Story, Reels, TikTok)</option>
+              <option value="4:3">4:3</option>
+              <option value="3:4">3:4</option>
+              <option value="3:2">3:2</option>
+              <option value="2:3">2:3</option>
+              <option value="21:9">21:9 (ultra geniş)</option>
+              <option value="1.91:1">1,91:1 (bağlantı görseli)</option>
+              <option value="ozel">Özel oran…</option>
+            </select></div>
+        </div>
+        <div id="k-custom" class="eb-grid" style="margin-top:12px" hidden>
+          <div class="ba-field"><label for="k-ra">Hedef oran: genişlik</label><input id="k-ra" type="text" inputmode="decimal" autocomplete="off" value="4"></div>
+          <div class="ba-field"><label for="k-rb">Hedef oran: yükseklik</label><input id="k-rb" type="text" inputmode="decimal" autocomplete="off" value="5"></div>
+        </div>
+        <div id="k-error" class="ba-error" role="alert"></div>
+        <div class="eb-split">
+          <div id="k-result" class="eb-box" aria-live="polite" hidden style="margin-top:0">
+            <h4>Kırpma sonucu</h4>
+            <dl class="eb-results" id="k-rows"></dl>
+            <p class="eb-line" id="k-line"></p>
+            <div class="ba-actions"><button id="k-copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+            <p class="eb-status" id="k-copy-status" aria-live="polite"></p>
+          </div>
+          <figure class="eb-figure">
+            <svg id="crop-svg" viewBox="0 0 320 200" role="img" aria-label="Kırpma önizlemesi: dış çerçeve mevcut görsel, kesikli alan kalan bölüm"></svg>
+            <figcaption>Düz çerçeve mevcut görsel, kesikli alan kırpma sonrası kalan bölümdür.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="eb-sec" id="sec-table">
+        <h3>4. Hazır boyutlar: sosyal medya, video ve ekran</h3>
+        <p class="eb-hint">"Hesapla" düğmesi seçtiğiniz boyutu yukarıdaki oran bulucuya aktarır.</p>
+        <table>
+          <thead><tr><th scope="col">Kullanım</th><th scope="col">Boyut (piksel)</th><th scope="col">Oran</th><th scope="col">İşlem</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">YouTube video (Full HD)</th><td>1920 × 1080</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="1920" data-h="1080" aria-label="YouTube video (Full HD) boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">YouTube video (4K)</th><td>3840 × 2160</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="3840" data-h="2160" aria-label="YouTube video (4K) boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">YouTube küçük resim</th><td>1280 × 720</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="1280" data-h="720" aria-label="YouTube küçük resim boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">YouTube Shorts</th><td>1080 × 1920</td><td>9:16</td><td><button type="button" class="ba-btn eb-small" data-w="1080" data-h="1920" aria-label="YouTube Shorts boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Instagram kare gönderi</th><td>1080 × 1080</td><td>1:1</td><td><button type="button" class="ba-btn eb-small" data-w="1080" data-h="1080" aria-label="Instagram kare gönderi boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Instagram dikey gönderi</th><td>1080 × 1350</td><td>4:5</td><td><button type="button" class="ba-btn eb-small" data-w="1080" data-h="1350" aria-label="Instagram dikey gönderi boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Instagram Story ve Reels</th><td>1080 × 1920</td><td>9:16</td><td><button type="button" class="ba-btn eb-small" data-w="1080" data-h="1920" aria-label="Instagram Story ve Reels boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">TikTok video</th><td>1080 × 1920</td><td>9:16</td><td><button type="button" class="ba-btn eb-small" data-w="1080" data-h="1920" aria-label="TikTok video boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Facebook ve bağlantı önizleme görseli</th><td>1200 × 630</td><td>yaklaşık 1,91:1</td><td><button type="button" class="ba-btn eb-small" data-w="1200" data-h="630" aria-label="Facebook ve bağlantı önizleme görseli boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">HD (720p)</th><td>1280 × 720</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="1280" data-h="720" aria-label="HD 720p boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Full HD (1080p)</th><td>1920 × 1080</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="1920" data-h="1080" aria-label="Full HD 1080p boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">2K / QHD</th><td>2560 × 1440</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="2560" data-h="1440" aria-label="2K QHD boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">4K UHD</th><td>3840 × 2160</td><td>16:9</td><td><button type="button" class="ba-btn eb-small" data-w="3840" data-h="2160" aria-label="4K UHD boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Ultra geniş ekran</th><td>3440 × 1440</td><td>yaklaşık 21:9 (43:18)</td><td><button type="button" class="ba-btn eb-small" data-w="3440" data-h="1440" aria-label="Ultra geniş ekran boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Dizüstü ekran</th><td>1920 × 1200</td><td>16:10 (8:5)</td><td><button type="button" class="ba-btn eb-small" data-w="1920" data-h="1200" aria-label="Dizüstü ekran boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Eski ekran ve sunum</th><td>1024 × 768</td><td>4:3</td><td><button type="button" class="ba-btn eb-small" data-w="1024" data-h="768" aria-label="Eski ekran ve sunum boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+            <tr><th scope="row">Fotoğraf makinesi</th><td>6000 × 4000</td><td>3:2</td><td><button type="button" class="ba-btn eb-small" data-w="6000" data-h="4000" aria-label="Fotoğraf makinesi boyutunu oran hesaplayıcıya aktar">Hesapla</button></td></tr>
+          </tbody>
+        </table>
+        <p class="eb-hint">Platformlar önerdikleri boyutları zaman zaman değiştirir. Yayın öncesinde ilgili platformun güncel yardım sayfasına bakın.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-boy-orani-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Oranı bul" bölümüne görselin, videonun ya da ekranın genişliğini ve yüksekliğini yazın; örneğin 1920 ve 1080. Sadeleştirilmiş oran (16:9), ondalık karşılığı (1,78), yönü ve en yakın bilinen oran anında görünür. Ondalıklı ölçülerde virgül kullanın: 21 × 29,7 cm yazarsanız 70:99 bulunur.</li>
+        <li>Oranı koruyarak yeni boyut istiyorsanız "Oranı koruyarak yeni boyut" bölümüne geçin. 16:9, 4:3, 1:1, 9:16, 21:9, 3:2 ya da 4:5 düğmelerinden birini seçebilir veya hiçbirini seçmeyip yukarıda yazdığınız oranı kullanabilirsiniz. Yeni genişliği yazınca yükseklik, yeni yüksekliği yazınca genişlik hesaplanır. Yandaki dikdörtgen oranı canlı olarak çizer.</li>
+        <li>Bir görseli belirli bir orana kırpacaksanız "Kırpma hesabı" bölümüne mevcut piksel boyutunu yazın ve hedef oranı seçin. Kırpma sonrası kalan boyut, atılan piksel miktarı, ortalı kırpmada başlangıç noktası ve kırpmadan sığdırmak için gereken tuval ölçüsü gösterilir.</li>
+        <li>Sayfanın altındaki tabloda YouTube, Instagram, TikTok, Facebook ve ekran çözünürlükleri için yaygın boyutlar listelenir. "Hesapla" düğmesi seçtiğiniz boyutu oran bulucuya aktarır.</li>
+        <li>"Sonucu kopyala" düğmeleri tek cümlelik bir özeti panoya alır; bunu not defterinize, tasarımcınıza gönderdiğiniz mesaja ya da iş emrine yapıştırabilirsiniz.</li>
+      </ol>
+
+      <h2>En boy oranı nedir?</h2>
+      <p>En boy oranı, bir görüntünün genişliğinin yüksekliğine oranıdır ve genellikle iki sayı arasına iki nokta konarak yazılır. 16:9 demek, her 16 birim genişliğe 9 birim yükseklik düşüyor demektir. Oran görüntünün şeklini anlatır; çözünürlük ise ayrıntı miktarını. 1920 × 1080 ile 1280 × 720 piksellik iki görüntünün ikisi de 16:9'dur, ama biri diğerinden çok daha fazla piksele sahiptir. Bir görseli yeniden boyutlandırırken oranı korumazsanız görüntü yatayda ya da dikeyde gerilir; daireler oval, yüzler basık ya da uzun görünür. Bu yüzden boyut değiştirirken önce oranı sabitlemek, sonra tek bir ölçü vermek en güvenli yoldur.</p>
+
+      <h2>Oran nasıl hesaplanır?</h2>
+      <p>Oranı bulmak için genişlik ve yükseklik, en büyük ortak bölenleriyle (EBOB) sadeleştirilir. 1920 ve 1080'in EBOB'u 120'dir; 1920 ÷ 120 = 16 ve 1080 ÷ 120 = 9 olduğundan oran 16:9 çıkar. 1080 × 1350 için EBOB 270'tir ve sonuç 4:5'tir. Ondalık karşılık ise genişliğin yüksekliğe bölünmesidir: 16 ÷ 9 = 1,78. Yeni boyut hesabında formül şöyledir: yeni yükseklik = yeni genişlik × oranın yüksekliği ÷ oranın genişliği. Genişliği 1280 piksel olan 16:9'luk görselin yüksekliği 1280 × 9 ÷ 16 = 720 pikseldir.</p>
+      <p>Bazı çözünürlükler düzgün sadeleşmez. Birçok dizüstü ekranın 1366 × 768 çözünürlüğü tam olarak 683:384 oranındadır; ama pratikte 16:9 olarak anılır, çünkü fark yüzde 0,05 gibi gözle görülmeyecek bir değerdir. Araç bu durumda hem gerçek sadeleştirilmiş oranı hem de "yaklaşık 16:9" notunu gösterir. Ondalıklı girişlerde, örneğin 21 × 29,7 cm yazdığınızda ölçüler önce tam sayıya ölçeklenir (210 ve 297), sonra sadeleştirilir ve 70:99 elde edilir.</p>
+
+      <h2>Yaygın oranlar ve kullanım alanları</h2>
+      <ul>
+        <li><strong>16:9.</strong> Yatay video, televizyon, YouTube ve Full HD ile 4K ekranların standardıdır.</li>
+        <li><strong>4:3.</strong> Eski televizyonların, klasik sunumların ve birçok tabletin oranıdır; kareye yakın bir görünüm verir.</li>
+        <li><strong>1:1.</strong> Kare gönderiler, profil görselleri ve uygulama simgeleri için kullanılır.</li>
+        <li><strong>9:16.</strong> Dikey tam ekran videolar; Instagram Story ve Reels, TikTok ve YouTube Shorts bu orandadır.</li>
+        <li><strong>4:5.</strong> Instagram'da dikey gönderiler için yaygın oran; akışta kareden daha fazla yer kaplar.</li>
+        <li><strong>3:2.</strong> Geleneksel 35 mm film ve birçok fotoğraf makinesinin sensör oranıdır; 10 × 15 cm baskı da bu orandadır.</li>
+        <li><strong>21:9.</strong> Ultra geniş monitörlerde ve sinema formatlı videolarda görülür. Gerçekte 3440 × 1440 ekranın oranı 43:18'dir; pazarlamada 21:9 diye anılır.</li>
+        <li><strong>16:10.</strong> Birçok dizüstü ve ofis monitörü 1920 × 1200 gibi çözünürlüklerle bu orandadır; sadeleşmiş hâli 8:5'tir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="en-boy-orani-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Kırpma hesabı nasıl çalışır?</h2>
+      <p>Bir görseli farklı orana getirmenin iki yolu vardır: kırpmak ya da çevresine boşluk ekleyerek tuvali büyütmek. Kırpmada kaynak görüntü hedeften daha genişse yükseklik korunur ve genişlik azaltılır; daha darsa genişlik korunur ve yükseklik azaltılır. 4000 × 3000 piksellik bir fotoğrafı 4:5'e kırpmak istediğinizi düşünün. Kaynak oran 1,33, hedef oran 0,8 olduğundan görüntü hedeften geniştir; yükseklik 3000 olarak kalır, genişlik 3000 × 4 ÷ 5 = 2400 piksele iner. Toplam 1600 piksel, yani genişliğin yüzde 40'ı atılır; ortalı kırpmada her kenardan 800 piksel gider.</p>
+      <p>Kırpmak görüntünün bir bölümünü kalıcı olarak kesmek demektir. Önemli bir yüz ya da nesne kenara yakınsa kırpma çerçevesini ortalamak yerine kaydırmanız gerekir; aracın verdiği başlangıç noktası ortalı kırpma içindir ve size referans sağlar. Kırpmak istemiyorsanız tuval seçeneğini kullanın: aynı görseli 4000 × 5000 piksellik 4:5 bir tuvalin ortasına yerleştirir, üstte ve altta birer 1000 piksel boşluk bırakırsınız. Bu boşluğu düz renk ya da bulanık arka planla doldurabilirsiniz. Kırpma sonrası kalan boyutlar tam sayı olmadığında araç değeri aşağı yuvarlar; böylece kırpma çerçevesi hiçbir zaman görselin dışına taşmaz.</p>
+
+      <h2>Sosyal medya ve video için ipuçları</h2>
+      <ul>
+        <li><strong>Önce oran, sonra piksel.</strong> Platformlar yüklediğiniz dosyayı yeniden sıkıştırır ve boyutlandırır. Doğru oranda yüklerseniz beklenmedik kırpma ve siyah şeritlerden kurtulursunuz.</li>
+        <li><strong>Güvenli alan bırakın.</strong> Dikey videolarda üst ve alt kenarlarda uygulama arayüzü bulunur. Önemli yazıyı kenarlardan uzak tutun; kenar payı platforma göre değişir.</li>
+        <li><strong>Küçük resmi 16:9 hazırlayın.</strong> YouTube küçük resimleri için yaygın öneri 1280 × 720 pikseldir; mobilde küçüldüğü için yazıyı iri tutun.</li>
+        <li><strong>Boyutlar değişebilir.</strong> Platformlar önerilerini güncelleyebilir. Tablodaki değerleri başlangıç noktası olarak alın, yayın öncesi platformun yardım sayfasını kontrol edin.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Yalnızca genişliği değiştirmek.</strong> Tasarım programında genişliği değiştirip yüksekliği elle yazmak oranı bozar. Bu araçtaki hesabı kullanarak iki ölçüyü birlikte girin.</li>
+        <li><strong>Çözünürlüğü oran sanmak.</strong> Full HD bir çözünürlüktür; oranı 16:9'dur. Aynı oranda çok farklı çözünürlükler bulunur.</li>
+        <li><strong>Yatay ve dikey ölçüyü karıştırmak.</strong> 16:9 ile 9:16 aynı sayılardır ama biri yatay, biri dikeydir. Önizleme dikdörtgeni yönü hemen gösterir.</li>
+        <li><strong>Kırpılmış görseli büyütmek.</strong> Kırpma pikselleri atar; sonradan büyütürseniz kalite düşer. Hedef boyuta ihtiyacınız varsa kırpmadan önce kaynağın yeterince büyük olup olmadığını kontrol edin.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; yazdığınız değerler hiçbir sunucuya iletilmez, çerez ya da analiz kodu kullanılmaz.</li>
+        <li><strong>Dört iş bir arada.</strong> Oran bulma, oranı koruyarak boyutlandırma, kırpma hesabı ve hazır boyut tablosu için ayrı sayfalar gezmeniz gerekmez.</li>
+        <li><strong>Canlı önizleme.</strong> Oran dikdörtgeni siz yazdıkça çizilir; kırpmada neyin kaldığı kesikli çerçeveyle gösterilir.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>1920x1080 kaç orandır?</summary><p>16:9'dur. 1920 ve 1080 sayıları en büyük ortak bölenleri olan 120'ye bölününce 16 ve 9 çıkar. Ondalık karşılığı 1,78'dir. Aynı oran 1280 × 720, 2560 × 1440 ve 3840 × 2160 çözünürlüklerinde de geçerlidir.</p></details>
+        <details><summary>16:9 oranında genişlik 1280 ise yükseklik kaç olur?</summary><p>720 olur. Hesap 1280 × 9 ÷ 16 formülüyle yapılır. Araçta 16:9 düğmesine basıp yeni genişliğe 1280 yazarsanız yükseklik alanı otomatik olarak 720'yi gösterir.</p></details>
+        <details><summary>Instagram gönderi ve hikaye boyutu nedir?</summary><p>Kare gönderiler için 1080 × 1080 (1:1), dikey gönderiler için 1080 × 1350 (4:5) yaygın kullanılır. Story ve Reels için 1080 × 1920 (9:16) önerilir. Platform boyutları değiştirebildiği için yayın öncesi güncel yardım sayfasına bakın.</p></details>
+        <details><summary>Görseli oranını bozmadan nasıl küçültürüm?</summary><p>Önce oranı bu araçta bulun, sonra yeni genişliği yazıp aracın hesapladığı yüksekliği kullanın. Boyutlandırma için Resim Boyutlandır aracını açıp iki ölçüyü girerek dosyanızı oranı bozmadan küçültebilirsiniz.</p></details>
+        <details><summary>4000x3000'lik fotoğrafı 4:5'e kırpınca boyut ne olur?</summary><p>2400 × 3000 piksel kalır. Fotoğraf hedeften daha geniş olduğu için yükseklik (3000) korunur, genişlik 3000 × 4 ÷ 5 = 2400 olur. Toplam 1600 piksel atılır; ortalı kırpmada her kenardan 800 piksel gider.</p></details>
+        <details><summary>1366x768 neden tam 16:9 değil?</summary><p>Çünkü 1366 sayısı 16'ya tam bölünmez ve 768 ile ortak böleni yalnızca 2'dir; sadeleşmiş oran 683:384 çıkar. 16:9 ile aradaki fark yüzde 0,05 olduğu için günlük kullanımda yine de 16:9 kabul edilir. Araç hem gerçek orana hem de "yaklaşık 16:9" notuna yer verir.</p></details>
+        <details><summary>YouTube küçük resim boyutu nedir?</summary><p>Yaygın öneri 1280 × 720 pikseldir ve oranı 16:9'dur. Küçük resim mobilde çok küçük görüneceği için yazıyı iri ve kontrastlı tutmanız iyi olur. Güncel sınırlar için YouTube yardım sayfasına bakın.</p></details>
+        <details><summary>Ondalıkları virgülle mi noktayla mı yazmalıyım?</summary><p>Virgül kullanın (29,7). Araç nokta işaretini binlik ayırıcı olarak yorumlar; yani "1.920" bin dokuz yüz yirmi sayılır. Alanlara yalnızca rakam ve virgül yazın, birim ya da harf eklemeyin.</p></details>
+        <details><summary>Girdiğim değerler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; değerler sunucuya gitmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Tablodaki platform boyutları yaygın önerilerdir ve platformlar tarafından değiştirilebilir. Yayın öncesinde ilgili platformun güncel yardım sayfasını kontrol edin.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../resim-boyutlandir/">Resim Boyutlandır</a></li>
+        <li><a href="../resim-kirp/">Resim Kırp</a></li>
+        <li><a href="../dpi-hesapla/">DPI Hesaplama</a></li>
+        <li><a href="../oran-oranti-hesapla/">Oran Orantı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-boy-orani-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Online Piyano Çal – Ücretsiz Sanal Piyano (kurulumsuz)</title>
+  <meta name="description" content="Online piyano çalın: 2-3 oktav klavye, bilgisayar tuşları ve dokunmatik ekranla çalma, piyano-org-sinüs sesi, sustain, melodi öğren modu ve kayıt. Ücretsiz, kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/online-piyano/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Piyanoya özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .pn-hud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 640px; margin: 0 auto 12px; }
+    .pn-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .pn-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .pn-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.1rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; overflow-wrap: anywhere; }
+    /* Klavye: dar ekranda yatay kaydırılır (tuş başına en az 34 px) */
+    .pn-board { background: #24272c; border-radius: var(--ba-radius); padding: 12px 10px 10px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+    .pn-board:focus-visible { outline: 3px solid var(--ba-accent); outline-offset: 2px; }
+    .pn-keys { position: relative; height: 190px; min-width: calc(var(--n, 14) * 34px); -webkit-user-select: none; user-select: none; }
+    .pn-whites { display: flex; height: 100%; }
+    .pn-blacks { position: absolute; left: 0; right: 0; top: 0; height: 62%; pointer-events: none; }
+    .pn-key { font: inherit; border: 0; padding: 0; margin: 0; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; touch-action: pan-x; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+    .pn-key.white { flex: 1 1 0; min-width: 0; background: linear-gradient(#fbfaf7, #ebe7df); border: 1px solid #8e8a82; border-top: 0; border-radius: 0 0 6px 6px; color: #33363c; padding-bottom: 8px; }
+    .pn-key.black { position: absolute; top: 0; height: 100%; background: linear-gradient(#3a3c42, #121316); border-radius: 0 0 5px 5px; color: #e6e7e9; padding-bottom: 6px; pointer-events: auto; box-shadow: 0 3px 5px rgba(0, 0, 0, .55); }
+    .pn-lab { font-family: var(--ba-mono); font-size: .68rem; line-height: 1.1; font-weight: 600; pointer-events: none; }
+    .pn-key.black .pn-lab { font-size: .56rem; }
+    .pn-key.white.is-target { background: linear-gradient(#fff0bd, #f0b429); }
+    .pn-key.black.is-target { background: linear-gradient(#f0b429, #a87606); color: #1b1d21; }
+    .pn-key.white.is-down { background: linear-gradient(#f4cfd7, #d58a9d); }
+    .pn-key.black.is-down { background: linear-gradient(#b4566a, #5e1a25); }
+    .pn-key.white.is-ok { background: linear-gradient(#d6f3df, #58b37a); }
+    .pn-key.black.is-ok { background: linear-gradient(#58b37a, #2b7a4a); }
+    .pn-key.white.is-wrong { background: linear-gradient(#f9d0cd, #d9534f); }
+    .pn-key.black.is-wrong { background: linear-gradient(#d9534f, #8f2420); }
+    .pn-quick { margin-top: 14px; }
+    .game-box .ba-actions { justify-content: center; }
+    .game-box .ba-btn[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .game-box .ba-btn.rec-on { background: var(--ba-danger); border-color: var(--ba-danger); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .game-box .ba-btn[aria-pressed="true"], :root:not([data-theme="light"]) .game-box .pn-seg button[aria-pressed="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .game-box .ba-btn[aria-pressed="true"], :root[data-theme="dark"] .game-box .pn-seg button[aria-pressed="true"] { color: #1a0d10; }
+    .pn-hint { max-width: 640px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .pn-panel { max-width: 640px; margin: 16px auto 0; padding: 14px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .pn-panel h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .pn-panel p { margin: 8px 0 0; font-size: .92rem; }
+    .pn-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pn-seg button { font: inherit; font-size: .92rem; min-height: 44px; padding: 6px 12px; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); cursor: pointer; touch-action: manipulation; }
+    .pn-seg button:hover { border-color: var(--ba-primary); }
+    .pn-seg button[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .pn-progress { height: 10px; border-radius: 5px; background: var(--ba-border); overflow: hidden; margin-top: 10px; }
+    .pn-progress div { height: 100%; width: 0; background: var(--ba-primary); transition: width .2s; }
+    .pn-panel .ba-actions { margin-top: 10px; }
+    .game-box .ba-options { max-width: 640px; margin-left: auto; margin-right: auto; }
+    .ba-field input[type="range"] { width: 100%; accent-color: var(--ba-primary); }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .pn-keys { height: min(46vh, 340px); }
+    /* Sayfada kahraman alanı sıkıştırılır: piyano ilk ekranda görünsün. */
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Online Piyano – Bilişim Ajans","description":"Tarayıcıda çalan ücretsiz sanal piyano: 2-3 oktav klavye, bilgisayar klavyesi ve dokunmatik çalma, piyano, org ve sinüs sesi, sustain, melodi öğren modu ve kayıt.","applicationCategory":"Game","genre":"Music","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/online-piyano/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Online piyano nasıl çalınır?","acceptedAnswer":{"@type":"Answer","text":"Ekrandaki tuşlara fareyle tıklayabilir, dokunmatik ekranda parmağınızla basabilir ya da bilgisayar klavyesini kullanabilirsiniz. A S D F G H J K L ; tuşları beyaz, W E T Y U O P tuşları siyah tuşları çalar."}},
+  {"@type":"Question","name":"Hangi bilgisayar tuşu hangi notayı çalar?","acceptedAnswer":{"@type":"Answer","text":"Orta sıradaki A tuşu klavyedeki ilk Do notasını, S Re'yi, D Mi'yi, F Fa'yı, G Sol'ü, H La'yı, J Si'yi çalar; K, L ve ; tuşları bir sonraki oktavın Do, Re ve Mi notalarına karşılık gelir. Üst sıradaki W E T Y U O P tuşları aradaki diyez notalarını verir."}},
+  {"@type":"Question","name":"Sesim gelmiyorsa ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcılar ses motorunu yalnızca bir tıklama ya da tuş basışından sonra başlatır; önce bir tuşa basın. Ardından cihazınızın ses düzeyini, sessiz modunu ve sayfadaki Ses düzeyi çubuğunu kontrol edin. Bluetooth kulaklıkta kısa bir gecikme olabilir."}},
+  {"@type":"Question","name":"Sustain ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Sustain, gerçek piyanodaki sağ pedal gibi çalışır: açıkken tuşu bıraksanız bile nota sönmeye devam eder. Sustain düğmesiyle açıp kapatabilir ya da klavyede Boşluk tuşunu basılı tutarak geçici olarak kullanabilirsiniz."}},
+  {"@type":"Question","name":"Melodi öğren modu nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Listeden bir melodi seçtiğinizde sıradaki tuş sarı yanar. Doğru tuşa basınca bir sonraki notaya geçersiniz; yanlış basarsanız tuş kısa süre kırmızı yanar ve ilerleme olmaz. Melodiyi Dinle düğmesiyle önce dinleyebilirsiniz."}},
+  {"@type":"Question","name":"Kaydettiğim notalar nereye gidiyor?","acceptedAnswer":{"@type":"Answer","text":"Hiçbir yere gitmez. Kayıt yalnızca sayfanın belleğinde durur, indirilmez ve sunucuya gönderilmez. Sayfayı yenilediğinizde ya da kapattığınızda silinir."}},
+  {"@type":"Question","name":"Telefonda ve tablette piyano çalabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Çoklu dokunmayı destekler, aynı anda birden fazla tuşa basabilirsiniz. Dar ekranlarda klavye yatay kaydırılır; Oktav düğmeleri ya da klavyeyi sürüklemek farklı aralıkları gösterir."}},
+  {"@type":"Question","name":"Piyano sesleri gerçek piyano kaydı mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sesler tarayıcının Web Audio özelliğiyle anında üretilir; indirilen bir ses dosyası kullanılmaz. Bu sayede sayfa küçüktür, hızlı açılır ve internet olmadan da çalışır; ancak ses gerçek bir kuyruklu piyanonun yerini tutmaz."}},
+  {"@type":"Question","name":"Online piyano ücretsiz mi, kayıt gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Tamamen ücretsizdir. Kayıt, indirme, eklenti ya da e-posta adresi gerekmez; sayfayı açıp çalmaya başlayabilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Online Piyano Çal – Ücretsiz Sanal Piyano</h1>
+      <p class="lead">Piyanoyu kurulum, üyelik ve indirme olmadan doğrudan tarayıcınızda çalın. Ekrandaki tuşlara tıklayın, bilgisayar klavyenizi ya da dokunmatik ekranınızı kullanın; ses tipini seçin, sustain açın, melodi öğrenin ve çaldıklarınızı kaydedip dinleyin.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu piyanonun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Online piyano alanı</h2>
+      <div class="pn-hud" aria-label="Piyano bilgileri">
+        <div class="pn-stat"><span>Son nota</span><strong id="hud-last">—</strong></div>
+        <div class="pn-stat"><span>Klavye aralığı</span><strong id="hud-range">C4 – B5</strong></div>
+        <div class="pn-stat"><span>Kayıt (nota)</span><strong id="hud-rec">—</strong></div>
+      </div>
+
+      <div class="pn-board" id="board" tabindex="0" role="group" aria-label="Piyano klavyesi. Bilgisayar klavyesinde A S D F G H J K L ve noktalı virgül tuşları beyaz, W E T Y U O P tuşları siyah tuşları çalar. Z ve X oktavı değiştirir. Boşluk tuşu sustain pedalıdır.">
+        <div class="pn-keys" id="keys"></div>
+      </div>
+
+      <div class="ba-actions pn-quick">
+        <button type="button" class="ba-btn" id="btn-oct-down" aria-label="Oktavı bir aşağı kaydır (Z tuşu)">Oktav −</button>
+        <button type="button" class="ba-btn" id="btn-oct-up" aria-label="Oktavı bir yukarı kaydır (X tuşu)">Oktav +</button>
+        <button type="button" class="ba-btn" id="btn-sustain" aria-pressed="false">Sustain</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+      <p class="pn-hint">Ses, ilk tuşa bastığınızda başlar (tarayıcı kuralı). Bilgisayar klavyesi: <strong>A S D F G H J K L ;</strong> beyaz, <strong>W E T Y U O P</strong> siyah tuşlar; <strong>Z / X</strong> oktav, <strong>Boşluk</strong> sustain. Türkçe klavyede ; tuşunun yerinde Ş vardır.</p>
+      <p id="audio-note" class="ba-note" hidden></p>
+
+      <div class="pn-panel" aria-labelledby="h-melodi">
+        <h3 id="h-melodi">Melodi öğren</h3>
+        <div class="pn-seg" id="melody-list" role="group" aria-label="Melodi seçimi"></div>
+        <p id="lesson-status">Bir melodi seçin.</p>
+        <div class="pn-progress" id="lesson-progress" role="progressbar" aria-label="Melodi ilerlemesi" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0"><div id="lesson-bar"></div></div>
+        <div class="ba-actions">
+          <button type="button" class="ba-btn" id="btn-listen" disabled>Melodiyi dinle</button>
+          <button type="button" class="ba-btn" id="btn-lesson-reset" disabled>Baştan başla</button>
+          <button type="button" class="ba-btn" id="btn-lesson-off" disabled>Serbest çalmaya dön</button>
+        </div>
+      </div>
+
+      <div class="pn-panel" aria-labelledby="h-kayit">
+        <h3 id="h-kayit">Kaydet ve oynat</h3>
+        <div class="ba-actions">
+          <button type="button" class="ba-btn" id="btn-rec" aria-pressed="false">Kaydı başlat</button>
+          <button type="button" class="ba-btn" id="btn-play" disabled>Kaydı oynat</button>
+          <button type="button" class="ba-btn" id="btn-clear" disabled>Kaydı sil</button>
+        </div>
+        <p id="rec-info">Henüz kayıt yok.</p>
+      </div>
+
+      <div class="ba-options">
+        <div class="ba-field"><span id="l-sound">Ses tipi</span>
+          <div class="pn-seg" role="group" aria-labelledby="l-sound">
+            <button type="button" data-sound="piano" aria-pressed="true">Piyano</button>
+            <button type="button" data-sound="organ" aria-pressed="false">Org</button>
+            <button type="button" data-sound="sine" aria-pressed="false">Sinüs</button>
+          </div></div>
+        <div class="ba-field"><span id="l-labels">Tuş etiketleri</span>
+          <div class="pn-seg" role="group" aria-labelledby="l-labels">
+            <button type="button" data-labels="none" aria-pressed="false">Gizle</button>
+            <button type="button" data-labels="intl" aria-pressed="true">C D E</button>
+            <button type="button" data-labels="sol" aria-pressed="false">Do Re Mi</button>
+            <button type="button" data-labels="keys" aria-pressed="false">Bilgisayar tuşu</button>
+          </div></div>
+        <div class="ba-field"><span id="l-octaves">Klavye boyutu</span>
+          <div class="pn-seg" role="group" aria-labelledby="l-octaves">
+            <button type="button" data-octaves="2" aria-pressed="true">2 oktav</button>
+            <button type="button" data-octaves="3" aria-pressed="false">3 oktav</button>
+          </div></div>
+        <div class="ba-field"><label for="opt-volume">Ses düzeyi: <span id="volume-val">%70</span></label>
+          <input type="range" id="opt-volume" min="0" max="100" step="1" value="70"></div>
+      </div>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-online-piyano-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Online piyano nedir?</h2>
+      <p>Online piyano, gerçek bir klavyeye ihtiyaç duymadan tarayıcınızda nota çalmanızı sağlayan sanal bir piyanodur. Bu sayfadaki klavye 2 ya da 3 oktav genişliğindedir; beyaz ve siyah tuşlarına fareyle, dokunmatik ekranda parmaklarınızla ya da bilgisayar klavyenizin harf tuşlarıyla basabilirsiniz. Piyano öğrenmeye yeni başlayan biri için notaların yerini keşfetmek, müzisyen biri için bir melodiyi hızlıca denemek, çocuklar için ise sadece eğlenmek amacıyla kullanılabilir.</p>
+      <p>Sayfa tamamen bilgisayarınızda ya da telefonunuzda çalışır. Sesler önceden kaydedilmiş dosyalardan değil, tarayıcının ses motoruyla anlık olarak üretilir; hiçbir şey indirilmez, hiçbir bilgi sunucuya gönderilmez. Ayarlarınız yalnızca tarayıcınızın yerel depolama alanında saklanır, kaydettiğiniz notalar ise sadece sayfanın belleğinde durur ve sayfayı kapattığınızda silinir. Piyano alanı reklamsızdır; reklamlar yalnızca sayfa içeriğinin aralarında yer alır.</p>
+
+      <h2>Online piyano nasıl çalınır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Bir tuşa basın.</strong> Tarayıcılar sesi yalnızca kullanıcı bir şeye tıkladıktan sonra başlatmaya izin verir. Klavyedeki herhangi bir tuşa tıklamanız ya da bilgisayar klavyesinden bir harfe basmanız ses motorunu uyandırır; bundan sonra her nota anında duyulur.</li>
+        <li><strong>Ses tipini seçin.</strong> "Piyano", "Org" ve "Sinüs" arasından zevkinize uygun olanı seçin. Piyano sesi tuş basılı kalsa bile zamanla söner; org ve sinüs sesi tuşu bıraktığınız ana kadar sürer.</li>
+        <li><strong>Etiketleri açın.</strong> Tuşların üzerinde nota adlarını C D E olarak, Do Re Mi olarak ya da hangi bilgisayar tuşuna karşılık geldiklerini görebilirsiniz. İsterseniz etiketleri tamamen gizleyip kulağınıza güvenebilirsiniz.</li>
+        <li><strong>Akor ve melodi deneyin.</strong> Dokunmatik ekranda ya da bilgisayar klavyesinde aynı anda birden fazla tuşa basabilirsiniz. Üç tuşa birlikte basarak ilk akorlarınızı çalın.</li>
+        <li><strong>Kaydedin ve dinleyin.</strong> "Kaydı başlat"a basıp çalın, ardından "Kaydı oynat" ile kendi çaldığınız notaları baştan dinleyin. Kayıt yalnızca bellekte tutulur.</li>
+      </ol>
+
+      <h2>Bilgisayar klavyesiyle piyano çalmak</h2>
+      <p>Bilgisayar klavyesi iki sıralı bir piyano gibi düzenlenmiştir. Alt sıradaki A, S, D, F, G, H, J, K, L ve ; tuşları beyaz tuşlara, üst sıradaki W, E, T, Y, U, O ve P tuşları ise aralarındaki siyah tuşlara karşılık gelir. Siyah tuşlar gerçek klavyedeki gibi her beyaz tuş çiftinin arasında bulunmadığı için üst sırada iki boşluk vardır: D ile F arasında ve J ile K arasında siyah tuş yoktur, çünkü Mi ile Fa ve Si ile Do zaten bir yarım ses uzaklıktadır. Bu düzen müzik yazılımlarında çok yaygın olduğundan başka programlara da kolayca alışırsınız.</p>
+      <ul>
+        <li><strong>A S D F G H J:</strong> klavyedeki ilk oktavın Do, Re, Mi, Fa, Sol, La ve Si notaları.</li>
+        <li><strong>K L ;</strong> bir sonraki oktavın Do, Re ve Mi notaları.</li>
+        <li><strong>W E T Y U O P:</strong> Do♯, Re♯, Fa♯, Sol♯, La♯, Do♯ (üst oktav) ve Re♯ (üst oktav) diyez notaları.</li>
+        <li><strong>Z ve X:</strong> klavye aralığını bir oktav aşağı ya da yukarı kaydırır.</li>
+        <li><strong>Boşluk:</strong> basılı tutulduğu sürece sustain pedalı gibi çalışır.</li>
+      </ul>
+      <p>Türkçe klavyede noktalı virgülün bulunduğu fiziksel tuş Ş harfidir; piyano tuş konumuna göre çalıştığı için o tuşu da kullanabilirsiniz. Çalarken tuşu bırakma anınız da önemlidir: tuşu çabuk bırakmak notayı keser, basılı tutmak notanın sürmesini sağlar.</p>
+
+      <h2>Ses tipleri, sustain ve ses düzeyi</h2>
+      <h3>Piyano, org ve sinüs</h3>
+      <p>Piyano sesinde bir temel ses ile birkaç üst harmonik birlikte çalar; üst harmonikler temel sesten daha hızlı söner, böylece ses vuruş anında parlak, sonra yumuşak olur. Alçak notalar yüksek notalardan daha uzun yankılanır. Org sesinde harmonikler sabit kalır ve ses tuşu bıraktığınız ana kadar kesintisiz sürer. Sinüs ise harmoniksiz, yalın bir sestir; notaların frekansını kulaklarla ayırt etmek ya da ses deneyleri yapmak için uygundur.</p>
+      <h3>Sustain pedalı</h3>
+      <p>Gerçek piyanoda sağ pedal, ses tellerini susturan tamponları kaldırır ve basılı tuşları bıraksanız bile sesin devam etmesini sağlar. Buradaki Sustain düğmesi aynı işi yapar; açık olduğunda bıraktığınız tuşların sesi doğal sönme süresine kadar duyulmaya devam eder. Boşluk tuşunu basılı tutarak da geçici sustain kullanabilirsiniz. Akorları birbirine bağlarken ve yavaş melodilerde etkisi çok belirgindir.</p>
+      <h3>Ses düzeyi</h3>
+      <p>Ses düzeyi çubuğu yalnızca bu sayfanın sesini ayarlar. Ses motoru çok sayıda notanın üst üste binmesinde sesin bozulmasını önleyen bir sınırlayıcıdan geçer; yine de kulaklık kullanıyorsanız sesi düşük bir seviyeden başlatmanızı öneririz.</p>
+
+      <h2>Melodi öğren modu</h2>
+      <p>Melodi öğren bölümünde beş kısa parça vardır: Do majör gam, Do majör arpej, Twinkle, Twinkle, Little Star, Neşeye Övgü (Beethoven) ve Mary Had a Little Lamb. Hepsi kamu malıdır ya da bu sayfa için yazılmış alıştırma dizisidir. Bir melodi seçtiğinizde klavye ilgili oktava döner ve çalmanız gereken ilk tuş sarı yanar. Doğru tuşa bastığınızda tuş kısa süre yeşil yanar ve sıradaki nota işaretlenir; yanlış tuşa basarsanız tuş kırmızı yanar, ilerleme olmaz ve yanlış basış sayacı bir artar.</p>
+      <p>Önce "Melodiyi dinle" düğmesiyle parçayı baştan sona dinleyebilirsiniz. Acele etmeyin: sıradaki notaya basmadan önce tuşun yerini bulmanız yeterlidir, süre sınırı ya da puan baskısı yoktur. Gam ve arpej, parmak alıştırması için uygundur; Twinkle ve Mary ise yalnızca beş altı nota kullandığı için ilk melodi olarak idealdir. Neşeye Övgü biraz daha uzundur ve el konumunuzu sabit tutmayı gerektirir.</p>
+
+      <h2>Kaydet ve oynat</h2>
+      <p>Kayıt özelliği, çaldığınız her notanın zamanını ve süresini sayfanın belleğine yazar. "Kaydı oynat" dediğinizde notalar aynı sırayla ve aynı aralıklarla yeniden çalınır; böylece hatalarınızı fark edebilir, fikirlerinizi hızlıca deneyebilirsiniz. Kayıt bir ses dosyası olarak indirilmez ve hiçbir yere gönderilmez; sayfayı yenilediğinizde silinir. Yeni bir kayıt başlatmak önceki kaydın yerine geçer.</p>
+
+      <div class="ba-ad" data-slot="oyun-online-piyano-b" aria-label="Reklam"></div>
+
+      <h2>Piyano klavyesi nasıl düzenlenir?</h2>
+      <p>Piyano klavyesi, 12 notalık bir kalıbın tekrarından oluşur: yedi beyaz tuş (Do, Re, Mi, Fa, Sol, La, Si) ve beş siyah tuş. Siyah tuşlar iki ve üç tuşluk gruplar halinde dizilir; iki siyah tuşun hemen solundaki beyaz tuş her zaman Do'dur. Bu ipucu, gözleriniz klavyede kaybolduğunda yerinizi bulmanızı sağlar. Bir Do'dan bir sonraki Do'ya kadar olan aralığa oktav denir ve sesin frekansı oktav boyunca iki katına çıkar.</p>
+      <p>Notaların yanındaki sayı hangi oktavda olduklarını gösterir. Klavyenin ortasındaki Do, "orta Do" ya da C4'tür; bu sayfanın ilk açılışında klavye C4 ile başlar. Uluslararası kullanılan ayarda La4 notasının frekansı 440 Hz'dir; piyanonun standart 88 tuşlu klavyesi La0'dan Do8'e uzanır. Siyah tuşlar beyaz tuşların arasındaki yarım sesleri verir: bir beyaz tuşun hemen sağındaki siyah tuş o notanın diyezi, hemen solundaki siyah tuş ise bemolüdür. Do♯ ile Re♭ klavyede aynı tuştur.</p>
+      <p>Do Re Mi adları Orta Çağ'da bir Latince ilahinin dizelerinin ilk hecelerinden türetilmiştir ve genellikle Guido d'Arezzo'ya atfedilir. Anglo-Sakson dünyada ve çoğu müzik yazılımında ise notalar C, D, E, F, G, A, B harfleriyle gösterilir. Bu sayfada iki adlandırmayı da etiket olarak seçebilirsiniz.</p>
+
+      <h2>Yeni başlayanlar için çalışma ipuçları</h2>
+      <ul>
+        <li><strong>Küçük başlayın.</strong> Önce yalnızca beyaz tuşlarda Do majör gamını çalın. Siyah tuşlar sonradan eklenir.</li>
+        <li><strong>Yavaş çalın.</strong> Doğru notayı bulmak hızdan önce gelir. Hızı kulağınız ve parmaklarınız birbirine alıştıktan sonra artırın.</li>
+        <li><strong>Etiketleri azaltın.</strong> İlk günlerde tuş etiketleri yardımcı olur; birkaç gün sonra "Gizle"yi deneyip melodileri ezberden çalmayı zorlayın.</li>
+        <li><strong>Akor kurun.</strong> Do, Mi ve Sol'e aynı anda basarak Do majör akoru elde edersiniz. Her akoru bir önceki ile bağlamak için sustain'i kullanın.</li>
+        <li><strong>Ritim için metronom kullanın.</strong> Düzenli çalmak için sitemizdeki <a href="../../metronom/">metronom aracı</a> işinizi görür.</li>
+        <li><strong>Kısa ve düzenli çalışın.</strong> Günde on beş dakika, haftada bir saatlik uzun denemeden çok daha etkilidir.</li>
+        <li><strong>Gerçek piyanoyu hedefleyin.</strong> Online piyano bir başlangıç ve eğlence aracıdır; tuşların ağırlığı, dinamik farkı ve pedal hissi için ilerledikçe gerçek bir enstrümana geçmek en doğrusudur.</li>
+      </ul>
+
+      <h2>Piyanonun kısa tarihi</h2>
+      <p>Piyano, 1700 civarında İtalya'da Floransa'daki Medici sarayında çalışan Bartolomeo Cristofori tarafından icat edilen bir enstrümandır. Daha önceki klavsen, tuşa ne kadar sert basılırsa basılsın hep aynı şiddette ses çıkarıyordu. Cristofori'nin buluşu, tuşa basış hızına göre hem yumuşak hem gür ses çıkarabildiği için "piano e forte" yani "hafif ve gür" anlamına gelen bir adla anıldı. Zamanla adı kısalıp piyano oldu. 18. ve 19. yüzyıllarda demir çerçeve, daha geniş ses aralığı ve gelişmiş mekanizmalarla bugünkü hâline yaklaştı; Mozart, Beethoven, Chopin gibi bestecilerin eserleri bu gelişimle birlikte şekillendi. Bugün klasik müzikten cazza, pop'tan film müziğine kadar hemen her türde kullanılıyor.</p>
+
+      <h2>Bu piyanoda ses nasıl üretiliyor?</h2>
+      <p>Sayfa, tarayıcıların kendi ses özelliği olan Web Audio'yu kullanır. Bastığınız her nota için birkaç salınımlı ses üreteci oluşturulur; bunların frekansları notanın frekansına ve katlarına ayarlanır, ardından bir ses zarfı sesin yumuşakça başlamasını ve bitmesini sağlar. Hiçbir ses dosyası indirilmez, bu yüzden sayfa küçüktür ve internetiniz olmasa bile çalışır. Dezavantajı, sesin kuyruklu bir piyano ya da profesyonel bir dijital piyanonun örneklenmiş sesi kadar zengin olmamasıdır. Bunun karşılığında anında açılır, gecikmesi çok düşüktür ve hiçbir izleme ya da veri toplama içermez.</p>
+
+      <h2>Neden Bilişim Ajans online piyanosu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, bir tuşa basın; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Klavye, fare ve dokunmatik birlikte çalışır.</strong> Çoklu dokunmayı destekler; 360 piksel genişliğindeki telefonlarda klavye yatay kaydırılarak kullanılır.</li>
+        <li><strong>Reklamsız piyano alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; tuşların ve düğmelerin yanında asla görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca ayarlarınız kendi cihazınızda saklanır; kayıtlarınız hiçbir yere gitmez.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da çalabilirsiniz; siteyi uygulama olarak kurmak da mümkündür.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Online piyano nasıl çalınır?</summary><p>Ekrandaki tuşlara fareyle tıklayabilir, dokunmatik ekranda parmağınızla basabilir ya da bilgisayar klavyesini kullanabilirsiniz. A S D F G H J K L ; tuşları beyaz, W E T Y U O P tuşları siyah tuşları çalar. Z ve X tuşları klavyenin oktavını değiştirir.</p></details>
+        <details><summary>Hangi bilgisayar tuşu hangi notayı çalar?</summary><p>Orta sıradaki A tuşu klavyedeki ilk Do notasını, S Re'yi, D Mi'yi, F Fa'yı, G Sol'ü, H La'yı, J Si'yi çalar; K, L ve ; tuşları bir sonraki oktavın Do, Re ve Mi notalarına karşılık gelir. Üst sıradaki W E T Y U O P tuşları aradaki diyez notalarını verir. "Tuş etiketleri" ayarında "Bilgisayar tuşu"nu seçerek harfleri tuşların üzerinde görebilirsiniz.</p></details>
+        <details><summary>Sesim gelmiyorsa ne yapmalıyım?</summary><p>Tarayıcılar ses motorunu yalnızca bir tıklama ya da tuş basışından sonra başlatır; önce bir tuşa basın. Ardından cihazınızın ses düzeyini, sessiz modunu ve sayfadaki Ses düzeyi çubuğunu kontrol edin. iPhone'da yan sessiz anahtarı kapalı olmalıdır. Bluetooth kulaklıklarda kısa bir gecikme olabilir.</p></details>
+        <details><summary>Sustain ne işe yarar?</summary><p>Sustain, gerçek piyanodaki sağ pedal gibi çalışır: açıkken tuşu bıraksanız bile nota sönmeye devam eder. Sustain düğmesiyle açıp kapatabilir ya da klavyede Boşluk tuşunu basılı tutarak geçici olarak kullanabilirsiniz.</p></details>
+        <details><summary>Melodi öğren modu nasıl çalışır?</summary><p>Listeden bir melodi seçtiğinizde sıradaki tuş sarı yanar. Doğru tuşa basınca bir sonraki notaya geçersiniz; yanlış basarsanız tuş kısa süre kırmızı yanar ve ilerleme olmaz. "Melodiyi dinle" düğmesiyle önce parçayı dinleyebilirsiniz. Aynı melodiye yeniden tıklarsanız mod kapanır ve serbest çalmaya dönersiniz.</p></details>
+        <details><summary>Kaydettiğim notalar nereye gidiyor?</summary><p>Hiçbir yere gitmez. Kayıt yalnızca sayfanın belleğinde durur, indirilmez ve sunucuya gönderilmez. Sayfayı yenilediğinizde ya da kapattığınızda silinir.</p></details>
+        <details><summary>Telefonda ve tablette piyano çalabilir miyim?</summary><p>Evet. Çoklu dokunmayı destekler, aynı anda birden fazla tuşa basabilirsiniz. Dar ekranlarda klavye yatay kaydırılır; Oktav düğmeleri ya da klavyeyi yana sürüklemek farklı aralıkları gösterir. Telefonu yatay çevirirseniz tuşlar daha geniş olur.</p></details>
+        <details><summary>Piyano sesleri gerçek piyano kaydı mı?</summary><p>Hayır. Sesler tarayıcının Web Audio özelliğiyle anında üretilir; indirilen bir ses dosyası kullanılmaz. Bu sayede sayfa küçüktür, hızlı açılır ve internet olmadan da çalışır; ancak ses gerçek bir kuyruklu piyanonun yerini tutmaz.</p></details>
+        <details><summary>Online piyano ücretsiz mi, kayıt gerekir mi?</summary><p>Tamamen ücretsizdir. Kayıt, indirme, eklenti ya da e-posta adresi gerekmez; sayfayı açıp çalmaya başlayabilirsiniz. Giderler yalnızca sayfadaki reklamlarla karşılanır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu piyano hiçbir kişisel veri toplamaz. Ayarlarınız yalnızca tarayıcınızın yerel depolama alanında durur, kaydınız yalnızca sayfanın belleğindedir ve hiçbiri bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar ve araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dizi-hafiza/">Dizi Hafıza</a></li>
+        <li><a href="../ucan-kus/">Uçan Kuş</a></li>
+        <li><a href="../../metronom/">Metronom</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-online-piyano-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

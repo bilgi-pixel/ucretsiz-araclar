@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hız Koşusu Oyna – Ücretsiz Online Sonsuz Koşu Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Hız Koşusu: kedinizle engellerin üstünden zıplayın, uçan nesnelerin altından eğilerek geçin. Hızlanan sonsuz koşu, gece-gündüz geçişi, en yüksek skor. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/hiz-kosusu/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .kc-hud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 720px; margin: 0 auto 12px; }
+    .kc-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .kc-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .kc-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; }
+    .kc-stage { position: relative; width: 100%; max-width: 720px; margin: 0 auto; aspect-ratio: 2 / 1; border-radius: var(--ba-radius); overflow: hidden; background: #ece5dc; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .kc-stage canvas { width: 100%; height: 100%; display: block; }
+    .kc-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 12px; text-align: center; background: rgba(20, 22, 26, .84); color: #fff; }
+    .kc-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.15rem, 5vw, 1.7rem); }
+    .kc-overlay p { margin: 0; color: #d7d8db; max-width: 40ch; font-size: clamp(.8rem, 3.2vw, .95rem); line-height: 1.45; }
+    .kc-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kc-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .kc-overlay .ba-btn-primary { color: #1a0d10; }
+    .kc-pad { display: none; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 720px; margin: 14px auto 0; }
+    .kc-pad button { font: inherit; font-size: 1.05rem; font-weight: 600; min-height: 60px; border-radius: var(--ba-radius); border: 1px solid var(--ba-border-hover); background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .kc-pad button:active { background: var(--ba-primary-soft); border-color: var(--ba-primary); }
+    @media (max-width: 720px), (pointer: coarse) { .kc-pad { display: grid; } }
+    .game-box .ba-actions { justify-content: center; }
+    .kc-hint { max-width: 720px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .kc-stage { max-width: min(100%, max(320px, calc((100vh - 260px) * 2))); }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Hız Koşusu – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz sonsuz koşu oyunu: koşan kedi, zıplama ve eğilme, hızlanan tempo, uçan engeller, gece-gündüz geçişi ve en yüksek skor.","applicationCategory":"Game","genre":"Arcade","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/hiz-kosusu/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Hız Koşusu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Kedi kendiliğinden koşar; siz yalnızca zıplar ve eğilirsiniz. Taş ve kutuların üstünden zıplayın, alçaktan uçan nesnelerin altından aşağı oku basılı tutarak eğilerek geçin. Bir engele çarparsanız oyun biter; skor koştuğunuz mesafeyle artar."}},
+  {"@type":"Question","name":"Telefonda Hız Koşusu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanına dokunmak kediyi zıplatır; parmağınızı basılı tutarsanız daha yükseğe zıplar. Eğilmek için oyun alanının altındaki Eğil düğmesini basılı tutun. Zıpla düğmesi de aynı işi yapar."}},
+  {"@type":"Question","name":"Zıplama yüksekliğini nasıl ayarlarım?","acceptedAnswer":{"@type":"Answer","text":"Zıplama tuşunu ne kadar uzun basılı tutarsanız kedi o kadar yükselir. Tuşu erken bırakırsanız kısa ve alçak bir sıçrama yaparsınız. Bu sayede peş peşe gelen engelleri alçak sıçramalarla da geçebilirsiniz."}},
+  {"@type":"Question","name":"Eğilmek ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Alçaktan uçan nesneler ayaktaki kediye çarpar ama eğilen kedinin üstünden geçer. Havadayken aşağı oka basarsanız kedi daha hızlı düşer; bu, yüksek bir zıplamadan sonra çabuk inip bir sonraki engele hazırlanmak için kullanışlıdır."}},
+  {"@type":"Question","name":"Skor nasıl hesaplanır, oyun neden hızlanıyor?","acceptedAnswer":{"@type":"Answer","text":"Skor, koştuğunuz mesafeyle orantılıdır; yaklaşık 20 piksel bir puan eder. Skor arttıkça hız da artar ve yaklaşık 2,4 katına kadar çıkar. Hız kutusu başlangıç hızına göre anlık çarpanı gösterir."}},
+  {"@type":"Question","name":"Gece ve gündüz neden değişiyor?","acceptedAnswer":{"@type":"Answer","text":"Her 500 puanda gökyüzü gündüzden geceye, gecenin ardından tekrar gündüze yumuşakça geçer. Bu yalnızca görsel bir değişikliktir; engellerin davranışı değişmez."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın yerel depolama alanında (localStorage). Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz sıfırlanır."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, internet olmadan oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt, indirme veya eklenti gerekmez. Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez; siteyi uygulama olarak kurarsanız çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Hız Koşusu Oyna – Ücretsiz Online Sonsuz Koşu Oyunu</h1>
+      <p class="lead">Kediniz durmadan koşar, siz yalnızca zamanlamayı belirlersiniz: taş ve kutuların üstünden zıplayın, uçan nesnelerin altından eğilerek geçin. Tempo yükseldikçe gökyüzü gece ile gündüz arasında geçiş yapar; kurulum, üyelik ve indirme olmadan en yüksek skorunuzu zorlayın.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Hız Koşusu oyun alanı</h2>
+      <div class="kc-hud" aria-label="Oyun bilgileri">
+        <div class="kc-stat"><span>Skor</span><strong id="score">0</strong></div>
+        <div class="kc-stat"><span>En yüksek</span><strong id="best">0</strong></div>
+        <div class="kc-stat"><span>Hız</span><strong id="speedx">1,0×</strong></div>
+      </div>
+
+      <div class="kc-stage" id="stage" tabindex="0" role="group" aria-label="Hız Koşusu oyun alanı. Zıplamak için Boşluk, yukarı ok ya da W; eğilmek için aşağı ok ya da S; duraklatmak için P tuşunu kullanın.">
+        <canvas id="board" width="640" height="320" role="img" aria-label="Koşan kedi, engeller ve gökyüzünün çizildiği oyun alanı"></canvas>
+        <div class="kc-overlay" id="overlay">
+          <h3 id="overlay-title">Hız Koşusu</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="kc-pad" aria-label="Ekran düğmeleri">
+        <button type="button" data-act="duck" aria-label="Eğil (basılı tutun)">Eğil ▼</button>
+        <button type="button" data-act="jump" aria-label="Zıpla">Zıpla ▲</button>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+      <p class="kc-hint">Boşluk, ↑ ya da W: zıpla (basılı tutunca daha yükseğe). ↓ ya da S basılı: eğil. P: duraklat. Dokunmatik ekranda oyun alanına dokunun ya da ekran düğmelerini kullanın. En yüksek skor yalnızca bu tarayıcıda saklanır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-hiz-kosusu-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Hız Koşusu nedir?</h2>
+      <p>Hız Koşusu, kahramanınızın durmadan ilerlediği, sizin ise yalnızca ne zaman zıplayıp ne zaman eğileceğinizi seçtiğiniz bir sonsuz koşu oyunudur. Bu sayfada oyunun kahramanı, yolda karşısına çıkan taşların ve kutuların üzerinden atlayan, uçan nesnelerin altından eğilerek geçen bir kedidir. Kuralları saniyeler içinde öğrenilir: engele çarpmazsanız koşmaya devam edersiniz, çarparsanız oyun biter. Zorluk ise zamanla, oyun hızlandıkça kendiliğinden artar.</p>
+      <p>Oyunu hiçbir şey indirmeden, üye olmadan ve e-posta adresi vermeden doğrudan tarayıcınızda oynayabilirsiniz. Her şey bilgisayarınızda ya da telefonunuzda çalışır; en yüksek skorunuz yalnızca tarayıcınızın yerel depolama alanında durur. Oyun alanı reklamsızdır, sayfadaki reklamlar yalnızca oyun kutusunun dışında yer alır.</p>
+
+      <h2>Hız Koşusu nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlat'a basın.</strong> Başlat düğmesine, oyun alanına dokunarak ya da oyun alanı seçiliyken Boşluk tuşuna basarak koşuyu başlatın. İlk engel birkaç saniye sonra gelir; ısınmak için zamanınız var.</li>
+        <li><strong>Zıplayın.</strong> Boşluk, yukarı ok, W tuşu ya da ekrana dokunma kediyi zıplatır. Tuşu ne kadar uzun basılı tutarsanız zıplama o kadar yüksek olur.</li>
+        <li><strong>Gerektiğinde eğilin.</strong> Alçaktan uçan nesneler ayaktaki kediye çarpar. Aşağı oku ya da S tuşunu basılı tutarak kediyi yere yatırın ve nesne geçene kadar bekleyin.</li>
+        <li><strong>Hızı hissedin.</strong> Skor arttıkça kedi hızlanır; engeller arasındaki boşluklar da buna göre genişler, ama tepki süreniz kısalır.</li>
+        <li><strong>Çarpınca yeniden deneyin.</strong> Oyun bittiğinde skorunuz ve en yüksek skorunuz görünür. "Tekrar oyna" düğmesi ya da Boşluk tuşuyla anında yeni bir koşuya çıkabilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Boşluk, yukarı ok ve W zıplatır; aşağı ok ve S eğilir. Havadayken aşağı ok kediyi daha hızlı düşürür. P tuşu duraklatır ve devam ettirir.</li>
+        <li><strong>Dokunmatik ekran:</strong> Oyun alanına dokunmak zıplatır; parmağınızı basılı tutarsanız daha yükseğe çıkarsınız. Küçük ekranlarda altta iki büyük düğme görünür: Eğil düğmesi basılı tutulduğu sürece kedi eğilir, Zıpla düğmesi ise zıplatır.</li>
+        <li><strong>Fare:</strong> Oyun alanına tıklamak zıplatır. Başlat, Duraklat, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır.</li>
+        <li><strong>Otomatik duraklatma:</strong> Başka bir sekmeye geçtiğinizde ya da pencereyi arka plana aldığınızda oyun kendiliğinden duraklar; geri döndüğünüzde "Devam et" ile sürdürebilirsiniz.</li>
+      </ul>
+
+      <h2>Engeller, hız ve gece-gündüz</h2>
+      <h3>Taş ve kutular</h3>
+      <p>Yerdeki engeller taş ve kutudur. Başlangıçta tek tek gelirler; skor yükseldikçe iki ya da üçlü gruplar hâlinde belirirler. Grupları tek bir uzun zıplamayla aşmanız gerekir. Zıplamayı çok erken yaparsanız engelin ortasına inersiniz, çok geç yaparsanız engelin önünde çarparsınız; doğru anı bulmak oyunun asıl becerisidir.</p>
+      <h3>Uçan nesneler</h3>
+      <p>150 puandan sonra gökyüzünde kanat çırpan uçan nesneler görünmeye başlar. Alçak uçanlar ayaktaki kediye çarpar; altlarından eğilerek geçebilir ya da yeterince yüksek zıplayarak üzerlerinden aşabilirsiniz. 400 puandan sonra bir de yüksek uçanlar çıkar: bunların altından ayakta rahatça geçersiniz, ama o sırada zıplamak çarpışmaya yol açar. Yani "her engelde zıpla" alışkanlığı bir noktadan sonra işe yaramaz.</p>
+      <h3>Hızlanan tempo</h3>
+      <p>Skor arttıkça kedi hızlanır ve hız yaklaşık 2,4 katına kadar çıkar. Hız kutusu başlangıç hızına göre anlık çarpanı gösterir: 1,0× başlangıç, 2,0× iki katı demektir. Engeller arasındaki boşluk da hıza bağlı olarak açılır, böylece oyun her zaman adil kalır; fakat tepki süreniz kısaldığı için dikkatiniz bir saniye bile dağılırsa koşu biter.</p>
+      <h3>Gece ve gündüz</h3>
+      <p>Her 500 puanda gökyüzü gündüzden geceye, ardından yeniden gündüze yumuşakça geçer. Gece yıldızlar ve ay görünür, renkler açılır ya da koyulaşır. Bu değişim yalnızca görseldir; engellerin davranışını etkilemez, ama bir geçiş sırasında kediyi ve engelleri seçmekte zorlanıyorsanız ritminizi kaybetmemek için zıplama zamanlamanızı sakin tutun.</p>
+
+      <h2>Skor ve en yüksek skor</h2>
+      <p>Skorunuz koştuğunuz mesafeyle orantılıdır: yaklaşık yirmi piksel bir puan eder. Dolayısıyla skor, yalnızca hayatta kaldığınız süreyle değil, aynı zamanda hızla da artar; tempo yükseldikçe puan akışı da hızlanır. En yüksek skorunuz tarayıcınızın localStorage alanına yazılır. Bu alan yalnızca sizin cihazınızdadır; başka bir tarayıcıya ya da cihaza taşınmaz ve tarayıcı verilerini temizlediğinizde silinir.</p>
+
+      <div class="ba-ad" data-slot="oyun-hiz-kosusu-b" aria-label="Reklam"></div>
+
+      <h2>Hız Koşusu'nda strateji ipuçları</h2>
+      <ul>
+        <li><strong>Ritim bulun.</strong> Engellere tepki vermek yerine bir sonraki engeli önceden bekleyin. Bir zıplamayı bitirirken gözünüz zaten sıradaki engelde olsun.</li>
+        <li><strong>Tuşu erken bırakın.</strong> Alçak bir engel için uzun zıplamaya gerek yoktur. Tuşu çabuk bırakmak sizi daha erken indirir ve bir sonraki engele hazırlanmanıza zaman kazandırır.</li>
+        <li><strong>Havadan hızlı inin.</strong> Yüksek bir zıplamadan sonra aşağı ok kediyi daha çabuk yere indirir. Peş peşe gelen engellerde bu hamle hayat kurtarır.</li>
+        <li><strong>Uçan nesnenin yüksekliğine bakın.</strong> Kediye yakın uçan nesne için eğilin, yüksekte uçan için ayakta bekleyin. Yanlış tepki çarpışma demektir.</li>
+        <li><strong>Gruplara erken hazırlanın.</strong> Üçlü kutu ya da taş grubunu aşmak için zıplama tuşunu basılı tutmanız gerekir. Zıplamayı engelin biraz daha önünde başlatın.</li>
+        <li><strong>Gözünüzü kedide değil, ilerideki engelde tutun.</strong> Kedi sabit bir yerde koşar; zorluk sağdan gelenlerdedir. Ekranın sağ üçte birine bakmak size birkaç saniyelik tepki payı kazandırır.</li>
+        <li><strong>Hızı sevin.</strong> Yüksek hız ürkütücü gelebilir ama boşluklar da genişler. Panik yapıp erken zıplamak çoğu zaman hızlı bölümlerde ölüm sebebidir.</li>
+        <li><strong>Mola verin.</strong> Dikkatiniz dağıldığında P tuşuyla duraklatın; bir nefes alıp devam etmek skoru çoğu zaman artırır.</li>
+      </ul>
+
+      <h2>Sonsuz koşu oyunlarının kısa tarihi</h2>
+      <p>Karakterin kendiliğinden ilerlediği, oyuncunun yalnızca zıplama ve eğilme gibi tek tuşlu kararlar verdiği oyun türü, basit arcade oyunlarından doğdu. 2010'lardan itibaren mobil cihazlarda en çok oynanan türlerden biri hâline geldi; çünkü tek parmakla oynanabilir, kısa sürer ve "bir koşu daha" dedirtir. Tarayıcıda çevrimdışı oynanabilen küçük koşu oyunları da bu sadeliğin bir yansımasıdır.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı. Kedi, engeller ve gökyüzü canvas ile çizilir; hiçbir dış kütüphane, görsel ya da ses dosyası kullanılmaz. Bu sayede oyun çok hızlı yüklenir ve çevrimdışı da çalışabilir. Retina gibi yüksek çözünürlüklü ekranlarda çizim netliği korunur.</p>
+
+      <h2>Neden Bilişim Ajans Hız Koşusu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişliğindeki telefonlarda da sığar; dokunma, ekran düğmeleri ve klavye birlikte çalışır.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun alanının ve düğmelerin yanında asla görünmez. Tam ekran modunda hiçbir reklam görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca rekorunuz kendi cihazınızda saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da oynayabilirsiniz; siteyi uygulama olarak kurmak da mümkündür.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Hız Koşusu nasıl oynanır?</summary><p>Kedi kendiliğinden koşar; siz yalnızca zıplar ve eğilirsiniz. Taş ve kutuların üstünden zıplayın, alçaktan uçan nesnelerin altından aşağı oku basılı tutarak eğilerek geçin. Bir engele çarparsanız oyun biter; skor koştuğunuz mesafeyle artar.</p></details>
+        <details><summary>Telefonda Hız Koşusu nasıl oynanır?</summary><p>Oyun alanına dokunmak kediyi zıplatır; parmağınızı basılı tutarsanız daha yükseğe zıplar. Eğilmek için oyun alanının altındaki Eğil düğmesini basılı tutun. Zıpla düğmesi de aynı işi yapar. Oyun sırasında sayfa kaymaz; oyun alanının dışına dokunarak sayfayı kaydırabilirsiniz.</p></details>
+        <details><summary>Zıplama yüksekliğini nasıl ayarlarım?</summary><p>Zıplama tuşunu ne kadar uzun basılı tutarsanız kedi o kadar yükselir. Tuşu erken bırakırsanız kısa ve alçak bir sıçrama yaparsınız. Bu sayede peş peşe gelen engelleri alçak sıçramalarla da geçebilirsiniz.</p></details>
+        <details><summary>Eğilmek ne işe yarar?</summary><p>Alçaktan uçan nesneler ayaktaki kediye çarpar ama eğilen kedinin üstünden geçer. Havadayken aşağı oka basarsanız kedi daha hızlı düşer; bu, yüksek bir zıplamadan sonra çabuk inip bir sonraki engele hazırlanmak için kullanışlıdır.</p></details>
+        <details><summary>Skor nasıl hesaplanır, oyun neden hızlanıyor?</summary><p>Skor, koştuğunuz mesafeyle orantılıdır; yaklaşık 20 piksel bir puan eder. Skor arttıkça hız da artar ve yaklaşık 2,4 katına kadar çıkar. Hız kutusu başlangıç hızına göre anlık çarpanı gösterir.</p></details>
+        <details><summary>Gece ve gündüz neden değişiyor?</summary><p>Her 500 puanda gökyüzü gündüzden geceye, gecenin ardından tekrar gündüze yumuşakça geçer. Bu yalnızca görsel bir değişikliktir; engellerin davranışı ve zorluk değişmez.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor, silinir mi?</summary><p>Tarayıcınızın yerel depolama alanında (localStorage) saklanır. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız skor kalıcı olmaz.</p></details>
+        <details><summary>Oyun ücretsiz mi, internet olmadan oynanır mı?</summary><p>Tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez; siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Skorunuz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../balon-patlatma/">Balon Patlatma</a></li>
+        <li><a href="../labirent/">Labirent</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-hiz-kosusu-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
