@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Okey Oyna – Ücretsiz Online Okey (kurulumsuz)</title>
+  <meta name="description" content="Online okey oyna: üç bilgisayar oyuncuyla 4 kişilik masa. Gösterge ve okey, ortadan ya da yandan taş çekme, sürükleyerek ıstaka düzenleme, seri diz / çift diz, çifte bitme. Ücretsiz, kayıtsız, kurulumsuz; para ve bahis yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/okey/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Taş renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; --tw: 40px; --th: 56px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 600px) { .game-box { --tw: 31px; --th: 44px; } }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .ok-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; }
+    .ok-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .ok-last { margin: 0 0 12px; min-height: 1.4em; font-size: .88rem; color: var(--ba-text-muted); }
+    .ok-felt { position: relative; background: #1f5f66; background-image: radial-gradient(circle at 50% 40%, #28777f, #154348); border-radius: 14px; padding: 12px 8px 14px; box-shadow: inset 0 0 0 3px #0d2f33, 0 4px 14px rgba(30, 33, 38, .25); color: #e8f4f4; }
+    .ok-grid { display: grid; grid-template-columns: 1fr auto 1fr; grid-template-areas: ". top ." "left center right"; gap: 8px; align-items: center; }
+    .ok-seat { text-align: center; padding: 6px 4px; border-radius: 10px; border: 2px solid transparent; min-width: 0; }
+    .ok-seat.turn { border-color: #f5c542; background: rgba(245, 197, 66, .12); }
+    .ok-seat-1 { grid-area: right; } .ok-seat-2 { grid-area: top; justify-self: center; min-width: 150px; } .ok-seat-3 { grid-area: left; }
+    .ok-name { margin: 0 0 4px; font-size: .75rem; font-weight: 600; line-height: 1.25; }
+    .ok-disc { position: relative; min-height: var(--th); display: inline-flex; align-items: center; justify-content: center; min-width: var(--tw); }
+    .ok-disc.empty { border: 1px dashed rgba(255, 255, 255, .4); border-radius: 6px; width: var(--tw); height: var(--th); }
+    .ok-dcount { position: absolute; right: -9px; bottom: -6px; background: #0d2f33; color: #fff; font-size: .7rem; line-height: 1; padding: 2px 5px; border-radius: 99px; }
+    .ok-center { grid-area: center; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0; }
+    .ok-ind { display: flex; align-items: center; gap: 8px; font-size: .75rem; text-align: left; max-width: 150px; }
+    .ok-pile { min-height: 44px; padding: 8px 12px; font: inherit; font-size: .8rem; font-weight: 600; color: #fff; background: #0d2f33; border: 2px solid #e8f4f4; border-radius: 10px; cursor: pointer; }
+    .ok-pile:disabled { opacity: .55; cursor: default; }
+    .ok-pile:not(:disabled) { border-color: #f5c542; }
+    .ok-pile:focus-visible, .ok-tile:focus-visible { outline: 3px solid #5aa9ff; outline-offset: 2px; }
+    .ok-mydisc { text-align: center; }
+    .ok-mydisc .ok-disc { margin-top: 2px; }
+    .ok-drophint { margin: 2px 0 0; font-size: .7rem; opacity: .9; }
+    .ok-rackwrap { margin-top: 12px; overflow-x: auto; padding: 8px 6px 10px; background: #8a5a2b; background-image: linear-gradient(#a06a35, #7d4f24); border-radius: 10px; box-shadow: inset 0 2px 4px rgba(0, 0, 0, .4); }
+    .ok-rack { display: grid; grid-template-columns: repeat(15, var(--tw)); gap: 3px; width: max-content; margin: 0 auto; }
+    .ok-slot { width: var(--tw); height: calc(var(--th) + 4px); background: rgba(0, 0, 0, .18); border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+    .ok-tile { position: relative; flex: none; display: block; width: var(--tw); height: var(--th); margin: 0; padding: 0; appearance: none; -webkit-appearance: none; font: inherit; border-radius: 6px; border: 1px solid #b9a77a; background: #fbf3dc; box-shadow: 0 2px 0 #9c8a5c, 0 3px 4px rgba(0, 0, 0, .35); -webkit-tap-highlight-color: transparent; text-align: center; cursor: pointer; touch-action: none; }
+    div.ok-tile { cursor: default; touch-action: auto; }
+    .ok-tile .n { display: block; font-size: calc(var(--tw) * .62); font-weight: 800; line-height: 1; padding-top: calc(var(--th) * .16); font-family: var(--ba-font); }
+    .ok-tile .dot { position: absolute; left: 50%; bottom: calc(var(--th) * .12); width: calc(var(--tw) * .26); height: calc(var(--tw) * .26); margin-left: calc(var(--tw) * -.13); border-radius: 50%; background: currentColor; }
+    .ok-tile .jk { position: absolute; left: 0; right: 0; top: 1px; font-size: calc(var(--tw) * .24); font-weight: 700; line-height: 1; }
+    .ok-tile.c0 { color: #8a6200; } .ok-tile.c1 { color: #1b55b5; } .ok-tile.c2 { color: #1a1a1f; } .ok-tile.c3 { color: #b3121f; }
+    .ok-tile.fake { color: #5b3d8a; }
+    .ok-tile.joker { box-shadow: 0 0 0 2px #7b2331, 0 2px 0 #9c8a5c; }
+    .ok-tile.sel { transform: translateY(-8px); box-shadow: 0 0 0 3px #1a73e8, 0 6px 8px rgba(0, 0, 0, .4); z-index: 2; }
+    .ok-tile.in-group { border-bottom: 4px solid #1e8e3e; }
+    .ok-tile.take { box-shadow: 0 0 0 3px #f5c542, 0 3px 4px rgba(0, 0, 0, .35); }
+    .ok-tile.dragging { opacity: .35; }
+    .ok-ghost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; opacity: .92; }
+    .ok-groups { margin: 8px 0 0; font-size: .8rem; text-align: center; }
+    .ok-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 0; }
+    .ok-actions .ba-btn { flex: 1 1 130px; }
+    .ok-result { position: absolute; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94%, 380px); padding: 14px; text-align: center; background: var(--ba-surface); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); color: var(--ba-text); }
+    .ok-result[hidden] { display: none; }
+    .ok-result h3 { margin: 0 0 8px; font-size: 1.15rem; }
+    .ok-result p { margin: 0 0 12px; font-size: .9rem; }
+    .ok-side { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 14px; }
+    .ok-stats { margin: 0; font-size: .85rem; color: var(--ba-text-muted); flex: 1 1 260px; }
+    .ok-note { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    @media (prefers-reduced-motion: reduce) { .ok-tile.sel { transform: none; outline: 3px solid #1a73e8; } }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.ok-ad-a { margin-top: 56px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Okey – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz okey: üç bilgisayar oyuncuyla dört kişilik masa, gösterge ve okey, sürükleyerek ıstaka düzenleme, çifte bitme. Para ve bahis içermez.","inLanguage":"tr","genre":["Masa oyunu","Taş oyunu","Geleneksel oyun"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/okey/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Okey taşı nasıl belirlenir?","acceptedAnswer":{"@type":"Answer","text":"Dağıtımdan sonra bir taş gösterge olarak açılır. Okey, göstergeyle aynı renkte ve bir büyük sayılı taştır; gösterge 13 ise okey aynı renkte 1'dir. Bu taşın iki kopyası da jokerdir."}},
+  {"@type":"Question","name":"Sahte okey nedir?","acceptedAnswer":{"@type":"Answer","text":"Takımda iki adet sahte okey bulunur. Sahte okey, okey olan taşın yerine geçer; yani okeyin rengi ve sayısını taşıyan sıradan bir taş gibi davranır. Gerçek okey ise joker olarak her taşın yerini tutar."}},
+  {"@type":"Question","name":"Per nasıl oluşur?","acceptedAnswer":{"@type":"Answer","text":"Aynı renkte ardışık en az üç taş (örneğin mavi 4-5-6) ya da farklı renklerde aynı sayıdan üç veya dört taş (örneğin 7 sarı, 7 mavi, 7 kırmızı) bir per oluşturur. 1 taşı 13'ten sonra gelebilir (12-13-1) ama 13-1-2 geçerli değildir."}},
+  {"@type":"Question","name":"El nasıl biter?","acceptedAnswer":{"@type":"Answer","text":"Elinizdeki 14 taşın tamamı perlere dizildiğinde ve son 15. taşı atarak bitirdiğinizde el biter. Oyun, atılan taştan sonra kalan 14 taşı denetler; geçerli değilse bitirme kabul edilmez."}},
+  {"@type":"Question","name":"Çifte bitme nedir?","acceptedAnswer":{"@type":"Answer","text":"14 taşın yedi çiftten oluşmasıdır; çift, rengi ve sayısı aynı iki taştır. Joker bir çifti tamamlayabilir. Bu oyunda çifte bitme puanı iki katına çıkarır."}},
+  {"@type":"Question","name":"Okey atarak bitmek ne demek?","acceptedAnswer":{"@type":"Answer","text":"Bitiş taşı olarak gerçek okey (joker) atılırsa puan iki katına çıkar. Bu oyunda çifte bitme ile birleşirse çarpanlar birlikte uygulanır."}},
+  {"@type":"Question","name":"Taşları nasıl dizerim?","acceptedAnswer":{"@type":"Answer","text":"Bir taşı basılı tutup başka bir yuvaya sürükleyin, ya da taşa tıklayıp boş yuvaya tıklayın. Klavyede Enter ile taşı seçin, ok tuşlarıyla yürütün. Seri diz ve Çift diz düğmeleri taşları sizin için otomatik düzenler."}},
+  {"@type":"Question","name":"Bu oyunda para ya da bahis var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Okey burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir masa oyunudur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Okey Oyna</span> – Ücretsiz Online Okey</h1>
+      <p class="lead">Üç bilgisayar oyuncuyla dört kişilik okey masasında oynayın. Gösterge ve okey belirlenir, taşları ortadan ya da yandan çeker, ıstakanızı sürükleyerek dizer, perleri ve çiftleri kurup eli bitirirsiniz. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz. Oyunda para, bahis ya da ödül yoktur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="ok-box" class="ba-tool game-box" aria-labelledby="h-oyun" data-turn="cpu">
+      <h2 id="h-oyun" class="visually-hidden">Okey oyunu</h2>
+      <p id="ok-status" class="ok-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+      <p id="ok-last" class="ok-last" aria-live="polite"></p>
+      <div class="ok-felt">
+        <div class="ok-grid">
+          <div id="ok-seat-2" class="ok-seat ok-seat-2"><p class="ok-name">Bilgisayar 2 (karşı) · <span id="ok-n-2">14</span> taş</p><div id="ok-disc-2" class="ok-disc empty"></div></div>
+          <div id="ok-seat-3" class="ok-seat ok-seat-3"><p class="ok-name">Bilgisayar 3 (sol) · <span id="ok-n-3">14</span> taş</p><div id="ok-disc-3" class="ok-disc empty"></div></div>
+          <div class="ok-center">
+            <div class="ok-ind"><span id="ok-indicator" aria-hidden="true"></span><span id="ok-okey-info">Gösterge</span></div>
+            <button id="ok-pile" class="ok-pile" type="button" disabled>Ortadan çek</button>
+            <div class="ok-mydisc"><div id="ok-disc-0" class="ok-disc empty" data-drop="discard" role="img" aria-label="Attığınız taşlar"></div><p class="ok-drophint">Taşı buraya sürükleyerek atın</p></div>
+          </div>
+          <div id="ok-seat-1" class="ok-seat ok-seat-1"><p class="ok-name">Bilgisayar 1 (sağ) · <span id="ok-n-1">14</span> taş</p><div id="ok-disc-1" class="ok-disc empty"></div></div>
+        </div>
+        <div class="ok-rackwrap"><div id="ok-rack" class="ok-rack" role="group" aria-label="Istakanız"></div></div>
+        <p id="ok-groups" class="ok-groups"></p>
+        <div id="ok-result" class="ok-result" role="dialog" aria-labelledby="ok-result-title" hidden>
+          <h3 id="ok-result-title">El bitti</h3>
+          <p id="ok-result-text"></p>
+          <button id="ok-next" class="ba-btn ba-btn-primary" type="button">Sonraki el</button>
+        </div>
+      </div>
+      <div class="ok-actions">
+        <button id="ok-series" class="ba-btn" type="button">Seri diz</button>
+        <button id="ok-pairs" class="ba-btn" type="button">Çift diz</button>
+        <button id="ok-discard-btn" class="ba-btn ba-btn-primary" type="button" disabled>Seçili taşı at</button>
+        <button id="ok-finish-btn" class="ba-btn" type="button" disabled>Seçili taşla bitir</button>
+      </div>
+      <div class="ok-actions"><button id="ok-new" class="ba-btn" type="button">Yeni oyun</button><button id="ok-full" class="ba-btn" type="button">Tam ekran</button></div>
+      <div class="ok-side"><p id="ok-stats" class="ok-stats"></p><button id="ok-stats-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button></div>
+      <p id="ok-totals" class="ok-note"></p>
+      <p class="ok-note">Taşı tıklayarak seçin, sürükleyerek yuvaya bırakın ya da klavyede Enter ile seçip ok tuşlarıyla yürütün; D tuşu odaktaki taşı atar. Bu oyun yalnızca eğlence içindir: para, bahis ve ödül yoktur.</p>
+    </section>
+
+    <div class="ba-ad ok-ad-a" data-slot="oyun-okey-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Okey nedir?</h2>
+      <p>Okey, Türkiye'de kahvehanelerde, aile sofralarında ve bayram ziyaretlerinde oynanan, dört kişilik bir taş oyunudur. Rummy ailesinden gelen oyunda amaç, elinizdeki taşları perlere dizip eli ilk bitiren olmaktır. Bu sayfada okeyi ücretsiz, kurulum yapmadan ve kayıt olmadan, üç bilgisayar oyuncuya karşı oynayabilirsiniz. Taşlar sizin tarayıcınızda dağıtılır ve oynanır; hiçbir bilgi bir sunucuya gönderilmez. Bu sayfa klasik okeyi sunar; 101 okey ayrı bir oyundur ve burada yoktur.</p>
+
+      <h2>Takım ve dağıtım</h2>
+      <p>Okey takımında 106 taş vardır: dört renkte (sarı, mavi, siyah, kırmızı) 1'den 13'e kadar numaralı taşlardan ikişer takım, yani 104 taş, ve iki sahte okey. Dağıtımdan önce taşlar karıştırılır, bir taş gösterge olarak açılır. Başlayan oyuncuya 15, diğer üç oyuncuya 14 taş verilir. Geri kalan 48 taş masanın ortasında kapalı durur. Sıra sizin yönünüzde, soldaki oyuncunun attığı taşı alabileceğiniz biçimde ilerler. Bu sayfada ilk eli siz başlatırsınız; sonraki ellerde başlama sırası saat yönünde değişir.</p>
+
+      <h2>Gösterge ve okey</h2>
+      <p>Okeyin hangi taş olduğu göstergeden anlaşılır. Gösterge taşıyla aynı renkte ve bir büyük sayılı taş okeydir. Örneğin gösterge mavi 8 ise okey mavi 9'dur. Gösterge 13 ise okey aynı rengin 1 numaralı taşıdır. Okey olan iki taş jokerdir: elinizde istediğiniz taşın yerine geçer. İki sahte okey ise okeyin kendisi gibi davranır: bir sahte okey, mavi 9 taşıyla aynı değeri taşır. Sahte okey joker değildir; ancak okeyin rengini ve sayısını temsil eder. Gösterge sahte okey çıkarsa bu oyun otomatik olarak yeni bir gösterge seçer.</p>
+
+      <h2>Okey nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Taş çekin.</strong> Sıra size geldiğinde ya masanın ortasındaki kapalı taşlardan birini ya da soldaki oyuncunun attığı son taşı alırsınız. Ortadan çekmek için "Ortadan çek" düğmesine, yandan çekmek için soldaki açık taşa tıklayın.</li>
+        <li><strong>Istakanızı dizin.</strong> Taşları sürükleyerek yan yana getirin. Aynı renkte ardışık ya da aynı sayıda farklı renkli taşlar per olur. Geçerli perlerin altı yeşil çizilir.</li>
+        <li><strong>Taş atın.</strong> Her çekişten sonra elinizdeki bir taşı atarsınız; böylece elinizde yine 14 taş kalır. Taşa tıklayıp "Seçili taşı at"a basın, çift tıklayın ya da taşı atış alanına sürükleyin.</li>
+        <li><strong>Eli bitirin.</strong> Kalan 14 taşın tamamı perlerde (ya da yedi çiftte) ise son taşı "Seçili taşla bitir" düğmesiyle atın.</li>
+      </ol>
+
+      <h2>Per nedir?</h2>
+      <ul>
+        <li><strong>Seri:</strong> Aynı renkte ardışık en az üç taş. Örneğin kırmızı 5-6-7 ya da siyah 10-11-12-13. 1 numaralı taş 13'ten sonra gelebilir (12-13-1), ancak 13-1-2 şeklinde dönme olmaz.</li>
+        <li><strong>Grup:</strong> Farklı renklerde aynı sayıdan üç ya da dört taş. Örneğin sarı 9, mavi 9, siyah 9. Aynı rengi iki kez kullanamazsınız.</li>
+        <li><strong>Joker:</strong> Okey, bir pere eksik olan herhangi bir taşın yerine geçer. Üç taşlık bir perde en çok bir joker kullanmak mantıklıdır; ancak iki joker de aynı pere girebilir.</li>
+        <li><strong>Sahte okey:</strong> Okeyin yüzünü taşır; örneğin okey mavi 9 ise sahte okey de mavi 9 gibi davranır.</li>
+      </ul>
+
+      <h2>Bitme şekilleri ve puan</h2>
+      <p>Eli bitirmek için son taşı attıktan sonra elinizde kalan 14 taşın tamamı perlerde olmalıdır. Örneğin 3+3+4+4 ya da 3+3+3+5 gibi bölünebilir. Bir ikinci yol çifte bitmedir: 14 taşın yedi çift olması. Çift, rengi ve sayısı aynı iki taştır; joker eksik taşı tamamlar.</p>
+      <table>
+        <thead><tr><th scope="col">Bitiş</th><th scope="col">Çarpan</th></tr></thead>
+        <tbody>
+          <tr><td>Normal bitme</td><td>×1</td></tr>
+          <tr><td>Çifte bitme (7 çift)</td><td>×2</td></tr>
+          <tr><td>Okey (joker) atarak bitme</td><td>×2</td></tr>
+          <tr><td>Çifte bitme + okey atarak</td><td>×4</td></tr>
+        </tbody>
+      </table>
+      <p>Bu sayfada kazanan 2 × çarpan puan alır, diğer üç oyuncu çarpan kadar puan kaybeder. Ortadaki taşlar biterse el berabere sayılır ve puan değişmez. Puanlar yalnızca bu cihazda tutulan sayılardır ve hiçbir değeri yoktur.</p>
+
+      <div class="ba-ad" data-slot="oyun-okey-b" aria-label="Reklam"></div>
+
+      <h2>Istaka düzenleme ve düğmeler</h2>
+      <ul>
+        <li><strong>Sürükle-bırak:</strong> Bir taşı basılı tutup başka yuvaya bırakın. Yuva doluysa iki taş yer değiştirir. Dokunmatik ekranlarda da çalışır.</li>
+        <li><strong>Tıkla ve taşı:</strong> Taşa tıklayıp seçin, ardından boş bir yuvaya tıklayın.</li>
+        <li><strong>Klavye:</strong> Sekme ile taşlara gelin, ok tuşlarıyla taşlar arasında gezinin. Enter ile taşı seçin, sonra ok tuşları taşın kendisini yürütür. Esc seçimi bırakır, D odaktaki taşı atar.</li>
+        <li><strong>Seri diz:</strong> Oyun elinizdeki en çok taşı kapsayan perleri bulur, yan yana dizer; perde olmayan taşları sona koyar.</li>
+        <li><strong>Çift diz:</strong> Aynı taşları çiftler halinde yan yana koyar; çifte bitmeyi planlıyorsanız işe yarar.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tam ekran modunda reklam gösterilmez.</li>
+      </ul>
+
+      <h2>Bilgisayar oyuncuları nasıl düşünür?</h2>
+      <p>Üç bilgisayar oyuncusu basit bir sezgiyle oynar. Elindeki taşları perlere böler, perlere giren taş sayısını en çok yapan düzeni arar; çekmeden önce soldaki oyuncunun attığı taşın elini belirgin biçimde güçlendirip güçlendirmediğine bakar, güçlendiriyorsa yandan, aksi halde ortadan çeker. Atarken perde işe yaramayan, komşu ve çift potansiyeli en düşük taşı atar; jokeri mümkün olduğunca saklar. Eli bitirebiliyorsa bitirir. Bilgisayar sizin ıstakanızı göremez, hile yapmaz.</p>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Jokeri saklayın.</strong> Okey elinizdeki en değerli taştır. Gerçek okeyi atmak çoğu zaman, elinizi bitirmeye hazırsanız dışında, kötü fikirdir.</li>
+        <li><strong>Yandan çekmeyi önemseyin.</strong> Soldaki oyuncunun attığı taş ona gereksiz olmuştur ama size per tamamlayabilir. Yandan alırsanız hangi taşın elinizde olduğunu da rakipler görmüş olur, bu yüzden yalnızca gerçekten işe yarayan taşı alın.</li>
+        <li><strong>Esnek taşları tutun.</strong> 6 ve 8 gibi aynı renkte aralıklı taşlar, tek bir taşla (7) per olur. Köşe taşlar (1 ve 13) daha az bağlantı kurar; önce onları atın.</li>
+        <li><strong>Çiftleri izleyin.</strong> Elinizde dört beş çift oluşmuşsa çifte bitme (×2) iyi bir hedeftir. Çift diz düğmesiyle durumu görebilirsiniz.</li>
+        <li><strong>Okey taşını bilin.</strong> Rakipler okeyin kendisini atmaz; ama göstergeyle aynı renkteki taşlardan biri okeye komşudur, bunların perlerde kaç kopyası kaldığını sayın.</li>
+        <li><strong>Atılanlara dikkat edin.</strong> Sağdaki oyuncu sizin attığınız taşı alabilir. Rakibe işine yarayacak, örneğin onun attığı rengin komşu taşını atmayın.</li>
+      </ul>
+
+      <h2>Kumar ya da bahis değildir</h2>
+      <p>Okey bazı çevrelerde para ile oynanmasıyla anılır. Bu sayfada ise hiçbir koşulda para, bahis, ödül, kazanç ya da bunlara yönlendiren bir bağlantı yoktur. Puanlar yalnızca bu cihazda tutulan sayılardır ve hiçbir değeri yoktur. Oyunu eğlence, hafıza ve olasılık egzersizi olarak kullanın. Reşit olmayanlara ve oyun bağımlılığı riski taşıyanlara bu tür oyunların para ile oynanmasını önermiyoruz.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da oyun sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır. Hamleleriniz bir sunucuya iletilmez.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda ıstaka yatay kaydırılabilir; dokunma, sürükleme ve klavye desteklenir.</li>
+        <li><strong>Ses yok.</strong> Oyun sessiz çalışır; ortak ortamlarda rahatça oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Okey taşı nasıl belirlenir?</summary><p>Dağıtımdan sonra bir taş gösterge olarak açılır. Okey, göstergeyle aynı renkte ve bir büyük sayılı taştır; gösterge 13 ise okey aynı renkte 1'dir. Bu taşın iki kopyası da jokerdir.</p></details>
+        <details><summary>Sahte okey nedir?</summary><p>Takımda iki adet sahte okey bulunur. Sahte okey, okey olan taşın yerine geçer; yani okeyin rengi ve sayısını taşıyan sıradan bir taş gibi davranır. Gerçek okey ise joker olarak her taşın yerini tutar.</p></details>
+        <details><summary>Per nasıl oluşur?</summary><p>Aynı renkte ardışık en az üç taş (örneğin mavi 4-5-6) ya da farklı renklerde aynı sayıdan üç veya dört taş (örneğin 7 sarı, 7 mavi, 7 kırmızı) bir per oluşturur. 1 taşı 13'ten sonra gelebilir (12-13-1) ama 13-1-2 geçerli değildir.</p></details>
+        <details><summary>El nasıl biter?</summary><p>Elinizdeki 14 taşın tamamı perlere dizildiğinde ve son 15. taşı atarak bitirdiğinizde el biter. Oyun, atılan taştan sonra kalan 14 taşı denetler; geçerli değilse bitirme kabul edilmez.</p></details>
+        <details><summary>Çifte bitme nedir?</summary><p>14 taşın yedi çiftten oluşmasıdır; çift, rengi ve sayısı aynı iki taştır. Joker bir çifti tamamlayabilir. Bu oyunda çifte bitme puanı iki katına çıkarır.</p></details>
+        <details><summary>Okey atarak bitmek ne demek?</summary><p>Bitiş taşı olarak gerçek okey (joker) atılırsa puan iki katına çıkar. Bu oyunda çifte bitme ile birleşirse çarpanlar birlikte uygulanır.</p></details>
+        <details><summary>Taşları nasıl dizerim?</summary><p>Bir taşı basılı tutup başka bir yuvaya sürükleyin, ya da taşa tıklayıp boş yuvaya tıklayın. Klavyede Enter ile taşı seçin, ok tuşlarıyla yürütün. Seri diz ve Çift diz düğmeleri taşları sizin için otomatik düzenler.</p></details>
+        <details><summary>Bu oyunda para ya da bahis var mı?</summary><p>Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Okey burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir masa oyunudur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../pisti/">Pişti</a></li>
+        <li><a href="../tavla/">Tavla</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../solitaire/">Solitaire</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-okey-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Pişti Oyna – Ücretsiz Online Pişti (kurulumsuz)</title>
+  <meta name="description" content="Online pişti oyna: bilgisayara karşı üç zorluk seviyesinde, 101 veya 151 puana kadar. Pişti, vale piştisi, kart çoğunluğu ve sinek 2 / karo 10 puanlaması otomatik. Ücretsiz, kayıtsız, kurulumsuz; para ve bahis yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/pisti/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Kart renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; --cw: 62px; --ps-off: 22px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 480px) { .game-box { padding: 12px 8px; --cw: 52px; --ps-off: 16px; } }
+    .ps-layout { display: grid; gap: 20px; }
+    @media (min-width: 960px) { .ps-layout { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; } }
+    .ps-main, .ps-side { min-width: 0; }
+    .ps-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; }
+    .ps-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .ps-last { margin: 0 0 12px; min-height: 1.4em; font-size: .88rem; color: var(--ba-text-muted); }
+    .ps-felt { position: relative; background: #1f6b46; background-image: radial-gradient(circle at 50% 40%, #2a8057, #165338); border-radius: 14px; padding: 14px 10px 16px; box-shadow: inset 0 0 0 3px #0e3a27, 0 4px 14px rgba(30, 33, 38, .25); }
+    .ps-zone { display: flex; align-items: center; justify-content: center; }
+    .ps-lbl { margin: 0 0 6px; text-align: center; font-size: .8rem; font-weight: 600; color: #e6f3ea; letter-spacing: .02em; }
+    .ps-opp { min-height: calc(var(--cw) * 1.4); gap: 4px; flex-wrap: wrap; }
+    .ps-opp .ps-card { margin-left: calc(var(--cw) * -.25); }
+    .ps-opp .ps-card:first-child { margin-left: 0; }
+    .ps-mid { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 14px 0; }
+    .ps-table { position: relative; width: calc(var(--cw) + var(--ps-off) * 5); height: calc(var(--cw) * 1.4 + 4px); }
+    .ps-table .ps-card { position: absolute; top: 0; }
+    .ps-table.is-empty { border: 2px dashed rgba(255, 255, 255, .45); border-radius: 8px; width: calc(var(--cw) + 8px); }
+    .ps-info { color: #e6f3ea; font-size: .85rem; text-align: center; }
+    .ps-hand { min-height: calc(var(--cw) * 1.4 + 6px); gap: 10px; flex-wrap: wrap; }
+    .ps-card { position: relative; flex: none; display: block; width: var(--cw); height: calc(var(--cw) * 1.4); margin: 0; padding: 0; appearance: none; -webkit-appearance: none; font: inherit; font-family: var(--ba-font); font-size: calc(var(--cw) * .24); border-radius: calc(var(--cw) * .08); border: 1px solid #9d9792; background: #fff; color: #16181d; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); -webkit-tap-highlight-color: transparent; text-align: left; }
+    .ps-card.red { color: #b3121f; }
+    button.ps-card { cursor: pointer; transition: transform .12s; }
+    button.ps-card:disabled { cursor: default; opacity: 1; }
+    button.ps-card:not(:disabled):hover { transform: translateY(-6px); }
+    .ps-card.can { box-shadow: 0 0 0 3px #f5c542, 0 2px 6px rgba(0, 0, 0, .4); }
+    .ps-card:focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; z-index: 5; }
+    .ps-card .c { position: absolute; left: .3em; top: .15em; font-weight: 700; line-height: 1; }
+    .ps-card .s { position: absolute; left: .3em; top: 1.2em; line-height: 1; font-size: .85em; }
+    .ps-card .m { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.4em; line-height: 1; padding-top: .5em; }
+    .ps-card.down { background: repeating-linear-gradient(45deg, #7b2331 0 6px, #8c2c3c 6px 12px); border-color: #5e1a25; box-shadow: inset 0 0 0 3px #fff, 0 1px 3px rgba(0, 0, 0, .4); }
+    @media (prefers-reduced-motion: reduce) { button.ps-card { transition: none; } }
+    .ps-score { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 12px; }
+    .ps-sc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 8px 10px; }
+    .ps-sc strong { display: block; font-size: .95rem; }
+    .ps-sc .num { display: block; font-family: var(--ba-mono); font-size: 1.6rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .ps-sc small { display: block; color: var(--ba-text-muted); font-size: .8rem; }
+    .ps-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .ps-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .ps-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .ps-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .ps-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .ps-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; }
+    .ps-actions .ba-btn { flex: 1 1 120px; }
+    .ps-stats { margin: 0 0 8px; font-size: .85rem; color: var(--ba-text-muted); }
+    .ps-note { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .ps-result { position: absolute; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94%, 380px); padding: 14px; text-align: center; background: var(--ba-surface); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+    .ps-result[hidden] { display: none; }
+    .ps-result h3 { margin: 0 0 8px; font-size: 1.15rem; color: var(--ba-text); }
+    .ps-result p { margin: 0 0 12px; font-size: .9rem; color: var(--ba-text); display: grid; gap: 3px; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.ps-ad-a { margin-top: 56px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Pişti – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz pişti: bilgisayara karşı üç zorluk seviyesi, 101 veya 151 puana kadar. Para ve bahis içermez.","inLanguage":"tr","genre":["Kart oyunu","Geleneksel oyun"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/pisti/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Pişti nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Yerde tek kart varken aynı değerde bir kart atarsanız pişti yaparsınız ve 10 puan alırsınız. Yerdeki tek kart vale ise ve siz de vale atarsanız vale piştisi olur, 20 puan alırsınız."}},
+  {"@type":"Question","name":"Vale her kartı alır mı, vale ile pişti olur mu?","acceptedAnswer":{"@type":"Answer","text":"Vale yerdeki bütün kartları toplar. Ancak yerde tek bir vale olmadıkça vale ile yapılan toplama pişti sayılmaz; yerde tek kart başka bir değerdeyse vale onu toplar ama pişti puanı yazılmaz."}},
+  {"@type":"Question","name":"Hangi kartlar puan getirir?","acceptedAnswer":{"@type":"Answer","text":"Sinek 2 iki puan, karo 10 üç puan, her as ve her vale birer puandır. Ayrıca en çok kart toplayan oyuncu 3 puan alır; kart sayıları eşitse kimse bu puanı almaz."}},
+  {"@type":"Question","name":"Oyun kaç puana kadar sürer?","acceptedAnswer":{"@type":"Answer","text":"Siz 101 ya da 151 puanı seçersiniz. Eller arka arkaya oynanır, puanlar toplanır ve hedefe ilk ulaşan oyunu kazanır. İki taraf aynı anda hedefi geçip eşit kalırsa bir el daha oynanır."}},
+  {"@type":"Question","name":"Bilgisayar zorluk seviyeleri nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviye rastgele kart atar. Orta seviye temel kuralları uygular: pişti fırsatını kaçırmaz, eşleşen kartı toplar, vale ve puanlı kartları saklar. Zor seviye ayrıca kart sayar ve rakibin pişti yapma olasılığını hesaplayarak atış yapar."}},
+  {"@type":"Question","name":"Yerdeki kapalı kartlar neden var?","acceptedAnswer":{"@type":"Answer","text":"Her elin başında yere dört kart konur; alttaki üçü kapalı, en üstteki açıktır. Kapalı kartlar toplandığı anda hesaba katılır. Oyun, kapalı kartların ne olduğunu bilgisayara da göstermez."}},
+  {"@type":"Question","name":"Bu oyunda para ya da bahis var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Pişti burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir kart oyunudur."}},
+  {"@type":"Question","name":"Hamlelerim kaydedilir veya sunucuya gönderilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oyun tamamen tarayıcınızda çalışır. Yalnızca kazanma, kaybetme ve pişti sayınız ile seçtiğiniz ayarlar bu cihazın tarayıcı belleğinde tutulur; istediğiniz zaman sıfırlayabilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Pişti Oyna</span> – Ücretsiz Online Pişti</h1>
+      <p class="lead">Bilgisayara karşı pişti oynayın: dört kartlık dağıtım, yerdeki kartı eşleştirerek toplama, pişti ve vale piştisi, kart çoğunluğu ve puanlı kartlar kurallara uygun hesaplanır. Üç zorluk seviyesi, 101 veya 151 puanlık oyun. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz. Oyunda para, bahis ya da ödül yoktur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="ps-box" class="ba-tool game-box" aria-labelledby="h-oyun" data-turn="cpu">
+      <h2 id="h-oyun" class="visually-hidden">Pişti oyunu</h2>
+      <div class="ps-layout">
+        <div class="ps-main">
+          <p id="ps-status" class="ps-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <p id="ps-last" class="ps-last" aria-live="polite"></p>
+          <div class="ps-felt">
+            <p class="ps-lbl">Bilgisayar · toplanan <span id="ps-cap-cpu">0</span> kart · pişti <span id="ps-pisti-cpu">0</span></p>
+            <div id="ps-opp" class="ps-zone ps-opp" role="img" aria-label="Bilgisayarın eli"></div>
+            <div class="ps-mid">
+              <div id="ps-table" class="ps-zone ps-table is-empty" role="img" aria-label="Yer"></div>
+              <p class="ps-info"><span id="ps-table-count">Yer boş</span> · <span id="ps-deck">Deste: 44</span></p>
+            </div>
+            <div id="ps-hand" class="ps-zone ps-hand" role="group" aria-label="Sizin elinizdeki kartlar"></div>
+            <p class="ps-lbl" style="margin:8px 0 0">Siz · toplanan <span id="ps-cap-me">0</span> kart · pişti <span id="ps-pisti-me">0</span></p>
+            <div id="ps-result" class="ps-result" role="dialog" aria-labelledby="ps-result-title" hidden>
+              <h3 id="ps-result-title">El bitti</h3>
+              <p id="ps-result-text"></p>
+              <button id="ps-next" class="ba-btn ba-btn-primary" type="button">Sonraki el</button>
+            </div>
+          </div>
+          <p class="ps-note">Eldeki bir karta tıklayın (klavyede Sekme ve Enter). Yerdeki en üst kartla aynı değerde olan kart ya da vale yerdeki kartları toplar. Sarı çerçeveli kartlar toplayabilen kartlarınızdır.</p>
+        </div>
+        <div class="ps-side">
+          <div class="ps-score" aria-label="Toplam puan">
+            <div class="ps-sc"><strong>Siz</strong><span class="num" id="ps-score-me">0</span><small>toplam puan</small></div>
+            <div class="ps-sc"><strong>Bilgisayar</strong><span class="num" id="ps-score-cpu">0</span><small>toplam puan</small></div>
+          </div>
+          <div class="ps-controls">
+            <div class="ps-field"><label for="ps-level">Zorluk</label><select id="ps-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+            <div class="ps-field"><label for="ps-target">Oyun uzunluğu</label><select id="ps-target"><option value="101">101 puana kadar</option><option value="151" selected>151 puana kadar</option></select></div>
+            <label class="ps-check"><input type="checkbox" id="ps-hints" checked> Toplayabilen kartları işaretle</label>
+          </div>
+          <div class="ps-actions"><button id="ps-new" class="ba-btn" type="button">Yeni oyun</button><button id="ps-full" class="ba-btn" type="button">Tam ekran</button></div>
+          <p id="ps-stats" class="ps-stats"></p>
+          <button id="ps-stats-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button>
+          <p class="ps-note">Bu oyun yalnızca eğlence içindir: para, bahis ve ödül yoktur.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad ps-ad-a" data-slot="oyun-pisti-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Pişti nedir?</h2>
+      <p>Pişti, Türkiye'de nesillerdir evlerde, kahvehanelerde, yaz akşamlarında ve uzun yolculuklarda oynanan bir iskambil oyunudur. Kuralları birkaç dakikada öğrenilir; ama iyi oynamak için hem hafıza hem de risk hesabı gerekir. Bu sayfada pişti oyununu ücretsiz, kurulum yapmadan ve kayıt olmadan bilgisayara karşı oynayabilirsiniz. Kartlar sizin tarayıcınızda dağıtılır ve oynanır; hiçbir bilgi bir sunucuya gönderilmez. Oyunun kökeni için kesin bir tarih verilemez; iskambil kâğıdıyla oynanan benzer "eşleştirip toplama" oyunları dünyanın birçok yerinde yüzyıllardır bilinmektedir.</p>
+
+      <h2>Kartlar ve dağıtım</h2>
+      <p>Oyun 52 kartlık standart bir desteyle oynanır. Her elin başında yere dört kart konur; bunlardan alttaki üçü kapalı, en üstteki açıktır. Ardından iki oyuncuya dörder kart dağıtılır. Oyuncular sırayla elindeki bir kartı yere atar. Eller bitince deste yeniden dörder kart verir ve bu, deste tükenene kadar sürer: bir el toplam altı dağıtımdan oluşur (ilk yer kartları dışında 48 kart oyunculara gider). Bu sayfada ilk eli siz başlatırsınız, sonraki ellerde başlama sırası değişir.</p>
+
+      <h2>Pişti nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Kart seçin.</strong> Elinizdeki dört karttan birine tıklayın. Kart yere atılır ve sıra bilgisayara geçer.</li>
+        <li><strong>Eşleştirip toplayın.</strong> Attığınız kart yerdeki en üst kartla aynı değerdeyse (örneğin kupa 7 üzerine sinek 7) yerdeki bütün kartları alırsınız. Vale (J) her zaman yerdeki bütün kartları toplar.</li>
+        <li><strong>Eşleşme yoksa kart yerde kalır.</strong> Toplayamayan kart yerdeki yığının üstüne eklenir ve rakibin hedefi olur.</li>
+        <li><strong>Pişti yapın.</strong> Yerde yalnızca tek kart varken aynı değerde kart atıp onu alırsanız pişti olur: 10 puan. Yerdeki tek kart vale ise ve siz de vale atarsanız vale piştisi: 20 puan.</li>
+        <li><strong>Eli bitirin.</strong> Deste ve eller bitince yerde kalan kartlar en son toplayan oyuncuya gider ve el puanlanır.</li>
+      </ol>
+
+      <h2>Puanlama</h2>
+      <p>Her elin sonunda aşağıdaki puanlar toplanır ve genel toplama eklenir. Oyun 101 ya da 151 puana kadar sürer; hedefe ilk ulaşan kazanır. İki oyuncu aynı eli bitirip eşit puanla hedefi aşarsa bir el daha oynanır.</p>
+      <table>
+        <thead><tr><th scope="col">Kazanım</th><th scope="col">Puan</th></tr></thead>
+        <tbody>
+          <tr><td>Pişti (tek kartı aynı değerle toplamak)</td><td>10</td></tr>
+          <tr><td>Vale piştisi (tek vale üzerine vale)</td><td>20</td></tr>
+          <tr><td>Sinek 2</td><td>2</td></tr>
+          <tr><td>Karo 10</td><td>3</td></tr>
+          <tr><td>Her as ve her vale</td><td>1'er</td></tr>
+          <tr><td>En çok kart toplamak (çoğunluk)</td><td>3</td></tr>
+        </tbody>
+      </table>
+      <p>Çoğunluk puanı için kartlar sayılır; kart sayıları eşitse kimse bu 3 puanı almaz. Bir elde dağıtılan puanın büyük bölümü kartlardan değil, pişti bonuslarından ve çoğunluktan gelir. Bu yüzden deneyimli oyuncular tek kartlı bir yeri rakibe bırakmamaya çalışır.</p>
+
+      <h2>Vale ile ilgili ayrıntılar</h2>
+      <ul>
+        <li>Vale yerdeki bütün kartları toplar; yer boşsa toplanacak bir şey yoktur ve vale yere atılır.</li>
+        <li>Yerde tek kart başka bir değerdeyse vale onu toplar ama pişti puanı yazılmaz.</li>
+        <li>Yerde tek bir vale varken vale atarsanız 20 puanlık vale piştisi olur. Bu, oyundaki en değerli tek hamledir.</li>
+        <li>Vale bir "joker" gibidir; küçük bir kazanç için harcamak çoğu zaman gereksizdir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-pisti-b" aria-label="Reklam"></div>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Elinizdeki karta tıklayın ya da dokunun. Sıra sizde değilken kartlar pasiftir.</li>
+        <li><strong>Klavye:</strong> Sekme tuşuyla kartlar arasında gezinin, Enter veya Boşluk ile oynayın. Kartların erişilebilir adı "Kupa 7" gibi okunur.</li>
+        <li><strong>İpucu çerçevesi:</strong> Sağ paneldeki seçenek açıkken yerdeki karta eşleşen kartlar ve valeler sarı çerçevelenir. İstemezseniz kapatın.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tam ekran modunda reklam gösterilmez.</li>
+        <li><strong>Yeni oyun:</strong> Puanları sıfırlar ve yeni bir deste dağıtır.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl oynar?</h2>
+      <ul>
+        <li><strong>Kolay:</strong> Elinden rastgele bir kart atar; pişti fırsatını bile kaçırabilir. Kuralları yeni öğrenenler için uygundur.</li>
+        <li><strong>Orta:</strong> Temel kuralları uygular. Pişti yapabiliyorsa yapar, eşleşen kartı toplar, yer boşken puanlı kartlarını ve valeleri elinde tutar, yerde değerli kart ya da birkaç kart birikince valesini kullanır.</li>
+        <li><strong>Zor:</strong> Kart sayar. Oynanmış, toplanmış ve yerde görünen kartları takip eder; geriye kalan kartların hangisinin rakipte olabileceğini olasılıkla hesaplar. Ona göre yere kart atarken pişti ve toplama riskini, toplarken kazancı karşılaştırır. Kapalı kartların ne olduğunu bilmez.</li>
+      </ul>
+      <p>Bilgisayar sizin elinizi göremez; yalnızca yere atılmış ve toplanmış kartlardan çıkarım yapar. Hile yoktur.</p>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Boş yere puansız kart atın.</strong> Yer boşken ilk kartınızı mümkünse puansız ve küçük bir kartla açın; rakip pişti yapsa bile en azından tek kartı eşleştirecektir. Asla aynı değerin kalan sayısını düşünmeden as veya vale atmayın.</li>
+        <li><strong>Yerdeki tek karttan kaçının.</strong> Yer boşken attığınız kart tek kalır ve rakip eşleşirse 10 puan alır. Rakibin o değerden kartı kalmadığına dair ipucu varsa (örneğin dört kartın hepsi görüldüyse) rahatça atabilirsiniz.</li>
+        <li><strong>Kart sayın.</strong> Bir değerin dört kartı da oynandıysa o değerle pişti riski sıfırdır. Valelerin kaçının çıktığına bakın; hâlâ çıkmamış vale rakipte olabilir.</li>
+        <li><strong>Vale ile yığını büyütün.</strong> Yerde puanlı kartlar ya da çok kart birikmişse vale atmak en iyi andır. Yerde bir kart varken vale kullanmak çoğunlukla verimsizdir.</li>
+        <li><strong>Çoğunluğu unutmayın.</strong> 3 puanlık çoğunluk için kart sayısı önemlidir; büyük yığınları toplamak puanlı kart olmasa da değerlidir.</li>
+        <li><strong>Eli bitirirken dikkat edin.</strong> Son dağıtımda yerde kalan kartlar son toplayana gider; son toplamayı kimin yapacağını hesaplayın.</li>
+      </ul>
+
+      <h2>Kumar ya da bahis değildir</h2>
+      <p>İskambil oyunları bazı çevrelerde para ile oynanmasıyla anılır. Bu sayfada ise hiçbir koşulda para, bahis, ödül, kazanç ya da bunlara yönlendiren bir bağlantı yoktur. Puanlar yalnızca bu cihazda tutulan sayılardır ve hiçbir değeri yoktur. Oyunu eğlence, hafıza ve olasılık egzersizi olarak kullanın. Reşit olmayanlara ve oyun bağımlılığı riski taşıyanlara bu tür oyunların para ile oynanmasını önermiyoruz.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da oyun sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır. Hamleleriniz bir sunucuya iletilmez.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile kartlar sığar; dokunma ve klavye desteklenir.</li>
+        <li><strong>Ses yok.</strong> Oyun sessiz çalışır; ortak ortamlarda rahatça oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Pişti nasıl yapılır?</summary><p>Yerde tek kart varken aynı değerde bir kart atarsanız pişti yaparsınız ve 10 puan alırsınız. Yerdeki tek kart vale ise ve siz de vale atarsanız vale piştisi olur, 20 puan alırsınız.</p></details>
+        <details><summary>Vale her kartı alır mı, vale ile pişti olur mu?</summary><p>Vale yerdeki bütün kartları toplar. Ancak yerde tek bir vale olmadıkça vale ile yapılan toplama pişti sayılmaz; yerde tek kart başka bir değerdeyse vale onu toplar ama pişti puanı yazılmaz.</p></details>
+        <details><summary>Hangi kartlar puan getirir?</summary><p>Sinek 2 iki puan, karo 10 üç puan, her as ve her vale birer puandır. Ayrıca en çok kart toplayan oyuncu 3 puan alır; kart sayıları eşitse kimse bu puanı almaz.</p></details>
+        <details><summary>Oyun kaç puana kadar sürer?</summary><p>Siz 101 ya da 151 puanı seçersiniz. Eller arka arkaya oynanır, puanlar toplanır ve hedefe ilk ulaşan oyunu kazanır. İki taraf aynı anda hedefi geçip eşit kalırsa bir el daha oynanır.</p></details>
+        <details><summary>Bilgisayar zorluk seviyeleri nasıl çalışır?</summary><p>Kolay seviye rastgele kart atar. Orta seviye temel kuralları uygular: pişti fırsatını kaçırmaz, eşleşen kartı toplar, vale ve puanlı kartları saklar. Zor seviye ayrıca kart sayar ve rakibin pişti yapma olasılığını hesaplayarak atış yapar.</p></details>
+        <details><summary>Yerdeki kapalı kartlar neden var?</summary><p>Her elin başında yere dört kart konur; alttaki üçü kapalı, en üstteki açıktır. Kapalı kartlar toplandığı anda hesaba katılır. Oyun, kapalı kartların ne olduğunu bilgisayara da göstermez.</p></details>
+        <details><summary>Bu oyunda para ya da bahis var mı?</summary><p>Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Pişti burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir kart oyunudur.</p></details>
+        <details><summary>Hamlelerim kaydedilir veya sunucuya gönderilir mi?</summary><p>Hayır. Oyun tamamen tarayıcınızda çalışır. Yalnızca kazanma, kaybetme ve pişti sayınız ile seçtiğiniz ayarlar bu cihazın tarayıcı belleğinde tutulur; istediğiniz zaman sıfırlayabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../okey/">Okey</a></li>
+        <li><a href="../tavla/">Tavla</a></li>
+        <li><a href="../solitaire/">Solitaire</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-pisti-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
