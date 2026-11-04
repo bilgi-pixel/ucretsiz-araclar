@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Bilgi Yarışması Oyna – Ücretsiz Online Bilgi Yarışması (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online genel kültür bilgi yarışması: tarih, coğrafya, bilim, spor, sanat ve Türkçe kategorilerinde üç yüzden fazla özgün soru, 50:50 joker, süreli mod, puan ve seri. Kurulum yok, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/bilgi-yarismasi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyun kutusu ortak düzen */
+    .game-box { padding: 16px; }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 48px; }
+    .gb-wrap { max-width: 680px; margin: 0 auto; }
+    .gb-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-hint { margin: 6px 0 14px; font-size: .92rem; color: var(--ba-text-2); }
+    .gb-warn { margin: 10px 0 0; min-height: 1.2em; font-size: .92rem; color: var(--ba-danger); font-weight: 600; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 24px 16px; display: flex; flex-direction: column; justify-content: center; border: 0; border-radius: 0; }
+    .game-box h3 { margin: 18px 0 8px; font-size: 1.05rem; }
+    .gb-top .ba-icon-btn { min-height: 36px; font-size: .85rem; padding: 0 12px; }
+    #ekran-yukleniyor p { margin: 24px 0; text-align: center; color: var(--ba-text-2); }
+
+    /* Durum satırı */
+    .bg-status { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .92rem; color: var(--ba-text-2); margin-bottom: 12px; }
+    .bg-status b { color: var(--ba-text); font-variant-numeric: tabular-nums; }
+    .bg-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-weight: 600; font-size: .82rem; }
+    .bg-level { font-family: var(--ba-mono); letter-spacing: .12em; color: var(--ba-text-muted); font-size: .85rem; }
+    .bg-practice { background: var(--ba-surface-2); color: var(--ba-text-2); border: 1px solid var(--ba-border); }
+
+    /* Süre çubuğu */
+    .bg-time { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bg-time .bar { flex: 1; height: 8px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 999px; overflow: hidden; }
+    .bg-time .bar > span { display: block; height: 100%; width: 100%; background: var(--ba-primary); transition: width .1s linear; }
+    .bg-time .bar > span.is-low { background: var(--ba-danger); }
+    .bg-time output { min-width: 2.2ch; text-align: right; font-family: var(--ba-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) { .bg-time .bar > span { transition: none; } }
+
+    /* Soru ve şıklar */
+    .bg-q { margin: 0 0 14px; font-size: 1.2rem; line-height: 1.45; font-weight: 600; color: var(--ba-text); overflow-wrap: anywhere; }
+    .bg-q:focus { outline: none; }
+    .bg-q:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 4px; border-radius: 4px; }
+    .bg-opts { display: grid; gap: 10px; }
+    .bg-opt { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 10px 14px; text-align: left; font: inherit; font-weight: 500; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); cursor: pointer; transition: border-color .15s, background-color .15s; }
+    .bg-opt:hover:not(:disabled) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .bg-opt .bg-n { flex: none; display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); font-family: var(--ba-mono); font-size: .85rem; font-weight: 600; }
+    .bg-opt .bg-t { flex: 1; overflow-wrap: anywhere; }
+    .bg-opt:disabled { cursor: default; color: var(--ba-text); opacity: 1; }
+    .bg-opt.is-correct { border-color: var(--ba-success); background: var(--ba-success-soft); }
+    .bg-opt.is-wrong { border-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .bg-opt.is-correct::after { content: "✓ Doğru"; flex: none; font-weight: 700; color: var(--ba-success); font-size: .85rem; }
+    .bg-opt.is-wrong::after { content: "✗ Yanlış"; flex: none; font-weight: 700; color: var(--ba-danger); font-size: .85rem; }
+    .bg-tools { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .bg-tools .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .bg-feedback { min-height: 1.5em; margin: 14px 0 0; font-weight: 600; }
+    .bg-feedback.is-ok { color: var(--ba-success); }
+    .bg-feedback.is-bad { color: var(--ba-danger); }
+    .bg-next { margin-top: 12px; }
+
+    /* Sonuç ekranı */
+    #sonuc-baslik { margin: 0 0 6px; font-size: 1.3rem; }
+    #sonuc-baslik:focus { outline: none; }
+    .bg-big { margin: 0; font-size: 2.6rem; line-height: 1.1; font-weight: 700; color: var(--ba-primary); font-variant-numeric: tabular-nums; }
+    .bg-big small { font-size: 1rem; font-weight: 600; color: var(--ba-text-2); margin-left: 6px; }
+    .bg-record { display: inline-block; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success); font-weight: 700; }
+    #sonuc-ozet, #sonuc-yorum, #sonuc-en-yuksek { margin: 8px 0 0; }
+    #yanlislar { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 12px; }
+    #yanlislar li strong { display: block; overflow-wrap: anywhere; }
+    #yanlislar .bg-you { display: block; color: var(--ba-danger); font-size: .92rem; }
+    #yanlislar .bg-right { display: block; color: var(--ba-success); font-size: .92rem; font-weight: 600; }
+
+    /* İstatistik */
+    .gb-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 0; }
+    @media (min-width: 560px) { .gb-stats { grid-template-columns: repeat(5, 1fr); } }
+    .gb-stats div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; }
+    .gb-stats dt { font-size: .75rem; color: var(--ba-text-muted); }
+    .gb-stats dd { margin: 2px 0 0; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+    .gb-cats { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+    .gb-cats li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .9rem; }
+    .gb-cats i { grid-column: 1 / -1; display: block; height: 6px; border-radius: 999px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); position: relative; overflow: hidden; }
+    .gb-cats i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--ba-primary); }
+    .gb-last { margin: 10px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    #ist-sifirla { margin-top: 12px; min-height: 40px; padding: 6px 14px; font-size: .88rem; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-content kbd, .gb-hint kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Bilgi Yarışması (Genel Kültür)","description":"Tarayıcıda oynanan, üç yüzden fazla özgün soruluk ücretsiz genel kültür bilgi yarışması; 50:50 joker, süreli mod, puan, seri ve istatistik içerir.","applicationCategory":"Game","operatingSystem":"Web (tarayıcı)","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/bilgi-yarismasi/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Bilgi yarışması oyunu ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp \"Yarışmayı başlat\" düğmesine basmanız yeterlidir. Hesap, e-posta ya da uygulama yüklemesi istenmez."}},{"@type":"Question","name":"Kaç soru var, sorular tekrar eder mi?","acceptedAnswer":{"@type":"Answer","text":"Havuzda üç yüzden fazla soru bulunur. Oyun daha önce gördüğünüz soruları tarayıcınızda hatırlar ve yeni turlarda önce görmediklerinizi getirir. Seçtiğiniz kategoride görülmemiş soru kalmadığında liste sıfırlanır ve sorular yeniden karışık gelir."}},{"@type":"Question","name":"50:50 jokeri nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Her turda bir kez kullanabilirsiniz. Joker iki yanlış şıkkı eler ve geriye bir yanlış, bir doğru şık bırakır. Jokerle cevapladığınız sorunun temel puanı yarıya iner; süre ve seri bonusu etkilenmez. Klavyede J tuşuyla da kullanılabilir."}},{"@type":"Question","name":"Süreli modda süre dolarsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Soru yanlış sayılır, doğru cevap yeşille gösterilir ve seriniz sıfırlanır. Ardından \"Sonraki soru\" düğmesiyle devam edersiniz. Sekmeyi arka plana alırsanız süre durur ve geri döndüğünüzde kaldığı yerden devam eder."}},{"@type":"Question","name":"Puanlarım ve istatistiklerim nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca kendi tarayıcınızın localStorage alanında saklanır; sunucuya gönderilmez. Bu yüzden farklı cihazlarda ya da tarayıcılarda ayrı kayıtlarınız olur. Tarayıcı verilerini temizlerseniz ya da gizli sekmede oynarsanız kayıtlar silinir. Ayar ekranındaki düğmeyle kendiniz de silebilirsiniz."}},{"@type":"Question","name":"Bir sorunun cevabı yanlış ya da tartışmalı görünüyorsa ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Soruyu ve düşündüğünüz doğru cevabı bilgi@bilisimajans.com adresine iletin. Sorular özenle seçilmiş, değişmeyen bilgilerden oluşuyor; yine de insan hatası mümkündür ve bildirimler bir sonraki güncellemede değerlendirilir."}},{"@type":"Question","name":"Sorular gerçek bir televizyon yarışmasından mı alındı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm sorular ve şıklar Bilişim Ajans ekibi tarafından özgün olarak yazıldı. Hiçbir yarışma programının, kitabın ya da soru bankasının içeriği kullanılmadı ve oyunda marka adı geçmez."}},{"@type":"Question","name":"Telefonda ve klavyesiz oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Düğmeler parmakla kolayca dokunulacak boyuttadır ve oyun 360 piksel genişliğindeki ekranlarda sorunsuz çalışır. Klavye kısayolları yalnızca bir kolaylıktır; fare ya da dokunmatik ekranla her şey yapılabilir."}}]}]}
+  </script>
+</head>
+<body>
+
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+    <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Bilgi Yarışması Oyna: Genel Kültür Soruları</h1><p class="lead">Tarih, coğrafya, bilim, spor, sanat, Türkçe ve genel kültür kategorilerinde 10 veya 20 soruluk turlar oynayın. İsterseniz süreli modu açın, 50:50 jokerinizi doğru anda kullanın, seri yapıp puanınızı yükseltin. Kurulum ve kayıt yok; puanlarınız yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="yukleniyor" aria-label="Bilgi Yarışması oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Genel Kültür Bilgi Yarışması</p><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <div id="ekran-yukleniyor"><p>Sorular yükleniyor…</p></div>
+        <div id="ekran-hata" hidden><p class="ba-error is-active" role="alert">Sorular yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin; sorun sürerse tarayıcı önbelleğini temizleyip yeniden deneyin.</p></div>
+
+        <div id="ekran-ayar" hidden>
+          <div class="ba-options">
+            <div class="ba-field"><label for="kategori">Kategori</label><select id="kategori"><option value="hepsi">Karışık (tüm kategoriler)</option></select></div>
+            <div class="ba-field"><label for="soru-sayisi">Tur uzunluğu</label><select id="soru-sayisi"><option value="10">10 soru</option><option value="20">20 soru</option></select></div>
+            <div class="ba-field"><label for="mod">Mod</label><select id="mod"><option value="klasik">Klasik (süresiz)</option><option value="sureli">Süreli (soru başına 15 sn)</option></select></div>
+            <div class="ba-field"><label for="zorluk">Zorluk</label><select id="zorluk"><option value="0">Hepsi</option><option value="1">Kolay</option><option value="2">Orta</option><option value="3">Zor</option></select></div>
+          </div>
+          <p class="gb-hint">Soru havuzunda <b id="havuz-sayisi">0</b> soru var. Her turda bir kez 50:50 joker kullanabilirsiniz; şıklar için <kbd>1</kbd>–<kbd>4</kbd>, joker için <kbd>J</kbd> tuşuna basın.</p>
+          <div class="ba-actions"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="baslat">Yarışmayı başlat</button></div>
+          <p id="ayar-uyari" class="gb-warn" role="status"></p>
+
+          <div id="istatistik" hidden>
+            <h3>İstatistikleriniz</h3>
+            <dl class="gb-stats">
+              <div><dt>Oynanan tur</dt><dd id="ist-tur">0</dd></div>
+              <div><dt>Cevaplanan soru</dt><dd id="ist-soru">0</dd></div>
+              <div><dt>Doğruluk</dt><dd id="ist-dogruluk">—</dd></div>
+              <div><dt>En yüksek puan</dt><dd id="ist-puan">0</dd></div>
+              <div><dt>En uzun seri</dt><dd id="ist-seri">0</dd></div>
+            </dl>
+            <ul class="gb-cats" id="ist-kategori" aria-label="Kategoriye göre doğruluk"></ul>
+            <p class="gb-last">Son turların puanı: <span id="ist-son">—</span></p>
+            <button type="button" class="ba-btn" id="ist-sifirla">İstatistikleri sıfırla</button>
+          </div>
+        </div>
+
+        <div id="ekran-oyun" hidden>
+          <div class="bg-status">
+            <span>Soru <b id="sira">1</b>/<b id="toplam">10</b></span>
+            <span>Puan <b id="puan">0</b></span>
+            <span>Seri <b id="seri">0</b></span>
+            <span class="bg-chip" id="kategori-etiket"></span>
+            <span class="bg-level" id="zorluk-etiket"></span>
+            <span class="bg-chip bg-practice" id="tur-etiketi" hidden>Tekrar turu</span>
+          </div>
+          <div class="bg-time" id="sure-kutu" hidden><div class="bar" aria-hidden="true"><span id="sure-bar"></span></div><output id="sure-yazi" role="timer" aria-label="Kalan süre, saniye">15</output></div>
+          <p class="bg-q" id="soru" tabindex="-1"></p>
+          <div class="bg-opts" id="siklar" role="group" aria-label="Cevap şıkları">
+            <button type="button" class="bg-opt" aria-keyshortcuts="1"><span class="bg-n" aria-hidden="true">1</span><span class="bg-t"></span></button>
+            <button type="button" class="bg-opt" aria-keyshortcuts="2"><span class="bg-n" aria-hidden="true">2</span><span class="bg-t"></span></button>
+            <button type="button" class="bg-opt" aria-keyshortcuts="3"><span class="bg-n" aria-hidden="true">3</span><span class="bg-t"></span></button>
+            <button type="button" class="bg-opt" aria-keyshortcuts="4"><span class="bg-n" aria-hidden="true">4</span><span class="bg-t"></span></button>
+          </div>
+          <p class="bg-feedback" id="geri-bildirim" role="status" aria-live="polite"></p>
+          <div class="bg-tools">
+            <button type="button" class="ba-btn" id="joker" aria-keyshortcuts="j">50:50 joker (1 hak)</button>
+            <button type="button" class="ba-btn" id="birak">Turu bırak</button>
+          </div>
+          <div class="bg-next"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="sonraki" hidden>Sonraki soru</button></div>
+        </div>
+
+        <div id="ekran-sonuc" hidden>
+          <h3 id="sonuc-baslik" tabindex="-1">Tur bitti</h3>
+          <p class="bg-big"><span id="sonuc-puan">0</span><small>puan</small></p>
+          <p class="bg-record" id="sonuc-rekor" hidden>Yeni en yüksek puan!</p>
+          <p id="sonuc-ozet"></p>
+          <p id="sonuc-yorum"></p>
+          <p id="sonuc-en-yuksek"></p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="tekrar">Yeni tur başlat</button>
+            <button type="button" class="ba-btn" id="yanlis-coz" hidden>Yanlışları yeniden çöz</button>
+            <button type="button" class="ba-btn" id="ayara-don">Ayarları değiştir</button>
+          </div>
+          <h3 id="yanlis-baslik" hidden>Yanlışları gözden geçirin</h3>
+          <p id="yanlis-yok" hidden>Bu turda hiç yanlışınız yok. Tebrikler!</p>
+          <ol id="yanlislar" hidden></ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-bilgi-yarismasi-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Bilgi yarışması nasıl bir oyun?</h2>
+      <p>Bilgi Yarışması, genel kültürünüzü eğlenceli bir biçimde sınamanız için hazırlanmış, tarayıcıda çalışan ücretsiz bir soru-cevap oyunudur. Her turda size dört şıklı sorular sorulur; doğru şıkkı seçtikçe puan kazanır, art arda doğru cevaplar verdikçe seri bonusu toplarsınız. Soru havuzunda tarih, coğrafya, bilim, spor, sanat, Türkçe ve genel kültür kategorilerinde üç yüzden fazla soru bulunur. Sorular kolay, orta ve zor olmak üzere üç zorluk seviyesine ayrılmıştır; böylece hem yeni başlayanlar hem de iddialı oyuncular kendi seviyesine uygun bir tur bulabilir.</p>
+      <p>Oyunu açmak için hesap oluşturmanız, uygulama indirmeniz ya da bir dosya yüklemeniz gerekmez. Sayfa açıldığında sorular aynı siteden küçük bir dosya olarak yüklenir ve oyunun geri kalanı tamamen cihazınızda çalışır. Telefon, tablet ve bilgisayarda aynı şekilde oynanır; düğmeler parmakla rahatça basılacak boyuttadır ve oyun 360 piksel genişliğindeki küçük ekranlara da sığar.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Kategori, tur uzunluğu, mod ve zorluk seçin. Kararsızsanız "Karışık" kategori, 10 soru ve klasik modla başlayın.</li>
+        <li>"Yarışmayı başlat" düğmesine basın. Soru ve dört şık ekrana gelir; şıklar her soruda yeniden karıştırılır.</li>
+        <li>Doğru olduğunu düşündüğünüz şıkka tıklayın ya da klavyede 1, 2, 3 veya 4 tuşuna basın. Seçiminiz hemen değerlendirilir; doğru şık yeşil, yanlış seçiminiz kırmızı işaretlenir ve doğru cevap yazıyla da gösterilir.</li>
+        <li>Cevabı inceledikten sonra "Sonraki soru" düğmesine basın. Klasik modda süre sınırı olmadığından açıklamayı okumak ve doğru bilgiyi aklınıza yerleştirmek için acele etmeniz gerekmez.</li>
+        <li>Tur bittiğinde puanınızı, doğru ve yanlış sayınızı, en uzun serinizi ve yanlış yaptığınız soruların doğru cevaplarını görürsünüz. İsterseniz yanlışları yeniden çözebilir ya da yeni bir tur başlatabilirsiniz.</li>
+      </ol>
+
+      <h2>Klavye ve dokunmatik kontroller</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> şıklara, joker düğmesine ve diğer düğmelere tıklamanız ya da dokunmanız yeterlidir.</li>
+        <li><strong>Klavye:</strong> <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd> tuşları ekrandaki sıraya göre şık seçer; <kbd>J</kbd> tuşu 50:50 jokerini kullanır. Düğmeler arasında <kbd>Tab</kbd> ile gezinip <kbd>Enter</kbd> ile basabilirsiniz.</li>
+        <li><strong>Sıradaki soru:</strong> Bir soruyu cevapladığınızda odak otomatik olarak "Sonraki soru" düğmesine geçer; tek bir <kbd>Enter</kbd> ile devam edebilirsiniz.</li>
+        <li><strong>Tam ekran:</strong> Tarayıcınız destekliyorsa oyun kutusunun üstündeki "Tam ekran" düğmesi yalnızca oyunu gösterir; dikkat dağıtıcı hiçbir şey kalmaz.</li>
+        <li><strong>Ekran okuyucular:</strong> Doğru ya da yanlış sonucu, 50:50 bilgisi ve kalan süre ekran okuyucuya da bildirilir; şık düğmelerinin klavye kısayolları işaretlenmiştir.</li>
+      </ul>
+
+      <h2>Puanlama, seri ve 50:50 joker</h2>
+      <p>Her doğru cevap temel puan getirir: kolay soru 10, orta soru 20, zor soru 30 puandır. Süreli modda cevap verdiğinizde kalan her saniye bonus puan olarak eklenir; en fazla 15 puan kazanılabilir. Art arda doğru cevap verdiğinizde seri bonusu başlar: ikinci doğruda 5, üçüncüde 10 puan eklenir ve bu, altıncı doğru cevapta 25 puana ulaşıp orada sabit kalır. Yanlış cevap ya da süre dolması seriyi sıfırlar.</p>
+      <p>Her turda yalnızca bir kez 50:50 jokerini kullanabilirsiniz. Joker iki yanlış şıkkı eler; geriye doğru cevap ile bir yanlış şık kalır. Dengeyi korumak için jokerle cevapladığınız sorunun temel puanı yarıya iner; süre ve seri bonusu ise aynen verilir. Jokeri bir turda yalnızca tek bir soruda kullanabildiğiniz için en çok tereddüt ettiğiniz soruya saklamak akıllıca olur.</p>
+
+      <div class="ba-ad" data-slot="oyun-bilgi-yarismasi-b" aria-label="Reklam"></div>
+
+      <h2>Klasik mod mu, süreli mod mu?</h2>
+      <p>Klasik modda süre yoktur; sorular üzerinde istediğiniz kadar düşünebilirsiniz. Bu mod hem öğrenmek hem de yeni konuları denemek için idealdir. Süreli modda ise her soru için 15 saniyeniz vardır ve ekranın üstünde kalan süreyi gösteren bir çubuk akar. Süre dolarsa soru yanlış sayılır, doğru cevap gösterilir ve seriniz sıfırlanır. Sekmeyi arka plana alırsanız süre durur, geri döndüğünüzde kaldığı yerden devam eder; yani bir bildirime bakmanız ya da başka bir uygulamaya geçmeniz sizi cezalandırmaz. İlk turlarınızı klasik modda oynayıp soruların seviyesine alıştıktan sonra süreli moda geçmenizi öneririz.</p>
+
+      <h2>Kategoriler ve soru havuzu</h2>
+      <p>Sorular Bilişim Ajans ekibi tarafından özgün olarak yazıldı; televizyon yarışmalarından, kitaplardan ya da hazır soru bankalarından kopyalanmadı ve hiçbir marka ya da program adı kullanılmıyor. Yedi kategori vardır:</p>
+      <ul>
+        <li><strong>Tarih:</strong> Osmanlı Devleti, Kurtuluş Savaşı, Cumhuriyet dönemi, antik uygarlıklar ve dünya tarihinden temel olaylar ve tarihler.</li>
+        <li><strong>Coğrafya:</strong> başkentler, dağlar, göller, nehirler, boğazlar, Türkiye'nin illeri ve bölgeleri.</li>
+        <li><strong>Bilim:</strong> fizik, kimya, biyoloji, astronomi ve insan vücuduna dair okul bilgisi düzeyinde sorular.</li>
+        <li><strong>Spor:</strong> takım sporlarının kuralları, olimpiyat oyunları, geleneksel sporlar ve branşlara dair genel bilgiler.</li>
+        <li><strong>Sanat:</strong> resim, müzik, edebiyat, mimari, sinema ve halk kültürü.</li>
+        <li><strong>Türkçe:</strong> yazım kuralları, sözcük türleri, eş ve zıt anlam, deyimler, atasözleri ve edebiyat bilgisi.</li>
+        <li><strong>Genel:</strong> sayılar, günlük hayat, teknoloji, önemli günler ve yöresel lezzetler.</li>
+      </ul>
+      <p>Soruları yazarken değişmeyen, ders kitaplarında ve kaynak eserlerde yer alan bilgileri seçtik. Ölçüm yöntemine göre tartışmalı olabilecek konularda koşulları sorunun içinde belirttik ya da soruyu hiç sormadık. Yine de bir hata fark ederseniz bilgi@bilisimajans.com adresine yazabilirsiniz; düzeltmeler bir sonraki güncellemede yayınlanır. Oyun, daha önce gördüğünüz soruları hatırlar ve yeni turlarda önce görmediklerinizi getirir; bu liste de yalnızca tarayıcınızda tutulur.</p>
+
+      <h2>Daha yüksek puan için ipuçları</h2>
+      <ul>
+        <li><strong>Soruyu sonuna kadar okuyun.</strong> "Hangisi doğrudur?" ile "Hangisi değildir?" arasındaki fark, bilgisi sağlam oyuncuların bile puan kaybettiği yerdir.</li>
+        <li><strong>Eleme yöntemini kullanın.</strong> Kesinlikle yanlış olduğunu bildiğiniz şıkları zihninizde eleyin; geriye iki şık kalınca tahmin şansınız yüzde ellidir.</li>
+        <li><strong>Jokeri erkenden harcamayın.</strong> İlk sorular genellikle kolaydır; jokeri tereddüt ettiğiniz zor bir soruya saklayın.</li>
+        <li><strong>Seriyi koruyun.</strong> Seri bonusu altı doğru cevapla en yükseğe çıkar; emin olmadığınız sorularda acele etmeyin, klasik modda düşünmek serbesttir.</li>
+        <li><strong>Zorluğu kademeli artırın.</strong> Zor soru 30 puan değerindedir. Kolay ve orta turlarda yüzde 80 üzerine çıktığınızda zorluk filtresini "Zor" yapın.</li>
+        <li><strong>Zayıf kategoriyi bulun.</strong> Ayar ekranındaki kategori çubukları hangi alanda daha çok yanlış yaptığınızı gösterir; o kategoriden tur seçerek eksiğinizi kapatın.</li>
+        <li><strong>Süreli modda ilk saniyeleri kullanın.</strong> Cevabınızdan eminseniz hemen verin; kalan her saniye bonus puandır.</li>
+      </ul>
+
+      <h2>İstatistikler ve yanlışları gözden geçirme</h2>
+      <p>Her tamamlanan tur sonunda oynadığınız tur sayısı, cevapladığınız soru sayısı, genel doğruluk oranı, en yüksek puan, en uzun seri ve kategori bazında doğruluk yüzdeniz tarayıcınızın localStorage alanına kaydedilir. Ayar ekranının altında bu özeti ve kategori çubuklarını görürsünüz. Tur sonunda yanlış yaptığınız soruların listesi, verdiğiniz cevapla birlikte doğru cevabı da gösterir. "Yanlışları yeniden çöz" düğmesi bu soruları yeni bir mini turda karşınıza çıkarır. Tekrar turu istatistiklere ve rekora yazılmaz; böylece ezberleyerek rekor kırmış olmazsınız. Dilerseniz "İstatistikleri sıfırla" düğmesiyle (iki adımlı onayla) tüm kayıtları silebilirsiniz. Tarayıcı verilerini temizlediğinizde ya da gizli sekmede oynadığınızda kayıtlar da silinir.</p>
+
+      <h2>Bilgi yarışmalarının kısa tarihi</h2>
+      <p>Soru sorarak öğrenme çok eski bir yöntemdir. Antik Yunan'da düşünürler öğrencileriyle soru ve cevap yoluyla tartışır, bilgiyi diyalogla sınardı; Sokrates'in adıyla anılan yöntem bunun en bilinen örneğidir. Orta Çağ'da medreselerde ve üniversitelerde yapılan münazaralar, yani düzenli sözlü tartışmalar da bilgiyi yarıştıran etkinliklerdi. Bu geleneğin eğlence yönü ise yirminci yüzyılda radyonun, ardından televizyonun yaygınlaşmasıyla öne çıktı; dünyanın birçok ülkesinde izleyicileri ekran başında toplayan soru-cevap programları yapıldı.</p>
+      <p>Bilgisayarların ve internetin gelişmesiyle bilgi yarışmaları telefona ve tarayıcıya taşındı. Okullardaki deneme sınavları, dergi ve gazete eklerindeki bulmacalar, kulüp ve okul yarışmaları da aynı soru-cevap kültürünün parçalarıdır. Bu sayfadaki oyun, uzun geleneğin sade ve kişisel bir uyarlamasıdır: rakip yok, süre baskısı isteğe bağlı, amaç eğlenirken öğrenmek ve bilgiyi tazelemek.</p>
+
+      <h2>Gizlilik: hesap yok, takip yok</h2>
+      <p>Oyunun kendisinde hesap, analiz ya da izleme kodu yoktur. Soru dosyası bu siteden indirilir; verdiğiniz cevaplar, puanlarınız ve istatistikleriniz hiçbir yere gönderilmez, yalnızca tarayıcınızın localStorage alanında saklanır. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda hiç görünmez. Reklamları sunan hizmetin kendi betiği bu açıklamanın dışındadır. Daha fazla bilgi için <a href="../../gizlilik/">Gizlilik Politikası</a> sayfamıza bakabilirsiniz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Bilgi yarışması oyunu ücretsiz mi, kayıt gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp "Yarışmayı başlat" düğmesine basmanız yeterlidir. Hesap, e-posta ya da uygulama yüklemesi istenmez.</p></details>
+      <details><summary>Kaç soru var, sorular tekrar eder mi?</summary><p>Havuzda üç yüzden fazla soru bulunur. Oyun daha önce gördüğünüz soruları tarayıcınızda hatırlar ve yeni turlarda önce görmediklerinizi getirir. Seçtiğiniz kategoride görülmemiş soru kalmadığında liste sıfırlanır ve sorular yeniden karışık gelir.</p></details>
+      <details><summary>50:50 jokeri nasıl çalışır?</summary><p>Her turda bir kez kullanabilirsiniz. Joker iki yanlış şıkkı eler ve geriye bir yanlış, bir doğru şık bırakır. Jokerle cevapladığınız sorunun temel puanı yarıya iner; süre ve seri bonusu etkilenmez. Klavyede J tuşuyla da kullanılabilir.</p></details>
+      <details><summary>Süreli modda süre dolarsa ne olur?</summary><p>Soru yanlış sayılır, doğru cevap yeşille gösterilir ve seriniz sıfırlanır. Ardından "Sonraki soru" düğmesiyle devam edersiniz. Sekmeyi arka plana alırsanız süre durur ve geri döndüğünüzde kaldığı yerden devam eder.</p></details>
+      <details><summary>Puanlarım ve istatistiklerim nerede saklanıyor?</summary><p>Yalnızca kendi tarayıcınızın localStorage alanında saklanır; sunucuya gönderilmez. Bu yüzden farklı cihazlarda ya da tarayıcılarda ayrı kayıtlarınız olur. Tarayıcı verilerini temizlerseniz ya da gizli sekmede oynarsanız kayıtlar silinir. Ayar ekranındaki düğmeyle kendiniz de silebilirsiniz.</p></details>
+      <details><summary>Bir sorunun cevabı yanlış ya da tartışmalı görünüyorsa ne yapmalıyım?</summary><p>Soruyu ve düşündüğünüz doğru cevabı bilgi@bilisimajans.com adresine iletin. Sorular özenle seçilmiş, değişmeyen bilgilerden oluşuyor; yine de insan hatası mümkündür ve bildirimler bir sonraki güncellemede değerlendirilir.</p></details>
+      <details><summary>Sorular gerçek bir televizyon yarışmasından mı alındı?</summary><p>Hayır. Tüm sorular ve şıklar Bilişim Ajans ekibi tarafından özgün olarak yazıldı. Hiçbir yarışma programının, kitabın ya da soru bankasının içeriği kullanılmadı ve oyunda marka adı geçmez.</p></details>
+      <details><summary>Telefonda ve klavyesiz oynayabilir miyim?</summary><p>Evet. Düğmeler parmakla kolayca dokunulacak boyuttadır ve oyun 360 piksel genişliğindeki ekranlarda sorunsuz çalışır. Klavye kısayolları yalnızca bir kolaylıktır; fare ya da dokunmatik ekranla her şey yapılabilir.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dizi-hafiza/">Dizi Hafıza Oyunu</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../adam-asmaca/">Adam Asmaca</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-bilgi-yarismasi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+    <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

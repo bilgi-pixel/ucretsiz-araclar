@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kaydırmalı Bulmaca Oyna – Ücretsiz Online Kaydırmalı Sayı Bulmacası (kurulumsuz)</title>
+  <meta name="description" content="Kaydırmalı sayı bulmacasını (15 bulmaca) ücretsiz oyna: 3×3, 4×4 ve 5×5 boyut, hamle sayacı, en iyi süre ve kendi fotoğrafınla resimli mod. Fotoğraf cihazından çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kaydirmali-bulmaca/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri tema değişse de sabittir (bordo tonları). */
+    .ba-hero.game-hero { padding: 28px 0 64px; }
+    .game-hero .lead { margin-bottom: .8em; }
+    .game-hero .ba-badges { margin-bottom: 0; }
+    .game-box { max-width: 560px; margin-left: auto; margin-right: auto; }
+    .g-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .g-stat { background: #5e1a25; color: #fff; border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .g-label { display: block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: #f0d3da; }
+    .g-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.35rem; line-height: 1.3; overflow-wrap: anywhere; }
+    .g-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin: 14px 0 0; }
+    .g-bar .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .g-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+    .g-seg button { min-height: 44px; min-width: 52px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); }
+    .g-seg button:hover { border-color: var(--ba-primary); }
+    .g-seg button[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .g-seg button[aria-pressed="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .g-seg button[aria-pressed="true"] { color: #1a0d10; }
+
+    .photo-panel { margin-top: 14px; padding: 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .pp-row { display: flex; gap: 12px; align-items: center; }
+    .thumb { width: 72px; height: 72px; flex: none; border-radius: 6px; border: 1px solid var(--ba-border-hover); background-color: #d3bcc2; background-image: var(--img, none); background-size: cover; background-position: center; }
+    .pp-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; flex: 1 1 0; min-width: 0; }
+    .pp-actions .ba-btn { min-height: 44px; padding: 8px 14px; }
+    #photo:focus-visible + label { outline: 2px solid var(--ba-primary); outline-offset: 3px; }
+    .pp-check { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .pp-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .photo-panel .g-hint { text-align: left; margin-top: 8px; font-size: .82rem; }
+    @media (max-width: 480px) { #btn-full { display: none; } }
+
+    .board-wrap { position: relative; width: 100%; max-width: 480px; margin: 14px auto 0; }
+    .board { --gk: 2; position: relative; width: 100%; aspect-ratio: 1 / 1; background: #bfa0a9; border-radius: 10px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; container-type: inline-size; }
+    .board[data-size="5"] { --gk: 1.6; }
+    .board.pic { --gk: 0; background: #3a0d18; }
+    .board:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 3px; }
+    .cells, .tiles { --gap: calc(var(--gk) * 1cqw); position: absolute; inset: var(--gap); }
+    .cells { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); grid-template-rows: repeat(var(--n, 4), 1fr); gap: var(--gap); }
+    .cells div { background: #d3bcc2; border-radius: 6px; }
+    .pic .cells { display: none; }
+    .ptile {
+      position: absolute; left: 0; top: 0; margin: 0; padding: 0; border: 0; cursor: pointer; font-family: inherit;
+      width: calc((100% - (var(--n, 4) - 1) * var(--gap)) / var(--n, 4));
+      height: calc((100% - (var(--n, 4) - 1) * var(--gap)) / var(--n, 4));
+      translate: calc(var(--c, 0) * (100% + var(--gap))) calc(var(--r, 0) * (100% + var(--gap)));
+      transition: translate .11s ease-in-out;
+      display: grid; place-items: center; border-radius: 6px; font-weight: 700; line-height: 1;
+      font-size: clamp(16px, 7vw, 40px);
+      font-size: calc(100cqw / var(--n, 4) * .4);
+      background: #7b2331; color: #fff;
+    }
+    .ptile:focus-visible { outline: 3px solid #ffd98a; outline-offset: -3px; }
+    .ptile.ok { box-shadow: inset 0 0 0 3px #ffd98a; }
+    .ptile.ghost { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+    .ptile.ghost.show { opacity: 1; }
+    .pic .ptile { border-radius: 0; background-color: #3a0d18; background-image: var(--img); background-repeat: no-repeat; background-size: calc(var(--n) * 100%) calc(var(--n) * 100%); background-position: calc(var(--gc) / (var(--n) - 1) * 100%) calc(var(--gr) / (var(--n) - 1) * 100%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45); display: block; }
+    .pic .ptile.ok { box-shadow: inset 0 0 0 2px #ffd98a; }
+    .pic .ptile span { position: absolute; left: 4px; top: 4px; font-size: clamp(10px, calc(100cqw / var(--n, 4) * .2), 18px); padding: 2px 6px; border-radius: 4px; background: rgba(58, 13, 24, .82); color: #fff; line-height: 1.1; }
+    .pic.nonum .ptile span { display: none; }
+    .board.solved .ptile { animation: pWave .55s ease both; animation-delay: calc((var(--r, 0) + var(--c, 0)) * 60ms); }
+    @keyframes pWave { 0% { scale: 1; } 45% { scale: 1.1; } 100% { scale: 1; } }
+    .p-status { min-height: 3em; margin: 12px 0 0; text-align: center; color: var(--ba-text-2); }
+    .p-status[data-kind="ok"] { color: var(--ba-success); font-weight: 600; }
+    .g-hint { text-align: center; font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    /* Oyun kontrol düğmeleri ile reklam arasında geniş boşluk (yanlışlıkla tıklamayı önler). */
+    .game-ad-a { margin-top: clamp(96px, 30vh, 240px); }
+    .game-box:fullscreen { max-width: none; border-radius: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--ba-surface); }
+    .game-box:fullscreen .board-wrap { max-width: min(70vh, 90vw); }
+    @media (prefers-reduced-motion: reduce) {
+      .ptile { transition: none; }
+      .board.solved .ptile { animation: none; }
+      .ptile.ghost { transition: none; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Kaydırmalı Sayı Bulmacası – Bilişim Ajans","applicationCategory":"GameApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/kaydirmali-bulmaca/"},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kaydırmalı sayı bulmacası nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Tahtadaki bir boşluk vardır. Boşluğun yanındaki taşa tıklayarak ya da ok tuşlarıyla taşı boşluğa kaydırırsınız. Amaç, taşları 1'den başlayarak sıraya dizmek ve boşluğu sağ alt köşeye getirmektir."}},
+  {"@type":"Question","name":"Karıştırılan her bulmaca çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Bu sayfa her karıştırmada, ters sıra sayısına dayanan bir eşlik denetimi yapar ve çözülemeyecek dizilimleri düzeltir. Böylece karşınıza çıkan her bulmacanın bir çözümü vardır."}},
+  {"@type":"Question","name":"Kendi fotoğrafımla oynayabilir miyim, fotoğrafım sunucuya gidiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Resimli modda Fotoğraf seç düğmesiyle kendi fotoğrafınızı kullanabilirsiniz. Fotoğraf yalnızca tarayıcınızın belleğinde parçalara bölünür; hiçbir sunucuya yüklenmez ve cihazınızdan çıkmaz."}},
+  {"@type":"Question","name":"Hamle nasıl sayılıyor?","acceptedAnswer":{"@type":"Answer","text":"Kaydırılan her taş bir hamledir. Boşlukla aynı satır ya da sütundaki uzak bir taşa tıklarsanız aradaki taşlar birlikte kayar ve her biri ayrı hamle olarak sayılır."}},
+  {"@type":"Question","name":"Çözümü izle düğmesi ne yapar, süremi kaydeder mi?","acceptedAnswer":{"@type":"Answer","text":"Bulmacanın bir çözümünü adım adım gösterir. Bu çözüm en kısa çözüm olmayabilir. Çözümü izlediğiniz oyunlar en iyi süre olarak kaydedilmez."}},
+  {"@type":"Question","name":"En iyi sürem nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Sayı ve resimli mod ile her tahta boyutu için ayrı en iyi süre tutulur. Tarayıcı verilerini temizlerseniz sıfırlanır."}},
+  {"@type":"Question","name":"Telefonda nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Kaydırmak istediğiniz taşa dokunun ya da taşın üzerinde parmağınızı boşluğa doğru kaydırın. Tahtanın üzerinde sayfa kaymaz."}},
+  {"@type":"Question","name":"Oyun ücretli mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oyun tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool game-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Kaydırmalı Bulmaca Oyna – Ücretsiz Online Sayı Bulmacası</h1><p class="lead">Taşları kaydırıp 1'den başlayarak sıraya dizin. 3×3, 4×4 ve 5×5 boyut; hamle sayacı, süre ve en iyi süre; isterseniz kendi fotoğrafınızla resimli mod. Fotoğraf cihazınızdan çıkmaz.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Kaydırmalı bulmaca oyun alanı</h2>
+      <div class="g-stats">
+        <div class="g-stat"><span class="g-label">Hamle</span><strong id="moves">0</strong></div>
+        <div class="g-stat"><span class="g-label">Süre</span><strong id="time">00:00</strong></div>
+        <div class="g-stat"><span class="g-label">En iyi süre</span><strong id="best">—</strong></div>
+      </div>
+      <div class="g-bar">
+        <div class="g-seg" role="group" aria-label="Oyun modu">
+          <button type="button" data-mode-btn="sayi" aria-pressed="true">Sayılar</button>
+          <button type="button" data-mode-btn="resim" aria-pressed="false">Resimli</button>
+        </div>
+        <div class="g-seg" role="group" aria-label="Tahta boyutu">
+          <button type="button" data-size-btn="3" aria-pressed="false">3×3</button>
+          <button type="button" data-size-btn="4" aria-pressed="true">4×4</button>
+          <button type="button" data-size-btn="5" aria-pressed="false">5×5</button>
+        </div>
+      </div>
+      <div class="g-bar">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-shuffle">Karıştır</button>
+        <button type="button" class="ba-btn" id="btn-solve">Çözümü izle</button>
+        <button type="button" class="ba-btn" id="btn-full" hidden>Tam ekran</button>
+      </div>
+      <div class="photo-panel" id="photo-panel" hidden>
+        <div class="pp-row">
+          <div class="thumb" id="thumb" role="img" aria-label="Hedef görsel önizlemesi"></div>
+          <div class="pp-actions">
+            <input type="file" id="photo" accept="image/*" class="visually-hidden">
+            <label for="photo" class="ba-btn">Fotoğraf seç</label>
+            <button type="button" class="ba-btn" id="btn-sample">Örnek resim</button>
+            <label class="pp-check"><input type="checkbox" id="show-nums" checked> Numaraları göster</label>
+          </div>
+        </div>
+        <p class="g-hint">Fotoğrafınız yalnızca bu cihazda, tarayıcınızın belleğinde parçalara bölünür; hiçbir yere yüklenmez. Resim ortadan kare olarak kırpılır.</p>
+        <p class="g-hint" id="photo-note" aria-live="polite"></p>
+      </div>
+      <p class="ba-error" id="error" role="alert"></p>
+      <div class="board-wrap">
+        <div class="board" id="board" data-size="4" tabindex="0" role="group" aria-label="Kaydırmalı bulmaca tahtası. Bir taşa tıklayın ya da ok tuşlarıyla kaydırın.">
+          <div class="cells" id="cells" aria-hidden="true"></div>
+          <div class="tiles" id="tiles"></div>
+        </div>
+      </div>
+      <p class="p-status" id="status" aria-live="polite"></p>
+      <p class="g-hint">Bir taşa tıklayın · ok tuşları veya W A S D · telefonda taşın üzerinde parmağınızı boşluğa doğru kaydırın. Altın çerçeveli taşlar doğru yerindedir.</p>
+    </section>
+
+    <div class="ba-ad game-ad-a" data-slot="oyun-kaydirmali-bulmaca-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Kaydırmalı sayı bulmacası nedir?</h2>
+      <p>Kaydırmalı sayı bulmacası, kare bir çerçevede numaralı taşların bir boşluk yardımıyla yer değiştirdiği klasik bir zeka oyunudur. 4×4 boyutlu hâli "15 bulmaca", 3×3 boyutlu hâli ise "8 bulmaca" olarak bilinir. Taşları doğrudan çekip alamazsınız; yalnızca boşluğa komşu bir taşı boşluğa kaydırabilirsiniz. Her kaydırma boşluğun yerini değiştirir ve bir sonraki hamleyi belirler. Amaç, taşları soldan sağa ve yukarıdan aşağıya 1'den başlayarak sıraya dizmek, boşluğu da sağ alt köşeye götürmektir.</p>
+      <p>Bu sayfadaki sürüm tarayıcınızda çalışır; bir şey indirmenizi ya da kayıt olmanızı istemez. Süreniz ve hamle sayınız yalnızca sizin cihazınızda tutulur.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Boyutu seçin.</strong> Yeni başlıyorsanız 3×3, klasik deneyim için 4×4, uzun bir bulmaca için 5×5 boyutunu seçin. Boyut değişince bulmaca yeniden karıştırılır.</li>
+        <li><strong>Karıştırın.</strong> Sayfa açıldığında bulmaca zaten karışıktır. Yeni bir dizilim için Karıştır düğmesine basın; her dizilimin çözümü vardır.</li>
+        <li><strong>Taşları kaydırın.</strong> Boşluğun yanındaki bir taşa tıklayın, taş boşluğa kayar. Süre ilk hamlenizle başlar.</li>
+        <li><strong>Sıraya dizin.</strong> Taşları 1'den başlayarak dizin. Doğru yerdeki taşlar altın bir çerçeveyle işaretlenir.</li>
+        <li><strong>Bitirin.</strong> Son taş yerine oturduğunda süre durur, hamle sayınız ve süreniz gösterilir; en iyi sürenizi geçtiyseniz kaydedilir.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare veya dokunma:</strong> Taşa tıklayın. Boşlukla aynı satır ya da sütundaki uzak bir taşa tıklarsanız aradaki taşlar birlikte kayar; her taş ayrı bir hamle sayılır.</li>
+        <li><strong>Ok tuşları ve W A S D:</strong> Tuşa bastığınız yönde bir taş kayar. Örneğin sol ok, boşluğun sağındaki taşı sola, yani boşluğa doğru iter. Tahta ekranda görünürken ok tuşları oyunu yönetir; sayfanın başka bir yerindeyken sayfa her zamanki gibi kayar.</li>
+        <li><strong>Parmak kaydırma:</strong> Kaydırmak istediğiniz taşın üzerinde parmağınızı boşluğa doğru sürükleyin.</li>
+        <li><strong>Karıştır:</strong> Aynı boyutta yeni bir bulmaca başlatır.</li>
+        <li><strong>Çözümü izle:</strong> Bulmacanın bir çözümünü adım adım oynatır. Dilediğiniz an Durdur'a basabilir ya da kendiniz devam edebilirsiniz.</li>
+        <li><strong>Tam ekran:</strong> Destekleyen tarayıcılarda oyunu ekranı kaplayacak şekilde büyütür.</li>
+      </ul>
+
+      <h2>Resimli mod: kendi fotoğrafınızla oynayın</h2>
+      <p>Resimli modda sayılar yerine bir fotoğrafın parçalarını dizersiniz. <strong>Resimli</strong> düğmesine basın; hazır bir örnek resimle başlarsınız. Kendi fotoğrafınızı kullanmak için <strong>Fotoğraf seç</strong> düğmesiyle cihazınızdan bir JPG, PNG, WebP ya da GIF dosyası seçin. Fotoğraf ortadan kare olarak kırpılır, seçtiğiniz boyuta göre 9, 16 ya da 25 parçaya bölünür ve karıştırılır. Parçaların köşesindeki küçük numaralar işe yarar; zorlaşmasını istiyorsanız "Numaraları göster" kutusunun işaretini kaldırın ve yalnızca resme güvenin. Çözdüğünüzde eksik sağ alt parça yerine oturur ve bütün resim ortaya çıkar.</p>
+      <p>Gizlilik açısından önemli nokta şudur: seçtiğiniz fotoğraf bir sunucuya yüklenmez. Tarayıcınız dosyayı yalnızca bu sayfanın belleğinde açar, küçültüp kırpar ve parçalar hâlinde gösterir. Sayfayı kapattığınızda ya da yenilediğinizde fotoğraf bellekten silinir; kaydedilmez. Dosya bozuksa ya da bir resim değilse size Türkçe bir uyarı gösterilir ve oyununuz bozulmaz.</p>
+
+      <h2>Çözümü izle ve en iyi süre</h2>
+      <p>Takıldığınızda <strong>Çözümü izle</strong> düğmesi, bulmacanın bir çözümünü taş taş gösterir. Bu, en kısa çözüm olmak zorunda değildir; üst satırdan başlayıp küçülen bir alanda çalışan düzenli bir yöntem kullanır. Hızı hamle sayısına göre ayarlanır, böylece 5×5 gibi büyük tahtalarda bile birkaç saniyede biter. Çözümü izlediğiniz oyun, adil olması için en iyi süre olarak kaydedilmez.</p>
+      <p>En iyi süreniz, mod (sayı ya da resimli) ve tahta boyutuna göre ayrı ayrı, yalnızca tarayıcınızın localStorage alanında saklanır. Hiçbir sunucuya gönderilmez; tarayıcı verilerini temizlerseniz sıfırlanır.</p>
+
+      <h2>Her karıştırma çözülebilir mi?</h2>
+      <p>Hayır, her rastgele dizilim çözülemez. Matematikçiler bunu 1879'da gösterdi: kaydırma hamleleri, taşların "ters sıra" sayısının eşliğini (çift mi, tek mi olduğunu) korur. 4×4 tahtada rastgele dizilen 16 karenin yalnızca yarısı, yani yaklaşık 10,4 trilyon dizilim çözülebilir; 3×3 tahtada bu sayı 181.440'tır. Bu yüzden sıradan bir rastgele karıştırma yarı yarıya çözümsüz bir bulmaca verebilirdi. Bizim oyunumuz her karıştırmada eşlik denetimi yapar, gerekirse iki taşı takas ederek bulmacayı çözülebilir hâle getirir. Karşınıza çıkan bulmacanın bir çözümü olduğundan emin olabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="oyun-kaydirmali-bulmaca-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Üstten başlayın.</strong> Önce üst satırı, sonra sol sütunu tamamlayın; her tamamladığınız satırı ya da sütunu bir daha bozmayın. Alan küçüldükçe iş kolaylaşır ve sonunda 2×2'lik bir köşe kalır.</li>
+        <li><strong>Son iki taş hilesi.</strong> Bir satırın son iki taşını sırayla yerleştirmeye çalışmak çıkmaza sokar. Bunun yerine sondaki taşı, sondan bir önceki taşın yerine, öbür taşı da onun hemen altına getirin; sonra boşluğu sağ üst kareye götürüp sondaki taşı sağa, alttakini yukarı kaydırın.</li>
+        <li><strong>Boşluğu bir "süpürge" gibi düşünün.</strong> Her taşı hedefine götürmek için önce boşluğu taşın gideceği yönün önüne getirin; sonra taşı kaydırın.</li>
+        <li><strong>Gereksiz hamleden kaçının.</strong> Bir taşı kaydırıp hemen geri almak sayacı boş yere artırır.</li>
+        <li><strong>Küçük boyuttan başlayın.</strong> 3×3 tahtada yöntemi oturtun; 4×4 ve 5×5'te aynı mantık uzun ama düzenli adımlarla uygulanır.</li>
+        <li><strong>Resimli modda ipuçlarını kullanın.</strong> Köşe ve kenar parçaları genellikle en kolay tanınır; önce çerçeveyi kurmak sizi doğru yöne götürür.</li>
+      </ul>
+
+      <h2>Kaydırmalı bulmacanın kısa tarihi</h2>
+      <p>Kaydırmalı bulmaca, 1870'lerin sonunda Amerika Birleşik Devletleri'nde ortaya çıktı. İlk fikrin New York'taki bir postane müdürü olan Noyes Chapman'a ait olduğu sıkça anılır. 1880 dolaylarında oyun Amerika ve Avrupa'da büyük bir "çılgınlığa" dönüştü; insanlar iş yerlerinde ve kahvehanelerde taşları kaydırmakla uğraştı. Daha sonra bulmaca ustası Sam Loyd'un icadı olduğu yönünde yaygın bir söylenti dolaşmaya başladı, ancak araştırmalar bu iddiayı doğrulamıyor. İki taşın yer değiştirdiği, ünlü "14-15" dizilimi uzun süre bir meydan okuma olarak sunuldu; oysa bu dizilimin çözümsüz olduğu matematiksel olarak kanıtlanmıştı. Bugün 4×4 tahtada en zor dizilimlerin bile en fazla 80 hamlede çözülebildiği bilinir (tek taş hamle sayımıyla); 3×3 tahtada bu sayı 31'dir.</p>
+
+      <h2>Neden Bilişim Ajans'ın kaydırmalı bulmacası?</h2>
+      <ul>
+        <li><strong>Kurulum yok:</strong> Tarayıcı yeterlidir; bilgisayar, telefon ve tablette aynı sayfa çalışır.</li>
+        <li><strong>Kayıt yok, yükleme yok:</strong> Fotoğrafınız ve skorlarınız cihazınızda kalır.</li>
+        <li><strong>Her bulmaca çözülebilir:</strong> Karıştırma eşlik denetiminden geçer.</li>
+        <li><strong>Üç boyut, iki mod:</strong> 3×3, 4×4, 5×5; sayılı ve resimli oynanış.</li>
+        <li><strong>Erişilebilirlik:</strong> Klavye ile tam kontrol, taşlar için ekran okuyucu etiketleri ve hareketi azalt tercihine saygı.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Kaydırmalı sayı bulmacası nasıl oynanır?</summary><p>Tahtada bir boşluk vardır. Boşluğun yanındaki taşa tıklayarak ya da ok tuşlarıyla taşı boşluğa kaydırırsınız. Amaç, taşları 1'den başlayarak sıraya dizmek ve boşluğu sağ alt köşeye getirmektir.</p></details>
+      <details><summary>Karıştırılan her bulmaca çözülebilir mi?</summary><p>Evet. Bu sayfa her karıştırmada ters sıra sayısına dayanan bir eşlik denetimi yapar ve çözülemeyecek dizilimleri düzeltir. Böylece karşınıza çıkan her bulmacanın bir çözümü vardır.</p></details>
+      <details><summary>Kendi fotoğrafımla oynayabilir miyim, fotoğrafım sunucuya gidiyor mu?</summary><p>Resimli modda Fotoğraf seç düğmesiyle kendi fotoğrafınızı kullanabilirsiniz. Fotoğraf yalnızca tarayıcınızın belleğinde parçalara bölünür; hiçbir sunucuya yüklenmez ve cihazınızdan çıkmaz.</p></details>
+      <details><summary>Hamle nasıl sayılıyor?</summary><p>Kaydırılan her taş bir hamledir. Boşlukla aynı satır ya da sütundaki uzak bir taşa tıklarsanız aradaki taşlar birlikte kayar ve her biri ayrı hamle olarak sayılır.</p></details>
+      <details><summary>Çözümü izle düğmesi ne yapar, süremi kaydeder mi?</summary><p>Bulmacanın bir çözümünü adım adım gösterir. Bu çözüm en kısa çözüm olmayabilir. Çözümü izlediğiniz oyunlar en iyi süre olarak kaydedilmez.</p></details>
+      <details><summary>En iyi sürem nerede saklanıyor?</summary><p>Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Sayı ve resimli mod ile her tahta boyutu için ayrı en iyi süre tutulur. Tarayıcı verilerini temizlerseniz sıfırlanır.</p></details>
+      <details><summary>Telefonda nasıl oynarım?</summary><p>Kaydırmak istediğiniz taşa dokunun ya da taşın üzerinde parmağınızı boşluğa doğru kaydırın. Tahtanın üzerinde sayfa kaymaz; sayfayı kaydırmak için tahtanın dışına dokunun.</p></details>
+      <details><summary>Oyun ücretli mi, kayıt gerekiyor mu?</summary><p>Hayır. Oyun tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez. Giderler sayfadaki reklamlarla karşılanır.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kaydirmali-bulmaca-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

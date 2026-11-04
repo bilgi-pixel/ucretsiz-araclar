@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Organize PDF Pages Online – Reorder, Rotate, Delete &amp; Extract | Bilişim Ajans</title>
+  <meta name="description" content="Rearrange, rotate, delete and extract PDF pages using drag-and-drop thumbnails. Free, no sign-up, and your file never leaves your device.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/organize-pdf/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/pdf-sayfa-duzenle/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/organize-pdf/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/pdf-sayfa-duzenle/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfa kartı ızgarası; tema token'ları ba.css'ten gelir. */
+    .pg-bulk { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+    .pg-bulk .ba-btn { min-height: 42px; padding: 8px 14px; font-size: .9rem; }
+    .pg-summary { font-family: var(--ba-mono); font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .pg-grid { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .pg-card { margin: 0; background: var(--ba-surface-2); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); padding: 8px; display: flex; flex-direction: column; gap: 6px; transition: border-color .15s, opacity .15s; }
+    .pg-card.is-selected { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .pg-card.is-dragging { opacity: .45; }
+    .pg-card.is-deleted .pg-thumb { opacity: .35; filter: grayscale(1); }
+    .pg-top { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+    .pg-check { display: inline-flex; align-items: center; min-width: 28px; min-height: 28px; cursor: pointer; }
+    .pg-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); margin: 0; }
+    .pg-num { flex: 1; font-family: var(--ba-mono); font-size: .8rem; color: var(--ba-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pg-card .ba-handle { font-size: 1.2rem; padding: 0 4px; min-width: 28px; text-align: center; }
+    .pg-thumb { position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); overflow: hidden; }
+    .pg-thumb canvas { max-width: 92%; max-height: 92%; width: auto; height: auto; box-shadow: var(--ba-shadow-card); background: #fff; transform: rotate(var(--rot, 0deg)); transition: transform .2s; }
+    .pg-thumb[data-rotation="90"] canvas, .pg-thumb[data-rotation="270"] canvas { max-width: 92%; max-height: 92%; }
+    .pg-card.is-blank .pg-thumb canvas { display: none; }
+    .pg-blank { color: var(--ba-text-muted); font-size: .85rem; border: 1px dashed var(--ba-border-hover); padding: 30px 12px; border-radius: 4px; background: #fff; }
+    .pg-deleted { position: absolute; inset: auto 0 8px; margin: 0 auto; width: max-content; background: var(--ba-danger); color: #fff; font-size: .75rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+    .pg-thumb.is-failed::after { content: "No preview"; position: absolute; color: var(--ba-text-muted); font-size: .8rem; }
+    .pg-tools { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .pg-tools .ba-icon-btn { min-width: 0; min-height: 36px; padding: 0; font-size: 1rem; }
+    .pg-tools .pg-del { color: var(--ba-danger); }
+    .pg-tools .ba-icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pg-warn { margin-top: 12px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .92rem; }
+    @media (max-width: 420px) { .pg-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Organize PDF – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/organize-pdf/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my PDF pages uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Thumbnails and the finished file are created inside your browser. You can switch off your internet connection after the page loads and the tool keeps working."}},{"@type":"Question","name":"Can I drag pages to reorder them on a phone?","acceptedAnswer":{"@type":"Answer","text":"Yes, grab the handle in the corner of a card with your finger and drop it in a new place. If dragging is awkward, the arrow buttons under each page move it one position at a time."}},{"@type":"Question","name":"Does rotating or deleting pages reduce quality?","acceptedAnswer":{"@type":"Answer","text":"No. Rotation only changes the page setting, and deleted pages are simply left out. Nothing is rasterized or recompressed, so text stays sharp and selectable."}},{"@type":"Question","name":"Can I combine pages from several PDFs here?","acceptedAnswer":{"@type":"Answer","text":"This tool works on one file at a time. To mix pages from several files, join them first with Merge PDF and then reorder the combined document here."}},{"@type":"Question","name":"What is the difference between \"Delete selected\" and \"Extract selected as new PDF\"?","acceptedAnswer":{"@type":"Answer","text":"Delete marks the ticked pages for removal and keeps everything else in your organized file. Extract does the opposite: it builds a new PDF that contains only the ticked pages, with their current order and rotation."}},{"@type":"Question","name":"Will bookmarks, links and form fields survive?","acceptedAnswer":{"@type":"Answer","text":"Page content survives fully, but document-level features such as bookmarks, links to other pages and interactive form fields may not carry over, and digital signatures stop validating. Always keep your original."}},{"@type":"Question","name":"How many pages can I handle at once?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed limit. Hundreds of pages work well on a computer. Very large files, above 50 MB, may be slow or run out of memory on a phone, so split them into parts first."}},{"@type":"Question","name":"Can I organize a password-protected PDF?","acceptedAnswer":{"@type":"Answer","text":"Not directly. If you know the password, remove it with Unlock PDF, organize the unlocked copy and, if needed, protect the result again with Protect PDF."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no premium tier, no trial and no registration. The site is supported by unobtrusive ads that never sit next to the buttons."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>+90 412 223 04 66</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a href="../../pdf-sayfa-duzenle/" hreflang="tr" lang="tr" class="ba-nav-optional">Türkçe</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#pdf">PDF tools</a></li></ol>
+      <h1><span class="ba-grad">Organize PDF Pages</span> – Reorder, Rotate, Delete & Extract</h1>
+      <p class="lead">Open a PDF and see every page as a thumbnail. Drag pages into a new order, turn sideways scans upright, delete pages you do not need, insert blank pages or pull the selected pages into a new PDF. Your file is never uploaded.</p>
+      <ul class="ba-badges" aria-label="Guarantees"><li>100% free</li><li>No sign-up</li><li>Files never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <div id="drop" aria-label="Choose a PDF to organize, or drop it here"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><strong>Drop your PDF here</strong><small>or click to choose · one PDF · pages are previewed</small><span class="ba-btn">Choose PDF</span></div>
+      <ul id="files" class="ba-filelist" aria-label="Selected file"></ul>
+      <p id="warn-big" class="pg-warn" hidden>This file is larger than 50 MB. Previews and saving may be slow, depending on your browser memory. If it stalls, try splitting it into parts first with <a href="../split-pdf/">Split PDF</a>.</p>
+
+      <div id="editor" hidden>
+        <div class="pg-bulk" role="group" aria-label="Bulk actions">
+          <button id="bulk-select-all" class="ba-btn" type="button">Select / deselect all</button>
+          <button id="bulk-rotate" class="ba-btn" type="button">Rotate all 90°</button>
+          <button id="bulk-delete" class="ba-btn" type="button">Delete selected</button>
+          <button id="bulk-extract" class="ba-btn" type="button">Extract selected as new PDF</button>
+          <button id="bulk-reverse" class="ba-btn" type="button">Reverse order</button>
+          <button id="bulk-blank" class="ba-btn" type="button">Add blank page</button>
+        </div>
+        <p class="hint" style="font-size:.85rem;color:var(--ba-text-muted);margin:6px 0 0">If any pages are selected, "Rotate all" turns only the selected ones, and a blank page is inserted after the selection. Drag a card by its handle (⠿), or move it with the arrow buttons from the keyboard.</p>
+        <p id="summary" class="pg-summary" aria-live="polite"></p>
+        <p id="lazy-note" class="pg-summary" hidden>Previews for the first 60 pages are ready; the others are drawn as you scroll.</p>
+        <ul id="pages" class="pg-grid" aria-label="Pages"></ul>
+      </div>
+
+      <div class="ba-actions" id="actions" hidden>
+        <button id="run" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Create organized PDF</button>
+        <button id="clear" class="ba-btn" type="button">Clear</button>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result"><h3>Your PDF is ready</h3><p id="result-info"></p><div class="ba-actions"><button id="download" class="ba-btn ba-btn-success ba-btn-lg" type="button">Download PDF</button></div></div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-organize-pdf-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to organize the pages of a PDF</h2>
+      <ol class="ba-steps">
+        <li>Drop your PDF into the box above, or press "Choose PDF". Every page appears as a thumbnail card. The first 60 previews are drawn straight away and the rest appear as you scroll.</li>
+        <li>Fix pages one at a time with the buttons under each thumbnail: rotate left or right, move a page earlier or later, or delete it. You can also drag a card by its handle to drop it somewhere new.</li>
+        <li>For bigger jobs, tick the checkboxes of several pages. "Delete selected" removes them, "Rotate all 90°" turns only the selected pages, and "Extract selected as new PDF" saves just those pages as a separate document. "Reverse order" flips the whole file, and "Add blank page" inserts an empty page at the end or after the last selected page.</li>
+        <li>Check the summary line, for example "12 pages · 11 kept · 1 deleted", then press "Create organized PDF".</li>
+        <li>Press "Download PDF". The result is saved as <code>yourfile-organized.pdf</code>, or <code>yourfile-selected.pdf</code> when you extract. Your original file is never changed.</li>
+      </ol>
+
+      <h2>Problems this tool solves</h2>
+      <p><strong>Upside-down and sideways scans.</strong> A sheet fed into the scanner the wrong way round ends up as a page you have to tilt your head to read. Rotate it by 90 or 180 degrees and it is fixed for everyone who opens the file afterwards.</p>
+      <p><strong>Pages in the wrong order.</strong> Scanning a stack from the back, or feeding a double-sided document through a single-sided feeder, often produces a PDF in reverse order. One click on "Reverse order" repairs it. For a single misplaced page, use the arrow buttons or drag it into place.</p>
+      <p><strong>Pages you do not want.</strong> Blank backs of sheets, a duplicated page, an old cover sheet or a page with private details that the recipient does not need can all be deleted. Deleted pages stay visible, grayed out, until you build the new file, so you can restore one if you change your mind.</p>
+      <p><strong>Extracting what matters.</strong> Need to email only the signed page of a contract, or one chapter of a long report? Tick it and use "Extract selected as new PDF". The difference from deleting is simply which pages end up in the output: extraction keeps the ticked pages, deleting removes them.</p>
+      <p><strong>Blank pages on purpose.</strong> A blank page separates sections, leaves room for notes, or makes the total page count even before you print double-sided, so the next document does not start on the back of the last sheet.</p>
+
+      <div class="ba-ad" data-slot="en-organize-pdf-b" aria-label="Advertisement"></div>
+
+      <h2>What happens to your pages behind the scenes</h2>
+      <p>Rotation is stored as the page's rotation setting, so nothing is redrawn or recompressed. Text stays selectable, images keep their quality and the page shows rotated in every viewer. Deleted pages are simply not copied into the new file, although they are still present in the original you opened.</p>
+      <p>The tool builds a fresh document and copies the pages you kept into it. Text, images and vector graphics come across exactly as they were. Document-level extras such as bookmarks, links that point to other pages, interactive form fields and digital signatures may not survive the copy, so keep the original file and check the result before you rely on it. If you need to keep a signed document intact, do not reorganize it; attach the signed original instead.</p>
+
+      <h2>Working with long documents</h2>
+      <p>Thumbnails for long files are drawn lazily so the page stays responsive: you will see the first 60 straight away and the others as you scroll to them. A document of a few hundred pages works comfortably on a computer. Files above 50 MB show a warning because phone browsers may run out of memory; if the page stalls, split the file into parts with <a href="../split-pdf/">Split PDF</a>, organize each part and join them again with <a href="../merge-pdf/">Merge PDF</a>.</p>
+
+      <h2>Tips for fast, tidy results</h2>
+      <ul>
+        <li><strong>Work in a sensible order.</strong> Delete unwanted pages first, rotate the rest, reorder them, and add blank pages last, because inserting blanks early shifts every position after them.</li>
+        <li><strong>Read the card labels.</strong> Each card shows its new position and, in brackets, its original one, for example "3 (was 7)", so you always know where a page came from.</li>
+        <li><strong>Combine first, organize second.</strong> To interleave pages from several files, merge them into one PDF and then reorder the result here.</li>
+        <li><strong>Finish with the other tools.</strong> Once the order is right you can <a href="../add-page-numbers/">add page numbers</a>, <a href="../watermark-pdf/">add a watermark</a> or <a href="../sign-pdf/">sign the document</a>, and shrink it with <a href="../compress-pdf/">Compress PDF</a> if it needs to fit an email.</li>
+        <li><strong>Use the keyboard if you prefer.</strong> Every card button can be reached with Tab and pressed with Enter or Space, so dragging is never required.</li>
+      </ul>
+
+      <h2>Privacy: nothing leaves your device</h2>
+      <p>Page thumbnails are drawn by pdf.js and the new file is assembled by pdf-lib, both running inside your browser. Your document is not uploaded, there is no account and nothing is stored on a server. That matters for the files people most often need to tidy up: scanned contracts, ID copies, medical letters and tax paperwork. Once the page has loaded it keeps working offline.</p>
+
+      <h2>Why use this PDF organizer?</h2>
+      <ul>
+        <li><strong>Visual and quick.</strong> You see every page, so there is no guessing which page number to delete.</li>
+        <li><strong>No limits, no watermark.</strong> Organize as many files as you like, free of charge.</li>
+        <li><strong>Quality is untouched.</strong> Pages are copied, not re-rendered.</li>
+        <li><strong>Works on phones and tablets.</strong> Drag with a finger or use the buttons, though a computer is faster for very large files.</li>
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Are my PDF pages uploaded to a server?</summary><p>No. Thumbnails and the finished file are created inside your browser. You can switch off your internet connection after the page loads and the tool keeps working.</p></details>
+        <details><summary>Can I drag pages to reorder them on a phone?</summary><p>Yes, grab the handle in the corner of a card with your finger and drop it in a new place. If dragging is awkward, the arrow buttons under each page move it one position at a time.</p></details>
+        <details><summary>Does rotating or deleting pages reduce quality?</summary><p>No. Rotation only changes the page setting, and deleted pages are simply left out. Nothing is rasterized or recompressed, so text stays sharp and selectable.</p></details>
+        <details><summary>Can I combine pages from several PDFs here?</summary><p>This tool works on one file at a time. To mix pages from several files, join them first with <a href="../merge-pdf/">Merge PDF</a> and then reorder the combined document here.</p></details>
+        <details><summary>What is the difference between "Delete selected" and "Extract selected as new PDF"?</summary><p>Delete marks the ticked pages for removal and keeps everything else in your organized file. Extract does the opposite: it builds a new PDF that contains only the ticked pages, with their current order and rotation.</p></details>
+        <details><summary>Will bookmarks, links and form fields survive?</summary><p>Page content survives fully, but document-level features such as bookmarks, links to other pages and interactive form fields may not carry over, and digital signatures stop validating. Always keep your original.</p></details>
+        <details><summary>How many pages can I handle at once?</summary><p>There is no fixed limit. Hundreds of pages work well on a computer. Very large files, above 50 MB, may be slow or run out of memory on a phone, so split them into parts first.</p></details>
+        <details><summary>Can I organize a password-protected PDF?</summary><p>Not directly. If you know the password, remove it with <a href="../unlock-pdf/">Unlock PDF</a>, organize the unlocked copy and, if needed, protect the result again with <a href="../protect-pdf/">Protect PDF</a>.</p></details>
+        <details><summary>Is it really free?</summary><p>Yes. There is no premium tier, no trial and no registration. The site is supported by unobtrusive ads that never sit next to the buttons.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../merge-pdf/">Merge PDF</a></li>
+        <li><a href="../split-pdf/">Split PDF</a></li>
+        <li><a href="../compress-pdf/">Compress PDF</a></li>
+        <li><a href="../add-page-numbers/">Add page numbers to PDF</a></li>
+        <li><a href="../sign-pdf/">Sign PDF</a></li>
+        <li><a href="../watermark-pdf/">Watermark PDF</a></li>
+        <li><a href="../">All free tools</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Need custom software or document workflows for your business? Get in touch with <a href="https://bilisimajans.com/">Bilişim Ajans</a>.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-organize-pdf-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by <a href="https://bilisimajans.com/">Bilişim Ajans</a>, Diyarbakır, Türkiye. An open project; all code is on GitHub.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../merge-pdf/">Merge PDF</a></li><li><a href="../compress-pdf/">Compress PDF</a></li><li><a href="../split-pdf/">Split PDF</a></li><li><a href="../organize-pdf/">Organize PDF</a></li><li><a href="../sign-pdf/">Sign PDF</a></li><li><a href="../protect-pdf/">Protect PDF</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/" hreflang="tr" lang="tr">About (Türkçe)</a></li><li><a href="../../gizlilik/" hreflang="tr" lang="tr">Privacy policy (Türkçe)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

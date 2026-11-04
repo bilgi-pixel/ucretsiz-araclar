@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Dizi Hafıza Oyunu Oyna – Ücretsiz Online Dizi Hafıza Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online dizi hafıza oyunu: renkli padlerin sırasını tekrar edin ya da ekranda beliren sayıyı yazın. Hız seviyeleri, isteğe bağlı ses, klavye ve dokunmatik kontrol, en yüksek tur kaydı. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/dizi-hafiza/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyun kutusu ortak düzen */
+    .game-box { padding: 16px; }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 48px; }
+    .gb-wrap { max-width: 680px; margin: 0 auto; }
+    .gb-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 36px; font-size: .85rem; padding: 0 12px; }
+    .gb-hint { margin: 14px 0 0; font-size: .92rem; color: var(--ba-text-2); }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 24px 16px; display: flex; flex-direction: column; justify-content: center; border: 0; border-radius: 0; }
+    .bg-status { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .92rem; color: var(--ba-text-2); margin-bottom: 8px; }
+    .bg-status b { color: var(--ba-text); font-variant-numeric: tabular-nums; }
+    .bg-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-weight: 600; font-size: .82rem; }
+    .ba-content kbd, .gb-hint kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+    .ba-content { overflow-wrap: anywhere; }
+
+    /* Seçenekler */
+    .dh-opts { margin: 0 0 12px; }
+    .dh-ses { display: flex; align-items: center; gap: 10px; }
+    .dh-ses .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .dh-ses .ba-btn[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    :root[data-theme="dark"] .dh-ses .ba-btn[aria-pressed="true"] { color: #1a0d10; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dh-ses .ba-btn[aria-pressed="true"] { color: #1a0d10; } }
+    #ses-durum { font-size: .9rem; color: var(--ba-text-2); }
+
+    .dh-prog { margin-left: auto; font-family: var(--ba-mono); font-variant-numeric: tabular-nums; }
+    .dh-msg { min-height: 2.9em; margin: 0 0 12px; font-weight: 600; color: var(--ba-text); }
+
+    /* Renk padleri: 2x2 ızgara, 360px'te de sığar */
+    .dh-pads { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 360px); margin: 0 auto; }
+    .dh-pad { position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center; border: 3px solid rgba(0, 0, 0, .28); border-radius: var(--ba-radius-lg); color: #fff; cursor: default; font: inherit; padding: 0; transition: background-color .08s, box-shadow .08s, transform .08s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .dh-pads.is-active .dh-pad { cursor: pointer; }
+    .dh-p0 { background: #a32d2d; --lit: #ff7a7a; }
+    .dh-p1 { background: #1f7a4d; --lit: #5ee08a; }
+    .dh-p2 { background: #2457b3; --lit: #6fb1ff; }
+    .dh-p3 { background: #8a6d00; --lit: #ffe14d; }
+    .dh-pad.is-lit, .dh-pad.is-down { background: var(--lit); color: #14161a; box-shadow: 0 0 0 4px var(--ba-text); transform: scale(.97); }
+    .dh-pad.is-wrong { box-shadow: 0 0 0 4px var(--ba-danger); background: var(--lit); color: #14161a; }
+    .dh-pad.is-expected { box-shadow: 0 0 0 4px var(--ba-success); }
+    .dh-pad:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 4px; }
+    .dh-key { position: absolute; top: 8px; left: 10px; font-family: var(--ba-mono); font-weight: 700; font-size: 1.05rem; }
+    .dh-sym { display: block; width: 34%; aspect-ratio: 1 / 1; background: currentColor; }
+    .dh-s0 { clip-path: polygon(50% 6%, 96% 94%, 4% 94%); }
+    .dh-s1 { border-radius: 50%; }
+    .dh-s2 { border-radius: 6px; }
+    .dh-s3 { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+    @media (prefers-reduced-motion: reduce) { .dh-pad { transition: none; } }
+
+    /* Sayı modu */
+    .dh-num { display: grid; place-items: center; min-height: 112px; padding: 12px; margin: 0 auto; max-width: 420px; background: var(--ba-surface-2); border: 2px solid var(--ba-border); border-radius: var(--ba-radius-lg); font-family: var(--ba-mono); font-weight: 500; font-size: clamp(1.7rem, 9vw, 2.8rem); letter-spacing: .14em; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; text-align: center; }
+    .dh-form { display: flex; flex-wrap: wrap; gap: 10px; max-width: 420px; margin: 14px auto 0; }
+    .dh-form input { flex: 1 1 160px; min-width: 0; min-height: 52px; padding: 8px 14px; font: inherit; font-family: var(--ba-mono); font-size: 1.4rem; letter-spacing: .12em; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .dh-form input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .dh-form .ba-btn { min-height: 52px; }
+
+    .dh-actions { justify-content: center; margin-top: 16px; }
+
+    /* Oyun sonu */
+    .dh-over { margin: 16px auto 0; max-width: 420px; padding: 14px 16px; border: 2px solid var(--ba-danger); background: var(--ba-danger-soft); border-radius: var(--ba-radius); }
+    .dh-over p { margin: 6px 0 0; }
+    .dh-over-title { margin: 0 !important; font-size: 1.15rem; font-weight: 700; color: var(--ba-danger); }
+    .dh-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success); font-weight: 700; }
+    #sonuc-dizi { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .dh-chip { padding: 3px 10px; border-radius: 999px; font-size: .85rem; font-weight: 700; color: #fff; border: 2px solid rgba(0, 0, 0, .25); }
+    .dh-c0 { background: #a32d2d; }
+    .dh-c1 { background: #1f7a4d; }
+    .dh-c2 { background: #2457b3; }
+    .dh-c3 { background: #8a6d00; }
+    .dh-typed { font-family: var(--ba-mono); font-weight: 700; overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Dizi Hafıza Oyunu","description":"Tarayıcıda oynanan, renk ve sayı dizisi modlu ücretsiz hafıza oyunu; hız seviyeleri, isteğe bağlı ses ve en yüksek tur kaydı içerir.","applicationCategory":"Game","operatingSystem":"Web (tarayıcı)","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/dizi-hafiza/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Dizi hafıza oyunu ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp \"Başlat\" düğmesine basmanız yeterlidir; hesap, e-posta ya da uygulama yüklemesi istenmez."}},{"@type":"Question","name":"Ses neden kapalı, nasıl açarım?","acceptedAnswer":{"@type":"Answer","text":"Beklenmedik sesler can sıkabileceği için ses varsayılan olarak kapalıdır. Oyun kutusundaki \"Ses\" düğmesine basarak açabilir, tekrar basarak kapatabilirsiniz. Ses açıkken her pad farklı bir ton çalar; hata ve başarı için ayrı sesler vardır."}},{"@type":"Question","name":"Renkleri ayırt edemiyorum, yine de oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Her pad hem farklı bir şekle (üçgen, daire, kare, eşkenar dörtgen) hem de bir tuş numarasına sahiptir ve yanan pad kalın bir çerçeveyle belirginleşir. Ayrıca sesi açarak tonlara göre oynayabilir ya da renk gerektirmeyen sayı dizisi modunu seçebilirsiniz."}},{"@type":"Question","name":"Sayı modunda süre yetmiyor, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Hızı \"Yavaş\" yapın; sayı ekranda daha uzun süre kalır. Ayrıca sayıyı üçerli ya da dörderli öbeklere bölerek ezberlemeyi deneyin: 482915 yerine \"482\" ve \"915\" olarak düşünmek çok daha kolaydır."}},{"@type":"Question","name":"En yüksek turum nerede saklanıyor, nasıl silerim?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın localStorage alanında, her mod için ayrı olarak saklanır; sunucuya gönderilmez. Silmek için tarayıcı ayarlarından bu siteye ait verileri temizlemeniz yeterlidir. Gizli sekmede oynarsanız kayıt oturum bitince kaybolur."}},{"@type":"Question","name":"Klavyeyle nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Renk modunda 1, 2, 3 ve 4 tuşları sırasıyla kırmızı, yeşil, mavi ve sarı pada karşılık gelir. Sayı modunda sayıyı yazıp Enter tuşuna basarsınız. Düğmeler arasında Tab tuşuyla gezinebilirsiniz."}},{"@type":"Question","name":"Telefonda ve tablette oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Padler dokunmatik ekrana uygundur ve 360 piksel genişlikli ekranlara sığar. Sayı modunda telefonunuzun sayısal klavyesi otomatik açılır. Sesi telefonda açacaksanız cihazın sessiz modunu da kontrol edin."}},{"@type":"Question","name":"Yarıda bırakıp yeniden başlayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. \"Yeniden başlat\" düğmesi oyunu birinci turdan başlatır. Modu değiştirdiğinizde oyun sıfırlanır; hızı değiştirdiğinizde ise oyun sürer ve yeni hız bir sonraki dizi gösteriminden itibaren geçerli olur."}},{"@type":"Question","name":"Bu oyun hafızamı geliştirir mi?","acceptedAnswer":{"@type":"Answer","text":"Oyun bir antrenman ve eğlence aracıdır; hafızayı geliştirdiğine dair tıbbi ya da bilimsel bir iddiada bulunmuyoruz. Öbekleme gibi stratejileri denemek ve düzenli, kısa oturumlarla oynamak keyifli bir zihin egzersizi olabilir."}}]}]}
+  </script>
+</head>
+<body>
+
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+    <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Dizi Hafıza Oyunu Oyna: Renk ve Sayı Dizisini Tekrar Et</h1><p class="lead">Dört renkli padin sırasını izleyin, sonra aynı sırayla tekrar edin; her turda dizi bir adım uzar. İsterseniz sayı dizisi moduna geçip ekranda beliren sayıyı aklınızda tutun. Hız seviyeleri, isteğe bağlı ses, klavye ve dokunmatik kontrol ve en yüksek tur kaydı: hepsi kurulumsuz ve kayıtsız.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="idle" data-mode="renk" aria-label="Dizi Hafıza oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Dizi Hafıza Oyunu</p><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <div class="ba-options dh-opts">
+          <div class="ba-field"><label for="mod">Mod</label><select id="mod"><option value="renk">Renk dizisi</option><option value="sayi">Sayı dizisi</option></select></div>
+          <div class="ba-field"><label for="hiz">Hız</label><select id="hiz"><option value="yavas">Yavaş</option><option value="normal" selected>Normal</option><option value="hizli">Hızlı</option><option value="cok-hizli">Çok hızlı</option><option value="kademeli">Kademeli (tur arttıkça hızlanır)</option></select></div>
+          <div class="ba-field"><span>Ses</span><div class="dh-ses"><button type="button" class="ba-btn" id="ses" aria-pressed="false">Ses</button><span id="ses-durum" aria-hidden="true">kapalı</span></div></div>
+        </div>
+
+        <div class="bg-status"><span>Tur <b id="tur">0</b></span><span>En yüksek tur <b id="en-yuksek">0</b></span><span class="bg-chip" id="mod-etiket">Renk dizisi</span><span class="dh-prog" id="ilerleme" aria-hidden="true"></span></div>
+        <p class="dh-msg" id="durum" role="status" aria-live="polite">Hazır olduğunuzda Başlat düğmesine basın.</p>
+
+        <div id="renk-alani">
+          <div class="dh-pads" id="pads" role="group" aria-label="Renk padleri">
+            <button type="button" class="dh-pad dh-p0" data-pad="0" aria-label="Kırmızı pad, tuş 1" aria-keyshortcuts="1" aria-disabled="true"><span class="dh-sym dh-s0" aria-hidden="true"></span><span class="dh-key" aria-hidden="true">1</span></button>
+            <button type="button" class="dh-pad dh-p1" data-pad="1" aria-label="Yeşil pad, tuş 2" aria-keyshortcuts="2" aria-disabled="true"><span class="dh-sym dh-s1" aria-hidden="true"></span><span class="dh-key" aria-hidden="true">2</span></button>
+            <button type="button" class="dh-pad dh-p2" data-pad="2" aria-label="Mavi pad, tuş 3" aria-keyshortcuts="3" aria-disabled="true"><span class="dh-sym dh-s2" aria-hidden="true"></span><span class="dh-key" aria-hidden="true">3</span></button>
+            <button type="button" class="dh-pad dh-p3" data-pad="3" aria-label="Sarı pad, tuş 4" aria-keyshortcuts="4" aria-disabled="true"><span class="dh-sym dh-s3" aria-hidden="true"></span><span class="dh-key" aria-hidden="true">4</span></button>
+          </div>
+        </div>
+
+        <div id="sayi-alani" hidden>
+          <div class="dh-num" id="sayi-ekran" aria-live="polite">• • •</div>
+          <form class="dh-form" id="sayi-form" autocomplete="off" hidden>
+            <label for="sayi-giris" class="visually-hidden">Gördüğünüz sayıyı yazın</label>
+            <input id="sayi-giris" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Sayıyı yazın">
+            <button type="submit" class="ba-btn ba-btn-primary" id="sayi-gonder">Gönder</button>
+          </form>
+        </div>
+
+        <div class="ba-actions dh-actions"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="baslat">Başlat</button></div>
+
+        <div class="dh-over" id="sonuc" role="status" hidden>
+          <p class="dh-over-title">Oyun bitti</p>
+          <p id="sonuc-ozet"></p>
+          <p><span id="sonuc-etiket">Doğru dizi:</span></p>
+          <div id="sonuc-dizi"></div>
+          <p class="dh-record" id="sonuc-rekor" hidden>Yeni rekor!</p>
+        </div>
+
+        <p class="gb-hint" id="ipucu-renk">Parlayan padlerin sırasını izleyin, sonra aynı sırayla tekrar edin. Klavyede <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd> tuşları padlere karşılık gelir; her turda dizi bir adım uzar.</p>
+        <p class="gb-hint" id="ipucu-sayi" hidden>Ekranda kısa süre beliren sayıyı aklınızda tutun, sayı kaybolunca yazıp Enter'a basın. Her turda sayı bir hane uzar; baştaki sıfırlar da önemlidir.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-dizi-hafiza-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Dizi hafıza oyunu nedir?</h2>
+      <p>Dizi Hafıza Oyunu, kısa süreli belleğinizi eğlenceli bir biçimde sınayan ve çalıştıran ücretsiz bir tarayıcı oyunudur. Kural çok basittir: ekrandaki dört renkli pad belirli bir sırayla yanıp söner, sizden aynı sırayı tekrar etmeniz istenir. Doğru yaparsanız bir sonraki turda dizi bir adım uzar; yanlış yaparsanız oyun biter ve en yüksek turunuz kaydedilir. Kuralın sadeliği oyunun gücüdür: ilk turlar neredeyse şaka gibi kolaydır, ancak dizi uzadıkça dikkat, öbekleme ve sakin kalma becerisi devreye girer.</p>
+      <p>Oyunda iki mod bulunur. <strong>Renk dizisi</strong> modunda padlerin yanma sırasını izleyip tıklarsınız. <strong>Sayı dizisi</strong> modunda ise ekranda kısa süre beliren sayıyı aklınızda tutar, sayı kaybolunca yazarsınız. İki mod da aynı fikre dayanır ama farklı bellek becerilerini zorlar: biri görsel ve işitsel sıralamayı, diğeri sayısal bilgiyi akılda tutmayı. Oyunu açmak için hesap oluşturmanız ya da bir şey yüklemeniz gerekmez; sayfa açılır açılmaz oynamaya başlayabilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki listeden modu (renk ya da sayı dizisi) ve hızı seçin. İlk kez oynuyorsanız "Renk dizisi" ve "Normal" hız iyi bir başlangıçtır.</li>
+        <li>"Başlat" düğmesine basın. Kısa bir hazırlık süresinden sonra ilk adım gösterilir.</li>
+        <li>İzleyin: padler sırayla yanar. Yanan pad aynı zamanda bir çerçeveyle belirginleşir, bu yüzden renkleri ayırt etmekte zorlansanız bile sırayı takip edebilirsiniz.</li>
+        <li>Sıra sizde: ekranda "Sıra sizde" yazınca padlere aynı sırayla tıklayın, dokunun ya da klavyede 1, 2, 3, 4 tuşlarına basın. Küçük sayaç kaçıncı adımda olduğunuzu gösterir.</li>
+        <li>Diziyi doğru tamamladığınızda tur artar ve dizi bir adım uzar. Yanlış pada basarsanız oyun biter; doğru dizi ekranda gösterilir ve "Tekrar oyna" ile yeniden başlayabilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller: klavye, fare ve dokunmatik ekran</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> padlere tıklamanız ya da dokunmanız yeterlidir. Padler küçük ekranlarda bile parmakla rahat basılacak boyuttadır ve 360 piksel genişliğe sığar.</li>
+        <li><strong>Klavye:</strong> <kbd>1</kbd> kırmızı üçgen, <kbd>2</kbd> yeşil daire, <kbd>3</kbd> mavi kare, <kbd>4</kbd> sarı eşkenar dörtgen pad içindir. Her padin üzerinde hem şekli hem de tuş numarası yazar; yalnızca renge bağlı kalmazsınız.</li>
+        <li><strong>Sayı modu:</strong> sayı kaybolunca alan otomatik odaklanır. Telefonlarda sayısal klavye açılır. Yazdıktan sonra <kbd>Enter</kbd> tuşuna ya da "Gönder" düğmesine basın; alan yalnızca rakam kabul eder.</li>
+        <li><strong>Ses düğmesi:</strong> sesi isteğe bağlı olarak açıp kapatabilirsiniz; varsayılan olarak kapalıdır.</li>
+        <li><strong>Tam ekran:</strong> tarayıcınız destekliyorsa "Tam ekran" düğmesi yalnızca oyunu gösterir.</li>
+      </ul>
+
+      <h2>Sayı dizisi modu</h2>
+      <p>Sayı modunda ilk turda üç haneli bir sayı görürsünüz. Her yeni turda sayı bir hane uzar ve her turda tamamen yeni bir sayı üretilir; yani bir öncekinin sonuna ekleme yapılmaz. Sayı ekranda bir süre kalır, sonra noktalara dönüşür ve yazma alanı açılır. Gösterim süresi hane sayısıyla birlikte uzar ve seçtiğiniz hıza göre kısalıp uzar. Baştaki sıfırlar da sayının parçasıdır; örneğin 0470 gördüyseniz 470 değil 0470 yazmalısınız. Yanlış yazarsanız oyun biter ve doğru sayı gösterilir. Bu mod, psikolojide bellek ölçümlerinde uzun süredir kullanılan rakam dizisi hatırlama yönteminin oyunlaştırılmış bir uyarlamasıdır.</p>
+
+      <div class="ba-ad" data-slot="oyun-dizi-hafiza-b" aria-label="Reklam"></div>
+
+      <h2>Hız seviyeleri</h2>
+      <p>Hız ayarı, padlerin ne kadar süre yandığını ve adımlar arasındaki boşluğu belirler; sayı modunda ise sayının ekranda kalma süresini değiştirir.</p>
+      <ul>
+        <li><strong>Yavaş:</strong> uzun süre yanan padler ve geniş boşluklar. Öğrenmek, çocuklarla oynamak ve ilk denemeler için uygundur.</li>
+        <li><strong>Normal:</strong> dengeli varsayılan ayar. Çoğu oyuncu için ilk on tura kadar rahat bir tempo sunar.</li>
+        <li><strong>Hızlı:</strong> dikkatinizi daha çok zorlar; diziyi ritim olarak ezberlemeniz gerekir.</li>
+        <li><strong>Çok hızlı:</strong> deneyimli oyuncular için; göz kırpacak vakit yoktur.</li>
+        <li><strong>Kademeli:</strong> oyun Normal hızla başlar, tur arttıkça Hızlı ve Çok hızlıya geçer. Hız değişimi bir sonraki dizi gösteriminden itibaren uygulanır.</li>
+      </ul>
+
+      <h2>Ses neden varsayılan olarak kapalı?</h2>
+      <p>Pek çok kişi oyunu iş yerinde, derste ya da toplu taşımada açar; beklenmedik bir ses can sıkıcı olabilir. Bu yüzden ses kapalı başlar ve yalnızca siz isterseniz açılır. Sesi açtığınızda her pad kendine özgü bir ton çalar: dört ton birbirinden net biçimde ayrılır ve diziyi küçük bir melodi gibi akılda tutmanızı kolaylaştırır. Hata yaptığınızda alçak bir uyarı sesi, turu tamamladığınızda kısa bir başarı sesi duyarsınız. Sesler tarayıcının kendi ses altyapısıyla anlık olarak üretilir; hiçbir ses dosyası indirilmez. Ses düğmesine basana kadar tarayıcıda ses sistemi bile başlatılmaz.</p>
+
+      <h2>Daha uzun diziler için hafıza teknikleri</h2>
+      <p>Psikolojide ünlü bir makale, kısa süreli belleğin kabaca "yedi artı eksi iki" öğe taşıdığını öne sürmüştü. Sonraki araştırmalar, özellikle öbekleme yapılmadığında bu sayının dört civarına inebildiğini gösterdi. Ne kadar kesin olursa olsun, bu rakamlar bir şeyi açıkça ortaya koyar: bellek sınırlıdır, ancak doğru stratejilerle bu sınır esnetilebilir. Aşağıdaki yöntemler hem renk hem de sayı modunda işe yarar.</p>
+      <ul>
+        <li><strong>Öbekleme:</strong> Diziyi üçerli ya da dörderli gruplara bölün. "1-3-2 / 4-4-1 / 2-3" gibi altı yedi tekil öğeyi hatırlamaktansa üç öbeği hatırlamak daha kolaydır.</li>
+        <li><strong>Sözel kodlama:</strong> Renklerin adını sessizce tekrar edin: "kırmızı, mavi, mavi, yeşil". Sözcükler görüntüden daha kolay tazelenir.</li>
+        <li><strong>Ritim ve melodi:</strong> Sesi açın ve diziyi bir ezgi gibi akılda tutmayı deneyin. Aynı yöntem sayılar için de geçerlidir; bir telefon numarasını gruplayarak ezberlemek gibi.</li>
+        <li><strong>Parmak hafızası:</strong> Klavyeyle oynuyorsanız dizi izlenirken parmaklarınızı tuşların üzerinde hafifçe hareket ettirin; sıra size geldiğinde kas hafızası yardıma gelir.</li>
+        <li><strong>Dikkatinizi toplayın:</strong> Bildirimleri kapatın ve gösterim sırasında başka şeyle ilgilenmeyin. Hata çoğunlukla bellek eksikliğinden değil, bir adımı kaçırmaktan doğar.</li>
+        <li><strong>Kısa ve düzenli oynayın:</strong> Yorgunken rekor kırmak zordur. Günde birkaç kısa oturum, uzun bir maratondan daha verimli ve daha keyiflidir.</li>
+      </ul>
+      <p>Bu oyun eğlence ve kişisel antrenman amaçlıdır; tıbbi bir test değildir ve bellekle ilgili bir sağlık durumunun tanısında kullanılamaz. Kendinizde ya da yakınınızda sürekli bir unutkanlık fark ederseniz bir sağlık kuruluşuna başvurmanız gerekir.</p>
+
+      <h2>En yüksek tur nerede saklanıyor?</h2>
+      <p>Her modun en yüksek turu ayrı ayrı tutulur ve yalnızca kendi tarayıcınızın localStorage alanına yazılır. Sunucuya hiçbir şey gönderilmez, bir skor tablosu ya da hesap yoktur; yani kimse puanınızı görmez, siz de kimseyle yarışmak zorunda kalmazsınız. Rekorunuz yalnızca bir tur tamamladığınızda güncellenir, böylece oyunu yarıda kapatsanız bile ulaştığınız en yüksek tur kaybolmaz. Tarayıcı verilerini temizlerseniz ya da gizli sekmede oynarsanız kayıtlar silinir. Farklı cihazlarda ayrı rekorlarınız olur.</p>
+
+      <h2>Hafıza oyunlarının kısa tarihi</h2>
+      <p>Sıralı hatırlama oyunları insanlık kadar eskidir: çocukların sözlü olarak oynadığı, her oyuncunun bir öncekilerin söylediklerini sırayla tekrar edip kendi öğesini eklediği oyunlar dünyanın birçok yerinde bilinir. Psikologlar ise bir yüzyılı aşkın süredir sayı dizilerini tekrar ettirme yöntemini bellek ve dikkat ölçümlerinde kullanır; bu yöntem bugün de zeka ve bellek testlerinin klasik bir parçasıdır.</p>
+      <p>Renkli düğmelerin ışık ve ses dizisini tekrar ettirdiği elektronik hafıza oyuncakları ise 1970'lerin sonunda yaygınlaştı ve kuşaklar boyu oynanan bir oyun türü hâline geldi. Bugün aynı fikir telefonlarda ve tarayıcılarda yaşamaya devam ediyor. Buradaki oyun, bu eski ve sevilen fikrin hiçbir şey kurmadan, hiçbir veri toplamadan ve tamamen kendi tasarımımızla hazırlanmış bir uyarlamasıdır.</p>
+
+      <h2>Gizlilik: hesap yok, takip yok</h2>
+      <p>Oyunun kendisinde hesap, analiz ya da izleme kodu yoktur. Oyun mantığı tamamen tarayıcınızda çalışır; ağ üzerinden hiçbir veri gönderilmez ve ses dosyası indirilmez. Reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez. Reklamları sunan hizmetin kendi betiği bu açıklamanın dışındadır. Ayrıntılar için <a href="../../gizlilik/">Gizlilik Politikası</a> sayfamıza bakabilirsiniz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Dizi hafıza oyunu ücretsiz mi, kayıt gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp "Başlat" düğmesine basmanız yeterlidir; hesap, e-posta ya da uygulama yüklemesi istenmez.</p></details>
+      <details><summary>Ses neden kapalı, nasıl açarım?</summary><p>Beklenmedik sesler can sıkabileceği için ses varsayılan olarak kapalıdır. Oyun kutusundaki "Ses" düğmesine basarak açabilir, tekrar basarak kapatabilirsiniz. Ses açıkken her pad farklı bir ton çalar; hata ve başarı için ayrı sesler vardır.</p></details>
+      <details><summary>Renkleri ayırt edemiyorum, yine de oynayabilir miyim?</summary><p>Evet. Her pad hem farklı bir şekle (üçgen, daire, kare, eşkenar dörtgen) hem de bir tuş numarasına sahiptir ve yanan pad kalın bir çerçeveyle belirginleşir. Ayrıca sesi açarak tonlara göre oynayabilir ya da renk gerektirmeyen sayı dizisi modunu seçebilirsiniz.</p></details>
+      <details><summary>Sayı modunda süre yetmiyor, ne yapmalıyım?</summary><p>Hızı "Yavaş" yapın; sayı ekranda daha uzun süre kalır. Ayrıca sayıyı üçerli ya da dörderli öbeklere bölerek ezberlemeyi deneyin: 482915 yerine "482" ve "915" olarak düşünmek çok daha kolaydır.</p></details>
+      <details><summary>En yüksek turum nerede saklanıyor, nasıl silerim?</summary><p>Tarayıcınızın localStorage alanında, her mod için ayrı olarak saklanır; sunucuya gönderilmez. Silmek için tarayıcı ayarlarından bu siteye ait verileri temizlemeniz yeterlidir. Gizli sekmede oynarsanız kayıt oturum bitince kaybolur.</p></details>
+      <details><summary>Klavyeyle nasıl oynanır?</summary><p>Renk modunda 1, 2, 3 ve 4 tuşları sırasıyla kırmızı, yeşil, mavi ve sarı pada karşılık gelir. Sayı modunda sayıyı yazıp Enter tuşuna basarsınız. Düğmeler arasında Tab tuşuyla gezinebilirsiniz.</p></details>
+      <details><summary>Telefonda ve tablette oynanır mı?</summary><p>Evet. Padler dokunmatik ekrana uygundur ve 360 piksel genişlikli ekranlara sığar. Sayı modunda telefonunuzun sayısal klavyesi otomatik açılır. Sesi telefonda açacaksanız cihazın sessiz modunu da kontrol edin.</p></details>
+      <details><summary>Yarıda bırakıp yeniden başlayabilir miyim?</summary><p>Evet. "Yeniden başlat" düğmesi oyunu birinci turdan başlatır. Modu değiştirdiğinizde oyun sıfırlanır; hızı değiştirdiğinizde ise oyun sürer ve yeni hız bir sonraki dizi gösteriminden itibaren geçerli olur.</p></details>
+      <details><summary>Bu oyun hafızamı geliştirir mi?</summary><p>Oyun bir antrenman ve eğlence aracıdır; hafızayı geliştirdiğine dair tıbbi ya da bilimsel bir iddiada bulunmuyoruz. Öbekleme gibi stratejileri denemek ve düzenli, kısa oturumlarla oynamak keyifli bir zihin egzersizi olabilir.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../bilgi-yarismasi/">Bilgi Yarışması</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a></li>
+        <li><a href="../yazma-hizi-testi/">Yazma Hızı Testi</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-dizi-hafiza-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+    <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

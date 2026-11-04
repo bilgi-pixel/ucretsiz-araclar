@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Password Generator – Strong, Random Passwords and Passphrases</title>
+  <meta name="description" content="Free online password generator: create strong random passwords, memorable passphrases or PINs, with an entropy meter and crack-time estimate. Generated in your browser and never sent anywhere.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/password-generator/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/sifre-uret/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/password-generator/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/sifre-uret/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Only the parts specific to this tool; theme tokens come from ba.css. */
+    .ba-modes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; padding: 0; border: 0; }
+    .ba-modes legend { font-weight: 600; font-size: .92rem; margin-bottom: 6px; }
+    .ba-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--ba-border); background: var(--ba-surface); cursor: pointer; font-weight: 500; }
+    .ba-modes label:has(input:checked) { background: var(--ba-primary); color: #fff; border-color: var(--ba-primary); }
+    .ba-modes label:has(input:focus-visible) { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .ba-modes input { width: 18px; height: 18px; accent-color: #fff; margin: 0; }
+    .ba-checks { display: grid; gap: 8px; }
+    .ba-checks label { display: flex; align-items: center; gap: 8px; min-height: 32px; font-weight: 400; }
+    .ba-strength { margin-top: 16px; }
+    .ba-strength .bar { height: 10px; background: var(--ba-surface-2); border-radius: 999px; overflow: hidden; border: 1px solid var(--ba-border); }
+    .ba-strength .bar > span { display: block; height: 100%; width: 0; background: var(--ba-danger); transition: width .25s, background .25s; }
+    .ba-strength[data-level="fair"] .bar > span { background: #d9822b; }
+    .ba-strength[data-level="good"] .bar > span { background: #b8a600; }
+    .ba-strength[data-level="strong"] .bar > span, .ba-strength[data-level="excellent"] .bar > span { background: var(--ba-success); }
+    .ba-strength .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font-size: .9rem; }
+    .ba-strength .meta strong { font-weight: 700; }
+    .ba-strength .time { font-size: .88rem; color: var(--ba-text-muted); margin-top: 2px; }
+    .ba-outputs { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+    .ba-outputs li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .ba-outputs .pw { flex: 1 1 200px; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 1.05rem; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); word-break: break-all; user-select: all; }
+    .ba-outputs .ba-btn.is-copied { background: var(--ba-success); border-color: var(--ba-success); color: #fff; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Password Generator – Bilişim Ajans","applicationCategory":"SecurityApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/password-generator/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"Is this password generator safe to use?","acceptedAnswer":{"@type":"Answer","text":"Yes. Passwords are generated inside your browser with the secure random number generator built into your device. They are never sent to a server, never stored in a cookie or in local storage, and disappear when you close the tab. Copy the password into your password manager straight away."}},{"@type":"Question","name":"How long should my password be?","acceptedAnswer":{"@type":"Answer","text":"For accounts you protect with a password manager, use at least 16 random characters. For a passphrase that you have to remember, use at least six random words. Length matters more than complexity, so when in doubt, make it longer."}},{"@type":"Question","name":"Should I choose random characters or a passphrase?","acceptedAnswer":{"@type":"Answer","text":"Choose random characters for anything stored in a password manager. Choose a passphrase for the few secrets you must type or memorize, such as a device login or the master password of your manager. Both modes use real randomness, so both are strong when long enough."}},{"@type":"Question","name":"What do \"bits of entropy\" mean?","acceptedAnswer":{"@type":"Answer","text":"Entropy measures unpredictability. Each bit doubles the number of guesses needed to find the password by trial. A password with 80 bits needs about a trillion trillion guesses in the worst case, which is out of reach for any attacker today."}},{"@type":"Question","name":"How is the \"time to crack\" estimated?","acceptedAnswer":{"@type":"Answer","text":"The tool assumes an attacker testing ten billion guesses per second against a stolen, quickly hashed password, and uses the average of half the possible combinations. Real services with slow hashing and login limits are much tougher, so treat the figure as a cautious comparison between settings, not as a promise."}},{"@type":"Question","name":"Do I really need symbols?","acceptedAnswer":{"@type":"Answer","text":"Symbols enlarge the pool of possible characters, but extra length helps even more. A longer password made only of letters and numbers can beat a short one with symbols. Keep symbols on when a site demands them, and turn them off when a system rejects certain characters, then increase the length instead."}},{"@type":"Question","name":"Why is a PIN rated as weak?","acceptedAnswer":{"@type":"Answer","text":"A six-digit PIN has only a million combinations, which a computer can try in a moment if it can test guesses freely. PINs are acceptable for phones and bank cards because those devices and banks limit failed attempts, but they are not strong enough to guard an online account."}},{"@type":"Question","name":"Should I change my passwords regularly?","acceptedAnswer":{"@type":"Answer","text":"Current guidance recommends changing a password when you suspect it has been exposed, for example after a data breach, rather than on a fixed schedule. Forced regular changes tend to push people towards weaker, predictable passwords. A unique, long, random password and two-factor authentication matter more."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-dosya">Files &amp; Text</a></li></ol>
+      <h1><span class="ba-grad">Password Generator</span> – Strong, Random Passwords and Passphrases</h1>
+      <p class="lead">Create a random password, a memorable passphrase or a PIN and see how strong it is. Everything is generated in your browser with the secure random number generator of your device, so the password is never sent anywhere.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Files never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <div id="options">
+        <fieldset class="ba-modes">
+          <legend>Password type</legend>
+          <label><input type="radio" name="mode" value="random" id="mode-random" checked> Random characters</label>
+          <label><input type="radio" name="mode" value="phrase" id="mode-phrase"> Passphrase</label>
+          <label><input type="radio" name="mode" value="pin" id="mode-pin"> PIN</label>
+        </fieldset>
+
+        <div id="panel-random" class="ba-options">
+          <div class="ba-field"><label for="opt-length">Length (8–64)</label><input id="opt-length" type="number" min="8" max="64" value="16" inputmode="numeric"><div class="hint">Recommended: at least 16 characters.</div></div>
+          <div class="ba-field"><span>Character types</span>
+            <div class="ba-checks">
+              <label><input type="checkbox" id="opt-lower" checked> Lowercase letters (a–z)</label>
+              <label><input type="checkbox" id="opt-upper" checked> Uppercase letters (A–Z)</label>
+              <label><input type="checkbox" id="opt-digit" checked> Numbers (0–9)</label>
+              <label><input type="checkbox" id="opt-symbol" checked> Symbols (!@#$%…)</label>
+              <label><input type="checkbox" id="opt-lookalike"> Exclude look-alike characters (0 O 1 l I)</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-phrase" class="ba-options" hidden>
+          <div class="ba-field"><label for="opt-words">Number of words (3–10)</label><input id="opt-words" type="number" min="3" max="10" value="6" inputmode="numeric"><div class="hint">Recommended: 6 words or more. The list contains <span id="word-count">460</span> common English words.</div></div>
+          <div class="ba-field"><label for="opt-sep">Separator</label><select id="opt-sep"><option value="-" selected>Hyphen (-)</option><option value=".">Period (.)</option><option value="_">Underscore (_)</option><option value=" ">Space</option><option value="">None</option></select></div>
+          <div class="ba-field"><span>More options</span>
+            <div class="ba-checks">
+              <label><input type="checkbox" id="opt-cap" checked> Capitalize each word</label>
+              <label><input type="checkbox" id="opt-num"> Add a two-digit number at the end</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="panel-pin" class="ba-options" hidden>
+          <div class="ba-field"><label for="opt-pin-length">Number of digits (4–12)</label><input id="opt-pin-length" type="number" min="4" max="12" value="6" inputmode="numeric"><div class="hint">6 digits is a sensible choice for a phone lock or a bank card.</div></div>
+        </div>
+
+        <div class="ba-options">
+          <div class="ba-field"><label for="opt-count">How many to generate?</label><select id="opt-count"><option value="1" selected>1 password</option><option value="5">5 passwords</option></select></div>
+        </div>
+      </div>
+
+      <div class="ba-actions" id="actions">
+        <button id="generate" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Generate password</button>
+        <button id="clear" class="ba-btn" type="button">Clear</button>
+      </div>
+
+      <div id="strength" class="ba-strength" role="meter" aria-label="Password strength" aria-valuemin="0" aria-valuemax="160" data-level="weak">
+        <div class="bar"><span></span></div>
+        <div class="meta"><strong id="strength-label">—</strong><span id="strength-bits"></span></div>
+        <div class="time" id="strength-time"></div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite"><h3>Your password is ready</h3><p id="result-info"></p><ul id="outputs" class="ba-outputs" aria-label="Generated passwords"></ul></div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-password-generator-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>A password generator that never sees your password</h2>
+      <p>A password is only as private as the place where it was created. Many online generators produce the string on their server and send it to you, which means a third party briefly knows a secret that is supposed to be known by you alone. This generator works differently. The password is assembled by JavaScript running inside your own browser tab, using the secure random number generator built into your device. It is never transmitted, never logged and never saved; when you close the tab it is gone, so copy it into your password manager before you leave.</p>
+
+      <h2>How to generate a strong password</h2>
+      <ol class="ba-steps">
+        <li>Choose a <strong>password type</strong>: random characters for the strongest result, a passphrase of words for something you may need to type by hand, or a PIN for numeric locks.</li>
+        <li>Adjust the options. For random passwords that means the length and which character types to include; for a passphrase, the number of words and the separator.</li>
+        <li>Press <strong>Generate password</strong>. The strength meter shows the entropy in bits and a plain-language estimate of how long a determined attacker would need.</li>
+        <li>Use the <strong>Copy</strong> button next to the result, paste it into your password manager or the account settings page, and save it right away.</li>
+      </ol>
+
+      <h2>What makes a password strong?</h2>
+      <p>Strength comes from unpredictability and length, not from clever substitutions. A password such as "P@ssw0rd!" follows a pattern attackers know by heart, whereas a string chosen completely at random has no pattern to exploit. The measure security people use is <strong>entropy</strong>, counted in bits. Each additional bit doubles the number of guesses an attacker needs. A password with 40 bits needs about a trillion guesses in the worst case, while 80 bits needs a trillion times a trillion, which is far beyond anything that can be tested in practice.</p>
+      <p>Modern guidance, such as the digital identity recommendations published by the US standards body NIST, has moved away from forcing odd character rules and frequent changes. It favors long passwords, allows pasting from password managers and suggests changing a password when there is evidence it has been exposed, not on a fixed schedule. Length is the cheapest strength you can buy: every extra character multiplies the work for an attacker.</p>
+      <table>
+        <thead><tr><th>Type and size</th><th>Approximate entropy</th><th>Practical meaning</th></tr></thead>
+        <tbody>
+          <tr><td>6-digit PIN</td><td>20 bits</td><td>Fine for a device that locks after a few wrong tries; never for an account that can be attacked offline</td></tr>
+          <tr><td>8 random characters, all types</td><td>about 51 bits</td><td>Minimum for low-value accounts</td></tr>
+          <tr><td>12 random characters, all types</td><td>about 77 bits</td><td>Solid for most online accounts</td></tr>
+          <tr><td>16 random characters, all types</td><td>about 103 bits</td><td>Very strong; the default setting</td></tr>
+          <tr><td>6-word passphrase</td><td>about 53 bits</td><td>Memorable; add words for more strength</td></tr>
+          <tr><td>10-word passphrase</td><td>about 88 bits</td><td>Strong and still easy to type</td></tr>
+        </tbody>
+      </table>
+
+
+
+<div class="ba-ad" data-slot="en-password-generator-b" aria-label="Advertisement"></div>
+
+      <h2>Random characters, passphrase or PIN?</h2>
+      <h3>Random characters</h3>
+      <p>This is the best choice for anything stored in a password manager, because you will never need to remember it. A 16-character mix of lowercase letters, uppercase letters, numbers and symbols gives roughly 103 bits of entropy. The generator also guarantees at least one character from every set you tick, so sites with composition rules accept the result on the first try. If you ever have to read a password aloud or type it from a printed sheet, tick <strong>Exclude look-alike characters</strong> to remove 0, O, 1, l, I and the vertical bar, which are easy to confuse.</p>
+      <h3>Passphrase</h3>
+      <p>A passphrase strings together several random common words, such as "Meadow-Lantern-Copper-Orbit-Willow-Rabbit". It is easier to remember and to type on a phone than a jumble of symbols, which makes it ideal for the few passwords you must know by heart: your computer login, your password manager's master password or your disk encryption key. The key is that the words are chosen by the computer, not by you; a phrase you invent, such as a favorite quote, is far weaker than it looks. Each word from this tool's list adds about 9 bits, so use six words as a minimum and eight or more for something you want to protect for years.</p>
+      <h3>PIN</h3>
+      <p>A PIN is short by design, so the meter honestly rates it as weak. That is acceptable for phone and bank-card locks because the device or bank limits the number of attempts. Do not use a PIN as the only protection of an online account.</p>
+
+      <h2>How the entropy and crack-time estimates work</h2>
+      <p>Entropy is calculated from the size of the pool and the length: the logarithm of the pool size, multiplied by the number of characters. For passphrases the pool is the word list. The crack-time line assumes an attacker who has stolen a database and can test ten billion guesses per second, which is a generous figure for a single powerful graphics card against a fast hash function. Real systems that use slow, salted hashing such as bcrypt or Argon2 are many orders of magnitude harder to attack, and live login forms usually block repeated guesses. The number is therefore a conservative teaching aid, not a guarantee.</p>
+
+      <h2>Where the randomness comes from</h2>
+      <p>The generator uses the browser's cryptographically secure random source, <code>crypto.getRandomValues</code>, the same facility that secures HTTPS connections. It does not use the ordinary <code>Math.random</code> function, which is predictable and unsuitable for secrets. To pick a number in a range, the code rejects values that would cause bias, so every character or word has exactly the same chance of being chosen. The tool then shuffles the guaranteed characters into random positions.</p>
+
+      <h2>Habits that matter more than the generator</h2>
+      <ul>
+        <li><strong>Use a different password for every account.</strong> Reuse is the biggest real-world risk, because one leaked site exposes all the others.</li>
+        <li><strong>Store passwords in a reputable password manager</strong> and protect it with a long passphrase generated here.</li>
+        <li><strong>Turn on two-factor authentication</strong> wherever it is offered, preferably with an authenticator app or a hardware key.</li>
+        <li><strong>Avoid sharing passwords by email or chat.</strong> If you must share access, use the sharing feature of your password manager.</li>
+        <li><strong>Remember the clipboard.</strong> Other programs on your device may read copied text, so paste the password promptly and clear the clipboard afterwards if you are on a shared computer.</li>
+      </ul>
+      <p>Nothing here is stored or sent, and the page works offline after loading, so you can generate a password even when you are not connected.</p>
+
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Is this password generator safe to use?</summary><p>Yes. Passwords are generated inside your browser with the secure random number generator built into your device. They are never sent to a server, never stored in a cookie or in local storage, and disappear when you close the tab. Copy the password into your password manager straight away.</p></details>
+        <details><summary>How long should my password be?</summary><p>For accounts you protect with a password manager, use at least 16 random characters. For a passphrase that you have to remember, use at least six random words. Length matters more than complexity, so when in doubt, make it longer.</p></details>
+        <details><summary>Should I choose random characters or a passphrase?</summary><p>Choose random characters for anything stored in a password manager. Choose a passphrase for the few secrets you must type or memorize, such as a device login or the master password of your manager. Both modes use real randomness, so both are strong when long enough.</p></details>
+        <details><summary>What do "bits of entropy" mean?</summary><p>Entropy measures unpredictability. Each bit doubles the number of guesses needed to find the password by trial. A password with 80 bits needs about a trillion trillion guesses in the worst case, which is out of reach for any attacker today.</p></details>
+        <details><summary>How is the "time to crack" estimated?</summary><p>The tool assumes an attacker testing ten billion guesses per second against a stolen, quickly hashed password, and uses the average of half the possible combinations. Real services with slow hashing and login limits are much tougher, so treat the figure as a cautious comparison between settings, not as a promise.</p></details>
+        <details><summary>Do I really need symbols?</summary><p>Symbols enlarge the pool of possible characters, but extra length helps even more. A longer password made only of letters and numbers can beat a short one with symbols. Keep symbols on when a site demands them, and turn them off when a system rejects certain characters, then increase the length instead.</p></details>
+        <details><summary>Why is a PIN rated as weak?</summary><p>A six-digit PIN has only a million combinations, which a computer can try in a moment if it can test guesses freely. PINs are acceptable for phones and bank cards because those devices and banks limit failed attempts, but they are not strong enough to guard an online account.</p></details>
+        <details><summary>Should I change my passwords regularly?</summary><p>Current guidance recommends changing a password when you suspect it has been exposed, for example after a data breach, rather than on a fixed schedule. Forced regular changes tend to push people towards weaker, predictable passwords. A unique, long, random password and two-factor authentication matter more.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li>
+        <li><a href="../qr-code-generator/">QR Code Generator</a></li>
+        <li><a href="../unit-converter/">Unit Converter</a></li>
+        <li><a href="../percentage-calculator/">Percentage Calculator</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need custom software, a faster website or help with digital projects? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-password-generator-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../password-generator/">Password Generator</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Şifreli Mesaj Oluşturucu ve Çözücü – Sezar, Vigenère, Mors, Base64 (Ücretsiz)</title>
+  <meta name="description" content="Şifreli mesaj oluşturun ve çözün: Sezar (Türkçe alfabe), Vigenère, Atbash, ROT13, Mors kodu (ses ve ışık), ikili, hex, Base64. Eğitim ve eğlence için; metin tarayıcıdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/sifreli-mesaj/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .sm-edu { margin: 0 0 16px; padding: 12px 14px; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: var(--ba-radius-sm); font-size: .92rem; }
+    .sm-edu-end { margin: 22px 0 0; }
+    .sm-fs { border: 0; margin: 0 0 12px; padding: 0; min-width: 0; }
+    .sm-fs legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+    .sm-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sm-chip { position: relative; display: inline-flex; margin: 0; }
+    .sm-chip input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .sm-chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 16px; border-radius: 999px; border: 1px solid var(--ba-border); background: var(--ba-surface); color: var(--ba-text); font-weight: 600; font-size: .95rem; cursor: pointer; }
+    .sm-chip:hover span { border-color: var(--ba-border-hover); }
+    .sm-chip input:checked + span { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sm-chip input:checked + span { color: #1a0d10; } }
+    :root[data-theme="dark"] .sm-chip input:checked + span { color: #1a0d10; }
+    .sm-chip input:focus-visible + span { outline: 2px solid var(--ba-primary); outline-offset: 3px; }
+    .sm-descs p { margin: 0 0 14px; color: var(--ba-text-2); font-size: .95rem; }
+    .sm-hint { margin: 6px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .sm-hint:empty { display: none; }
+    .ba-tool textarea { display: block; width: 100%; min-height: 110px; padding: 10px 12px; font: inherit; font-size: 1rem; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; word-break: break-word; }
+    .ba-tool textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .ba-tool textarea[readonly] { background: var(--ba-surface-2); }
+    .ba-tool .ba-field { margin-bottom: 12px; }
+    .ba-tool .ba-options .ba-field { margin-bottom: 0; }
+    .ba-tool .ba-actions { margin: 4px 0 14px; }
+    .sm-warn { margin: 0 0 12px; padding: 10px 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-accent); border-radius: var(--ba-radius-sm); font-size: .9rem; }
+    .sm-status { min-height: 1.4em; margin: 6px 0 0; font-size: .9rem; color: var(--ba-success); }
+    .sm-panel { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--ba-border); }
+    .sm-panel h3 { margin: 0 0 8px; }
+    .sm-bf { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; max-height: 440px; overflow: auto; }
+    .sm-bf li { margin: 0; }
+    .sm-bfrow { display: flex; align-items: baseline; gap: 12px; width: 100%; min-height: 44px; padding: 8px 12px; text-align: left; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .sm-bfrow:hover { border-color: var(--ba-border-hover); background: var(--ba-primary-soft); }
+    .sm-bfrow .k { flex: none; min-width: 6.2em; font-weight: 700; color: var(--ba-primary); }
+    .sm-bfrow .t { min-width: 0; word-break: break-word; }
+    .sm-keytable { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 10px; font-family: var(--ba-mono); font-size: .8rem; }
+    .sm-keytable span { padding: 2px 6px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: 4px; }
+    .sm-morse { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-bottom: 12px; }
+    .sm-lamp { width: 84px; height: 84px; flex: none; border-radius: 50%; background: #3a3d42; border: 3px solid var(--ba-border-hover); }
+    .sm-lamp.is-on { background: #ffd54a; border-color: #ffd54a; box-shadow: 0 0 28px 8px rgba(255, 213, 74, .7); }
+    .sm-morse-ctrl { flex: 1 1 280px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+    .ba-content td:last-child { font-family: var(--ba-mono); font-size: .85rem; word-break: break-all; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Şifreli Mesaj Oluşturucu ve Çözücü – Bilişim Ajans","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/sifreli-mesaj/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Şifreli mesaj nasıl oluşturulur?","acceptedAnswer":{"@type":"Answer","text":"Yöntemi seçin, \"Şifrele\" yönünde mesajınızı yazın ve sonucu kopyalayın. Sezar için kaydırma sayısını, Vigenère için anahtar kelimeyi, anahtar tablosu için karışık alfabeyi belirleyin. Alıcıya hem şifreli metni hem de yöntem ve anahtar bilgisini iletmeniz gerekir; aksi hâlde mesaj çözülemez."}},{"@type":"Question","name":"Şifreli mesajı nasıl çözerim?","acceptedAnswer":{"@type":"Answer","text":"Aynı sayfada \"Çöz\" yönünü seçin, gönderenin kullandığı yöntemi, alfabeyi ve anahtarı ayarlayın, şifreli metni mesaj kutusuna yapıştırın. Sezar'da kaydırma sayısını bilmiyorsanız \"Tüm kaydırmaları dene\" düğmesiyle bütün seçenekleri listeleyip anlamlı olanı seçebilirsiniz."}},{"@type":"Question","name":"Sezar şifresinde Türkçe karakterler nasıl işleniyor?","acceptedAnswer":{"@type":"Answer","text":"\"Türk alfabesi\" seçeneğinde 29 harf (Ç, Ğ, İ, Ö, Ş, Ü dahil) kullanılır; Q, W ve X alfabede olmadığı için olduğu gibi bırakılır ve size bir uyarı gösterilir. \"İngiliz alfabesi\" seçeneğinde 26 harf kullanılır; Türkçe harfler atlanır ya da \"Türkçe harfleri sadeleştir\" kutusuyla ç, ğ, ı, ö, ş, ü harfleri c, g, i, o, s, u olarak çevrilir."}},{"@type":"Question","name":"Bu yöntemlerle önemli bilgilerimi koruyabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sezar, Vigenère, Atbash, ROT13, Mors, ikili, hex ve Base64 yöntemleri eğitim ve eğlence içindir; bunları birkaç saniyede çözmek mümkündür. Parola, kart bilgisi ya da kişisel veri gibi önemli bilgiler için güncel şifreleme programları ve güçlü parolalar kullanın."}},{"@type":"Question","name":"Mors kodunda Türkçe harfler nasıl yazılıyor?","acceptedAnswer":{"@type":"Answer","text":"Araç, Ç, Ğ, İ, Ö, Ş ve Ü harflerini ASCII karşılıklarıyla (C, G, I, O, S, U) yazar ve bunu size bir notla bildirir. Çözerken de sonuç büyük harf ve sadeleşmiş olarak gelir. Bu, Mors tablolarında harfler için tek bir Türkçe standart bulunmadığı için en güvenli yoldur."}},{"@type":"Question","name":"ROT13'ü iki kez uygulayınca neden eski metin geliyor?","acceptedAnswer":{"@type":"Answer","text":"Alfabede 26 harf vardır ve 13 bunun yarısıdır. Bir harfi 13 kaydırınca alfabenin diğer yarısına geçersiniz, ikinci 13 kaydırma sizi tam başladığınız yere getirir. Bu yüzden ROT13'te \"şifrele\" ile \"çöz\" aynı işlemdir."}},{"@type":"Question","name":"Yazdığım mesaj bir sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm işlem tarayıcınızın içinde yapılır; mesajınız, anahtarınız ve sonuç hiçbir yere gönderilmez ve kaydedilmez. Sayfa bir kez açıldıktan sonra internet olmadan da çalışır."}},{"@type":"Question","name":"Şifreli mesajı WhatsApp ya da e-postayla nasıl paylaşırım?","acceptedAnswer":{"@type":"Answer","text":"\"Sonucu kopyala\" düğmesiyle metni alıp sohbete yapıştırın; telefonda \"Paylaş\" düğmesi paylaşım menüsünü açar. Alıcıya hangi yöntemi, hangi alfabeyi ve anahtarı kullandığınızı ayrıca söyleyin; çözüm için bu sayfayı açıp \"Çöz\" yönünü seçmesi yeterlidir. Emoji ve noktalama işaretleri şifrelenmez, aynen kalır."}},{"@type":"Question","name":"Vigenère anahtarında boşluk ya da rakam kullanabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Kullanabilirsiniz ama yok sayılır; yalnızca seçili alfabedeki harfler anahtar olarak işlenir. Anahtarda hiç harf yoksa araç hata verir ve ANAHTAR gibi bir kelime yazmanızı önerir."}},{"@type":"Question","name":"Mors sesi çalmıyor, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Cihazın sesini ve \"Sesi çal\" kutusunu kontrol edin; bazı tarayıcılar sesi yalnızca bir düğmeye tıklandıktan sonra başlatır, bu yüzden \"Oynat\"a basmanız gerekir. Ses hâlâ gelmiyorsa \"Işığı göster\" seçeneğiyle ışık simülasyonunu kullanabilirsiniz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1><span class="ba-grad">Şifreli Mesaj Oluşturucu ve Çözücü</span></h1>
+      <p class="lead">Arkadaşınıza, öğrencilerinize ya da hazine avı oyununuza şifreli mesaj yazın; gelen şifreli mesajı da çözün. Sezar (Türkçe alfabe seçeneğiyle), Vigenère, Atbash, ROT13, Mors kodu (ses ve ışıkla), ikili, onaltılık, Base64, A1Z26 ve kendi anahtar tablonuz tek sayfada. Eğitim ve eğlence amaçlıdır; metniniz tarayıcınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Şifreleme aracı</h2>
+      <p class="sm-edu"><strong>Eğitim ve eğlence aracıdır.</strong> Bu yöntemler gerçek güvenlik için kullanılmaz; parola, kart numarası ya da özel bilgi gibi önemli verileri bu şekilde "şifrelemeyin".</p>
+
+      <fieldset class="sm-fs">
+        <legend>1. Yöntemi seçin</legend>
+        <div class="sm-chips">
+          <label class="sm-chip"><input type="radio" name="yontem" value="caesar" checked><span>Sezar</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="vigenere"><span>Vigenère</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="atbash"><span>Atbash</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="rot13"><span>ROT13</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="morse"><span>Mors kodu</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="binary"><span>İkili</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="hex"><span>Onaltılık</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="base64"><span>Base64</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="a1z26"><span>A1Z26</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="reverse"><span>Ters çevir</span></label>
+          <label class="sm-chip"><input type="radio" name="yontem" value="custom"><span>Anahtar tablosu</span></label>
+        </div>
+      </fieldset>
+      <div class="sm-descs">
+        <p data-desc="caesar">Her harfi alfabede belirli sayıda ileri kaydırır. Julius Caesar'ın askerî yazışmalarında 3 kaydırmayı kullandığı anlatılır. Çözen kişinin kaydırma sayısını bilmesi gerekir.</p>
+        <p data-desc="vigenere" hidden>Sezar'ın geliştirilmiş hâli: kaydırma, anahtar kelimenin harflerine göre her harfte değişir. Çözmek için aynı anahtar kelime gerekir.</p>
+        <p data-desc="atbash" hidden>Alfabeyi tersine çevirir: ilk harf son harfe, ikinci harf sondan ikinciye karşılık gelir. Anahtar gerekmez; aynı işlem hem şifreler hem çözer.</p>
+        <p data-desc="rot13" hidden>İngiliz alfabesinde 13 harf kaydırma. Alfabe 26 harf olduğundan iki kez uygulamak metni eski hâline getirir. Eskiden forumlarda sürprizi bozan cümleleri gizlemek için kullanılırdı.</p>
+        <p data-desc="morse" hidden>Harfleri nokta ve çizgilere çevirir; harfler arasında boşluk, kelimeler arasında / bulunur. Aşağıdaki oynatıcıyla ses ve ışık olarak dinleyebilirsiniz. Türkçe harfler ASCII karşılıklarıyla yazılır.</p>
+        <p data-desc="binary" hidden>Metni bilgisayarın gördüğü gibi 0 ve 1 gruplarına çevirir (her bayt 8 bit). Bu bir şifre değil, kodlamadır; sayı tabanları için <a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştür</a> aracına bakın.</p>
+        <p data-desc="hex" hidden>Her baytı iki basamaklı onaltılık sayıyla yazar (ör. A = 41). Bu bir şifre değil, kodlamadır.</p>
+        <p data-desc="base64" hidden>Metni Base64 kodlamasına çevirir ve geri alır. Bu bir şifre değil, kodlamadır; dosyalar ve ayrıntılı seçenekler için <a href="../base64-donustur/">Base64 Kodla / Çöz</a> aracını kullanın.</p>
+        <p data-desc="a1z26" hidden>Her harfi alfabedeki sırasıyla yazar: A=1, B=2… Harfler tire ile birleşir, kelimeler boşlukla ayrılır. Çözerken büyük/küçük harf ayrımı kaybolur.</p>
+        <p data-desc="reverse" hidden>Metni sondan başa doğru yazar. Tüm metni, her kelimeyi ayrı ya da yalnızca kelime sırasını ters çevirebilirsiniz.</p>
+        <p data-desc="custom" hidden>Alfabenizin her harfine karışık bir karşılık verirsiniz (yerine koyma şifresi). Anahtar tablosunu mesajı çözecek kişiyle paylaşmanız gerekir.</p>
+      </div>
+
+      <fieldset class="sm-fs">
+        <legend>2. Yön</legend>
+        <div class="sm-chips">
+          <label class="sm-chip"><input type="radio" name="mod" value="sifrele" checked><span>Şifrele</span></label>
+          <label class="sm-chip"><input type="radio" name="mod" value="coz"><span>Çöz</span></label>
+        </div>
+        <p id="mod-ipucu" class="sm-hint"></p>
+      </fieldset>
+
+      <div id="options" class="ba-options">
+        <div class="ba-field" data-show="caesar vigenere atbash a1z26 custom"><label for="opt-alfabe">Alfabe</label>
+          <select id="opt-alfabe"><option value="tr" selected>Türk alfabesi (29 harf)</option><option value="en">İngiliz alfabesi (26 harf)</option></select>
+          <div class="hint">Türkçe metin için Türk alfabesi; Q, W, X içeren ya da İngilizce metin için İngiliz alfabesi.</div></div>
+        <div class="ba-field" data-show="caesar"><label for="opt-kaydirma">Kaydırma miktarı</label>
+          <input id="opt-kaydirma" type="number" min="1" max="28" step="1" value="3" inputmode="numeric">
+          <div id="kaydirma-ipucu" class="hint"></div></div>
+        <div class="ba-field" data-show="vigenere"><label for="opt-anahtar">Anahtar kelime</label>
+          <input id="opt-anahtar" type="text" value="ANAHTAR" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <div class="hint">Yalnızca harfler kullanılır; boşluk, rakam ve işaretler yok sayılır.</div></div>
+        <div class="ba-field" data-show="custom"><label for="opt-ozel">Anahtar tablosu (karışık alfabe)</label>
+          <input id="opt-ozel" type="text" value="" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <div class="hint">Alfabedeki her harf tam bir kez geçmeli; ilk harf A'nın, ikinci harf B'nin karşılığıdır.</div>
+          <div class="ba-actions"><button id="ozel-uret" class="ba-btn" type="button">Rastgele anahtar üret</button></div>
+          <div id="ozel-tablo" class="sm-keytable" aria-label="Anahtar tablosu önizlemesi"></div></div>
+        <div class="ba-field" data-show="reverse"><label for="opt-ters">Ters çevirme biçimi</label>
+          <select id="opt-ters"><option value="tum" selected>Tüm metni baştan sona ters çevir</option><option value="kelime">Her kelimenin harflerini ters çevir</option><option value="sira">Yalnızca kelime sırasını ters çevir</option></select></div>
+        <div class="ba-field" id="f-sade" hidden><label><input id="opt-sade" type="checkbox"> Türkçe harfleri sadeleştir</label>
+          <div class="hint">ç→c, ğ→g, ı→i, ö→o, ş→s, ü→u olarak çevrilir; İngiliz alfabesiyle çalışırken harfler atlanmaz.</div></div>
+      </div>
+
+      <div class="ba-field"><label for="girdi">Mesajınız</label>
+        <textarea id="girdi" rows="4" placeholder="Şifrelemek ya da çözmek istediğiniz metni buraya yazın" spellcheck="false" autocomplete="off"></textarea></div>
+      <div class="ba-actions"><button id="ornek" class="ba-btn" type="button">Örnek metin yaz</button><button id="temizle" class="ba-btn" type="button">Temizle</button></div>
+      <p id="uyari" class="sm-warn" role="status" hidden></p>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div class="ba-field"><label for="cikti">Sonuç</label>
+        <textarea id="cikti" rows="4" readonly spellcheck="false" placeholder="Sonuç burada görünür"></textarea></div>
+      <div class="ba-actions">
+        <button id="kopyala" class="ba-btn ba-btn-primary" type="button" disabled>Sonucu kopyala</button>
+        <button id="paylas" class="ba-btn" type="button" disabled>Paylaş</button>
+        <button id="tasi" class="ba-btn" type="button" disabled>Sonucu girişe taşı (yönü çevirir)</button>
+      </div>
+      <p id="durum" class="sm-status" role="status"></p>
+
+      <section id="bf" class="sm-panel" aria-labelledby="h-bf">
+        <h3 id="h-bf">Kaydırmayı bilmiyorsanız: tüm kaydırmaları deneyin</h3>
+        <p>Sezar'da yalnızca 25 (İngiliz) ya da 28 (Türk alfabesi) olası kaydırma vardır; hepsini sırayla çözmeyi deneyebilirsiniz. Anlamlı görünen satıra tıkladığınızda o kaydırma seçilir. Bu, klasik şifrelerin neden güvenli olmadığını göstermek için bir derstir.</p>
+        <button id="bf-btn" class="ba-btn" type="button">Tüm kaydırmaları dene</button>
+        <ol id="bf-list" class="sm-bf" hidden aria-label="Tüm kaydırma sonuçları"></ol>
+      </section>
+
+      <section id="morse-panel" class="sm-panel" aria-labelledby="h-morse" hidden>
+        <h3 id="h-morse">Mors kodunu ses ve ışıkla dinleyin</h3>
+        <div class="sm-morse">
+          <div id="lamp" class="sm-lamp" role="img" aria-label="Mors ışığı: yandığında daire parlar" data-flashes="0"></div>
+          <div class="sm-morse-ctrl">
+            <div class="ba-field"><label for="morse-hiz">Hız (kelime/dakika)</label><input id="morse-hiz" type="number" min="5" max="25" step="1" value="12" inputmode="numeric"></div>
+            <div class="ba-field"><label for="morse-ton">Ses tonu (Hz)</label><input id="morse-ton" type="number" min="300" max="1000" step="50" value="600" inputmode="numeric"></div>
+            <div class="ba-field"><label><input id="morse-ses" type="checkbox" checked> Sesi çal</label></div>
+            <div class="ba-field"><label><input id="morse-isik" type="checkbox" checked> Işığı göster</label></div>
+          </div>
+        </div>
+        <div class="ba-actions"><button id="morse-cal" class="ba-btn" type="button">Oynat</button><button id="morse-dur" class="ba-btn" type="button">Durdur</button></div>
+        <p id="morse-durum" class="sm-status" role="status"></p>
+        <p class="sm-hint">Işık hızlı yanıp söner; ışığa duyarlıysanız "Işığı göster" seçeneğini kapatıp yalnızca sesi kullanın. Çalınan, "Şifrele" yönünde sonuç kutusundaki, "Çöz" yönünde mesaj kutusundaki Mors kodudur.</p>
+      </section>
+
+      <p class="sm-edu sm-edu-end">Gerçek güvenlik için bu yöntemler kullanılmaz; eğitim ve eğlence amaçlıdır. Önemli bilgileri korumak için güncel şifreleme programları ve güçlü parolalar kullanın.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="sifreli-mesaj-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Şifreli mesaj nedir, bu araç ne işe yarar?</h2>
+      <p>Şifreli mesaj, anlamı yalnızca belirli bir kuralı bilen kişinin çözebildiği yazıdır. İnsanlar bu oyunu binlerce yıldır oynuyor: askerler haberleri düşmandan saklamak için, izciler hazine avı oyunları için, öğretmenler matematik ve tarih derslerini renklendirmek için, çocuklar ise kardeşlerinden sır saklamak için şifreli yazı kullanır. Bu sayfa, klasik yöntemlerin hepsini tek yerde toplar: Sezar, Vigenère, Atbash, ROT13, Mors kodu, ikili, onaltılık ve Base64 kodlamaları, A1Z26, ters çevirme ve kendi anahtar tablonuzla yerine koyma şifresi. Metni yazarsınız, yöntemi seçersiniz, sonuç anında görünür. Aynı ekrandan tersini de yapabilir, yani gelen şifreli mesajı çözebilirsiniz.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Yöntemi seçin.</strong> Üstteki düğmelerden Sezar, Vigenère, Mors gibi bir yöntemi işaretleyin. Altında yöntemin kısa bir açıklaması çıkar. İlk kez deniyorsanız "Örnek metin yaz" düğmesi size uygun bir başlangıç verir.</li>
+        <li><strong>Yönü ve ayarları belirleyin.</strong> "Şifrele" ile düz metni gizli yazıya, "Çöz" ile gizli yazıyı düz metne çevirirsiniz. Sezar için kaydırma sayısını ve alfabeyi (Türk alfabesi 29 harf, İngiliz alfabesi 26 harf), Vigenère için anahtar kelimeyi, anahtar tablosu için karışık alfabeyi girin.</li>
+        <li><strong>Mesajınızı yazın.</strong> Sonuç siz yazdıkça güncellenir. Harf olmayan karakterler (boşluk, rakam, noktalama, emoji) aynen korunur; büyük ve küçük harf ayrımı da bozulmaz.</li>
+        <li><strong>Kopyalayın ya da paylaşın.</strong> "Sonucu kopyala" ile metni panoya alın ve istediğiniz sohbete yapıştırın. Alıcı bu sayfayı açıp aynı yöntemi ve aynı anahtarı seçerek "Çöz" yönünde sonucu görür. Telefonda "Paylaş" düğmesi paylaşım menüsünü açar.</li>
+        <li><strong>Gidiş-dönüşü deneyin.</strong> "Sonucu girişe taşı" düğmesi sonucu mesaj kutusuna koyar ve yönü ters çevirir; böylece şifreli metnin gerçekten çözülüp aynı mesaja döndüğünü görürsünüz.</li>
+      </ol>
+
+      <h2>Hangi yöntem nasıl çalışır?</h2>
+      <p>Aşağıdaki tablo, aynı kelimenin ("MERHABA") yöntemlere göre nasıl göründüğünü gösterir. Sayfadaki aracı kullanarak kendiniz doğrulayabilirsiniz.</p>
+      <table>
+        <thead><tr><th>Yöntem</th><th>Kural</th><th>MERHABA</th></tr></thead>
+        <tbody>
+          <tr><td>Sezar, +3, Türk alfabesi</td><td>Her harf 29 harflik alfabede 3 ileri gider</td><td>ÖĞTJÇDÇ</td></tr>
+          <tr><td>Sezar, +3, İngiliz alfabesi</td><td>26 harflik alfabede 3 ileri</td><td>PHUKDED</td></tr>
+          <tr><td>Vigenère, anahtar ANAHTAR</td><td>Her harf anahtarın sıradaki harfi kadar kayar</td><td>MSRÖTBR</td></tr>
+          <tr><td>Atbash, Türk alfabesi</td><td>Alfabe tersten okunur</td><td>KTĞPZYZ</td></tr>
+          <tr><td>ROT13</td><td>26 harfli alfabede 13 kaydırma</td><td>ZREUNON</td></tr>
+          <tr><td>Mors kodu</td><td>Nokta ve çizgi; harfler arasında boşluk</td><td>-- . .-. .... .- -... .-</td></tr>
+          <tr><td>İkili</td><td>Her harf 8 bit</td><td>01001101 01000101 01010010 01001000 01000001 01000010 01000001</td></tr>
+          <tr><td>Onaltılık</td><td>Her bayt iki basamaklı hex</td><td>4D 45 52 48 41 42 41</td></tr>
+          <tr><td>Base64</td><td>3 bayt → 4 karakter</td><td>TUVSSEFCQQ==</td></tr>
+          <tr><td>A1Z26 (Türk alfabesi)</td><td>Harf yerine alfabedeki sırası</td><td>16-6-21-10-1-2-1</td></tr>
+          <tr><td>Ters çevir</td><td>Sondan başa</td><td>ABAHREM</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Sezar şifresi ve Türkçe alfabe</h2>
+      <p>Sezar şifresi, en eski ve en basit yerine koyma yöntemidir. Tarihçi Suetonius, Julius Caesar'ın yazışmalarında her harfi alfabede üç sıra ileri kaydırdığını aktarır. İngiliz alfabesinde A harfi D, B harfi E olur. Türkçede iş biraz farklıdır: Türk alfabesi 29 harftir ve Ç, Ğ, İ, Ö, Ş, Ü gibi harfler içerir, buna karşılık Q, W ve X yoktur. Bu yüzden "Türk alfabesi" seçeneğinde MERHABA kelimesi +3 kaydırmayla ÖĞTJÇDÇ olur; aynı kelime İngiliz alfabesiyle PHUKDED'dir. Çözen kişi aynı alfabeyi seçmezse metin yanlış çıkar, bu yüzden alfabe seçimini mesajla birlikte iletmek önemlidir. Büyük ve küçük "ı" ile "i" harfleri de doğru eşleşir: küçük "i" büyük "İ" ile, küçük "ı" büyük "I" ile aynı sıradadır.</p>
+
+      <div class="ba-ad" data-slot="sifreli-mesaj-b" aria-label="Reklam"></div>
+
+      <h2>Sezar şifresinin zayıf yönü: tüm kaydırmaları denemek</h2>
+      <p>Sezar şifresinde gizli olan yalnızca kaydırma sayısıdır ve bu sayının sınırlı olması yöntemi çok zayıf yapar. Türk alfabesinde 28, İngiliz alfabesinde 25 farklı kaydırma vardır; hepsini sırayla çözmek birkaç saniye sürer. Araçtaki "Tüm kaydırmaları dene" düğmesi bunu sizin için yapar: şifreli metni her kaydırmayla çözüp listeler, anlamlı bir Türkçe cümle çıkan satırı kendiniz seçersiniz. Bilmeceler ve sınıf etkinlikleri için çok işe yarar, çünkü şifreyi bilmeden çözmenin mümkün olduğunu bir derste göstermek, bu yöntemlerin neden güvenlik sağlamadığını anlatmanın en etkili yoludur. Dilerseniz bir adım ileri gidip harf sıklığını inceleyin: Türkçede "A" ve "E" en sık kullanılan harflerdir ve şifreli metinde en çok geçen harf genellikle bunlardan birinin karşılığıdır.</p>
+
+      <h2>Vigenère: Sezar'ın güçlendirilmiş hâli</h2>
+      <p>Vigenère şifresi, tek bir kaydırma yerine bir anahtar kelimenin harflerini sırayla kaydırma değeri olarak kullanır. Anahtar ANAHTAR ise ilk harf 0, ikinci harf 16, üçüncü harf yine 0 kadar ilerler ve böyle devam eder. Aynı harf metnin farklı yerlerinde farklı şifrelendiği için basit harf sayma yöntemi işe yaramaz. Yöntem tarihte yanlış anılan bir isimle kalmıştır: ilk olarak Giovan Battista Bellaso 1553'te tarif etmiş, Blaise de Vigenère'in adı sonradan ona verilmiştir. Yüzyıllarca "çözülemez şifre" sayılmış, ancak 19. yüzyılda Friedrich Kasiski ve Charles Babbage gibi isimler yöntemin açığını bulmuştur. Bugün bilgisayarlar için çocuk oyuncağıdır, fakat anahtar kelimeyle çalışma fikrini öğretmek için çok güzel bir başlangıçtır. Bu araçta anahtar kelimedeki boşluk, rakam ve noktalama yok sayılır, yalnızca seçili alfabedeki harfler kullanılır.</p>
+
+      <h2>Atbash, ROT13 ve ters çevirme</h2>
+      <p>Atbash, alfabeyi tersine çevirir: Türk alfabesinde A, Z ile; B, Y ile; C, V ile eşleşir. Adı İbrani alfabesinin ilk ve son harflerinden (aleph–tav, beth–shin) gelir. Anahtar olmadığı için çözmek de kolaydır; aynı işlem iki kez uygulanınca düz metne dönülür. ROT13, İngiliz alfabesinde 13 harf kaydırmadır ve 26 harfin yarısı olduğu için kendi tersidir: bir metne iki kez uygularsanız aynı metni elde edersiniz. Eski internet forumlarında bilmecenin cevabını ya da bir filmin sürprizini gizlemek için çok kullanılmıştır; gerçek koruma amacı yoktur. Ters çevirme ise en basit oyundur: tüm metni, her kelimeyi ya da yalnızca kelime sırasını ters çevirebilirsiniz. Çocuklarla oynarken ayna yazısı fikri için güzel bir giriştir.</p>
+
+      <h2>Mors kodu: nokta, çizgi, ses ve ışık</h2>
+      <p>Mors kodu, 19. yüzyılda telgraf için geliştirilen ve her harfi kısa ve uzun işaretlerin birleşimiyle gösteren bir yazım sistemidir. Zamanlaması basit bir orana dayanır: bir nokta 1 birim, bir çizgi 3 birim sürer; bir harfin işaretleri arasında 1, harfler arasında 3, kelimeler arasında 7 birimlik sessizlik bırakılır. Bu araç da aynı oranı kullanır ve hızı kelime/dakika olarak ayarlayabilirsiniz. "Oynat" düğmesi ses tonuyla birlikte bir ışık simülasyonu çalıştırır; gemilerdeki sinyal lambaları, el feneriyle haberleşme ve izcilik etkinlikleri böyle çalışır. "SOS" üç nokta, üç çizgi, üç nokta olarak sürekli yazılan bir imdat sinyalidir ve bir kısaltma değildir. Türkçe harfler Mors tablosunda ASCII karşılıklarıyla yazılır (Ç yerine C, Ş yerine S gibi). Çözerken harfleri boşlukla, kelimeleri bir eğik çizgi ile ayırdığınızdan emin olun. Işığa duyarlıysanız ışığı kapatıp yalnızca sesi kullanın.</p>
+
+      <h2>İkili, onaltılık ve Base64 şifre midir?</h2>
+      <p>Hayır, bunlar kodlamadır; bilgiyi başka bir alfabeyle yazarlar ama gizli tutmazlar, çünkü herkes aynı kuralı bilir ve anahtar yoktur. Yine de bilgisayarların metni nasıl sakladığını anlamak için çok öğreticidir. İkili sistemde her harf 8 bittir; "A" harfi 01000001 olur. Türkçe karakterler UTF-8 kodlamasında iki bayt tuttuğundan "ş" harfi 16 bitlik bir grupla gösterilir. Onaltılık gösterim aynı baytları daha kısa yazar. Base64, üç baytı dört yazdırılabilir karaktere çevirir ve e-posta eklerinde ya da web adreslerinde görürsünüz. Dosyalar ve daha fazla seçenek için <a href="../base64-donustur/">Base64 Kodla / Çöz</a> aracına, sayı tabanları arasında çalışmak için <a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştür</a> aracına göz atın.</p>
+
+      <h2>Kendi anahtar tablonuz</h2>
+      <p>Anahtar tablosu yöntemi, alfabenin her harfine bir karşılık atayan yerine koyma şifresidir. 29 harflik alfabenin karışık sıralaması çok sayıda olası anahtar üretir ve tüm anahtarları denemek elle mümkün değildir. Yine de harf sıklığı gibi dil bilgisiyle çözülebildiğinden gerçek güvenlik sağlamaz. Araç, "Rastgele anahtar üret" düğmesiyle tarayıcınızın güvenli rastgele sayı üretecini kullanarak yeni bir tablo oluşturur; anahtar tablosunun bir benzerini yazıp arkadaşınıza verebilirsiniz. Anahtardaki bir harf eksik, fazla ya da yinelenmişse araç hangi harfin sorunlu olduğunu söyler.</p>
+
+      <h2>Gerçek güvenlik için ne kullanılır?</h2>
+      <p>Bu sayfadaki yöntemlerin hiçbiri günümüzde gizli bilgiyi korumak için kullanılmamalıdır. Gerçek şifrelemede AES-256 ya da ChaCha20 gibi, yıllarca uzmanlarca incelenmiş algoritmalar ve rastgele üretilmiş uzun anahtarlar kullanılır. Günlük hayatta bunu uçtan uca şifreli mesajlaşma uygulamalarının, parola yöneticilerinin ve şifreli disklerin içinde görürsünüz. Parola konusunda yardım için <a href="../sifre-uret/">Şifre Üret</a> ve <a href="../sifre-guc-test/">Şifre Gücü Testi</a> araçlarımıza bakabilirsiniz. Bu sayfa ise yalnızca eğitim ve eğlence içindir: bilmece yazmak, hazine avı hazırlamak, bir şifreleme dersini görselleştirmek ya da arkadaşlarınızla oynamak.</p>
+
+      <h2>Sınıfta ve oyunda kullanım fikirleri</h2>
+      <ul>
+        <li><strong>Hazine avı:</strong> Her ipucunu farklı bir yöntemle şifreleyin; Sezar kaydırmasını bir sonraki ipucunun içine saklayın.</li>
+        <li><strong>Matematik dersi:</strong> Modüler aritmetiği ve olasılığı göstermek için Sezar ve anahtar tablosunu karşılaştırın.</li>
+        <li><strong>İzci kampı:</strong> Mors kodunu el fenerleriyle ve düdükle uygulayın; hız ayarını değiştirerek zorluğu artırın.</li>
+        <li><strong>Bilgisayar dersi:</strong> İkili, hex ve Base64 çıktılarını yan yana koyup karakter kodlamasını konuşun.</li>
+        <li><strong>Kaçış oyunu:</strong> Odadaki nesnelere A1Z26 sayıları yazın, sonucu birleştirip bir parola elde ettirin.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Metin sunucuya gitmez.</strong> Şifreleme ve çözme tarayıcınızda yapılır; yazdıklarınız kaydedilmez, kimseyle paylaşılmaz.</li>
+        <li><strong>Türkçeye uygun.</strong> 29 harflik Türk alfabesi, büyük/küçük ı-i ayrımı ve UTF-8 desteği vardır.</li>
+        <li><strong>Gidiş-dönüş kontrolü.</strong> Her yöntemde şifrelediğiniz metni aynı ekranda geri çözebilirsiniz.</li>
+        <li><strong>Ses ve ışıklı Mors oynatıcı.</strong> Ek program gerekmez, çevrimdışı da çalışır.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, filigran ve "premium" tuzağı yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Şifreli mesaj nasıl oluşturulur?</summary><p>Yöntemi seçin, "Şifrele" yönünde mesajınızı yazın ve sonucu kopyalayın. Sezar için kaydırma sayısını, Vigenère için anahtar kelimeyi, anahtar tablosu için karışık alfabeyi belirleyin. Alıcıya hem şifreli metni hem de yöntem ve anahtar bilgisini iletmeniz gerekir; aksi hâlde mesaj çözülemez.</p></details>
+        <details><summary>Şifreli mesajı nasıl çözerim?</summary><p>Aynı sayfada "Çöz" yönünü seçin, gönderenin kullandığı yöntemi, alfabeyi ve anahtarı ayarlayın, şifreli metni mesaj kutusuna yapıştırın. Sezar'da kaydırma sayısını bilmiyorsanız "Tüm kaydırmaları dene" düğmesiyle bütün seçenekleri listeleyip anlamlı olanı seçebilirsiniz.</p></details>
+        <details><summary>Sezar şifresinde Türkçe karakterler nasıl işleniyor?</summary><p>"Türk alfabesi" seçeneğinde 29 harf (Ç, Ğ, İ, Ö, Ş, Ü dahil) kullanılır; Q, W ve X alfabede olmadığı için olduğu gibi bırakılır ve size bir uyarı gösterilir. "İngiliz alfabesi" seçeneğinde 26 harf kullanılır; Türkçe harfler atlanır ya da "Türkçe harfleri sadeleştir" kutusuyla ç, ğ, ı, ö, ş, ü harfleri c, g, i, o, s, u olarak çevrilir.</p></details>
+        <details><summary>Bu yöntemlerle önemli bilgilerimi koruyabilir miyim?</summary><p>Hayır. Sezar, Vigenère, Atbash, ROT13, Mors, ikili, hex ve Base64 yöntemleri eğitim ve eğlence içindir; bunları birkaç saniyede çözmek mümkündür. Parola, kart bilgisi ya da kişisel veri gibi önemli bilgiler için güncel şifreleme programları ve güçlü parolalar kullanın.</p></details>
+        <details><summary>Mors kodunda Türkçe harfler nasıl yazılıyor?</summary><p>Araç, Ç, Ğ, İ, Ö, Ş ve Ü harflerini ASCII karşılıklarıyla (C, G, I, O, S, U) yazar ve bunu size bir notla bildirir. Çözerken de sonuç büyük harf ve sadeleşmiş olarak gelir. Bu, Mors tablolarında harfler için tek bir Türkçe standart bulunmadığı için en güvenli yoldur.</p></details>
+        <details><summary>ROT13'ü iki kez uygulayınca neden eski metin geliyor?</summary><p>Alfabede 26 harf vardır ve 13 bunun yarısıdır. Bir harfi 13 kaydırınca alfabenin diğer yarısına geçersiniz, ikinci 13 kaydırma sizi tam başladığınız yere getirir. Bu yüzden ROT13'te "şifrele" ile "çöz" aynı işlemdir.</p></details>
+        <details><summary>Yazdığım mesaj bir sunucuya gönderiliyor mu?</summary><p>Hayır. Tüm işlem tarayıcınızın içinde yapılır; mesajınız, anahtarınız ve sonuç hiçbir yere gönderilmez ve kaydedilmez. Sayfa bir kez açıldıktan sonra internet olmadan da çalışır.</p></details>
+        <details><summary>Şifreli mesajı WhatsApp ya da e-postayla nasıl paylaşırım?</summary><p>"Sonucu kopyala" düğmesiyle metni alıp sohbete yapıştırın; telefonda "Paylaş" düğmesi paylaşım menüsünü açar. Alıcıya hangi yöntemi, hangi alfabeyi ve anahtarı kullandığınızı ayrıca söyleyin; çözüm için bu sayfayı açıp "Çöz" yönünü seçmesi yeterlidir. Emoji ve noktalama işaretleri şifrelenmez, aynen kalır.</p></details>
+        <details><summary>Vigenère anahtarında boşluk ya da rakam kullanabilir miyim?</summary><p>Kullanabilirsiniz ama yok sayılır; yalnızca seçili alfabedeki harfler anahtar olarak işlenir. Anahtarda hiç harf yoksa araç hata verir ve ANAHTAR gibi bir kelime yazmanızı önerir.</p></details>
+        <details><summary>Mors sesi çalmıyor, ne yapmalıyım?</summary><p>Cihazın sesini ve "Sesi çal" kutusunu kontrol edin; bazı tarayıcılar sesi yalnızca bir düğmeye tıklandıktan sonra başlatır, bu yüzden "Oynat"a basmanız gerekir. Ses hâlâ gelmiyorsa "Işığı göster" seçeneğiyle ışık simülasyonunu kullanabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../base64-donustur/">Base64 Kodla / Çöz</a></li>
+        <li><a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştür</a></li>
+        <li><a href="../sifre-uret/">Şifre Üret</a></li>
+        <li><a href="../sifre-guc-test/">Şifre Gücü Testi</a></li>
+      </ul>
+      <p class="ba-note">Okulunuz ya da etkinliğiniz için özel hazırlanmış etkileşimli içerik ve web çözümleri gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="sifreli-mesaj-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

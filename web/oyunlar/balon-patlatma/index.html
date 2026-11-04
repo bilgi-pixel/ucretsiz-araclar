@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Balon Patlatma Oyna – Ücretsiz Online Balon Patlatma (kurulumsuz)</title>
+  <meta name="description" content="Balon Patlatma oyununu tarayıcınızda ücretsiz oynayın: 60 saniyelik süreli mod, çocuklar için sakin mod, bonus süre, kalkan ve bomba balonları, kombo ve en yüksek skor. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/balon-patlatma/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .bp-top { display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .bp-modes, .bp-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bp-mode[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; box-shadow: var(--ba-shadow-btn); }
+    .bp-mode[aria-pressed="true"]:hover { background: var(--ba-primary-strong); border-color: var(--ba-primary-strong); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bp-mode[aria-pressed="true"], :root:not([data-theme="light"]) .bp-mode[aria-pressed="true"]:hover { color: #1a0d10; } }
+    :root[data-theme="dark"] .bp-mode[aria-pressed="true"], :root[data-theme="dark"] .bp-mode[aria-pressed="true"]:hover { color: #1a0d10; }
+    @media (max-width: 520px) {
+      .bp-modes, .bp-tools { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+      .bp-top .ba-btn { min-height: 44px; padding: 8px 6px; font-size: .9rem; justify-content: center; }
+    }
+    .bp-hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 480px; margin: 0 auto 12px; }
+    .bp-hud > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .bp-hud dt { font-size: .7rem; font-family: var(--ba-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .bp-hud dd { margin: 0; font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+    .bp-frame { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border: 2px solid var(--ba-border); border-radius: var(--ba-radius); overflow: hidden; }
+    .game-box:fullscreen .bp-frame { max-width: min(100%, 480px, calc((100vh - 250px) * .8)); }
+    .bp-canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; background: #cfeeff; cursor: crosshair; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; touch-action: pan-y; }
+    .bp-canvas.is-playing { touch-action: none; }
+    .bp-canvas:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: -3px; }
+    .bp-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; text-align: center; background: rgba(255, 253, 247, .93); color: #1e2126; }
+    .bp-overlay h3 { margin: 0; font-size: 1.5rem; color: #7b2331; }
+    .bp-overlay p { margin: 0; max-width: 34ch; color: #33363c; }
+    .bp-overlay .ba-btn-lg { width: auto; }
+    .bp-help { max-width: 480px; margin: 12px auto 0; font-size: .9rem; color: var(--ba-text-2); text-align: center; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Balon Patlatma – Bilişim Ajans","applicationCategory":"Game","genre":"Refleks oyunu","operatingSystem":"Web","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/balon-patlatma/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Balon Patlatma ücretsiz mi, üyelik gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir. Üyelik, kayıt ya da uygulama indirmek gerekmez; sayfayı açıp Oyunu başlat düğmesine basmanız yeterlidir."}},
+  {"@type":"Question","name":"Süreli modda süre ne kadar, uzatılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Süreli mod 60 saniyedir. Altın renkli +5 SN balonunu patlatırsanız süreye 5 saniye eklenir; toplam süre en fazla 99 saniyeye çıkabilir. Bombayı kalkansız patlatırsanız 3 saniye kaybedersiniz."}},
+  {"@type":"Question","name":"Bombaya dokunursam ne olur, kalkan nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Kalkansız bomba patlatmak 30 puan ve 3 saniye götürür, kombo serisini sıfırlar. Turkuaz kalkan balonu bir sonraki bombayı tek seferlik etkisiz hale getirir. Bombanın ekrandan çıkıp gitmesi ceza değildir."}},
+  {"@type":"Question","name":"Sakin mod nedir, en yüksek skor ayrı mı tutulur?","acceptedAnswer":{"@type":"Answer","text":"Sakin modda süre, bomba, özel balon ve ıska cezası yoktur; balonlar yavaş ve sabit hızla yükselir. Bitirmek için Bitir düğmesine basarsınız. Süreli ve sakin mod için en yüksek skorlar ayrı saklanır."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor, kaybolur mu?","acceptedAnswer":{"@type":"Answer","text":"Skor yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir, başka cihazda görünmez; gizli sekmede kalıcı olmayabilir."}},
+  {"@type":"Question","name":"Telefonda oynarken sayfa kayıyor, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Oyun başladığında oyun alanı üzerinde kaydırma kapanır ki parmağınız sayfayı oynatmasın. Sayfayı kaydırmak için oyun alanının dışındaki boşluğa dokunun ya da oyunu duraklatın."}},
+  {"@type":"Question","name":"Klavyeyle oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tab ile oyun alanına odaklanın, ok tuşlarıyla nişangâhı hareket ettirin (Shift ile daha hızlı), Enter veya Boşluk ile patlatın. P tuşu oyunu duraklatır ya da devam ettirir."}},
+  {"@type":"Question","name":"Oyun neden kendiliğinden duraklıyor?","acceptedAnswer":{"@type":"Answer","text":"Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun haksız yere süre kaybetmemeniz için otomatik duraklar. Devam et düğmesine basarak kaldığınız yerden sürdürebilirsiniz."}},
+  {"@type":"Question","name":"İnternet olmadan oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyunda ağ isteği yapılmaz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Balon Patlatma</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Yükselen renkli balonlara tıklayın ya da dokunun, 60 saniyede en yüksek skoru yapın. Bonus süre ve kalkan balonlarını toplayın, bombalardan kaçının; küçükler için süresiz bir sakin mod da var. Kurulum, üyelik ve indirme yok, her şey tarayıcınızda çalışır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Balon Patlatma oyunu</h2>
+      <div class="bp-top">
+        <div class="bp-modes" role="group" aria-label="Oyun modu">
+          <button id="mode-timed" class="ba-btn bp-mode" type="button" aria-pressed="true">Süreli · 60 sn</button>
+          <button id="mode-calm" class="ba-btn bp-mode" type="button" aria-pressed="false">Sakin · süresiz</button>
+        </div>
+        <div class="bp-tools">
+          <button id="btn-pause" class="ba-btn" type="button" disabled>Duraklat</button>
+          <button id="btn-restart" class="ba-btn" type="button" disabled>Baştan başlat</button>
+          <button id="btn-finish" class="ba-btn" type="button" disabled>Bitir</button>
+          <button id="btn-full" class="ba-btn" type="button">Tam ekran</button>
+        </div>
+      </div>
+      <dl class="bp-hud" aria-label="Skor tablosu">
+        <div><dt>Skor</dt><dd id="hud-score">0</dd></div>
+        <div><dt>Süre</dt><dd id="hud-time">60</dd></div>
+        <div><dt>Rekor</dt><dd id="hud-best">0</dd></div>
+        <div><dt>Kombo</dt><dd id="hud-combo">0</dd></div>
+      </dl>
+      <div class="bp-frame">
+        <canvas id="game-canvas" class="bp-canvas" width="480" height="600" tabindex="0" aria-label="Balon Patlatma oyun alanı. Balonlara tıklayın ya da dokunun; klavyede ok tuşlarıyla nişan alıp Enter ile patlatın." aria-describedby="bp-help"></canvas>
+        <div id="overlay" class="bp-overlay">
+          <h3 id="ov-title">Balon Patlatma</h3>
+          <p id="ov-text"></p>
+          <button id="ov-primary" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Oyunu başlat</button>
+        </div>
+      </div>
+      <p id="bp-help" class="bp-help">Fare ya da parmakla balona dokunun. Klavye: Tab ile oyun alanına gelin, ok tuşlarıyla nişan alın, Enter ile patlatın; P duraklatır.</p>
+      <p id="live" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-balon-patlatma-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Balon Patlatma nedir?</h2>
+      <p>Balon Patlatma, ekranın altından yukarı doğru süzülen renkli balonlara dokunarak ya da tıklayarak patlattığınız kısa, rahatlatıcı ve hızlı bir refleks oyunudur. Kuralları tek cümleyle anlatmak mümkün: balonlar yükselir, siz patlatırsınız. Ama oyun ilerledikçe balonlar hızlanır, sıklaşır ve aralarına sizi zor durumda bırakmak isteyen bombalar karışır; işte bu yüzden “bir tur daha” demek çok kolaydır.</p>
+      <p>Oyun, Bilişim Ajans'ın ücretsiz araçlar koleksiyonunun bir parçasıdır ve tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da e-posta adresi vermeniz gerekmez. Telefonda, tablette ve bilgisayarda aynı sayfa açılır; fare, parmak ya da klavyeyle oynayabilirsiniz. Oyunda ses yoktur, bu yüzden toplu taşımada, derste ya da ofiste sessizce oynanabilir.</p>
+      <p>İki oyun modu vardır. <strong>Süreli modda</strong> 60 saniyeniz bulunur ve amaç en yüksek skoru yapmaktır. <strong>Sakin modda</strong> ise süre, bomba ve ceza yoktur; küçük çocuklar, acele etmeden oynamak isteyenler ya da fare ve dokunmatik ekran kullanımını yeni öğrenenler için tasarlanmıştır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Oyun alanının üstündeki düğmelerden modu seçin: “Süreli · 60 sn” ya da “Sakin · süresiz”.</li>
+        <li>“Oyunu başlat” düğmesine basın; balonlar alttan yükselmeye başlar ve süre işler.</li>
+        <li>Bir balona fareyle tıklayın ya da parmağınızla dokunun. Balon patlar, puan kazanırsınız ve seriniz büyür.</li>
+        <li>Altın renkli “+5 SN” balonlarını ve turkuaz kalkan balonlarını toplayın; siyah, ünlem işaretli bombalara dokunmayın.</li>
+        <li>Süre dolunca sonuç ekranı skorunuzu, patlattığınız balon sayısını ve en yüksek skorunuzu gösterir. “Tekrar oyna” ile yeni tura geçin.</li>
+      </ol>
+
+      <h2>Balon türleri ve puanlar</h2>
+      <ul>
+        <li><strong>Renkli balonlar:</strong> Her patlatma 10 puan verir. Daha küçük olanlar yakalaması zor olduğu için 15 puan getirir.</li>
+        <li><strong>+5 SN balonu (altın):</strong> Süreye 5 saniye ekler. Toplam süre en fazla 99 saniyeye çıkabilir. Süreli modun en değerli balonudur.</li>
+        <li><strong>Kalkan balonu (turkuaz, kalkan simgeli):</strong> Bir sonraki bombayı tek seferlik etkisiz hale getirir. Aynı anda yalnızca bir kalkan taşınır; hazır olduğunda oyun alanının sol üstünde “Kalkan hazır” rozeti görünür.</li>
+        <li><strong>Bomba (siyah, kesikli kırmızı çerçeveli, ünlem işaretli):</strong> Kalkansız patlatırsanız 30 puan ve 3 saniye kaybedersiniz, serinizi de sıfırlarsınız. Bombanın ekrandan çıkıp gitmesi ceza değildir; yani en iyi cevap çoğu zaman “dokunma”dır.</li>
+      </ul>
+      <p>Özel balonlar oyunun ilk 6 saniyesinde görünmez; böylece önce temel akışa alışırsınız. Sonrasında bomba oranı yavaşça artar. Özel balonları yalnızca renge bakarak ayırmak zorunda değilsiniz: her birinin üzerinde ayırt edici bir işaret (“+5”, kalkan çizimi, ünlem) bulunur.</p>
+
+      <h2>Kombo ve hız artışı</h2>
+      <p>Süreli modda arka arkaya yaptığınız her başarılı patlatma seriyi bir artırır. Seri 5'e ulaşınca puan çarpanı ×2 olur, 10'da ×3, 15'te ×4, 20 ve üzerinde ×5 olur. Çarpan, oyun alanının sağ üstünde “Kombo” rozetiyle gösterilir. Seri; boş yere dokunmanızla (ıska), sıradan bir balonun ekrandan kaçmasıyla ya da bir bombayı patlatmanızla sıfırlanır. Bu kural, rastgele tıklamanın yerine hedef seçmenin daha kârlı olmasını sağlar.</p>
+      <p>Balonlar zamanla hızlanır: 60. saniyede yükselme hızı başlangıcın yaklaşık 2,2 katına ulaşır ve yeni balonlar daha sık çıkar. Oyunun ilk yarısında seriyi büyütmek, ikinci yarısında ise doğru balonu seçmek skoru belirler. Sakin modda hız sabittir, çarpan yoktur ve ıska cezası uygulanmaz; yalnızca seri sayacı çalışır.</p>
+
+      <div class="ba-ad" data-slot="oyun-balon-patlatma-b" aria-label="Reklam"></div>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> Balonun üzerine tıklayın. Üst üste binen balonlarda en önde çizilen balon patlar.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızla balona dokunun. Vuruş alanı balonun çizilen sınırından biraz geniştir; bu yüzden küçük ekranda da isabet etmek kolaydır. Oyun sırasında oyun alanı üzerinde sayfa kaydırma kapanır.</li>
+        <li><strong>Klavye:</strong> Tab ile oyun alanına odaklanın. Ok tuşları nişangâhı hareket ettirir (Shift ile daha hızlı), Enter ya da Boşluk nişangâhın altındaki balonu patlatır.</li>
+        <li><strong>Duraklat:</strong> “Duraklat” düğmesi ya da P tuşu oyunu durdurur. Başka bir sekmeye geçerseniz oyun kendiliğinden duraklar.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu büyütür; tablette ve masaüstünde daha geniş bir alanda oynarsınız.</li>
+      </ul>
+
+      <h2>Sakin mod: çocuklar ve rahat oyun için</h2>
+      <p>Her oyuncu rekor peşinde koşmak zorunda değildir. Sakin modda sayaç ve bomba olmadığı için kaybetmenin bir yolu yoktur; balonlar yavaş ve eşit hızla yükselir, ıskalamak seri sayacını bozmaz. İstediğiniz kadar oynayıp “Bitir” düğmesine bastığınızda skorunuz görünür. Bu mod; parmak-göz koordinasyonu çalışan küçük çocuklar, fare kullanmayı yeni öğrenenler ve kısa bir mola verip gevşemek isteyen yetişkinler için uygundur. Sakin mod için ayrı bir en yüksek skor tutulur; böylece süreli moddaki rekorunuz bozulmaz.</p>
+
+      <h2>Daha yüksek skor için ipuçları</h2>
+      <ul>
+        <li><strong>Hedefi seçerek tıklayın.</strong> Iska seriyi sıfırlar. Emin olmadığınız bir yere dokunmak yerine bir sonraki balonu beklemek çoğu zaman daha iyidir.</li>
+        <li><strong>Ekrandan çıkmak üzere olan balonlara öncelik verin.</strong> Yukarıdan kaçan her sıradan balon seriyi bozar; alttan yeni gelenler ise henüz sizi beklemektedir.</li>
+        <li><strong>Altın balonu bırakmayın.</strong> Her “+5 SN” balonu, puan toplamak için 5 saniye daha demektir.</li>
+        <li><strong>Bombanın yanındaki balonlara dikkat edin.</strong> Dokunuş, hangi balona denk geliyorsa onu patlatır; bombayla iç içe geçmiş bir balona dokunurken parmağınızı bomba tarafına kaydırmayın.</li>
+        <li><strong>Kalkan varken cesur olun.</strong> Kalkan hazırken yanlışlıkla bir bombaya dokunsanız bile ceza almazsınız; bu yüzden kalabalık anlarda hızlı tıklamayı göze alabilirsiniz.</li>
+        <li><strong>Son 10 saniyede riske girin.</strong> Süre bitince serinin bir önemi kalmaz; çarpanı yüksekken hızlı tıklamak puanı en çok o anda büyütür.</li>
+        <li><strong>Telefonda iki başparmakla oynayın.</strong> Cihazı iki elle tutup alanı sol ve sağ olarak paylaşmak tepki süresini kısaltır.</li>
+      </ul>
+
+      <h2>Balonların kısa tarihi</h2>
+      <p>Oyuncak balonların ilk örnekleri hayvan mesanesinden yapılırdı; hafif ve esnek oldukları için şişirilip oyun için kullanılırlardı. Kauçuk balonun hikâyesi ise 1824'e uzanır: İngiliz bilim insanı Michael Faraday, hidrojen gazı üzerine yaptığı deneylerde kauçuk yaprakları birbirine yapıştırıp gazla şişirdi. Sonraki on yıllarda kauçuk işleme teknikleri gelişti ve lateks balonlar bugün bildiğimiz hâliyle doğum günü ve kutlamaların vazgeçilmezi oldu. Sıcak hava balonlarının tarihi ise daha eskidir; 1783'te Montgolfier kardeşler Fransa'da insan taşıyabilecek büyüklükte bir balonun yükselebileceğini kamuya gösterdi.</p>
+      <p>Bilgisayar oyunlarında “yükselen nesneyi tıkla” fikri, fare ve dokunmatik ekran alışkanlığı kazandırmak için en sık kullanılan oyun biçimlerinden biridir. Kuralı sezgiseldir, anında geri bildirim verir (bir balon patlar, bir sayı yükselir) ve her yaştan oyuncuya hitap eder. Bu sayfadaki oyun, aynı fikrin yalın bir yorumudur; çizimlerin tamamı tarayıcınızda canvas ile çizilir, dışarıdan görsel ya da ses dosyası yüklenmez.</p>
+
+      <h2>Neden Bilişim Ajans'ın Balon Patlatma oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve kayıt yok.</strong> Sayfayı açın ve oynayın. Hesap, e-posta ya da indirme gerekmez.</li>
+        <li><strong>Verileriniz cihazınızda kalır.</strong> Oyun sunucuya hiçbir bilgi göndermez. Yalnızca en yüksek skorlarınız, tarayıcınızın yerel belleğinde saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Çocuklar için güvenli.</strong> Sakin modda baskı, bomba ve sayaç yoktur; oyunda ses ve yönlendirme bulunmaz.</li>
+        <li><strong>Dürüst tasarım.</strong> Sahte geri sayım, yanıltıcı düğme ya da oyunu bölen açılır pencere yoktur. Reklam alanları oyunun ve düğmelerin dışında, sayfanın aşağısındadır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Balon Patlatma ücretsiz mi, üyelik gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir. Üyelik, kayıt ya da uygulama indirmek gerekmez; sayfayı açıp “Oyunu başlat” düğmesine basmanız yeterlidir. Giderler yalnızca sayfalardaki reklamlarla karşılanır.</p></details>
+        <details><summary>Süreli modda süre ne kadar, uzatılabilir mi?</summary><p>Süreli mod 60 saniyedir. Altın renkli “+5 SN” balonunu patlatırsanız süreye 5 saniye eklenir; toplam süre en fazla 99 saniyeye çıkabilir. Bombayı kalkansız patlatırsanız 3 saniye kaybedersiniz.</p></details>
+        <details><summary>Bombaya dokunursam ne olur, kalkan nasıl çalışır?</summary><p>Kalkansız bomba patlatmak 30 puan ve 3 saniye götürür, kombo serisini sıfırlar. Turkuaz kalkan balonu, bir sonraki bombayı tek seferlik etkisiz hale getirir. Bombanın ekrandan çıkıp gitmesi ceza değildir.</p></details>
+        <details><summary>Sakin mod nedir, en yüksek skor ayrı mı tutulur?</summary><p>Sakin modda süre, bomba, özel balon ve ıska cezası yoktur; balonlar yavaş ve sabit hızla yükselir. Bitirmek için “Bitir” düğmesine basarsınız. Süreli ve sakin mod için en yüksek skorlar ayrı saklanır.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor, kaybolur mu?</summary><p>Skor yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir, başka bir cihazda ya da tarayıcıda görünmez; gizli sekmede ise kalıcı olmayabilir.</p></details>
+        <details><summary>Telefonda oynarken sayfa kayıyor, ne yapmalıyım?</summary><p>Oyun başladığında oyun alanı üzerinde kaydırma kapanır; böylece parmağınız sayfayı oynatmaz. Sayfayı kaydırmak için oyun alanının dışındaki bir yere dokunun ya da oyunu duraklatın.</p></details>
+        <details><summary>Klavyeyle oynanabilir mi?</summary><p>Evet. Tab ile oyun alanına odaklanın, ok tuşlarıyla nişangâhı hareket ettirin (Shift ile daha hızlı), Enter ya da Boşluk ile patlatın. P tuşu oyunu duraklatır veya devam ettirir.</p></details>
+        <details><summary>Oyun neden kendiliğinden duraklıyor?</summary><p>Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun, haksız yere süre kaybetmemeniz için otomatik duraklar. “Devam et” düğmesine basarak kaldığınız yerden sürdürebilirsiniz.</p></details>
+        <details><summary>İnternet olmadan oynanabilir mi?</summary><p>Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a></li>
+        <li><a href="../labirent/">Labirent Oyunu</a></li>
+        <li><a href="../hiz-kosusu/">Hız Koşusu</a></li>
+        <li><a href="../../">Tüm oyunlar ve araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span><strong>Not:</strong> Balon Patlatma eğlence amaçlı bir oyundur. Uzun süre ekrana bakıyorsanız gözlerinizi dinlendirmek için ara verin; çocukların ekran süresini yaşlarına uygun biçimde sınırlamanızı öneririz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-balon-patlatma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

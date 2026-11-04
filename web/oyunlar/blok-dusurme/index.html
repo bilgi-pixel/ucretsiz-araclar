@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Blok Düşürme Oyna – Ücretsiz Online Blok Düşürme (kurulumsuz)</title>
+  <meta name="description" content="Düşen Bloklar: dört kareli parçaları döndür, satırları doldur, puan topla. Gölge parça, tutma, sıradaki parça, seviye hızlanması ve en yüksek skor. Klavye ve mobil düğmelerle, ücretsiz ve kayıtsız.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/blok-dusurme/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Oyun alanı renkleri temadan bağımsızdır. */
+    .bd-layout { display: grid; grid-template-columns: minmax(0, 1fr) 84px; gap: 12px; max-width: 520px; margin: 0 auto; align-items: start; }
+    @media (min-width: 520px) { .bd-layout { grid-template-columns: 300px 168px; max-width: none; justify-content: center; gap: 20px; } }
+    .bd-stage { position: relative; width: min(100%, 300px, max(200px, calc((100vh - 150px) / 2))); aspect-ratio: 1 / 2; margin: 0 auto; background: #14161a; border: 3px solid #2f3237; border-radius: 6px; box-sizing: content-box; outline: none; }
+    .bd-stage:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 3px; }
+    .bd-canvas { display: block; width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .bd-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 14px; text-align: center; background: rgba(12, 14, 18, .86); color: #fff; }
+    .bd-overlay h3 { margin: 0; font-size: 1.3rem; color: #fff; }
+    .bd-overlay p { margin: 0; font-size: .92rem; color: #dcdde0; line-height: 1.4; }
+    .bd-side { display: grid; gap: 10px; min-width: 0; }
+    .bd-mini { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px; }
+    .bd-mini h3 { margin: 0 0 4px; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ba-text-2); }
+    .bd-mini canvas { display: block; width: 100%; height: auto; border-radius: 4px; background: #14161a; }
+    .bd-stats { display: grid; grid-template-columns: 1fr; gap: 6px; margin: 0; }
+    .bd-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 5px 8px; }
+    .bd-stat dt { margin: 0; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--ba-text-2); }
+    .bd-stat dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1rem; color: var(--ba-text); overflow-wrap: anywhere; }
+    .bd-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 16px 0 0; }
+    .bd-actions .ba-btn { flex: 1 1 150px; max-width: 240px; }
+    .bd-touch { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; margin: 16px auto 0; }
+    @media (max-width: 760px), (pointer: coarse) { .bd-touch { display: grid; } }
+    .bd-touch button { min-height: 58px; padding: 6px; border-radius: var(--ba-radius); border: 1px solid var(--ba-border-hover); background: var(--ba-surface-2); color: var(--ba-text); font: inherit; font-weight: 700; font-size: 1.15rem; cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    .bd-touch button:active { background: var(--ba-primary-soft); border-color: var(--ba-primary); }
+    .bd-touch button small { display: block; font-size: .7rem; font-weight: 600; color: var(--ba-text-2); }
+    .bd-keys { max-width: 560px; margin: 22px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border-radius: var(--ba-radius-sm); border: 1px solid var(--ba-border); font-size: .88rem; color: var(--ba-text-2); }
+    .bd-keys h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .bd-keys ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+    kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.bd-ad-a { margin-top: 64px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Düşen Bloklar (Blok Düşürme) – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz blok düşürme oyunu: dört kareli parçalar, gölge parça, tutma, sıradaki parça, seviye hızlanması ve en yüksek skor.","inLanguage":"tr","genre":["Bulmaca","Arcade"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/blok-dusurme/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Düşen Bloklar nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Yukarıdan düşen dört kareli parçaları sağa sola kaydırıp döndürerek alt alta yerleştirirsiniz. Bir satırın tüm hücreleri dolunca satır silinir ve puan kazanırsınız. Parçalar tavana ulaşırsa oyun biter."}},
+  {"@type":"Question","name":"Klavye kontrolleri nelerdir?","acceptedAnswer":{"@type":"Answer","text":"Sol ve sağ ok tuşları kaydırır, aşağı ok yumuşak düşürür, yukarı ok ya da X saat yönünde, Z saat yönünün tersine döndürür. Boşluk sert düşürür, C ya da Shift parçayı tutar, P ya da Esc oyunu duraklatır."}},
+  {"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanında parmağınızı sağa sola kaydırarak parçayı taşıyın, dokunarak döndürün, aşağı doğru hızlı kaydırarak sert düşürün. Alt kısımdaki ekran düğmeleri aynı işleri yapar ve tutma düğmesini de içerir."}},
+  {"@type":"Question","name":"Puanlar nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Tek hamlede bir satır silmek 100, iki satır 300, üç satır 500, dört satır 800 puan getirir ve mevcut seviye ile çarpılır. Yumuşak düşürmede her hücre için 1, sert düşürmede her hücre için 2 puan eklenir."}},
+  {"@type":"Question","name":"Seviye nasıl yükselir, oyun neden hızlanır?","acceptedAnswer":{"@type":"Answer","text":"Her 10 satırda seviye bir artar. Seviye yükseldikçe parçaların bir hücre düşme süresi kısalır; böylece karar vermek için daha az zamanınız kalır."}},
+  {"@type":"Question","name":"Gölge parça ve tutma (hold) ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Gölge, parçanın şu anki konumdan düşerse nereye oturacağını çerçeve olarak gösterir. Tutma özelliği, parçayı kenara ayırıp daha sonra kullanmanızı sağlar; her parça için bir kez kullanılabilir."}},
+  {"@type":"Question","name":"En yüksek skorum kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, ama yalnızca bu cihazın tarayıcı depolamasında. Skorunuz hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz en yüksek skor da sıfırlanır."}},
+  {"@type":"Question","name":"Oyun internet gerektirir mi?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez açıldıktan sonra oyun tamamen tarayıcınızda çalışır. Siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Blok Düşürme Oyna</span> – Ücretsiz Düşen Bloklar</h1>
+      <p class="lead">Dört kareli parçaları döndürüp yerleştirin, satırları doldurup silin, seviye yükseldikçe hızlanan oyunda en yüksek skoru kovalayın. Gölge parça, tutma ve sıradaki parça önizlemesi var; klavye, kaydırma ve ekran düğmeleriyle oynanır. Kurulum ve kayıt yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Düşen Bloklar oyunu</h2>
+      <div class="bd-layout">
+        <div id="bd-stage" class="bd-stage" tabindex="-1">
+          <canvas id="bd-canvas" class="bd-canvas" width="300" height="600" role="img" aria-label="Oyun alanı: 10 sütun, 20 satır. Durum bilgisi sağdaki paneldedir."></canvas>
+          <div id="bd-overlay" class="bd-overlay">
+            <h3 id="bd-ov-title">Düşen Bloklar</h3>
+            <p id="bd-ov-text">Başlamak için düğmeye basın.</p>
+            <button id="bd-ov-btn" class="ba-btn ba-btn-primary" type="button">Başlat</button>
+          </div>
+        </div>
+        <div class="bd-side">
+          <div class="bd-mini"><h3>Tut</h3><canvas id="bd-hold" width="96" height="64" aria-label="Tutulan parça"></canvas></div>
+          <div class="bd-mini"><h3>Sıradaki</h3><canvas id="bd-next" width="96" height="168" aria-label="Sıradaki parçalar"></canvas></div>
+          <dl class="bd-stats" aria-label="Skor bilgileri">
+            <div class="bd-stat"><dt>Skor</dt><dd id="bd-score">0</dd></div>
+            <div class="bd-stat"><dt>En yüksek</dt><dd id="bd-high">0</dd></div>
+            <div class="bd-stat"><dt>Satır</dt><dd id="bd-lines">0</dd></div>
+            <div class="bd-stat"><dt>Seviye</dt><dd id="bd-level">1</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div class="bd-actions"><button id="bd-pause" class="ba-btn" type="button" aria-pressed="false" disabled>Duraklat</button><button id="bd-restart" class="ba-btn" type="button">Yeniden başlat</button></div>
+      <div class="bd-touch" aria-label="Ekran düğmeleri">
+        <button type="button" data-act="left" aria-label="Sola kaydır">◀</button>
+        <button type="button" data-act="rotate" aria-label="Döndür">↻<small>Döndür</small></button>
+        <button type="button" data-act="right" aria-label="Sağa kaydır">▶</button>
+        <button type="button" data-act="hold" aria-label="Parçayı tut">Tut</button>
+        <button type="button" data-act="down" aria-label="Yumuşak düşür">▼<small>Aşağı</small></button>
+        <button type="button" data-act="drop" aria-label="Sert düşür">⤓<small>Bırak</small></button>
+      </div>
+      <div class="bd-keys">
+        <h3>Kontroller</h3>
+        <ul>
+          <li><kbd>←</kbd> <kbd>→</kbd> kaydır · <kbd>↓</kbd> yumuşak düşür · <kbd>Boşluk</kbd> sert düşür</li>
+          <li><kbd>↑</kbd> ya da <kbd>X</kbd> saat yönünde, <kbd>Z</kbd> ters yönde döndür</li>
+          <li><kbd>C</kbd> ya da <kbd>Shift</kbd> parçayı tut · <kbd>P</kbd> ya da <kbd>Esc</kbd> duraklat</li>
+          <li>Dokunmatik: oyun alanında kaydır, dokunarak döndür, hızlıca aşağı çekerek bırak.</li>
+        </ul>
+      </div>
+      <p id="bd-live" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad bd-ad-a" data-slot="oyun-blok-dusurme-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Düşen Bloklar nedir?</h2>
+      <p>Düşen Bloklar, yukarıdan sürekli yeni parçaların indiği bir bulmaca oyunudur. Parçaların hepsi dört kareden oluşur ve bu şekillere "tetromino" denir. Amaç, parçaları sağa sola kaydırıp döndürerek alta boşluk bırakmadan dizmek ve bir satırın tüm hücrelerini doldurmaktır. Dolan satır silinir, üstündeki her şey bir satır aşağı kayar ve siz puan kazanırsınız. Parçalar tavana kadar yığılırsa oyun biter. Kuralları üç cümleyle anlatılabilen bu oyun, ustalaşması yıllar alan derin bir refleks ve planlama sınavıdır. Bu sayfada oyunu ücretsiz, kurulum yapmadan ve kayıt olmadan oynayabilirsiniz; klavye, dokunmatik kaydırma ve ekran düğmeleri desteklenir.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlatın.</strong> "Başlat" düğmesine ya da Enter tuşuna basın. Oyun alanı 10 sütun ve 20 satırdan oluşur.</li>
+        <li><strong>Parçayı yönlendirin.</strong> Yukarıdan inen parçayı sol ve sağ ok tuşlarıyla kaydırın, yukarı ok ya da X tuşuyla döndürün. Parça yere ya da başka bir parçaya değince kısa bir süre sonra yerine oturur.</li>
+        <li><strong>Gölgeyi izleyin.</strong> Parçanın altında, düşeceği yeri gösteren bir çerçeve belirir. Doğru yeri bulmak için gölgeye bakın.</li>
+        <li><strong>Satırları doldurun.</strong> Boşluk bırakmadan yan yana dizilen bir satır silinir. Aynı anda birden çok satırı silmek çok daha fazla puan getirir.</li>
+        <li><strong>Hızlanmaya hazır olun.</strong> Her on satırda seviye atlarsınız ve parçalar daha hızlı düşer. Parçalar tavana ulaştığında oyun biter; skorunuz cihazınızda saklanır.</li>
+      </ol>
+
+      <h2>Parçalar: yedi tetromino</h2>
+      <p>Oyunda yedi farklı parça vardır ve her birinin adı şekline benzeyen bir harftir:</p>
+      <ul>
+        <li><strong>I (çubuk):</strong> Dört kare düz bir çizgi. Dört satırı birden silmek için en önemli parçadır.</li>
+        <li><strong>O (kare):</strong> İki çarpı iki kare. Döndürülmez, yüzeyi düz tutmak için idealdir.</li>
+        <li><strong>T:</strong> Üç karelik bir sıranın ortasında çıkıntı olan parça. Boşluklara girmekte çok yeteneklidir.</li>
+        <li><strong>S ve Z:</strong> Zikzak parçalar. Basamaklı yüzeylere uyar ama yanlış yerleştirilirse delik bırakır.</li>
+        <li><strong>J ve L:</strong> Köşeli parçalar. Köşelere ve kenarlara yerleştirilir; birbirinin aynadaki görüntüsüdür.</li>
+      </ul>
+      <p>Parçalar tamamen rastgele gelmez: oyun "yedili torba" yöntemini kullanır. Her torbada yedi parçanın hepsi birer kez bulunur ve karıştırılarak verilir. Bu yüzden uzun süre hiç çubuk gelmemesi gibi bir kötü şansla karşılaşmazsınız; iki torba arasında en fazla birkaç parça beklersiniz.</p>
+
+      <h2>Kontroller ve mobil oynanış</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Sol/sağ ok kaydırır, aşağı ok yumuşak düşürür, yukarı ok ya da X saat yönünde, Z saat yönünün tersine döndürür. Boşluk sert düşürür, C ya da Shift tutar, P ya da Esc duraklatır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Oyun alanında parmağınızı sağa sola kaydırın; her hücre kadar hareket bir hücre ilerletir. Ekrana kısa dokunmak parçayı döndürür; hızlıca aşağı çekmek sert düşürür.</li>
+        <li><strong>Ekran düğmeleri:</strong> Telefonda ve dar ekranlarda alt kısımda altı düğme görünür: sol, sağ, döndür, tut, aşağı ve bırak. Sol, sağ ve aşağı düğmelerinin üzerinde basılı tutunca hareket tekrarlanır.</li>
+        <li><strong>Duraklatma:</strong> Oyun sekmesi arka plana geçince otomatik duraklar, geri döndüğünüzde "Devam et" ile sürdürürsünüz.</li>
+      </ul>
+
+      <h2>Puanlama ve seviyeler</h2>
+      <p>Skor, silinen satırların sayısına ve mevcut seviyeye bağlıdır. Tek hamlede silinen satır sayısı arttıkça puan hızla yükselir:</p>
+      <ul>
+        <li>1 satır: 100 puan × seviye</li>
+        <li>2 satır: 300 puan × seviye</li>
+        <li>3 satır: 500 puan × seviye</li>
+        <li>4 satır (çubukla): 800 puan × seviye</li>
+        <li>Yumuşak düşürme: düşürülen her hücre için 1 puan</li>
+        <li>Sert düşürme: bırakılan her hücre için 2 puan</li>
+      </ul>
+      <p>Her on satırda seviye bir artar. Seviye 1'de bir hücre yaklaşık 0,9 saniyede iner; her seviyede bu süre yaklaşık yüzde yirmi kısalır ve alt sınıra yaklaşır. En yüksek skorunuz bu cihazın tarayıcı depolamasında tutulur, hiçbir yere gönderilmez.</p>
+
+      <div class="ba-ad" data-slot="oyun-blok-dusurme-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Yüzeyi düz tutun.</strong> Yığınınızın üst kenarı ne kadar pürüzsüzse parçalara o kadar çok yer bulursunuz. Derin ve dar boşluklar, çubuk gelmediği sürece sorun yaratır.</li>
+        <li><strong>Tek sütunluk bir kuyu bırakın.</strong> Bir kenarı boş bırakıp diğer sütunları doldurarak çubukla dört satırı birden silebilirsiniz; bu en yüksek puanlı harekettir.</li>
+        <li><strong>Sıradaki parçaya bakın.</strong> Sağ paneldeki önizleme, bir sonraki parçayı gösterir. Şu anki parçayı ona göre yerleştirmek hamle kalitesini ciddi biçimde artırır.</li>
+        <li><strong>Tutmayı akıllıca kullanın.</strong> Çubuğu kenara ayırıp doğru anı bekleyebilir, yanlış gelen parçayı geçici olarak saklayabilirsiniz. Ancak her parçada yalnızca bir kez tutabilirsiniz; tutarak sürekli kaçmak yığını bozar.</li>
+        <li><strong>Gölgeye güvenin.</strong> Parçayı bırakmadan önce gölgenin altında delik kalıp kalmadığına bakın. Delikli satırlar silinemez ve üzerlerine gelen her parça sorunu büyütür.</li>
+        <li><strong>Yüksek seviyede sakin kalın.</strong> Hız arttığında parçayı mümkün olduğunca erken konumlandırın; döndürmeyi en üstte, parça yere inmeden yapın.</li>
+        <li><strong>Panik yapmayın.</strong> Yığın tavana yaklaşınca kolay satırları hemen silin ve yüksek puanlı hamleleri sonraya bırakın. Hayatta kalmak her zaman skordan önce gelir.</li>
+      </ul>
+
+      <h2>Kısa tarih: blok düşürme oyunları</h2>
+      <p>Dört kareli parçaları yerleştirmeye dayanan oyunlar 1980'lerin ortasında ortaya çıktı. Fikrin, "pentomino" adı verilen beş kareli şekillerle yapılan bulmacalardan esinlenerek, daha hızlı ve oynanması kolay bir oyuna dönüştürüldüğü anlatılır. Kısa sürede dünyaya yayılan bu tür, el konsollarından ev bilgisayarlarına ve cep telefonlarına kadar sayısız platforma uyarlandı. Zamanla her ülkede onlarca benzeri ve yeni adı çıktı. Bu sayfadaki oyun, aynı türün kurallarını sıfırdan yazılmış kendi kodumuz ve kendi çizimlerimizle sunar; herhangi bir ticari oyunun kopyası ya da onunla bağlantılı değildir.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Ücretsiz ve kayıtsız.</strong> Üyelik, indirme ya da oyun içi satın alma yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır; yalnızca en yüksek skorunuz cihazınızda saklanır.</li>
+        <li><strong>Her cihazda çalışır.</strong> 360 piksellik telefon ekranında bile oyun alanı ve düğmeler sığar; klavyede de tam kontrol sunar.</li>
+        <li><strong>Çevrimdışı.</strong> Sayfa bir kez yüklendikten sonra internet olmadan da oynanır; siteyi uygulama olarak kurabilirsiniz.</li>
+        <li><strong>Hile ve tuzak yok.</strong> Sahte geri sayım, yanıltıcı düğme ya da zorla izletilen reklam yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Düşen Bloklar nasıl oynanır?</summary><p>Yukarıdan düşen dört kareli parçaları sağa sola kaydırıp döndürerek alt alta yerleştirirsiniz. Bir satırın tüm hücreleri dolunca satır silinir ve puan kazanırsınız. Parçalar tavana ulaşırsa oyun biter.</p></details>
+        <details><summary>Klavye kontrolleri nelerdir?</summary><p>Sol ve sağ ok tuşları kaydırır, aşağı ok yumuşak düşürür, yukarı ok ya da X saat yönünde, Z saat yönünün tersine döndürür. Boşluk sert düşürür, C ya da Shift parçayı tutar, P ya da Esc oyunu duraklatır.</p></details>
+        <details><summary>Telefonda nasıl oynanır?</summary><p>Oyun alanında parmağınızı sağa sola kaydırarak parçayı taşıyın, dokunarak döndürün, aşağı doğru hızlı kaydırarak sert düşürün. Alt kısımdaki ekran düğmeleri aynı işleri yapar ve tutma düğmesini de içerir.</p></details>
+        <details><summary>Puanlar nasıl hesaplanır?</summary><p>Tek hamlede bir satır silmek 100, iki satır 300, üç satır 500, dört satır 800 puan getirir ve mevcut seviye ile çarpılır. Yumuşak düşürmede her hücre için 1, sert düşürmede her hücre için 2 puan eklenir.</p></details>
+        <details><summary>Seviye nasıl yükselir, oyun neden hızlanır?</summary><p>Her 10 satırda seviye bir artar. Seviye yükseldikçe parçaların bir hücre düşme süresi kısalır; böylece karar vermek için daha az zamanınız kalır.</p></details>
+        <details><summary>Gölge parça ve tutma (hold) ne işe yarar?</summary><p>Gölge, parçanın şu anki konumdan düşerse nereye oturacağını çerçeve olarak gösterir. Tutma özelliği, parçayı kenara ayırıp daha sonra kullanmanızı sağlar; her parça için bir kez kullanılabilir.</p></details>
+        <details><summary>En yüksek skorum kaydediliyor mu?</summary><p>Evet, ama yalnızca bu cihazın tarayıcı depolamasında. Skorunuz hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz en yüksek skor da sıfırlanır.</p></details>
+        <details><summary>Oyun internet gerektirir mi?</summary><p>Sayfa bir kez açıldıktan sonra oyun tamamen tarayıcınızda çalışır. Siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../2048-oyunu/">2048</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-blok-dusurme-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Periyodik Tablo – İnteraktif, Türkçe, 118 Element (Ücretsiz, Yazdırılabilir)</title>
+  <meta name="description" content="İnteraktif Türkçe periyodik tablo: 118 elementin atom numarası, kütlesi, elektron dizilimi, erime ve kaynama noktası. Arama, kategori süzme, karşılaştırma ve yazdırma. Ücretsiz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/periyodik-tablo/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Element renkleri sabit pastel + koyu yazıdır (iki temada da AA). */
+    .k-alkali-metal { --k: #f5a99f; }
+    .k-toprak-alkali-metal { --k: #f8c98e; }
+    .k-gecis-metali { --k: #f3e38b; }
+    .k-gecis-sonrasi-metal { --k: #b6dc98; }
+    .k-yari-metal { --k: #8dd5c0; }
+    .k-ametal { --k: #9dd1f1; }
+    .k-halojen { --k: #bcc0f3; }
+    .k-soy-gaz { --k: #dcb5ee; }
+    .k-lantanit { --k: #f3b1d7; }
+    .k-aktinit { --k: #dfbba6; }
+
+    .pt-controls { display: grid; gap: 12px; margin-bottom: 12px; }
+    .pt-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+    .pt-search { flex: 1 1 260px; min-width: 0; }
+    .pt-search label, .pt-lbl { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 5px; }
+    .pt-search input { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .pt-search input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .pt-toolbar .ba-field { min-width: 120px; }
+    .pt-seg { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+    .pt-seg button, .pt-chip { min-height: 44px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--ba-border); background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 600; font-size: .9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+    .pt-seg button:hover, .pt-chip:hover { border-color: var(--ba-border-hover); }
+    .pt-seg button[aria-pressed="true"], .pt-chip[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pt-seg button[aria-pressed="true"], :root:not([data-theme="light"]) .pt-chip[aria-pressed="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .pt-seg button[aria-pressed="true"], :root[data-theme="dark"] .pt-chip[aria-pressed="true"] { color: #1a0d10; }
+    .pt-chip i { width: 14px; height: 14px; border-radius: 3px; background: var(--k); border: 1px solid rgba(0, 0, 0, .4); flex: none; }
+    .pt-chip small { font-weight: 400; opacity: .85; }
+    .pt-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .pt-legend .pt-chip { min-height: 40px; padding: 4px 12px; font-size: .85rem; }
+    #pt-count { margin: 0; font-size: .92rem; color: var(--ba-text-2); min-height: 1.4em; }
+    #pt-count.is-empty { color: var(--ba-danger); font-weight: 600; }
+    .pt-hint { margin: 0 0 10px; font-size: .85rem; color: var(--ba-text-muted); }
+
+    .pt-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 6px 4px 12px; margin: 0 -4px; }
+    .pt-board { display: grid; grid-template-columns: repeat(18, minmax(50px, 1fr)); grid-template-rows: auto repeat(3, 66px) repeat(4, minmax(56px, auto)) 14px repeat(2, minmax(56px, auto)); gap: 3px; min-width: 940px; }
+    .pt-gh { text-align: center; font-size: .72rem; font-weight: 600; color: var(--ba-text-muted); align-self: end; }
+    .pt-rl { align-self: center; justify-self: end; padding-right: 6px; font-size: .75rem; font-weight: 600; color: var(--ba-text-muted); text-align: right; }
+    .pt-cell, .pt-ph { background: var(--k); color: #1a1c1f; border: 1px solid rgba(0, 0, 0, .25); border-radius: 5px; font: inherit; cursor: pointer; min-width: 0; }
+    .pt-cell { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 2px 3px; transition: opacity .15s, transform .15s, box-shadow .15s; }
+    .pt-cell .pt-n { position: absolute; top: 3px; left: 4px; font-size: .68rem; font-weight: 600; line-height: 1; }
+    .pt-cell .s { font-size: 1.15rem; font-weight: 700; line-height: 1.1; }
+    .pt-cell .pt-a { display: none; font-size: .62rem; line-height: 1.15; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @media (min-width: 1100px) { .pt-cell .pt-a { display: block; } .pt-cell { padding-top: 12px; } }
+    .pt-cell:hover { transform: scale(1.06); z-index: 2; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
+    .pt-cell:focus-visible { outline: 3px solid var(--ba-text); outline-offset: 2px; z-index: 3; border-radius: 5px; }
+    .pt-cell.is-dim { opacity: .2; }
+    .pt-cell.is-match { box-shadow: 0 0 0 3px var(--ba-primary), 0 4px 12px rgba(0, 0, 0, .3); transform: scale(1.07); z-index: 2; }
+    .pt-cell.is-selected { box-shadow: 0 0 0 3px var(--ba-text); z-index: 2; }
+    .pt-cell.is-selected.is-match { box-shadow: 0 0 0 3px var(--ba-text), 0 0 0 6px var(--ba-primary); }
+    .pt-ph { display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 600; border-style: dashed; padding: 2px; }
+    .pt-ph.is-on { box-shadow: 0 0 0 3px var(--ba-primary); }
+    .pt-ph:focus-visible { outline: 3px solid var(--ba-text); outline-offset: 2px; }
+
+    .pt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .pt-list li { margin: 0; }
+    .pt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 6px 10px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); color: var(--ba-text); font: inherit; text-align: left; cursor: pointer; }
+    .pt-row:hover { border-color: var(--ba-border-hover); }
+    .pt-row.is-match { box-shadow: 0 0 0 3px var(--ba-primary); }
+    .pt-row.is-selected { background: var(--ba-primary-soft); border-color: var(--ba-primary); }
+    .pt-tile { width: 48px; height: 48px; border-radius: 6px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--k); color: #1a1c1f; border: 1px solid rgba(0, 0, 0, .25); }
+    .pt-tile small { font-size: .66rem; line-height: 1; font-weight: 600; }
+    .pt-tile strong { font-size: 1.15rem; line-height: 1.1; }
+    .pt-rn { display: flex; flex-direction: column; min-width: 0; }
+    .pt-rn small { color: var(--ba-text-muted); font-size: .82rem; }
+
+    /* Ayrıntı kartı: geniş ekranda tablonun boş köşesine oturur (--gap); dar ekranda tablonun altında yapışkan panel olur. */
+    .pt-detail { position: sticky; bottom: 8px; z-index: 5; margin: 14px 0; padding: 14px 16px; max-height: 42vh; overflow-y: auto; background: var(--ba-surface); border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-lg); box-shadow: var(--ba-shadow-pop); }
+    .pt-d-empty { margin: 0; color: var(--ba-text-muted); }
+    .pt-d-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+    .pt-d-tile { width: 76px; height: 76px; flex: none; border-radius: 8px; background: var(--k); color: #1a1c1f; border: 1px solid rgba(0, 0, 0, .3); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+    .pt-d-n { font-size: .78rem; font-weight: 600; }
+    .pt-d-s { font-size: 1.8rem; font-weight: 700; }
+    .pt-d-m { font-size: .72rem; }
+    .pt-d-title { min-width: 0; flex: 1 1 140px; }
+    .pt-d-title h3 { margin: 0; font-size: 1.4rem; line-height: 1.2; }
+    .pt-d-title p { margin: 2px 0 0; }
+    .pt-d-cat { color: var(--ba-text-muted); }
+    .pt-d-act { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+    .pt-d-body { display: grid; gap: 14px; margin-top: 12px; }
+    @media (min-width: 760px) { .pt-d-body { grid-template-columns: 1fr 170px; align-items: start; } }
+    .pt-d-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px 22px; margin: 0; }
+    .pt-d-list > div { border-bottom: 1px solid var(--ba-border); padding: 3px 0; }
+    .pt-d-list dt { font-size: .76rem; color: var(--ba-text-muted); }
+    .pt-d-list dd { margin: 0; font-weight: 600; word-break: break-word; }
+    .pt-bohr { width: 100%; max-width: 170px; height: auto; justify-self: center; }
+    .pt-bohr .orb { stroke: var(--ba-border-hover); stroke-width: .8; }
+    .pt-bohr .e { fill: var(--ba-primary); }
+    .pt-bohr .nuc { fill: var(--ba-text-2); }
+    .pt-d-note { margin: 8px 0 0; font-size: .85rem; color: var(--ba-text-2); }
+    .pt-d-status { min-height: 1.2em; font-size: .82rem; color: var(--ba-success); }
+    @media (max-width: 759px) {
+      .pt-bohr { display: none; }
+      .pt-detail { max-height: 44vh; padding: 10px 12px; margin: 10px 0; }
+      .pt-d-tile { width: 56px; height: 56px; }
+      .pt-d-s { font-size: 1.4rem; }
+      .pt-d-title h3 { font-size: 1.2rem; }
+      .pt-d-act { width: 100%; margin-left: 0; flex-wrap: nowrap; }
+      .pt-d-act .ba-btn { min-height: 40px; padding: 6px 12px; flex: 1 1 auto; }
+      .pt-d-body { margin-top: 8px; }
+      .pt-d-list { grid-template-columns: repeat(2, 1fr); gap: 2px 14px; }
+    }
+
+    /* Boş köşe yerleşimi: 3–12. sütun, 2–4. satır */
+    .pt-detail--gap { position: static; grid-column: 3 / 13; grid-row: 2 / 5; z-index: auto; margin: 0; padding: 8px 12px; max-height: none; overflow: auto; box-shadow: none; border-color: var(--ba-border); border-radius: 8px; background: var(--ba-surface-2); }
+    .pt-detail--gap .pt-d-head { flex-wrap: nowrap; gap: 12px; }
+    .pt-detail--gap .pt-d-tile { width: 54px; height: 54px; }
+    .pt-detail--gap .pt-d-s { font-size: 1.35rem; }
+    .pt-detail--gap .pt-d-n, .pt-detail--gap .pt-d-m { font-size: .62rem; }
+    .pt-detail--gap .pt-d-title h3 { font-size: 1.15rem; }
+    .pt-detail--gap .pt-d-title p { font-size: .78rem; }
+    .pt-detail--gap .pt-d-act .ba-btn { min-height: 34px; padding: 4px 12px; font-size: .82rem; }
+    .pt-detail--gap .pt-d-close { display: none; }
+    .pt-detail--gap .pt-d-body { grid-template-columns: 1fr; margin-top: 4px; }
+    .pt-detail--gap .pt-bohr { display: none; }
+    .pt-detail--gap .pt-d-list { grid-template-columns: repeat(4, 1fr); gap: 0 14px; }
+    .pt-detail--gap .pt-d-list > div { padding: 1px 0; }
+    .pt-detail--gap .pt-d-list dt { font-size: .64rem; line-height: 1.2; }
+    .pt-detail--gap .pt-d-list dd { font-size: .78rem; line-height: 1.25; }
+    .pt-detail--gap .pt-d-note { font-size: .74rem; margin-top: 4px; }
+    .pt-detail--gap .pt-d-empty { padding: 20px 6px; font-size: .95rem; }
+
+    .pt-compare { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--ba-border); }
+    .pt-compare h3 { margin: 0 0 10px; }
+    .pt-cmp-pick { display: grid; gap: 12px; grid-template-columns: 1fr; margin-bottom: 14px; }
+    @media (min-width: 640px) { .pt-cmp-pick { grid-template-columns: 1fr 1fr auto auto; align-items: end; } }
+    .pt-cmp-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .pt-cmp-table th, .pt-cmp-table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .pt-cmp-table thead th { background: var(--ba-surface-2); }
+    .pt-cmp-table tbody td:first-child { color: var(--ba-text-muted); }
+    #cmp-summary { margin: 12px 0 0; color: var(--ba-text-2); }
+    .pt-note { margin: 16px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .pt-print-title { display: none; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+
+    @media print {
+      @page { size: A4 landscape; margin: 8mm; }
+      .ba-topbar, .ba-header, .ba-hero, .ba-ad, .ba-content, .ba-footer, .pt-controls, .pt-detail, .pt-compare, .pt-hint, .pt-note, #error { display: none !important; }
+      .ba-tool { border: 0; box-shadow: none; padding: 0; margin: 0; }
+      .pt-print-title { display: block; margin: 0 0 6px; font-size: 14pt; font-weight: 700; }
+      .pt-scroll { overflow: visible; margin: 0; padding: 0; }
+      .pt-board { min-width: 0; width: 100%; gap: 2px; grid-template-rows: auto repeat(7, 15mm) 4mm repeat(2, 15mm); }
+      .pt-cell, .pt-ph, .pt-chip i { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .pt-cell .pt-a { display: block; font-size: 6pt; }
+      .pt-cell.is-dim { opacity: 1; }
+      .pt-cell.is-match, .pt-cell.is-selected { box-shadow: none; transform: none; }
+      .pt-legend .pt-chip { min-height: 0; padding: 1px 8px; font-size: 8pt; border: 1px solid #999; color: #000; background: #fff; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"İnteraktif Periyodik Tablo – Bilişim Ajans","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/periyodik-tablo/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Periyodik tabloda kaç element var?","acceptedAnswer":{"@type":"Answer","text":"Bugün bilinen ve resmen adlandırılmış 118 element vardır. Bunların yaklaşık doksan dördü doğada bulunur (bazıları yalnızca eser miktarda); plütonyumdan sonrakiler ise yalnızca laboratuvarda üretilir. Bu araçta 1'den 118'e kadar hepsini bulabilirsiniz."}},{"@type":"Question","name":"Atom numarası ile kütle numarası aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Atom numarası çekirdekteki proton sayısıdır ve elementi belirler. Kütle numarası proton ile nötron sayısının toplamıdır ve aynı elementin izotoplarında değişir. Tabloda verilen atom kütlesi ise doğadaki izotopların ortalamasından gelen ondalıklı bir değerdir."}},{"@type":"Question","name":"Grup ile periyot arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Periyot yatay satırdır (1'den 7'ye), grup ise dikey sütundur (1'den 18'e). Aynı periyottaki elementlerin en dış kabuğu aynı numaralıdır; aynı gruptaki elementlerin değerlik elektron sayısı benzer olduğundan kimyasal davranışları da benzerdir."}},{"@type":"Question","name":"Lantanitler ve aktinitler neden tablonun altında ayrı duruyor?","acceptedAnswer":{"@type":"Answer","text":"Her biri on beş element içeren bu iki sıra ana gövdeye yerleştirilse tablo yatayda çok genişlerdi. Bu yüzden f bloğu alta alınır. Tabloda 3. grubun altındaki \"57–71\" ve \"89–103\" kutuları bunların nerede durduğunu gösterir; kutulara tıklayarak ilgili aileyi vurgulayabilirsiniz."}},{"@type":"Question","name":"Hidrojen neden 1. grupta ama alkali metal sayılmıyor?","acceptedAnswer":{"@type":"Answer","text":"Hidrojenin tek bir değerlik elektronu vardır, bu yüzden elektron dizilimi bakımından 1. gruba yerleştirilir. Ancak oda koşullarında gaz olan, metalik özellik göstermeyen ve çoğunlukla ametal gibi davranan bir elementtir. Bu yüzden renk olarak ametal kategorisinde gösterilir."}},{"@type":"Question","name":"Kütle, erime ve kaynama noktası değerleri sınavda ya da ödevde kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Değerler yaklaşıktır ve kaynaklara göre küçük farklar gösterebilir. Ödev ve sınavlarda öğretmeninizin ya da sınav kitapçığının verdiği tabloyu esas alın; bu araç öğrenmek, tekrar etmek ve hızlıca bakmak içindir."}},{"@type":"Question","name":"Tabloyu nasıl yazdırırım ya da PDF olarak kaydederim?","acceptedAnswer":{"@type":"Answer","text":"\"Tabloyu yazdır\" düğmesine basın. Açılan yazdırma penceresinde yazıcınızı ya da \"PDF olarak kaydet\" seçeneğini seçin. Renklerin çıkması için \"Arka plan grafikleri\" seçeneğini açın ve kâğıt yönünü yatay bırakın. Menü, reklam ve açıklama metinleri basılmaz."}},{"@type":"Question","name":"Bu araç internetsiz çalışır mı, bir şey kaydediyor mu?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez açıldıktan sonra çevrimdışı da kullanılabilir. Aradığınız terimler ve seçtiğiniz elementler hiçbir yere gönderilmez, kaydedilmez. Tarayıcı adres çubuğundaki \"#Fe\" gibi ekler yalnızca seçtiğiniz elementi paylaşabilmeniz içindir."}},{"@type":"Question","name":"Arama kutusuna Türkçe karakter yazmak zorunda mıyım?","acceptedAnswer":{"@type":"Answer","text":"Hayır. \"Aluminyum\", \"altin\", \"iyot\" ya da \"kukurt\" yazmanız yeterlidir; arama büyük küçük harf ve Türkçe karakter farkını yok sayar. Atom numarası (örneğin 79) veya sembol (Au) de çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1><span class="ba-grad">İnteraktif Periyodik Tablo</span></h1>
+      <p class="lead">118 elementin hepsi Türkçe adlarıyla bir arada: atom numarası, kütle, elektron dizilimi, elektronegatiflik, erime ve kaynama noktası. Ada, sembole ya da numaraya göre arayın, kategoriye veya bloğa göre süzün, iki elementi karşılaştırın, tabloyu yazdırın. Her şey tarayıcınızda çalışır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Periyodik tablo</h2>
+      <p class="pt-print-title">Periyodik Tablo – araclar.bilisimajans.com</p>
+
+      <div class="pt-controls">
+        <div class="pt-toolbar">
+          <div class="pt-search"><label for="pt-ara">Element ara</label><input id="pt-ara" type="search" placeholder="Ad, sembol ya da atom numarası (ör. Demir, Fe, 26)" autocomplete="off" spellcheck="false" enterkeyhint="search"></div>
+          <div class="ba-field"><label for="f-grup">Grup</label><select id="f-grup"><option value="">Tümü</option></select></div>
+          <div class="ba-field"><label for="f-periyot">Periyot</label><select id="f-periyot"><option value="">Tümü</option></select></div>
+          <div><span class="pt-lbl" id="lbl-blok">Blok</span><div class="pt-seg" role="group" aria-labelledby="lbl-blok"><button type="button" data-blok-btn="s" aria-pressed="false">s</button><button type="button" data-blok-btn="p" aria-pressed="false">p</button><button type="button" data-blok-btn="d" aria-pressed="false">d</button><button type="button" data-blok-btn="f" aria-pressed="false">f</button></div></div>
+          <button id="pt-clear" class="ba-btn" type="button" hidden>Vurguları temizle</button>
+        </div>
+        <div class="pt-toolbar">
+          <div><span class="pt-lbl" id="lbl-view">Görünüm</span><div class="pt-seg" role="group" aria-labelledby="lbl-view"><button id="v-tablo" type="button" aria-pressed="true">Tablo</button><button id="v-liste" type="button" aria-pressed="false">Liste</button></div></div>
+          <button id="pt-print" class="ba-btn" type="button">Tabloyu yazdır</button>
+        </div>
+        <p id="pt-count" role="status" aria-live="polite">118 element gösteriliyor.</p>
+      </div>
+
+      <div id="pt-legend" class="pt-legend" role="group" aria-label="Kategoriye göre süz (renklere tıklayın)"></div>
+      <p class="pt-hint">Tabloda ok tuşlarıyla gezinebilir, Enter ile element kartını açabilirsiniz. Telefonda "Liste" görünümü daha rahattır.</p>
+
+      <div id="pt-scroll" class="pt-scroll" tabindex="-1">
+        <div id="pt-board" class="pt-board" role="group" aria-label="Periyodik tablo, 18 grup ve 7 periyot"></div>
+      </div>
+      <div id="pt-list-wrap" hidden><ul id="pt-list" class="pt-list" aria-label="Elementler listesi"></ul></div>
+
+      <section id="pt-detail" class="pt-detail" aria-live="polite" aria-label="Element kartı" hidden></section>
+
+      <div id="pt-compare" class="pt-compare" aria-labelledby="h-cmp">
+        <h3 id="h-cmp">İki elementi karşılaştır</h3>
+        <div class="pt-cmp-pick">
+          <div class="ba-field"><label for="cmp-a">Birinci element</label><select id="cmp-a"></select></div>
+          <div class="ba-field"><label for="cmp-b">İkinci element</label><select id="cmp-b"></select></div>
+          <button id="cmp-swap" class="ba-btn" type="button">Yer değiştir</button>
+          <button id="cmp-clear" class="ba-btn" type="button">Temizle</button>
+        </div>
+        <table id="cmp-table" class="pt-cmp-table" hidden>
+          <caption class="visually-hidden">Seçilen iki elementin özellik karşılaştırması</caption>
+          <thead><tr><th scope="col">Özellik</th><th scope="col" id="cmp-ha"></th><th scope="col" id="cmp-hb"></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p id="cmp-summary" aria-live="polite"></p>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <p class="pt-note">Değerler IUPAC'ın genel bilgisine dayanan yaklaşık değerlerdir; kütleler iki ondalığa, sıcaklıklar bilinen en yaygın değere yuvarlanmıştır. Derslerde ve sınavlarda size verilen tabloyu esas alın.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="periyodik-tablo-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Periyodik tablo nedir?</h2>
+      <p>Periyodik tablo, bilinen bütün kimyasal elementleri atom numaralarına göre sıralayan ve benzer davranan elementleri aynı sütuna yerleştiren bir haritadır. Rus kimyager Dmitri Mendeleyev 1869'da elementleri atom kütlesine göre dizdiği ilk düzenlemeyi yayımladığında henüz keşfedilmemiş elementler için boşluklar bırakmış, bu boşlukları sonradan bulunan galyum ve germanyum gibi elementler doldurmuştu. Bugünkü tablo ise Henry Moseley'in 1913'te gösterdiği gibi atom numarasına, yani çekirdekteki proton sayısına dayanır. Bu sayfadaki tablo, hidrojenden (1) oganessona (118) kadar yedi periyodun tamamını içerir. IUPAC 2016'da nihonyum, moskovyum, tennesin ve oganesson adlarını onaylayarak yedinci periyodu resmen tamamladı. Tablodaki her kutu bir elementtir; kutuya dokunduğunuzda atom kütlesi, elektron dizilimi, elektronegatifliği, erime ve kaynama noktası gibi bilgilerin yer aldığı bir element kartı açılır.</p>
+
+      <h2>Periyodik tablo nasıl okunur?</h2>
+      <p>Tablonun yatay satırlarına <strong>periyot</strong>, dikey sütunlarına <strong>grup</strong> denir. Yedi periyot ve on sekiz grup vardır. Bir periyodun numarası, genel olarak o satırdaki elementlerin elektron bulunduran kabuk sayısını gösterir; yani birinci periyotta yalnızca hidrojen ve helyum, ikinci periyotta lityumdan neona kadar sekiz element bulunur. Aynı gruptaki elementlerin son kabuklarındaki (değerlik) elektron sayısı benzerdir; bu yüzden kimyasal davranışları da birbirine yakındır. Sodyum ile potasyumun suyla şiddetle tepkimeye girmesi, flor ile klorun benzer bileşikler yapması bu benzerliğin sonucudur.</p>
+      <p>Türkiye'deki ders kitaplarında gruplar hâlâ A ve B harfleriyle de anılır. Karşılığı kolayca hatırlanabilir: 1. grup 1A (alkali metaller), 2. grup 2A (toprak alkali metaller), 13. grup 3A, 14. grup 4A, 15. grup 5A, 16. grup 6A, 17. grup 7A (halojenler) ve 18. grup 8A (soy gazlar) demektir. 3 ile 12 arasındaki gruplar ise B grupları, yani geçiş metalleridir. Tablonun altındaki iki ayrı satır lantanitler ve aktinitlerdir; tablo çok geniş olmasın diye onlar ana gövdeden ayrılmış ve alta alınmıştır. Bu iki satır f bloğunu oluşturur.</p>
+      <p>Her kutuda büyük harfle yazılmış kısaltma elementin <strong>sembolü</strong>, köşedeki küçük sayı <strong>atom numarasıdır</strong>. Atom numarası, o elementin çekirdeğindeki proton sayısını verir ve elementi benzersiz kılar: 26 protonu olan atom her zaman demirdir. Atom kütlesi ise bir atomun ortalama ağırlığıdır ve atom kütle birimi (u) cinsinden verilir. Kararlı izotopu olmayan elementlerde kütle parantez içinde yazılır; bu, en kararlı izotopun kütle sayısıdır.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Tabloya göz atın.</strong> Bir elemente tıklayın ya da klavyeyle ok tuşlarıyla gidip Enter'a basın. Ekranın altında element kartı açılır: atom numarası, kütle, grup, periyot, blok, elektron dizilimi, elektron kabukları, elektronegatiflik, erime ve kaynama noktası, 25 °C'deki hâli ve keşif yılı bir arada görünür. Telefonda "Liste" düğmesiyle satır satır gezmek daha rahattır.</li>
+        <li><strong>Arama yapın.</strong> Kutuya ad (Demir), sembol (Fe) ya da atom numarası (26) yazın. Türkçe karakter yazmanız gerekmez; "altin" yazınca da Altın bulunur. Eşleşen elementler vurgulanır, diğerleri soluklaşır. Tek bir sonuç varsa Enter kartını açar.</li>
+        <li><strong>Süzün ve vurgulayın.</strong> Renkli kategori düğmeleriyle yalnızca soy gazları, halojenleri ya da geçiş metallerini öne çıkarın. Blok (s, p, d, f), grup ve periyot seçimleri birlikte çalışır: örneğin "p bloğu" ile "17. grup" seçerseniz halojenler kalır.</li>
+        <li><strong>İki elementi karşılaştırın.</strong> Element kartındaki "Karşılaştırmaya ekle" düğmesini iki kez kullanın ya da tablonun altındaki iki listeden birer element seçin. Tüm özellikler yan yana sıralanır, elektronegatiflik farkı için kısa bir yorum eklenir.</li>
+        <li><strong>Yazdırın.</strong> "Tabloyu yazdır" düğmesi sayfayı yatay A4 için hazırlar; yalnızca renkli tablo ve kategori açıklamaları basılır, reklam ve menüler basılmaz. Tarayıcının yazdırma penceresinde "Arka plan grafikleri" seçeneğini açık tutarsanız renkler kâğıda da çıkar.</li>
+      </ol>
+
+      <div class="ba-ad" data-slot="periyodik-tablo-b" aria-label="Reklam"></div>
+
+      <h2>Element kategorileri ve renkler</h2>
+      <p>Tablodaki renkler elementlerin kabaca hangi aileye ait olduğunu gösterir. Aynı renkteki elementler benzer özellikler taşır; yine de her sınıflandırma bir kolaylıktır ve kaynaklar arasında küçük farklar görülebilir.</p>
+      <ul>
+        <li><strong>Alkali metaller</strong> (1. grup, hidrojen hariç): yumuşak, düşük yoğunluklu ve çok etkin metallerdir; lityum, sodyum, potasyum bu gruptadır. Hidrojen 1. grupta yer alsa da bir metal değildir.</li>
+        <li><strong>Toprak alkali metaller</strong> (2. grup): alkali metallerden daha sert ve daha az etkindir; magnezyum, kalsiyum, baryum örnektir.</li>
+        <li><strong>Geçiş metalleri</strong> (3–12. gruplar): demir, bakır, çinko, altın gibi sert, iletken ve genellikle renkli bileşikler yapan metallerdir.</li>
+        <li><strong>Geçiş sonrası metaller</strong>: alüminyum, kalay, kurşun gibi geçiş metallerinin sağında kalan daha yumuşak ve düşük erime noktalı metallerdir.</li>
+        <li><strong>Yarı metaller</strong>: bor, silisyum, germanyum, arsenik, antimon ve tellür; hem metal hem ametal özelliği gösterirler, silisyum yarı iletken teknolojisinin temelidir.</li>
+        <li><strong>Ametaller</strong>: hidrojen, karbon, azot, oksijen, fosfor, kükürt ve selenyum; canlıların temel yapı taşlarının çoğunu oluşturur.</li>
+        <li><strong>Halojenler</strong> (17. grup): flor, klor, brom, iyot ve astatin; metallerle kolayca tuz oluşturdukları için bu adı alırlar.</li>
+        <li><strong>Soy gazlar</strong> (18. grup): helyum, neon, argon, kripton, ksenon ve radon; son kabukları dolu olduğundan çok az tepkime verirler. Yapay olarak üretilen oganesson da bu grubun son üyesidir, ancak özellikleri büyük ölçüde hesaplamalara dayanır.</li>
+        <li><strong>Lantanitler ve aktinitler</strong>: tablonun alt iki satırındaki iç geçiş elementleridir. Aktinitlerin büyük bölümü radyoaktiftir ve uranyumdan sonrakilerin çoğu laboratuvarda üretilir.</li>
+      </ul>
+
+      <h2>Periyodik özellikler nasıl değişir?</h2>
+      <p>Periyodik tablonun asıl gücü, özelliklerin tablo üzerinde düzenli bir eğilim göstermesidir. Aşağıdaki özet, sınavlarda en çok karşılaşılan dört özelliği toplar. Eğilimlerde küçük istisnalar vardır; bunlar için ders kitabınızdaki ayrıntılara bakın.</p>
+      <table>
+        <thead><tr><th>Özellik</th><th>Periyotta soldan sağa</th><th>Grupta yukarıdan aşağı</th></tr></thead>
+        <tbody>
+          <tr><td>Atom yarıçapı</td><td>Azalır</td><td>Artar</td></tr>
+          <tr><td>İyonlaşma enerjisi</td><td>Genel olarak artar</td><td>Azalır</td></tr>
+          <tr><td>Elektronegatiflik</td><td>Artar (soy gazlar hariç)</td><td>Azalır</td></tr>
+          <tr><td>Metalik karakter</td><td>Azalır</td><td>Artar</td></tr>
+        </tbody>
+      </table>
+      <p>Bu yüzden en elektronegatif element tablonun sağ üstünde yer alan flordur (Pauling ölçeğinde yaklaşık 3,98), en etkin metaller ise sol altta, sezyum ve fransiyum civarındadır. Elementin kartında gördüğünüz elektronegatiflik değerleriyle bu eğilimi kendiniz deneyebilirsiniz: aynı periyottaki iki elementi karşılaştırma bölümüne koyun ve farkı izleyin.</p>
+
+      <h2>Elektron dizilimi ve kabuklar nasıl gösterilir?</h2>
+      <p>Elementin kartındaki "[Ar] 3d6 4s2" gibi ifade, demirin elektronlarının hangi orbitallerde bulunduğunu söyler. Köşeli parantez, kendinden önceki soy gazın dizilimini kısaltır (argon, 18 elektron); geri kalan kısım ise argonun üzerine eklenen elektronlardır: üç numaralı kabukta altı d elektronu, dördüncü kabukta iki s elektronu. Bu yazımdaki toplam elektron sayısı, nötr atomda atom numarasına eşittir. Kartın yanındaki küçük şemada ise aynı bilgi kabuk kabuk gösterilir: demir için 2, 8, 14, 2. Krom ve bakır gibi birkaç elementin dizilimi kural dışı görünür; bunun nedeni yarı dolu ve tam dolu d orbitallerinin kararlılığıdır. Tablodaki diziliş bilgileri temel hâl için verilmiştir.</p>
+
+      <h2>LGS ve YKS'de periyodik tablo</h2>
+      <p>Ortaokulda periyodik tablo, elementlerin sembollerini, metal, ametal, yarı metal ve soy gaz ayrımını ve bir elementin tablodaki yerini yorumlamayı öğrenmenin temelidir. LGS Fen Bilimleri sorularında genellikle ilk yirmi element ve bunların grupları üzerinden metal-ametal ayrımı, soy gazların kararlılığı ve elementlerin kullanım alanları sorulur. Liseye geçince konu derinleşir: TYT Kimya'da atom yapısı ve periyodik sistem, elektron dizilimi ve değerlik elektronu; AYT Kimya'da ise atom yarıçapı, iyonlaşma enerjisi, elektronegatiflik ve metalik karakter gibi periyodik özelliklerin karşılaştırılması öne çıkar.</p>
+      <p>Bu sayfa çalışma yardımcısı olarak şöyle kullanılabilir: ilk yirmi elementi "1–20" diye tek tek arayıp sembollerini tekrar edin, blok ve grup seçimleriyle benzer elementleri toplu görün, iki elementi karşılaştırma bölümüne koyarak eğilimleri deneyin. Sınavlarda genellikle soru kitapçığında bir periyodik tablo verilir; yine de sembol ve atom numaralarını bilmek zaman kazandırır. Müfredat ve sınav kuralları her yıl değişebilir, bu yüzden güncel kazanımlar için MEB ve ÖSYM duyurularını kontrol edin.</p>
+
+      <h2>Verilerin doğruluğu</h2>
+      <p>Tablodaki bilgiler IUPAC'ın yayımladığı genel verilerden derlenmiştir. Atom kütleleri iki ondalığa yuvarlanmıştır; erime ve kaynama noktaları bilinen yaygın değerlerdir ve basınca, saflığa ya da aletin hassasiyetine göre kaynaklarda küçük farklarla görülebilir. Ağır ve yapay elementlerin birçoğunun (özellikle 104 ve sonrası) bazı özellikleri henüz ölçülememiştir; bu alanlarda "Bilinmiyor" yazar. Türkçe adlandırmada da kaynaklara göre küçük farklar olabilir: örneğin 74 numaralı elemente bazı kitaplar volfram, bazıları tungsten der; aramada ikisi de çalışır. Sınavlarda ve ödevlerde sizden istenen kaynağın değerlerini esas alın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri sunucuya gitmez.</strong> Tablo ve element bilgileri sayfanın kendi dosyasından okunur; arama, süzme ve karşılaştırma tarayıcınızda yapılır, hiçbir bilgi toplanmaz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da kullanabilirsiniz.</li>
+        <li><strong>Türkçe ve öğrenci dostu.</strong> Adlar Türkçedir, ek olarak A/B grup eşleşmesi ve sınavda sorulan eğilimler anlatılır.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> Telefonda liste görünümü, masaüstünde ok tuşlu gezinme vardır.</li>
+        <li><strong>Gerçekten ücretsiz.</strong> Kayıt, günlük sınır ve "premium" tuzağı yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Periyodik tabloda kaç element var?</summary><p>Bugün bilinen ve resmen adlandırılmış 118 element vardır. Bunların yaklaşık doksan dördü doğada bulunur (bazıları yalnızca eser miktarda); plütonyumdan sonrakiler ise yalnızca laboratuvarda üretilir. Bu araçta 1'den 118'e kadar hepsini bulabilirsiniz.</p></details>
+        <details><summary>Atom numarası ile kütle numarası aynı şey mi?</summary><p>Hayır. Atom numarası çekirdekteki proton sayısıdır ve elementi belirler. Kütle numarası proton ile nötron sayısının toplamıdır ve aynı elementin izotoplarında değişir. Tabloda verilen atom kütlesi ise doğadaki izotopların ortalamasından gelen ondalıklı bir değerdir.</p></details>
+        <details><summary>Grup ile periyot arasındaki fark nedir?</summary><p>Periyot yatay satırdır (1'den 7'ye), grup ise dikey sütundur (1'den 18'e). Aynı periyottaki elementlerin en dış kabuğu aynı numaralıdır; aynı gruptaki elementlerin değerlik elektron sayısı benzer olduğundan kimyasal davranışları da benzerdir.</p></details>
+        <details><summary>Lantanitler ve aktinitler neden tablonun altında ayrı duruyor?</summary><p>Her biri on beş element içeren bu iki sıra ana gövdeye yerleştirilse tablo yatayda çok genişlerdi. Bu yüzden f bloğu alta alınır. Tabloda 3. grubun altındaki "57–71" ve "89–103" kutuları bunların nerede durduğunu gösterir; kutulara tıklayarak ilgili aileyi vurgulayabilirsiniz.</p></details>
+        <details><summary>Hidrojen neden 1. grupta ama alkali metal sayılmıyor?</summary><p>Hidrojenin tek bir değerlik elektronu vardır, bu yüzden elektron dizilimi bakımından 1. gruba yerleştirilir. Ancak oda koşullarında gaz olan, metalik özellik göstermeyen ve çoğunlukla ametal gibi davranan bir elementtir. Bu yüzden renk olarak ametal kategorisinde gösterilir.</p></details>
+        <details><summary>Kütle, erime ve kaynama noktası değerleri sınavda ya da ödevde kullanılabilir mi?</summary><p>Değerler yaklaşıktır ve kaynaklara göre küçük farklar gösterebilir. Ödev ve sınavlarda öğretmeninizin ya da sınav kitapçığının verdiği tabloyu esas alın; bu araç öğrenmek, tekrar etmek ve hızlıca bakmak içindir.</p></details>
+        <details><summary>Tabloyu nasıl yazdırırım ya da PDF olarak kaydederim?</summary><p>"Tabloyu yazdır" düğmesine basın. Açılan yazdırma penceresinde yazıcınızı ya da "PDF olarak kaydet" seçeneğini seçin. Renklerin çıkması için "Arka plan grafikleri" seçeneğini açın ve kâğıt yönünü yatay bırakın. Menü, reklam ve açıklama metinleri basılmaz.</p></details>
+        <details><summary>Bu araç internetsiz çalışır mı, bir şey kaydediyor mu?</summary><p>Sayfa bir kez açıldıktan sonra çevrimdışı da kullanılabilir. Aradığınız terimler ve seçtiğiniz elementler hiçbir yere gönderilmez, kaydedilmez. Tarayıcı adres çubuğundaki "#Fe" gibi ekler yalnızca seçtiğiniz elementi paylaşabilmeniz içindir.</p></details>
+        <details><summary>Arama kutusuna Türkçe karakter yazmak zorunda mıyım?</summary><p>Hayır. "Aluminyum", "altin", "iyot" ya da "kukurt" yazmanız yeterlidir; arama büyük küçük harf ve Türkçe karakter farkını yok sayar. Atom numarası (örneğin 79) veya sembol (Au) de çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../lgs-puan-hesapla/">LGS Puan Hesapla</a></li>
+        <li><a href="../yks-puan-hesapla/">YKS Puan Hesapla</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştür</a></li>
+        <li><a href="../ders-programi-olustur/">Ders Programı Oluştur</a></li>
+      </ul>
+      <p class="ba-note">Okulunuz ya da eğitim kurumunuz için özel hazırlanmış etkileşimli içerik ve web çözümleri gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="periyodik-tablo-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

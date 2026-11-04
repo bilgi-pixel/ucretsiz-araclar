@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Mayın Tarlası Oyna – Ücretsiz Online Mayın Tarlası (kurulumsuz)</title>
+  <meta name="description" content="Mayın Tarlası'nı tarayıcınızda ücretsiz oynayın: kolay, orta, zor ve özel tahta, güvenli ilk tıklama, telefonda bayrak modu ve en iyi süreler. Kurulum ve kayıt yok.">
+  <meta name="keywords" content="mayın tarlası oyna, mayın tarlası, online mayın tarlası, mayın tarama oyunu, bulmaca oyunları, ücretsiz oyun">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/mayin-tarlasi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+
+    /* Mayın Tarlası — renkler token'lara bağlı; koyu temada sayı renkleri açılır */
+    .game-box { --mt-closed: #d6d2cd; --mt-closed-hi: #ffffff; --mt-closed-lo: #9c9791; --mt-open: #f3f1ee; --mt-open-line: #cdc8c3;
+      --mt-n1: #1a5fb4; --mt-n2: #1f7a4d; --mt-n3: #b3261e; --mt-n4: #4b2a99; --mt-n5: #8a3b00; --mt-n6: #00696b; --mt-n7: #1e2126; --mt-n8: #55585e;
+      --mt-boom: #f3b3ab; --mt-lcd-bg: #1f2226; --mt-lcd-fg: #ff8a7a; position: relative; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .game-box { --mt-closed: #4a4e55; --mt-closed-hi: #6c717a; --mt-closed-lo: #2a2d31; --mt-open: #1d1f23; --mt-open-line: #34373d;
+      --mt-n1: #7fb1ff; --mt-n2: #6fcf97; --mt-n3: #ff8a80; --mt-n4: #b69cff; --mt-n5: #ffb066; --mt-n6: #4fd1d3; --mt-n7: #e6e7ea; --mt-n8: #b8babf; --mt-boom: #6a2b27; } }
+    :root[data-theme="dark"] .game-box { --mt-closed: #4a4e55; --mt-closed-hi: #6c717a; --mt-closed-lo: #2a2d31; --mt-open: #1d1f23; --mt-open-line: #34373d;
+      --mt-n1: #7fb1ff; --mt-n2: #6fcf97; --mt-n3: #ff8a80; --mt-n4: #b69cff; --mt-n5: #ffb066; --mt-n6: #4fd1d3; --mt-n7: #e6e7ea; --mt-n8: #b8babf; --mt-boom: #6a2b27; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 20px; margin: 0; border-radius: 0; }
+    .mt-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-bottom: 14px; }
+    .mt-stat { display: grid; gap: 4px; }
+    .mt-k { font-size: .82rem; font-weight: 600; color: var(--ba-text-2); }
+    .mt-lcd { font-family: var(--ba-mono); font-size: 1.6rem; font-weight: 500; line-height: 1; letter-spacing: .1em; background: var(--mt-lcd-bg); color: var(--mt-lcd-fg); padding: 8px 12px; border-radius: var(--ba-radius-sm); min-width: 84px; text-align: center; }
+    .mt-controls { display: grid; gap: 12px; }
+    @media (min-width: 640px) { .mt-controls { grid-template-columns: minmax(220px, 1fr) auto; align-items: end; } }
+    .mt-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mt-btns .ba-btn { min-height: 44px; padding: 8px 16px; }
+    .mt-btns .ba-btn[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .mt-custom { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); margin-top: 12px; padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); align-items: end; }
+    .mt-custom .mt-go { grid-column: 1 / -1; }
+    .mt-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 6px; font-weight: 500; cursor: pointer; }
+    .mt-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .mt-scroll { position: relative; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; padding: 4px; margin-top: 10px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    #tahta { --cs: 32px; display: block; width: max-content; margin: 0 auto; box-shadow: 0 0 0 1px var(--mt-open-line); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+    .is-paused #tahta { visibility: hidden; }
+    .mt-row { display: flex; }
+    .mt-cell { width: var(--cs); height: var(--cs); flex: none; display: grid; place-items: center; font-family: var(--ba-mono); font-weight: 500; font-size: calc(var(--cs) * .58); line-height: 1; cursor: pointer; color: var(--ba-text); -webkit-tap-highlight-color: transparent; }
+    .mt-cell svg { width: 72%; height: 72%; display: block; }
+    .s-kapali, .s-bayrak, .s-soru { background: var(--mt-closed); box-shadow: inset 2px 2px 0 var(--mt-closed-hi), inset -2px -2px 0 var(--mt-closed-lo); }
+    .s-kapali:hover { filter: brightness(1.07); }
+    .s-soru { font-weight: 700; }
+    .s-acik, .s-mayin, .s-yanlis-bayrak, .s-patladi { background: var(--mt-open); box-shadow: inset 0 0 0 1px var(--mt-open-line); cursor: default; }
+    .s-patladi { background: var(--mt-boom); }
+    .mt-cell:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: -3px; position: relative; z-index: 1; border-radius: 0; }
+    .flag-mode .s-kapali { cursor: cell; }
+    .n1 { color: var(--mt-n1); } .n2 { color: var(--mt-n2); } .n3 { color: var(--mt-n3); } .n4 { color: var(--mt-n4); }
+    .n5 { color: var(--mt-n5); } .n6 { color: var(--mt-n6); } .n7 { color: var(--mt-n7); } .n8 { color: var(--mt-n8); }
+    .n1, .n2, .n3, .n4, .n5, .n6, .n7, .n8 { font-weight: 700; }
+    .mt-pause { position: absolute; inset: 0; display: grid; place-content: center; gap: 12px; text-align: center; background: var(--ba-surface-2); }
+    .mt-pause p { margin: 0; font-weight: 600; }
+    .mt-status { margin: 12px 0 0; min-height: 3.2em; font-weight: 500; color: var(--ba-text-2); }
+    .is-won .mt-status { color: var(--ba-success); font-weight: 700; }
+    .is-lost .mt-status { color: var(--ba-danger); font-weight: 700; }
+    .mt-h { font-size: 1.05rem; margin: 16px 0 6px; }
+    .mt-best { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+    .mt-best li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); font-size: .92rem; }
+    .mt-best strong { font-family: var(--ba-mono); font-weight: 500; white-space: nowrap; }
+    .mt-help { font-size: .88rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Mayın Tarlası","description":"Mayın Tarlası'nı tarayıcınızda ücretsiz oynayın: kolay, orta, zor ve özel tahta, güvenli ilk tıklama, telefonda bayrak modu ve en iyi süreler. Kurulum ve kayıt yok.","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/mayin-tarlasi/","genre":"Bulmaca","applicationCategory":"Game","operatingSystem":"Web tarayıcısı","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Mayın Tarlası'nda ilk tıklamada mayına basabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Mayınlar siz ilk kareyi açtıktan sonra yerleştirilir; tıkladığınız kare ve çevresindeki kareler mayından arındırılır. Bu nedenle ilk hamlede kaybetmezsiniz ve çoğu zaman geniş bir boş alan açılır."}},{"@type":"Question","name":"Telefonda bayrağı nasıl koyarım?","acceptedAnswer":{"@type":"Answer","text":"İki yol var: bir kareye yarım saniyeden uzun basın ya da Bayrak modu düğmesini açın. Bayrak modu açıkken her dokunuş bir bayrak koyar veya kaldırır; açık bir sayıya dokunursanız çevresindeki kareleri açar, bayrak sayısı doğruysa."}},{"@type":"Question","name":"Çift tıklamanın (akor) amacı nedir?","acceptedAnswer":{"@type":"Answer","text":"Açık bir sayıya çift tıkladığınızda, çevresindeki bayrak sayısı o sayıya eşitse kalan kapalı komşular birlikte açılır. Bayraklarınız doğruysa hızlı ilerlersiniz; yanlış bayrak koyduysanız mayına basabilirsiniz, bu yüzden bayrağı emin olduğunuzda koyun."}},{"@type":"Question","name":"En iyi sürelerim nerede saklanır?","acceptedAnswer":{"@type":"Answer","text":"En iyi süreleriniz yalnızca kendi cihazınızdaki tarayıcı belleğinde (localStorage) saklanır. Bir sunucuya gönderilmez, başkalarıyla paylaşılmaz. Tarayıcı verilerini silerseniz ya da farklı bir tarayıcı kullanırsanız süreler sıfırlanır."}},{"@type":"Question","name":"Zor seviyede mutlaka tahmin gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Çoğu zaman evet. 30×16 tahtada 99 mayın yoğun bir dağılım oluşturur ve bazı durumlarda mantıkla ilerleyemezsiniz. Böyle anlarda kalan mayın sayısını kalan kare sayısına bölerek olasılığı hesaplayın ve en az riskli kareyi açın."}},{"@type":"Question","name":"Oyunu internetsiz oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sayfa bir kez yüklendikten sonra oyun tamamen tarayıcınızda çalışır ve ağ isteği yapmaz. Siteyi uygulama olarak yüklerseniz çevrimdışı da açılır."}},{"@type":"Question","name":"Özel tahtada mayın sayısı neden sınırlı?","acceptedAnswer":{"@type":"Answer","text":"İlk tıklamanın güvenli olması için tıkladığınız kare ve komşuları mayınsız kalmalıdır. Bu yüzden mayın sayısı en çok kare sayısının dokuz eksiğidir. Genişlik 5 ile 40, yükseklik 5 ile 30 arasında seçilebilir."}},{"@type":"Question","name":"Oyun ücretli mi, üyelik gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilişim Ajans'ın topluluk projesi olarak tamamen ücretsizdir, kayıt gerektirmez ve sınırsız oynanabilir. Giderler yalnızca sayfadaki reklamlarla karşılanır; reklamlar oyun alanından uzakta durur."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../../#oyunlar">Oyunlar</a></li></ol>
+      <h1><span class="ba-grad">Mayın Tarlası</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Klasik mayın tarama bulmacasını tarayıcınızda oynayın. Kolay, orta, zor ya da kendi ölçülerinizde bir tahta seçin; ilk tıklamanız her zaman güvenli. Telefonda bayrak modu ve uzun basma ile bayrak koyun. Kurulum, kayıt ve dosya yükleme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Mayın Tarlası oyun alanı</h2>
+      <div class="mt-top">
+        <div class="mt-stat"><span class="mt-k" id="k-sayac">Kalan mayın</span><span class="mt-lcd" id="sayac" aria-labelledby="k-sayac">010</span></div>
+        <div class="mt-stat"><span class="mt-k" id="k-sure">Süre (sn)</span><span class="mt-lcd" id="sure" role="timer" aria-labelledby="k-sure">000</span></div>
+      </div>
+      <div class="mt-controls">
+        <div class="ba-field"><label for="seviye">Seviye</label>
+          <select id="seviye">
+            <option value="kolay">Kolay – 9×9, 10 mayın</option>
+            <option value="orta">Orta – 16×16, 40 mayın</option>
+            <option value="zor">Zor – 30×16, 99 mayın</option>
+            <option value="ozel">Özel boyut…</option>
+          </select>
+        </div>
+        <div class="mt-btns">
+          <button class="ba-btn ba-btn-primary" id="yeni-oyun" type="button">Yeni oyun</button>
+          <button class="ba-btn" id="bayrak-modu" type="button" aria-pressed="false">Bayrak modu: kapalı</button>
+          <button class="ba-btn" id="duraklat" type="button" disabled>Duraklat</button>
+          <button class="ba-btn" id="tam-ekran" type="button">Tam ekran</button>
+        </div>
+      </div>
+      <div class="mt-custom" id="ozel-alan" hidden>
+        <div class="ba-field"><label for="ozel-w">Genişlik (5–40)</label><input id="ozel-w" type="number" min="5" max="40" value="12" inputmode="numeric"></div>
+        <div class="ba-field"><label for="ozel-h">Yükseklik (5–30)</label><input id="ozel-h" type="number" min="5" max="30" value="12" inputmode="numeric"></div>
+        <div class="ba-field"><label for="ozel-m">Mayın sayısı</label><input id="ozel-m" type="number" min="1" max="999" value="20" inputmode="numeric"></div>
+        <button class="ba-btn mt-go" id="ozel-baslat" type="button">Bu boyutla başlat</button>
+      </div>
+      <label class="mt-check"><input type="checkbox" id="soru-isareti"> Soru işaretini kullan (bayrak, ?, boş döngüsü)</label>
+      <div class="ba-error" id="hata" role="alert"></div>
+      <div class="mt-scroll" id="tahta-kaydirma">
+        <div id="tahta" role="grid" aria-label="Mayın tarlası tahtası"></div>
+        <div class="mt-pause" id="duraklatildi" hidden><p>Oyun duraklatıldı</p><button class="ba-btn ba-btn-primary" id="devam-et" type="button">Devam et</button></div>
+      </div>
+      <p class="mt-status" id="durum" role="status" aria-live="polite"></p>
+      <h3 class="mt-h">En iyi süreler (yalnızca bu cihazda saklanır)</h3>
+      <ul class="mt-best" id="en-iyi"></ul>
+      <p class="mt-help">Fare: sol tık açar, sağ tık bayrak koyar, açık sayıya çift tık çevresini açar. Dokunmatik: dokun açar, uzun bas bayrak koyar. Klavye: oklarla gezin, Enter açar, F bayrak koyar.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-mayin-tarlasi-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Mayın Tarlası nedir?</h2>
+      <p>Mayın Tarlası, mantık yürüterek oynanan klasik bir tek kişilik bulmacadır. Karşınızda kapalı karelerden oluşan bir tahta vardır ve bu karelerin bir kısmının altında mayın saklıdır. Amacınız mayına basmadan, mayın içermeyen bütün kareleri açmaktır. Şansın payı yalnızca ilk hamlede ve bazen kaçınılmaz tahminlerde devreye girer; oyunun asıl yükü sayıları doğru okumaktır. Bu sayfadaki sürüm tarayıcınızda çalışır: kurulum, kayıt ya da hesap gerektirmez ve hiçbir dosya ya da bilgi sunucuya gönderilmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki listeden bir seviye seçin ve herhangi bir kareyi açın. İlk tıklamanız ve çevresindeki kareler mayından arındırılmıştır, yani ilk hamlede kaybetmezsiniz.</li>
+        <li>Açılan karedeki sayı, o karenin çevresindeki sekiz komşudan kaçında mayın olduğunu gösterir. Boş (sayısız) bir kare açılırsa çevresi otomatik olarak açılır.</li>
+        <li>Mayın olduğundan emin olduğunuz kareleri bayrakla işaretleyin. Sayaç, koyduğunuz her bayrakla bir azalır; böylece kaç mayın kaldığını takip edersiniz.</li>
+        <li>Bir sayının çevresindeki bayrak adedi o sayıya eşitse kalan kapalı komşular güvenlidir. Sayıya çift tıklayarak hepsini tek hamlede açabilirsiniz.</li>
+        <li>Mayın içermeyen bütün kareler açılınca oyunu kazanırsınız. Süreniz, seviye için kayıtlı en iyi sürenizden kısaysa yeni rekor olarak saklanır.</li>
+      </ol>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <table>
+        <thead><tr><th>İşlem</th><th>Fare</th><th>Dokunmatik</th><th>Klavye</th></tr></thead>
+        <tbody>
+          <tr><td>Kare aç</td><td>Sol tık</td><td>Dokun</td><td>Enter veya Boşluk</td></tr>
+          <tr><td>Bayrak koy / kaldır</td><td>Sağ tık</td><td>Uzun bas ya da Bayrak modu</td><td>F</td></tr>
+          <tr><td>Çevreyi aç (akor)</td><td>Açık sayıya çift tık veya orta tuş</td><td>Bayrak modundayken açık sayıya dokun</td><td>Açık sayıda Enter</td></tr>
+          <tr><td>Gezinme</td><td>İmleç</td><td>Kaydırma</td><td>Ok tuşları, Home, End</td></tr>
+        </tbody>
+      </table>
+      <p>Telefonda sağ tık olmadığı için iki yol sunuyoruz: bir kareye yarım saniyeden uzun basarak bayrak koyabilir ya da Bayrak modu düğmesini açıp dokunuşlarınızı bayrak işaretine çevirebilirsiniz. Soru işareti seçeneğini açarsanız aynı hareket sırasıyla bayrak, soru işareti ve boş kare arasında döner; emin olmadığınız kareleri bu şekilde not edebilirsiniz.</p>
+
+      <h2>Zorluk seviyeleri ve özel tahta</h2>
+      <p>Seviyeler, yaygın kabul gören üç standart ölçüyü kullanır. Kolay seviye 9×9 tahtada 10 mayın içerir; mayın yoğunluğu yaklaşık yüzde 12'dir ve oyunu öğrenmek için idealdir. Orta seviye 16×16 tahtada 40 mayın barındırır, yoğunluk yaklaşık yüzde 16'dır. Zor seviye 30×16 geniş tahtada 99 mayın taşır; yoğunluk yaklaşık yüzde 21'e çıkar ve çoğu oyunda en az bir kez tahmin yapmanız gerekir. Daha geniş bir tahta, telefonda yatay kaydırma gerektirebilir; ekranı yan çevirmek ya da kaydırma çubuğunu kullanmak yeterlidir.</p>
+      <p>Özel boyut seçeneğiyle genişlik, yükseklik ve mayın sayısını kendiniz belirleyebilirsiniz. İlk tıklamanın güvenli olabilmesi için tahtada en az dokuz karenin mayınsız kalması gerekir; bu yüzden mayın sayısı en çok kare sayısının dokuz eksiğidir. Özel tahtalarda da en iyi süreniz, o boyut ve mayın sayısına özel olarak saklanır.</p>
+
+      <div class="ba-ad" data-slot="oyun-mayin-tarlasi-b" aria-label="Reklam"></div>
+
+
+      <h2>Strateji ipuçları</h2>
+      <p>Mayın Tarlası'nda iyi oyuncuyu ayıran şey hız değil, sayıları sistemli okumaktır. Aşağıdaki yöntemler zor seviyede bile tahmin sayınızı ciddi biçimde azaltır.</p>
+      <ul>
+        <li><strong>Kesin mayınları önce bulun.</strong> Bir sayının kapalı komşu sayısı, o sayının gösterdiği değere eşitse bütün o komşular mayındır. Bunları hemen bayraklayın; çünkü bayraklar komşu sayılardaki işi kolaylaştırır.</li>
+        <li><strong>Bayrak sayısı tamamsa çevreyi açın.</strong> Bir sayının çevresinde o kadar bayrak varsa geri kalan kapalı komşular güvenlidir. Çift tıkla akor yapmak, hem zamandan kazandırır hem de tek tek tıklama hatalarını önler.</li>
+        <li><strong>1-2-1 örüntüsü.</strong> Kenar boyunca yan yana açık 1, 2, 1 sayıları ve karşılarında kapalı bir sıra görüyorsanız, mayınlar iki uçtaki 1'lerin hizasındaki karelerdedir; ortadaki 2'nin hizasındaki kare güvenlidir.</li>
+        <li><strong>1-2-2-1 örüntüsü.</strong> Aynı durumda 1, 2, 2, 1 sırası varsa mayınlar ortadaki iki 2'nin hizasındaki karelerdir, uçlardaki kareler güvenlidir.</li>
+        <li><strong>Komşu sayıları karşılaştırın.</strong> Bir sayının kapalı komşuları, başka bir sayının kapalı komşularının alt kümesiyse, iki sayının farkı ek karelerdeki mayın sayısını verir. Bu mantık, görünürde belirsiz olan pek çok durumu çözer.</li>
+        <li><strong>Mayın yoğunluğunu hesaplayın.</strong> Tahmin etmek zorunda kaldığınızda, kalan mayın sayısını kalan kapalı kare sayısına bölerek serbest bir karenin mayın olma olasılığını kabaca bulun. Sınırdaki belirsiz karelerin olasılığı bu orandan yüksekse, sınırdan uzak bir kareyi açmak daha az risklidir.</li>
+        <li><strong>Bayrağı yalnızca emin olunca koyun.</strong> Yanlış bayrak, ilerleyen hamlelerde zincirleme hataya yol açar. Emin değilseniz soru işareti kullanın ya da kareyi boş bırakın.</li>
+      </ul>
+      <p>Düzenli oynadıkça kalıpları gözünüzün tanıdığını fark edeceksiniz. Hız yarışı yapacaksanız önce doğruluğa odaklanın; hız, kalıplar otomatikleştikçe kendiliğinden gelir.</p>
+
+      <h2>Neden Bilişim Ajans Mayın Tarlası?</h2>
+      <p>Çoğu online oyun sayfası, açılır pencerelerle ve zorunlu üyelikle dolu gelir. Bu sayfada ise kayıt, kurulum ve çerez bildirimi yoktur. Oyun tamamen tarayıcınızda çalışır; tahtanız, hamleleriniz ve süreleriniz hiçbir sunucuya gönderilmez. En iyi süreleriniz yalnızca bu cihazın tarayıcı belleğinde (localStorage) saklanır; tarayıcı verilerini temizlerseniz silinir. Sayfayı bir kez açtıktan sonra internetsiz de oynayabilir, siteyi uygulama olarak ana ekranınıza ekleyebilirsiniz. Tahta 360 piksel genişliğindeki telefonlarda da çalışır; ekran okuyucu ve klavye kullanıcıları için her kare anlamlı bir etiket taşır.</p>
+
+      <h2>Mayın Tarlası'nın kısa tarihi</h2>
+      <p>Mayın arama temalı bulmacaların kökleri, 1960'lı ve 1970'li yıllarda büyük bilgisayarlarda yazılan ilk mantık oyunlarına kadar uzanır. Fikir, kişisel bilgisayarların yaygınlaştığı 1980'li ve 1990'lı yıllarda farklı yazılımlarda yeniden yorumlandı ve birçok işletim sistemiyle birlikte gelen hafif bir oyuna dönüştü. Bu yaygınlık sayesinde mayın tarama bulmacası, milyonlarca insanın ofis arasında oynadığı bir klasik oldu. Bugün hâlâ rekor süreler için yarışan, tahta çözümü üzerine yazılar yazan ve olasılık hesabıyla oynayan bir topluluğu var. Bu sayfadaki oyun, aynı mantığı sıfırdan yazılmış, özgün bir arayüzle sunar.</p>
+
+      <h2>Erişilebilirlik ve klavyeyle oynama</h2>
+      <p>Tahta tek bir sekme durağıdır: Tab tuşuyla tahtaya girin, ok tuşlarıyla kareler arasında gezinin, Enter ile açın, F ile bayrak koyun. Her karenin satır ve sütun bilgisini içeren bir etiketi vardır; ekran okuyucunuz "3. satır 4. sütun, kapalı" ya da "2 komşu mayın" gibi duyuracaktır. Renk körlüğü olan oyuncular için sayılar yalnızca renkle değil, rakamın kendisiyle de ayırt edilir. Oyun durumu mesajı, kazanma ve kaybetme anlarında otomatik olarak okunur.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Mayın Tarlası'nda ilk tıklamada mayına basabilir miyim?</summary><p>Hayır. Mayınlar siz ilk kareyi açtıktan sonra yerleştirilir; tıkladığınız kare ve çevresindeki kareler mayından arındırılır. Bu nedenle ilk hamlede kaybetmezsiniz ve çoğu zaman geniş bir boş alan açılır.</p></details>
+      <details><summary>Telefonda bayrağı nasıl koyarım?</summary><p>İki yol var: bir kareye yarım saniyeden uzun basın ya da Bayrak modu düğmesini açın. Bayrak modu açıkken her dokunuş bir bayrak koyar veya kaldırır; açık bir sayıya dokunursanız çevresindeki kareleri açar, bayrak sayısı doğruysa.</p></details>
+      <details><summary>Çift tıklamanın (akor) amacı nedir?</summary><p>Açık bir sayıya çift tıkladığınızda, çevresindeki bayrak sayısı o sayıya eşitse kalan kapalı komşular birlikte açılır. Bayraklarınız doğruysa hızlı ilerlersiniz; yanlış bayrak koyduysanız mayına basabilirsiniz, bu yüzden bayrağı emin olduğunuzda koyun.</p></details>
+      <details><summary>En iyi sürelerim nerede saklanır?</summary><p>En iyi süreleriniz yalnızca kendi cihazınızdaki tarayıcı belleğinde (localStorage) saklanır. Bir sunucuya gönderilmez, başkalarıyla paylaşılmaz. Tarayıcı verilerini silerseniz ya da farklı bir tarayıcı kullanırsanız süreler sıfırlanır.</p></details>
+      <details><summary>Zor seviyede mutlaka tahmin gerekir mi?</summary><p>Çoğu zaman evet. 30×16 tahtada 99 mayın yoğun bir dağılım oluşturur ve bazı durumlarda mantıkla ilerleyemezsiniz. Böyle anlarda kalan mayın sayısını kalan kare sayısına bölerek olasılığı hesaplayın ve en az riskli kareyi açın.</p></details>
+      <details><summary>Oyunu internetsiz oynayabilir miyim?</summary><p>Evet. Sayfa bir kez yüklendikten sonra oyun tamamen tarayıcınızda çalışır ve ağ isteği yapmaz. Siteyi uygulama olarak yüklerseniz çevrimdışı da açılır.</p></details>
+      <details><summary>Özel tahtada mayın sayısı neden sınırlı?</summary><p>İlk tıklamanın güvenli olması için tıkladığınız kare ve komşuları mayınsız kalmalıdır. Bu yüzden mayın sayısı en çok kare sayısının dokuz eksiğidir. Genişlik 5 ile 40, yükseklik 5 ile 30 arasında seçilebilir.</p></details>
+      <details><summary>Oyun ücretli mi, üyelik gerekiyor mu?</summary><p>Hayır. Bilişim Ajans'ın topluluk projesi olarak tamamen ücretsizdir, kayıt gerektirmez ve sınırsız oynanabilir. Giderler yalnızca sayfadaki reklamlarla karşılanır; reklamlar oyun alanından uzakta durur.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../xox/">XOX</a></li>
+      </ul>
+      <p>Tüm oyunları ve ücretsiz araçları <a href="../../">ana sayfada</a> bulabilirsiniz. Yazılım, web ve bilişim altyapısı ihtiyaçlarınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-mayin-tarlasi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
