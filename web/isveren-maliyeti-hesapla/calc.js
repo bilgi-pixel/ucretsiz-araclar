@@ -17,18 +17,18 @@ export function taxOnBase(base, brackets) {
 
 /**
  * 12 aylık hesap. Her ay aynı brüt ücret varsayılır.
- * opts: { asgariIstisna: bool, isverenMaliyeti: bool, isverenIndirim: bool }
+ * opts: { asgariIstisna: bool, indirimPuan: number } (indirimPuan: 5510 md. 81/1-ı Hazine teşviki puanı)
  */
 export function calcYear(brut, p, opts = {}) {
   const asgari = p.asgari_ucret_brut;
-  const capBase = asgari * p.sgk_tavan_katsayisi; // SGK prim tavanı (aylık)
+  const capBase = asgari * p.sgk_tavan_katsayisi; // SGK prim tavanı (aylık; 2026: 9 × 33.030 = 297.270)
   const sgkBase = Math.min(brut, capBase);
   const sgkRate = p.sgk_isci_orani / 100;
   const issRate = p.issizlik_isci_orani / 100;
   const damgaRate = p.damga_vergisi_orani / 100;
   const asgariSgkBase = Math.min(asgari, capBase);
   const asgariMatrah = asgari - round2(asgariSgkBase * sgkRate) - round2(asgariSgkBase * issRate);
-  const employerRate = (p.sgk_isveren_orani - (opts.isverenIndirim ? p.sgk_isveren_indirim_puan : 0) + p.issizlik_isveren_orani) / 100;
+  const employerRate = (p.sgk_isveren_orani - (opts.indirimPuan || 0) + p.issizlik_isveren_orani) / 100;
 
   const rows = [];
   let cum = 0, cumAsgari = 0;
@@ -72,16 +72,25 @@ export function netToBrut(targetNet, p, opts = {}, month = 1) {
   return round2(hi);
 }
 
+/** Sektöre göre Hazine teşviki puanı (parametre listesinden; bulunamazsa 0). */
+export function discountPoints(p, id) {
+  const d = (p.sgk_isveren_indirimleri || []).find((x) => x.id === id);
+  return d ? d.puan : 0;
+}
+
 /**
  * Aylık işveren maliyeti dökümü (brüt ücret üzerinden).
- * opts: { isverenIndirim: bool, destek: bool, destekTutari: number }
+ * opts: { indirimPuan: number, destek: bool, destekTutari: number }
+ * Teşvik puanı MYÖ işveren hissesinden düşülür (2026: imalat dışı 2, imalat 5 puan).
  */
 export function employerCost(brut, p, opts = {}) {
   const capBase = p.asgari_ucret_brut * p.sgk_tavan_katsayisi;
   const sgkBase = Math.min(brut, capBase);
-  const sgkRate = p.sgk_isveren_orani - (opts.isverenIndirim ? p.sgk_isveren_indirim_puan : 0);
+  const indirimPuan = Math.max(0, opts.indirimPuan || 0);
+  const sgkRate = p.sgk_isveren_orani - indirimPuan;
   const sgk = round2(sgkBase * sgkRate / 100);
   const issizlik = round2(sgkBase * p.issizlik_isveren_orani / 100);
-  const destek = opts.destek ? Math.min(round2(opts.destekTutari || 0), sgk + issizlik) : 0;
-  return { brut, sgkBase, sgkRate, sgk, issizlik, destek, toplam: round2(brut + sgk + issizlik - destek) };
+  // Destek primden mahsup edilir; ödenecek işveren priminden fazla olamaz.
+  const destek = opts.destek ? Math.min(round2(opts.destekTutari || 0), round2(sgk + issizlik)) : 0;
+  return { brut, capBase, sgkBase, indirimPuan, sgkRate, sgk, issizlik, destek, toplam: round2(brut + sgk + issizlik - destek) };
 }

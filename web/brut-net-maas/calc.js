@@ -15,24 +15,56 @@ export function taxOnBase(base, brackets) {
   return tax;
 }
 
+/** Aylık prime esas kazanç üst sınırı (SGK prim tavanı). Resmî TL tutarı varsa o, yoksa asgari ücret × katsayı. */
+export function primTavani(p) {
+  return p.sgk_tavan_tutari || round2(p.asgari_ucret_brut * p.sgk_tavan_katsayisi);
+}
+
 /**
- * 12 aylık hesap. Her ay aynı brüt ücret varsayılır.
- * opts: { asgariIstisna: bool, isverenMaliyeti: bool, isverenIndirim: bool }
+ * Seçilen teşvike göre SGK işveren hissesinden düşülen puan.
+ * tesvik: 'yok' | 'diger' (imalat dışı özel sektör) | 'imalat'
+ */
+export function tesvikPuani(p, tesvik) {
+  if (!tesvik || tesvik === 'yok') return 0;
+  const puanlar = p.sgk_isveren_tesvik_puanlari || {};
+  return Number(puanlar[tesvik]) || 0;
+}
+
+/**
+ * Bir aylık işveren maliyeti. Her bileşen bordrodaki gibi ayrı ayrı kuruşa yuvarlanır.
+ * opts: { tesvik: 'yok'|'diger'|'imalat', destek: bool }
+ * Asgari ücret desteği 30 günlük tam ay için günlük tutar × 30'dur ve işverenin
+ * ödeyeceği primden mahsup edildiği için o aydaki işveren priminden büyük olamaz.
+ */
+export function employerCost(brut, p, opts = {}) {
+  const sgkBase = Math.min(brut, primTavani(p));
+  const puan = tesvikPuani(p, opts.tesvik);
+  const sgkOran = p.sgk_isveren_orani - puan;
+  const sgk = round2(sgkBase * sgkOran / 100);
+  const issizlik = round2(sgkBase * p.issizlik_isveren_orani / 100);
+  const destekAylik = round2((p.asgari_ucret_destegi_gunluk || 0) * 30);
+  const destek = opts.destek ? Math.min(destekAylik, round2(sgk + issizlik)) : 0;
+  return { sgkBase, puan, sgkOran, sgk, issizlik, destek, toplam: round2(brut + sgk + issizlik - destek) };
+}
+
+/**
+ * 12 aylık hesap. Her ay aynı brüt ücret ve 30 günlük tam ay varsayılır.
+ * opts: { asgariIstisna: bool, tesvik: 'yok'|'diger'|'imalat', destek: bool }
  */
 export function calcYear(brut, p, opts = {}) {
   const asgari = p.asgari_ucret_brut;
-  const capBase = asgari * p.sgk_tavan_katsayisi; // SGK prim tavanı (aylık)
+  const capBase = primTavani(p); // SGK prim tavanı (aylık)
   const sgkBase = Math.min(brut, capBase);
   const sgkRate = p.sgk_isci_orani / 100;
   const issRate = p.issizlik_isci_orani / 100;
   const damgaRate = p.damga_vergisi_orani / 100;
   const asgariSgkBase = Math.min(asgari, capBase);
   const asgariMatrah = asgari - round2(asgariSgkBase * sgkRate) - round2(asgariSgkBase * issRate);
-  const employerRate = (p.sgk_isveren_orani - (opts.isverenIndirim ? p.sgk_isveren_indirim_puan : 0) + p.issizlik_isveren_orani) / 100;
+  const isv = employerCost(brut, p, opts);
 
   const rows = [];
   let cum = 0, cumAsgari = 0;
-  const totals = { brut: 0, sgk: 0, issizlik: 0, matrah: 0, gelirVergisi: 0, damga: 0, net: 0, isverenMaliyet: 0 };
+  const totals = { brut: 0, sgk: 0, issizlik: 0, matrah: 0, gelirVergisi: 0, damga: 0, net: 0, isverenSgk: 0, isverenIssizlik: 0, destek: 0, isverenMaliyet: 0 };
   for (let m = 1; m <= 12; m++) {
     const sgk = round2(sgkBase * sgkRate);
     const issizlik = round2(sgkBase * issRate);
@@ -49,15 +81,18 @@ export function calcYear(brut, p, opts = {}) {
     gv = round2(gv);
     damga = round2(damga);
     const net = round2(brut - sgk - issizlik - gv - damga);
-    const isverenMaliyet = round2(brut + sgkBase * employerRate);
-    rows.push({ ay: m, brut, sgk, issizlik, matrah, kumulatif: round2(cum + matrah), gelirVergisi: gv, damga, net, isverenMaliyet });
+    rows.push({
+      ay: m, brut, sgk, issizlik, matrah, kumulatif: round2(cum + matrah), gelirVergisi: gv, damga, net,
+      isverenSgk: isv.sgk, isverenIssizlik: isv.issizlik, destek: isv.destek, isverenMaliyet: isv.toplam,
+    });
     cum += matrah;
     cumAsgari += asgariMatrah;
     totals.brut += brut; totals.sgk += sgk; totals.issizlik += issizlik; totals.matrah += matrah;
-    totals.gelirVergisi += gv; totals.damga += damga; totals.net += net; totals.isverenMaliyet += isverenMaliyet;
+    totals.gelirVergisi += gv; totals.damga += damga; totals.net += net;
+    totals.isverenSgk += isv.sgk; totals.isverenIssizlik += isv.issizlik; totals.destek += isv.destek; totals.isverenMaliyet += isv.toplam;
   }
   for (const k of Object.keys(totals)) totals[k] = round2(totals[k]);
-  return { rows, totals };
+  return { rows, totals, tavan: capBase, tavanAsildi: brut > capBase, isveren: isv };
 }
 
 /** Hedef net (belirtilen ay) için brüt ücreti ikili aramayla bulur. Net, brütle monoton artar. */

@@ -75,7 +75,25 @@ test.describe(`Rehber: ${SLUG}`, () => {
     expect(text).toContain(`${money(au.asgari_ucret_brut * au.sgk_isci_orani / 100)} TL`);
     const cap = kt.kidem_tavani.find((c: { baslangic: string }) => c.baslangic === '2026-07-01');
     expect(text).toContain(`${money(cap.tutar)} TL`);
+    // Asgari ücret desteği: 5510 geçici md. 112 (7573 md. 8) günlük 42,33 TL; 30 günlük tam ayda 1.269,90 TL.
+    const r2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+    const destekGunluk = im.asgari_ucret_destegi_gunluk ?? au.asgari_ucret_destegi_gunluk;
+    expect(destekGunluk).toBe(42.33);
+    expect(text).toContain(`${money(destekGunluk)} TL`);
+    expect(text).toContain(`${money(r2(destekGunluk * 30))} TL`);
+    expect(im.asgari_ucret_destegi).toBe(r2(destekGunluk * 30));
     expect(text).toContain(`${money(im.asgari_ucret_destegi)} TL`);
+    // İşveren oranı, sektöre göre teşvik puanları ve prim tavanı araç parametreleriyle aynı olmalı.
+    const pct = (n: number) => `yüzde ${String(n).replace('.', ',')}`;
+    expect(text).toContain(pct(au.sgk_isveren_orani));
+    expect(text).toContain(pct(au.sgk_isveren_orani + au.issizlik_isveren_orani));
+    for (const puan of Object.values(au.sgk_isveren_tesvik_puanlari as Record<string, number>).filter((x) => x > 0)) {
+      expect(text).toContain(`${puan} puan`);
+      expect(text).toContain(pct(au.sgk_isveren_orani - puan));
+    }
+    const tavan = au.asgari_ucret_brut * au.sgk_tavan_katsayisi;
+    expect(text).toContain(`${new Intl.NumberFormat('tr-TR').format(tavan)} TL`);
+    expect(text).toContain(`${au.sgk_tavan_katsayisi} katına`);
   });
 
   test('45.000 TL örneği brüt-net çekirdeğiyle, işveren maliyeti 2026 oranlarıyla tutarlı', async ({ page }) => {
@@ -96,8 +114,25 @@ test.describe(`Rehber: ${SLUG}`, () => {
     expect(text).toContain(`${money(cost(21.75))} TL`);
     expect(text).toContain(`${money(cost(19.75))} TL`);
     expect(text).toContain(`${money(cost(16.75))} TL`);
+    // Asgari ücret desteği (42,33 TL × 30 gün = 1.269,90 TL) 2 ve 5 puan indirimli maliyetten düşülür.
+    const destek = r2(42.33 * 30);
+    expect(text).toContain(`${money(r2(cost(19.75) - destek))} TL`);
+    expect(text).toContain(`${money(r2(cost(16.75) - destek))} TL`);
+    expect(text).toContain(`${money(r2(cost(19.75) * 12 - destek * 12))} TL`);
+    // Tavan 33.030 × 9 = 297.270 TL; tavanı aşan 350.000 TL'de işçi payı tavandan hesaplanır.
     expect(text).toContain('297.270 TL');
-    for (const stale of ['40.461,75', '38.810,25', '247.725', 'yüzde 20,5']) expect(text, stale).not.toContain(stale);
+    expect(text).toContain('9.909 TL');
+    expect(text).toContain(`${money(r2(297270 * 0.14))} TL`);
+    // Aracın kendi işveren maliyeti çekirdeği aynı tutarları vermeli (teşviksiz, imalat dışı 2 puan, imalat 5 puan).
+    const tool = await page.evaluate(async (params) => {
+      const m = await import('/brut-net-maas/calc.js');
+      const row = (tesvik: string, destek = false) => m.calcYear(33030, params, { asgariIstisna: true, tesvik, destek }).rows[0].isverenMaliyet;
+      return [row('yok'), row('diger'), row('imalat'), row('diger', true), row('imalat', true)];
+    }, p);
+    expect(tool).toEqual([cost(21.75), cost(19.75), cost(16.75), r2(cost(19.75) - destek), r2(cost(16.75) - destek)]);
+    for (const stale of ['40.461,75', '38.810,25', '247.725', 'yüzde 20,5', '1.270,38', '38.944,03', 'tehlike sınıfına', 'oranlarından farklıysa', 'oranlarıyla karşılaştırın']) {
+      expect(text, stale).not.toContain(stale);
+    }
   });
 
   test('360px genişlikte yatay taşma yok, tablo hücrelerinde kelime bölünmez', async ({ page }) => {

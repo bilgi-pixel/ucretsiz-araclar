@@ -3,6 +3,12 @@
 
 export const round2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
 
+// 657 sayılı Kanun md. 176: ders saati başına gündüz öğretiminde 140, saat 18.00'den sonra başlayan
+// derslerde, cumartesi-pazar ve yarıyıl/yaz tatillerinde 150 gösterge × aylık katsayı.
+// Gece farkı yüzde artış değil gösterge farkıdır (150/140).
+export const EK_DERS_GOSTERGE_GUNDUZ = 140;
+export const EK_DERS_GOSTERGE_GECE = 150;
+
 /** Kümülatif matrah için artan oranlı gelir vergisi tarifesi. */
 export function taxOnBase(base, brackets) {
   let tax = 0;
@@ -45,14 +51,27 @@ export function calcMemur(input, p) {
     + (input.cocuk06 || 0) * p.aile_cocuk_gostergesi * p.aile_cocuk_0_6_carpan));
 
   // Kesenek ve GSS matrahı (basitleştirilmiş): gösterge + ek gösterge + taban aylık.
-  const primBase = lines.gostergeAylik + lines.ekGostergeAylik + lines.taban;
+  // 4/c: 5510 md. 82 üst sınırı (2026: aylık 297.270 TL = günlük alt sınır 1.101 TL × 9 × 30) aşılamaz.
+  // 5434 iştirakçilerinin keseneği 5434 hükümlerine göre hesaplanır (5510 geçici md. 4); tavan uygulanmaz.
+  const primBaseHam = round2(lines.gostergeAylik + lines.ekGostergeAylik + lines.taban);
+  const ustSinir = !input.eski5434 && p.prim_ust_sinir_aylik ? p.prim_ust_sinir_aylik : Infinity;
+  const primBase = Math.min(primBaseHam, ustSinir);
+  const tavanaTakildi = primBaseHam > ustSinir;
   const keseneRate = (input.eski5434 ? p.emekli_kesenegi_5434 : p.emekli_kesenegi_4c) / 100;
   const kesenek = round2(primBase * keseneRate);
-  const gss = round2(primBase * (p.gss_orani / 100));
+  // GSS kişi payı: 4/c'de %5 (5510 md. 81/1-f). 5434 iştirakçilerinde GSS primini (%12) kurum öder,
+  // maaştan kesilmez (5510 geçici md. 4).
+  const gssRate = (input.eski5434 ? (p.gss_orani_5434 ?? 0) : p.gss_orani) / 100;
+  const gss = round2(primBase * gssRate);
+  // Kurumun ödediği 4/c primi (maaştan kesilmez): MYÖ işveren %12 (7566 md. 23 ile 2026'dan itibaren) + GSS %7,5.
+  // 5434 rejiminde kurum karşılığı farklı kurallara bağlı olduğundan hesaplanmaz (null).
+  const kurumRate = ((p.kurum_myo_orani_4c ?? 0) + (p.kurum_gss_orani_4c ?? 0)) / 100;
+  const kurumPayi = input.eski5434 || !kurumRate ? null : round2(primBase * kurumRate);
 
   const taxable = round2(lines.gostergeAylik + lines.ekGostergeAylik + lines.taban + lines.yanOdeme + lines.tazminat + ekDers);
   const matrah = round2(taxable - kesenek - gss);
 
+  // Asgari ücret istisnası: 2026 brüt asgari ücretten %14 SGK ve %1 işsizlik işçi payı düşülerek bulunan matrah (28.075,50 TL).
   const asgari = p.asgari_ucret_brut;
   const asgariMatrah = asgari - round2(asgari * p.asgari_sgk_isci_orani / 100) - round2(asgari * p.asgari_issizlik_isci_orani / 100);
   const damgaRate = p.damga_vergisi_orani / 100;
@@ -80,17 +99,22 @@ export function calcMemur(input, p) {
     totals.gelirVergisi += gv; totals.damga += damga; totals.net += net;
   }
   for (const k of Object.keys(totals)) totals[k] = round2(totals[k]);
-  return { lines: { ...lines, ekDers }, kesenek, gss, taxable, matrah, rows, totals, ocakNet: rows[0].net, ortalamaNet: round2(totals.net / 12) };
+  return {
+    lines: { ...lines, ekDers }, primBase, tavanaTakildi, kesenek, gss, kurumPayi, taxable, matrah, asgariMatrah,
+    rows, totals, ocakNet: rows[0].net, ortalamaNet: round2(totals.net / 12),
+  };
 }
 
-/** Ek ders birim ücreti: gösterge × aylık katsayı (gece için artış oranı uygulanır). */
+/** Ek ders birim ücreti: gösterge × aylık katsayı. Gece / hafta sonu / tatil dersinde gösterge 150'dir (yüzde artış değil). */
 export function ekDersUnit(p, aylikKatsayi, gece = false) {
-  const base = p.ek_ders_gostergesi * aylikKatsayi;
-  return round2(gece ? base * (1 + p.ek_ders_gece_artis_orani / 100) : base);
+  const gosterge = gece
+    ? (p.ek_ders_gostergesi_gece ?? EK_DERS_GOSTERGE_GECE)
+    : (p.ek_ders_gostergesi ?? EK_DERS_GOSTERGE_GUNDUZ);
+  return round2(gosterge * aylikKatsayi);
 }
 
-/** Haftalık ek ders saatlerinden aylık brüt ek ders ücreti. */
+/** Haftalık gündüz ve gece / hafta sonu saatlerinden aylık brüt ek ders ücreti. */
 export function ekDersBrut(p, aylikKatsayi, gunduzHaftalik, geceHaftalik) {
-  const hafta = p.aylik_hafta_sayisi;
+  const hafta = p.aylik_hafta_sayisi ?? 4;
   return round2(gunduzHaftalik * hafta * ekDersUnit(p, aylikKatsayi, false) + geceHaftalik * hafta * ekDersUnit(p, aylikKatsayi, true));
 }

@@ -40,6 +40,7 @@ test.describe(`Rehber: ${SLUG}`, () => {
     const data = JSON.parse(raw || '{}');
     const faq = data['@graph'].find((n: { '@type': string }) => n['@type'] === 'FAQPage');
     expect(faq.mainEntity.length).toBeGreaterThanOrEqual(7);
+    expect(faq.mainEntity.length).toBe(await page.locator('details').count());
   });
 
   test('reklam alanı adları, Article JSON-LD ve rakamlar araç parametreleriyle tutarlı', async ({ page }) => {
@@ -53,6 +54,9 @@ test.describe(`Rehber: ${SLUG}`, () => {
     const res = await page.request.get('/ek-ders-ucreti-hesapla/parametreler.json');
     expect(res.status()).toBe(200);
     const p = await res.json();
+    // 657 sayılı Kanun md. 176: gündüz 140, 18.00 sonrası / hafta sonu / tatil 150 gösterge.
+    expect(p.ek_ders_gostergesi).toBe(140);
+    expect(p.ek_ders_gostergesi_gece).toBe(150);
     const fmt = (x: number) => x.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const text = await page.locator('main').innerText();
     for (const d of Object.values(p.donemler) as { aylik_katsayi: number }[]) {
@@ -63,9 +67,11 @@ test.describe(`Rehber: ${SLUG}`, () => {
     expect(text).toContain(`binde ${String(p.damga_vergisi_orani * 10).replace('.', ',')}`);
 
     // Örnek hesaplar aracın formülüyle (tool.js compute) yeniden hesaplanır ve metindeki tutarlarla karşılaştırılır.
+    // Gece birim ücreti gösterge farkından gelir (150 × katsayı); aracın artış oranı aynı sonucu kuruşuna kadar vermeli.
     const calc = (coef: number, day: number, night: number, weeks: number, taxRate: number) => {
       const dayU = p.ek_ders_gostergesi * coef;
-      const nightU = dayU * (1 + p.gece_artis_orani / 100);
+      const nightU = p.ek_ders_gostergesi_gece * coef;
+      expect(fmt(dayU * (1 + p.gece_artis_orani / 100))).toBe(fmt(nightU));
       const gross = day * weeks * dayU + night * weeks * nightU;
       const tax = (gross * taxRate) / 100;
       const stamp = (gross * p.damga_vergisi_orani) / 100;
@@ -92,6 +98,25 @@ test.describe(`Rehber: ${SLUG}`, () => {
     // Gece artışı %25 değil, 150/140 oranıdır.
     expect(p.ek_ders_gostergesi * (1 + p.gece_artis_orani / 100)).toBeCloseTo(p.ek_ders_gostergesi_gece, 6);
     expect(text).toContain('yüzde 7,14');
+    // Yüzde 25'lik yanlış varsayımla bulunan tutar yalnızca karşılaştırma için geçer; doğru gece birim ücreti 150 × katsayıdır.
+    expect(text).toContain(`${fmt(p.ek_ders_gostergesi * tem * 1.25)} TL`);
+
+    // Öğretmen maaşı aracı da gece/hafta sonu dersini 150 göstergeyle hesaplamalı (rehber bunu söylüyor).
+    const op = await (await page.request.get('/ogretmen-maas-hesapla/parametreler.json')).json();
+    const units = await page.evaluate(async ({ params, coefs }) => {
+      const m = await import('/memur-maas-hesapla/calc.js');
+      return coefs.map((c: number) => [m.ekDersUnit(params, c, false), m.ekDersUnit(params, c, true)]);
+    }, { params: op, coefs: [tem, oca] });
+    const r2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+    expect(units).toEqual([tem, oca].map((c) => [r2(140 * c), r2(150 * c)]));
+    expect(text).toContain('Bu araç da gece ve hafta sonu saatlerini 150 göstergeyle hesaplar');
+    expect(text).not.toContain('ayrı bir artış oranı parametresiyle');
+
+    // Katsayılar bu kontrolde resmî genelgeyle yeniden doğrulanmadı: sayfada görünür yaklaşıklık notu bulunmalı.
+    const note = page.locator('.rh-note', { hasText: 'Katsayı notu' });
+    await expect(note).toBeVisible();
+    await expect(note).toContainText('yaklaşık');
+    await expect(note).toContainText('657 sayılı Kanun');
   });
 
   test('360px genişlikte yatay taşma yok', async ({ page }) => {
