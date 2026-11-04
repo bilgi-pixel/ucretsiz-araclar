@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Çizgi Bağla Oyna – Ücretsiz Online Çizgi Bağla (kurulumsuz)</title>
+  <meta name="description" content="Çizgi Bağla oyna: aynı renkli noktaları kesişmeyen yollarla birleştir, tüm ızgarayı doldur. 5×5'ten 9×9'a 75 tek çözümlü bulmaca, ipucu, klavye desteği. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/cizgi-bagla/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. Hücre boyutu game.js'ten (--cell) gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 48px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); border: 0; border-radius: 0; display: flex; flex-direction: column; justify-content: center; padding: 16px; }
+    .cb-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 560px; margin: 0 auto 12px; }
+    .cb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .cb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .cb-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 560px; margin: 0 auto 12px; }
+    .cb-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .cb-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .cb-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.05rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 420px) { .cb-stat strong { font-size: .92rem; } .game-box { padding: 12px 10px; } }
+
+    .cb-wrap { max-width: 100%; overflow-x: auto; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; }
+    .cb-board { --n: 5; --cell: 48px; position: relative; box-sizing: content-box; width: calc(var(--n) * var(--cell)); height: calc(var(--n) * var(--cell)); margin: 0 auto; border: 2px solid var(--ba-border-hover); border-radius: 6px; background: var(--ba-surface); }
+    .cb-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+    .cb-gridline { fill: none; stroke: var(--ba-border); stroke-width: 1; }
+    .cb-tint rect { opacity: .22; }
+    .cb-board.won .cb-tint rect { opacity: .38; }
+    .cb-lines polyline { fill: none; stroke-width: .34; stroke-linecap: round; stroke-linejoin: round; }
+    .cb-lines polyline.is-hint { stroke-dasharray: .55 .14; }
+    /* İnce kontur: açık renkli yol ve noktalar her iki temada da zeminden en az 3:1 ayrılır */
+    .cb-lines polyline.cb-case { stroke: var(--ba-text); stroke-opacity: .5; stroke-width: .42; }
+    .cb-dot { stroke: var(--ba-text); stroke-opacity: .5; stroke-width: .04; }
+    .cb-halo { opacity: 0; }
+    .cb-ends g.is-on .cb-halo { opacity: .32; }
+    .cb-letter { font-family: var(--ba-mono); font-weight: 700; pointer-events: none; }
+    .cb-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), var(--cell)); grid-template-rows: repeat(var(--n), var(--cell)); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+    .cb-row { display: contents; }
+    .cb-cell { min-width: 0; min-height: 0; cursor: pointer; outline: none; border-radius: 4px; }
+    .cb-cell:focus-visible { box-shadow: inset 0 0 0 3px var(--ba-text); }
+    .cb-cell.is-head { box-shadow: inset 0 0 0 3px var(--ba-text), inset 0 0 0 6px var(--ba-surface); }
+    .cb-board.won .cb-cell { cursor: default; }
+
+    .cb-msg { max-width: 560px; margin: 12px auto 0; min-height: 1.5em; font-size: .92rem; color: var(--ba-text-2); text-align: center; overflow-wrap: anywhere; }
+    .cb-result { max-width: 560px; margin: 12px auto 0; padding: 14px 16px; border: 1px solid var(--ba-success); background: var(--ba-success-soft); border-radius: var(--ba-radius); text-align: center; }
+    .cb-result strong { display: block; font-size: 1.1rem; color: var(--ba-text); margin-bottom: 4px; }
+    .cb-result p { margin: 0 0 10px; color: var(--ba-text); font-size: .95rem; overflow-wrap: anywhere; }
+    .game-box .ba-actions { justify-content: center; }
+
+    .cb-levels { max-width: 560px; margin: 16px auto 0; padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .cb-levels-title { margin: 0 0 10px; font-size: 1rem; }
+    .cb-levels-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+    .cb-levels-head .ba-field { flex: 1 1 170px; margin: 0; min-width: 0; }
+    .cb-nav { display: flex; gap: 8px; flex: 1 1 200px; }
+    .cb-nav .ba-btn { flex: 1; min-height: 44px; padding: 6px 12px; }
+    .cb-lv-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+    .cb-lv { min-height: 44px; min-width: 0; font: inherit; font-family: var(--ba-mono); font-weight: 600; border: 1px solid var(--ba-border-hover); background: var(--ba-surface); color: var(--ba-text); border-radius: var(--ba-radius-sm); cursor: pointer; touch-action: manipulation; }
+    .cb-lv:hover { border-color: var(--ba-primary); }
+    .cb-lv.is-solved { background: var(--ba-success-soft); border-color: var(--ba-success); }
+    .cb-lv.is-solved::after { content: " ✓"; color: var(--ba-success); }
+    .cb-lv[aria-current="true"] { border-color: var(--ba-primary); box-shadow: 0 0 0 2px var(--ba-primary) inset; }
+    .cb-progress { margin: 10px 0 0; font-size: .88rem; color: var(--ba-text-muted); overflow-wrap: anywhere; }
+    .cb-keys { max-width: 560px; margin: 14px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; overflow-wrap: anywhere; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-content kbd, .cb-keys kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Çizgi Bağla – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz renk bağlama bulmacası: aynı renkli noktaları kesişmeyen yollarla birleştirip tüm ızgarayı doldurun. 5×5'ten 9×9'a 75 tek çözümlü bulmaca, ipucu, klavye desteği ve kayıtlı ilerleme.","applicationCategory":"Game","genre":["Puzzle","Mantık bulmacası"],"playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/cizgi-bagla/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Çizgi Bağla nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Izgaradaki her renkten iki nokta vardır. Bir noktadan başlayıp parmağınızı ya da farenizi sürükleyerek aynı renkteki diğer noktaya kadar bir yol çizersiniz. Yollar yalnızca yatay ve dikey ilerler, birbirini kesemez. Bütün renkler bağlandığında ve boş hücre kalmadığında seviye tamamlanır."}},
+  {"@type":"Question","name":"Yollar çapraz gidebilir mi, birbirini kesebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Yollar hücreden hücreye yalnızca yukarı, aşağı, sağa ve sola gider; çapraz adım yoktur. Bir yolu başka bir rengin yolunun üzerinden geçirirseniz o yol kesişme noktasından kısalır; kendi yolunuzu geri çekerseniz kesilen yol eski hâline döner. Başka bir rengin uç noktasının üzerinden ise hiç geçilemez."}},
+  {"@type":"Question","name":"Tüm renkleri bağladım ama seviye bitmedi, neden?","acceptedAnswer":{"@type":"Answer","text":"Seviyenin bitmesi için iki şart vardır: her renk çifti bağlı olmalı ve ızgarada hiç boş hücre kalmamalıdır. Üstteki Doluluk göstergesi yüzde yüze ulaşmadıysa bazı hücreler boştur. Yollardan birini boş hücrelerin içinden dolaşacak şekilde yeniden çizin; her bulmacanın tam olarak bir doğru çözümü vardır."}},
+  {"@type":"Question","name":"Her bulmacanın tek çözümü var mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. 75 bulmacanın her biri, tüm olası yol çizimlerini tek tek sayan bir çözücüyle denetlendi ve hepsinin tam olarak bir çözümü olduğu doğrulandı. Bu denetim, yolların kendi yanından geçtiği alışılmadık çizimleri de kapsar. Bu yüzden tahmin yürütmek zorunda kalmadan, mantık yürüterek çözebilirsiniz."}},
+  {"@type":"Question","name":"İpucu düğmesi ne yapar?","acceptedAnswer":{"@type":"Answer","text":"İpucu, henüz doğru çizilmemiş bir rengin yolunu çözümdeki hâliyle tahtaya çizer. Önce bağlanmamış renkler seçilir. Gösterilen yolla çakışan başka yollar varsa o noktadan kesilir. Kullandığınız ipuçları sayılır ve sonuç ekranında gösterilir; ipucu kullanılan seviye kusursuz sayılmaz."}},
+  {"@type":"Question","name":"Hamle sayısı ve kusursuz çözüm ne demek?","acceptedAnswer":{"@type":"Answer","text":"Bir rengi çizmeye başladığınızda, son çizdiğiniz renkten farklıysa hamle sayacı bir artar. Aynı rengi düzeltmek yeni hamle sayılmaz. Her rengi tek seferde, yani renk sayısı kadar hamleyle ve ipucusuz bitirirseniz çözümünüz kusursuz sayılır."}},
+  {"@type":"Question","name":"Klavyeyle nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Tahtaya Tab tuşuyla gelin ve ok tuşlarıyla hücreler arasında gezinin. Bir uç noktasının ya da var olan bir yolun üzerindeyken Enter veya Boşluk tuşuna basınca çizim başlar; ok tuşları yolu uzatır, Backspace bir adım geri alır, Enter çizimi bitirir, Esc iptal eder. Çizim modunda değilken Backspace ya da Delete, imlecin bulunduğu rengin yolunu siler."}},
+  {"@type":"Question","name":"İlerlemem kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Çözdüğünüz seviyeler, en az hamle sayınız ve yarım bıraktığınız bulmacanın yolları tarayıcınızın yerel depolama alanında (localStorage) saklanır. Sayfayı yeniden açtığınızda kaldığınız yerden devam edersiniz. Bu bilgiler hiçbir sunucuya gönderilmez ve tarayıcı verilerini silerseniz kaybolur."}},
+  {"@type":"Question","name":"Telefonda ya da internet olmadan oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun 360 piksel genişliğindeki telefon ekranlarına sığar ve parmakla sürükleyerek oynanır. Sayfa bir kez yüklendikten sonra bağlantı gerekmez; siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır. Kayıt, indirme ya da ödeme yoktur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Çizgi Bağla Oyna</span> – Ücretsiz Online Renk Bağlama Bulmacası</h1>
+      <p class="lead">Aynı renkli noktaları birbirini kesmeyen yollarla birleştirin ve ızgarada tek bir boş hücre bırakmayın. 5×5'ten 9×9'a kolaydan zora sıralanmış 75 bulmaca, her birinin tek çözümü, ipucu, geri alma ve tam klavye desteği; kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <div class="cb-top"><h2 id="h-oyun" class="cb-title">Çizgi Bağla</h2><button type="button" class="ba-icon-btn" id="btn-full" aria-pressed="false" hidden>Tam ekran</button></div>
+      <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+      <div class="cb-hud" role="group" aria-label="Oyun bilgileri">
+        <div class="cb-stat"><span>Seviye</span><strong id="st-level">–</strong></div>
+        <div class="cb-stat"><span>Bağlı</span><strong id="st-flows">0/0</strong></div>
+        <div class="cb-stat"><span>Doluluk</span><strong id="st-fill">%0</strong></div>
+        <div class="cb-stat"><span>Hamle</span><strong id="st-moves">0</strong></div>
+      </div>
+
+      <div class="cb-wrap" id="board-wrap">
+        <div class="cb-board" id="board" data-state="hazirlaniyor">
+          <svg class="cb-svg" id="board-svg" aria-hidden="true" focusable="false" preserveAspectRatio="none"></svg>
+          <div class="cb-grid" id="board-grid" role="grid" aria-label="Çizgi Bağla tahtası" aria-describedby="keys-help"></div>
+        </div>
+      </div>
+
+      <p id="msg" class="cb-msg" role="status" aria-live="polite">Bulmaca hazırlanıyor…</p>
+
+      <div class="cb-result" id="result" hidden>
+        <strong id="result-title">Tebrikler!</strong>
+        <p id="result-text"></p>
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-next">Sonraki seviye</button>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn" id="btn-hint">İpucu: bir yolu göster</button>
+        <button type="button" class="ba-btn" id="btn-undo">Geri al</button>
+        <button type="button" class="ba-btn" id="btn-reset">Temizle</button>
+      </div>
+
+      <div class="cb-levels" role="group" aria-labelledby="h-seviye">
+        <h3 id="h-seviye" class="cb-levels-title">Seviye seçimi</h3>
+        <div class="cb-levels-head">
+          <div class="ba-field"><label for="opt-size">Izgara boyutu</label>
+            <select id="opt-size"><option value="5">5×5 (kolay)</option><option value="6">6×6</option><option value="7">7×7 (orta)</option><option value="8">8×8</option><option value="9">9×9 (zor)</option></select></div>
+          <div class="cb-nav"><button type="button" class="ba-btn" id="btn-prev">‹ Önceki</button><button type="button" class="ba-btn" id="btn-fwd">Sonraki ›</button></div>
+        </div>
+        <div class="cb-lv-grid" id="levels" role="group" aria-label="Bu boyuttaki seviyeler"></div>
+        <p class="cb-progress" id="progress-text"></p>
+      </div>
+
+      <p class="cb-keys" id="keys-help">Fare ya da parmak: bir renkli noktadan başlayıp sürükleyin; var olan bir yola dokunursanız o noktadan devam edersiniz. Klavye: ok tuşlarıyla gezinin, uç noktasında ya da yolda <kbd>Enter</kbd> veya <kbd>Boşluk</kbd> ile çizime başlayın, ok tuşlarıyla yolu uzatın, <kbd>Backspace</kbd> bir adım geri alır, <kbd>Enter</kbd> bitirir, <kbd>Esc</kbd> iptal eder. İlerleme bu tarayıcıda otomatik kaydedilir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-cizgi-bagla-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Çizgi Bağla nedir?</h2>
+      <p>Çizgi Bağla, kare bir ızgaraya dağılmış renkli nokta çiftlerini birbirine bağladığınız bir mantık bulmacasıdır. Her renkten tam iki nokta vardır; göreviniz, her çifti hücreden hücreye ilerleyen bir yolla birleştirmek. Kulağa basit gelir, ama iki kural işi zorlaştırır: yollar birbirini kesemez ve bulmaca ancak ızgarada hiç boş hücre kalmadığında biter. Yani yalnızca noktaları bağlamak yetmez; bütün yolları, tahtayı tam olarak kaplayacak şekilde yerleştirmeniz gerekir.</p>
+      <p>Bu sayfadaki Çizgi Bağla oyununu hiçbir şey indirmeden, üye olmadan ve e-posta adresi vermeden doğrudan tarayıcınızda oynayabilirsiniz. Oyun tamamen kendi cihazınızda çalışır; çözdüğünüz seviyeler ve yarım bıraktığınız bulmaca yalnızca tarayıcınızın yerel depolama alanında durur. Oyun alanında reklam yoktur; sayfadaki reklamlar oyun kutusunun dışında, içerik aralarında yer alır.</p>
+
+      <h2>Çizgi Bağla nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Bir boyut ve seviye seçin.</strong> İlk kez oynuyorsanız 5×5 ızgaranın birinci seviyesiyle başlayın. Seviye düğmeleri her boyutta 1'den 15'e kadar kolaydan zora sıralıdır; çözdükleriniz yeşil ve onay işaretli görünür.</li>
+        <li><strong>Bir noktadan çizmeye başlayın.</strong> Renkli bir noktaya basın ya da dokunun ve basılı tutarak komşu hücrelere sürükleyin. Yol arkanızda o rengin çizgisi olarak belirir ve geçtiği hücreler hafifçe o renge boyanır.</li>
+        <li><strong>Aynı renkteki ikinci noktaya ulaşın.</strong> Yol, eş noktaya değdiği anda bağlanır; noktaların çevresinde soluk bir hale belirir ve üstteki Bağlı sayacı artar.</li>
+        <li><strong>Boş hücre bırakmayın.</strong> Doluluk göstergesi, uç noktaları dışındaki hücrelerin yüzde kaçının bir yolla kaplandığını gösterir. Bütün renkler bağlandığı hâlde gösterge yüzde yüz değilse bazı yolları boş bölgelerden dolaştırmanız gerekir.</li>
+        <li><strong>Seviyeyi tamamlayın.</strong> Tüm çiftler bağlanıp ızgara tamamen dolduğunda seviye biter. Sonuç kutusu hamle sayınızı gösterir; Sonraki seviye düğmesiyle devam edersiniz.</li>
+      </ol>
+
+      <h2>Kurallar</h2>
+      <ul>
+        <li>Her renk çifti tek bir kesintisiz yolla bağlanır; yol yalnızca yatay ve dikey ilerler, çapraz adım yoktur.</li>
+        <li>İki yol aynı hücreden geçemez ve birbirini kesemez. Başka bir rengin uç noktasının üzerinden hiç geçilemez.</li>
+        <li>Seviyenin bitmesi için bütün hücrelerin bir yolla kaplanması gerekir; tek bir boş kare bile kalmamalıdır.</li>
+        <li>Her bulmacanın tam olarak bir çözümü vardır. Doğru düşünürseniz tahmine gerek kalmadan o çözüme ulaşırsınız.</li>
+      </ul>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> Bir uç noktasına tıklayıp basılı tutarak sürükleyin. Var olan bir yolun ortasına tıklarsanız yol o noktadan kısalır ve oradan devam edersiniz. Kendi yolunuzun üzerine geri dönmek yolu geri sarar. Bir uç noktasına yeniden tıklamak o rengin yolunu sıfırdan çizmeye başlatır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızı bir noktaya koyup kaydırın. Tahtanın üzerinde sayfa kaymaz, böylece çizim kesilmez; sayfayı kaydırmak için tahtanın dışını kullanın. Hücreler dar ekranlarda da parmakla seçilebilecek büyüklükte kalır.</li>
+        <li><strong>Klavye:</strong> Tab ile tahtaya gelin, ok tuşlarıyla gezinin. Uç noktasında ya da bir yolun üzerindeyken Enter veya Boşluk çizimi başlatır; ardından ok tuşları yolu uzatır, Backspace bir adım geri alır, Enter bitirir, Esc iptal eder. Çizim modunda değilken Backspace ya da Delete, imlecin bulunduğu rengin yolunu siler. Home ve End satırın başına ve sonuna götürür.</li>
+        <li><strong>Düğmeler:</strong> İpucu bir yolu gösterir, Geri al son değişikliği geri getirir, Temizle tahtayı boşaltır. Tam ekran düğmesi oyun kutusunu ekranı kaplayacak şekilde büyütür; tam ekranda reklam görünmez.</li>
+      </ul>
+
+      <h2>Seviyeler ve ızgara boyutları</h2>
+      <p>Oyunda beş boyutta toplam 75 bulmaca vardır: 5×5, 6×6, 7×7, 8×8 ve 9×9 ızgaraların her birinde on beş seviye. Küçük ızgaralarda dört ya da beş renk çifti bulunur; 9×9 ızgaralarda bu sayı sekiz ile on arasında değişir. Aynı boyuttaki seviyeler, bir bilgisayar çözücüsünün bulmacayı çözerken denediği olasılık sayısına göre kolaydan zora sıralanmıştır. Bu ölçü insan için zorluğu birebir yansıtmasa da genel eğilimi iyi gösterir: ilk seviyelerde yollar neredeyse kendiliğinden ortaya çıkar, son seviyelerde ise uzun ve kıvrımlı yolları önceden planlamanız gerekir.</p>
+      <p>Bütün bulmacalar tek çözümlüdür. Her biri, olası tüm yol çizimlerini tek tek sayan bir çözücüyle denetlendi; denetim, bir yolun kendi yanından geçtiği alışılmadık çizimleri de kapsar. Sayfanın otomatik testleri de bu denetimi her seferinde yeniden yapar. Böylece "iki farklı doğru cevap" ya da şansa kalan bir durumla karşılaşmazsınız.</p>
+
+      <h2>İpucu, geri alma ve hamle sayacı</h2>
+      <p>Takıldığınızda İpucu düğmesi, henüz doğru çizilmemiş bir rengin yolunu çözümdeki hâliyle tahtaya çizer. Önce bağlanmamış renkler seçilir; gösterilen yolla çakışan başka yollar varsa o noktadan kesilir. İpucuyla çizilen yol kesik çizgiyle gösterilir ve siz o yolu değiştirene kadar böyle kalır. Kullandığınız ipuçları sayılır ve sonuç ekranında belirtilir.</p>
+      <p>Hamle sayacı, farklı bir rengi çizmeye başladığınızda bir artar; aynı rengi düzeltmek yeni hamle sayılmaz. Her rengi tek seferde, yani renk sayısı kadar hamleyle ve ipucusuz bitirirseniz çözümünüz kusursuz sayılır. Geri al düğmesi son altmış değişikliği tek tek geri getirir; Temizle ise tahtayı boşaltır ve hamle sayacını sıfırlar.</p>
+
+      <div class="ba-ad" data-slot="oyun-cizgi-bagla-b" aria-label="Reklam"></div>
+
+      <h2>Çözüm stratejileri</h2>
+      <ul>
+        <li><strong>Kenar ve köşelerden başlayın.</strong> Kenara ya da köşeye yakın uç noktalarının gidebileceği yön azdır. Bu yollar çoğu zaman kenar boyunca ilerler ve diğer renklere yer açar.</li>
+        <li><strong>Yan yana duran çiftleri hemen bağlamayın.</strong> İki eş nokta birbirine yakın diye en kısa yolu çizmek cazip gelir, ama boş hücre bırakmamak için o yolun bir bölgeyi dolaşması gerekebilir.</li>
+        <li><strong>Bir rengin önünü kesmeyin.</strong> Çizdiğiniz yol başka bir çifti iki ayrı bölgeye ayırıyorsa o çift bir daha bağlanamaz. Her yoldan sonra kalan renklerin hâlâ birbirine ulaşabildiğini kontrol edin.</li>
+        <li><strong>Çıkmaz hücrelere dikkat edin.</strong> Üç yanı kapalı bir boş hücreye yol yalnızca bir yönden girebilir ve çıkamaz. Böyle bir hücre oluştuysa son çizdiğiniz yolu değiştirmeniz gerekir.</li>
+        <li><strong>Uzun yolları duvara yaslayın.</strong> Uzun bir yolun kenara ya da başka bir yola paralel ilerlemesi, ortada küçük ve doldurulamaz boşluklar kalmasını önler.</li>
+        <li><strong>Zorunlu hamleleri arayın.</strong> Bir uç noktasının yalnızca tek bir boş komşusu varsa yol oradan geçmek zorundadır. Bu tür zorunlu adımları zincir hâlinde izlemek, büyük ızgaraları bile hızla çözer.</li>
+        <li><strong>Tek çözüm bilgisini kullanın.</strong> İki yerleşim de işe yarıyor gibi görünüyorsa biri mutlaka başka bir yerde çıkmaza yol açar. Bulmacanın tek çözümü olduğunu bilmek, hangi seçeneğin yanlış olduğunu bulmanıza yardım eder.</li>
+      </ul>
+
+      <h2>Bağlama bulmacalarının kısa tarihi</h2>
+      <p>Bir ızgaradaki eş işaretleri birbirini kesmeyen çizgilerle birleştirme fikri yeni değildir. Benzer bulmacalar 19. yüzyılın sonlarında gazetelerin bulmaca köşelerinde görülmeye başladı. 20. yüzyılın sonlarında Japon bulmaca dergileri, eş sayıları birleştirdiğiniz ve kalem kâğıtla çözülen bir sürümü yaygınlaştırdı. Akıllı telefonların yaygınlaşmasıyla birlikte sayıların yerini renkler aldı; parmakla çizilen renkli yollar bu bulmaca türünü milyonlarca oyuncuya tanıttı.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı. Hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor; bu sayede çok hızlı yükleniyor ve çevrimdışı da çalışabiliyor. Bulmacalar özgündür: kısa yollar, tek çözüm korunarak adım adım birleştirildi ve her sonuç çözücüyle doğrulandı.</p>
+
+      <h2>Neden Bilişim Ajans Çizgi Bağla?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, ilk noktaya dokunun; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Adil bulmacalar.</strong> 75 bulmacanın tamamı tek çözümlüdür ve bu, otomatik testlerle sürekli denetlenir.</li>
+        <li><strong>Herkes için erişilebilir.</strong> Uç noktalarında renklerin yanında harfler de yazar; renkleri ayırt etmekte zorlananlar harflere bakarak oynayabilir. Oyun yalnızca klavyeyle de baştan sona oynanır ve ekran okuyucular her hücrenin durumunu okur.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksel genişliğindeki telefonlarda bile 9×9 ızgara sığar; dokunmatik ekranda çizerken sayfa kaymaz.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; tahtanın ve düğmelerin yanında asla görünmez.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Çizgi Bağla nasıl oynanır?</summary><p>Izgaradaki her renkten iki nokta vardır. Bir noktadan başlayıp parmağınızı ya da farenizi sürükleyerek aynı renkteki diğer noktaya kadar bir yol çizersiniz. Yollar yalnızca yatay ve dikey ilerler, birbirini kesemez. Bütün renkler bağlandığında ve boş hücre kalmadığında seviye tamamlanır.</p></details>
+        <details><summary>Yollar çapraz gidebilir mi, birbirini kesebilir mi?</summary><p>Hayır. Yollar hücreden hücreye yalnızca yukarı, aşağı, sağa ve sola gider; çapraz adım yoktur. Bir yolu başka bir rengin yolunun üzerinden geçirirseniz o yol kesişme noktasından kısalır; kendi yolunuzu geri çekerseniz kesilen yol eski hâline döner. Başka bir rengin uç noktasının üzerinden ise hiç geçilemez.</p></details>
+        <details><summary>Tüm renkleri bağladım ama seviye bitmedi, neden?</summary><p>Seviyenin bitmesi için iki şart vardır: her renk çifti bağlı olmalı ve ızgarada hiç boş hücre kalmamalıdır. Üstteki Doluluk göstergesi yüzde yüze ulaşmadıysa bazı hücreler boştur. Yollardan birini boş hücrelerin içinden dolaşacak şekilde yeniden çizin; her bulmacanın tam olarak bir doğru çözümü vardır.</p></details>
+        <details><summary>Her bulmacanın tek çözümü var mı?</summary><p>Evet. 75 bulmacanın her biri, tüm olası yol çizimlerini tek tek sayan bir çözücüyle denetlendi ve hepsinin tam olarak bir çözümü olduğu doğrulandı. Bu denetim, yolların kendi yanından geçtiği alışılmadık çizimleri de kapsar. Bu yüzden tahmin yürütmek zorunda kalmadan, mantık yürüterek çözebilirsiniz.</p></details>
+        <details><summary>İpucu düğmesi ne yapar?</summary><p>İpucu, henüz doğru çizilmemiş bir rengin yolunu çözümdeki hâliyle tahtaya çizer. Önce bağlanmamış renkler seçilir. Gösterilen yolla çakışan başka yollar varsa o noktadan kesilir. Kullandığınız ipuçları sayılır ve sonuç ekranında gösterilir; ipucu kullanılan seviye kusursuz sayılmaz.</p></details>
+        <details><summary>Hamle sayısı ve kusursuz çözüm ne demek?</summary><p>Bir rengi çizmeye başladığınızda, son çizdiğiniz renkten farklıysa hamle sayacı bir artar. Aynı rengi düzeltmek yeni hamle sayılmaz. Her rengi tek seferde, yani renk sayısı kadar hamleyle ve ipucusuz bitirirseniz çözümünüz kusursuz sayılır.</p></details>
+        <details><summary>Klavyeyle nasıl oynarım?</summary><p>Tahtaya Tab tuşuyla gelin ve ok tuşlarıyla hücreler arasında gezinin. Bir uç noktasının ya da var olan bir yolun üzerindeyken Enter veya Boşluk tuşuna basınca çizim başlar; ok tuşları yolu uzatır, Backspace bir adım geri alır, Enter çizimi bitirir, Esc iptal eder. Çizim modunda değilken Backspace ya da Delete, imlecin bulunduğu rengin yolunu siler.</p></details>
+        <details><summary>İlerlemem kaydediliyor mu?</summary><p>Evet. Çözdüğünüz seviyeler, en az hamle sayınız ve yarım bıraktığınız bulmacanın yolları tarayıcınızın yerel depolama alanında (localStorage) saklanır. Sayfayı yeniden açtığınızda kaldığınız yerden devam edersiniz. Bu bilgiler hiçbir sunucuya gönderilmez ve tarayıcı verilerini silerseniz kaybolur.</p></details>
+        <details><summary>Telefonda ya da internet olmadan oynanır mı?</summary><p>Evet. Oyun 360 piksel genişliğindeki telefon ekranlarına sığar ve parmakla sürükleyerek oynanır. Sayfa bir kez yüklendikten sonra bağlantı gerekmez; siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır. Kayıt, indirme ya da ödeme yoktur.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz ve hiçbir dosya yüklemez. Çözdüğünüz seviyeler ve yarım kalan bulmacanız yalnızca tarayıcınızın yerel depolama alanında durur; bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../nonogram/">Nonogram</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../labirent/">Labirent</a></li>
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-cizgi-bagla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

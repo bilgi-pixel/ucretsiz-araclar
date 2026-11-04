@@ -35,3 +35,5 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | chess.js | 1.4.0 | BSD-2-Clause | Satranç |
 | flag-icons | 7.6.0 | MIT | Bayrak Bil |
 | lichess-puzzles | 2026 | CC0-1.0 | Satranç Bulmacaları |
+| js-yaml | 4.3.2 | MIT | JSON YAML Dönüştürücü |
+| sql-formatter | 15.9.0 | MIT | SQL Biçimlendirici |

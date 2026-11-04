@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>JSON YAML Dönüştürücü – JSON'dan YAML'a, YAML'dan JSON'a Çevir (Ücretsiz)</title>
+  <meta name="description" content="JSON'u YAML'a, YAML'ı JSON'a tarayıcınızda çevirin. Çoklu belge (---), girinti, anahtar sıralama ve küçültme seçenekleri; hatalar satır numarasıyla Türkçe. Ücretsiz, kayıt yok, veri yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/json-yaml-donustur/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/json-yaml-donustur/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/json-yaml-donustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .jy-area .jy-lbl { display: block; font-weight: 600; margin: 16px 0 6px; }
+    .jy-area textarea { width: 100%; min-height: 240px; font-family: var(--ba-mono); font-size: .88rem; line-height: 1.5; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: inherit; resize: vertical; tab-size: 2; }
+    .jy-area textarea:focus { border-color: var(--ba-primary); }
+    .jy-modes { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
+    .jy-modes legend { font-weight: 600; padding: 0; margin-bottom: 8px; }
+    .jy-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); overflow: hidden; background: var(--ba-surface); }
+    .jy-seg label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; cursor: pointer; font-weight: 600; }
+    .jy-seg input { width: 18px; height: 18px; margin: 0; accent-color: var(--ba-primary); }
+    .jy-seg label:has(input:checked) { background: var(--ba-primary-soft); color: var(--ba-primary); }
+    .jy-seg label:has(input:focus-visible) { outline: 2px solid var(--ba-primary); outline-offset: -3px; }
+    #btn-swap { min-height: 44px; }
+    .jy-drop { margin-top: 12px; }
+    #file-name { display: block; min-height: 1.2em; margin-top: 6px; color: var(--ba-text-muted); font-size: .9rem; overflow-wrap: anywhere; }
+    .jy-grp { display: contents; }
+    .jy-check label { display: flex; align-items: center; gap: 2px; min-height: 44px; font-weight: 600; cursor: pointer; }
+    .jy-msg { display: none; margin-top: 12px; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); font-size: .93rem; overflow-wrap: anywhere; }
+    .jy-msg.is-active { display: block; }
+    .jy-msg.jy-warn { border-left-color: #a35a00; }
+    .ba-error { overflow-wrap: anywhere; }
+    .jy-snippet { margin: 8px 0 0; padding: 10px 12px; max-width: 100%; overflow-x: auto; white-space: pre; font-family: var(--ba-mono); font-size: .82rem; line-height: 1.5; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); color: var(--ba-text); }
+    .jy-notes { margin: 8px 0 0; padding-left: 20px; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .jy-notes li { margin: 2px 0; }
+    #copied { color: var(--ba-success); font-weight: 600; font-size: .9rem; }
+    .jy-out-label { font-weight: 600; margin: 16px 0 6px; color: var(--ba-text); }
+    .jy-out { margin: 0; padding: 12px; min-height: 120px; max-height: 480px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--ba-mono); font-size: .86rem; line-height: 1.55; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); color: var(--ba-text); tab-size: 2; }
+    .jy-out:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    .jy-spec { font-size: .85rem; color: var(--ba-text-muted); margin: 16px 0 0; overflow-wrap: anywhere; }
+    .ba-content pre { max-width: 100%; overflow-x: auto; padding: 12px 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .86rem; line-height: 1.55; }
+    .ba-content pre code { background: none; padding: 0; }
+    .ba-content code { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"JSON YAML Dönüştürücü – Bilişim Ajans","applicationCategory":"DeveloperApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/json-yaml-donustur/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"JSON'u YAML'a çevirince veri kaybı olur mu?","acceptedAnswer":{"@type":"Answer","text":"Değerler korunur. JSON'daki her değerin YAML'da birebir karşılığı vardır; araç yanlış yorumlanabilecek metinleri ('yes', '0123', 'null', '2026-01-01' gibi) tırnak içine alarak yazar, böylece JSON → YAML → JSON gidiş-dönüşünde aynı veri elde edilir. Girinti, sayıların yazımı (1.0 yerine 1 gibi) ve yalnızca rakamdan oluşan anahtarların (\"1\", \"2\" gibi) sırası değişebilir. Tarayıcının sınırını aşan çok büyük sayılar ve aynı nesnede iki kez yazılmış anahtarlar istisnadır; araç bu durumlarda sonuç kutusunda ayrıca uyarır."}},{"@type":"Question","name":"YAML'daki yorumlar JSON'a aktarılır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. JSON'da yorum yazılamadığı için # ile başlayan açıklamalar dönüşümde düşer. Yorumları korumak istiyorsanız özgün YAML dosyanızı saklayın; ters yönde de yorum üretilmez."}},{"@type":"Question","name":"\"yes\" ve \"no\" neden true/false olmadı?","acceptedAnswer":{"@type":"Answer","text":"YAML 1.2'de yalnızca true ve false (True, TRUE, False, FALSE yazımlarıyla) mantıksal değerdir; yes, no, on ve off sıradan metindir. Eski YAML 1.1 araçları bunları mantıksal sayıyordu. Mantıksal değer istiyorsanız YAML'da true ya da false yazın."}},{"@type":"Question","name":"Birden çok belge içeren YAML nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"--- ile ayrılmış her belge JSON dizisinin bir öğesi olur; örneğin 'a: 1', '---', 'b: 2' girişi [{\"a\":1},{\"b\":2}] verir. Ters yönde 'Kök diziyi ayrı belgelere böl' seçeneğini işaretlerseniz JSON dizisinin her öğesi ayrı bir YAML belgesine yazılır."}},{"@type":"Question","name":"Dönüştürdüğüm dosya bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Metin ve dosyalar yalnızca tarayıcınızın belleğinde işlenir; sayfada yükleme, kayıt ya da izleme kodu yoktur. Sayfayı kapattığınızda veriler silinir."}},{"@type":"Question","name":"Hata mesajındaki satır numarası neye göre?","acceptedAnswer":{"@type":"Answer","text":"Satır ve sütun 1'den başlar ve metin kutusundaki konuma karşılık gelir; imleç de oraya taşınır. YAML'da sorun çoğu zaman bir önceki satırın girintisinden kaynaklandığı için gösterilen alıntıda üstteki satırlara da bakın."}},{"@type":"Question","name":"Baştaki sıfırım neden kayboldu?","acceptedAnswer":{"@type":"Answer","text":"YAML 1.2'de tırnaksız 0123 onluk bir tam sayıdır ve 123 olarak okunur. Posta kodu, telefon ya da sicil numarası gibi baştaki sıfırın önemli olduğu değerleri YAML'da tırnak içinde (\"0123\") yazın."}},{"@type":"Question","name":"Kubernetes ya da Docker Compose dosyalarıyla çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet, bunlar standart YAML'dır; çoklu belgeli Kubernetes manifestleri JSON dizisine çevrilir. Yalnızca belirli araçlara özgü özel etiketler (bulut altyapı şablonlarındaki !Ref, !Sub ya da Compose dosyalarındaki !reset, !override gibi) güvenlik nedeniyle reddedilir; bulut şablonlarında bunların yerine uzun biçimleri (Ref:, Fn::Sub:) kullanabilirsiniz."}},{"@type":"Question","name":"Telefonda ya da internetsiz çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sayfa telefonda da çalışır. Tarayıcının 'Uygulama olarak yükle' seçeneğiyle cihazınıza ekleyebilir, bir kez açtıktan sonra internet bağlantısı olmadan da kullanabilirsiniz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya</a></li></ol>
+      <h1><span class="ba-grad">JSON YAML Dönüştürücü</span> – JSON'dan YAML'a, YAML'dan JSON'a</h1>
+      <p class="lead">JSON metnini okunaklı YAML'a, YAML yapılandırma dosyasını JSON'a tek tıkla çevirin. Çoklu belgeli YAML, Türkçe karakterler ve büyük dosyalar desteklenir; hata varsa satır ve sütunu gösterilir. Verileriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool jy-area" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">JSON YAML dönüştürme aracı</h2>
+      <fieldset class="jy-modes">
+        <legend>Dönüşüm yönü</legend>
+        <div class="jy-seg">
+          <label><input type="radio" name="mode" id="mode-j2y" value="json2yaml" checked> JSON → YAML</label>
+          <label><input type="radio" name="mode" id="mode-y2j" value="yaml2json"> YAML → JSON</label>
+        </div>
+        <button id="btn-swap" class="ba-btn" type="button" title="Çıktıyı girişe taşır ve ters yönde dönüştürür"><span aria-hidden="true">⇄</span> Yönü değiştir</button>
+      </fieldset>
+
+      <label id="in-label" class="jy-lbl" for="input">JSON girişi</label>
+      <textarea id="input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="in-hint"></textarea>
+      <p id="in-hint" class="visually-hidden">Ctrl ve Enter tuşlarına birlikte basarak dönüştürebilirsiniz.</p>
+      <div id="drop" class="jy-drop" aria-label="JSON ya da YAML dosyası seçmek için tıklayın veya dosyayı buraya bırakın"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><strong>.json, .yaml ya da .yml dosyasını buraya bırakın</strong><small>veya seçmek için tıklayın · dosya bilgisayarınızda okunur</small><span class="ba-btn">Dosya seç</span></div>
+      <span id="file-name" aria-live="polite"></span>
+      <div id="warning" class="jy-msg jy-warn" role="status"></div>
+
+      <div class="ba-options">
+        <div class="ba-field"><label for="opt-indent">Girinti</label>
+          <select id="opt-indent"><option value="2" selected>2 boşluk</option><option value="4">4 boşluk</option></select></div>
+        <div id="grp-yaml" class="jy-grp">
+          <div class="ba-field"><label for="opt-width">YAML satır genişliği</label>
+            <select id="opt-width"><option value="-1" selected>Kırma yok (tek satır)</option><option value="80">80 karakterde kır</option><option value="120">120 karakterde kır</option></select></div>
+          <div class="ba-field jy-check"><label><input type="checkbox" id="opt-sort"> Anahtarları alfabetik sırala</label></div>
+          <div class="ba-field jy-check"><label><input type="checkbox" id="opt-split"> Kök diziyi ayrı belgelere böl (---)</label></div>
+        </div>
+        <div id="grp-json" class="jy-grp" hidden>
+          <div class="ba-field jy-check"><label><input type="checkbox" id="opt-minify"> JSON çıktısını küçült (minify)</label></div>
+          <div class="ba-field jy-check"><label><input type="checkbox" id="opt-dates" checked> Tarihleri metin olarak koru</label></div>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button id="btn-convert" class="ba-btn ba-btn-primary" type="button">JSON'u YAML'a dönüştür</button>
+        <button id="btn-sample" class="ba-btn" type="button">Örnek yükle</button>
+        <button id="btn-clear" class="ba-btn" type="button">Temizle</button>
+      </div>
+
+      <div id="info" class="jy-msg" role="status"></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <pre id="error-snippet" class="jy-snippet" aria-label="Hatalı satır ve çevresi" hidden></pre>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+
+      <div id="result" class="ba-result" hidden>
+        <h3>Dönüşüm tamam</h3>
+        <p id="result-info" aria-live="polite"></p>
+        <ul id="result-notes" class="jy-notes" hidden></ul>
+        <div class="ba-actions">
+          <button id="btn-copy" class="ba-btn ba-btn-primary" type="button">Kopyala</button>
+          <button id="btn-download" class="ba-btn" type="button">YAML olarak indir (.yaml)</button>
+          <span id="copied" role="status"></span>
+        </div>
+        <p id="out-label" class="jy-out-label">YAML çıktısı</p>
+        <pre id="output" class="jy-out" tabindex="0" aria-labelledby="out-label"></pre>
+      </div>
+
+      <p class="jy-spec">Davranış YAML 1.2.2 (Core şema) ve RFC 8259 (JSON) belgelerine göre 04.11.2026 tarihinde doğrulandı. Kütüphane: js-yaml 4.3.2 (MIT), sitenin kendi sunucusundan yüklenir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="json-yaml-donustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>JSON ve YAML: aynı veri, iki farklı yazım</h2>
+      <p>JSON (JavaScript Object Notation) ve YAML (YAML Ain't Markup Language) aynı türden veriyi taşır: anahtar-değer eşlemeleri, listeler, metinler, sayılar, mantıksal değerler ve boş değer. Aradaki fark yazım biçimindedir. JSON süslü parantez, köşeli parantez, çift tırnak ve virgülle kesin bir yapı kurar; web servislerinin, tarayıcıların ve hemen her programlama dilinin ortak dilidir. YAML ise girintiye dayanır, çoğu zaman tırnak ve virgül istemez, yorum satırına izin verir; bu yüzden insanların elle düzenlediği yapılandırma dosyalarında tercih edilir. Docker Compose, Kubernetes manifestleri, GitHub Actions iş akışları, Ansible görevleri, OpenAPI belgeleri ve pek çok statik site üreticisinin ayar dosyası YAML ile yazılır.</p>
+      <p>Bir API yanıtını yapılandırma dosyasına taşımak, bir YAML ayarını JSON bekleyen bir programa vermek, iki biçimi yan yana karşılaştırmak ya da bir belgedeki girinti hatasını bulmak istediğinizde dönüştürücüye ihtiyaç duyarsınız. YAML 1.2 sürümünden beri JSON'un bir üst kümesi olarak tasarlanmıştır; yani geçerli JSON metinleri, aynı nesnede yinelenen anahtar gibi birkaç uç durum dışında, aynı zamanda geçerli YAML'dır. Tersi doğru değildir: YAML'daki yorumlar, takma adlar ve çoklu belgeler JSON'da doğrudan karşılık bulmaz. Bu sayfa iki yönde de dönüşümü tarayıcınızda, hesap açmadan ve dosyanızı hiçbir yere göndermeden yapar.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Dönüşüm yönünü seçin: "JSON → YAML" ya da "YAML → JSON". Dosya seçerseniz yön, uzantıya (.json, .yaml, .yml) göre kendiliğinden ayarlanır.</li>
+        <li>Metni kutuya yapıştırın ya da dosyayı kutunun altındaki alana sürükleyip bırakın; dosya bilgisayarınızda okunur, hiçbir yere gönderilmez.</li>
+        <li>Girinti, anahtar sıralama, satır genişliği ya da JSON küçültme gibi seçenekleri ayarlayıp dönüştür düğmesine basın; klavyede Ctrl + Enter da aynı işi yapar.</li>
+        <li>Sonucu "Kopyala" ile panoya alın ya da .yaml / .json dosyası olarak indirin.</li>
+        <li>Gidiş-dönüş denetimi için "Yönü değiştir" düğmesine basın: çıktı girişe taşınır ve hemen ters yönde dönüştürülür.</li>
+      </ol>
+
+      <h2>Seçenekler ne işe yarar?</h2>
+      <ul>
+        <li><strong>Girinti (2 ya da 4 boşluk):</strong> YAML'da iç içe düzeyleri, JSON'da biçimlendirilmiş çıktının girintisini belirler. YAML girintide sekme karakterine izin vermediği için yalnızca boşluk seçenekleri vardır.</li>
+        <li><strong>Anahtarları alfabetik sırala:</strong> YAML çıktısındaki tüm nesnelerin anahtarlarını, iç içe olanlar dâhil, Türkçe harf sırasına göre dizer. Sürüm kontrolünde gereksiz farkları azaltır. Dizilerin sırası değişmez, çünkü listede sıra anlam taşır.</li>
+        <li><strong>YAML satır genişliği:</strong> Varsayılan "kırma yok" seçeneği uzun metinleri tek satırda bırakır. 80 ya da 120 karakter seçerseniz uzun metinler katlanmış blok (<code>&gt;-</code>) biçiminde birkaç satıra bölünür; değer değişmez, yalnızca görünüm değişir.</li>
+        <li><strong>Kök diziyi ayrı belgelere böl:</strong> JSON'un en dışı bir diziyse her öğe <code>---</code> ile ayrılmış ayrı bir YAML belgesi olur. Birden çok Kubernetes kaynağını tek dosyada tutarken işe yarar.</li>
+        <li><strong>JSON çıktısını küçült:</strong> YAML'dan üretilen JSON'u boşluksuz tek satıra indirir; bir ortam değişkenine yazılacak ya da ağ üzerinden gönderilecek veriler için uygundur.</li>
+        <li><strong>Tarihleri metin olarak koru:</strong> Açıkken <code>2026-01-01</code> gibi değerler yazıldığı gibi metin kalır. Kapatırsanız tarih olarak yorumlanır ve ISO 8601 biçimine (<code>2026-01-01T00:00:00.000Z</code>) çevrilir.</li>
+      </ul>
+
+      <h2>YAML 1.2 davranışı: yes/no, tarihler ve baştaki sıfırlar</h2>
+      <p>Dönüştürücü, YAML 1.2.2 belirtiminin varsayılan olarak önerdiği Core şemayı izleyen js-yaml 4 kütüphanesini kullanır. Bu, eski YAML 1.1 araçlarına alışkın olanları şaşırtabilecek birkaç sonuç doğurur. Aşağıdaki kurallar belirtimin "Core Schema" bölümündeki düzenli ifadelerle birebir uyumludur:</p>
+      <ul>
+        <li><strong>yes, no, on, off mantıksal değer değildir.</strong> YAML 1.2'de yalnızca <code>true</code> ve <code>false</code> (ve True, TRUE, False, FALSE yazımları) mantıksal değerdir. <code>cevap: yes</code> satırı JSON'da <code>"yes"</code> metni olur. Tersine, JSON'daki "yes" metni YAML'a <code>'yes'</code> biçiminde tırnaklı yazılır; böylece YAML 1.1 kullanan eski bir ayrıştırıcı da onu metin olarak okur.</li>
+        <li><strong>Baştaki sıfır kaybolabilir.</strong> YAML 1.2'de tırnaksız <code>0123</code> onluk tam sayıdır ve JSON'da <code>123</code> olur. Posta kodu, telefon ya da sicil numarası gibi baştaki sıfırın önemli olduğu değerleri YAML'da tırnak içinde yazın. JSON'dan YAML'a çevirirken metin olan "0123" kendiliğinden tırnaklanır, yani bilgi kaybolmaz.</li>
+        <li><strong>Tarihe benzeyen değerler.</strong> YAML 1.2 Core şemasında tarih türü yoktur; js-yaml ise eski sürümlerle uyum için <code>2026-01-01</code> gibi değerleri tarih sayabilir. Aracımız varsayılan olarak bunları metin bırakır; isterseniz seçenekten değiştirebilirsiniz.</li>
+        <li><strong>.inf ve .nan.</strong> YAML'da sonsuz ve tanımsız sayı yazılabilir ama JSON'da karşılıkları yoktur; bu değerler null yazılır ve sonuç kutusunda ayrıca belirtilir.</li>
+        <li><strong>Çok büyük tam sayılar.</strong> JSON standardı RFC 8259, yalnızca ±(2⁵³−1) aralığındaki tam sayıların her ortamda aynı okunacağını söyler. Daha uzun sayılar tarayıcıda yuvarlanabilir; araç bu durumda uyarı verir.</li>
+      </ul>
+      <p>Örnek bir YAML girişi:</p>
+      <pre><code>cevap: yes
+posta_kodu: 02100
+il_kodu: "02"
+etkin: true</code></pre>
+      <p>Bu girişin JSON karşılığı:</p>
+      <pre><code>{"cevap": "yes", "posta_kodu": 2100,
+ "il_kodu": "02", "etkin": true}</code></pre>
+
+      <div class="ba-ad" data-slot="json-yaml-donustur-b" aria-label="Reklam"></div>
+
+      <h2>Çoklu belge, takma adlar ve birleştirme anahtarları</h2>
+      <p>Bir YAML dosyası <code>---</code> satırlarıyla ayrılmış birden çok belge içerebilir. Araç her belgeyi okur ve sonucu bir JSON dizisi olarak verir: <code>a: 1</code>, <code>---</code>, <code>b: 2</code> girişi <code>[{"a":1},{"b":2}]</code> olur. Yalnızca <code>---</code> ya da yorumdan oluşan boş belgeler atlanır ve kaç tanesinin atlandığı yazılır. Tek belgeli YAML ise dizi olarak değil, doğrudan o belgenin değeri olarak çevrilir.</p>
+      <p>YAML'ın <code>&amp;çapa</code> ve <code>*takma-ad</code> özelliği aynı veriyi tekrar yazmadan birden çok yerde kullanmanızı sağlar; <code>&lt;&lt;: *varsayilan</code> biçimindeki birleştirme anahtarı da bir eşlemenin alanlarını başka bir eşlemeye kopyalar. JSON'da bu kavramlar olmadığından dönüştürücü takma adları açar ve her kullanım yerine verinin tam kopyasını yazar. Kötü niyetli bir belge, iç içe takma adlarla küçük bir dosyadan milyarlarca öğe üretebilir; bu saldırı "milyar gülüş" adıyla bilinir. Araç açılmış öğe sayısını dönüştürmeden önce hesaplar ve beş milyonu aşan belgeleri tarayıcınızı kilitlemeden reddeder. Kendini içeren döngüsel takma adlar da yakalanır.</p>
+      <p>JSON'dan YAML'a çevirirken çıktıda çapa ve takma ad kullanılmaz; her değer açıkça yazılır. Böylece çıktı, takma adları desteklemeyen basit YAML okuyucularında da sorunsuz açılır.</p>
+
+      <h2>Hata mesajları nasıl okunur?</h2>
+      <p>Geçersiz JSON'da hata, satır ve sütun numarasıyla ve ne yapmanız gerektiğini anlatan bir cümleyle gösterilir: tırnaksız anahtar, tek tırnak, fazladan virgül, kapatılmamış parantez ya da sıfırla başlayan sayı gibi. Örneğin <code>{a:1</code> girişi "satır 1, sütun 2: Anahtar çift tırnak içinde yazılmalı" uyarısını verir. Geçersiz YAML'da js-yaml'ın bildirdiği konum kullanılır ve İngilizce teknik mesaj Türkçe bir açıklamaya çevrilir: girinti hatası, girintide sekme karakteri, aynı anahtarın iki kez yazılması, kapatılmamış tırnak ya da tanımlanmamış takma ad gibi. Her iki durumda da hatalı satır ve çevresi bir alıntı olarak gösterilir, imleç metin kutusunda hatalı karaktere gider. JSON yönünde yanlışlıkla YAML yapıştırdıysanız araç bunu fark eder ve yönü değiştirmenizi önerir.</p>
+
+      <h2>Güvenlik ve gizlilik</h2>
+      <p>YAML ayrıştırıcıları geçmişte ciddi güvenlik açıklarına konu oldu; bazı kütüphaneler <code>!!python/object</code> ya da <code>!!js/function</code> gibi etiketlerle belgenin içinden kod çalıştırılmasına izin veriyordu. Bu araç yalnızca güvenli veri türlerini tanıyan şemayla çalışır: eşleme, liste, metin, sayı, mantıksal değer ve null; bunlara ek olarak birleştirme anahtarı, ikili veri (<code>!!binary</code>), küme ve sıralı eşleme. Bunların dışındaki her etiket açık bir hata mesajıyla reddedilir. İç içe geçme derinliği 100 düzeyle sınırlıdır. Çıktı sayfaya HTML olarak değil düz metin olarak yazılır; YAML'ın içinde HTML ya da betik kodu olsa bile tarayıcı onu çalıştırmaz, yalnızca harf harf gösterir.</p>
+      <p>Dönüşüm baştan sona tarayıcınızda gerçekleşir. Yapıştırdığınız metin ya da seçtiğiniz dosya sunucuya gönderilmez, kaydedilmez, çerez ya da analiz koduyla izlenmez. API anahtarı, veritabanı parolası ya da müşteri verisi içeren yapılandırma dosyalarını da gönül rahatlığıyla dönüştürebilirsiniz. Kütüphane sitenin kendi sunucusundan sabit sürümle yüklenir; sayfa bir kez açıldıktan sonra internet bağlantısı olmadan da çalışır.</p>
+
+      <h2>Dosya kodlaması, BOM ve büyük dosyalar</h2>
+      <p>Dosyalar UTF-8 olarak okunur. Bazı Windows programlarının dosya başına eklediği BOM (bayt sırası işareti) kendiliğinden atılır; ş, ğ, ı, İ, ç, ö, ü gibi harfler hem anahtarlarda hem değerlerde bozulmadan korunur. BOM ile kaydedilmiş UTF-16 dosyaları da tanınır. UTF-8 olmayan eski dosyalar Türkçe Windows kodlamasıyla (Windows-1254) okunur ve bu durum ayrıca belirtilir. İndirilen dosyalara BOM eklenmez; RFC 8259 de JSON metinlerinin başına BOM konmamasını ister.</p>
+      <p>5 MB'ı aşan metinlerde dönüşüm birkaç saniye sürebilir; araç bunu önceden haber verir ve ekrandaki önizlemeyi kısaltır, ama kopyalanan ve indirilen çıktı her zaman tamdır. 50 MB üstü dosyalarda tarayıcı uzun süre yanıt vermeyebilir; bu boyutlarda dosyayı parçalara bölmenizi ya da güçlü bir bilgisayar kullanmanızı öneririz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri yüklenmez.</strong> Dönüşüm tarayıcıda yapılır, hiçbir ağ isteği gönderilmez.</li>
+        <li><strong>İki yön tek sayfada.</strong> "Yönü değiştir" düğmesiyle gidiş-dönüş denetimi saniyeler sürer.</li>
+        <li><strong>Açıklayıcı Türkçe hatalar.</strong> Satır, sütun, hatalı satırın alıntısı ve çözüm önerisi birlikte verilir.</li>
+        <li><strong>Güvenli varsayılanlar.</strong> Yalnızca veri türleri işlenir; takma ad şişirmesine karşı sınır vardır.</li>
+        <li><strong>Ücretsiz ve sınırsız.</strong> Kayıt, günlük kota ya da filigran yoktur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>JSON'u YAML'a çevirince veri kaybı olur mu?</summary><p>Değerler korunur. JSON'daki her değerin YAML'da birebir karşılığı vardır; araç yanlış yorumlanabilecek metinleri ('yes', '0123', 'null', '2026-01-01' gibi) tırnak içine alarak yazar, böylece JSON → YAML → JSON gidiş-dönüşünde aynı veri elde edilir. Girinti, sayıların yazımı (1.0 yerine 1 gibi) ve yalnızca rakamdan oluşan anahtarların ("1", "2" gibi) sırası değişebilir. Tarayıcının sınırını aşan çok büyük sayılar ve aynı nesnede iki kez yazılmış anahtarlar istisnadır; araç bu durumlarda sonuç kutusunda ayrıca uyarır.</p></details>
+        <details><summary>YAML'daki yorumlar JSON'a aktarılır mı?</summary><p>Hayır. JSON'da yorum yazılamadığı için # ile başlayan açıklamalar dönüşümde düşer. Yorumları korumak istiyorsanız özgün YAML dosyanızı saklayın; ters yönde de yorum üretilmez.</p></details>
+        <details><summary>"yes" ve "no" neden true/false olmadı?</summary><p>YAML 1.2'de yalnızca true ve false (True, TRUE, False, FALSE yazımlarıyla) mantıksal değerdir; yes, no, on ve off sıradan metindir. Eski YAML 1.1 araçları bunları mantıksal sayıyordu. Mantıksal değer istiyorsanız YAML'da true ya da false yazın.</p></details>
+        <details><summary>Birden çok belge içeren YAML nasıl çevrilir?</summary><p>--- ile ayrılmış her belge JSON dizisinin bir öğesi olur; örneğin 'a: 1', '---', 'b: 2' girişi [{"a":1},{"b":2}] verir. Ters yönde "Kök diziyi ayrı belgelere böl" seçeneğini işaretlerseniz JSON dizisinin her öğesi ayrı bir YAML belgesine yazılır.</p></details>
+        <details><summary>Dönüştürdüğüm dosya bir yere gönderiliyor mu?</summary><p>Hayır. Metin ve dosyalar yalnızca tarayıcınızın belleğinde işlenir; sayfada yükleme, kayıt ya da izleme kodu yoktur. Sayfayı kapattığınızda veriler silinir.</p></details>
+        <details><summary>Hata mesajındaki satır numarası neye göre?</summary><p>Satır ve sütun 1'den başlar ve metin kutusundaki konuma karşılık gelir; imleç de oraya taşınır. YAML'da sorun çoğu zaman bir önceki satırın girintisinden kaynaklandığı için gösterilen alıntıda üstteki satırlara da bakın.</p></details>
+        <details><summary>Baştaki sıfırım neden kayboldu?</summary><p>YAML 1.2'de tırnaksız 0123 onluk bir tam sayıdır ve 123 olarak okunur. Posta kodu, telefon ya da sicil numarası gibi baştaki sıfırın önemli olduğu değerleri YAML'da tırnak içinde ("0123") yazın.</p></details>
+        <details><summary>Kubernetes ya da Docker Compose dosyalarıyla çalışır mı?</summary><p>Evet, bunlar standart YAML'dır; çoklu belgeli Kubernetes manifestleri JSON dizisine çevrilir. Yalnızca belirli araçlara özgü özel etiketler (bulut altyapı şablonlarındaki !Ref, !Sub ya da Compose dosyalarındaki !reset, !override gibi) güvenlik nedeniyle reddedilir; bulut şablonlarında bunların yerine uzun biçimleri (Ref:, Fn::Sub:) kullanabilirsiniz.</p></details>
+        <details><summary>Telefonda ya da internetsiz çalışır mı?</summary><p>Evet. Sayfa telefonda da çalışır. Tarayıcının "Uygulama olarak yükle" seçeneğiyle cihazınıza ekleyebilir, bir kez açtıktan sonra internet bağlantısı olmadan da kullanabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir ve Doğrula</a></li>
+        <li><a href="../csv-json-donustur/">CSV JSON Dönüştürücü</a></li>
+        <li><a href="../base64-donustur/">Base64 Dönüştürücü</a></li>
+        <li><a href="../metin-karsilastir/">Metin Karşılaştırma</a></li>
+      </ul>
+      <p>Kaynaklar: <a href="https://yaml.org/spec/1.2.2/" rel="noopener">YAML 1.2.2 belirtimi</a> (Core şema, bölüm 10.3), <a href="https://www.rfc-editor.org/rfc/rfc8259" rel="noopener">RFC 8259 – JSON</a>, <a href="https://www.rfc-editor.org/rfc/rfc9512" rel="noopener">RFC 9512 – YAML ortam türü</a>, <a href="https://github.com/nodeca/js-yaml" rel="noopener">js-yaml (MIT lisansı)</a>. Bağlantılar yalnızca tıkladığınızda açılır.</p>
+      <p class="ba-note">Veri entegrasyonu, API geliştirme, DevOps yapılandırması ya da kuruma özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="json-yaml-donustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

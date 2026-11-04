@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Beton Hesaplama – m³ Beton, Çimento, Kum, Çakıl ve Su Miktarı</title>
+  <meta name="description" content="Döşeme, kolon, temel ve merdiven için kaç m³ beton gerektiğini fire payıyla hesaplayın; C16–C30 sınıfına göre yaklaşık çimento torbası, kum, çakıl, su ve mikser sayısı. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/beton-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/beton-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/beton-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; min-width: 0; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-form input[aria-invalid="true"] { border-color: var(--ba-danger); }
+    .kdv-grid { display: grid; gap: 0 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .bt-fields { display: grid; gap: 0 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .kdv-form fieldset { border: 0; margin: 0 0 4px; padding: 0; min-width: 0; }
+    .kdv-form legend { font-weight: 600; margin-bottom: 6px; padding: 0; }
+    .bt-sec { border-top: 1px solid var(--ba-border); margin-top: 10px; padding-top: 14px; }
+    .bt-sub { font-size: 1rem; margin: 18px 0 8px; }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.2rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; overflow-wrap: anywhere; }
+    .ba-result p.kdv-note { margin-top: 10px; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; overflow-wrap: anywhere; }
+    .kdv-rates { font-size: .82rem; color: var(--ba-text-muted); margin: 12px 0 0; overflow-wrap: anywhere; }
+    .age-big { font-size: 1.3rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); overflow-wrap: anywhere; }
+    .ba-result p.age-big { color: var(--ba-primary); margin-bottom: 12px; }
+    .bt-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .bt-table th, .bt-table td { text-align: left; padding: 7px 6px; border-bottom: 1px dashed var(--ba-border); vertical-align: top; overflow-wrap: anywhere; }
+    .bt-table thead th { font-size: .82rem; color: var(--ba-text-2); border-bottom: 1px solid var(--ba-border); }
+    .bt-table td { font-family: var(--ba-mono); white-space: nowrap; overflow-wrap: normal; }
+    .bt-table td small { display: block; color: var(--ba-text-muted); font-size: .8rem; }
+    .bt-table tbody th { font-weight: 500; }
+    .bt-table-wrap { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (max-width: 640px) { .ba-tool table.bt-table { display: table; } .bt-table { font-size: .85rem; } .bt-table th, .bt-table td { padding: 7px 4px; } }
+    .kdv-row dd.bt-text { font-family: inherit; font-size: .92rem; }
+    .bt-warn { margin-top: 14px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: #fff4dc; color: #5c3b00; border: 1px solid #a86b00; border-left-width: 4px; overflow-wrap: anywhere; }
+    .bt-approx { margin: 14px 0 0; padding: 10px 12px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); border-left: 4px solid #a86b00; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    #items { list-style: none; margin: 0 0 8px; padding: 0; }
+    .bt-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); }
+    .bt-item span { overflow-wrap: anywhere; min-width: 0; font-size: .92rem; }
+    .bt-del { min-height: 40px; padding: 4px 12px; font-size: .85rem; flex: none; }
+    .bt-total { margin: 4px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+    @media print {
+      .ba-topbar, .ba-header, .ba-crumb, .ba-hero .lead, .ba-badges, .ba-ad, .ba-content, .ba-footer, #form, #error, .bt-noprint { display: none !important; }
+      .ba-hero { background: none !important; color: #000 !important; padding: 0 !important; }
+      .ba-result { border: 0 !important; background: none !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Beton Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","description":"Döşeme, kolon, temel ve merdiven için m³ beton, fire, yaklaşık çimento, kum, çakıl, su miktarı ve hazır beton mikser sayısı hesaplayıcı.","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/beton-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"1 m³ betona kaç torba çimento gider?","acceptedAnswer":{"@type":"Answer","text":"Sınıfa göre değişir. Aracın kullandığı yaklaşık değerlerle 1 m³ C25/30 için yaklaşık 340 kg yani 50 kg'lık yaklaşık 7 torba, C20/25 için yaklaşık 300 kg (6 torba), C30/37 için yaklaşık 380 kg (8 torbaya yakın) çimento gerekir. Kesin miktarı laboratuvar karışım hesabı belirler."}},{"@type":"Question","name":"Döşeme betonu nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"En, boy ve kalınlık metreye çevrilip çarpılır. 5 m × 4 m alanında 15 cm kalınlığındaki bir döşeme 5 × 4 × 0,15 = 3 m³ eder. Yüzde 5 fire eklenince sipariş edilecek miktar 3,15 m³ olur."}},{"@type":"Question","name":"Kolon betonu nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Dikdörtgen kolonda kesit eni × kesit boyu × yükseklik × adet kullanılır: 30 × 50 cm kesitli, 3 m yüksekliğinde 4 kolon 0,3 × 0,5 × 3 × 4 = 1,8 m³ eder. Yuvarlak kolonda π × (çap ÷ 2)² × yükseklik kullanılır: 40 cm çaplı, 3 m'lik bir kolon yaklaşık 0,377 m³ eder."}},{"@type":"Question","name":"Merdiven betonu nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Basamak üçgenlerinin hacmi (basamak sayısı × rıht × basamak genişliği ÷ 2) ile eğik taşıyıcı plağın hacmi (basamak sayısı × √(rıht² + basamak genişliği²) × plak kalınlığı) toplanır ve merdiven eniyle çarpılır. Sahanlıklar ayrı döşeme olarak eklenir."}},{"@type":"Question","name":"Fire oranı kaç olmalı?","acceptedAnswer":{"@type":"Answer","text":"Pompayla dökülen hazır betonda genellikle yüzde 3–5, betoniyerde ya da elle karılan betonda yüzde 5–10 fire payı bırakılır. Araç varsayılan olarak yüzde 5 kullanır ve yüzde 0 ile 30 arasında değer kabul eder."}},{"@type":"Question","name":"Kaç mikser hazır beton gerekir?","acceptedAnswer":{"@type":"Answer","text":"Fire dahil hacim mikser kapasitesine bölünür ve yukarı yuvarlanır. 8 m³'lük mikserle 3,15 m³ için 1 mikser, 9 m³ için 2 mikser gerekir. Kapasiteyi beton firmanıza sorup araca yazabilirsiniz."}},{"@type":"Question","name":"C20 mi C25 mi kullanmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Türkiye Bina Deprem Yönetmeliği 2018'in 7.2.5.1 maddesine göre betonarme binalarda C25'ten düşük dayanımlı beton kullanılamaz. C16 ve C20 grobeton, bahçe yolu ve saha betonu gibi taşıyıcı olmayan işler içindir. Taşıyıcı elemanlarda sınıfı statik proje belirler."}},{"@type":"Question","name":"Karışım oranları kesin mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oranlar çimento tipi, agrega, nem ve kıvam için yapılan varsayımlarla hesaplanmış yaklaşık değerlerdir. Şantiye için laboratuvar karışım hesabı esastır; taşıyıcı işlerde sınıfı belgelenmiş hazır beton tercih edin."}},{"@type":"Question","name":"Ölçülerim bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır. Ölçüler, eleman listesi ve fiyatlar hiçbir sunucuya iletilmez, saklanmaz ve çerez ya da analiz koduyla izlenmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Beton Hesaplama</span> – m³ Beton, Çimento, Kum, Çakıl ve Su</h1>
+      <p class="lead">Döşeme, kolon, temel ya da merdiven ölçülerini girin; kaç m³ beton gerektiğini fire payıyla birlikte görün. Seçtiğiniz beton sınıfına (C16–C30) göre yaklaşık çimento torbası, kum, çakıl ve su miktarını, hazır beton için kaç mikser gerektiğini ve isterseniz toplam maliyeti hesaplayın. Ölçüleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Beton hesaplama aracı</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="f-mode">Eleman türü</label><select id="f-mode">
+            <option value="doseme">Döşeme / plak (en × boy × kalınlık)</option>
+            <option value="kolon">Kolon – dikdörtgen kesit</option>
+            <option value="silindir">Kolon – silindir (yuvarlak)</option>
+            <option value="temel">Şerit temel / hatıl</option>
+            <option value="merdiven">Merdiven</option>
+          </select></div>
+          <div class="ba-field"><label for="f-unit">Ölçü birimi</label><select id="f-unit"><option value="m">Metre (m)</option><option value="cm">Santimetre (cm)</option></select><div class="hint">Ondalık için virgül kullanabilirsiniz (12,5).</div></div>
+        </div>
+
+        <fieldset id="g-doseme"><legend>Döşeme ölçüleri</legend><div class="bt-fields">
+          <div class="ba-field"><label for="f-slab-w">En (<span class="u">m</span>)</label><input id="f-slab-w" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 5" data-ph-cm="örn. 500" placeholder="örn. 5"></div>
+          <div class="ba-field"><label for="f-slab-l">Boy (<span class="u">m</span>)</label><input id="f-slab-l" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 4" data-ph-cm="örn. 400" placeholder="örn. 4"></div>
+          <div class="ba-field"><label for="f-slab-t">Kalınlık (<span class="u">m</span>)</label><input id="f-slab-t" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,15" data-ph-cm="örn. 15" placeholder="örn. 0,15"></div>
+        </div></fieldset>
+
+        <fieldset id="g-kolon" hidden><legend>Dikdörtgen kolon ölçüleri</legend><div class="bt-fields">
+          <div class="ba-field"><label for="f-col-a">Kesit eni (<span class="u">m</span>)</label><input id="f-col-a" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,3" data-ph-cm="örn. 30" placeholder="örn. 0,3"></div>
+          <div class="ba-field"><label for="f-col-b">Kesit boyu (<span class="u">m</span>)</label><input id="f-col-b" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,5" data-ph-cm="örn. 50" placeholder="örn. 0,5"></div>
+          <div class="ba-field"><label for="f-col-h">Yükseklik (<span class="u">m</span>)</label><input id="f-col-h" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 3" data-ph-cm="örn. 300" placeholder="örn. 3"></div>
+          <div class="ba-field"><label for="f-col-n">Adet</label><input id="f-col-n" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 4" value="1"></div>
+        </div></fieldset>
+
+        <fieldset id="g-silindir" hidden><legend>Silindir kolon ölçüleri</legend><div class="bt-fields">
+          <div class="ba-field"><label for="f-cyl-d">Çap (<span class="u">m</span>)</label><input id="f-cyl-d" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,4" data-ph-cm="örn. 40" placeholder="örn. 0,4"></div>
+          <div class="ba-field"><label for="f-cyl-h">Yükseklik (<span class="u">m</span>)</label><input id="f-cyl-h" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 3" data-ph-cm="örn. 300" placeholder="örn. 3"></div>
+          <div class="ba-field"><label for="f-cyl-n">Adet</label><input id="f-cyl-n" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 1" value="1"></div>
+        </div></fieldset>
+
+        <fieldset id="g-temel" hidden><legend>Şerit temel / hatıl ölçüleri</legend><div class="bt-fields">
+          <div class="ba-field"><label for="f-str-l">Toplam uzunluk (<span class="u">m</span>)</label><input id="f-str-l" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 24" data-ph-cm="örn. 2400" placeholder="örn. 24"></div>
+          <div class="ba-field"><label for="f-str-w">Genişlik (<span class="u">m</span>)</label><input id="f-str-w" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,6" data-ph-cm="örn. 60" placeholder="örn. 0,6"></div>
+          <div class="ba-field"><label for="f-str-d">Derinlik (<span class="u">m</span>)</label><input id="f-str-d" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,5" data-ph-cm="örn. 50" placeholder="örn. 0,5"></div>
+        </div></fieldset>
+
+        <fieldset id="g-merdiven" hidden><legend>Merdiven ölçüleri</legend><div class="bt-fields">
+          <div class="ba-field"><label for="f-st-n">Basamak sayısı</label><input id="f-st-n" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 10"></div>
+          <div class="ba-field"><label for="f-st-r">Rıht yüksekliği (<span class="u">m</span>)</label><input id="f-st-r" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,17" data-ph-cm="örn. 17" placeholder="örn. 0,17"></div>
+          <div class="ba-field"><label for="f-st-t">Basamak genişliği (<span class="u">m</span>)</label><input id="f-st-t" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,28" data-ph-cm="örn. 28" placeholder="örn. 0,28"></div>
+          <div class="ba-field"><label for="f-st-w">Merdiven eni (<span class="u">m</span>)</label><input id="f-st-w" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 1,2" data-ph-cm="örn. 120" placeholder="örn. 1,2"></div>
+          <div class="ba-field"><label for="f-st-k">Plak kalınlığı (<span class="u">m</span>)</label><input id="f-st-k" type="text" inputmode="decimal" autocomplete="off" data-ph-m="örn. 0,15" data-ph-cm="örn. 15" placeholder="örn. 0,15"></div>
+        </div><p class="kdv-note">Basamak genişliği, basamağın yatay derinliğidir (ayak basılan yüzey). Sahanlıkları ayrı bir döşeme olarak listeye ekleyin.</p></fieldset>
+
+        <div class="bt-sec">
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="f-class">Beton sınıfı</label><select id="f-class">
+              <option value="C16">C16/20 (grobeton, saha)</option>
+              <option value="C20">C20/25 (taşıyıcı olmayan)</option>
+              <option value="C25" selected>C25/30 (betonarme alt sınır)</option>
+              <option value="C30">C30/37</option>
+            </select></div>
+            <div class="ba-field"><label for="f-fire">Fire oranı (%)</label><input id="f-fire" type="text" inputmode="decimal" autocomplete="off" value="5"><div class="hint">0 ile 30 arası.</div></div>
+            <div class="ba-field"><label for="f-mixer">Mikser kapasitesi (m³)</label><input id="f-mixer" type="text" inputmode="decimal" autocomplete="off" value="8"></div>
+          </div>
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="f-price">Hazır beton m³ fiyatı (TL, isteğe bağlı)</label><input id="f-price" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 2.750"></div>
+          </div>
+        </div>
+
+        <div id="list-wrap" class="bt-sec" hidden>
+          <h3 class="bt-sub" id="h-list">Eleman listesi</h3>
+          <ul id="items" aria-labelledby="h-list"></ul>
+          <p class="bt-total">Listenin toplamı (fire hariç): <span id="list-total"></span></p>
+          <p class="kdv-note">Liste doluyken sonuç, listedeki elemanların toplamına göre hesaplanır.</p>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Betonu hesapla</button><button id="add" class="ba-btn" type="button">Listeye ekle</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+        <p class="kdv-status" id="add-status" aria-live="polite"></p>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="warn" class="bt-warn" role="status" hidden></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="age-big" id="r-head"></p>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Hesaplanan</dt><dd id="r-used" class="bt-text"></dd></div>
+          <div class="kdv-row"><dt>Net beton hacmi</dt><dd id="r-net"></dd></div>
+          <div class="kdv-row"><dt>Fire payı</dt><dd id="r-fire"></dd></div>
+          <div class="kdv-row is-strong"><dt>Fire dahil hacim</dt><dd id="r-total"></dd></div>
+          <div class="kdv-row"><dt>Beton sınıfı</dt><dd id="r-class"></dd></div>
+          <div class="kdv-row"><dt>Hazır beton mikseri</dt><dd id="r-mixer"></dd></div>
+          <div class="kdv-row"><dt>Tahmini maliyet</dt><dd id="r-cost"></dd></div>
+        </dl>
+        <h4 class="bt-sub">Yaklaşık malzeme miktarı (şantiyede karışım)</h4>
+        <div class="bt-table-wrap" tabindex="0" role="region" aria-label="Malzeme tablosu">
+        <table class="bt-table" id="mat-table">
+          <caption class="visually-hidden">Fire dahil hacim için yaklaşık malzeme miktarları</caption>
+          <thead><tr><th scope="col">Malzeme</th><th scope="col">1 m³ için</th><th scope="col">Toplam</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Çimento</th><td id="p-cement"></td><td id="m-cement"></td></tr>
+            <tr><th scope="row">Çimento torbası (50 kg)</th><td id="p-bags"></td><td id="m-bags"></td></tr>
+            <tr><th scope="row">Kum (0–4 mm)</th><td><span id="p-sand"></span><small id="p-sand-v"></small></td><td><span id="m-sand"></span><small id="m-sand-v"></small></td></tr>
+            <tr><th scope="row">Çakıl / mıcır</th><td><span id="p-gravel"></span><small id="p-gravel-v"></small></td><td><span id="m-gravel"></span><small id="m-gravel-v"></small></td></tr>
+            <tr><th scope="row">Su</th><td id="p-water"></td><td id="m-water"></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="kdv-note" id="r-class-note" hidden></p>
+        <p class="kdv-note"><strong>Yaklaşık değerlerdir:</strong> şantiye için laboratuvar karışım hesabı esastır. Islak kum kullanıyorsanız suyu azaltın. Hazır beton siparişinde yalnızca hacim ve sınıf yeterlidir.</p>
+        <div class="ba-actions bt-noprint"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır</button></div>
+        <p class="kdv-status bt-noprint" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="bt-approx" id="approx-note"><strong>Yaklaşık değer uyarısı:</strong> Karışım oranları (çimento, kum, çakıl, su) tipik varsayımlarla hesaplanmış yaklaşık değerlerdir; şantiye için laboratuvar karışım hesabı (TS 802) ve statik proje esastır. Bu araç mühendislik hizmeti yerine geçmez.</p>
+      <p class="kdv-rates" id="params-line"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="beton-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Eleman türü" listesinden hesaplayacağınız parçayı seçin: döşeme (plak), dikdörtgen kolon, yuvarlak (silindir) kolon, şerit temel ya da hatıl veya merdiven.</li>
+        <li>Ölçü birimini metre ya da santimetre olarak seçin ve ölçüleri yazın. Ondalık için virgül kullanabilirsiniz (12,5). Aynı elemandaki tüm ölçüler seçtiğiniz birimde olmalıdır.</li>
+        <li>Beton sınıfını, fire oranını (varsayılan %5) ve hazır beton mikserinin kapasitesini (varsayılan 8 m³) kontrol edin. Hazır betonun metreküp fiyatını biliyorsanız fiyat alanına yazın.</li>
+        <li>"Betonu hesapla" düğmesine basın. Yapınızda birden fazla parça varsa her birini girip "Listeye ekle" ile ekleyin; araç listedeki elemanların toplam hacmini kullanır, yanlış eklediğiniz satırı "Sil" ile kaldırırsınız.</li>
+        <li>Sonucu "Sonucu kopyala" ile mesaj olarak gönderin ya da "Yazdır" ile kâğıda alıp ustanızla veya beton firmasıyla paylaşın.</li>
+      </ol>
+
+      <h2>Beton hacmi nasıl hesaplanır?</h2>
+      <p>Beton her zaman hacimle, yani metreküp (m³) cinsinden ölçülür ve sipariş edilir. Temel kural basittir: elemanın üç boyutu metreye çevrilir ve birbiriyle çarpılır. Hesaplarda yapılan hataların çoğu formülde değil, birimdedir; 15 santimetrelik bir döşeme kalınlığı hesaba 0,15 metre olarak girmelidir. Aracımız bu yüzden birim seçimine izin verir ve metre seçiliyken kalınlığa 15 gibi olağan dışı bir değer yazarsanız "çok büyük, cm mi yazdınız?" diye uyarır. Eleman türlerine göre kullanılan formüller şunlardır:</p>
+      <ul>
+        <li><strong>Döşeme / plak:</strong> en × boy × kalınlık. Örnek: 5 m × 4 m × 0,15 m = 3,000 m³. Döşemenin alanını parça parça ölçtüyseniz önce <a href="../metrekare-hesapla/">Metrekare Hesaplama</a> aracıyla toplam alanı bulabilirsiniz.</li>
+        <li><strong>Dikdörtgen kolon:</strong> kesit eni × kesit boyu × yükseklik × adet. Örnek: 30 × 50 cm kesitli, 3 m yüksekliğinde 4 kolon için 0,3 × 0,5 × 3 × 4 = 1,800 m³.</li>
+        <li><strong>Silindir (yuvarlak) kolon:</strong> π × (çap ÷ 2)² × yükseklik × adet. Örnek: 40 cm çaplı, 3 m yüksekliğinde bir kolon için 3,1416 × 0,2² × 3 ≈ 0,377 m³.</li>
+        <li><strong>Şerit temel ve hatıl:</strong> toplam uzunluk × genişlik × derinlik. Köşelerde birleşen temellerde kesişim bölgesini iki kez saymamak için kesişen kollardan birinin uzunluğunu temel genişliği kadar kısaltın.</li>
+        <li><strong>Merdiven:</strong> basamak üçgenlerinin hacmi (basamak sayısı × rıht × basamak genişliği ÷ 2) ile eğik taşıyıcı plağın hacmi (basamak sayısı × √(rıht² + basamak genişliği²) × plak kalınlığı) toplanır ve merdiven eniyle çarpılır. 17 cm rıhtlı, 28 cm basamaklı, 10 basamaklı, 1 m enli ve 15 cm plaklı bir merdiven yaklaşık 0,729 m³ eder. Sahanlıkları ayrı bir döşeme olarak ekleyin.</li>
+      </ul>
+
+      <h2>Fire payı neden eklenir?</h2>
+      <p>Kâğıt üzerindeki hacim ile mikserden boşalan beton hiçbir zaman birebir aynı değildir. Kalıplar beton basıncıyla bir miktar esner, zemin ya da grobeton yüzeyi tam düz değildir, pompa hattında ve mikser kazanında bir miktar beton kalır, döküm sırasında da bir kısmı kalıp dışına taşar. Bu kayıpları karşılamak için net hacmin üzerine fire payı eklenir. Pompayla dökülen hazır betonda %3–5, betoniyerde ya da elle karılan betonda %5–10 genellikle yeterlidir. Araç fireyi net hacmin üzerine ekler: 3 m³ net hacim ve %5 fire için sipariş edilecek miktar 3,150 m³ olur. Fireyi gereğinden büyük tutmak mikser sayısını artırabilir ve fazla betonun şantiyede boşa gitmesine yol açar; çok küçük tutmak ise dökümün yarıda kalması riskini doğurur, ki bu soğuk derz oluşturduğu için çok daha pahalı bir sorundur.</p>
+
+      <h2>Beton sınıfları: C16, C20, C25 ve C30 ne anlatır?</h2>
+      <p>TS EN 206 standardında beton sınıfı C25/30 gibi iki sayıyla yazılır. İlk sayı 28 günlük silindir numunelerin, ikinci sayı küp numunelerin karakteristik basınç dayanımını megapaskal (MPa) cinsinden gösterir. Sınıf yükseldikçe karışımda daha fazla çimento ve daha düşük bir su/çimento oranı gerekir; bu da birim fiyatı artırır.</p>
+      <p>Türkiye Bina Deprem Yönetmeliği 2018'in 7.2.5.1 maddesi, yönetmelik kapsamındaki tüm betonarme binalarda C25'ten daha düşük dayanımlı beton kullanılamayacağını açıkça söyler. Dolayısıyla C16 ve C20; grobeton (temel altı tesviye betonu), bahçe yolu, otopark zemini altı, çit dibi ve benzeri taşıyıcı olmayan işler içindir. Kolon, kiriş, perde, döşeme ve temel gibi taşıyıcı elemanlarda kullanılacak sınıfı statik projeniz belirler; projede C30 yazıyorsa araçta da C30 seçmelisiniz. Araçta C16 veya C20 seçtiğinizde sonuç kutusunda bu hatırlatma ayrıca görünür.</p>
+
+      <div class="ba-ad" data-slot="beton-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>1 m³ beton için yaklaşık malzeme miktarı</h2>
+      <p>Aracın kullandığı karışımlar, TS 802'de anlatılan mutlak hacim yöntemine göre hesaplanmış tipik değerlerdir. Bu yöntemde çimentonun, suyun, agreganın ve havanın kapladığı hacimler toplandığında tam 1 m³ etmelidir. Varsayımlarımız şunlardır: CEM I ya da CEM II 42,5 çimento, en büyük tane boyutu 22–31,5 mm olan agrega, orta kıvam (S3), yaklaşık %1,5 hava ve kuru-yüzey doygun agrega. Bu varsayımlarla 1 m³ C25/30 beton için yaklaşık 340 kg çimento (50 kg'lık yaklaşık 7 torba), 185 litre su, 790 kg kum ve 1.040 kg çakıl gerekir. C20/25 için çimento yaklaşık 300 kg'a iner, C30/37 için yaklaşık 380 kg'a çıkar.</p>
+      <p>Kum ve çakıl kamyonla genellikle ton ya da metreküp olarak satıldığından araç iki birimi de gösterir. Dönüşümde gevşek kum için 1,6 ton/m³, gevşek çakıl için 1,55 ton/m³ birim hacim ağırlığı kullanılır. Islak kum daha fazla yer kaplar ve içindeki su karışım suyuna eklenir; bu yüzden şantiyede su miktarı agrega nemine göre azaltılmalıdır. Çimento ise her zaman tam torba alınacağı için torba sayısı yukarı yuvarlanır.</p>
+      <p><strong>Önemli:</strong> Bu oranlar yaklaşıktır. Gerçek karışım; çimento tipi, agreganın ocağı ve tane dağılımı, nem, katkı maddesi ve istenen kıvama göre değişir. Taşıyıcı elemanlarda şantiye için laboratuvar karışım hesabı esastır ve çoğu durumda en güvenli yol, sınıfı belgelenmiş hazır beton sipariş etmektir. Bu sayfadaki malzeme tablosu, küçük işlerde ne kadar malzeme alacağınızı kabaca planlamanız içindir.</p>
+
+      <h2>Hazır beton mu, şantiyede karışım mı?</h2>
+      <p>Bahçe yolu, çit dibi ya da küçük bir sahanlık gibi işlerde betoniyerle karışım pratik olabilir. Birkaç metreküpü aşan ve taşıyıcı olan işlerde ise hazır beton hem daha tutarlı bir dayanım sağlar hem de dökümün kesintisiz bitmesini kolaylaştırır. Hazır beton firmaları siparişi metreküp ve sınıf üzerinden alır. Aracın "Hazır beton mikseri" satırı, fire dahil hacmi girdiğiniz mikser kapasitesine böler ve yukarı yuvarlar: 8 m³'lük mikserle 3,15 m³ için tek mikser yeterliyken 9 m³ için iki mikser gerekir. Son mikserin yarım dolu gelmesi normaldir; bazı firmalar az miktarlı siparişlerde ek ücret isteyebilir, bunu sipariş öncesinde sorun. Birim fiyat girerseniz araç fire dahil hacim üzerinden tahmini tutarı gösterir; pompa, nakliye ve vergi gibi kalemleri firmanızla ayrıca konuşun.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Santimetre–metre karışıklığı:</strong> Metre seçiliyken kalınlığa 15 yazmak 15 metre demektir ve sonuç yüz kat büyür. Araç bu tür olağan dışı değerlerde uyarı gösterir; birimi kontrol edin.</li>
+        <li><strong>Kesişimleri iki kez saymak:</strong> Kolonların döşeme ve kiriş içinde kalan kısmı ile temel köşeleri, iki ayrı elemana dahil edildiğinde hacim gereğinden büyük çıkar.</li>
+        <li><strong>Kirişleri unutmak:</strong> Döşemenin altından sarkan kirişleri ayrı eleman olarak (şerit temel / hatıl türüyle uzunluk × genişlik × sarkma yüksekliği) listeye ekleyin.</li>
+        <li><strong>Grobetonu atlamak:</strong> Temel altındaki 5–10 cm'lik tesviye betonu ayrı bir döşeme olarak hesaplanır ve çoğunlukla daha düşük sınıftadır.</li>
+        <li><strong>Fireyi sıfır almak:</strong> Net hacim kadar beton sipariş etmek, dökümün son metreküpünde beton eksik kalmasına yol açabilir.</li>
+      </ul>
+      <p>Beton işi bittikten sonra sıra sıva, boya ve kaplamaya gelir. Duvar boyası ve fayans ihtiyacını hesaplamak için <a href="../boya-fayans-hesapla/">Boya ve Fayans Hesaplama</a> aracını kullanabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Ölçüleriniz ve fiyatlar hiçbir sunucuya iletilmez.</li>
+        <li><strong>Beş eleman türü ve liste.</strong> Döşeme, kolon, temel ve merdiveni tek listede toplayıp toplam hacmi görürsünüz.</li>
+        <li><strong>Akıllı uyarılar.</strong> Birim karışıklığı, boş ya da negatif değer anında Türkçe ve çözüm öneren mesajla bildirilir.</li>
+        <li><strong>Şeffaf parametreler.</strong> Karışım değerleri ayrı bir dosyada tutulur; güncelleme tarihi ve kaynak notu sayfada görünür.</li>
+        <li><strong>Mobil ve çevrimdışı.</strong> 360 piksel genişlikte rahat kullanılır, sayfa bir kez açıldıktan sonra şantiyede internet olmadan da çalışır.</li>
+      </ul>
+
+      <h2>Gizlilik notu</h2>
+      <p>Bu sayfa girdiğiniz ölçüleri, eleman listesini ve fiyatları yalnızca tarayıcınızın belleğinde işler. Girdiğiniz değerler hiçbir sunucuya gönderilmez ve bir yere kaydedilmez; aracın kendisi analiz ya da izleme çerezi kullanmaz. Sayfadaki reklam alanları üçüncü taraf bir reklam hizmetince doldurulur; bu hizmetin çerez kullanımı <a href="../gizlilik/">Gizlilik Politikası</a> sayfamızda açıklanmıştır. Sayfayı kapattığınızda liste silinir. Ortak bir bilgisayarda çalışıyorsanız "Temizle" düğmesi tüm alanları ve listeyi boşaltır.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>1 m³ betona kaç torba çimento gider?</summary><p>Sınıfa göre değişir. Aracın kullandığı yaklaşık değerlerle 1 m³ C25/30 için yaklaşık 340 kg yani 50 kg'lık yaklaşık 7 torba, C20/25 için yaklaşık 300 kg (6 torba), C30/37 için yaklaşık 380 kg (8 torbaya yakın) çimento gerekir. Kesin miktarı laboratuvar karışım hesabı belirler.</p></details>
+        <details><summary>Döşeme betonu nasıl hesaplanır?</summary><p>En, boy ve kalınlık metreye çevrilip çarpılır. 5 m × 4 m alanında 15 cm kalınlığındaki bir döşeme 5 × 4 × 0,15 = 3 m³ eder. Yüzde 5 fire eklenince sipariş edilecek miktar 3,15 m³ olur.</p></details>
+        <details><summary>Kolon betonu nasıl hesaplanır?</summary><p>Dikdörtgen kolonda kesit eni × kesit boyu × yükseklik × adet kullanılır: 30 × 50 cm kesitli, 3 m yüksekliğinde 4 kolon 0,3 × 0,5 × 3 × 4 = 1,8 m³ eder. Yuvarlak kolonda π × (çap ÷ 2)² × yükseklik kullanılır: 40 cm çaplı, 3 m'lik bir kolon yaklaşık 0,377 m³ eder.</p></details>
+        <details><summary>Merdiven betonu nasıl hesaplanır?</summary><p>Basamak üçgenlerinin hacmi (basamak sayısı × rıht × basamak genişliği ÷ 2) ile eğik taşıyıcı plağın hacmi (basamak sayısı × √(rıht² + basamak genişliği²) × plak kalınlığı) toplanır ve merdiven eniyle çarpılır. Sahanlıklar ayrı döşeme olarak eklenir.</p></details>
+        <details><summary>Fire oranı kaç olmalı?</summary><p>Pompayla dökülen hazır betonda genellikle yüzde 3–5, betoniyerde ya da elle karılan betonda yüzde 5–10 fire payı bırakılır. Araç varsayılan olarak yüzde 5 kullanır ve yüzde 0 ile 30 arasında değer kabul eder.</p></details>
+        <details><summary>Kaç mikser hazır beton gerekir?</summary><p>Fire dahil hacim mikser kapasitesine bölünür ve yukarı yuvarlanır. 8 m³'lük mikserle 3,15 m³ için 1 mikser, 9 m³ için 2 mikser gerekir. Kapasiteyi beton firmanıza sorup araca yazabilirsiniz.</p></details>
+        <details><summary>C20 mi C25 mi kullanmalıyım?</summary><p>Türkiye Bina Deprem Yönetmeliği 2018'in 7.2.5.1 maddesine göre betonarme binalarda C25'ten düşük dayanımlı beton kullanılamaz. C16 ve C20 grobeton, bahçe yolu ve saha betonu gibi taşıyıcı olmayan işler içindir. Taşıyıcı elemanlarda sınıfı statik proje belirler.</p></details>
+        <details><summary>Karışım oranları kesin mi?</summary><p>Hayır. Oranlar çimento tipi, agrega, nem ve kıvam için yapılan varsayımlarla hesaplanmış yaklaşık değerlerdir. Şantiye için laboratuvar karışım hesabı esastır; taşıyıcı işlerde sınıfı belgelenmiş hazır beton tercih edin.</p></details>
+        <details><summary>Ölçülerim bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Ölçüler, eleman listesi ve fiyatlar hiçbir sunucuya iletilmez, saklanmaz ve çerez ya da analiz koduyla izlenmez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç bilgilendirme amaçlıdır; statik proje, teknik şartname ve laboratuvar karışım hesabının yerine geçmez. Taşıyıcı elemanlarda yetkili bir inşaat mühendisine danışın. Yönetmelik bilgisi için <a href="https://www.resmigazete.gov.tr/eskiler/2018/03/20180318M1-2.htm" rel="noopener">Resmî Gazete'deki TBDY 2018 metnine</a> bakabilirsiniz.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../metrekare-hesapla/">Metrekare Hesaplama</a></li>
+        <li><a href="../boya-fayans-hesapla/">Boya ve Fayans Hesaplama</a></li>
+        <li><a href="../alan-cevre-hesapla/">Alan ve Çevre Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="beton-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

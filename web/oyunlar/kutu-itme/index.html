@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kutu İtme Oyna – Ücretsiz Online Kutu İtme Bulmacası (kurulumsuz)</title>
+  <meta name="description" content="Kutu itme bulmacası oyna: 50 özgün seviye, sınırsız geri al, hamle ve itme sayacı, seviye seçimi ve kayıtlı en iyi skor. Klavye, kaydırma ve ekran oklarıyla; ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kutu-itme/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. Hücre boyutu game.js'ten (--cell) gelir. */
+    .game-box {
+      padding: 14px;
+      --ki-floor: #efebe4; --ki-grid: rgba(30, 33, 38, .07); --ki-wall: #4b5058; --ki-goal: #7b2331;
+      --ki-box: #b5742c; --ki-box-edge: #74440f; --ki-box-on: #1f7a4d; --ki-box-on-edge: #11492d;
+      --ki-player: #7b2331; --ki-eye: #ffffff; --ki-mark: #ffffff; --ki-dead-bg: #a3271f; --ki-dead-fg: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .game-box { --ki-floor: #2b2e33; --ki-grid: rgba(255, 255, 255, .06); --ki-wall: #767b84; --ki-goal: #e07a93; --ki-box: #c98a3d; --ki-box-edge: #5a3610; --ki-box-on: #3fae72; --ki-box-on-edge: #0f3a22; --ki-player: #e07a93; --ki-eye: #1a1c1f; --ki-mark: #08200f; --ki-dead-bg: #ff8a80; --ki-dead-fg: #1a0d10; }
+    }
+    :root[data-theme="dark"] .game-box { --ki-floor: #2b2e33; --ki-grid: rgba(255, 255, 255, .06); --ki-wall: #767b84; --ki-goal: #e07a93; --ki-box: #c98a3d; --ki-box-edge: #5a3610; --ki-box-on: #3fae72; --ki-box-on-edge: #0f3a22; --ki-player: #e07a93; --ki-eye: #1a1c1f; --ki-mark: #08200f; --ki-dead-bg: #ff8a80; --ki-dead-fg: #1a0d10; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 48px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; display: flex; flex-direction: column; }
+    /* Ortalamayı otomatik kenar boşluğu yapar: içerik ekrandan uzunsa üst kısım (çıkış düğmesi) kaydırılarak görülebilir kalır */
+    .game-box:fullscreen > .ki-top { margin-top: auto; }
+    .game-box:fullscreen > .ki-keys { margin-bottom: auto; }
+    .ki-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; max-width: 560px; margin: 0 auto 10px; }
+    .ki-title { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-width: 0; }
+    .ki-title strong { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+    .ki-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-weight: 600; font-size: .8rem; }
+    .ki-par { font-size: .85rem; color: var(--ba-text-muted); }
+    .ki-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; flex: none; }
+    .ki-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 560px; margin: 0 auto 12px; }
+    .ki-hud > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .ki-hud dt { font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .ki-hud dd { margin: 0; font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .ki-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 560px; margin: 0 auto 12px; }
+    .ki-bar .ba-btn { min-height: 44px; padding: 6px 8px; font-size: .9rem; justify-content: center; text-align: center; }
+    @media (max-width: 520px) { .ki-bar { grid-template-columns: 1fr 1fr; } }
+
+    .ki-wrap { width: 100%; max-width: 100%; display: flex; justify-content: center; padding: 2px 0 4px; overflow: hidden; }
+    .ki-board { --cell: 32px; --w: 7; --h: 3; position: relative; display: grid; grid-template-columns: repeat(var(--w), var(--cell)); grid-auto-rows: var(--cell); width: calc(var(--w) * var(--cell)); height: calc(var(--h) * var(--cell)); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; cursor: pointer; border-radius: 6px; outline: none; }
+    .ki-board:focus-visible { box-shadow: 0 0 0 3px var(--ba-surface), 0 0 0 5px var(--ba-text); }
+    .ki-board.won { box-shadow: 0 0 0 3px var(--ba-success); }
+    .ki-t { width: var(--cell); height: var(--cell); }
+    .ki-t.f { background: var(--ki-floor); box-shadow: inset 0 0 0 .5px var(--ki-grid); }
+    .ki-t.w { background: var(--ki-wall); border-radius: 3px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .2), inset 0 2px 0 rgba(255, 255, 255, .1); }
+    .ki-t.g { position: relative; }
+    .ki-t.g::after { content: ""; position: absolute; inset: 28%; border: max(2px, calc(var(--cell) * .09)) solid var(--ki-goal); border-radius: 50%; }
+    .ki-p { position: absolute; left: 0; top: 0; width: var(--cell); height: var(--cell); transform: translate(calc(var(--x, 0) * var(--cell)), calc(var(--y, 0) * var(--cell))); transition: transform .09s linear; pointer-events: none; }
+    .ki-board.no-anim .ki-p { transition: none; }
+    .ki-box::before { content: ""; position: absolute; inset: 7%; border-radius: 4px; border: max(2px, calc(var(--cell) * .07)) solid var(--ki-box-edge); background: linear-gradient(45deg, transparent 42%, var(--ki-box-edge) 42%, var(--ki-box-edge) 58%, transparent 58%), linear-gradient(-45deg, transparent 42%, var(--ki-box-edge) 42%, var(--ki-box-edge) 58%, transparent 58%), var(--ki-box); transition: background-color .15s; }
+    .ki-box.on::before { border-color: var(--ki-box-on-edge); background: var(--ki-box-on); }
+    .ki-box.on::after { content: ""; position: absolute; left: 50%; top: 45%; width: 20%; height: 40%; border: solid var(--ki-mark); border-width: 0 max(2px, calc(var(--cell) * .1)) max(2px, calc(var(--cell) * .1)) 0; transform: translate(-50%, -50%) rotate(45deg); }
+    .ki-box.dead:not(.on)::after { content: "!"; position: absolute; right: 0; top: 0; width: 42%; height: 42%; display: grid; place-items: center; border-radius: 50%; background: var(--ki-dead-bg); color: var(--ki-dead-fg); box-shadow: 0 0 0 1.5px var(--ki-dead-fg); font-weight: 700; font-size: calc(var(--cell) * .3); line-height: 1; }
+    .ki-player::before { content: ""; position: absolute; inset: 14%; border-radius: 50%; background: radial-gradient(circle at 36% 40%, var(--ki-eye) 0 9%, transparent 10%), radial-gradient(circle at 64% 40%, var(--ki-eye) 0 9%, transparent 10%), var(--ki-player); box-shadow: 0 2px 0 rgba(0, 0, 0, .18); }
+    .ki-player.bump::before { animation: ki-bump .2s ease; }
+    @keyframes ki-bump { 40% { transform: scale(.82); } }
+    @media (prefers-reduced-motion: reduce) { .ki-p { transition: none; } .ki-player.bump::before { animation: none; } }
+
+    .ki-msg { max-width: 560px; margin: 10px auto 0; min-height: 3em; font-size: .92rem; color: var(--ba-text-2); text-align: center; overflow-wrap: anywhere; }
+    .ki-msg.warn { color: var(--ba-danger); font-weight: 600; }
+    .game-box .ba-result { max-width: 560px; margin: 10px auto 0; }
+    .game-box .ba-result .ba-actions { margin-top: 12px; }
+    .ki-pad { display: grid; grid-template-areas: ". up ." "left down right"; grid-template-columns: repeat(3, 64px); gap: 8px; justify-content: center; margin: 14px auto 0; }
+    .ki-pad .ba-btn { min-height: 52px; padding: 0; justify-content: center; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+    .ki-pad svg { width: 24px; height: 24px; }
+    #dp-up { grid-area: up; } #dp-left { grid-area: left; } #dp-down { grid-area: down; } #dp-right { grid-area: right; }
+    .ki-levels { max-width: 560px; margin: 16px auto 0; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .ki-levels summary { cursor: pointer; min-height: 46px; padding: 8px 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; font-weight: 600; }
+    .ki-levels summary span { font-weight: 500; font-size: .88rem; color: var(--ba-text-muted); font-variant-numeric: tabular-nums; }
+    .ki-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; padding: 4px 12px 14px; }
+    .ki-lv { font: inherit; font-family: var(--ba-mono); font-size: .9rem; min-height: 44px; border-radius: var(--ba-radius-sm); border: 1px solid var(--ba-border-hover); background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; position: relative; padding: 0; }
+    .ki-lv:hover { border-color: var(--ba-primary); }
+    .ki-lv.done { background: var(--ba-success-soft); border-color: var(--ba-success); }
+    .ki-lv.done::after { content: "✓"; position: absolute; top: 1px; right: 4px; font-size: .7rem; color: var(--ba-success); font-family: var(--ba-font); font-weight: 700; }
+    .ki-lv.cur { box-shadow: 0 0 0 2px var(--ba-primary) inset; font-weight: 700; }
+    .ki-keys { max-width: 560px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; overflow-wrap: anywhere; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-content kbd, .ki-keys kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Kutu İtme – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz kutu itme bulmacası: 50 özgün seviye, sınırsız geri al, hamle ve itme sayacı, seviye seçimi ve tarayıcıda saklanan en iyi skorlar.","applicationCategory":"Game","genre":["Puzzle","Bulmaca"],"playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/kutu-itme/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kutu itme oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Depo görevlisini ok tuşları, W A S D, kaydırma ya da ekran oklarıyla yürütürsünüz. Bir kutuya doğru yürüdüğünüzde kutuyu bir kare iter, kutuların tamamını halkalı hedef karelerine yerleştirdiğinizde seviyeyi bitirirsiniz."}},
+  {"@type":"Question","name":"Kutuyu çekebilir ya da iki kutuyu birlikte itebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kutular yalnızca itilebilir, asla çekilemez; aynı anda tek kutu itilebilir. Kutunun önünde duvar ya da başka bir kutu varsa o yöne hareket edemezsiniz."}},
+  {"@type":"Question","name":"Kutuyu köşeye sıkıştırdım, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Köşeye ya da hedefi olmayan bir duvar kenarına itilen kutu bir daha hedefe ulaşamaz. Oyun bu durumda kutuya kırmızı bir ünlem koyar ve sizi uyarır. Geri al düğmesi ya da Z tuşu ile hamleleri tek tek geri alabilirsiniz; geri almanın sınırı yoktur."}},
+  {"@type":"Question","name":"Hamle ile itme arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Her adım bir hamledir. Adım sırasında bir kutuyu yerinden oynattıysanız bu adım aynı zamanda bir itmedir. Hamle sayısı ne kadar yürüdüğünüzü, itme sayısı kutuları ne kadar oynattığınızı gösterir."}},
+  {"@type":"Question","name":"Seviye bilgisindeki en az itme sayısı ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Her seviye bir çözücü programla taranmıştır. En az itme, kutuları hedeflere yerleştirmek için gereken en küçük itme sayısıdır. Bu sayıyı tutturmak zorunlu değildir; kendinize hedef koymak isterseniz kullanabilirsiniz."}},
+  {"@type":"Question","name":"Tüm seviyeler gerçekten çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. 50 seviyenin her biri genişlik öncelikli arama (BFS) yapan bir çözücüyle çözülerek doğrulanmıştır. Bir seviyede takıldıysanız kutulardan biri kilitlenmiş olabilir; geri alarak ya da yeniden başlatarak devam edin."}},
+  {"@type":"Question","name":"İlerlemem ve en iyi skorlarım nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Çözdüğünüz seviyeler, her seviyedeki en iyi hamle ve itme sayınız ile yarım bıraktığınız seviyelerin hamleleri yalnızca tarayıcınızın yerel depolama alanında (localStorage) tutulur. Sunucuya gönderilmez; tarayıcı verilerini silerseniz kaybolur."}},
+  {"@type":"Question","name":"Telefonda nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Tahtanın üzerinde parmağınızı gitmek istediğiniz yöne kaydırın; parmağınızı kaldırmadan sürüklerseniz her kare boyunda bir adım daha atılır. Bir kareye dokunursanız görevli kutulara çarpmadan oraya yürür. Tahtanın altındaki yön düğmeleri de basılı tutulduğunda tekrarlar."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, internet olmadan çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez; siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Kutu İtme Oyna</span> – 50 Seviyelik Ücretsiz Online Bulmaca</h1>
+      <p class="lead">Depo görevlisini yürütün, kutuları tek tek iterek halkalı hedeflere yerleştirin. Elle seçilmiş 50 özgün seviye, sınırsız geri al, hamle ve itme sayacı, seviye seçimi ve kaydedilen en iyi skorlar; klavye, kaydırma ve ekran oklarıyla oynanır. Kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Kutu itme oyun alanı</h2>
+      <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+      <div class="ki-top">
+        <p class="ki-title"><strong id="level-label">Seviye 1 / 50</strong><span class="ki-chip" id="level-diff">Başlangıç</span><span class="ki-par" id="level-par"></span></p>
+        <button type="button" class="ba-icon-btn" id="btn-full" aria-pressed="false" hidden>Tam ekran</button>
+      </div>
+      <dl class="ki-hud" aria-label="Oyun bilgileri">
+        <div><dt>Hamle</dt><dd id="moves">0</dd></div>
+        <div><dt>İtme</dt><dd id="pushes">0</dd></div>
+        <div><dt>Hedefte</dt><dd id="on-goal">0/1</dd></div>
+        <div><dt>En iyi</dt><dd id="best">–</dd></div>
+      </dl>
+      <div class="ki-bar" role="group" aria-label="Oyun düğmeleri">
+        <button type="button" class="ba-btn" id="btn-undo" aria-keyshortcuts="Z" disabled>Geri al</button>
+        <button type="button" class="ba-btn" id="btn-restart" aria-keyshortcuts="R" disabled>Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-prev" aria-keyshortcuts="P">‹ Önceki seviye</button>
+        <button type="button" class="ba-btn" id="btn-next" aria-keyshortcuts="N">Sonraki seviye ›</button>
+      </div>
+
+      <div class="ki-wrap" id="board-wrap">
+        <div class="ki-board" id="board" tabindex="0" role="application" aria-roledescription="oyun tahtası" aria-label="Kutu itme tahtası" aria-describedby="keys-help" data-state="hazirlaniyor"></div>
+      </div>
+
+      <p id="msg" class="ki-msg" role="status" aria-live="polite">Seviye hazırlanıyor…</p>
+
+      <div class="ba-result" id="result" hidden>
+        <h3 id="result-title">Seviye tamamlandı!</h3>
+        <p id="result-text"></p>
+        <div class="ba-actions">
+          <button type="button" class="ba-btn ba-btn-primary" id="btn-next-level">Sonraki seviye</button>
+          <button type="button" class="ba-btn" id="btn-replay">Bu seviyeyi yeniden oyna</button>
+        </div>
+      </div>
+
+      <div class="ki-pad" role="group" aria-label="Yön düğmeleri">
+        <button id="dp-up" class="ba-btn" type="button" aria-label="Yukarı"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6l8 12H4z" fill="currentColor"/></svg></button>
+        <button id="dp-left" class="ba-btn" type="button" aria-label="Sola"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12l12-8v16z" fill="currentColor"/></svg></button>
+        <button id="dp-down" class="ba-btn" type="button" aria-label="Aşağı"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18L4 6h16z" fill="currentColor"/></svg></button>
+        <button id="dp-right" class="ba-btn" type="button" aria-label="Sağa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 12L6 4v16z" fill="currentColor"/></svg></button>
+      </div>
+
+      <details class="ki-levels" id="levels">
+        <summary>Seviye seç <span id="progress">0/50 çözüldü</span></summary>
+        <div class="ki-grid" id="level-grid"></div>
+      </details>
+      <p class="ki-keys" id="keys-help">Klavye: <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> ya da <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> yürür ve iter; <kbd>Z</kbd>, <kbd>U</kbd> veya <kbd>Backspace</kbd> geri alır; <kbd>R</kbd> yeniden başlatır; <kbd>N</kbd> sonraki, <kbd>P</kbd> önceki seviye. Dokunmatik ekranda tahtada parmağınızı kaydırın ya da bir kareye dokunun. İlerlemeniz bu tarayıcıda otomatik kaydedilir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kutu-itme-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Kutu itme oyunu nedir?</h2>
+      <p>Kutu itme, küçük bir depoda dolaşan bir görevliyi yönettiğiniz ve dağınık duran kutuları işaretli yerlerine taşımaya çalıştığınız klasik bir mantık bulmacasıdır. Kurallar bir dakikada öğrenilir: görevli yalnızca yukarı, aşağı, sola ve sağa yürür; bir kutuya doğru yürürse kutuyu bir kare iter. Kutular asla çekilemez ve aynı anda yalnızca tek kutu itilebilir. Bu kadar basit kuralların arkasında ise şaşırtıcı derecede derin bir düşünme oyunu saklıdır, çünkü yanlış yere itilen tek bir kutu bütün seviyeyi çözümsüz bırakabilir.</p>
+      <p>Bu sayfadaki oyunu hiçbir şey indirmeden, üye olmadan ve e-posta adresi vermeden doğrudan tarayıcınızda oynayabilirsiniz. Oyunun tamamı bilgisayarınızda ya da telefonunuzda çalışır; çözdüğünüz seviyeler ve en iyi skorlarınız yalnızca tarayıcınızın yerel depolama alanında durur. Oyun alanı reklamsızdır, sayfadaki reklamlar yalnızca oyun kutusunun dışında, içerik bölümlerinin arasında yer alır.</p>
+
+      <h2>Kutu itme nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Tahtayı tanıyın.</strong> Gri, kabartmalı kareler duvardır; ince çizgili düz kareler görevlinin yürüyebildiği zemindir. İçinde halka olan kareler hedeflerdir. Kahverengi çapraz desenli kareler kutular, iki gözlü yuvarlak simge ise sizin yönettiğiniz görevlidir.</li>
+        <li><strong>Yürüyün ve itin.</strong> Ok tuşları ya da W A S D ile görevliyi yürütün. Bir kutunun yanında durup ona doğru ilerlerseniz kutu bir kare kayar. Kutunun önünde duvar ya da başka bir kutu varsa hareket olmaz.</li>
+        <li><strong>Kutuları hedeflere yerleştirin.</strong> Hedefe oturan kutu yeşile döner, üzerindeki çarpı onay işaretine dönüşür ve üstteki "Hedefte" sayacı artar. Bir kutuyu hedeften yeniden çıkarmak serbesttir; bazen yer açmak için bu gerekir.</li>
+        <li><strong>Hata yaparsanız geri alın.</strong> Geri al düğmesi ya da Z tuşu son hamleyi geri alır ve bunu istediğiniz kadar tekrarlayabilirsiniz. Yeniden başlat seviyeyi baştan kurar; fikrinizi değiştirirseniz yeniden başlatmayı da geri alabilirsiniz.</li>
+        <li><strong>Seviyeyi bitirin.</strong> Kutuların tamamı hedefte olduğunda seviye çözülür, hamle ve itme sayınız kaydedilir ve sıradaki seviyeye tek tuşla geçersiniz.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Ok tuşları ya da W A S D yürür ve iter. Z, U ya da Backspace (ve Ctrl+Z) son hamleyi geri alır, R seviyeyi yeniden başlatır, N sonraki ve P önceki seviyeyi açar. Tuşlar, oyun tahtası ekranda görünürken ya da odak oyun kutusundayken çalışır; aşağıdaki yazıları okurken ok tuşları sayfayı normal biçimde kaydırır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Tahtanın üzerinde parmağınızı gitmek istediğiniz yöne kaydırın. Parmağınızı kaldırmadan sürüklemeye devam ederseniz her kare boyunda bir adım daha atılır. Görevlinin yanındaki bir kareye dokunmak o yöne bir adım attırır, uzaktaki boş bir kareye dokunmak ise görevliyi kutulara çarpmadan oraya yürütür.</li>
+        <li><strong>Fare:</strong> Bir kareye tıklamak dokunmatik ekrandaki gibi çalışır; uzun yürüyüşler tek tıkla yapılır ve geri al bu yürüyüşü tek seferde geri alır.</li>
+        <li><strong>Ekran okları:</strong> Tahtanın altındaki dört yön düğmesi tek dokunuşta bir adım atar, basılı tutulduğunda adımları tekrarlar. Klavyeyle Tab tuşuyla bu düğmelere gelip Enter ya da Boşluk ile de kullanabilirsiniz.</li>
+        <li><strong>Tam ekran:</strong> Oyun kutusunun sağ üstündeki Tam ekran düğmesi yalnızca oyun alanını ekrana yayar; dikkatinizi dağıtan başka bir şey kalmaz. Esc tuşu ya da aynı düğme tam ekrandan çıkarır.</li>
+      </ul>
+
+      <h2>Hamle, itme ve en iyi skor</h2>
+      <p>Attığınız her adım bir hamledir. Adım sırasında bir kutu yerinden oynadıysa bu adım aynı zamanda bir itme sayılır. Üstteki sayaçlar iki değeri de anlık gösterir. Seviye bilgisinde yazan "en az itme" sayısı, o seviyenin bir çözücü programla bulunan en kısa itme sayısıdır; kutuları bundan daha az itmeyle hedeflere yerleştirmek mümkün değildir. Bu sayıyı tutturmak zorunlu değil, ama kendinize hedef koymayı sevenler için iyi bir ölçüdür.</p>
+      <p>Bir seviyeyi çözdüğünüzde hamle ve itme sayınız o seviyenin en iyi skoruyla karşılaştırılır. Daha az hamleyle bitirirseniz yeni rekor kaydedilir; hamle sayısı eşitse daha az itme kazanır. Seviye seçim listesinde çözdüğünüz seviyeler yeşil bir onay işaretiyle görünür, üstteki sayaç da kaç seviyeyi bitirdiğinizi gösterir. Yarım bıraktığınız seviyeler de hamle hamle saklanır; sayfayı kapatıp yeniden açtığınızda kaldığınız yerden, geri al geçmişi dahil devam edersiniz.</p>
+
+      <div class="ba-ad" data-slot="oyun-kutu-itme-b" aria-label="Reklam"></div>
+
+      <h2>Kutu itme stratejileri ve ipuçları</h2>
+      <ul>
+        <li><strong>Köşelerden kaçının.</strong> İki duvarın birleştiği köşeye itilen kutu bir daha hiçbir yöne itilemez. Köşe bir hedef değilse seviye artık çözülemez. Oyun böyle bir kutuya kırmızı ünlem koyar; gördüğünüz anda geri alın.</li>
+        <li><strong>Duvar kenarlarına dikkat edin.</strong> Bir kutuyu düz bir duvara yasladığınızda onu yalnızca duvar boyunca kaydırabilirsiniz. O duvar boyunca hiç hedef yoksa kutu kilitlenmiş demektir.</li>
+        <li><strong>2×2 kilitlerini tanıyın.</strong> Dört kareden oluşan bir blokta kutular ve duvarlar birbirine dayanırsa hiçbiri kıpırdayamaz. Hedefte olmayan bir kutu böyle bir bloğa girerse oyun sizi uyarır.</li>
+        <li><strong>Önce plan yapın.</strong> İlk hamleden önce hangi kutunun hangi hedefe gideceğini düşünün. Dar koridorlarda kutuların sırası çok önemlidir; en arkadaki hedefi önce doldurmak çoğu zaman yolu açık tutar.</li>
+        <li><strong>Geriye doğru düşünün.</strong> Son kutunun hedefe hangi yönden girmesi gerektiğini bulun ve oradan geriye doğru akıl yürütün. Görevlinin kutunun arkasına geçebilmesi için gereken boşluğu hep hesaba katın.</li>
+        <li><strong>Yol kapatmayın.</strong> Bir kutuyu koridorun ağzına bırakmak görevlinin seviyenin diğer yarısına geçmesini engelleyebilir. Kutuları park ederken görevlinin dolaşabileceği bir yol bırakın.</li>
+        <li><strong>Hedefi geçici park yeri olarak kullanın.</strong> Bir kutuyu hedefe koyup sonra yeniden çıkarmak serbesttir. Kalabalık seviyelerde bu, diğer kutulara yer açmanın en kolay yoludur.</li>
+        <li><strong>Geri almaktan çekinmeyin.</strong> Geri alma ceza getirmez, sınırı da yoktur. Denemek, yanılmak ve birkaç adım geri dönmek bu bulmacanın doğal parçasıdır.</li>
+      </ul>
+
+      <h2>Seviyeler nasıl hazırlandı?</h2>
+      <p>Oyundaki 50 seviyenin tamamı Bilişim Ajans tarafından bu oyun için özgün olarak hazırlandı; başka bir seviye setinden kopyalanmadı. İlk dört seviye kuralları öğreten küçük, elle çizilmiş odalardır. Diğerleri bilgisayar destekli bir yöntemle oluşturuldu: önce rastgele bir depo planı çizildi, kutular hedeflerin üzerine konuldu ve program kutuları hedeflerden geriye doğru "çekerek" en uzun çözüm gerektiren başlangıç durumunu aradı. Ortaya çıkan yüzlerce aday arasından en ilginç olanlar seçildi.</p>
+      <p>Seçilen her seviye, olası bütün itme durumlarını genişlik öncelikli arama (BFS) ile tarayan bir çözücüyle yeniden çözüldü. Böylece her seviyenin gerçekten çözülebildiği ve gereken en az itme sayısı kesin olarak bilinir. Seviyeler zorluk sırasıyla dizilmiştir: 4 başlangıç, 12 kolay (iki kutu), 18 orta (üç kutu), 12 zor (dört kutu) ve 4 uzman (beş kutu) seviyesi. Hepsi en fazla on kare genişliğinde olduğundan telefon ekranına da rahatça sığar.</p>
+
+      <h2>Türün kısa tarihi</h2>
+      <p>Kutu itme bulmacaları 1980'lerin başında Japonya'da ev bilgisayarları için yayımlanan bir oyunla tanındı. Tür, dünyada bugün hâlâ o ilk oyunun Japonca "depo bekçisi" anlamına gelen adı Sokoban ile anılır. Kısa sürede farklı bilgisayarlara ve oyun konsollarına uyarlandı, sonra da bulmaca meraklılarının kendi seviyelerini tasarlayıp paylaştığı büyük bir topluluk oluştu. Bugün binlerce farklı seviye vardır ve bunların bir kısmı deneyimli oyuncuları bile saatlerce düşündürür.</p>
+      <p>Kutu itme bilgisayar bilimi için de ilginç bir konudur. 1990'ların sonunda yapılan çalışmalar, genel kutu itme probleminin bilgisayarlar için de çok zor (PSPACE-tam) bir problem olduğunu gösterdi. Bu nedenle tür, yapay zekâ ve planlama algoritmalarının sınandığı klasik problemlerden biri hâline geldi. Bu sayfadaki küçük seviyeler ise bir çözücünün saniyeler içinde tarayabileceği boyuttadır; zorluğu insan için ilginç kılan, çözümün doğru sırayı bulmayı gerektirmesidir.</p>
+
+      <h2>Neden Bilişim Ajans kutu itme oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, ilk adımı atın; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Adil seviyeler.</strong> Her seviyenin çözülebildiği bir çözücüyle doğrulandı; şansa kalan ya da imkânsız seviye yoktur.</li>
+        <li><strong>Sınırsız geri al.</strong> Hatalar cezalandırılmaz; istediğiniz kadar geri dönebilir, yeniden başlatmayı bile geri alabilirsiniz.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişliğindeki telefonlarda da sığar; kaydırma, dokunma, ekran okları ve klavye birlikte çalışır.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun tahtasının ve düğmelerin yanında asla görünmez.</li>
+        <li><strong>Gizlilik.</strong> Oyunun kendisi çerez, izleme kodu ya da hesap kullanmaz; sayfadaki tek dış öğe oyun alanının dışındaki reklam alanlarıdır. İlerlemeniz ve skorlarınız kendi cihazınızda saklanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kutu itme oyunu nasıl oynanır?</summary><p>Depo görevlisini ok tuşları, W A S D, kaydırma ya da ekran oklarıyla yürütürsünüz. Bir kutuya doğru yürüdüğünüzde kutuyu bir kare iter, kutuların tamamını halkalı hedef karelerine yerleştirdiğinizde seviyeyi bitirirsiniz. İlk dört seviye kuralları adım adım öğretir.</p></details>
+        <details><summary>Kutuyu çekebilir ya da iki kutuyu birlikte itebilir miyim?</summary><p>Hayır. Kutular yalnızca itilebilir, asla çekilemez; aynı anda tek kutu itilebilir. Kutunun önünde duvar ya da başka bir kutu varsa o yöne hareket edemezsiniz. Bulmacanın bütün zorluğu bu iki kuraldan doğar.</p></details>
+        <details><summary>Kutuyu köşeye sıkıştırdım, ne yapmalıyım?</summary><p>Köşeye ya da hedefi olmayan bir duvar kenarına itilen kutu bir daha hedefe ulaşamaz. Oyun bu durumda kutuya kırmızı bir ünlem koyar ve tahtanın altında sizi uyarır. Geri al düğmesi ya da Z tuşu ile hamleleri tek tek geri alabilirsiniz; geri almanın sınırı yoktur.</p></details>
+        <details><summary>Hamle ile itme arasındaki fark nedir?</summary><p>Her adım bir hamledir. Adım sırasında bir kutuyu yerinden oynattıysanız bu adım aynı zamanda bir itmedir. Hamle sayısı ne kadar yürüdüğünüzü, itme sayısı kutuları ne kadar oynattığınızı gösterir. En iyi skor önce hamleye, eşitlikte itmeye göre belirlenir.</p></details>
+        <details><summary>Seviye bilgisindeki en az itme sayısı ne anlama gelir?</summary><p>Her seviye bir çözücü programla taranmıştır. En az itme, kutuları hedeflere yerleştirmek için gereken en küçük itme sayısıdır. Bu sayıyı tutturmak zorunlu değildir; kendinize hedef koymak isterseniz kullanabilirsiniz. Tutturursanız seviye sonunda bunu belirten bir not görürsünüz.</p></details>
+        <details><summary>Tüm seviyeler gerçekten çözülebilir mi?</summary><p>Evet. 50 seviyenin her biri genişlik öncelikli arama (BFS) yapan bir çözücüyle çözülerek doğrulanmıştır. Bir seviyede takıldıysanız kutulardan biri kilitlenmiş olabilir; geri alarak ya da yeniden başlatarak devam edin.</p></details>
+        <details><summary>İlerlemem ve en iyi skorlarım nerede saklanıyor?</summary><p>Çözdüğünüz seviyeler, her seviyedeki en iyi hamle ve itme sayınız ile yarım bıraktığınız seviyelerin hamleleri yalnızca tarayıcınızın yerel depolama alanında (localStorage) tutulur. Sunucuya gönderilmez, başka cihazlarla eşitlenmez; tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız kaybolur.</p></details>
+        <details><summary>Telefonda nasıl oynarım?</summary><p>Tahtanın üzerinde parmağınızı gitmek istediğiniz yöne kaydırın; parmağınızı kaldırmadan sürüklerseniz her kare boyunda bir adım daha atılır. Bir kareye dokunursanız görevli kutulara çarpmadan oraya yürür. Tahtanın altındaki yön düğmeleri de basılı tutulduğunda tekrarlar. Telefonu yan çevirmeye gerek yoktur.</p></details>
+        <details><summary>Oyun ücretsiz mi, internet olmadan çalışır mı?</summary><p>Oyun tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez; siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz ve hiçbir dosya yüklemez. Seviye ilerlemeniz ve skorlarınız yalnızca tarayıcınızın yerel depolama alanında durur; bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../labirent/">Labirent</a></li>
+        <li><a href="../nonogram/">Nonogram</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kutu-itme-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, FileChooser } from '@playwright/test';
 import { trackExternalRequests, expectNoConsoleErrors } from './helpers';
 import { PNG } from 'pngjs';
 import { readFileSync } from 'node:fs';
@@ -235,10 +235,29 @@ test.describe('Resimden Renk Paleti', () => {
   });
 
   test('klavye: dosya seçme alanına odaklanıp Enter dosya penceresini açar', async ({ page }) => {
+    // Dinleyici sayfa açılmadan kurulur. Playwright 'filechooser' aboneliğini tarayıcıya beklemeden
+    // iletir; dinleyici tuşla aynı anda eklenirse (Promise.all) Chromium yük altında yakalama devreye
+    // girmeden gerçek pencereyi açar, headless onu hemen iptal eder ve olay hiç gelmez (CI'da aralıklı
+    // 60 sn zaman aşımı). Uygulama doğru çalışıyordu: keydown → kullanıcı etkinleşmesiyle input.click().
+    const choosers: FileChooser[] = [];
+    page.on('filechooser', (c) => choosers.push(c));
     await open(page);
-    await page.locator('#drop').focus();
-    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.keyboard.press('Enter')]);
+    const drop = page.locator('#drop');
+    await drop.focus();
+    await expect(drop).toBeFocused();
+    expect(choosers).toHaveLength(0); // sayfa açılırken kendiliğinden pencere açılmaz
+    await page.keyboard.press('Enter');
+    await expect.poll(() => choosers.length).toBe(1);
+    const chooser = choosers[0];
     expect(chooser.isMultiple()).toBe(false);
+    expect(await chooser.element().evaluate((el) => (el as HTMLInputElement).accept)).toBe('image/*');
+    // klavyeyle açılan pencereden seçilen resim gerçekten işlenir
+    await chooser.setFiles({ name: 'dort-renk.png', mimeType: 'image/png', buffer: quadrantPng() });
+    await expect(page.locator('#pal-list li')).toHaveCount(4);
+    // role="button" olduğu için Boşluk tuşu da pencereyi açar
+    await drop.focus();
+    await page.keyboard.press('Space');
+    await expect.poll(() => choosers.length).toBe(2);
   });
 
   test('sayfa içeriği: ≥900 kelime, 3 reklam alanı (araç kutusunun dışında), SSS ≥7, JSON-LD, gizlilik rozeti', async ({ page }) => {
