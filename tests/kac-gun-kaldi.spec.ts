@@ -44,6 +44,10 @@ test.describe('Kaç Gün Kaldı Sayacı', () => {
     await expect(page.locator('#c-days')).toHaveText(String(ny));
     await page.locator('#preset').selectOption('kurban-bayrami');
     await expect(page.locator('#tarih')).toHaveValue('2027-05-16');
+    // Kurban Bayramı 2027 Diyanet takvimiyle kesin: tahmin uyarısı yok
+    await expect(page.locator('#approx')).toBeHidden();
+    await page.locator('#preset').selectOption('okullarin-acilmasi');
+    await expect(page.locator('#tarih')).toHaveValue('2027-09-13');
     await expect(page.locator('#approx')).toBeVisible();
     await page.locator('#tarih').fill('2026-12-31');
     await page.locator('#ad').fill('Yılın son günü');
@@ -81,7 +85,10 @@ test.describe('Kaç Gün Kaldı Sayacı', () => {
     for (const id of ['yilbasi', 'ramazan-bayrami', 'kurban-bayrami', '23-nisan', '19-mayis', '29-ekim', 'yks', 'lgs', 'kpss', 'yaz-tatili', 'okullarin-acilmasi']) {
       await expect(page.locator(`[id="${id}"] .kg-live`)).toContainText('gün kaldı');
     }
-    await expect(page.locator('#yks .kg-live')).toContainText('tahmini');
+    // YKS ÖSYM takvimiyle kesin; 2027-28 okul açılışı henüz yayımlanmadığı için tahmini
+    await expect(page.locator('#yks .kg-live')).not.toContainText('tahmini');
+    await expect(page.locator('#yks .kg-live')).toContainText('19 Haziran 2027');
+    await expect(page.locator('#okullarin-acilmasi .kg-live')).toContainText('tahmini');
     await expect(page.locator('#yilbasi .kg-live')).toContainText('58 gün kaldı');
   });
 });

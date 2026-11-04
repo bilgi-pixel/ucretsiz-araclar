@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { trackExternalRequests, expectNoConsoleErrors } from './helpers';
 
 test.describe('Bağ-Kur Primi Hesaplama', () => {
-  test('alt sınır 33.030 × 0,345 = 11.395,35; indirimle 9.743,85; dış istek yok', async ({ page }) => {
+  test('alt sınır 33.030 × 0,3575 = 11.808,23; indirimle 10.156,73; dış istek yok', async ({ page }) => {
     const external = trackExternalRequests(page);
     const noErrors = await expectNoConsoleErrors(page);
     await page.goto('/bagkur-primi-hesapla/');
@@ -10,16 +10,16 @@ test.describe('Bağ-Kur Primi Hesaplama', () => {
     await expect(page.locator('#status option').first()).toBeAttached();
     await page.locator('#calc').click();
     await expect(page.locator('#r-pek')).toHaveText('33.030,00 TL');
-    await expect(page.locator('#r-monthly')).toHaveText('11.395,35 TL');
-    await expect(page.locator('#r-yearly')).toHaveText('136.744,20 TL');
+    await expect(page.locator('#r-monthly')).toHaveText('11.808,23 TL');
+    await expect(page.locator('#r-yearly')).toHaveText('141.698,76 TL');
     await page.locator('#discount').check();
     await page.locator('#calc').click();
-    await expect(page.locator('#r-monthly')).toHaveText('9.743,85 TL');
+    await expect(page.locator('#r-monthly')).toHaveText('10.156,73 TL');
     await expect(page.locator('#r-saving')).toHaveText('1.651,50 TL');
-    // üst sınır: 33.030 × 7,5 = 247.725 → uygulanır ve not düşer
+    // üst sınır: 33.030 × 9 = 297.270 → uygulanır ve not düşer
     await page.locator('#pek').fill('1.000.000');
     await page.locator('#calc').click();
-    await expect(page.locator('#r-pek')).toHaveText('247.725,00 TL');
+    await expect(page.locator('#r-pek')).toHaveText('297.270,00 TL');
     await expect(page.locator('#r-note')).toContainText('üst sınır');
     expect(external).toEqual([]);
     noErrors();

@@ -39,14 +39,14 @@ test.describe('Resmî Tatiller', () => {
     expect(errors).toEqual([]);
   });
 
-  test('2027: bayram tarihleri ve yaklaşık uyarısı', async ({ page }) => {
+  test('2027: bayram tarihleri (Diyanet takvimi, uyarı yok)', async ({ page }) => {
     await page.goto('/resmi-tatiller/');
     await expect(page.locator('html[data-ready="1"]')).toHaveCount(1);
     await page.locator('#year').selectOption('2027');
     await expect(page.locator('#tbl-body')).toContainText('9 Mart 2027');
     await expect(page.locator('#tbl-body')).toContainText('16 Mayıs 2027');
-    await expect(page.locator('#year-note')).toBeVisible();
-    await expect(page.locator('#year-note')).toContainText('Resmî Gazete');
+    // 2027 dini bayram tarihleri Diyanet takvimiyle kesin: yaklaşık uyarısı yok
+    await expect(page.locator('#year-note')).toBeHidden();
     // 19 Mayıs ile Kurban 4. günü çakışır: benzersiz gün sayısı 1+3+1+1+4+1+1+1 = 13
     await expect(page.locator('#s-total')).toHaveText('13 gün');
   });
