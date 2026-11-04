@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Mahjong Eşleştirme Oyna – Ücretsiz Online Taş Eşleştirme (kurulumsuz)</title>
+  <meta name="description" content="Online mahjong taş eşleştirme oyunu: kaplumbağa, piramit ve kale yerleşimleri, ipucu, karıştır ve geri al. Her dağıtım çözülebilir. Süre ve en iyi süre tutulur. Ücretsiz, kayıtsız, kurulumsuz; para ve bahis yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/mahjong-eslestirme/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Taş renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 480px) { .game-box { padding: 12px 8px; } }
+    .mj-layout { display: grid; gap: 20px; }
+    @media (min-width: 960px) { .mj-layout { grid-template-columns: minmax(0, 1fr) 280px; align-items: start; } }
+    .mj-main, .mj-side { min-width: 0; }
+    .mj-status { margin: 0 0 12px; padding: 10px 14px; min-height: 3em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .92rem; }
+    .mj-felt { position: relative; background: #1f6b46; background-image: radial-gradient(circle at 50% 40%, #2a8057, #165338); border-radius: 14px; padding: 8px; box-shadow: inset 0 0 0 3px #0e3a27, 0 4px 14px rgba(30, 33, 38, .25); }
+    .mj-wrap { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .mj-board { position: relative; margin: 0 auto; }
+    .mj-tile { position: absolute; display: block; margin: 0; padding: 2px; appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer; border-radius: 5px; border: 1px solid #8b7a45; background: linear-gradient(160deg, #fffdf2, #efe6c4); box-shadow: 2px 2px 0 #c9b676, 3px 3px 0 #86733a, 4px 5px 5px rgba(0, 0, 0, .35); -webkit-tap-highlight-color: transparent; color: #16181d; }
+    .mj-tile svg { display: block; width: 100%; height: 100%; pointer-events: none; }
+    .mj-tile.blocked { filter: brightness(.78) saturate(.8); }
+    .mj-tile.sel { outline: 3px solid #1a73e8; outline-offset: 1px; filter: none; }
+    .mj-tile.hint { outline: 3px solid #f5c542; outline-offset: 1px; filter: none; animation: mj-pulse .9s ease-in-out infinite alternate; }
+    .mj-tile:focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; }
+    @keyframes mj-pulse { from { box-shadow: 2px 2px 0 #c9b676, 3px 3px 0 #86733a, 0 0 0 0 rgba(245, 197, 66, .8); } to { box-shadow: 2px 2px 0 #c9b676, 3px 3px 0 #86733a, 0 0 10px 4px rgba(245, 197, 66, .8); } }
+    @media (prefers-reduced-motion: reduce) { .mj-tile.hint { animation: none; } }
+    .game-box.no-hints .mj-tile.blocked { filter: none; }
+    .mj-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0 0 12px; }
+    .mj-it { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 6px 10px; }
+    .mj-it strong { display: block; font-size: .8rem; color: var(--ba-text-muted); font-weight: 600; }
+    .mj-it .num { display: block; font-family: var(--ba-mono); font-size: 1.4rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .mj-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .mj-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .mj-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .mj-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .mj-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 14px; }
+    .mj-stats { margin: 0 0 8px; font-size: .85rem; color: var(--ba-text-muted); }
+    .mj-note { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .mj-win { position: absolute; z-index: 500; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(94%, 380px); padding: 14px; text-align: center; background: var(--ba-surface); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+    .mj-win[hidden] { display: none; }
+    .mj-win h3 { margin: 0 0 8px; font-size: 1.15rem; color: var(--ba-text); }
+    .mj-win p { margin: 0 0 12px; font-size: .9rem; color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.mj-ad-a { margin-top: 56px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Taş Eşleştirme (Mahjong Solitaire) – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz mahjong taş eşleştirme oyunu: üç yerleşim, ipucu, karıştır, geri al ve süre sayacı. Her dağıtım çözülebilir; para ve bahis içermez.","inLanguage":"tr","genre":["Bulmaca","Taş eşleştirme"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/mahjong-eslestirme/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Mahjong taş eşleştirme nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Tahtadaki aynı iki serbest taşı sırayla tıklayarak kaldırırsınız. Bütün taşlar kalkınca oyunu kazanırsınız. Serbest taş, üstünde başka taş olmayan ve sağ ya da sol kenarı boş olan taştır."}},
+  {"@type":"Question","name":"Hangi taşlar serbesttir?","acceptedAnswer":{"@type":"Answer","text":"Üstünde başka bir taş bulunmayan ve aynı zamanda sağ kenarı ya da sol kenarı (en az biri) açık olan taş serbesttir. Sağı ve solu aynı anda komşu taşlarla kapalı olan taş ya da üstü örtülü taş seçilemez."}},
+  {"@type":"Question","name":"Çiçek ve mevsim taşları nasıl eşleşir?","acceptedAnswer":{"@type":"Answer","text":"Dört çiçek taşı kendi aralarında, dört mevsim taşı da kendi aralarında eşleşir; numaraları farklı olsa bile iki çiçek ya da iki mevsim taşı bir çifttir. Diğer bütün taşlar yalnızca birebir aynı yüzle eşleşir."}},
+  {"@type":"Question","name":"Her dağıtım çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Taşlar rastgele serilmez; oyunun tersi yönde, her adımda serbest iki taş koyarak kurulur. Bu yüzden başlangıçta en az bir çözüm vardır. Yine de yanlış çiftler seçerek çıkmaza girebilirsiniz; bu durumda geri alabilir ya da karıştırabilirsiniz."}},
+  {"@type":"Question","name":"Hamle kalmazsa ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Geri al düğmesiyle son hamleleri geri alabilir ya da Karıştır düğmesiyle kalan taşları yeniden dağıtabilirsiniz. Karıştırma sonrası düzen de çözülebilir olarak kurulur."}},
+  {"@type":"Question","name":"İpucu nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"İpucu düğmesi, oyunu bitirmeye götüren bir çifti sarı çerçeveyle işaretler. Bilinen çözümden sapmadıysanız bu çift doğrudan çözüm sırasından gelir; sapmışsanız oyun yeniden çözüm arar."}},
+  {"@type":"Question","name":"Süre ve en iyi süre nerede tutulur?","acceptedAnswer":{"@type":"Answer","text":"Süre oyun başladığında işlemeye başlar ve tahta temizlenince durur. Her yerleşim için en iyi süreniz yalnızca bu cihazın tarayıcı belleğinde saklanır; istediğiniz zaman sıfırlayabilirsiniz."}},
+  {"@type":"Question","name":"Bu oyunda para ya da bahis var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Oyun yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir bulmacadır. Veriler sunucuya gönderilmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Mahjong Eşleştirme Oyna</span> – Ücretsiz Online Taş Eşleştirme</h1>
+      <p class="lead">Katman katman dizilmiş taşlardan aynı olan iki serbest taşı seçip kaldırın, tahtayı temizleyin. Kaplumbağa, piramit ve kale olmak üzere üç yerleşim, ipucu, karıştır ve geri al düğmeleri, süre ve en iyi süre sayacı vardır. Her dağıtım çözülebilirdir. Kurulum ve kayıt yok, oyununuz bilgisayarınızdan çıkmaz. Oyunda para, bahis ya da ödül yoktur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="mj-box" class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Taş eşleştirme oyunu</h2>
+      <div class="mj-layout">
+        <div class="mj-main">
+          <p id="mj-status" class="mj-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <div class="mj-felt">
+            <div id="mj-wrap" class="mj-wrap"><div id="mj-board" class="mj-board" role="group" aria-label="Oyun tahtası"></div></div>
+            <div id="mj-win" class="mj-win" role="dialog" aria-labelledby="mj-win-title" hidden>
+              <h3 id="mj-win-title">Tebrikler!</h3>
+              <p id="mj-win-text"></p>
+              <button id="mj-win-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button>
+            </div>
+          </div>
+          <p class="mj-note">Aynı iki serbest taşa sırayla tıklayın (klavyede Sekme ve Enter). Parlak taşlar serbesttir; koyu taşlar kapalıdır.</p>
+        </div>
+        <div class="mj-side">
+          <div class="mj-info" aria-label="Oyun durumu">
+            <div class="mj-it"><strong>Süre</strong><span class="num" id="mj-time">0:00</span></div>
+            <div class="mj-it"><strong>En iyi süre</strong><span class="num" id="mj-best">—</span></div>
+            <div class="mj-it"><strong>Kalan taş</strong><span class="num" id="mj-left">0</span></div>
+            <div class="mj-it"><strong>Serbest çift</strong><span class="num" id="mj-pairs">0</span></div>
+          </div>
+          <div class="mj-field"><label for="mj-layout">Yerleşim</label><select id="mj-layout"><option value="kaplumbaga">Kaplumbağa (144 taş)</option><option value="piramit">Piramit (80 taş)</option><option value="kale">Kale (60 taş)</option></select></div>
+          <label class="mj-check"><input type="checkbox" id="mj-hints" checked> Kapalı taşları karart</label>
+          <div class="mj-actions">
+            <button id="mj-hint" class="ba-btn" type="button">İpucu</button>
+            <button id="mj-shuffle" class="ba-btn" type="button">Karıştır</button>
+            <button id="mj-undo" class="ba-btn" type="button">Geri al</button>
+            <button id="mj-new" class="ba-btn" type="button">Yeni oyun</button>
+            <button id="mj-full" class="ba-btn" type="button">Tam ekran</button>
+          </div>
+          <p id="mj-stats" class="mj-stats"></p>
+          <button id="mj-stats-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button>
+          <p class="mj-note">Bu oyun yalnızca eğlence içindir: para, bahis ve ödül yoktur.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad mj-ad-a" data-slot="oyun-mahjong-eslestirme-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Mahjong taş eşleştirme nedir?</h2>
+      <p>Taş eşleştirme, tek kişilik oynanan, sakin bir bulmaca oyunudur. Tahtada üst üste ve yan yana dizilmiş taşlar vardır; amaç aynı yüzü taşıyan iki taşı bulup birlikte kaldırmak ve bunu tahta tamamen boşalana kadar sürdürmektir. Oyunun ilham aldığı gerçek mahjong ise dört kişiyle oynanan, Çin kökenli bir masa oyunudur; burada oynadığınız sürüm ise o oyunun taş takımını kullanan ayrı bir tek kişilik bulmacadır. Kuralları öğrenmek bir dakika sürer, ama iyi oynamak için üst katmanları ve taşların birbirini kilitleme biçimini önceden görebilmek gerekir. Bu sayfada oyunu ücretsiz, kurulum yapmadan ve kayıt olmadan oynayabilirsiniz. Taşların hepsi bu sayfaya özel çizilmiş sade simgelerdir; hiçbir marka görseli ya da hazır oyun varlığı kullanılmaz.</p>
+      <p>Taş eşleştirme oyunlarının tarihi, bilgisayarların masaüstü oyunlarıyla birlikte yaygınlaşmıştır. Çok sayıda ücretsiz sürümü bulunur ve her biri aynı temel fikri farklı yerleşim ve taş çizimleriyle sunar. Bu sürüm, aynı fikri Türkçe arayüz, klavye desteği ve mobil uyumla sunar.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Bir yerleşim seçin.</strong> Sağ paneldeki listeden kaplumbağa, piramit ya da kale yerleşimini seçin. İlk kez oynuyorsanız 60 taşlı kale yerleşimiyle başlamak iyi bir fikirdir.</li>
+        <li><strong>Serbest bir taş seçin.</strong> Parlak görünen taşlar serbesttir. Tıkladığınızda mavi çerçeveyle seçilir.</li>
+        <li><strong>Eşini seçin.</strong> Aynı yüzü taşıyan başka bir serbest taşa tıklayın. İki taş birlikte kaybolur.</li>
+        <li><strong>Eşleşmiyorsa seçim değişir.</strong> Farklı yüzlü bir taşa tıklarsanız yeni taş seçilir; yanlış bir hamle yapmış sayılmazsınız.</li>
+        <li><strong>Tahtayı temizleyin.</strong> Tüm taşları kaldırdığınızda oyun biter ve süreniz kaydedilir.</li>
+      </ol>
+
+      <h2>Serbest taş nedir?</h2>
+      <p>Oyunun temel kuralı, hangi taşın seçilebileceğidir. Bir taşın serbest sayılması için iki koşul birlikte sağlanmalıdır. Birincisi, üzerinde başka bir taş olmamalıdır. İkincisi, sol kenarı ya da sağ kenarı boş olmalıdır; yani iki yanından biri komşu bir taşla kapalı değilse yeterlidir. Aynı satırda iki yanı da kapalı olan bir taş, komşularından biri kalkana kadar seçilemez. Üst katman taşları genellikle serbesttir, çünkü üstlerini örten bir şey yoktur. Alt katmandaki taşlar ise üstlerindeki taşlar kalkana kadar bekler. Bu yüzden iyi bir oyuncu önce üst katmanları ve sıraların uçlarını temizler.</p>
+
+      <h2>Taş takımı</h2>
+      <p>Oyunda 144 taşlık klasik bir takım kullanılır. Küçük yerleşimlerde bu takımın bir bölümü kullanılır; çiftler her zaman tam kurulur.</p>
+      <table>
+        <thead><tr><th scope="col">Grup</th><th scope="col">Taşlar</th><th scope="col">Eşleşme</th></tr></thead>
+        <tbody>
+          <tr><td>Noktalar</td><td>1'den 9'a, her biri 4 adet</td><td>Birebir aynı yüz</td></tr>
+          <tr><td>Bambular</td><td>1'den 9'a, her biri 4 adet</td><td>Birebir aynı yüz</td></tr>
+          <tr><td>Sayılar</td><td>1'den 9'a, her biri 4 adet</td><td>Birebir aynı yüz</td></tr>
+          <tr><td>Yönler</td><td>Doğu, Güney, Batı, Kuzey (D, G, B, K), her biri 4 adet</td><td>Birebir aynı yüz</td></tr>
+          <tr><td>Ejderler</td><td>Kırmızı, yeşil, beyaz, her biri 4 adet</td><td>Birebir aynı yüz</td></tr>
+          <tr><td>Çiçekler</td><td>4 farklı çiçek</td><td>Herhangi iki çiçek</td></tr>
+          <tr><td>Mevsimler</td><td>4 farklı mevsim</td><td>Herhangi iki mevsim</td></tr>
+        </tbody>
+      </table>
+      <p>Çiçek ve mevsim taşlarında yüzler birbirinden farklıdır, ancak aynı gruptaki iki taş her zaman bir çift sayılır. Bu, oyunu biraz kolaylaştırır; çünkü bu taşların sayısı azdır.</p>
+
+      <h2>Yerleşimler</h2>
+      <ul>
+        <li><strong>Kaplumbağa (144 taş):</strong> Klasik şekil. Beş katmanlı, geniş taban ve sağda iki, solda bir çıkıntı taşı vardır. Zordur; zirvedeki tek taş çok kilit açar.</li>
+        <li><strong>Piramit (80 taş):</strong> Dikdörtgen bir taban ve üç katman. Orta zorlukta, mobilde okunaklıdır.</li>
+        <li><strong>Kale (60 taş):</strong> Geniş ve alçak, üç katmanlı sade bir şekil. Yeni başlayanlar için uygundur ve kısa sürede biter.</li>
+      </ul>
+
+      <h2>Her dağıtım çözülebilir</h2>
+      <p>Bu oyunda taşlar rastgele savrulmaz. Dağıtım, oyunun tersi yönde kurulur: her adımda tahtaya, kendisi o an serbest olacak iki taş yerleştirilir. Bunlar bir çift yüz alır. Sıra tamamlanınca elde, baştan sona çözüm barındıran bir tahta kalır. Bu yöntem sayesinde takılıp kalacağınız bir oyunla karşılaşmazsınız; yine de yanlış çiftleri seçerek çıkmaza girebilirsiniz, çünkü çözüm birden fazla çiftin sırasına bağlıdır. Böyle bir durumda iki seçeneğiniz vardır: son hamleleri geri almak ya da kalan taşları karıştırmak. Karıştırma, kalan taşları yine aynı kuralla yeniden kurar ve sonuç yine çözülebilir olur.</p>
+
+      <div class="ba-ad" data-slot="oyun-mahjong-eslestirme-b" aria-label="Reklam"></div>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Taşa tıklayın ya da dokunun. Aynı taşa tekrar dokunmak seçimi kaldırır.</li>
+        <li><strong>Klavye:</strong> Sekme tuşuyla serbest taşlar arasında gezinin, Enter veya Boşluk ile seçin. Taşların okunabilir adı "5 Nokta, serbest" gibi verilir. Kapalı taşlar klavye sırasına girmez.</li>
+        <li><strong>İpucu:</strong> Oyunu bitirmeye götüren bir çifti sarı çerçeveyle işaretler.</li>
+        <li><strong>Karıştır:</strong> Kalan taşları çözülebilir olarak yeniden dağıtır. Geri alma geçmişi temizlenir.</li>
+        <li><strong>Geri al:</strong> Son kaldırdığınız çifti tahtaya geri koyar. İstediğiniz kadar geri alabilirsiniz.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tam ekran modunda reklam gösterilmez.</li>
+      </ul>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce üst katmanları ve uçları açın.</strong> Çok sayıda taşı kilitleyen taşları erken kaldırın. Zirvedeki taş, altındakilerin hepsini serbest bırakır.</li>
+        <li><strong>Dört taşlı yüzlerde dikkatli olun.</strong> Aynı yüzden dört taş serbestse, hangi ikisini eşleştirdiğiniz sonraki taşların açılışını etkiler. Altında başka taşları kilitleyen taşı tercih edin.</li>
+        <li><strong>Satırların ortasını boşaltmayın.</strong> Uçlardan başlamak ortadakilerin serbest kalmasını sağlar; ortadan başlarsanız yanları kapanır.</li>
+        <li><strong>Gelecek hamleyi düşünün.</strong> Aynı yüzün tüm taşlarının nerede olduğuna bakın. Biri çok derindeyse, ona giden taşları öncelikli açın.</li>
+        <li><strong>İpucunu öğrenme aracı olarak kullanın.</strong> Sıkıştığınızda ipucuna bakıp neden o çiftin seçildiğini düşünün.</li>
+        <li><strong>Geri almayı kullanmaktan çekinmeyin.</strong> Bu bir hile sayılmaz; hata yaptığınız anda geri dönmek bulmacayı öğrenmenin parçasıdır.</li>
+      </ul>
+
+      <h2>Süre ve en iyi süre</h2>
+      <p>Oyun başladığında süre sayacı çalışır ve tahta temizlendiğinde durur. Her yerleşim için en iyi süreniz ayrı ayrı bu cihazın tarayıcı belleğinde saklanır. İsterseniz sağ paneldeki düğmeyle istatistikleri sıfırlayabilirsiniz. Süreler yalnızca sizin içindir; sıralama, çevrimiçi liste ya da ödül yoktur.</p>
+
+      <h2>Kumar ya da bahis değildir</h2>
+      <p>Mahjong adıyla bilinen masa oyunu bazı çevrelerde para ile oynanmasıyla anılır. Bu sayfada ise hiçbir koşulda para, bahis, ödül, kazanç ya da bunlara yönlendiren bir bağlantı yoktur. Bu bir şans oyunu da değildir; tamamı gözlem ve planlamaya dayalı tek kişilik bir bulmacadır. Süreler ve sayılar yalnızca bu cihazda tutulan değerlerdir ve hiçbir parasal karşılığı yoktur.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da oyun sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır. Hamleleriniz bir sunucuya iletilmez.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda tahta ekrana sığar; büyük yerleşimlerde tahta yan kaydırılabilir.</li>
+        <li><strong>Ses yok.</strong> Oyun sessiz çalışır; ortak ortamlarda rahatça oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Mahjong taş eşleştirme nasıl oynanır?</summary><p>Tahtadaki aynı iki serbest taşı sırayla tıklayarak kaldırırsınız. Bütün taşlar kalkınca oyunu kazanırsınız. Serbest taş, üstünde başka taş olmayan ve sağ ya da sol kenarı boş olan taştır.</p></details>
+        <details><summary>Hangi taşlar serbesttir?</summary><p>Üstünde başka bir taş bulunmayan ve aynı zamanda sağ kenarı ya da sol kenarı (en az biri) açık olan taş serbesttir. Sağı ve solu aynı anda komşu taşlarla kapalı olan taş ya da üstü örtülü taş seçilemez.</p></details>
+        <details><summary>Çiçek ve mevsim taşları nasıl eşleşir?</summary><p>Dört çiçek taşı kendi aralarında, dört mevsim taşı da kendi aralarında eşleşir; numaraları farklı olsa bile iki çiçek ya da iki mevsim taşı bir çifttir. Diğer bütün taşlar yalnızca birebir aynı yüzle eşleşir.</p></details>
+        <details><summary>Her dağıtım çözülebilir mi?</summary><p>Evet. Taşlar rastgele serilmez; oyunun tersi yönde, her adımda serbest iki taş koyarak kurulur. Bu yüzden başlangıçta en az bir çözüm vardır. Yine de yanlış çiftler seçerek çıkmaza girebilirsiniz; bu durumda geri alabilir ya da karıştırabilirsiniz.</p></details>
+        <details><summary>Hamle kalmazsa ne yapmalıyım?</summary><p>Geri al düğmesiyle son hamleleri geri alabilir ya da Karıştır düğmesiyle kalan taşları yeniden dağıtabilirsiniz. Karıştırma sonrası düzen de çözülebilir olarak kurulur.</p></details>
+        <details><summary>İpucu nasıl çalışır?</summary><p>İpucu düğmesi, oyunu bitirmeye götüren bir çifti sarı çerçeveyle işaretler. Bilinen çözümden sapmadıysanız bu çift doğrudan çözüm sırasından gelir; sapmışsanız oyun yeniden çözüm arar.</p></details>
+        <details><summary>Süre ve en iyi süre nerede tutulur?</summary><p>Süre oyun başladığında işlemeye başlar ve tahta temizlenince durur. Her yerleşim için en iyi süreniz yalnızca bu cihazın tarayıcı belleğinde saklanır; istediğiniz zaman sıfırlayabilirsiniz.</p></details>
+        <details><summary>Bu oyunda para ya da bahis var mı?</summary><p>Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Oyun yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir bulmacadır. Veriler sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hafiza-kartlari/">Hafıza kartları</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../solitaire/">Solitaire</a></li>
+        <li><a href="../okey/">Okey</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-mahjong-eslestirme-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

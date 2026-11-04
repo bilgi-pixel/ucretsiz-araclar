@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Batak Oyna – Ücretsiz Online İhaleli Batak (kurulumsuz)</title>
+  <meta name="description" content="Online ihaleli batak oyna: sen ve üç bilgisayar, 13'er kart, ihale, koz seçimi, renge uyma, kesme ve büyük atma zorunluluğu. Puanlama otomatik. Ücretsiz, kayıtsız, kurulumsuz; para ve bahis yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/batak/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Kart renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; --cw: 62px; --tw: 52px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 480px) { .game-box { padding: 12px 8px; --cw: 42px; --tw: 40px; } }
+    .bt-layout { display: grid; gap: 20px; }
+    @media (min-width: 960px) { .bt-layout { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; } }
+    .bt-main, .bt-side { min-width: 0; }
+    .bt-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; }
+    .bt-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .bt-last { margin: 0 0 12px; min-height: 1.4em; font-size: .88rem; color: var(--ba-text-muted); }
+    .bt-felt { position: relative; background: #1f6b46; background-image: radial-gradient(circle at 50% 40%, #2a8057, #165338); border-radius: 14px; padding: 12px 8px 14px; box-shadow: inset 0 0 0 3px #0e3a27, 0 4px 14px rgba(30, 33, 38, .25); }
+    .bt-top { text-align: center; color: #e6f3ea; font-size: .8rem; margin: 0 0 6px; }
+    .bt-table { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: ". s2 ." "s1 mid s3"; gap: 6px; align-items: center; }
+    .bt-seat { text-align: center; color: #e6f3ea; font-size: .78rem; line-height: 1.25; border-radius: 10px; padding: 4px 2px; min-width: 0; }
+    .bt-seat strong { display: block; font-size: .85rem; }
+    .bt-seat.is-turn { background: rgba(245, 197, 66, .25); box-shadow: 0 0 0 2px #f5c542; }
+    .bt-seat.is-bidder strong::after { content: " · ihale"; color: #f5c542; }
+    .bt-s1 { grid-area: s1; } .bt-s2 { grid-area: s2; } .bt-s3 { grid-area: s3; }
+    .bt-back { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 30px; }
+    .bt-back .bt-card { --cw: 30px; }
+    .bt-count { font-weight: 700; font-size: .85rem; }
+    .bt-mid { grid-area: mid; display: grid; grid-template-columns: repeat(3, var(--tw)); grid-template-rows: repeat(3, calc(var(--tw) * 1.4)); gap: 4px; justify-content: center; padding: 4px; }
+    .bt-slot { --cw: var(--tw); display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+    .bt-slot[data-p="2"] { grid-column: 2; grid-row: 1; }
+    .bt-slot[data-p="1"] { grid-column: 1; grid-row: 2; }
+    .bt-slot[data-p="3"] { grid-column: 3; grid-row: 2; }
+    .bt-slot[data-p="0"] { grid-column: 2; grid-row: 3; }
+    .bt-slot.is-winner .bt-card { box-shadow: 0 0 0 3px #f5c542, 0 2px 6px rgba(0, 0, 0, .4); }
+    .bt-hand-wrap { margin-top: 10px; }
+    .bt-me { text-align: center; color: #e6f3ea; font-size: .8rem; margin: 6px 0; }
+    .bt-me.is-bidder strong::after { content: " · ihale"; color: #f5c542; }
+    .bt-hand { display: flex; justify-content: center; flex-wrap: nowrap; min-height: calc(var(--cw) * 1.4 + 8px); padding-top: 8px; }
+    .bt-hand .bt-card + .bt-card { margin-left: calc(var(--cw) * -.5); }
+    .bt-card { position: relative; flex: none; display: block; width: var(--cw); height: calc(var(--cw) * 1.4); margin: 0; padding: 0; appearance: none; -webkit-appearance: none; font: inherit; font-family: var(--ba-font); font-size: calc(var(--cw) * .27); border-radius: calc(var(--cw) * .08); border: 1px solid #9d9792; background: #fff; color: #16181d; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); -webkit-tap-highlight-color: transparent; text-align: left; }
+    .bt-card.red { color: #b3121f; }
+    button.bt-card { cursor: pointer; transition: transform .12s; }
+    button.bt-card:disabled { cursor: default; opacity: 1; }
+    button.bt-card.no { filter: brightness(.6); }
+    button.bt-card:not(:disabled):hover { transform: translateY(-8px); }
+    .bt-card.can { box-shadow: 0 0 0 3px #f5c542, 0 2px 6px rgba(0, 0, 0, .4); }
+    .bt-card:focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; z-index: 5; }
+    .bt-card .c { position: absolute; left: .25em; top: .12em; font-weight: 700; line-height: 1; }
+    .bt-card .s { position: absolute; left: .25em; top: 1.1em; line-height: 1; font-size: .85em; }
+    .bt-card .m { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.2em; line-height: 1; padding-top: .6em; }
+    .bt-card.down { background: repeating-linear-gradient(45deg, #7b2331 0 6px, #8c2c3c 6px 12px); border-color: #5e1a25; box-shadow: inset 0 0 0 3px #fff, 0 1px 3px rgba(0, 0, 0, .4); }
+    @media (prefers-reduced-motion: reduce) { button.bt-card { transition: none; } }
+    .bt-panel { margin: 10px auto 0; padding: 10px; max-width: 460px; background: var(--ba-surface); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .bt-panel[hidden] { display: none; }
+    .bt-panel-h { margin: 0 0 8px; font-weight: 700; color: var(--ba-text); font-size: .9rem; }
+    .bt-bids { display: flex; flex-wrap: wrap; gap: 6px; }
+    .bt-bids .ba-btn { min-width: 44px; min-height: 44px; padding: 6px 10px; flex: 0 0 auto; }
+    .bt-bids .ba-btn.red { color: #b3121f; }
+    .bt-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 12px; }
+    .bt-sc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 6px 10px; }
+    .bt-sc strong { display: block; font-size: .9rem; }
+    .bt-sc .num { display: block; font-family: var(--ba-mono); font-size: 1.5rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .bt-meta { margin: 0 0 12px; font-size: .88rem; color: var(--ba-text); }
+    .bt-meta span { display: block; }
+    .bt-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .bt-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .bt-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .bt-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .bt-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .bt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; }
+    .bt-actions .ba-btn { flex: 1 1 120px; }
+    .bt-stats { margin: 0 0 8px; font-size: .85rem; color: var(--ba-text-muted); }
+    .bt-note { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .bt-result { position: absolute; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(96%, 400px); padding: 14px; text-align: center; background: var(--ba-surface); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+    .bt-result[hidden] { display: none; }
+    .bt-result h3 { margin: 0 0 8px; font-size: 1.1rem; color: var(--ba-text); }
+    .bt-result p { margin: 0 0 12px; font-size: .88rem; color: var(--ba-text); display: grid; gap: 3px; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.bt-ad-a { margin-top: 56px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"İhaleli Batak – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz ihaleli batak: üç bilgisayar rakibe karşı, ihale, koz seçimi, renge uyma, kesme ve büyük atma kurallarıyla. Para ve bahis içermez.","inLanguage":"tr","genre":["Kart oyunu","Geleneksel oyun"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/batak/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"İhaleli batak nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Dört kişi oynanır, herkese 13 kart dağıtılır. Önce ihale yapılır: her oyuncu bir kez konuşur, en az 5 el isteyebilir ya da pas geçer. İhaleyi alan koz seçer ve ilk eli açar. 13 el oynanır; ihaleyi alan, istediği eli almaya çalışır, diğerleri ise onu engellemeye ve kendi ellerini toplamaya çalışır."}},
+  {"@type":"Question","name":"En az kaç el istenir, herkes pas geçerse ne olur?","acceptedAnswer":{"@type":"Answer","text":"En düşük ihale 5, en yüksek 13 eldir. Herkes pas geçerse son söz sahibi olan dağıtıcı 5 ile ihaleyi almak zorunda kalır. Bu sayfada 13 ihale verilirse ihale hemen kapanır."}},
+  {"@type":"Question","name":"Renge uyma, kesme ve büyük atma zorunluluğu nedir?","acceptedAnswer":{"@type":"Answer","text":"Açılan renkte kartınız varsa o renkten atmak zorundasınız. Masadaki en yüksek kartı geçebiliyorsanız geçmeniz gerekir (büyük atma). Açılan renkte kartınız yoksa ve kozunuz varsa koz atarak eli kesmeniz zorunludur; masada koz varsa onu geçen bir koz atmanız gerekir. Hiçbiri yoksa istediğiniz kartı atabilirsiniz."}},
+  {"@type":"Question","name":"Puanlama nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"İhaleyi alan istediği eli ya da fazlasını alırsa aldığı el sayısı kadar artı puan yazılır. Alamazsa ihale ettiği sayı kadar eksi puan alır. Diğer oyuncular aldıkları el kadar artı puan yazar. Oyun 11 el sürer ya da seçtiğiniz hedef puana ilk ulaşan oyunu bitirir."}},
+  {"@type":"Question","name":"Koz nedir ve nasıl seçilir?","acceptedAnswer":{"@type":"Answer","text":"Koz, o elde diğer bütün renklerden üstün sayılan renktir. İhaleyi alan oyuncu eline bakıp en uzun ve en güçlü rengi koz seçer. Koz kartlar, başka bir renk açıldığında o rengi bitirmiş oyuncular tarafından kesme için kullanılır."}},
+  {"@type":"Question","name":"Bilgisayar rakipler nasıl karar verir?","acceptedAnswer":{"@type":"Answer","text":"Bilgisayar eline bakıp koz kartlarını, as ve papazları, uzun renkleri ve kısa renklerle kesme imkânını tahmini el sayısına çevirir; ihale buna göre verilir. Oyunda yasal kartlar arasından basit sezgiler kullanır: yenilmeyecek kartı açar, alabilecekse en küçük alan kartı atar. Elinizdeki kartları göremez, hile yapmaz."}},
+  {"@type":"Question","name":"Bu oyunda para ya da bahis var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Batak burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir kart oyunudur."}},
+  {"@type":"Question","name":"Hamlelerim kaydedilir veya sunucuya gönderilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oyun tamamen tarayıcınızda çalışır. Yalnızca oynadığınız ve kazandığınız oyun sayısı, en yüksek skorunuz ve ayarlarınız bu cihazın tarayıcı belleğinde tutulur; istediğiniz zaman sıfırlayabilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Batak Oyna</span> – Ücretsiz Online İhaleli Batak</h1>
+      <p class="lead">Üç bilgisayara karşı ihaleli batak oynayın: 13'er kart, ihale, koz seçimi, renge uyma, kozla kesme ve büyük atma zorunluluğu kurallara uygun işler. Ellerin puanı otomatik hesaplanır, oyun 11 el sürer ya da seçtiğiniz hedef puanda biter. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz. Oyunda para, bahis ya da ödül yoktur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="bt-box" class="ba-tool game-box" aria-labelledby="h-oyun" data-phase="bid" data-turn="1">
+      <h2 id="h-oyun" class="visually-hidden">Batak oyunu</h2>
+      <div class="bt-layout">
+        <div class="bt-main">
+          <p id="bt-status" class="bt-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <p id="bt-last" class="bt-last" aria-live="polite"></p>
+          <div class="bt-felt">
+            <p class="bt-top"><span id="bt-round">El 1 / 11</span> · <span id="bt-trump-info">Koz henüz seçilmedi</span></p>
+            <div class="bt-table">
+              <div id="bt-seat-2" class="bt-seat bt-s2"><strong>Karşı</strong><div id="bt-back-2" class="bt-back"></div><span id="bt-info-2"></span></div>
+              <div id="bt-seat-1" class="bt-seat bt-s1"><strong>Sol</strong><div id="bt-back-1" class="bt-back"></div><span id="bt-info-1"></span></div>
+              <div id="bt-trick" class="bt-mid" role="img" aria-label="Masada kart yok">
+                <div id="bt-slot-2" class="bt-slot" data-p="2"></div>
+                <div id="bt-slot-1" class="bt-slot" data-p="1"></div>
+                <div id="bt-slot-3" class="bt-slot" data-p="3"></div>
+                <div id="bt-slot-0" class="bt-slot" data-p="0"></div>
+              </div>
+              <div id="bt-seat-3" class="bt-seat bt-s3"><strong>Sağ</strong><div id="bt-back-3" class="bt-back"></div><span id="bt-info-3"></span></div>
+            </div>
+            <div id="bt-panel" class="bt-panel" hidden></div>
+            <div class="bt-hand-wrap">
+              <div id="bt-hand" class="bt-hand" role="group" aria-label="Sizin elinizdeki kartlar"></div>
+              <p id="bt-seat-0" class="bt-me"><strong>Siz</strong> · <span id="bt-info-0"></span></p>
+            </div>
+            <div id="bt-result" class="bt-result" role="dialog" aria-labelledby="bt-result-title" hidden>
+              <h3 id="bt-result-title">El bitti</h3>
+              <p id="bt-result-text"></p>
+              <button id="bt-next" class="ba-btn ba-btn-primary" type="button">Sonraki el</button>
+            </div>
+          </div>
+          <p class="bt-note">Eldeki sarı çerçeveli bir karta tıklayın (klavyede Sekme ve Enter). Renge uyma, kesme ve büyük atma zorunlu olduğundan yalnızca atabileceğiniz kartlar etkindir.</p>
+        </div>
+        <div class="bt-side">
+          <div class="bt-score" aria-label="Toplam puan">
+            <div class="bt-sc"><strong>Siz</strong><span class="num" id="bt-score-0">0</span></div>
+            <div class="bt-sc"><strong>Sol</strong><span class="num" id="bt-score-1">0</span></div>
+            <div class="bt-sc"><strong>Karşı</strong><span class="num" id="bt-score-2">0</span></div>
+            <div class="bt-sc"><strong>Sağ</strong><span class="num" id="bt-score-3">0</span></div>
+          </div>
+          <div class="bt-controls">
+            <div class="bt-field"><label for="bt-target">Oyun uzunluğu</label><select id="bt-target"><option value="0" selected>11 el (tam oyun)</option><option value="30">11 el ya da ilk 30 puan</option><option value="50">11 el ya da ilk 50 puan</option></select></div>
+            <label class="bt-check"><input type="checkbox" id="bt-hints" checked> Atabileceğim kartları işaretle</label>
+          </div>
+          <div class="bt-actions"><button id="bt-new" class="ba-btn" type="button">Yeni oyun</button><button id="bt-full" class="ba-btn" type="button">Tam ekran</button></div>
+          <p id="bt-stats" class="bt-stats"></p>
+          <button id="bt-stats-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button>
+          <p class="bt-note">Bu oyun yalnızca eğlence içindir: para, bahis ve ödül yoktur.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad bt-ad-a" data-slot="oyun-batak-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>İhaleli batak nedir?</h2>
+      <p>Batak, Türkiye'de en çok sevilen iskambil oyunlarından biridir. Dört kişiyle, 52 kartlık standart bir desteyle oynanır ve birkaç saat süren sohbetlerin, çay bardaklarının, yaz akşamlarının vazgeçilmez eşlikçisidir. İhaleli batak, oyunun en yaygın biçimidir: her el başında oyuncular elindeki kartlara bakıp kaç el alabileceğini söyler, en yüksek iddiayı sunan oyuncu "ihaleyi alır" ve koz rengini kendisi belirler. Bu sayfada ihaleli batak oyununu ücretsiz, kurulum yapmadan ve kayıt olmadan, üç bilgisayar rakibe karşı oynayabilirsiniz. Kartlar sizin tarayıcınızda dağıtılır ve oynanır; hiçbir bilgi bir sunucuya gönderilmez.</p>
+      <p>Batak, "el kazanma" oyunları ailesindendir. Bu ailenin atası olan oyunlar Avrupa'da yüzyıllardır bilinir; İngilizce konuşulan dünyada "whist" ve "spades" gibi isimlerle anılan benzer oyunlar vardır. Türkiye'de ise batak, kendine özgü ihale ve büyük atma kurallarıyla yerel bir karakter kazanmıştır. Oyunun kesin bir doğum tarihi bilinmez; zamanla ağızdan ağıza yayılan kurallar bölgeden bölgeye küçük farklar gösterir. Bu sayfadaki sürüm, en yaygın kabul gören kuralları uygular ve hangi kuralın nasıl işlediğini aşağıda ayrıntılı olarak açıklar.</p>
+
+      <h2>Kartlar ve dağıtım</h2>
+      <p>Oyunda 52 kart kullanılır ve dört oyuncunun her birine 13'er kart dağıtılır. Kart sıralaması büyükten küçüğe As, Papaz, Kız, Vale, 10, 9 ve böyle 2'ye kadar iner. Dört renk vardır: maça, kupa, karo ve sinek. Hiçbir rengin kendiliğinden bir üstünlüğü yoktur; üstünlüğü her elde ihaleyi alan oyuncunun seçtiği koz rengi belirler. Bu sayfada siz altta, bilgisayar rakipler solda, karşıda ve sağda oturur. Her el sonunda dağıtıcı bir sonraki oyuncuya geçer; ihalede ilk söz dağıtıcının solundaki oyuncudadır.</p>
+
+      <h2>Batak nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>İhale yapın.</strong> Sıra size geldiğinde ekranda "Pas" ve verebileceğiniz sayılar görünür. Elinizde kaç el alabileceğinizi düşünüyorsanız o sayıyı seçin; en az 5, en çok 13 olabilir. Herkes yalnızca bir kez konuşur.</li>
+        <li><strong>Kozu seçin.</strong> İhaleyi siz alırsanız dört renk düğmesi çıkar. Genellikle en uzun ve en güçlü rengi koz seçmek iyi sonuç verir.</li>
+        <li><strong>Eli açın.</strong> İhaleyi alan oyuncu ilk kartı atar. Sonra sırayla saat yönünde herkes birer kart atar.</li>
+        <li><strong>Kurallara uyun.</strong> Açılan renkte kartınız varsa o renkten atmak zorundasınız; yoksa koz atarsınız; ikisi de yoksa istediğiniz kartı verebilirsiniz.</li>
+        <li><strong>Eli kim aldıysa o başlar.</strong> Dört kart atılınca en yüksek koz (koz atılmadıysa en yüksek açılış rengi kartı) eli alır. Eli alan sonraki ilk kartı açar. 13 el sonunda puanlama yapılır.</li>
+      </ol>
+
+      <h2>İhale: kaç el isteyeceksiniz?</h2>
+      <p>İhale, batak oyununun en kritik anıdır. İhale yaparken "ben bu elde en az şu kadar el alırım" demiş olursunuz. Verilen her ihale bir öncekinden büyük olmalıdır; yani biri 6 dediyse siz 7 ya da daha fazlasını söyleyebilir, ya da pas geçebilirsiniz. Bu sayfada en düşük ihale 5, en yüksek 13'tür. 13 ihale verilirse tüm elleri almayı iddia ettiğiniz için ihale hemen kapanır. Herkes pas geçerse son söz sahibi olan dağıtıcı, 5 ile ihaleyi almak zorunda kalır; böylece her elde mutlaka bir oyun kurulur.</p>
+      <p>İhale vermeden önce eldeki kartların potansiyel el sayısına bakın. As ve papaz, eli doğrudan alma şansı yüksek kartlardır. Koz rengi seçeceğiniz uzun bir renk (beş altı kart) sizi hem ellerin sonuna doğru koruyacak hem de başka renklerde kesme imkânı verecektir. Elinizde hiç bir rengin bulunmaması, o rengi koz ile kesebileceğiniz anlamına gelir ve sayıyı artırır. Bilgisayar da ihaleyi buna benzer bir hesapla verir.</p>
+
+      <h2>Renge uyma, kesme ve büyük atma</h2>
+      <p>Batak oyununu güzel kılan şey zorunlu kurallardır; bu kuralların hepsi bu sayfada otomatik uygulanır ve uygunsuz kartlar etkisizleşir.</p>
+      <ul>
+        <li><strong>Renge uyma:</strong> Elinde açılan renkten kartı olan oyuncu o renkten atmak zorundadır.</li>
+        <li><strong>Büyük atma:</strong> Açılan renkte masadaki en yüksek kartı geçebiliyorsanız geçmek zorundasınız. Geçemiyorsanız aynı renkten herhangi bir kartı atarsınız. Türk batak kuralının en belirgin özelliği budur.</li>
+        <li><strong>Kozla kesme:</strong> Açılan renkte kartınız yoksa ve kozunuz varsa koz atmanız zorunludur. Masada daha önce biri kozla kesmişse, daha büyük bir kozunuz varsa onu atmak zorundasınız; yoksa herhangi bir koz atarsınız.</li>
+        <li><strong>Serbest atış:</strong> Açılan renk de koz da yoksa istediğiniz kartı atabilirsiniz. Bu, istenmeyen küçük kartlardan kurtulma fırsatıdır.</li>
+        <li><strong>Açılışta özgürlük:</strong> Eli açan oyuncu, koz dahil, istediği kartı oynayabilir.</li>
+      </ul>
+
+      <h2>Puanlama</h2>
+      <p>Her elin sonunda her oyuncunun aldığı el sayısı sayılır ve aşağıdaki gibi puanlanır. Skorlar eller boyunca toplanır. Oyun 11 el sürer; hedef puan seçeneğini kullanırsanız bir oyuncu hedefe ulaşınca oyun erken biter. En yüksek puanı yapan oyunu kazanır.</p>
+      <table>
+        <thead><tr><th scope="col">Durum</th><th scope="col">Puan</th></tr></thead>
+        <tbody>
+          <tr><td>İhaleyi alan, istediği eli ya da fazlasını aldı</td><td>+ aldığı el sayısı</td></tr>
+          <tr><td>İhaleyi alan, istediği eli alamadı</td><td>− ihale ettiği sayı</td></tr>
+          <tr><td>Diğer oyuncular</td><td>+ aldıkları el sayısı</td></tr>
+        </tbody>
+      </table>
+      <p>Örneğin 7 el ihale ettiniz ve 8 el aldınız: 8 puan yazılır. 6 el alırsanız −7 puan alırsınız; rakipler ellerini aldıkları kadar kazanır. Bu yüzden gereksiz iddialı ihale pahalıya patlar, ama çok temkinli oynayan da rakiplerin lehine olur.</p>
+
+      <div class="ba-ad" data-slot="oyun-batak-b" aria-label="Reklam"></div>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> İhale sayısına, koz düğmesine ya da atmak istediğiniz karta tıklayın veya dokunun.</li>
+        <li><strong>Klavye:</strong> Sekme tuşuyla düğme ve kartlar arasında gezinin, Enter veya Boşluk ile seçin. Kartların okunabilir adı "Kupa 7" gibi verilir.</li>
+        <li><strong>İşaretli kartlar:</strong> Sağ paneldeki seçenek açıkken sıra sizdeyse atabileceğiniz kartlar sarı çerçevelenir, diğerleri kararır. İstemezseniz kapatın; kurallar yine de uygulanır.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tam ekran modunda reklam gösterilmez.</li>
+        <li><strong>Yeni oyun:</strong> Puanları sıfırlar ve yeni bir deste dağıtır.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl oynar?</h2>
+      <p>Bilgisayar oyuncular eline bakıp el gücünü tahmin eder. Koz adayı bir rengin kartlarını (As, Papaz, Kız gibi) değerlendirir, uzun rengi ve diğer renklerdeki as ve papazları hesaba katar, kısa renklerde kesme imkânını ekler. Çıkan tahmini el sayısı, mevcut en yüksek ihaleden büyükse bir üstünü söyler, değilse pas geçer. Oyunda yasal kartlar arasından seçim yapar: elinde yenilmeyecek bir kart varsa onu açar, ihale sahibiyse gerektiğinde koz çeker, takipte eli alabiliyorsa en küçük alan kartı atar, alamıyorsa en değersiz kartı verir. Savunma tarafındayken başka bir savunmacının zaten aldığı ele gereksiz büyük kart harcamaz. Bilgisayar sizin elinizi göremez; yalnızca masaya atılan kartlardan çıkarım yapar. Hile yoktur.</p>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Eliniz kadar iddia edin.</strong> Kartlarınız her elde 13'tür; gerçekten garantili ellerin sayısına yarım ya da bir el ekleyin, fazlasını değil.</li>
+        <li><strong>Kozu doğru seçin.</strong> Dört beş kartlık bir rengi, içinde As veya Papaz varsa tercih edin. Kozun uzunluğu, ellerin sonunda size ek el getirir.</li>
+        <li><strong>As'larınızı erkenden kullanın.</strong> Koz dışı As'ları erken açmak, kesilme riskini en aza indirir. Bir renk ilerledikçe kesilme ihtimali artar.</li>
+        <li><strong>Kozu çekmeyi düşünün.</strong> İhale sahibiyseniz, rakiplerin kozlarını erken tüketmek kesme tehlikesini azaltır.</li>
+        <li><strong>Rakiplerin ihalesini izleyin.</strong> Ağır ihale veren birinin elinde güçlü bir koz vardır. Savunmadaysanız onun en güçlü renklerinden kaçınmak için kendi uzun rengi açın.</li>
+        <li><strong>Atılan kartları sayın.</strong> Bir renkte As ve Papaz oynandıysa, o rengin Kızı artık yenilmezdir. Kart saymak batakta en önemli beceridir.</li>
+        <li><strong>Savunmada ihale sahibini zorlayın.</strong> İhaleyi bozmak, kendi ellerinizi toplamak kadar değerlidir; çünkü ihale sahibi −ihale puanı alır.</li>
+      </ul>
+
+      <h2>Kumar ya da bahis değildir</h2>
+      <p>İskambil oyunları bazı çevrelerde para ile oynanmasıyla anılır. Bu sayfada ise hiçbir koşulda para, bahis, ödül, kazanç ya da bunlara yönlendiren bir bağlantı yoktur. Puanlar yalnızca bu cihazda tutulan sayılardır ve hiçbir değeri yoktur. Oyunu eğlence, hafıza ve olasılık egzersizi olarak kullanın. Reşit olmayanlara ve oyun bağımlılığı riski taşıyanlara bu tür oyunların para ile oynanmasını önermiyoruz.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da oyun sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır. Hamleleriniz bir sunucuya iletilmez.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile on üç kart sığar; dokunma ve klavye desteklenir.</li>
+        <li><strong>Ses yok.</strong> Oyun sessiz çalışır; ortak ortamlarda rahatça oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>İhaleli batak nasıl oynanır?</summary><p>Dört kişi oynanır, herkese 13 kart dağıtılır. Önce ihale yapılır: her oyuncu bir kez konuşur, en az 5 el isteyebilir ya da pas geçer. İhaleyi alan koz seçer ve ilk eli açar. 13 el oynanır; ihaleyi alan, istediği eli almaya çalışır, diğerleri ise onu engellemeye ve kendi ellerini toplamaya çalışır.</p></details>
+        <details><summary>En az kaç el istenir, herkes pas geçerse ne olur?</summary><p>En düşük ihale 5, en yüksek 13 eldir. Herkes pas geçerse son söz sahibi olan dağıtıcı 5 ile ihaleyi almak zorunda kalır. Bu sayfada 13 ihale verilirse ihale hemen kapanır.</p></details>
+        <details><summary>Renge uyma, kesme ve büyük atma zorunluluğu nedir?</summary><p>Açılan renkte kartınız varsa o renkten atmak zorundasınız. Masadaki en yüksek kartı geçebiliyorsanız geçmeniz gerekir (büyük atma). Açılan renkte kartınız yoksa ve kozunuz varsa koz atarak eli kesmeniz zorunludur; masada koz varsa onu geçen bir koz atmanız gerekir. Hiçbiri yoksa istediğiniz kartı atabilirsiniz.</p></details>
+        <details><summary>Puanlama nasıl yapılır?</summary><p>İhaleyi alan istediği eli ya da fazlasını alırsa aldığı el sayısı kadar artı puan yazılır. Alamazsa ihale ettiği sayı kadar eksi puan alır. Diğer oyuncular aldıkları el kadar artı puan yazar. Oyun 11 el sürer ya da seçtiğiniz hedef puana ilk ulaşan oyunu bitirir.</p></details>
+        <details><summary>Koz nedir ve nasıl seçilir?</summary><p>Koz, o elde diğer bütün renklerden üstün sayılan renktir. İhaleyi alan oyuncu eline bakıp en uzun ve en güçlü rengi koz seçer. Koz kartlar, başka bir renk açıldığında o rengi bitirmiş oyuncular tarafından kesme için kullanılır.</p></details>
+        <details><summary>Bilgisayar rakipler nasıl karar verir?</summary><p>Bilgisayar eline bakıp koz kartlarını, as ve papazları, uzun renkleri ve kısa renklerle kesme imkânını tahmini el sayısına çevirir; ihale buna göre verilir. Oyunda yasal kartlar arasından basit sezgiler kullanır: yenilmeyecek kartı açar, alabilecekse en küçük alan kartı atar. Elinizdeki kartları göremez, hile yapmaz.</p></details>
+        <details><summary>Bu oyunda para ya da bahis var mı?</summary><p>Hayır. Sayfada para, bahis, ödül ya da kazanç yoktur. Batak burada yalnızca eğlence ve zihin egzersizi için sunulan ücretsiz bir kart oyunudur.</p></details>
+        <details><summary>Hamlelerim kaydedilir veya sunucuya gönderilir mi?</summary><p>Hayır. Oyun tamamen tarayıcınızda çalışır. Yalnızca oynadığınız ve kazandığınız oyun sayısı, en yüksek skorunuz ve ayarlarınız bu cihazın tarayıcı belleğinde tutulur; istediğiniz zaman sıfırlayabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../pisti/">Pişti</a></li>
+        <li><a href="../okey/">Okey</a></li>
+        <li><a href="../solitaire/">Solitaire</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza kartları</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-batak-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
