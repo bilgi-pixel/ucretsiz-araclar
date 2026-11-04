@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Balon Vurma Oyna – Ücretsiz Online Renkli Top Atma Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Balon vurma oyununu tarayıcıda hemen oynayın: nişan alın, aynı renkten 3 veya daha fazla balonu bir araya getirip patlatın, havada kalanları düşürün. Fare, dokunma ve klavye desteği; ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/balon-vurma/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .bv-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 420px; margin: 0 auto 12px; }
+    .bv-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .bv-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .bv-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; white-space: nowrap; }
+    .bv-stage { position: relative; width: 100%; max-width: 420px; margin: 0 auto; aspect-ratio: 2 / 3; border-radius: var(--ba-radius); overflow: hidden; background: #24272c; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .bv-stage:focus-visible { outline: 3px solid #e8a0b3; outline-offset: 3px; }
+    .bv-stage canvas { width: 100%; height: 100%; display: block; }
+    .bv-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(20, 22, 26, .84); color: #fff; }
+    .bv-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .bv-overlay p { margin: 0; color: #d7d8db; max-width: 34ch; font-size: .95rem; line-height: 1.5; }
+    .bv-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bv-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .bv-overlay .ba-btn-primary { color: #1a0d10; }
+    .game-box .ba-actions { justify-content: center; }
+    .bv-hint { max-width: 520px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .bv-stage { max-width: min(100%, max(200px, calc((100vh - 220px) * .6667))); }
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Balon Vurma – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz renkli balon atma oyunu: nişan al, aynı renkten 3 veya daha fazla balonu patlat, havada kalanları düşür, her seviyede yeni dizilim ve en yüksek skor.","applicationCategory":"Game","genre":"Puzzle","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/balon-vurma/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Balon vurma oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Ekranın altındaki atıcıyla nişan alıp balon fırlatırsınız. Aynı renkten üç ya da daha fazla balon birbirine değerse patlar. Tavana bağlı olmayan balonlar da düşer. Tahta temizlenince sonraki seviyeye geçilir."}},
+  {"@type":"Question","name":"Nasıl nişan alırım ve atarım?","acceptedAnswer":{"@type":"Answer","text":"Farede imleci hareket ettirip tıklayın; dokunmatik ekranda parmağınızı sürükleyip bırakın. Klavyede sol ve sağ ok tuşları nişanı çevirir, Boşluk tuşu atar."}},
+  {"@type":"Question","name":"Duvardan sekme nasıl kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Balon yan duvarlara çarpınca yansır. Nişan çizgisi bu sekmeyi önceden gösterir; böylece başka balonların arkasında kalan boşluklara ulaşabilirsiniz."}},
+  {"@type":"Question","name":"Tavan neden aşağı iniyor?","acceptedAnswer":{"@type":"Answer","text":"Her altı atışta tahtanın üstüne yeni bir balon sırası eklenir ve bütün dizilim bir sıra aşağı kayar. Balonlar alt çizgiye ulaşırsa oyun biter, bu yüzden her atış önemlidir."}},
+  {"@type":"Question","name":"Sıradaki balonu değiştirebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Aşağı ok, X tuşu ya da Değiştir düğmesi atıcıdaki ve sıradaki balonun yerini değiştirir. Değiştirmek atış hakkı harcamaz."}},
+  {"@type":"Question","name":"Aynı seviyeyi yeniden oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Adres çubuğundaki adrese ?seed=12345 gibi bir sayı eklerseniz dizilim ve balon sırası o sayıya göre sabit olur. Aynı sayıyla aynı oyun yeniden oynanır."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın yerel depolama alanında (localStorage). Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz sıfırlanır."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, çevrimdışı çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt veya indirme gerekmez. Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Balon Vurma Oyna</span> – Ücretsiz Online Renkli Top Atma Oyunu</h1>
+      <p class="lead">Nişan alın, renkli balonu fırlatın, aynı renkten üç ya da daha fazlasını bir araya getirip patlatın. Duvardan sekmeyi kullanın, havada kalan balonları düşürün ve tavan inmeden tahtayı temizleyin. Fare, parmak ya da klavyeyle oynanır; kurulum, üyelik ve indirme yok, en yüksek skorunuz bu cihazda saklanır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Balon vurma oyun alanı</h2>
+      <div class="bv-hud" aria-label="Oyun bilgileri">
+        <div class="bv-stat"><span>Skor</span><strong id="score">0</strong></div>
+        <div class="bv-stat"><span>En yüksek</span><strong id="best">0</strong></div>
+        <div class="bv-stat"><span>Seviye</span><strong id="level">1</strong></div>
+        <div class="bv-stat"><span>Tavan</span><strong id="descent" aria-label="Tavanın inmesine kalan atış">6</strong></div>
+      </div>
+
+      <div class="bv-stage" id="stage" tabindex="0" role="group" aria-label="Balon vurma oyun alanı. Nişan için sol ve sağ ok tuşları, fare ya da parmak sürükleme; atmak için Boşluk, yukarı ok ya da tıklama; balonları değiştirmek için aşağı ok veya X; duraklatmak için P." data-state="hazir">
+        <canvas id="board" width="360" height="540" role="img" aria-label="Renkli balonlar ve alttaki atıcıdan oluşan oyun alanı"></canvas>
+        <div class="bv-overlay" id="overlay">
+          <h3 id="overlay-title">Balon Vurma</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-swap">Balonu değiştir</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+      <p class="bv-hint">Nişan: fare, parmakla sürükleme ya da ← →. At: tıklama, bırakma, Boşluk veya ↑. Değiştir: ↓ veya X. Duraklat: P. Balonlar şekil işaretleriyle de ayırt edilir. En yüksek skor yalnızca bu tarayıcıda saklanır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-balon-vurma-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Balon vurma oyunu nedir?</h2>
+      <p>Balon vurma, ekranın altındaki bir atıcıdan renkli balonlar fırlatıp üstteki balon dizilimine eklediğiniz bir bulmaca oyunudur. Amaç, aynı renkten en az üç balonu yan yana getirip patlatmak ve tahtayı temizlemektir. Patlayan balonların altında kalan, tavana bağlı olmayan balonlar da kendiliğinden aşağı düşer; bu sayede tek atışla çok sayıda balon yok edilebilir ve yüksek puanlar kazanılır. Bu tür, kolay öğrenilip uzun süre bırakılamayan oyunlar arasında yer alır: kural basittir ama her atışın hem açısı hem de yerleşeceği nokta düşünülmelidir.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Hiçbir şey indirmeniz, hesap açmanız ya da e-posta vermeniz gerekmez. Skorunuz yalnızca tarayıcınızın yerel depolama alanında tutulur; sunucumuza hiçbir bilgi gönderilmez. Oyun alanı reklamsızdır; reklamlar yalnızca sayfa içeriğinin aralarında yer alır ve tam ekran modunda hiçbir reklam görünmez.</p>
+
+      <h2>Balon vurma nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlat'a basın.</strong> Tahtanın üst kısmında renkli balonlar, altta ise atıcı ve sıradaki balon bekler. Atıcının yanında küçük bir önizleme kutusu bir sonraki balonun rengini gösterir.</li>
+        <li><strong>Nişan alın.</strong> Fareyi hareket ettirin, parmağınızı sürükleyin ya da sol ve sağ ok tuşlarını kullanın. Noktalı nişan çizgisi balonun gideceği yolu, duvardan sekmeleri de dahil, önceden gösterir.</li>
+        <li><strong>Balonu fırlatın.</strong> Tıklayın, parmağınızı bırakın ya da Boşluk tuşuna basın. Balon, bir diğer balona ya da tavana değene kadar uçar ve en yakın boş hücreye yerleşir.</li>
+        <li><strong>Eşleştirin.</strong> Yerleşen balon, kendi rengindeki komşularıyla birlikte üç veya daha fazla balonluk bir küme oluşturursa hepsi patlar. Altında kalan ve tavana bağlantısı kopan balonlar düşer.</li>
+        <li><strong>Tahtayı temizleyin.</strong> Hiç balon kalmayınca seviye tamamlanır, bonus puan eklenir ve daha kalabalık bir dizilim gelir. Balonlar alt çizgiye ulaşırsa oyun biter.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> İmleci oyun alanında hareket ettirdiğinizde nişan imleci takip eder. Sol tıklama balonu fırlatır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızı oyun alanında sürükleyerek nişan alın; parmağınızı kaldırdığınızda balon fırlar. Böylece nişanı görerek ayarlayabilir, hazır olunca bırakabilirsiniz.</li>
+        <li><strong>Klavye:</strong> Sol ve sağ ok tuşları (ya da A ve D) nişanı çevirir. Boşluk, yukarı ok veya Enter balonu fırlatır. Aşağı ok ya da X, atıcıdaki balonla sıradaki balonun yerini değiştirir. P duraklatır.</li>
+        <li><strong>Düğmeler:</strong> Başlat, Duraklat, Balonu değiştir, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır.</li>
+      </ul>
+
+      <h2>Duvardan sekme, tavan ve puanlama</h2>
+      <p>Balon yan duvarlara çarpınca yansır. Bu, iki balon sütunu arasındaki dar boşluklara ya da başka balonların arkasında kalan hücrelere ulaşmanın tek yoludur. Nişan çizgisi sekmeyi kısa bir süre öncesinden gösterir; çizginin bittiği yerde balon yerleşecektir. Dar bir açıyla yapılan sekmeler daha az hata payı bıraktığı için ilk başta tek sekmeli atışlarla başlamak mantıklıdır.</p>
+      <p>Her altı atışta tavan bir sıra aşağı iner: tahtanın üstüne yeni bir renkli balon sırası eklenir ve bütün dizilim kayar. Üst bardaki "Tavan" sayacı, inişe kaç atış kaldığını gösterir. Bir balon, alt çizginin üzerine yerleştiğinde oyun biter; bu yüzden sürekli yalnızca yan hücrelere değil, yukarıdan başlayarak kümeleri azaltmaya çalışmalısınız.</p>
+      <p>Her patlayan balon 10 puan, düşen her balon 20 puan getirir; ayrıca bir atışta patlayan balon sayısı büyüdükçe küçük bir çarpan eklenir. Tahtayı temizlemek seviye numarasının yüz katı kadar bonus verir. Böylece birkaç hamlede büyük gruplar düşüren oyuncu, tek tek balon patlatandan çok daha hızlı yükselir.</p>
+
+      <div class="ba-ad" data-slot="oyun-balon-vurma-b" aria-label="Reklam"></div>
+
+      <h2>Balon vurmada strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce desteği hedefleyin.</strong> Büyük bir kümenin tavanla bağlantısını sağlayan balonları patlatırsanız, tek atışta onlarca balon düşer. Düşen balonlar patlayanlardan iki kat puan verir.</li>
+        <li><strong>Renkleri sayın.</strong> Tahtada az kalan bir rengi önce temizlemek, sıradaki balonların daha öngörülebilir olmasını sağlar. Oyun yalnızca tahtada bulunan renklerden balon verir.</li>
+        <li><strong>Sıradaki balonu kullanın.</strong> Atıcıdaki balon istediğiniz yere uymuyorsa değiştirin. Değiştirmek atış hakkı harcamaz; ama tavan sayacı yalnızca atışlarla ilerler, bu yüzden acele etmeden düşünebilirsiniz.</li>
+        <li><strong>Kenarlardan temizleyin.</strong> Yan duvarın yanındaki balonlar sekmeyle kolay ulaşılır. Orta kısımda derin boşluk açmak, sonraki atışlar için tünel oluşturur.</li>
+        <li><strong>Tek renkli adalar bırakmayın.</strong> Tavandan sarkan tek bir balon, altındaki kümeyi taşıyabilir. Bağlantıyı koparmak çoğu zaman en kârlı hamledir.</li>
+        <li><strong>Alt çizgiyi izleyin.</strong> Dizilim alt çizgiye yaklaştığında puan peşinde koşmayın; en çok balon kaldıran güvenli atışı seçin.</li>
+        <li><strong>Seed ile pratik yapın.</strong> Adrese ?seed=sayı ekleyerek aynı dizilimi tekrar tekrar oynayabilir, farklı stratejileri kıyaslayabilirsiniz.</li>
+      </ul>
+
+      <h2>Bu tür oyunların kısa tarihi</h2>
+      <p>Renkli nesneleri aynı renkten gruplar hâlinde eşleştirme fikri, 1990'lardaki arcade bulmaca oyunlarında hızla yayıldı. Bir atıcıyla balon fırlatıp tavandan sarkan kümelere ekleme mekaniği ise önce atari salonlarında, ardından bilgisayar ve cep telefonu oyunlarında sayısız sürümle karşımıza çıktı. Web tarayıcılarının canvas özelliği geliştikçe bu oyunlar eklentisiz çalışır hâle geldi; bugün telefon ekranında parmakla oynanan en yaygın bulmaca türlerinden biridir.</p>
+      <p>Bu sayfadaki oyun sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı; hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor. Balonlar altıgen bir ızgaraya yerleştirilir: her sıra bir öncekine göre yarım hücre kaydırılmıştır, bu yüzden her balonun altı komşusu vardır. Oyun alanı sabit bir ölçekte hesaplanır ve ekrana sığacak biçimde çizilir; telefonda da bilgisayarda da aynı fizik geçerlidir.</p>
+
+      <h2>Neden Bilişim Ajans balon vurma oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın.</li>
+        <li><strong>Fare, klavye ve dokunmatik.</strong> 360 piksel genişliğindeki telefonlarda da sığar; balonlar renklerin yanında şekil işaretleriyle de ayırt edilir.</li>
+        <li><strong>Tohumlu seviyeler.</strong> Aynı dizilimi yeniden oynamak için adrese ?seed= eklemeniz yeterlidir.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun alanının ve düğmelerin yanında görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca rekorunuz kendi cihazınızda saklanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Balon vurma oyunu nasıl oynanır?</summary><p>Ekranın altındaki atıcıyla nişan alıp balon fırlatırsınız. Aynı renkten üç ya da daha fazla balon birbirine değerse patlar. Tavana bağlı olmayan balonlar da düşer. Tahta temizlenince sonraki seviyeye geçilir.</p></details>
+        <details><summary>Nasıl nişan alırım ve atarım?</summary><p>Farede imleci hareket ettirip tıklayın; dokunmatik ekranda parmağınızı sürükleyip bırakın. Klavyede sol ve sağ ok tuşları nişanı çevirir, Boşluk tuşu atar. Nişan çizgisi balonun yolunu önceden gösterir.</p></details>
+        <details><summary>Duvardan sekme nasıl kullanılır?</summary><p>Balon yan duvarlara çarpınca yansır. Nişan çizgisi bu sekmeyi önceden gösterir; böylece başka balonların arkasında kalan boşluklara ulaşabilirsiniz.</p></details>
+        <details><summary>Tavan neden aşağı iniyor?</summary><p>Her altı atışta tahtanın üstüne yeni bir balon sırası eklenir ve bütün dizilim bir sıra aşağı kayar. Balonlar alt çizgiye ulaşırsa oyun biter, bu yüzden her atış önemlidir. Üstteki Tavan sayacı kalan atışı gösterir.</p></details>
+        <details><summary>Sıradaki balonu değiştirebilir miyim?</summary><p>Evet. Aşağı ok, X tuşu ya da Balonu değiştir düğmesi, atıcıdaki ve sıradaki balonun yerini değiştirir. Değiştirmek atış hakkı harcamaz ve tavan sayacını ilerletmez.</p></details>
+        <details><summary>Aynı seviyeyi yeniden oynayabilir miyim?</summary><p>Adres çubuğundaki adrese ?seed=12345 gibi bir sayı eklerseniz dizilim ve balon sırası o sayıya göre sabit olur. Aynı sayıyla aynı oyun yeniden oynanır; farklı sayılar farklı oyunlar verir.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor, silinir mi?</summary><p>Tarayıcınızın yerel depolama alanında (localStorage) saklanır. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız skor kalıcı olmaz.</p></details>
+        <details><summary>Telefonda nasıl oynarım?</summary><p>Oyun alanında parmağınızı sürükleyerek nişan alın, bıraktığınızda balon fırlar. Parmağınızı oyun alanının dışında bırakmak da atışı tamamlar. Ekran döndürmeye gerek yoktur; oyun dikey ekranda tam sığar.</p></details>
+        <details><summary>Oyun ücretsiz mi, çevrimdışı çalışır mı?</summary><p>Tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra internet bağlantısı olmadan da oynanabilir; siteyi uygulama olarak kurmak da mümkündür.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Skorunuz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../balon-patlatma/">Balon Patlatma</a></li>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../renk-eslestir/">Renk Eşleştir</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-balon-vurma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
