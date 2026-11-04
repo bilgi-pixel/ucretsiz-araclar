@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Webcam Test – Check Your Camera Online (Resolution, FPS, Mic)</title>
+  <meta name="description" content="Free online webcam test: live preview, the real resolution and aspect ratio, measured FPS, brightness, camera capabilities, a PNG snapshot and a quick mic level check. No sign-up, your video never leaves your device.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/webcam-test/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/kamera-test/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/webcam-test/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/kamera-test/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .wt-row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; }
+    .wt-row .ba-field { flex: 1 1 220px; min-width: 0; }
+    .wt-row select { width: 100%; max-width: 100%; }
+    .ba-tool .ba-btn[aria-pressed="true"] { background: var(--ba-primary-soft); border-color: var(--ba-primary); color: var(--ba-text); box-shadow: inset 0 0 0 1px var(--ba-primary); }
+    .ba-tool .ba-btn[aria-pressed="true"]:hover { background: var(--ba-text); color: var(--ba-bg); }
+    .wt-stage { position: relative; margin: 16px auto 0; max-width: 720px; background: #000; border-radius: var(--ba-radius-sm); overflow: hidden; line-height: 0; }
+    .wt-stage video { display: block; width: 100%; max-width: 100%; height: auto; }
+    .wt-stage video.is-mirror { transform: scaleX(-1); }
+    .wt-grid { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0, 0, 0, .9)); }
+    .wt-note { margin: 12px 0 0; padding: 10px 14px; border-radius: var(--ba-radius-sm); font-size: .93rem; border: 1px solid var(--ba-border); background: var(--ba-surface-2); color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .wt-small { font-size: .9rem; color: var(--ba-text-muted); margin: 6px 0 0; overflow-wrap: anywhere; }
+    .ba-result .wt-small { color: var(--ba-text-2); }
+    .ba-result h4, .wt-shot h3 { margin: 16px 0 6px; font-size: 1rem; }
+    .wt-dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 6px 16px; margin: 10px 0 0; font-size: .93rem; }
+    .wt-dl dt { font-weight: 600; color: var(--ba-text); }
+    .wt-dl dd { margin: 0; font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); overflow-wrap: anywhere; min-width: 0; }
+    .wt-dl:empty { display: none; }
+    .wt-range { margin-top: 12px; max-width: 420px; }
+    .wt-range input { width: 100%; accent-color: var(--ba-primary); min-height: 32px; }
+    .wt-check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+    .wt-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--ba-primary); flex: none; }
+    .wt-shot { margin-top: 18px; padding: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .wt-shot h3 { margin-top: 0; }
+    .wt-shot img { display: block; max-width: 100%; height: auto; border-radius: var(--ba-radius-sm); border: 1px solid var(--ba-border); }
+    .wt-block { margin-top: 22px; padding: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); min-width: 0; }
+    .wt-block h3 { margin: 0 0 6px; font-size: 1.05rem; }
+    .wt-block .ba-actions { margin-top: 12px; }
+    .wt-meter { margin-top: 12px; height: 18px; border-radius: 999px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); overflow: hidden; }
+    .wt-meter span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #2e9e5b 0 60%, #e0a21b 60% 85%, #c8372d 85%); background-size: 100vw 100%; transition: width .08s linear; }
+    .wt-info { font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); margin: 8px 0 0; min-height: 1.3em; overflow-wrap: anywhere; }
+    .wt-help { margin-top: 12px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .93rem; overflow-wrap: anywhere; }
+    .wt-help h3 { margin: 0 0 6px; font-size: 1rem; }
+    .wt-help ul { margin: 6px 0 0; padding-left: 20px; }
+    .wt-help li { margin: 4px 0; }
+    .wt-help li.is-current { font-weight: 600; }
+    .wt-help p { margin: 0; }
+    @media (max-width: 480px) { .wt-dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .wt-dl dd { margin-bottom: 8px; } }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .wt-help { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; }
+    }
+    :root[data-theme="dark"] .wt-help { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Webcam Test – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/webcam-test/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[
+    {"@type":"Question","name":"Is my video uploaded or recorded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The preview and every measurement run inside this browser tab, and no picture or sound is sent to a server. A snapshot is kept in the tab's memory only. It is written to your disk only if you press Download PNG, and it disappears when you close or reload the page."}},
+    {"@type":"Question","name":"Why does my webcam show a lower resolution than the box says?","acceptedAnswer":{"@type":"Answer","text":"A camera only offers a fixed list of modes, and the browser picks the closest one to what you request. Many webcams sold as 1080p reach that size only in certain modes, and a USB 2.0 port, a busy hub or a long cable can push them down to 720p. Request 1080p here and compare the delivered resolution with the maximum the browser reports."}},
+    {"@type":"Question","name":"What is a good frame rate for a webcam?","acceptedAnswer":{"@type":"Answer","text":"For video calls 30 frames per second is the usual target, and 24 or 25 still looks smooth. Below about 15 fps movement looks choppy. Streamers often prefer 60 fps. If the rate drops in a dark room, the camera is lengthening its exposure time, so more light usually brings the frame rate back up."}},
+    {"@type":"Question","name":"Why is the measured frame rate different from the reported one?","acceptedAnswer":{"@type":"Answer","text":"The reported value is the frame rate the camera driver and the browser agreed on. The measured value counts the frames that were really shown on this page during the last second. Low light, a busy processor, power saving and a display slower than the camera can all make the measured number lower."}},
+    {"@type":"Question","name":"Why is my picture mirrored?","acceptedAnswer":{"@type":"Answer","text":"The preview is mirrored by default because that is how you are used to seeing yourself in a mirror. Most call apps show the other people an unmirrored picture, so text behind you reads normally for them. Press the Mirror button to switch. A snapshot saves exactly what the preview shows."}},
+    {"@type":"Question","name":"The camera light is on but the picture is black. What can I do?","acceptedAnswer":{"@type":"Answer","text":"Check for a sliding privacy shutter or a cover over the lens, and for a camera on/off function key on laptops. Make sure you did not pick a virtual camera whose software is not running. The brightness row in the results shows almost black when the sensor receives no light at all."}},
+    {"@type":"Question","name":"How do I allow the camera again after blocking it?","acceptedAnswer":{"@type":"Answer","text":"Click the lock or site settings icon to the left of the address bar, set Camera to Allow and reload the page. If that does not help, turn on camera access for apps in Windows Settings, Privacy and security, Camera, or switch on your browser in macOS System Settings, Privacy and Security, Camera, then restart the browser."}},
+    {"@type":"Question","name":"Does the webcam test work on phones and tablets?","acceptedAnswer":{"@type":"Answer","text":"Yes. Use Chrome on Android or Safari on iPhone and iPad. A Switch front/back button appears on touch screens. Held upright, a phone usually reports a tall picture such as 720×1280, so the aspect ratio shows 9:16; that is normal."}},
+    {"@type":"Question","name":"Can I test my microphone on this page?","acceptedAnswer":{"@type":"Answer","text":"Yes. The quick microphone check under the camera shows a live level bar in dBFS so you can see that sound arrives. For recording and playback, device selection and voice processing options, use the separate Mic Test page."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-dosya">Files &amp; Text</a></li></ol>
+      <h1><span class="ba-grad">Webcam Test</span> – Check Your Camera Online (Resolution, FPS, Mic)</h1>
+      <p class="lead">Is your camera working, and how good is the picture really? Press start to see a live preview with the actual resolution, aspect ratio, measured frame rate and brightness, take a snapshot and run a quick microphone check. Everything happens in this tab; your video is never sent anywhere.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Video never leaves your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Webcam test tool</h2>
+      <p id="support" class="wt-help" role="status" hidden></p>
+
+      <div class="wt-row">
+        <div class="ba-field"><label for="device">Camera</label><select id="device"><option value="">Default camera</option></select></div>
+        <div class="ba-field"><label for="res">Resolution to request</label>
+          <select id="res">
+            <option value="auto">Camera default</option>
+            <option value="480">480p (640×480)</option>
+            <option value="720" selected>720p HD (1280×720)</option>
+            <option value="1080">1080p Full HD (1920×1080)</option>
+            <option value="2160">4K UHD (3840×2160)</option>
+          </select>
+        </div>
+      </div>
+      <div class="ba-actions">
+        <button id="start" class="ba-btn ba-btn-primary" type="button">Start camera</button>
+        <button id="stop" class="ba-btn" type="button" disabled>Stop</button>
+        <button id="snap" class="ba-btn" type="button" disabled>Take snapshot</button>
+        <button id="mirror" class="ba-btn" type="button" aria-pressed="true">Mirror</button>
+        <button id="grid" class="ba-btn" type="button" aria-pressed="false">Grid</button>
+        <button id="flip" class="ba-btn" type="button" hidden>Switch front/back</button>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="help" class="wt-help" hidden>
+        <h3>How do I allow the camera?</h3>
+        <ul>
+          <li data-os="browser"><strong>In the browser:</strong> click the lock or site settings icon to the left of the address bar, set Camera (and Microphone) to Allow and reload the page. In Firefox, click the crossed-out camera icon in the address bar and remove the block.</li>
+          <li data-os="windows"><strong>Windows 10 and 11:</strong> Settings &rarr; Privacy &amp; security (Privacy on Windows 10) &rarr; Camera. Turn on "Camera access", "Let apps access your camera" and "Let desktop apps access your camera"; browsers count as desktop apps.</li>
+          <li data-os="macos"><strong>macOS:</strong> System Settings &rarr; Privacy &amp; Security &rarr; Camera, switch on your browser, then quit and reopen the browser.</li>
+          <li data-os="ios"><strong>iPhone and iPad:</strong> Settings &rarr; Apps &rarr; Safari (on iOS 17 and earlier, Settings &rarr; Safari) &rarr; Camera, choose Ask or Allow, then reload this page. For another browser, open its own entry in Settings.</li>
+          <li data-os="android"><strong>Android:</strong> tap the settings icon next to the address in Chrome &rarr; Permissions &rarr; Camera. Also check Settings &rarr; Apps &rarr; Chrome &rarr; Permissions, and the camera access tile in Quick Settings on Android 12 and later.</li>
+        </ul>
+      </div>
+
+      <div id="stage" class="wt-stage" hidden>
+        <video id="video" playsinline muted autoplay aria-label="Live camera preview"></video>
+        <svg id="grid-overlay" class="wt-grid" viewBox="0 0 300 300" preserveAspectRatio="none" aria-hidden="true" hidden>
+          <g stroke="#fff" stroke-opacity=".8" stroke-width="1" fill="none">
+            <line x1="100" y1="0" x2="100" y2="300" vector-effect="non-scaling-stroke"/>
+            <line x1="200" y1="0" x2="200" y2="300" vector-effect="non-scaling-stroke"/>
+            <line x1="0" y1="100" x2="300" y2="100" vector-effect="non-scaling-stroke"/>
+            <line x1="0" y1="200" x2="300" y2="200" vector-effect="non-scaling-stroke"/>
+            <line x1="140" y1="150" x2="160" y2="150" vector-effect="non-scaling-stroke"/>
+            <line x1="150" y1="140" x2="150" y2="160" vector-effect="non-scaling-stroke"/>
+          </g>
+        </svg>
+      </div>
+      <p id="note" class="wt-note" role="status" hidden></p>
+
+      <div id="shot-box" class="wt-shot" hidden>
+        <h3>Your snapshot</h3>
+        <img id="shot-img" alt="Snapshot taken from your webcam">
+        <p id="shot-info" class="wt-small"></p>
+        <div class="ba-actions"><button id="shot-download" class="ba-btn" type="button">Download PNG</button></div>
+      </div>
+
+      <div id="result" class="ba-result" hidden>
+        <h3>Camera is on: live results</h3>
+        <dl class="wt-dl">
+          <dt>Camera</dt><dd id="r-camera">–</dd>
+          <dt>Resolution</dt><dd id="r-res">–</dd>
+          <dt>Aspect ratio</dt><dd id="r-aspect">–</dd>
+          <dt>Quality class</dt><dd id="r-class">–</dd>
+          <dt>Megapixels</dt><dd id="r-mp">–</dd>
+          <dt>Requested</dt><dd id="r-req">–</dd>
+          <dt>Frame rate (reported)</dt><dd id="r-fps-set">–</dd>
+          <dt>Frame rate (measured)</dt><dd id="r-fps">–</dd>
+          <dt>Brightness</dt><dd id="r-light">–</dd>
+          <dt>Facing</dt><dd id="r-facing">–</dd>
+        </dl>
+        <h4>Camera capabilities</h4>
+        <p id="caps-note" class="wt-small"></p>
+        <dl id="caps" class="wt-dl"></dl>
+        <div id="zoom-box" class="ba-field wt-range" hidden><label for="zoom">Zoom <span id="zoom-val"></span></label><input type="range" id="zoom" min="1" max="2" step="0.1" value="1"></div>
+        <label id="torch-box" class="wt-check" hidden><input type="checkbox" id="torch"> Torch (flash light)</label>
+      </div>
+
+      <div class="wt-block" role="group" aria-labelledby="h-mic">
+        <h3 id="h-mic">Quick microphone check</h3>
+        <p class="wt-small">Start it and say a few words: the bar should follow your voice. Nothing is recorded. For a recording and playback test, open the <a href="../mic-test/">Mic Test</a>.</p>
+        <div class="ba-actions">
+          <button id="mic-start" class="ba-btn" type="button">Start microphone</button>
+          <button id="mic-stop" class="ba-btn" type="button" disabled>Stop microphone</button>
+        </div>
+        <div id="mic-error" class="ba-error" role="alert"></div>
+        <div id="mic-bar" class="wt-meter" aria-hidden="true"><span id="mic-fill"></span></div>
+        <p id="mic-level" class="wt-info">Microphone off. Start it and speak; the bar should follow your voice.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-webcam-test-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to test your webcam</h2>
+      <ol class="ba-steps">
+        <li>Choose the resolution you want to check. 720p is a sensible start; pick 1080p or 4K to find out what the camera can really deliver. If you have more than one camera, the list fills with their names after you allow access the first time.</li>
+        <li>Press <strong>Start camera</strong> and choose "Allow" in the browser prompt. The live preview appears, and the results box shows the resolution the camera actually delivers, its aspect ratio and quality class.</li>
+        <li>Give it two or three seconds. The measured frame rate and the brightness of the picture update every second, so you can see how they react when you turn a lamp on or off.</li>
+        <li>Use <strong>Grid</strong> to line up your eyes with the upper third of the frame, and <strong>Mirror</strong> to see the picture the way others will see it. Press <strong>Take snapshot</strong> to freeze a frame and look at sharpness and color in detail; downloading it is optional.</li>
+        <li>Press <strong>Stop</strong> when you are done. The browser releases the camera, the light next to the lens goes out and other apps can use it again.</li>
+      </ol>
+
+      <h2>What the results mean</h2>
+      <p><strong>Resolution</strong> is the size of each frame in pixels, read from the video element after the first frame has arrived, so it is the real size and not the number on the box. <strong>Aspect ratio</strong> reduces that size to a simple ratio: 640×480 is 4:3, the shape of older webcams, while 1280×720 and 1920×1080 are 16:9, the widescreen shape most call apps expect. When the numbers do not reduce neatly, as with 1366×768, the page shows the closest common ratio with an approximately sign. The <strong>quality class</strong> is based on the short side of the frame, which is how 720p, 1080p and 2160p (4K) are defined, so a phone held upright that sends 720×1280 is still labelled 720p.</p>
+      <p>There are two frame rate rows. The <strong>reported</strong> rate is what the driver and the browser agreed on when the camera started. The <strong>measured</strong> rate counts the frames that were really drawn on this page during the last second, using the browser's video frame callback where it is available and a simpler estimate elsewhere. If the two are far apart, something between the sensor and the screen is slowing down: usually low light, sometimes a busy processor or an overloaded USB port. The <strong>brightness</strong> row is the average light level of a small, scaled-down copy of the current frame, sampled once a second. A reading of a few percent means the sensor is getting almost no light, which points to a closed shutter or a covered lens rather than a broken camera.</p>
+      <p>The <strong>capabilities</strong> list comes straight from the browser and can include the maximum resolution and frame rate, the focus, exposure and white balance modes, a zoom range and, on many phones, a torch. When the camera offers zoom or a torch, a slider or a switch appears so you can try them. Some browsers report only a few capabilities or none at all, and the page says so instead of guessing.</p>
+
+      <h2>Why the resolution can be lower than advertised</h2>
+      <p>The resolution menu asks for a size as an ideal, not as a strict demand, so the browser picks the nearest mode the camera supports and the test never fails just because a size is missing. If you request 4K from a 1080p webcam, you get 1920×1080 and a note telling you so; that is a useful way to find the true maximum. Only when the browser rejects a request outright does the page step down one level at a time, from 4K to 1080p, 720p, 480p and finally the camera default, and it tells you which level worked.</p>
+      <p>A lower result than expected has a few typical causes. Many webcams sold as 1080p send full resolution only in a compressed mode, and some drivers offer that mode at a lower frame rate. A camera plugged into a USB 2.0 port, a hub shared with other devices or a long extension cable may not have the bandwidth for 1080p at 30 frames per second, so it falls back to 720p. Video-call apps often cap the outgoing picture at 720p anyway to save bandwidth, so a perfect local result does not guarantee the same quality on the other end of a call.</p>
+
+      <div class="ba-ad" data-slot="en-webcam-test-b" aria-label="Advertisement"></div>
+
+      <h2>Before a video call or an interview</h2>
+      <p>A two-minute check saves an awkward start. Put the camera at eye level, using a stack of books under a laptop if needed, so people are not looking up your nose. Turn on the grid and keep your eyes near the upper horizontal line, with a little space above your head. The best light comes from the front, for example a window or lamp behind the screen; a bright window behind you turns your face into a silhouette, and the brightness row will show the picture as dim. Clean the lens with a soft cloth, since a fingerprint makes the whole image look hazy. Take a snapshot to check what is visible in the background before anyone else sees it.</p>
+      <p>Watch the measured frame rate while you test. If it is around 30 fps in daylight but drops to about 15 fps in the evening, the camera is lengthening its exposure to gather more light. A desk lamp aimed at a wall in front of you usually brings it back up and also reduces grain.</p>
+
+      <h2>Webcam not working? A checklist</h2>
+      <ul>
+        <li><strong>Permission blocked.</strong> If you dismissed the prompt or clicked Block, the browser remembers that choice. The page opens step-by-step help for the browser, Windows, macOS, iPhone and Android, with your own system highlighted.</li>
+        <li><strong>Camera in use.</strong> On Windows a camera usually works with only one app at a time. If a call app, streaming software or another browser tab holds it, the page tells you that the camera is probably in use by another app. Close those programs and try again.</li>
+        <li><strong>No camera found.</strong> Check the cable and try another USB port. Some laptops have a function key or a physical switch that disconnects the camera completely.</li>
+        <li><strong>Black picture with no error.</strong> Look for a sliding privacy shutter above the screen or a sticker over the lens. The brightness row reads "almost black" in this case.</li>
+        <li><strong>Virtual cameras.</strong> Streaming tools, background-effect software and apps that turn a phone into a webcam add extra entries to the camera list. If one of those is selected while its program is closed, you may see a blank or placeholder image. Pick the physical camera instead.</li>
+        <li><strong>Drivers.</strong> On Windows, open Device Manager &rarr; Cameras and look for a warning sign; a restart or a driver update from the laptop maker usually fixes it.</li>
+      </ul>
+
+      <h2>Phones, tablets and the microphone</h2>
+      <p>On phones and tablets the page shows a <strong>Switch front/back</strong> button. The front camera starts mirrored, as in a selfie app, and the back camera starts unmirrored. Held upright, a phone sends a tall picture, so the aspect ratio reads 9:16 instead of 16:9. Mobile browsers also pause the camera when you switch apps, and this page does the same on every device: when the tab is hidden, the camera and microphone are stopped so they are never left running in the background.</p>
+      <p>The quick microphone check below the camera shows whether sound arrives at all, with a live level bar and a reading in dBFS, where 0 is the loudest possible digital signal and normal speech usually sits between about -30 and -12. For a recording you can play back, a choice between several microphones and the echo and noise switches used in calls, open the full <a href="../mic-test/">Mic Test</a>.</p>
+
+      <h2>Privacy</h2>
+      <p>This webcam test is a plain web page that runs entirely in your browser. The video stream goes from the camera to the video element on this page and nowhere else: there is no upload and no account, the tool itself sets no cookies and runs no tracking script, and you can confirm in the network tab of your browser's developer tools that no video is sent. The ads on this page are loaded by a separate script, and the tool never passes it any picture or sound. A snapshot is held in the tab's memory as an image; it is saved to your disk only when you press Download PNG and is gone when you reload or close the page. The browser shows a camera indicator while the camera is on, and pressing Stop, hiding the tab or closing the page switches it off.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Is my video uploaded or recorded anywhere?</summary><p>No. The preview and every measurement run inside this browser tab, and no picture or sound is sent to a server. A snapshot is kept in the tab's memory only. It is written to your disk only if you press Download PNG, and it disappears when you close or reload the page.</p></details>
+        <details><summary>Why does my webcam show a lower resolution than the box says?</summary><p>A camera only offers a fixed list of modes, and the browser picks the closest one to what you request. Many webcams sold as 1080p reach that size only in certain modes, and a USB 2.0 port, a busy hub or a long cable can push them down to 720p. Request 1080p here and compare the delivered resolution with the maximum the browser reports.</p></details>
+        <details><summary>What is a good frame rate for a webcam?</summary><p>For video calls 30 frames per second is the usual target, and 24 or 25 still looks smooth. Below about 15 fps movement looks choppy. Streamers often prefer 60 fps. If the rate drops in a dark room, the camera is lengthening its exposure time, so more light usually brings the frame rate back up.</p></details>
+        <details><summary>Why is the measured frame rate different from the reported one?</summary><p>The reported value is the frame rate the camera driver and the browser agreed on. The measured value counts the frames that were really shown on this page during the last second. Low light, a busy processor, power saving and a display slower than the camera can all make the measured number lower.</p></details>
+        <details><summary>Why is my picture mirrored?</summary><p>The preview is mirrored by default because that is how you are used to seeing yourself in a mirror. Most call apps show the other people an unmirrored picture, so text behind you reads normally for them. Press the Mirror button to switch. A snapshot saves exactly what the preview shows.</p></details>
+        <details><summary>The camera light is on but the picture is black. What can I do?</summary><p>Check for a sliding privacy shutter or a cover over the lens, and for a camera on/off function key on laptops. Make sure you did not pick a virtual camera whose software is not running. The brightness row in the results shows almost black when the sensor receives no light at all.</p></details>
+        <details><summary>How do I allow the camera again after blocking it?</summary><p>Click the lock or site settings icon to the left of the address bar, set Camera to Allow and reload the page. If that does not help, turn on camera access for apps in Windows Settings, Privacy and security, Camera, or switch on your browser in macOS System Settings, Privacy and Security, Camera, then restart the browser.</p></details>
+        <details><summary>Does the webcam test work on phones and tablets?</summary><p>Yes. Use Chrome on Android or Safari on iPhone and iPad. A Switch front/back button appears on touch screens. Held upright, a phone usually reports a tall picture such as 720×1280, so the aspect ratio shows 9:16; that is normal.</p></details>
+        <details><summary>Can I test my microphone on this page?</summary><p>Yes. The quick microphone check under the camera shows a live level bar in dBFS so you can see that sound arrives. For recording and playback, device selection and voice processing options, use the separate Mic Test page.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../mic-test/">Mic Test (record and play back)</a></li>
+        <li><a href="../aspect-ratio-calculator/">Aspect Ratio Calculator</a></li>
+        <li><a href="../resize-image/">Resize Image</a></li>
+        <li><a href="../compress-image/">Compress Image</a></li>
+        <li><a href="../../kamera-test/">Kamera ve Mikrofon Testi (Turkish version)</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Setting up meeting rooms, conference cameras or custom software for your business? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-webcam-test-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

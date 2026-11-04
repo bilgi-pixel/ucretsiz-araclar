@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Image to Text (OCR) – Extract Text from Images and Scanned PDFs, Free</title>
+  <meta name="description" content="Free image to text converter: extract text from JPG, PNG, screenshots and scanned PDFs in your browser. Paste with Ctrl+V, rotate, crop, copy or download TXT and Word. Your image never leaves your device.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/image-to-text/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/resimden-yaziya/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/image-to-text/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/resimden-yaziya/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Page-specific layout; theme tokens come from ba.css. */
+    .ba-content, .ba-tool .ba-error, .ba-tool .ba-progress .label, #result-info, .ocr-status { overflow-wrap: anywhere; }
+    .ocr-paste { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 12px; }
+    .ocr-paste .ba-btn { min-height: 44px; }
+    .ocr-paste span { color: var(--ba-text-muted); font-size: .92rem; }
+    kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ocr-status { margin: 8px 0 0; min-height: 1.3em; font-size: .92rem; color: var(--ba-text-2); }
+    .ocr-queue-info { margin: 14px 0 0; font-size: .9rem; color: var(--ba-text-muted); font-family: var(--ba-mono); }
+    .ocr-queue { grid-template-columns: minmax(0, 1fr); margin-top: 8px; }
+    .ocr-queue li { flex-wrap: wrap; min-width: 0; gap: 4px 10px; }
+    .ocr-queue li.is-selected { border-color: var(--ba-primary); box-shadow: inset 4px 0 0 var(--ba-primary); }
+    .ocr-q-name { flex: 1 1 160px; min-width: 0; min-height: 40px; padding: 4px 0; text-align: left; font: inherit; font-weight: 600; color: var(--ba-text); background: none; border: 0; cursor: pointer; overflow-wrap: anywhere; }
+    .ocr-q-name:hover { color: var(--ba-primary); text-decoration: underline; }
+    .ocr-queue .meta { white-space: normal; overflow-wrap: anywhere; }
+    .ocr-q-status { font-size: .85rem; color: var(--ba-text-2); }
+    .ocr-q-remove { margin-left: auto; width: 40px; height: 40px; flex: none; font-size: 1.3rem; line-height: 1; color: var(--ba-text-2); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .ocr-q-remove:hover { color: var(--ba-danger); border-color: var(--ba-danger); }
+    .ocr-q-name:disabled, .ocr-q-remove:disabled { cursor: not-allowed; opacity: .6; }
+    .ocr-warn, .ba-result .ocr-warn { margin: 12px 0 0; padding: 10px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #6b4000; border: 1px solid #e8b964; font-size: .92rem; overflow-wrap: anywhere; }
+    .ocr-warn a { color: #4f2f00; }
+    .ocr-editor { margin-top: 18px; padding: 14px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); min-width: 0; }
+    .ocr-editor-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 10px; }
+    .ocr-caption { margin: 0; font-weight: 600; font-size: .92rem; overflow-wrap: anywhere; min-width: 0; flex: 1 1 200px; }
+    .ocr-editor-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .ocr-editor-btns .ba-btn { min-height: 44px; padding: 8px 14px; font-size: .95rem; }
+    .ocr-rot { font-size: .9rem; color: var(--ba-text-2); font-family: var(--ba-mono); }
+    .ocr-stage-wrap { text-align: center; }
+    .ocr-stage { position: relative; display: inline-block; max-width: 100%; line-height: 0; overflow: hidden; touch-action: none; cursor: crosshair; background: #fff; border: 1px solid var(--ba-border); user-select: none; }
+    .ocr-stage canvas { display: block; max-width: 100%; max-height: 420px; width: auto; height: auto; }
+    @media (max-width: 600px) { .ocr-stage canvas { max-height: 280px; } }
+    .ocr-crop { position: absolute; border: 2px dashed var(--ba-primary); box-shadow: 0 0 0 9999px rgba(20, 20, 20, .45); pointer-events: none; }
+    .ocr-crop-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; margin: 12px 0 0; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); min-width: 0; }
+    @media (min-width: 600px) { .ocr-crop-fields { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .ocr-crop-fields legend { font-weight: 600; font-size: .9rem; padding: 0 4px; }
+    .ocr-crop-fields label { display: flex; flex-direction: column; gap: 4px; font-size: .88rem; min-width: 0; }
+    .ocr-crop-fields input { width: 100%; min-width: 0; min-height: 40px; padding: 6px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .ocr-crop-fields input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .ocr-editor .hint { margin: 8px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .ba-options .ba-field { min-width: 0; }
+    .ba-field label.ocr-check { display: flex; align-items: center; gap: 4px; min-height: 40px; font-weight: 500; cursor: pointer; }
+    .ba-options .ocr-first { grid-column: 1 / -1; margin: 0; font-size: .88rem; color: var(--ba-text-2); }
+    .ocr-out { width: 100%; min-height: 240px; margin-top: 6px; padding: 12px; font: 1rem/1.5 var(--ba-mono); color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; }
+    .ocr-out:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .ocr-out-label { display: block; font-weight: 600; margin: 14px 0 0; }
+    .ocr-copy-status, .ba-result .ocr-copy-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .ocr-conf { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+    .ocr-conf li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; padding: 8px 10px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .9rem; min-width: 0; }
+    .ocr-conf li.is-low { border-color: #c98a00; background: #fff8e6; color: #4f3300; }
+    .ocr-conf li.is-low .ocr-conf-val { color: #5c3b00; }
+    .ocr-conf li.is-empty { color: var(--ba-text-muted); }
+    .ocr-conf-name { font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
+    .ocr-conf-val { font-family: var(--ba-mono); font-size: .85rem; color: var(--ba-text-2); }
+    .ocr-review { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); }
+    .ocr-review summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+    .ocr-review .hint { margin: 6px 0 10px; font-size: .88rem; color: var(--ba-text-muted); }
+    .ocr-marked { max-height: 320px; overflow: auto; font: .95rem/1.55 var(--ba-mono); color: var(--ba-text); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .ocr-marked mark { background: #ffd966; color: #1a1a1a; padding: 0 2px; border-radius: 2px; }
+    .ocr-marked-h { margin: 10px 0 4px; font-family: var(--ba-font, inherit); font-weight: 600; color: var(--ba-text-2); }
+    .ocr-gap { height: .8em; }
+    .ba-result.ocr-none { background: var(--ba-surface-2); border-color: var(--ba-border-hover); }
+    .ba-result.ocr-none h3 { color: var(--ba-text); }
+    .ba-result.ocr-none h3::before { content: "!"; background: var(--ba-text-2); color: var(--ba-bg); }
+    .ocr-privacy { margin: 24px 0 0; padding: 14px 16px; border-radius: var(--ba-radius-sm); background: var(--ba-success-soft); border: 1px solid var(--ba-success); border-left-width: 4px; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .ocr-privacy strong { color: var(--ba-text); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Image to Text (OCR) – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","description":"Extract text from JPG, PNG, WebP, BMP and GIF images, pasted screenshots and scanned PDFs in the browser with English and Turkish OCR. Rotate, crop and clean up images, check per-page confidence, copy the text or download TXT and Word files. Images are never uploaded.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/image-to-text/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"Is my image uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. When you choose, drop or paste an image, the browser only reads it into its own memory. The OCR engine runs as WebAssembly inside this page. The only files that travel over the network are the engine and language files, which come from this website on first use. You can confirm it in the Network tab of your browser's developer tools."}},{"@type":"Question","name":"Why does the first run download a few megabytes?","acceptedAnswer":{"@type":"Answer","text":"The OCR engine (about 4 MB) and the model for each language (about 2 MB each) have to be in your browser, otherwise the recognition would have to happen on a server. The files are served from our own domain with fixed versions, and your browser keeps them, so later runs start much faster."}},{"@type":"Question","name":"Can it read handwriting?","acceptedAnswer":{"@type":"Answer","text":"Not reliably. The engine is trained on printed and on-screen text. Neat block capitals sometimes come out partly right, but cursive and quick notes do not. When a page scores low, the tool shows a warning so you know to check it."}},{"@type":"Question","name":"How do I convert a screenshot to text?","acceptedAnswer":{"@type":"Answer","text":"Copy a screenshot to the clipboard (Win+Shift+S on Windows, Cmd+Ctrl+Shift+4 on a Mac), click anywhere on this page and press Ctrl+V or Cmd+V. The screenshot joins the queue as screenshot-1.png. Press Extract text and copy the result."}},{"@type":"Question","name":"Can I convert a multi-page scanned PDF to text?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drop the PDF on the tool, leave the PDF pages box empty to read every page or type a range such as 1-3, 5, and press Extract text. Each page is drawn as an image and read in turn, and the result keeps a separator line for every page. If the PDF already contains selectable text, the PDF to Word tool is faster and more exact."}},{"@type":"Question","name":"What does the confidence percentage mean?","acceptedAnswer":{"@type":"Answer","text":"It is the average certainty the OCR engine reports for the words on a page. Clean scans usually score above 85 percent. Below 60 percent the page is flagged so you can check it, and the review panel highlights every word the engine was less than 60 percent sure about. It is a guide, not a guarantee."}},{"@type":"Question","name":"Which languages can it read?","acceptedAnswer":{"@type":"Answer","text":"English and Turkish, or both together for mixed documents. Only these two models are included so that everything runs from our own server and works offline. Text in other Latin-script languages is often readable but accented letters may be misread."}},{"@type":"Question","name":"Does the Word file keep the original layout?","acceptedAnswer":{"@type":"Answer","text":"No. OCR produces plain text. In the .docx file every block separated by a blank line becomes a paragraph and line breaks are kept, but fonts, columns, tables and pictures are not rebuilt, so format the document in Word afterwards."}},{"@type":"Question","name":"Does it work on a phone?","acceptedAnswer":{"@type":"Answer","text":"Yes, in Chrome on Android and Safari on iPhone. You can pick a photo straight from the camera roll. Phones are slower than computers and have less memory, so read a few PDF pages at a time and crop large photos to the text area."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-donustur">Converters</a></li></ol>
+      <h1><span class="ba-grad">Image to Text</span> (OCR) – Extract Text from Images and Scanned PDFs <small>(beta)</small></h1>
+      <p class="lead">Turn photos, screenshots and scanned PDF pages into editable text. Drop files, paste a screenshot with Ctrl+V, then copy the result or save it as TXT or Word. Recognition runs inside your browser in English or Turkish.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Your image never leaves your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <div id="drop" aria-label="Click to choose images or PDFs, or drop them here"><span class="ba-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><strong>Drop images or a scanned PDF here</strong><small>or click to choose · JPG, PNG, WebP, BMP, GIF, PDF · several files at once · nothing is uploaded</small><span class="ba-btn">Choose files</span></div>
+      <div class="ocr-paste"><button id="paste" class="ba-btn" type="button">Paste screenshot</button><span>or press <kbd>Ctrl</kbd>+<kbd>V</kbd> (<kbd>Cmd</kbd>+<kbd>V</kbd> on a Mac) anywhere on this page</span></div>
+      <p id="status" class="ocr-status" role="status" aria-live="polite"></p>
+
+      <div id="queue-wrap" hidden>
+        <p id="queue-info" class="ocr-queue-info"></p>
+        <ul id="queue" class="ba-filelist ocr-queue" aria-label="Files to read"></ul>
+      </div>
+      <p id="warn-size" class="ocr-warn" hidden>At least one file is larger than 50 MB. Reading it depends on your device's memory and may be slow; if the page stalls, crop the image to the text, shrink it with <a href="../compress-image/">Compress Image</a> or split the PDF with <a href="../split-pdf/">Split PDF</a> and try again.</p>
+      <p id="warn-memory" class="ocr-warn" hidden>You seem to be on a phone or a device with limited memory. Large photos and long PDFs can make the browser reload the tab. Read a few pages at a time with the PDF pages box, crop photos to the text area and close other tabs.</p>
+
+      <div id="editor" class="ocr-editor" hidden>
+        <div class="ocr-editor-bar">
+          <p id="preview-caption" class="ocr-caption"></p>
+          <div class="ocr-editor-btns">
+            <button id="rotate" class="ba-btn" type="button">Rotate 90°<span class="visually-hidden"> clockwise</span></button>
+            <span class="ocr-rot">Rotation: <output id="rotation-label" for="rotate">0°</output></span>
+            <button id="crop-reset" class="ba-btn" type="button">Reset crop</button>
+          </div>
+        </div>
+        <div class="ocr-stage-wrap"><div id="stage" class="ocr-stage"><canvas id="preview" width="1" height="1" role="img" aria-label="Preview of the selected file. Drag to select the area to read."></canvas><div id="crop-box" class="ocr-crop" hidden></div></div></div>
+        <fieldset class="ocr-crop-fields"><legend>Crop: trim from each edge (%)</legend>
+          <label>Left<input id="crop-l" type="number" min="0" max="90" step="1" value="0" inputmode="numeric"></label>
+          <label>Top<input id="crop-t" type="number" min="0" max="90" step="1" value="0" inputmode="numeric"></label>
+          <label>Right<input id="crop-r" type="number" min="0" max="90" step="1" value="0" inputmode="numeric"></label>
+          <label>Bottom<input id="crop-b" type="number" min="0" max="90" step="1" value="0" inputmode="numeric"></label>
+        </fieldset>
+        <p class="hint">Select a file in the list to preview it. Drag across the preview to keep only the text you need, or type how much to trim from each edge. Turn sideways or upside-down photos with Rotate until the text reads normally.</p>
+      </div>
+
+      <div id="options" class="ba-options" hidden>
+        <div class="ba-field"><label for="opt-lang">Text language</label>
+          <select id="opt-lang">
+            <option value="eng" selected>English</option>
+            <option value="tur">Turkish</option>
+            <option value="eng+tur">English + Turkish</option>
+          </select>
+          <div class="hint">One language is faster and more accurate; choose both only for mixed documents.</div>
+        </div>
+        <div class="ba-field" id="field-pages" hidden><label for="opt-pages">PDF pages</label>
+          <input id="opt-pages" type="text" autocomplete="off" spellcheck="false" placeholder="All pages, or e.g. 1-3, 5" aria-describedby="pages-hint">
+          <div id="pages-hint" class="hint">Leave empty to read every page. Each page takes a few seconds.</div>
+        </div>
+        <div class="ba-field"><label for="opt-clean">Image clean-up</label>
+          <select id="opt-clean">
+            <option value="none" selected>Original colors</option>
+            <option value="gray">Grayscale</option>
+            <option value="bw">Black &amp; white (threshold)</option>
+          </select>
+          <div class="hint">Black &amp; white helps with gray paper, shadows and faint photocopies.</div>
+        </div>
+        <div class="ba-field"><span>Extras</span>
+          <label class="ocr-check"><input id="opt-deskew" type="checkbox" checked> Straighten slightly tilted text</label>
+          <label class="ocr-check"><input id="opt-tidy" type="checkbox" checked> Tidy up the result</label>
+          <div class="hint">Tidy-up joins words split by a hyphen at line ends, fixes ﬁ/ﬂ ligatures and removes double spaces.</div>
+        </div>
+        <p class="hint ocr-first">On first use the OCR engine and the language model (about 6 MB) are downloaded <strong>from this website only</strong> and kept by your browser; no other server is contacted. Beta: works best on printed or on-screen text and does not read handwriting.</p>
+      </div>
+
+      <div class="ba-actions" id="actions" hidden>
+        <button id="run" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Extract text</button>
+        <button id="cancel" class="ba-btn" type="button" hidden>Cancel</button>
+        <button id="clear" class="ba-btn" type="button">Clear all</button>
+      </div>
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="OCR progress"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3 id="result-title">Text extracted</h3>
+        <p id="result-info"></p>
+        <p id="warn-low" class="ocr-warn" hidden>Some pages have low confidence. This tool reads printed and on-screen text; handwriting, decorative fonts, tiny text and blurry photos give unreliable results. Try a sharper image, crop to the text, rotate it upright or switch the clean-up to Black &amp; white.</p>
+        <ul id="page-conf" class="ocr-conf" aria-label="Confidence per page"></ul>
+        <label for="out" class="ocr-out-label">Recognized text (you can edit it)</label>
+        <textarea id="out" class="ocr-out" spellcheck="false"></textarea>
+        <div class="ba-actions">
+          <button id="copy" class="ba-btn ba-btn-success ba-btn-lg" type="button">Copy text</button>
+          <button id="download-txt" class="ba-btn ba-btn-primary" type="button">Download .txt</button>
+          <button id="download-docx" class="ba-btn ba-btn-primary" type="button">Download .docx</button>
+        </div>
+        <p id="copy-status" class="ocr-copy-status" role="status"></p>
+        <details id="review" class="ocr-review"><summary>Review uncertain words (<span id="low-count">0</span>)</summary>
+          <p class="hint">This is the original OCR result. Words the engine was less than 60% sure about are highlighted; compare them with the image and correct them in the text box above.</p>
+          <div id="marked" class="ocr-marked"></div>
+        </details>
+      </div>
+    </section>
+
+    <aside class="ocr-privacy" aria-label="Privacy"><strong>Your image never leaves your device.</strong> Files you choose, drop or paste are read and recognized by WebAssembly code running in this browser tab. Nothing is uploaded, nothing is stored on our servers, and the text disappears when you close the page.</aside>
+
+    <div class="ba-ad" data-slot="en-image-to-text-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to extract text from an image</h2>
+      <ol class="ba-steps">
+        <li>Drop one or more JPG, PNG, WebP, BMP or GIF images, or a scanned PDF, on the box above. You can also click it to browse, or copy a screenshot and press <kbd>Ctrl</kbd>+<kbd>V</kbd> on this page.</li>
+        <li>Check the preview. If the picture is sideways, press <strong>Rotate 90°</strong> until the text reads normally. Drag across the preview to keep only the paragraph you need; everything outside the box is ignored.</li>
+        <li>Pick the language of the text. English is selected by default; choose Turkish or English + Turkish for documents that contain Turkish letters. For PDFs you can type a page range such as <code>1-3, 5</code>.</li>
+        <li>Press <strong>Extract text</strong>. The first run loads the OCR engine from this site, then the progress bar shows each page being read. You can press <strong>Cancel</strong> at any time.</li>
+        <li>Read the result, fix anything the engine got wrong directly in the text box, then copy it or download it as a <code>.txt</code> or Word <code>.docx</code> file.</li>
+      </ol>
+
+      <h2>What this image to text converter does</h2>
+      <p>Optical character recognition, or OCR, is the process of finding letters in a picture and turning them back into characters you can search, edit and paste. A photo of a page is only a grid of colored pixels to your computer; until it has been recognized you cannot select a sentence, look up a word or paste a paragraph into an email. This tool runs Tesseract, a mature open-source OCR engine originally developed at Hewlett-Packard and later maintained with support from Google, compiled to WebAssembly so it works directly in a browser tab. It looks for lines of text, splits them into words and characters, and uses a neural network trained on large amounts of printed text to decide what each word says.</p>
+      <p>Because the engine runs on your own device, you can use it for things you would never upload to an unknown website: a bank letter, a medical bill, a contract page, a photo of an ID card you need to transcribe for a form, or notes from a confidential meeting. There is no account, no daily limit, no watermark and no "premium" version. Once the engine has been downloaded on first use, the page also works offline, and you can install it as an app from your browser menu.</p>
+
+      <h2>JPG to text: reading photos and scans</h2>
+      <p>Most people reach for OCR when they have a JPG: a phone photo of a whiteboard, a picture of a recipe, a scan saved by an office copier, or an image that was emailed instead of a document. Drop the JPG, keep the language on English and press Extract text. The converter scales very large photos down to 4,000 pixels on the longest side before reading, which keeps memory use reasonable without losing detail on normal documents, and it enlarges small images so thin letters are easier to recognize. Transparent PNG files are placed on a white background so dark text does not vanish against black.</p>
+      <p>PNG, WebP and BMP files are handled the same way. For an animated GIF the first frame is read. If you have several photos, for example the pages of a printed handout, drop them all at once; they are read one after another and the text of each file is separated by a heading line so you can tell where one ends and the next begins.</p>
+
+      <h2>Screenshot to text in two keystrokes</h2>
+      <p>Screenshots are often the quickest way to capture text that cannot be selected, such as words inside a video, an error dialog, a slide shared in a meeting or a picture posted on social media. On Windows press <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> and drag over the area; on a Mac press <kbd>Cmd</kbd>+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> so the capture goes to the clipboard instead of the desktop. Then click anywhere on this page and press <kbd>Ctrl</kbd>+<kbd>V</kbd> or <kbd>Cmd</kbd>+<kbd>V</kbd>. The screenshot appears in the list as <code>screenshot-1.png</code>, ready to read. The <strong>Paste screenshot</strong> button does the same in browsers that allow a button to read the clipboard.</p>
+      <p>Screen text is usually the easiest material for OCR because it is sharp, straight and high in contrast. Results are typically near perfect, apart from unusual fonts, text placed over busy photos and very small captions. If you capture at a higher zoom level, for example 125% or 150% in your browser, accuracy improves further.</p>
+
+      <h2>Scanned PDF to text</h2>
+      <p>Many PDFs are not really text documents but a stack of pictures: what a scanner or a phone scanning app produces. You can tell because you cannot select a word in your PDF reader. Drop such a file here and every page is drawn as an image at about 216 DPI and then recognized. Leave the PDF pages box empty to read the whole document, or type a range like <code>2-4</code> to save time on long files. The output contains a separator line for each page, and the confidence list shows how well every page was read.</p>
+      <p>If your PDF already has selectable text, OCR is the slower and less exact route. Use <a href="../pdf-to-word/">PDF to Word</a> instead, which copies the real text out of the file. If you need pictures of the pages rather than text, <a href="../pdf-to-jpg/">PDF to JPG</a> exports them.</p>
+
+      <div class="ba-ad" data-slot="en-image-to-text-b" aria-label="Advertisement"></div>
+
+      <h2>Tips for accurate OCR</h2>
+      <ul>
+        <li><strong>Scan at 300 DPI.</strong> When you use a flatbed scanner, choose 300 DPI or a "high quality" or "text" preset. Below 150 DPI thin letters break apart and similar characters such as rn and m, or 1 and l, get confused.</li>
+        <li><strong>Shoot straight from above.</strong> With a phone, place the page flat on a table, fill the frame with the text and keep the camera parallel to the paper. Angled shots and curved book pages bend the lines; the straighten option fixes small tilts but not strong perspective.</li>
+        <li><strong>Light it evenly.</strong> Shadows across the page and glare on glossy paper hide letters. Daylight from a window or two lamps from the sides works better than an overhead light that throws your phone's shadow.</li>
+        <li><strong>Crop to the text.</strong> Logos, photos, stamps and page borders give the engine extra shapes to puzzle over. Dragging a box around the paragraph you want is often the single biggest improvement.</li>
+        <li><strong>Use Black &amp; white for gray pages.</strong> Old photocopies, receipts on thermal paper and pages with colored backgrounds read better after the threshold clean-up, which turns every pixel black or white.</li>
+        <li><strong>Pick the right language.</strong> The English model does not know letters like ş, ğ or ı, and the Turkish model has its own vocabulary. Choose the language that matches the text, and use both only when the document really mixes them.</li>
+        <li><strong>One column at a time.</strong> Newspapers, brochures and two-column papers can interleave lines from neighboring columns. Crop each column and read them separately for clean paragraphs.</li>
+        <li><strong>Expect tables to flatten.</strong> OCR returns plain text, so table cells become words separated by spaces. For numbers you plan to paste into a spreadsheet, check the order of the columns after copying.</li>
+      </ul>
+
+      <h2>Understanding the confidence score</h2>
+      <p>After each run the tool lists every page with a confidence percentage, the number of words found and how many words were uncertain. The percentage is the average certainty the engine reports for the words on that page. Clean screenshots and good scans usually land above 85%. A page below 60% is flagged with "check this page", and if any page falls under 50% a warning explains the usual causes, from handwriting to blurry photos. Open <strong>Review uncertain words</strong> to see the original result with every word under 60% highlighted, so you know exactly where to look. Treat the score as a helpful guide: a confident word can still be wrong, and a low-scoring word is sometimes correct.</p>
+
+      <h2>What it can and cannot do</h2>
+      <p>The converter is good at printed documents, typed letters, book pages, receipts, labels, slides and screenshots in English or Turkish. It handles several files and long PDFs in one go, keeps line breaks, and lets you edit the text before saving. It is not built for handwriting, it does not rebuild layouts, fonts, tables or images, and it cannot read text in languages whose models are not included. It also cannot see through heavy blur, strong compression artifacts or text that is only a few pixels tall. When nothing readable is found, the tool says so instead of returning invented text, and suggests what to try next.</p>
+
+      <h2>Your image never leaves your device</h2>
+      <p>Many free OCR websites upload your file to their servers, keep it for an unknown time and sometimes use it to train their own systems. Here the recognition happens on your computer or phone. The only network traffic is the first download of the engine and language files, and those come from this same website, not from a third-party server or CDN. After that the page can even work offline. If you want to verify it, open your browser's developer tools, switch to the Network tab and run a conversion: you will see no request carrying your image. This matters for anything personal or confidential, and it is also why the tool keeps working on a slow connection once it has loaded.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Is my image uploaded to a server?</summary><p>No. When you choose, drop or paste an image, the browser only reads it into its own memory. The OCR engine runs as WebAssembly inside this page. The only files that travel over the network are the engine and language files, which come from this website on first use. You can confirm it in the Network tab of your browser's developer tools.</p></details>
+        <details><summary>Why does the first run download a few megabytes?</summary><p>The OCR engine (about 4 MB) and the model for each language (about 2 MB each) have to be in your browser, otherwise the recognition would have to happen on a server. The files are served from our own domain with fixed versions, and your browser keeps them, so later runs start much faster.</p></details>
+        <details><summary>Can it read handwriting?</summary><p>Not reliably. The engine is trained on printed and on-screen text. Neat block capitals sometimes come out partly right, but cursive and quick notes do not. When a page scores low, the tool shows a warning so you know to check it.</p></details>
+        <details><summary>How do I convert a screenshot to text?</summary><p>Copy a screenshot to the clipboard (Win+Shift+S on Windows, Cmd+Ctrl+Shift+4 on a Mac), click anywhere on this page and press Ctrl+V or Cmd+V. The screenshot joins the queue as screenshot-1.png. Press Extract text and copy the result.</p></details>
+        <details><summary>Can I convert a multi-page scanned PDF to text?</summary><p>Yes. Drop the PDF on the tool, leave the PDF pages box empty to read every page or type a range such as 1-3, 5, and press Extract text. Each page is drawn as an image and read in turn, and the result keeps a separator line for every page. If the PDF already contains selectable text, the <a href="../pdf-to-word/">PDF to Word</a> tool is faster and more exact.</p></details>
+        <details><summary>What does the confidence percentage mean?</summary><p>It is the average certainty the OCR engine reports for the words on a page. Clean scans usually score above 85 percent. Below 60 percent the page is flagged so you can check it, and the review panel highlights every word the engine was less than 60 percent sure about. It is a guide, not a guarantee.</p></details>
+        <details><summary>Which languages can it read?</summary><p>English and Turkish, or both together for mixed documents. Only these two models are included so that everything runs from our own server and works offline. Text in other Latin-script languages is often readable but accented letters may be misread.</p></details>
+        <details><summary>Does the Word file keep the original layout?</summary><p>No. OCR produces plain text. In the .docx file every block separated by a blank line becomes a paragraph and line breaks are kept, but fonts, columns, tables and pictures are not rebuilt, so format the document in Word afterwards.</p></details>
+        <details><summary>Does it work on a phone?</summary><p>Yes, in Chrome on Android and Safari on iPhone. You can pick a photo straight from the camera roll. Phones are slower than computers and have less memory, so read a few PDF pages at a time and crop large photos to the text area.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../pdf-to-word/">PDF to Word</a></li>
+        <li><a href="../image-to-pdf/">Image to PDF</a></li>
+        <li><a href="../pdf-to-jpg/">PDF to JPG</a></li>
+        <li><a href="../word-counter/">Word Counter &amp; Text Tools</a></li>
+        <li><a href="../../resimden-yaziya/">Resimden Yazıya (Turkish version)</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need to make thousands of archived documents searchable, or build OCR into your own workflow? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-image-to-text-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../image-to-pdf/">Image to PDF</a></li><li><a href="../pdf-to-word/">PDF to Word</a></li><li><a href="../compress-image/">Compress Image</a></li><li><a href="../merge-pdf/">Merge PDF</a></li><li><a href="../word-counter/">Word Counter</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

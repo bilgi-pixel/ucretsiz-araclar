@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Mic Test – Check Your Microphone Online (Free, No Upload)</title>
+  <meta name="description" content="Free online mic test: live dBFS level meter, waveform, device picker and a 10-second record-and-play-back check. Your audio never leaves your device.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/mic-test/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/mikrofon-test/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/mic-test/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/mikrofon-test/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .mt-block { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; margin: 0 0 18px; background: var(--ba-surface); min-width: 0; }
+    .mt-block h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .mt-row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; margin-bottom: 12px; }
+    .mt-row .ba-field { flex: 1 1 220px; min-width: 0; }
+    .mt-row select { max-width: 100%; }
+    .mt-opts { margin: 0 0 12px; padding: 0; border: 0; min-width: 0; }
+    .mt-opts legend { font-weight: 600; font-size: .9rem; margin-bottom: 4px; padding: 0; }
+    .mt-opts-list { display: flex; flex-wrap: wrap; gap: 0 18px; }
+    .mt-check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .mt-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--ba-primary); flex: none; }
+    .mt-meter, .mt-wave { width: 100%; display: block; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); border: 1px solid var(--ba-border); }
+    .mt-meter { height: 36px; }
+    .mt-wave { height: 110px; }
+    .mt-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 8px 0 0; }
+    .mt-info { font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); margin: 8px 0 0; min-height: 1.3em; overflow-wrap: anywhere; }
+    .mt-status .mt-info { margin: 0; flex: 1 1 220px; }
+    .mt-sound { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: .88rem; font-weight: 600; border: 1px solid var(--ba-border); background: var(--ba-surface-2); color: var(--ba-text-2); }
+    .mt-sound::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #8a8a8a; flex: none; }
+    .mt-sound[data-state="sound"] { background: var(--ba-success-soft); border-color: var(--ba-success); color: var(--ba-text); }
+    .mt-sound[data-state="sound"]::before { background: var(--ba-success); }
+    .mt-sound[data-state="silence"]::before { background: #c8372d; }
+    .mt-note { font-size: .9rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .mt-hint { margin: 10px 0 0; padding: 10px 14px; border-radius: var(--ba-radius-sm); font-size: .93rem; border: 1px solid var(--ba-border); background: var(--ba-surface-2); color: var(--ba-text-2); }
+    .mt-hint[data-state="silent"], .mt-hint[data-state="clipping"] { background: #fff4e0; color: #7a4a00; border-color: #e8b964; }
+    .mt-hint[data-state="ok"] { background: var(--ba-success-soft); color: var(--ba-text-2); border-color: var(--ba-success); }
+    .mt-help { margin-top: 12px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: #fff4e0; color: #7a4a00; border: 1px solid #e8b964; font-size: .93rem; overflow-wrap: anywhere; }
+    .mt-help h3, .mt-help h4 { margin: 0 0 6px; font-size: 1rem; }
+    .mt-help ul { margin: 6px 0 0; padding-left: 20px; }
+    .mt-help li { margin: 4px 0; }
+    .mt-help p { margin: 0; }
+    .mt-audio { width: 100%; margin-top: 12px; display: block; }
+    .mt-dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 6px 16px; margin: 0; font-size: .93rem; }
+    .mt-dl dt { font-weight: 600; color: var(--ba-text); }
+    .mt-dl dd { margin: 0; font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    @media (max-width: 480px) { .mt-dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .mt-dl dd { margin-bottom: 8px; } }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .mt-help, :root:not([data-theme="light"]) .mt-hint[data-state="silent"], :root:not([data-theme="light"]) .mt-hint[data-state="clipping"] { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; }
+    }
+    :root[data-theme="dark"] .mt-help, :root[data-theme="dark"] .mt-hint[data-state="silent"], :root[data-theme="dark"] .mt-hint[data-state="clipping"] { background: #3a2a10; color: #ffd48a; border-color: #8a6a2a; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Mic Test – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/mic-test/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[
+    {"@type":"Question","name":"Is my voice uploaded or recorded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The microphone signal is measured live inside this tab and is never sent to a server. The optional 10-second recording is kept in your browser's memory only. It is not written to disk unless you press the download button, and it disappears when you close or reload the page."}},
+    {"@type":"Question","name":"I blocked the microphone by mistake. How do I allow it again?","acceptedAnswer":{"@type":"Answer","text":"In Chrome and Edge, click the lock or site settings icon on the left of the address bar, switch Microphone to Allow and reload the page. In Firefox, click the crossed-out microphone icon in the address bar and remove the block. In Safari on a Mac, open Safari, Settings, Websites, Microphone. Also make sure access is on in Windows Settings, Privacy & security, Microphone, or in macOS System Settings, Privacy & Security, Microphone."}},
+    {"@type":"Question","name":"Why does the level bar not move at all?","acceptedAnswer":{"@type":"Answer","text":"The usual causes are the wrong input device, a microphone that is muted or set to zero in the operating system, a hardware mute switch on the headset and another app holding the microphone. Pick another device from the list, raise the input volume in your sound settings and close other apps that use the microphone."}},
+    {"@type":"Question","name":"What is a good microphone level in dBFS?","acceptedAnswer":{"@type":"Answer","text":"For normal speech the reading usually moves between about -30 and -12 dBFS. Around -50 dBFS or lower is too quiet, frequent readings above -6 dBFS mean the input is too hot, and peaks that reach 0 dBFS cause clipping. If the page warns about clipping, lower the gain or move back from the microphone."}},
+    {"@type":"Question","name":"Why does my Bluetooth headset microphone sound bad?","acceptedAnswer":{"@type":"Answer","text":"While a Bluetooth headset's microphone is in use, most devices switch from the high-quality music profile to the hands-free profile, which carries speech at a much lower sample rate, often 8 or 16 kHz. That is a limit of the technology, not a fault. For recordings and important calls, use a wired, USB or built-in microphone."}},
+    {"@type":"Question","name":"What do the echo cancellation, noise suppression and auto gain switches do?","acceptedAnswer":{"@type":"Answer","text":"They ask the browser to apply the same voice processing that video-call apps use. With all three on, the test is close to what other people hear in a call. With them off you see the raw signal, which is better for judging the hardware and the real background noise. Not every browser honours every switch; the connection details show what was actually applied."}},
+    {"@type":"Question","name":"Why is the recording limited to 10 seconds?","acceptedAnswer":{"@type":"Answer","text":"The goal is a quick listening check, not an archive. A short clip is enough to hear your tone, volume, background noise and echo, and keeping it short means it stays small in memory."}},
+    {"@type":"Question","name":"Does the mic test work on phones and tablets?","acceptedAnswer":{"@type":"Answer","text":"Yes. Use Chrome on Android or Safari on iPhone and iPad. The page is served over https, so the browser asks for microphone permission in the usual way. If a headset is connected, the phone may use the headset microphone instead of the built-in one."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-dosya">Files &amp; Text</a></li></ol>
+      <h1><span class="ba-grad">Mic Test</span> – Check Your Microphone Online</h1>
+      <p class="lead">Is your microphone working? Press start and speak: a live level meter and a waveform show your voice, and a 10-second recording lets you hear yourself as others will. The sound is analysed only in this tab, in your computer's memory, and is never sent anywhere.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Your audio never leaves your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <p id="support" class="mt-help" role="status" hidden></p>
+
+      <div class="mt-block" role="group" aria-labelledby="h-live">
+        <h3 id="h-live">1. Live microphone level</h3>
+        <div class="mt-row">
+          <div class="ba-field"><label for="mic-device">Choose a microphone</label><select id="mic-device"><option value="">Default microphone</option></select></div>
+        </div>
+        <fieldset class="mt-opts">
+          <legend>Voice processing (as used in video calls)</legend>
+          <div class="mt-opts-list">
+            <label class="mt-check"><input type="checkbox" id="opt-echo" checked> Echo cancellation</label>
+            <label class="mt-check"><input type="checkbox" id="opt-noise" checked> Noise suppression</label>
+            <label class="mt-check"><input type="checkbox" id="opt-agc" checked> Automatic gain control</label>
+          </div>
+        </fieldset>
+        <div class="ba-actions" style="margin-top:0">
+          <button id="mic-start" class="ba-btn ba-btn-primary" type="button">Start microphone</button>
+          <button id="mic-stop" class="ba-btn" type="button" disabled>Stop microphone</button>
+        </div>
+        <div id="mic-error" class="ba-error" role="alert"></div>
+        <div id="perm-help" class="mt-help" hidden>
+          <h4>How do I allow the microphone?</h4>
+          <ul>
+            <li><strong>Chrome and Edge:</strong> click the lock (or site settings) icon to the left of the address bar, set "Microphone" to "Allow" and reload the page. For all sites, open chrome://settings/content/microphone in Chrome or edge://settings/content/microphone in Edge.</li>
+            <li><strong>Firefox:</strong> click the crossed-out microphone icon in the address bar, remove the block, reload and choose "Allow" in the prompt.</li>
+            <li><strong>Safari (macOS):</strong> open Safari &rarr; Settings &rarr; Websites &rarr; Microphone and choose "Allow" for this site.</li>
+            <li><strong>Windows 10 and 11:</strong> Settings &rarr; Privacy &amp; security (Privacy on Windows 10) &rarr; Microphone. "Microphone access" and "Let desktop apps access your microphone" must both be on.</li>
+            <li><strong>macOS:</strong> System Settings &rarr; Privacy &amp; Security &rarr; Microphone. Turn on the switch next to your browser, then quit and reopen the browser.</li>
+          </ul>
+        </div>
+        <div style="margin-top:12px">
+          <canvas id="mic-canvas" class="mt-meter" width="600" height="36" role="img" aria-label="Microphone level meter"></canvas>
+          <div class="mt-status">
+            <span id="mic-sound" class="mt-sound" data-state="off">Microphone off</span>
+            <p id="mic-level" class="mt-info" aria-live="off">Microphone off. Start it and speak; the bar should follow your voice.</p>
+          </div>
+          <p id="mic-hint" class="mt-hint" data-state="idle" role="status">Start the microphone and this box will explain what your level means.</p>
+          <div id="bt-warn" class="mt-help" role="status" hidden><p><strong>Bluetooth hands-free mode likely.</strong> This looks like a Bluetooth headset microphone or a low sample rate. While its microphone is on, the headset switches to the hands-free profile, so your voice sounds thin, like an old phone line. For recordings and important calls, a wired, USB or built-in microphone will sound better.</p></div>
+          <p id="mic-paused" class="mt-note" role="status" hidden>The microphone was stopped because the tab was hidden, so it is not left running in the background. Press "Start microphone" to continue.</p>
+        </div>
+        <div style="margin-top:14px">
+          <canvas id="wave-canvas" class="mt-wave" width="600" height="110" role="img" aria-label="Microphone waveform"></canvas>
+          <p class="mt-note">Waveform: the shape of the sound right now. Silence draws a flat line; speech draws a wavy band.</p>
+        </div>
+      </div>
+
+      <div class="mt-block" role="group" aria-labelledby="h-rec">
+        <h3 id="h-rec">2. Record and play back (up to 10 seconds)</h3>
+        <p class="mt-note" style="margin-top:0">The recording is kept only in your browser's memory. Start the microphone above first, and keep the speaker volume low while you listen.</p>
+        <div class="ba-actions">
+          <button id="rec-toggle" class="ba-btn ba-btn-primary" type="button" disabled>Start recording</button>
+        </div>
+        <p id="rec-status" class="mt-info" data-state="idle" aria-live="polite">Start the microphone above first.</p>
+        <div id="rec-result" class="ba-result" hidden>
+          <h3>Your test recording</h3>
+          <p>Play it back below. It stays in this tab's memory and is deleted when you close or reload the page.</p>
+          <audio id="rec-audio" class="mt-audio" controls aria-label="Play back your recording"></audio>
+          <div class="ba-actions"><button id="rec-download" class="ba-btn" type="button">Download recording (optional)</button></div>
+        </div>
+      </div>
+
+      <div class="mt-block" role="group" aria-labelledby="h-info">
+        <h3 id="h-info">3. Connection details</h3>
+        <dl class="mt-dl">
+          <dt>Device</dt><dd id="info-device">–</dd>
+          <dt>Sample rate</dt><dd id="info-rate">–</dd>
+          <dt>Channels</dt><dd id="info-channels">–</dd>
+          <dt>Processing applied</dt><dd id="info-processing">–</dd>
+        </dl>
+        <p class="mt-note">These values are reported by your browser after the microphone starts. Some browsers do not report every field.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-mic-test-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to test your microphone</h2>
+      <ol class="ba-steps">
+        <li>Press <strong>Start microphone</strong>. Your browser shows a permission prompt near the address bar; choose "Allow". If you have more than one microphone (built-in, headset, USB), pick the one you want from the list. Changing the device or a processing switch restarts the test automatically.</li>
+        <li>Say a sentence at your normal speaking volume. The level bar should rise and fall with your voice, the badge should change to "Sound detected" and the waveform should turn from a flat line into a wavy band.</li>
+        <li>If nothing moves for three seconds, a warning appears with the most likely causes. Work through the checklist further down this page.</li>
+        <li>Press <strong>Start recording</strong>, speak for a few seconds and press <strong>Stop recording</strong>. The clip plays back straight away, so you can judge with your own ears how you will sound in a meeting. Downloading the file is optional.</li>
+        <li>When you are finished, press <strong>Stop microphone</strong>. The browser releases the device, the recording indicator in the tab goes away and other apps can use the microphone again.</li>
+      </ol>
+
+      <h2>What the level meter tells you</h2>
+      <p>The most reliable check before a call, an online class or a live stream is to see that your microphone really turns sound into a digital signal. This page reads the signal through Web Audio, the audio engine built into every modern browser. Several times a second it takes a short slice of samples, works out the average power (the RMS value) and shows it in decibels relative to digital full scale, written dBFS. On this scale 0 dBFS is the loudest value a digital signal can hold, so every reading is a negative number. The bar covers the range from -60 dBFS on the left to 0 dBFS on the right, and a thin marker holds the recent peak for a moment so short sounds are easy to see.</p>
+      <table>
+        <thead><tr><th>Reading</th><th>What it usually means</th></tr></thead>
+        <tbody>
+          <tr><td>Below -55 dBFS</td><td>Silence or a muted microphone. The badge shows "No sound", and after three seconds a warning lists what to check.</td></tr>
+          <tr><td>-50 to -35 dBFS</td><td>A quiet room, or speech that is too far from the microphone.</td></tr>
+          <tr><td>-30 to -12 dBFS</td><td>Normal speech at a healthy level. Aim for this band.</td></tr>
+          <tr><td>-12 to -6 dBFS</td><td>Loud speech. Fine for short moments, but leaves little headroom.</td></tr>
+          <tr><td>Peaks at 0 dBFS</td><td>Clipping: the top of the wave is cut off and the sound crackles.</td></tr>
+        </tbody>
+      </table>
+      <p>The numbers are calculated from the real samples your browser receives from the device. They are not an animation, which is why a muted headset shows a flat line even though the page is running. Keep in mind that dBFS describes the digital signal, not the loudness of the room, so the same voice can read differently on two microphones with different gain.</p>
+
+      <h2>Fixing microphone permission</h2>
+      <p>Browsers always ask before a site may use the microphone. If you closed the prompt or clicked "Block", the browser remembers that choice and stops asking, so the test fails at once. The page then shows an error with step-by-step help. In short, open the site settings from the icon on the left of the address bar in Chrome and Edge, remove the block from the crossed-out microphone icon in Firefox, or use Safari &rarr; Settings &rarr; Websites &rarr; Microphone on a Mac, then reload the page.</p>
+      <p>The operating system has its own switch as well. On Windows 10 and 11, go to Settings &rarr; Privacy &amp; security &rarr; Microphone and turn on both "Microphone access" and "Let desktop apps access your microphone"; browsers count as desktop apps. On macOS Ventura and later, open System Settings &rarr; Privacy &amp; Security &rarr; Microphone (on older versions, System Preferences &rarr; Security &amp; Privacy &rarr; Privacy) and switch your browser on. On a school or company computer, an administrator policy may block the microphone completely; in that case the prompt never appears and only your IT team can change it.</p>
+
+      <div class="ba-ad" data-slot="en-mic-test-b" aria-label="Advertisement"></div>
+
+      <h2>Microphone not working? A checklist</h2>
+      <p>If the bar does not move or a warning appears, test from the hardware up to the software. Most problems are solved in the first three steps.</p>
+      <ul>
+        <li><strong>Is the right device selected?</strong> Open the list and try each input. When a wireless headset connects, the system often moves the input to it, and if the headset then switches off, no sound arrives. A laptop's built-in microphone is often listed as "Microphone Array".</li>
+        <li><strong>Hardware mute.</strong> Many headsets, USB microphones and keyboards have a physical mute button. A red light on the device usually means the microphone is off.</li>
+        <li><strong>Muted or very low in the system.</strong> On Windows, open Settings &rarr; System &rarr; Sound and check the input volume of your device. On a Mac, use System Settings &rarr; Sound &rarr; Input and move the input volume slider.</li>
+        <li><strong>Another app is holding the microphone.</strong> If a call app, a recording program or another browser tab has taken the device, the page reports that the microphone is in use. Close those apps and tabs and start again.</li>
+        <li><strong>3.5 mm jacks and USB ports.</strong> A headset with a four-ring plug may not work in a three-ring socket without an adapter. For USB devices, try another port and avoid unpowered hubs.</li>
+        <li><strong>Drivers and restarts.</strong> On Windows, look for a warning sign under Device Manager &rarr; Audio inputs and outputs. A restart clears most stuck drivers.</li>
+      </ul>
+
+      <h2>Too quiet, too loud or distorted</h2>
+      <p>If the bar moves but people struggle to hear you, raise the input volume and move to about 15 to 20 cm (6 to 8 inches) from the microphone. If the bar keeps hitting red and the page reports clipping, lower the gain or move back a little, and avoid breathing straight into the capsule; sounds like "p" and "b" push the peak up sharply. A crackling sound together with a normal level often points to a loose cable or a failing USB connection rather than a setting.</p>
+      <p>The three switches above the start button let you compare processed and raw sound. Echo cancellation removes the sound of your own speakers, noise suppression cuts steady background noise such as fans, and automatic gain control keeps your level even. Video-call apps normally keep all three on, so leave them on to preview how a call will sound. Turn them off to see the raw signal, which shows the true noise floor of the room and the real quality of the hardware. The connection details box shows which processing your browser actually applied, together with the sample rate and channel count it reports.</p>
+
+      <h2>Bluetooth headsets and the hands-free profile</h2>
+      <p>Wireless headsets use one connection mode for music and another for calls. As soon as an app opens the headset microphone, most systems switch to the hands-free profile, which squeezes speech into a narrow band with a sample rate of only 8 or 16 kHz. Your voice then sounds thin and muffled, and music playing at the same time loses quality too. This is how the technology works, not a fault in your headset. When the device name or the reported sample rate suggests this mode, the page shows a note. For a podcast, a presentation or an important interview, a wired headset, a USB microphone or the computer's built-in microphone will usually sound clearer.</p>
+
+      <h2>Recording and privacy</h2>
+      <p>The record button uses the recorder built into your browser. Audio chunks are collected in this tab's memory and turned into a short file when you stop, and the player on the page plays it back. The download button is optional: if you do not press it, nothing is written to your disk, and reloading or closing the page deletes the clip. The tool itself uploads nothing and uses no cookies or tracking scripts. The page shows ads, but the tool never passes your audio to them, and you can check in the network tab of your browser's developer tools that no request carries your sound or your recording. The page also stops the microphone if you switch to another tab, so the device is never left open in the background by accident.</p>
+
+      <h2>Why use this mic test?</h2>
+      <ul>
+        <li><strong>Your audio stays on your device.</strong> Measuring, recording and playback all happen in your browser.</li>
+        <li><strong>No account.</strong> No sign-up and nothing to install; one page does the whole check.</li>
+        <li><strong>Real values.</strong> Level, peak and sample rate come from the actual signal and device, not from a decorative animation.</li>
+        <li><strong>Works offline.</strong> After the first visit the page also works without a connection, and you can install it as an app from the browser menu.</li>
+        <li><strong>Honest design.</strong> No fake warnings, no countdowns and no "your driver is outdated" traps.</li>
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Is my voice uploaded or recorded anywhere?</summary><p>No. The microphone signal is measured live inside this tab and is never sent to a server. The optional 10-second recording is kept in your browser's memory only. It is not written to disk unless you press the download button, and it disappears when you close or reload the page.</p></details>
+        <details><summary>I blocked the microphone by mistake. How do I allow it again?</summary><p>In Chrome and Edge, click the lock or site settings icon on the left of the address bar, switch Microphone to Allow and reload the page. In Firefox, click the crossed-out microphone icon in the address bar and remove the block. In Safari on a Mac, open Safari, Settings, Websites, Microphone. Also make sure access is on in Windows Settings, Privacy &amp; security, Microphone, or in macOS System Settings, Privacy &amp; Security, Microphone.</p></details>
+        <details><summary>Why does the level bar not move at all?</summary><p>The usual causes are the wrong input device, a microphone that is muted or set to zero in the operating system, a hardware mute switch on the headset and another app holding the microphone. Pick another device from the list, raise the input volume in your sound settings and close other apps that use the microphone.</p></details>
+        <details><summary>What is a good microphone level in dBFS?</summary><p>For normal speech the reading usually moves between about -30 and -12 dBFS. Around -50 dBFS or lower is too quiet, frequent readings above -6 dBFS mean the input is too hot, and peaks that reach 0 dBFS cause clipping. If the page warns about clipping, lower the gain or move back from the microphone.</p></details>
+        <details><summary>Why does my Bluetooth headset microphone sound bad?</summary><p>While a Bluetooth headset's microphone is in use, most devices switch from the high-quality music profile to the hands-free profile, which carries speech at a much lower sample rate, often 8 or 16 kHz. That is a limit of the technology, not a fault. For recordings and important calls, use a wired, USB or built-in microphone.</p></details>
+        <details><summary>What do the echo cancellation, noise suppression and auto gain switches do?</summary><p>They ask the browser to apply the same voice processing that video-call apps use. With all three on, the test is close to what other people hear in a call. With them off you see the raw signal, which is better for judging the hardware and the real background noise. Not every browser honours every switch; the connection details show what was actually applied.</p></details>
+        <details><summary>Why is the recording limited to 10 seconds?</summary><p>The goal is a quick listening check, not an archive. A short clip is enough to hear your tone, volume, background noise and echo, and keeping it short means it stays small in memory.</p></details>
+        <details><summary>Does the mic test work on phones and tablets?</summary><p>Yes. Use Chrome on Android or Safari on iPhone and iPad. The page is served over https, so the browser asks for microphone permission in the usual way. If a headset is connected, the phone may use the headset microphone instead of the built-in one.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../timer/">Online Timer and Pomodoro</a></li>
+        <li><a href="../stopwatch/">Online Stopwatch with Laps</a></li>
+        <li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li>
+        <li><a href="../../mikrofon-test/" hreflang="tr"><span lang="tr">Mikrofon Testi</span> (Turkish version)</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need help choosing meeting-room audio equipment, setting up a conference system or building custom software? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-mic-test-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

@@ -9,11 +9,15 @@
   const onApprovedHost = /(^|\.)bilisimajans\.com$/.test(location.hostname);
   const client = (window.BA_ADSENSE_CLIENT || (onApprovedHost ? 'ca-pub-5734060206675377' : '')).trim();
   const slots = document.querySelectorAll('.ba-ad');
+  // İngilizce sayfalarda etiket İngilizce gösterilir.
+  const en = /^en/i.test(document.documentElement.lang || '');
+  const LABEL = en ? 'Advertisement' : 'Reklam';
+  const PLACEHOLDER = en ? 'Ad space' : 'Reklam alanı';
   if (!slots.length) return;
 
   if (!client) {
     slots.forEach((el) => {
-      el.innerHTML = '<span class="ba-ad-label">Reklam</span><div class="ba-ad-placeholder">Reklam alanı</div>';
+      el.innerHTML = `<span class="ba-ad-label">${LABEL}</span><div class="ba-ad-placeholder">${PLACEHOLDER}</div>`;
     });
     return;
   }
@@ -31,7 +35,7 @@
     const raw = el.dataset.slot || '';
     const key = (raw.match(/-([abc])$/) || [])[1] || (/^\d+$/.test(raw) ? raw : '');
     const slot = UNITS[key] || key;
-    el.innerHTML = '<span class="ba-ad-label">Reklam</span>';
+    el.innerHTML = `<span class="ba-ad-label">${LABEL}</span>`;
     const ins = document.createElement('ins');
     ins.className = 'adsbygoogle';
     ins.style.display = 'block';
