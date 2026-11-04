@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hafıza Kartları Oyna – Ücretsiz Online Hafıza Kartları (kurulumsuz)</title>
+  <meta name="description" content="Hafıza Kartları oyununu tarayıcınızda ücretsiz oynayın: 4×3'ten 6×6'ya dört boyut, sembol, sayı ve renk temaları, iki oyunculu sıra modu, hamle ve süre sayacı. Kurulum ve kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/hafiza-kartlari/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .mc-options { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 560px) { .mc-options { grid-template-columns: repeat(3, 1fr); } }
+    .mc-options .ba-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .mc-top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 0; }
+    .mc-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0 8px; }
+    .mc-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; text-align: center; }
+    .mc-stats span { display: block; font-size: .78rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .08em; text-transform: uppercase; }
+    .mc-stats strong { font-size: 1.2rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .mc-best { margin: 0 0 8px; font-size: .92rem; color: var(--ba-text-2); }
+    .mc-turns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .mc-turn { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; background: var(--ba-surface); }
+    .mc-turn[aria-current="true"] { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .mc-turn[aria-current="true"] span::before { content: "▶ "; color: var(--ba-primary); }
+    .mc-turn strong { font-variant-numeric: tabular-nums; }
+    .mc-status { min-height: 1.5em; margin: 6px 0 12px; font-size: .95rem; color: var(--ba-text-2); }
+    .game-box .ba-result { margin: 0 0 14px; }
+
+    /* Kart tahtası: sütun sayısı --cols ile gelir; kartlar kare. */
+    .mc-board { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 6px; width: 100%; max-width: calc(var(--cols, 4) * 120px); margin: 0 auto; }
+    @media (max-width: 420px) { .mc-board { gap: 4px; } }
+    .mc-card { position: relative; aspect-ratio: 1; padding: 0; margin: 0; border: 0; background: none; cursor: pointer; container-type: inline-size; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
+    .mc-card[aria-disabled="true"] { cursor: default; }
+    .mc-card:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .mc-inner { position: absolute; inset: 0; display: block; transform-style: preserve-3d; transform: perspective(600px) rotateY(0deg); transition: transform .45s var(--ba-ease-inout); }
+    .mc-card[data-state="open"] .mc-inner, .mc-card[data-state="matched"] .mc-inner { transform: perspective(600px) rotateY(180deg); }
+    .mc-face { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 8px; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; }
+    .mc-front { background: repeating-linear-gradient(45deg, #7b2331 0 6px, #8c2c3c 6px 12px); border: 2px solid #5e1a25; box-shadow: var(--ba-shadow-card); }
+    .mc-front::after { content: "?"; color: rgba(255, 255, 255, .88); font-weight: 700; font-size: 45px; font-size: 45cqw; line-height: 1; }
+    .mc-card[data-state="closed"]:hover .mc-front { filter: brightness(1.12); }
+    .mc-back { transform: rotateY(180deg); background: var(--ba-surface-2); border: 2px solid var(--ba-border-hover); }
+    .mc-card[data-state="matched"] .mc-back { background: var(--ba-success-soft); border-color: var(--ba-success); }
+    .mc-sym { display: grid; place-items: center; width: 100%; height: 100%; font-size: 1.6rem; font-size: 52cqw; line-height: 1; font-weight: 700; color: var(--ba-text); font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", var(--ba-font); }
+    .mc-sym svg { width: 64%; height: 64%; }
+    @media (prefers-reduced-motion: reduce) { .mc-inner { transition: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Hafıza Kartları – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz eşleştirme oyunu: dört tahta boyutu, üç tema, iki oyunculu mod.","applicationCategory":"GameApplication","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":["SinglePlayer","MultiPlayer"],"inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/hafiza-kartlari/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Hafıza Kartları nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Her turda iki kapalı kart açarsınız. İki kart aynıysa çift açık kalır, farklıysa yaklaşık bir saniye sonra kapanır. Tüm çiftleri en az hamleyle bulmaya çalışırsınız."}},
+  {"@type":"Question","name":"Hangi tahta boyutları var?","acceptedAnswer":{"@type":"Answer","text":"4×3 (12 kart), 4×4 (16 kart), 6×5 (30 kart) ve 6×6 (36 kart). Her boyutun en iyi sonucu ayrı tutulur."}},
+  {"@type":"Question","name":"En iyi sonucum nerede saklanır?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca kendi tarayıcınızın localStorage alanında. Hiçbir sunucuya gönderilmez; tarayıcı verilerini silerseniz kaydınız da silinir."}},
+  {"@type":"Question","name":"İki kişi birlikte nasıl oynar?","acceptedAnswer":{"@type":"Answer","text":"Oyuncu sayısı seçeneğinden 2 oyuncuyu seçin. Eşleşme bulan oyuncu bir puan alır ve sırayı korur; bulamayan oyuncunun sırası rakibe geçer. Sonunda çifti çok olan kazanır."}},
+  {"@type":"Question","name":"Klavyeyle oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sekme tuşuyla tahtaya gelin, ok tuşlarıyla kartlar arasında dolaşın, Enter veya Boşluk ile kartı çevirin. Home ve End ilk ve son karta götürür."}},
+  {"@type":"Question","name":"Telefonda çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tahta ekran genişliğine uyum sağlar; 360 piksel genişliğindeki telefonlarda 6×6 boyutu bile sığar ve kartlara dokunarak oynanır."}},
+  {"@type":"Question","name":"İnternet olmadan oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez yüklendikten sonra oyun için internet gerekmez. Siteyi tarayıcıdan uygulama olarak yüklerseniz çevrimdışı da açılır."}},
+  {"@type":"Question","name":"Kartlar adil karıştırılıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Her yeni oyunda Fisher-Yates algoritmasıyla rastgele karıştırılır. Oyunda ipucu ya da hile düğmesi yoktur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Hafıza Kartları</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Kapalı kartları ikişer ikişer açın, eşlerini bulun, en az hamleyle bitirmeye çalışın. Dört tahta boyutu, üç tema ve iki oyunculu mod var; kurulum, üyelik ve indirme gerekmez, her şey tarayıcınızda çalışır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Hafıza Kartları oyunu</h2>
+      <div class="mc-options">
+        <div class="ba-field"><label for="mc-size">Boyut (sütun × satır)</label>
+          <select id="mc-size">
+            <option value="4x3">4 × 3 – 12 kart (kolay)</option>
+            <option value="4x4">4 × 4 – 16 kart</option>
+            <option value="6x5">6 × 5 – 30 kart</option>
+            <option value="6x6">6 × 6 – 36 kart (zor)</option>
+          </select></div>
+        <div class="ba-field"><label for="mc-theme">Tema</label>
+          <select id="mc-theme">
+            <option value="semboller">Semboller (hayvan, meyve)</option>
+            <option value="sayilar">Sayılar</option>
+            <option value="renkler">Renkler ve şekiller</option>
+          </select></div>
+        <div class="ba-field"><label for="mc-players">Oyuncu</label>
+          <select id="mc-players">
+            <option value="1">1 oyuncu</option>
+            <option value="2">2 oyuncu (sırayla)</option>
+          </select></div>
+      </div>
+      <div class="mc-top">
+        <button id="mc-restart" class="ba-btn ba-btn-primary" type="button">Yeniden başlat</button>
+        <button id="mc-full" class="ba-btn" type="button">Tam ekran</button>
+      </div>
+      <div class="mc-stats" role="group" aria-label="Oyun durumu">
+        <div><span>Hamle</span><strong id="mc-moves">0</strong></div>
+        <div><span>Süre</span><strong id="mc-time">0:00</strong></div>
+      </div>
+      <p class="mc-best" id="mc-best">En iyi sonuç: henüz yok</p>
+      <div class="mc-turns" id="mc-turns" hidden>
+        <div class="mc-turn" id="mc-p1" aria-current="true"><span>Oyuncu 1</span><strong id="mc-p1-score">0</strong></div>
+        <div class="mc-turn" id="mc-p2" aria-current="false"><span>Oyuncu 2</span><strong id="mc-p2-score">0</strong></div>
+      </div>
+      <p class="mc-status" id="mc-status" role="status" aria-live="polite"></p>
+      <div class="ba-result" id="mc-result">
+        <h3 id="mc-result-title">Tebrikler!</h3>
+        <p id="mc-result-text"></p>
+        <div class="ba-actions"><button id="mc-again" class="ba-btn ba-btn-success" type="button">Yeni oyun</button></div>
+      </div>
+      <div class="mc-board" id="mc-board" role="group" aria-label="Kartlar. Ok tuşlarıyla gezinin, Enter veya Boşluk ile kartı çevirin."></div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-hafiza-kartlari-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Hafıza Kartları nedir?</h2>
+      <p>Hafıza Kartları, yüzü aşağı bakan kartları ikişer ikişer açıp aynı resme sahip çiftleri bulmaya dayanan, herkesin saniyeler içinde öğrenebildiği klasik bir eşleştirme oyunudur. Kurallar çok basittir: her turda iki kart açarsınız. İkisi aynıysa çift size kalır ve açık durur; farklıysa kartlar yeniden kapanır ve hangisinin nerede olduğunu aklınızda tutmaya çalışırsınız. Bütün çiftler bulunduğunda oyun biter. Basit görünse de dikkat, görsel hafıza ve planlama birlikte çalıştığı için hem çocuklar hem yetişkinler için keyifli bir zaman geçirme yoludur.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Kart yüzleri emoji ve vektör şekillerden oluşur, dolayısıyla dışarıdan hiçbir görsel indirilmez; sayfa bir kez açıldıktan sonra internet bağlantınız kesilse bile oyun çalışmaya devam eder. Oyunu başlatmak için ayrıca bir hesap açmanız, uygulama kurmanız ya da bir şey indirmeniz gerekmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Ayarları seçin.</strong> Boyut, tema ve oyuncu sayısını yukarıdaki listelerden belirleyin. Ayarı değiştirdiğiniz anda tahta yeniden karıştırılır ve yeni bir oyun başlar.</li>
+        <li><strong>İlk kartı açın.</strong> Bir karta tıklayın, dokunun ya da klavyeyle seçip Enter'a basın. Kart üç boyutlu bir hareketle çevrilir ve yüzü görünür. Süre sayacı ilk kartı açtığınız anda çalışmaya başlar.</li>
+        <li><strong>İkinci kartı açın.</strong> İki kart aynıysa yeşil çerçeveyle açık kalır ve eşleşmiş sayılır. Farklıysa yaklaşık bir saniye sonra ikisi de kapanır. İsterseniz beklemeden başka bir karta tıklayabilirsiniz; eşleşmeyen çift hemen kapanır.</li>
+        <li><strong>Hepsini bulun.</strong> Tüm çiftler bulunduğunda hamle sayınız ve süreniz görünür. Sonucunuz o boyuttaki önceki en iyi sonuçtan iyiyse tarayıcınıza kaydedilir. "Yeni oyun" ile hemen yeniden başlayabilirsiniz.</li>
+      </ol>
+      <p>Bir hamle, iki kart açmak demektir. Dolayısıyla puanınız ne kadar küçükse o kadar iyidir. En iyi sonuç önce hamle sayısına, hamle sayıları eşitse süreye bakılarak belirlenir.</p>
+
+      <h2>Boyutlar ve temalar</h2>
+      <p>Oyun dört tahta boyutu sunar. <strong>4 × 3</strong> tahtada 12 kart ve 6 çift bulunur; küçük çocuklar ve ısınma turları için idealdir. <strong>4 × 4</strong> tahta 8 çiftle orta düzeydir. <strong>6 × 5</strong> tahta 15 çift ve <strong>6 × 6</strong> tahta 18 çift içerir; bu boyutlarda sistemli bir hafıza haritası çıkarmadan iyi sonuç almak zordur. Her boyutun en iyi sonucu ayrı saklanır, böylece kolay tahtadaki rekorunuz zor tahtadakini gölgelemez.</p>
+      <p>Tema seçimi kartların görünümünü değiştirir. <strong>Semboller</strong> temasında hayvan ve meyve emojileri vardır; resimler ayırt edici olduğu için en kolay temadır. <strong>Sayılar</strong> teması yalnızca rakamlardan oluşur ve zihinsel olarak daha soyut olduğu için daha zordur. <strong>Renkler ve şekiller</strong> temasında altı şekil üç farklı renkte çizilir; renkleri ayırt etmekte zorlanan oyuncular için her çiftin şekli de farklıdır, yani yalnızca renge bakmanız gerekmez.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik:</strong> Kartın üzerine tıklayın ya da dokunun. Düğmeler parmakla rahat kullanılacak büyüklüktedir.</li>
+        <li><strong>Klavye:</strong> Sekme tuşuyla tahtaya gelin. Ok tuşlarıyla kartlar arasında dolaşın, Enter veya Boşluk tuşuyla çevirin. Home ilk karta, End son karta götürür.</li>
+        <li><strong>Ekran okuyucu:</strong> Her kart "Kart 5, kapalı" biçiminde okunur. Açtığınız kartın adı ve eşleşme durumu sayfadaki durum satırında duyurulur.</li>
+        <li><strong>Tam ekran:</strong> "Tam ekran" düğmesi yalnızca oyun kutusunu ekrana yayar; tarayıcınız desteklemiyorsa düğme gizlenir.</li>
+        <li><strong>Hareket tercihi:</strong> Cihazınızda "hareketi azalt" ayarı açıksa kart çevirme animasyonu kapanır, kartlar anında döner.</li>
+      </ul>
+
+      <h2>İki oyunculu mod</h2>
+      <p>Oyuncu sayısı olarak "2 oyuncu"yu seçtiğinizde ekranda iki skor kutusu belirir ve sırası gelen oyuncu işaretlenir. Kurallar klasik hafıza oyunuyla aynıdır: eşleşme bulan oyuncu bir puan alır ve sırayı korur, eşleşme bulamayan oyuncunun sırası rakibe geçer. Tüm çiftler bittiğinde en çok çifti bulan kazanır; eşitlik durumunda oyun berabere sayılır. Tek ekranı paylaşan iki kişi için tasarlanmıştır; bu yüzden ağ bağlantısı ya da hesap gerekmez. Büyük tahtalarda, açılan kartları iki oyuncunun da görmesi nedeniyle hafıza kadar dikkat de belirleyici olur. İki oyunculu modda kişisel en iyi sonuç kaydedilmez, çünkü hamle sayısı iki oyuncuya birden aittir.</p>
+
+      <h2>Daha iyi sonuç için ipuçları</h2>
+      <ul>
+        <li><strong>Bilinen çiftleri önce tamamlayın.</strong> İki eşin yerini de biliyorsanız hemen açın; bu, risk almadan kazanılan bir çifttir. Bilinen çift yoksa daha önce açılmamış bir kartla başlayın; eşi daha önce görülmüşse hemen eşleştirin.</li>
+        <li><strong>Eşini bilmiyorsanız ikinci kartı da yeni seçin.</strong> Bildiğiniz kartlardan birini ikinci kart yapmak hamleyi boşa harcar. Yeni bir kart açmak hem eşleşme şansı verir hem de tahta hakkında bilgi toplar.</li>
+        <li><strong>Zihinsel bir koordinat sistemi kurun.</strong> Kartları "üst satır, üçüncü" gibi konumlarıyla anımsayın. Satır satır ilerlemek rastgele tıklamaktan çok daha güvenilir bir hafıza haritası verir.</li>
+        <li><strong>Kartlara kısa hikâyeler bağlayın.</strong> "Sol üstte tilki, onun altında ayı" gibi küçük cümleler görsel hafızayı sözel hafızayla destekler.</li>
+        <li><strong>Hızdan önce hamle sayısına odaklanın.</strong> Sıralamada önce hamle sayısı değerlendirilir. Birkaç saniyelik düşünme çoğu zaman bir fazla hamleden ucuzdur.</li>
+        <li><strong>Küçükten büyüğe geçin.</strong> 4 × 3 tahtada altı hamlede bitirmek mümkündür; ancak bu çok şans ister. Gerçekçi bir hedef, çift sayısının kabaca bir buçuk ila iki katı hamledir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-hafiza-kartlari-b" aria-label="Reklam"></div>
+
+      <h2>Eşleştirme oyunlarının kısa tarihi</h2>
+      <p>Kâğıt kartlarla oynanan eşleştirme oyunları, genel olarak yirminci yüzyılın başından beri bilinir. İngilizce konuşulan ülkelerde bu tür oyun uzun süre "Konsantrasyon" ve "Pelmanizm" gibi adlarla anıldı; ikinci ad, hafıza eğitimiyle ilişkilendirilen bir kurumdan gelir. Daha sonra kartların yerini resimli karolar aldı ve oyun çocuk oyunları arasında dünya çapında yayıldı. Bilgisayar çağında ise hafıza kartları, her platformda yer alan bir "ilk oyun" hâline geldi; çünkü kuralları çok az, mantığı sadece listeleri karıştırmak ve karşılaştırmaktan ibaret.</p>
+      <p>Bu tür oyunların popülerliğinin bir nedeni de ölçeklenebilir olmasıdır. Aynı kural 12 kartla da 36 kartla da çalışır; zorluğu belirleyen şey yalnızca tahtanın büyüklüğü ve sembollerin birbirine benzemesidir. Bir hafıza oyununu oynamak eğlenceli bir zihin egzersizi olarak görülebilir; ancak bu bir tıbbi tedavi, tanı ya da bilişsel test değildir ve sağlık amacıyla kullanılmamalıdır. Sağlıkla ilgili sorularınız için bir uzmana başvurun.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalısınız?</h2>
+      <ul>
+        <li><strong>Gizlilik:</strong> Oyun tamamen tarayıcınızda çalışır. Dosya yüklemez, hesap istemez, sizi izlemez. Tek veri, en iyi sonucunuz ve ayarlarınızdır; bunlar yalnızca bu cihazın localStorage alanında durur.</li>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve oynayın. İsterseniz tarayıcıdan "uygulama olarak yükle" diyerek masaüstünüze ya da ana ekranınıza ekleyebilirsiniz.</li>
+        <li><strong>Mobil uyumlu:</strong> Tahta 360 piksel genişlikteki telefon ekranlarına da sığar. Kart düğmeleri dokunmaya uygundur.</li>
+        <li><strong>Dürüst tasarım:</strong> Sahte geri sayım, yanıltıcı düğme ya da "premium" tuzağı yoktur. Reklamlar oyun alanının dışında, yalnızca belirli bölümlerde yer alır.</li>
+        <li><strong>Erişilebilirlik:</strong> Klavyeyle oynanabilir, ekran okuyucuya duyurular yapar, hareket azaltma tercihine saygı duyar ve renk körlüğü için şekil temasını sunar.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Hafıza Kartları nasıl oynanır?</summary><p>Her turda iki kapalı kart açarsınız. İki kart aynıysa çift açık kalır, farklıysa yaklaşık bir saniye sonra kapanır. Amaç, tüm çiftleri en az hamleyle ve kısa sürede bulmaktır.</p></details>
+        <details><summary>Hangi tahta boyutları var?</summary><p>4 × 3 (12 kart), 4 × 4 (16 kart), 6 × 5 (30 kart) ve 6 × 6 (36 kart). Her boyutun en iyi sonucu ayrı tutulur; boyutu değiştirmek oyunu sıfırlar.</p></details>
+        <details><summary>En iyi sonucum nerede saklanıyor, başkaları görebilir mi?</summary><p>Yalnızca kendi tarayıcınızın localStorage alanında. Hiçbir sunucuya gönderilmez ve başka kimse göremez. Tarayıcı verilerini temizlerseniz ya da başka bir cihaz kullanırsanız kaydınız görünmez.</p></details>
+        <details><summary>İki kişi birlikte nasıl oynar?</summary><p>Oyuncu listesinden "2 oyuncu"yu seçin. Eşleşme bulan oyuncu bir puan alır ve sırayı korur; bulamayan oyuncunun sırası rakibe geçer. Sonunda daha çok çift bulan kazanır, eşitlik berabere sayılır.</p></details>
+        <details><summary>Klavyeyle oynayabilir miyim?</summary><p>Evet. Sekme tuşuyla tahtaya gelin, ok tuşlarıyla kartlar arasında dolaşın ve Enter ya da Boşluk ile kartı çevirin. Home ve End tuşları ilk ve son karta götürür.</p></details>
+        <details><summary>Telefonda çalışır mı?</summary><p>Evet. Tahta ekran genişliğine uyum sağlar. 360 piksel genişliğindeki telefonlarda 6 × 6 boyutu bile sığar; kartlara dokunarak oynarsınız.</p></details>
+        <details><summary>İnternet olmadan oynanabilir mi?</summary><p>Sayfa bir kez yüklendikten sonra oyun için internet gerekmez, çünkü kart yüzleri tarayıcıda üretilir. Siteyi uygulama olarak yüklerseniz çevrimdışı da açılır.</p></details>
+        <details><summary>Kartlar adil karıştırılıyor mu, hile var mı?</summary><p>Her yeni oyunda kartlar Fisher–Yates algoritmasıyla rastgele karıştırılır. Oyunda ipucu, hile ya da sonuç değiştiren herhangi bir düğme yoktur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../xox/">XOX ve Beşli Dizi</a></li>
+        <li><a href="../dizi-hafiza/">Dizi Hafıza</a></li>
+        <li><a href="../adam-asmaca/">Adam Asmaca</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-hafiza-kartlari-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

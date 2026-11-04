@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Excel'i PDF'e, PDF'i Excel'e Çevirme ve CSV Sorunları: Türkçe Karakter, Noktalı Virgül</title>
+  <meta name="description" content="Excel PDF dönüştürme rehberi: Excel'i PDF'e sayfaya sığdırarak çevirme, PDF tabloyu Excel'e aktarma ve CSV'deki Türkçe karakter, noktalı virgül ve tek sütun sorunlarının çözümü.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/rehber/excel-pdf-donusturme/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Excel'i PDF'e, PDF'i Excel'e Çevirme ve CSV Sorunları (Türkçe Karakter, Noktalı Virgül)","description":"Excel PDF dönüştürme rehberi: Excel'i PDF'e çevirme, PDF tabloyu Excel'e aktarma ve CSV'deki Türkçe karakter, noktalı virgül ve tek sütun sorunları.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/rehber/excel-pdf-donusturme/","dateModified":"2026-11-04","author":{"@type":"Organization","name":"Bilişim Ajans"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Excel tablosunu PDF'e sayfaya sığdırarak nasıl çeviririm?","acceptedAnswer":{"@type":"Answer","text":"Excel'de Sayfa Düzeni sekmesinden yönü yatay yapıp ölçeklendirmeyi tüm sütunları tek sayfaya sığdır olarak ayarlayın, sonra PDF olarak kaydedin. Bilişim Ajans Excel'i PDF'e Çevir aracında da sayfaya sığdır, A3 ve yatay yön seçenekleri vardır."}},
+  {"@type":"Question","name":"PDF'teki tabloyu Excel'e çevirince neden bozuk geliyor?","acceptedAnswer":{"@type":"Answer","text":"PDF bir tablo değil, sayfaya yerleştirilmiş metin ve çizgilerdir; hücre bilgisi taşımaz. Çevirici sütunları tahmin eder. Birleştirilmiş hücreler, çok satırlı hücreler ve iç içe tablolar bozulabilir. Sonucu her zaman gözle kontrol edin."}},
+  {"@type":"Question","name":"CSV dosyasını açınca Türkçe karakterler neden bozuk görünüyor?","acceptedAnswer":{"@type":"Answer","text":"Dosya UTF-8 ile kaydedilmiş, Excel ise çift tıklamada eski ANSI kodlamasını varsayıyordur. Çözüm, dosyayı Veri sekmesindeki Metin ya da CSV'den seçeneğiyle içe aktarıp UTF-8'i seçmek veya dosyaya UTF-8 BOM eklemektir."}},
+  {"@type":"Question","name":"CSV Excel'de tek sütunda açılıyor, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Dosya virgülle ayrılmış, Türkçe Excel ise noktalı virgül bekliyor olabilir. Dosyayı içe aktarma yoluyla açıp ayırıcıyı seçin ya da dosyayı xlsx olarak kaydedin; Excel dosyasında ayırıcı sorunu yoktur."}},
+  {"@type":"Question","name":"Telefon numarasının başındaki sıfır neden siliniyor?","acceptedAnswer":{"@type":"Answer","text":"Excel başı sıfırlı değeri sayı sanıp baştaki sıfırı atar. Sütunu metin olarak içe aktarmanız gerekir. CSV Excel aracı başı sıfırla başlayan ve çok uzun değerleri otomatik metin tutar."}},
+  {"@type":"Question","name":"Taranmış PDF'i doğrudan Excel'e çevirebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Doğrudan hayır. Taranmış PDF'te yazı değil piksel vardır; önce OCR ile metne dönüştürmek gerekir. OCR hata yapabilir, bu yüzden sayıları ve adları kaynakla karşılaştırın."}},
+  {"@type":"Question","name":"Eski xls dosyalarını araçlarınız açıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Excel'i PDF'e Çevir aracı xls dosyalarını da okur. CSV Excel aracı yalnızca xlsx ve csv okur; xls dosyasını Excel ya da LibreOffice'te xlsx olarak kaydetmeniz gerekir."}},
+  {"@type":"Question","name":"Excel ya da PDF dosyam bir sunucuya yükleniyor mu?","acceptedAnswer":{"@type":"Answer","text":"Araçlarımızda hayır; dönüştürme tarayıcınızda yapılır. Banka ekstresi, bordro ve müşteri listesi gibi hassas dosyalar için bu önemlidir. Başka web servislerinin çoğu dosyayı sunucusuna gönderir; koşullarını kullanmadan önce okuyun."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Rehber</li></ol><h1>Excel'i PDF'e, PDF'i Excel'e Çevirme ve CSV Sorunları (Türkçe Karakter, Noktalı Virgül)</h1><p class="lead">Excel PDF dönüştürme işi iki yönlüdür ve ikisi de farklı sınırlara sahiptir: Excel'i PDF'e çevirmek kolaydır, PDF'i Excel'e çevirmek ise tahmine dayanır. Bu rehber ikisini, ayrıca CSV dosyalarında Türkçe karakterlerin bozulması ve tablonun tek sütunda açılması gibi sorunları çözer. Araçlarımızla dosyalarınız tarayıcınızdan çıkmadan dönüşür; bordro, ekstre ve müşteri listesi gibi hassas tablolar için bu önemlidir.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu rehberde kullanılan araçlar</h2>
+      <ul>
+          <li><a href="../../excelden-pdfe/"><strong>Excel'i PDF'e Çevir</strong><span>.xlsx, .xls ve CSV tabloları sayfaya sığdırarak, başlık tekrarlı PDF yapar.</span></a></li>
+          <li><a href="../../pdf-excel/"><strong>PDF'den Excel'e Çevir (beta)</strong><span>Metin katmanı olan basit PDF tablolarını xlsx ve CSV'ye aktarır.</span></a></li>
+          <li><a href="../../csv-excel/"><strong>CSV Excel Dönüştürücü</strong><span>Ayraç ve kodlamayı algılar; CSV'yi xlsx'e çevirir ya da bozuk CSV'yi onarır.</span></a></li>
+          <li><a href="../../csv-json-donustur/"><strong>CSV JSON Dönüştürücü</strong><span>CSV ile JSON arasında çevirir; Markdown, HTML tablo ve SQL çıktısı verir.</span></a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="rehber-excel-pdf-donusturme-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Önce yönü belirleyin: hangi dönüşüm?</h2>
+      <p>"Excel PDF çevirme" arayanların işi dört farklı kategoriden birine düşer ve her birinin doğru çözümü farklıdır. Bir tabloyu başkasına göndermek ya da yazdırmak istiyorsanız Excel'den PDF'e gidersiniz; bu yön kolaydır ve neredeyse her zaman güvenilir sonuç verir. Elinizde yalnızca PDF olarak gelen bir listeden veri çıkarmak istiyorsanız PDF'ten Excel'e gidersiniz; bu yön tahmine dayanır ve her zaman kontrol gerektirir. Bir sistemden indirdiğiniz CSV Excel'de bozuk görünüyorsa sorun dönüşüm değil kodlama ve ayırıcıdır. Bir yazılıma ya da web uygulamasına veri aktaracaksanız CSV'yi JSON gibi başka bir biçime çevirmeniz gerekebilir.</p>
+      <p>Her bölüm aynı sırayı izler: önce programınızdaki yerleşik yol, sonra araçlarımız, sonra sınırlar. Böylece hangi durumda hangi çözümün daha uygun olduğunu kendiniz karşılaştırabilirsiniz.</p>
+
+      <h2>Excel'i PDF'e çevirme</h2>
+      <p>Excel'in kendi PDF çıktısı en birebir sonucu verir; grafikler, renkli hücreler ve koşullu biçimlendirme olduğu gibi gelir. Dosya menüsünden "Farklı Kaydet" ya da "Dışa Aktar" ile PDF'i seçmeniz yeterlidir. Bu yolun tek zorluğu tablo geniş olduğunda sayfa düzenidir. Sayfa Düzeni sekmesinden yönü yatay yapın, ölçeklendirmede "tüm sütunları tek sayfaya sığdır"ı seçin, yazdırma alanını belirleyin ve uzun listelerde "başlık satırlarını yinele"yi işaretleyin. Aksi hâlde son iki sütun ayrı bir sayfaya taşar, başlıksız sayfalar okunmaz hâle gelir.</p>
+      <p>Excel'iniz yoksa ya da dosya size e-postayla gelmişse <a href="../../excelden-pdfe/">Excel'i PDF'e Çevir</a> aracı bu işi tarayıcıda yapar. .xlsx ve .xls dosyalarının yanında CSV de açılır; hangi çalışma sayfasının çevrileceğini ya da hepsinin tek PDF'te toplanacağını seçersiniz, A4 ya da A3 ve dikey ya da yatay yönü belirlersiniz. Başlığın her sayfada tekrar etmesi, ızgara çizgileri ve sayfa numarası seçenekleri vardır. Türkçe karakterler PDF'e gömülü yazı tipiyle basılır.</p>
+      <p>Aracın dürüst sınırı şudur: hücre değerlerini bir tablo olarak çizer. Grafikler, resimler, koşullu biçimlendirme renkleri ve hücre arka planları aktarılmaz; birleştirilmiş hücreler tek hücreye açılmış gibi görünür. Formül hücrelerinde dosyanın en son kaydedilmiş sonucu gösterilir; bu yüzden dosyayı Excel'de kaydedip yeniden seçmek güncel değeri verir. Tam görsel birebirlik gerekiyorsa Excel'in kendi PDF çıktısını kullanın. Çok büyük tablolarda (binlerce satır) PDF yüzlerce sayfa olabilir; yazı boyutunu düşürmek, sığdırmayı açmak ya da tabloyu bölümlere ayırmak mantıklıdır.</p>
+
+      <h2>PDF'i Excel'e çevirme: gerçekçi beklentiler</h2>
+      <p>Bu yönde önce neden zor olduğunu anlamak işe yarar. Bir PDF'te tablo kavramı yoktur; sayfaya belirli koordinatlarda yerleştirilmiş metin parçaları ve çizgiler vardır. Hücre, satır ve sütun bilgisini bir çevirici yalnızca metinlerin hizalanmasından tahmin eder. Bu yüzden iki bölgeye ayrılan sayfa, birleştirilmiş hücre, çok satırlı açıklama ya da iç içe tablo yanlış okunabilir. İlk kontrol basittir: PDF'te bir satırı fareyle seçmeyi deneyin. Seçilebiliyorsa belgede metin katmanı vardır; seçilemiyorsa belge taranmış bir görüntüdür ve önce OCR gerekir.</p>
+      <p><a href="../../pdf-excel/">PDF'den Excel'e Çevir</a> aracı bir beta sürümüdür ve bu sınırı açıkça söyler. Metin katmanı olan, sütunları dikey boşluklarla ayrışan basit tablolarda iyi çalışır. Sayfa görüntüsü üzerindeki sütun ayraçlarını sürükleyerek düzeltebilir, sonucu xlsx ya da CSV olarak indirebilirsiniz. Taranmış bir PDF'te araç bunu fark eder ve sizi OCR yoluna yönlendirir; bunun için <a href="../../resimden-yaziya/">Resimden Yazıya</a> aracını kullanabilirsiniz, ama OCR çıktısının hata yapabileceğini unutmayın.</p>
+      <p>Banka ekstresi, fatura listesi ya da bordro gibi önemli verilerde sonucu mutlaka toplam satırıyla karşılaştırın: Excel'e geçen tutarların toplamı PDF'teki toplamla tutmuyorsa bir hücre yanlış okunmuştur. Daha da güvenilir olan, mümkünse kaynağın kendi dışa aktarımını kullanmaktır; birçok internet bankası ve muhasebe yazılımı ekstreyi doğrudan Excel ya da CSV olarak indirmenize izin verir ve bu, PDF'ten tahminle çıkarılan veriden her zaman daha doğrudur. Microsoft 365 ve yeni Excel sürümlerinde (özellikle Windows'ta) "Veri" sekmesinden PDF'ten veri alma seçeneği de bulunabilir; sürümünüze göre kontrol edin.</p>
+
+      <div class="ba-ad" data-slot="rehber-excel-pdf-donusturme-b" aria-label="Reklam"></div>
+
+      <h2>CSV nedir ve neden sorun çıkarır?</h2>
+      <p>CSV düz bir metin dosyasıdır: satırlar alt alta, hücreler bir ayırıcı karakterle ayrılmıştır. Biçim sade olduğu için her sistem bunu dışa aktarır; ama sadeliğin bedeli, dosyanın kendisi hakkında bilgi taşımamasıdır. Hangi karakterin ayırıcı olduğu da, harflerin hangi kodlamayla yazıldığı da dosyanın içinde yazmaz. Türkçe bilgisayarda bu iki bilgi, Excel'in tahminine bırakılır ve tahmin çoğu zaman yanlış çıkar.</p>
+      <ul>
+        <li><strong>Kodlama sorunu:</strong> Dosyayı bir web sistemi UTF-8 ile yazmıştır; Türkçe Windows'taki Excel çift tıklamada eski ANSI kodlamasını (Windows-1254) varsayar ve "İstanbul" yerine "Ä°stanbul" gibi anlamsız karakterler gösterir. Tersi de olur: Excel'in kaydettiği ANSI dosyası bir web uygulamasında soru işaretlerine dönüşür.</li>
+        <li><strong>Ayırıcı sorunu:</strong> Dünyadaki çoğu program CSV'yi virgülle yazar. Türkçe bölge ayarında ondalık ayırıcı virgül olduğu için Excel liste ayırıcısı olarak noktalı virgül bekler; virgüllü dosyayı açınca her satır tek bir hücreye sıkışır.</li>
+        <li><strong>Akıllı dönüştürme sorunu:</strong> Excel hücreleri kendi kafasına göre yorumlar. Başı sıfırlı telefon numarasının sıfırı silinir, uzun IBAN ve barkod numaraları "1,23E+15" biçimine dönüşür, "1-2" gibi bir değer tarih olur ve "03.04" ayla gün olarak karışabilir.</li>
+      </ul>
+
+      <h2>Excel'de elle çözüm: içe aktarma yolu</h2>
+      <p>CSV'yi çift tıklayarak açmak yerine Excel'in içe aktarma özelliğini kullanmak iki sorunu birlikte çözer. Veri sekmesinde "Metin/CSV'den" seçeneğini (eski sürümlerde "Metinden") açın, dosyayı seçin ve önizleme penceresinde Dosya Kaynağı olarak "65001: Unicode (UTF-8)"yi, sınırlayıcı olarak dosyadaki ayırıcıyı (noktalı virgül ya da virgül) seçin. Önizlemede harflerin düzgün göründüğünü doğruladıktan sonra yükleyin. Kaybolmasını istemediğiniz başı sıfırlı sütunları bu aşamada metin olarak işaretleyebilirsiniz.</p>
+      <p>Excel'in kaydetme tarafında "CSV UTF-8" seçeneği de bulunur. Dikkat edilecek nokta: çoğu sürümde bu seçenek ayırıcıyı yine Windows'un liste ayırıcısına göre belirler; Türkçe bölge ayarında bu noktalı virgüldür. Dosyayı virgül bekleyen bir sisteme gönderecekseniz sonucu bir metin düzenleyicide kontrol edin. Windows'un liste ayırıcısını Bölge ayarlarından değiştirmek de mümkündür, ancak bu ayar tüm programları etkiler; yalnızca bir dosya için yapılacak bir değişiklik değildir. LibreOffice Calc ve Google E-Tablolar da içe aktarırken kodlama ile ayırıcıyı seçmenize izin verir; Google E-Tablolar dosyayı Google'ın sunucusuna yükler, bu yüzden hassas veride dikkatli olun.</p>
+
+      <h2>CSV Excel aracıyla çözüm</h2>
+      <p>Elle içe aktarma çalışır ama her dosyada tekrarlamak zahmetlidir. <a href="../../csv-excel/">CSV Excel Dönüştürücü</a> kodlamayı (UTF-8 ya da Windows-1254) ve ayırıcıyı kendisi algılar, önizlemede ilk satırları gösterir ve çıktıyı sizin belirlediğiniz biçimde verir. Doğru çıktı, dosyanın kime gideceğine bağlıdır:</p>
+      <ul>
+        <li><strong>Türkçe Excel'de açacak biri varsa:</strong> Doğrudan xlsx üretin; ayırıcı kavramı ortadan kalkar, sayılar gerçek sayı olur. CSV gerekiyorsa "noktalı virgül + UTF-8 BOM" ön ayarı çift tıklamada doğru açılır.</li>
+        <li><strong>E-ticaret paneli, CRM ya da başka bir yazılıma yüklenecekse:</strong> Virgül ve UTF-8 (BOM'suz), ondalık ayırıcı nokta olacak biçimde "Standart" ön ayarını kullanın. Bu yazılımların çoğu noktalı virgüllü Excel çıktısını reddeder.</li>
+        <li><strong>Eski bir muhasebe programına yüklenecekse:</strong> Bazıları hâlâ Windows-1254 ister; araç bu kodlamayla da yazabilir.</li>
+      </ul>
+      <p>Başı sıfırlı numaraları ve çok uzun sayıları araç otomatik metin olarak korur; tarih görünümlü sütunları ise Excel'in ay-gün karışıklığına düşmesin diye metin yazar. Bir sütun için bu kararı değiştirebilirsiniz. Önemli bir ayrıntı: araç .xlsx okur ama .xls okumaz; eski bir .xls dosyasını Excel ya da LibreOffice'te "Farklı Kaydet" ile .xlsx yapıp sonra kullanın. Bozulmuş bir CSV'yi önce Excel'de açıp kaydetmeye çalışmayın; Excel yanlış çözdüğü harfleri yanlış hâliyle kaydeder, dosyayı ham hâliyle araca verin.</p>
+
+      <h2>CSV'den JSON'a ve geliştirici ihtiyaçları</h2>
+      <p>Tabloyu bir web uygulamasına, bir API'ye ya da dokümantasyona taşıyacaksanız CSV tek başına yetmeyebilir. <a href="../../csv-json-donustur/">CSV JSON Dönüştürücü</a> iki yönde çalışır: CSV'yi JSON dizisine, JSON'u CSV'ye çevirir. Ayrıca Markdown tablo, HTML tablo ve SQL INSERT çıktısı verir; ayırıcı otomatik algılanır ve Türkçe karakterler korunur. Pratik örnekler: bir fiyat listesini sitenizin JSON verisine eklemek, bir tabloyu GitHub README'sine Markdown olarak yapıştırmak, küçük bir veri setini veri tabanına aktarmak.</p>
+      <div class="rh-note"><strong>Güvenlik notu:</strong> SQL INSERT çıktısını doğrudan canlı bir veri tabanında çalıştırmadan önce okuyup bir test ortamında deneyin; veri türleri ve özel karakterler her sistemde aynı davranmaz. Ayrıca dışarıdan gelen bir CSV'de "=", "+", "-" ya da "@" ile başlayan hücreler Excel'de formül gibi çalışabilir; güvenmediğiniz bir kaynaktan gelen dosyada Excel'in formül uyarılarını kapatmayın.</div>
+
+      <h2>Alternatifler ve dürüst değerlendirme</h2>
+      <p>Araçlarımız bu işlerin tek yolu değildir; duruma göre şu seçenekler de uygundur:</p>
+      <ul>
+        <li><strong>Excel'in kendi özellikleri:</strong> PDF olarak kaydetme, Metin/CSV'den içe aktarma ve (Microsoft 365'te) PDF'ten veri alma, program zaten yüklüyse en doğrudan çözümdür. Grafikler ve biçimlendirme PDF'e birebir gelir.</li>
+        <li><strong>LibreOffice Calc:</strong> Ücretsiz ve açık kaynaktır. Excel dosyalarını açar, PDF'e aktarır, CSV içe aktarırken kodlama ve ayırıcı seçtirir. Kurulum gerektirir.</li>
+        <li><strong>Google E-Tablolar:</strong> Dosya yükleyip PDF ya da CSV olarak indirebilirsiniz. Kolaydır ama dosya Google hesabınıza yüklenir; hassas tablolarda bunu bilerek karar verin.</li>
+        <li><strong>Mac Numbers:</strong> Excel dosyasını açar ve PDF olarak dışa aktarır; karmaşık Excel biçimlendirmesinde farklılıklar olabilir.</li>
+        <li><strong>Adobe Acrobat ve benzeri ücretli PDF yazılımları:</strong> PDF'ten Excel'e çevirmede genellikle daha gelişmiş tablo tanıma sunar; abonelik gerektirir ve taranmış belgelerde OCR yine hata yapabilir.</li>
+        <li><strong>Çevrimiçi dönüştürücü siteleri:</strong> Hızlıdır ama çoğu dosyanızı sunucusuna yükler, kayıt, günlük sınır ya da filigran dayatabilir. Banka ekstresi ve müşteri listesi için bu yol uygun değildir.</li>
+      </ul>
+      <p>Bizim yaklaşımımızın güçlü yanı dosyanın cihazınızdan çıkmaması, kayıt gerektirmemesi ve Türkçe karakter ile noktalı virgül sorunlarına özel ön ayarlar sunmasıdır. Sınırları ise şunlardır: Excel'i PDF'e çevirirken grafik ve resimler taşınmaz, PDF'ten Excel'e çevirme beta aşamasındadır ve yalnızca basit tablolarda güvenilirdir, CSV aracı formül ve çok sayfalı biçimlendirmeyi korumaz. Bu durumlarda yukarıdaki alternatifler daha uygundur. Taranmış belgelerle ilgili kapsamlı bir yöntem için <a href="../taranmis-belgeyi-pdf-yapma/">taranmış belgeyi PDF yapma rehberimize</a> bakabilirsiniz.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Bozuk CSV'yi Excel'de açıp kaydetmek:</strong> Yanlış çözülen harfler kalıcı hâle gelir.</li>
+        <li><strong>PDF'ten gelen tutarları kontrol etmemek:</strong> Tek bir yanlış hücre toplamı bozar.</li>
+        <li><strong>Hassas dosyayı rastgele bir web sitesine yüklemek:</strong> Ekstre, bordro ve müşteri verisi sunucuda kalabilir.</li>
+        <li><strong>Geniş tabloyu dikey A4'e basmak:</strong> Sütunlar sayfalara bölünür ve okunmaz. Yatay ve sığdır seçeneğini kullanın.</li>
+        <li><strong>Başı sıfırlı numarayı sayı olarak içe aktarmak:</strong> Telefon ve posta kodu bozulur.</li>
+        <li><strong>Ondalık ayırıcıyı karıştırmak:</strong> Türkçede virgül, İngilizce sistemlerde nokta kullanılır; 1.234,56 ile 1,234.56 aynı sayıdır.</li>
+      </ul>
+
+      <h2>Teslim öncesi son kontrol listesi</h2>
+      <ol class="ba-steps">
+        <li>Dönüşüm yönünü ve dosyanın kime ya da hangi sisteme gideceğini belirleyin.</li>
+        <li>PDF'e çevirdiyseniz son sütunun ve son satırın sayfada eksiksiz göründüğünü, başlığın her sayfada tekrar ettiğini doğrulayın.</li>
+        <li>Excel'e çevirdiyseniz toplamları kaynakla karşılaştırın ve başı sıfırlı sütunların metin kaldığını kontrol edin.</li>
+        <li>CSV gönderecekseniz hedef sistemin istediği ayırıcı ve kodlamayı seçtiğinizden emin olun.</li>
+        <li>Hassas verili dosyaları işiniz bitince bilgisayarınızdan ve indirilenler klasöründen silin.</li>
+      </ol>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Excel tablosunu PDF'e sayfaya sığdırarak nasıl çeviririm?</summary><p>Excel'de Sayfa Düzeni sekmesinden yönü yatay yapıp ölçeklendirmeyi tüm sütunları tek sayfaya sığdır olarak ayarlayın, sonra PDF olarak kaydedin. Bilişim Ajans Excel'i PDF'e Çevir aracında da sayfaya sığdır, A3 ve yatay yön seçenekleri vardır.</p></details>
+      <details><summary>PDF'teki tabloyu Excel'e çevirince neden bozuk geliyor?</summary><p>PDF bir tablo değil, sayfaya yerleştirilmiş metin ve çizgilerdir; hücre bilgisi taşımaz. Çevirici sütunları tahmin eder. Birleştirilmiş hücreler, çok satırlı hücreler ve iç içe tablolar bozulabilir. Sonucu her zaman gözle kontrol edin.</p></details>
+      <details><summary>CSV dosyasını açınca Türkçe karakterler neden bozuk görünüyor?</summary><p>Dosya UTF-8 ile kaydedilmiş, Excel ise çift tıklamada eski ANSI kodlamasını varsayıyordur. Çözüm, dosyayı Veri sekmesindeki Metin ya da CSV'den seçeneğiyle içe aktarıp UTF-8'i seçmek veya dosyaya UTF-8 BOM eklemektir.</p></details>
+      <details><summary>CSV Excel'de tek sütunda açılıyor, ne yapmalıyım?</summary><p>Dosya virgülle ayrılmış, Türkçe Excel ise noktalı virgül bekliyor olabilir. Dosyayı içe aktarma yoluyla açıp ayırıcıyı seçin ya da dosyayı xlsx olarak kaydedin; Excel dosyasında ayırıcı sorunu yoktur.</p></details>
+      <details><summary>Telefon numarasının başındaki sıfır neden siliniyor?</summary><p>Excel başı sıfırlı değeri sayı sanıp baştaki sıfırı atar. Sütunu metin olarak içe aktarmanız gerekir. CSV Excel aracı başı sıfırla başlayan ve çok uzun değerleri otomatik metin tutar.</p></details>
+      <details><summary>Taranmış PDF'i doğrudan Excel'e çevirebilir miyim?</summary><p>Doğrudan hayır. Taranmış PDF'te yazı değil piksel vardır; önce OCR ile metne dönüştürmek gerekir. OCR hata yapabilir, bu yüzden sayıları ve adları kaynakla karşılaştırın.</p></details>
+      <details><summary>Eski xls dosyalarını araçlarınız açıyor mu?</summary><p>Excel'i PDF'e Çevir aracı xls dosyalarını da okur. CSV Excel aracı yalnızca xlsx ve csv okur; xls dosyasını Excel ya da LibreOffice'te xlsx olarak kaydetmeniz gerekir.</p></details>
+      <details><summary>Excel ya da PDF dosyam bir sunucuya yükleniyor mu?</summary><p>Araçlarımızda hayır; dönüştürme tarayıcınızda yapılır. Banka ekstresi, bordro ve müşteri listesi gibi hassas dosyalar için bu önemlidir. Başka web servislerinin çoğu dosyayı sunucusuna gönderir; koşullarını kullanmadan önce okuyun.</p></details>
+
+      <h2>Sonuç ve destek</h2>
+      <p>Excel'den PDF'e geçmek kolaydır, PDF'ten Excel'e geçmek her zaman bir kontrol gerektirir ve CSV sorunlarının neredeyse tamamı kodlama ile ayırıcı uyuşmazlığından çıkar. Doğru yönü seçip dosyanın gideceği yere göre çıktıyı belirlerseniz çoğu sorun daha başlamadan biter. Tablolarınızı otomatik raporlamaya, web sitesine ya da yazılıma bağlamak için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz; tüm ücretsiz araçların listesi <a href="../../">ana sayfada</a>.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="rehber-excel-pdf-donusturme-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
