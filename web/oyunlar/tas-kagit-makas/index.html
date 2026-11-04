@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Taş Kağıt Makas Oyna – Ücretsiz Online Taş Kağıt Makas (kurulumsuz)</title>
+  <meta name="description" content="Taş Kağıt Makas oyununu tarayıcınızda ücretsiz oynayın: rastgele ve öğrenen bilgisayar, 5'li kertenkele-uzaylı modu, 3-5-10 elli maçlar, seri ve istatistikler, aynı klavyede iki oyunculu mod. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/tas-kagit-makas/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    .tkm-options { display: grid; gap: 14px; padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    @media (min-width: 640px) { .tkm-options { grid-template-columns: 1fr 1fr; } .tkm-options > :first-child { grid-column: 1 / -1; } }
+    .tkm-fs { border: 0; margin: 0; padding: 0; min-width: 0; }
+    .tkm-fs legend { font-weight: 600; font-size: .9rem; padding: 0; margin-bottom: 6px; }
+    .tkm-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tkm-pill { position: relative; display: inline-flex; }
+    .tkm-pill input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .tkm-pill span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid var(--ba-border-hover); border-radius: 999px; background: var(--ba-surface); font-size: .92rem; font-weight: 500; color: var(--ba-text); }
+    .tkm-pill input:hover + span { border-color: var(--ba-primary); }
+    .tkm-pill input:checked + span { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .tkm-pill input:focus-visible + span { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    :root[data-theme="dark"] .tkm-pill input:checked + span { color: #1a0d10; }
+    .tkm-info { margin: 12px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+
+    .tkm-score { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 6px; }
+    .tkm-score > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .tkm-score span { display: block; font-size: .75rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .06em; text-transform: uppercase; overflow-wrap: anywhere; }
+    .tkm-score strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
+    .tkm-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin: 0 0 4px; font-size: .88rem; color: var(--ba-text-2); }
+
+    .tkm-arena { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px 0 8px; }
+    .tkm-side { flex: 0 1 170px; min-width: 0; text-align: center; padding: 10px 6px; border: 2px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .tkm-side b { display: block; margin-top: 4px; font-size: .95rem; font-weight: 600; min-height: 1.5em; }
+    .tkm-side.is-win { border-color: var(--ba-success); background: var(--ba-success-soft); }
+    .tkm-side.is-lose { opacity: .78; }
+    .tkm-side.is-draw { border-color: var(--ba-border-hover); }
+    .tkm-vs { font-family: var(--ba-mono); font-size: .85rem; color: var(--ba-text-muted); letter-spacing: .1em; }
+    .tkm-hand { width: clamp(72px, 24vw, 118px); aspect-ratio: 1; margin: 0 auto; }
+    .tkm-hand svg { width: 100%; height: 100%; transform-origin: 50% 85%; }
+    .tkm-flip { rotate: 180deg; }
+    .tkm-q { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 3rem; font-weight: 700; color: var(--ba-text-muted); }
+    .tkm-flip .tkm-q { rotate: 180deg; }
+
+    /* El çizimleri: dış hat + dolgu iki katman; renkler tema değişkenlerinden */
+    .tkm-o * { fill: var(--ba-primary-strong); stroke: var(--ba-primary-strong); stroke-width: 5; stroke-linejoin: round; }
+    .tkm-f * { fill: var(--ba-primary-soft); stroke: none; }
+    .tkm-o .leg { fill: none; stroke-width: 9; stroke-linecap: round; }
+    .tkm-f .leg { fill: none; stroke: var(--ba-primary-soft); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+    .tkm-d * { fill: none; stroke: var(--ba-primary-strong); stroke-width: 1.8; stroke-linecap: round; }
+    .tkm-d .dot { fill: var(--ba-primary-strong); stroke: none; }
+
+    @keyframes tkmShake { 0%, 100% { transform: translateY(0) rotate(0); } 17% { transform: translateY(-16px) rotate(-5deg); } 33% { transform: translateY(4px); } 50% { transform: translateY(-16px) rotate(5deg); } 67% { transform: translateY(4px); } 83% { transform: translateY(-12px); } }
+    @keyframes tkmPop { 0% { transform: scale(.55); opacity: .3; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+    .tkm-arena.is-shaking .tkm-hand svg { animation: tkmShake .48s ease-in-out; }
+    .tkm-side.is-reveal .tkm-hand svg { animation: tkmPop .32s var(--ba-ease-spring, ease-out); }
+
+    .tkm-result { min-height: 1.7em; margin: 10px 0 4px; text-align: center; font-size: 1.15rem; font-weight: 600; }
+    .tkm-result[data-tone="win"] { color: var(--ba-success); }
+    .tkm-result[data-tone="lose"] { color: var(--ba-danger); }
+    .tkm-predict, .tkm-match { text-align: center; margin: 0 0 6px; font-size: .92rem; color: var(--ba-text-2); }
+    .tkm-match { font-weight: 600; color: var(--ba-text); padding: 10px 12px; background: var(--ba-primary-soft); border-radius: var(--ba-radius-sm); }
+
+    .tkm-padlabel { font-weight: 600; font-size: .9rem; margin: 14px 0 6px; }
+    .tkm-pad { display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: 8px; max-width: 560px; }
+    .tkm-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 96px; padding: 8px 4px; background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius); color: var(--ba-text); font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .tkm-btn:hover:not([aria-disabled="true"]) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .tkm-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+    .tkm-btn svg { width: 44px; height: 44px; }
+    .tkm-btn-name { font-size: .9rem; font-weight: 600; }
+    .tkm-btn kbd { font-family: var(--ba-mono); font-size: .72rem; line-height: 1.5; padding: 0 6px; border: 1px solid var(--ba-border-hover); border-radius: 4px; color: var(--ba-text-muted); }
+    @media (hover: none) { .tkm-btn kbd { display: none; } }
+
+    .tkm-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+    .tkm-stats { margin-top: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 0 14px; }
+    .tkm-stats summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .tkm-stats dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0 0 14px; font-size: .92rem; }
+    .tkm-stats dt { color: var(--ba-text-2); }
+    .tkm-stats dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .ba-content { overflow-wrap: anywhere; }
+    .tkm-rules { columns: 1; }
+    @media (min-width: 640px) { .tkm-rules { columns: 2; column-gap: 28px; } }
+    @media (prefers-reduced-motion: reduce) { .tkm-arena.is-shaking .tkm-hand svg, .tkm-side.is-reveal .tkm-hand svg { animation: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Taş Kağıt Makas","description":"Bilgisayara karşı rastgele ve öğrenen modda, 5'li kertenkele-uzaylı varyantında ya da aynı klavyede iki oyunculu oynanan ücretsiz online taş kağıt makas oyunu.","url":"https://araclar.bilisimajans.com/oyunlar/tas-kagit-makas/","inLanguage":"tr","applicationCategory":"Game","operatingSystem":"Web tarayıcısı (kurulum gerekmez)","genre":"El oyunu","numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":2},"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Taş kağıt makasta kazanma şansı nedir?","acceptedAnswer":{"@type":"Answer","text":"Rastgele oynayan bir rakibe karşı her elde üçte bir kazanma, üçte bir beraberlik ve üçte bir kaybetme şansınız vardır. Ne kadar akıllı oynarsanız oynayın, rakip gerçekten rastgele seçiyorsa bu oranı kalıcı olarak değiştiremezsiniz."}},
+  {"@type":"Question","name":"Öğrenen bilgisayar benim seçimimi önceden görüyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilgisayarın hamlesi yalnızca önceki ellerinize bakılarak belirlenir ve o elde seçtiğiniz işaretten bağımsızdır. Kalıplarınızı yakalar ama anlık tıklamanızı bilemez; bu yüzden gerçekten rastgele oynayan birini yenemez."}},
+  {"@type":"Question","name":"Rastgele mod gerçekten rastgele mi?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcının sözde rastgele sayı üreteci kullanılır. Oyun için fazlasıyla yeterlidir, ancak kriptografik güvenlik gerektiren işlerde kullanılmamalıdır."}},
+  {"@type":"Question","name":"İki oyuncu aynı klavyede nasıl oynar?","acceptedAnswer":{"@type":"Answer","text":"İki oyunculu klavye modunu seçin. Birinci oyuncu A, S, D tuşlarıyla taş, kağıt ve makas seçer; ikinci oyuncu J, K, L tuşlarını kullanır. Birinci oyuncunun seçimi, ikinci oyuncu seçene kadar gizli kalır."}},
+  {"@type":"Question","name":"Skorlarım nerede saklanıyor, silebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"İstatistikler yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur, hiçbir sunucuya gönderilmez. Oyun kutusundaki İstatistikleri sil düğmesiyle ya da tarayıcı verilerini temizleyerek silebilirsiniz."}},
+  {"@type":"Question","name":"Telefonda oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Düğmeler dokunmatik ekran için büyük tutulmuştur ve 360 piksel genişliğinde bile sığar. İki oyunculu modda iki kişi aynı telefonda kendi satırındaki düğmeye dokunabilir."}},
+  {"@type":"Question","name":"5'li modda kertenkele neye karşı kazanır?","acceptedAnswer":{"@type":"Answer","text":"Kertenkele kağıdı kemirir ve uzaylıyı zehirler; taşa ve makasa yenilir. Her işaret iki işareti yener, iki işarete yenilir."}},
+  {"@type":"Question","name":"İnternet olmadan oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynarsınız."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Taş Kağıt Makas</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Bilgisayara karşı rastgele ya da seni öğrenen modda oyna, 5'li kertenkele-uzaylı varyantını dene, 3, 5 veya 10 elli maç yap ya da aynı klavyede arkadaşınla yarış. Kurulum, üyelik ve indirme gerekmez; her şey tarayıcında çalışır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Taş Kağıt Makas oyunu</h2>
+      <noscript><p class="ba-error is-active">Oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır. Ayarlardan JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+      <div class="tkm-options">
+        <fieldset class="tkm-fs"><legend>Rakip</legend>
+          <div class="tkm-pills">
+            <label class="tkm-pill"><input type="radio" name="opp" value="random" checked><span>Bilgisayar (rastgele)</span></label>
+            <label class="tkm-pill"><input type="radio" name="opp" value="learning"><span>Bilgisayar (öğrenen)</span></label>
+            <label class="tkm-pill"><input type="radio" name="opp" value="two"><span>İki oyuncu (klavye)</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="tkm-fs"><legend>Oyun türü</legend>
+          <div class="tkm-pills">
+            <label class="tkm-pill"><input type="radio" name="variant" value="3" checked><span>Klasik (3 işaret)</span></label>
+            <label class="tkm-pill"><input type="radio" name="variant" value="5"><span>5'li (kertenkele, uzaylı)</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="tkm-fs"><legend>Maç uzunluğu</legend>
+          <div class="tkm-pills">
+            <label class="tkm-pill"><input type="radio" name="len" value="0" checked><span>Serbest</span></label>
+            <label class="tkm-pill"><input type="radio" name="len" value="3"><span>3 el</span></label>
+            <label class="tkm-pill"><input type="radio" name="len" value="5"><span>5 el</span></label>
+            <label class="tkm-pill"><input type="radio" name="len" value="10"><span>10 el</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <p class="tkm-info" id="tkm-info"></p>
+
+      <div class="tkm-score" role="group" aria-label="Skor">
+        <div><span id="tkm-name-you">Sen</span><strong id="score-you">0</strong></div>
+        <div><span>Berabere</span><strong id="score-draw">0</strong></div>
+        <div><span id="tkm-name-cpu">Bilgisayar</span><strong id="score-cpu">0</strong></div>
+      </div>
+      <p class="tkm-meta"><span id="tkm-round">El: 0</span><span id="tkm-streak">Seri: 0</span></p>
+
+      <div class="tkm-arena" id="tkm-arena">
+        <div class="tkm-side" id="side-you"><div class="tkm-hand" id="hand-you"></div><b id="pick-you-name">—</b></div>
+        <div class="tkm-vs" aria-hidden="true">VS</div>
+        <div class="tkm-side" id="side-cpu"><div class="tkm-hand tkm-flip" id="hand-cpu"></div><b id="pick-cpu-name">—</b></div>
+      </div>
+      <p class="tkm-result" id="tkm-result" role="status" aria-live="polite">Bir işaret seçerek başlayın.</p>
+      <p class="tkm-predict" id="tkm-predict" aria-live="polite" hidden></p>
+      <p class="tkm-match" id="tkm-match" role="status" hidden></p>
+
+      <div class="tkm-padlabel" id="tkm-pad-1-label">İşaretini seç</div>
+      <div class="tkm-pad" id="tkm-pad-1" role="group" aria-labelledby="tkm-pad-1-label"></div>
+      <div id="tkm-pad-2-wrap" hidden>
+        <div class="tkm-padlabel" id="tkm-pad-2-label">Oyuncu 2</div>
+        <div class="tkm-pad" id="tkm-pad-2" role="group" aria-labelledby="tkm-pad-2-label"></div>
+      </div>
+
+      <div class="tkm-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="tkm-new">Yeni maç</button>
+        <button type="button" class="ba-btn" id="tkm-clear">İstatistikleri sil</button>
+      </div>
+
+      <details class="tkm-stats">
+        <summary>İstatistiklerim</summary>
+        <dl>
+          <dt>Toplam el (bilgisayara karşı)</dt><dd id="stat-rounds">0</dd>
+          <dt>Kazanma oranı, rastgele mod</dt><dd id="stat-random">—</dd>
+          <dt>Kazanma oranı, öğrenen mod</dt><dd id="stat-learning">—</dd>
+          <dt>En uzun galibiyet serisi</dt><dd id="stat-best">0</dd>
+          <dt>Maç sonuçları</dt><dd id="stat-matches">—</dd>
+          <dt>Bilgisayarın tahmin isabeti</dt><dd id="stat-predict">—</dd>
+        </dl>
+      </details>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-tas-kagit-makas-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Taş kağıt makas nasıl oynanır?</h2>
+      <p>Taş kağıt makas, iki oyuncunun aynı anda üç el işaretinden birini seçtiği, dünyanın en yaygın malzemesiz oyunlarından biridir. Kurallar tek cümleye sığar: taş makası kırar, makas kağıdı keser, kağıt taşı sarar. İki oyuncu aynı işareti seçerse el berabere biter. Bu sayfada oyunu bilgisayara karşı ya da aynı klavyede bir arkadaşınla oynayabilirsin; sayfa açıldığı anda hazırdır, kurulum veya üyelik istemez.</p>
+      <ol class="ba-steps">
+        <li>Üstteki seçeneklerden rakibini belirle: rastgele oynayan bilgisayar, öğrenen bilgisayar ya da iki oyunculu klavye modu.</li>
+        <li>İstersen oyun türünü "5'li" yap ve maç uzunluğunu serbest, 3, 5 ya da 10 el olarak seç.</li>
+        <li>Taş, kağıt veya makas düğmesine dokun. Klavyede A, S, D tuşlarını ya da 1, 2, 3 rakamlarını kullanabilirsin.</li>
+        <li>Eller "taş… kağıt… makas!" diye sallandıktan sonra açılır; sonuç cümlesi neden kazandığını ya da kaybettiğini açıklar.</li>
+        <li>Skor tablosu, galibiyet serisi ve istatistikler otomatik güncellenir. Maç bitince "Yeni maç" ile baştan başla.</li>
+      </ol>
+
+      <h2>Oyun modları</h2>
+      <h3>Bilgisayar (rastgele)</h3>
+      <p>Bilgisayar her elde üç işaretten birini eşit olasılıkla seçer. Bu modda strateji işe yaramaz; uzun vadede galibiyet, beraberlik ve yenilgi oranı üçte bire yaklaşır. Hızlı bir mola, bir kararı şansa bırakmak ya da çocuklarla vakit geçirmek için idealdir.</p>
+      <h3>Bilgisayar (öğrenen)</h3>
+      <p>Bu mod seni gözlemler. Önceki seçimlerine bakarak bir sonraki işaretini tahmin etmeye çalışır ve o işareti yenecek hamleyi oynar. İlk birkaç elde rastgele oynar; yeterli veri biriktikçe kalıplarını yakalar. Tahmini her elden sonra ekranda görebilir, "doğru bildi" ya da "yanıldı" bilgisini takip edebilirsin.</p>
+      <h3>5'li: kertenkele ve uzaylı</h3>
+      <p>Beş işaretli varyantta her işaret iki işareti yener ve iki işarete yenilir. Beraberlik ihtimali beşte bire düştüğü için eller daha az berabere biter, oyun daha dengeli ve sürprizli akar. Kurallar aşağıdaki listede ve her elin sonuç cümlesinde yazar.</p>
+      <h3>İki oyunculu klavye</h3>
+      <p>İki kişi aynı ekranın başında oynar. Birinci oyuncu A, S, D tuşlarını (5'li modda ayrıca F ve G), ikinci oyuncu J, K, L tuşlarını (5'li modda ayrıca I ve O) kullanır. Birinci oyuncunun seçimi gizli kalır; ikinci oyuncu seçtiği anda iki el birlikte açılır. Dokunmatik ekranda iki satır düğme de görünür, her oyuncu kendi satırına dokunur.</p>
+      <h3>3, 5 ve 10 elli maçlar</h3>
+      <p>Maç uzunluğunu seçtiğinde belirlenen sayıda el oynanır; beraberlikler de el sayısına dahildir. Son el bittiğinde kazanan, skorla birlikte ekranda belirir. Serbest modda ise istediğin kadar oynayabilir, istediğin an skoru sıfırlayabilirsin.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare ya da dokunma:</strong> İşaret düğmelerine tıkla veya dokun. Düğmeler 360 piksellik dar ekranlara bile sığacak şekilde yerleşir.</li>
+        <li><strong>Tek oyuncu klavye:</strong> A, S, D, F, G tuşları sırayla taş, kağıt, makas, kertenkele ve uzaylıyı seçer; 1-5 rakamları da aynı işi yapar.</li>
+        <li><strong>İki oyuncu klavye:</strong> Oyuncu 1 için A S D (F G), oyuncu 2 için J K L (I O). Tuşlar harf konumuna değil klavyedeki fiziksel yerine bağlıdır, bu yüzden Türkçe Q ve F klavyelerinde aynı çalışır.</li>
+        <li><strong>Sekme ile gezinti:</strong> Tüm seçenekler ve düğmeler Tab, ok tuşları ve boşluk ile kullanılabilir; seçili seçenekler görünür bir çerçeveyle vurgulanır.</li>
+        <li><strong>Hareket azaltma:</strong> Cihazında "hareketi azalt" ayarı açıksa sallanma animasyonu atlanır, eller anında açılır.</li>
+      </ul>
+
+      <h2>Öğrenen mod nasıl çalışıyor?</h2>
+      <p>Öğrenen bilgisayar, makine öğrenmesinin en sade hâlini kullanır: birinci derece Markov zinciri. Bilgisayar, senin her seçiminden sonra bir sonrakinin ne olduğunu sayar. Örneğin taştan sonra çoğunlukla kağıt oynuyorsan, son hamlen taş olduğunda "bu kişi büyük olasılıkla kağıt seçecek" der ve kağıdı yenen makası oynar. Bir geçiş için yeterli örnek yoksa en sık seçtiğin işarete bakar. İlk üç elde ise tamamen rastgele oynar.</p>
+      <p>Bilgisayarın hamlesi, o elde seçtiğin işaretten bağımsızdır; yalnızca geçmiş ellerine bakılarak belirlenir, yani tıklamanı önceden görmez ve hile yapmaz. Her elde yüzde on ihtimalle rastgele bir deneme de yapar, böylece tamamen öngörülebilir olmaz. Öğrenilen sayılar yalnızca bu cihazdaki tarayıcı depolamasında tutulur ve "İstatistikleri sil" ile sıfırlanır.</p>
+
+      <div class="ba-ad" data-slot="oyun-tas-kagit-makas-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <p>Oyun teorisine göre taş kağıt makasın en iyi stratejisi, her işareti üçte bir olasılıkla ve tamamen rastgele seçmektir. Böyle oynayan birine karşı hiçbir rakip uzun vadede üçte birin üstüne çıkamaz. Sorun, insanların rastgele oynamakta pek başarılı olmamasıdır. Şu eğilimler öğrenen bilgisayarın en çok yararlandığı noktalardır:</p>
+      <ul>
+        <li><strong>İlk el eğilimi:</strong> Birçok oyuncu ilk elde taş seçer. Rakibin acemi görünüyorsa ilk elde kağıt oynamak mantıklı olabilir.</li>
+        <li><strong>Kazanınca tekrarla, kaybedince değiştir:</strong> İnsanlar kazandıkları işareti sık tekrarlar, kaybedince ise bir sonrakine geçer. Bu kalıbı fark edip tersini yapabilirsin.</li>
+        <li><strong>Döngüsel kalıplar:</strong> Taş, kağıt, makas, taş gibi sırayla oynamak kolay bir kalıptır. Öğrenen mod bunu üç dört elde yakalar.</li>
+        <li><strong>Dış rastgelelik kullan:</strong> Saatteki saniye rakamının 3'e bölümünden kalanına göre oyna ya da zar at. Zihnin rastgele davranmaya çalışmasından çok daha tutarlıdır.</li>
+        <li><strong>Maç sonunda kalıbı kır:</strong> Maçın son elinde kalıbını bozmak, bilgisayarın biriktirdiği geçmişi boşa çıkarır.</li>
+      </ul>
+      <p>İki oyunculu maçlarda da aynı kurallar geçerlidir. Arkadaşının seçimlerini üç dört el boyunca içinden say; hep aynı kalıba düşüyorsa onu yenmek kolaylaşır.</p>
+
+      <h2>5'li kurallar: kertenkele ve uzaylı</h2>
+      <p>Beş işaretli varyantta her işaret iki işareti yener. Sonuç cümleleri ekranda aynen şöyle görünür:</p>
+      <ul class="tkm-rules">
+        <li>Taş makası kırar</li>
+        <li>Taş kertenkeleyi ezer</li>
+        <li>Kağıt taşı sarar</li>
+        <li>Kağıt uzaylıyı çürütür</li>
+        <li>Makas kağıdı keser</li>
+        <li>Makas kertenkeleyi doğrar</li>
+        <li>Kertenkele kağıdı kemirir</li>
+        <li>Kertenkele uzaylıyı zehirler</li>
+        <li>Uzaylı makası eritir</li>
+        <li>Uzaylı taşı buharlaştırır</li>
+      </ul>
+      <p>Bu varyant birçok kaynakta bir bilimkurgu karakterinin adıyla anılır; biz burada daha sade bir isim olan "uzaylı" diyoruz. Hiçbir işaret baskın değildir: hepsi eşit sayıda rakibi yener ve eşit sayıda rakibe yenilir. Beraberlik ihtimali beşte bire düştüğü için kararlı sonuç almak daha kolaydır; bu yüzden 5'li mod, bir kararı şansa bırakacak arkadaşlar arasında da sevilir.</p>
+
+      <h2>Taş kağıt makasın kısa tarihi</h2>
+      <p>Oyunun kökeni için tek bir kesin tarih yoktur. Anlatılanlara göre benzer el oyunları Çin'de çok eski dönemlerde oynanmış, Japonya'da "janken" adıyla yaygınlaşmış, 20. yüzyılda dünyanın dört bir yanına yayılmıştır. Bugün birçok ülkede çocuklar sıra belirlerken, yetişkinler küçük anlaşmazlıkları çözmek için bu oyunu kullanır. Bazı ülkelerde düzenli turnuvalar ve ulusal şampiyonalar bile yapılır.</p>
+      <p>Beş işaretli kertenkele varyantı ise 1990'ların sonunda, beraberlik sayısını azaltmak amacıyla tasarlanmış ve sonradan popüler kültürde yer bulduğu için tanınmıştır. Eski bir oyunun, küçük bir kural eklemesiyle yeniden hayat bulması, sade mekaniklerin gücünü gösterir.</p>
+
+      <h2>Gizlilik ve veriler</h2>
+      <p>Oyun tamamen tarayıcında çalışır; hiçbir hamle, skor ya da istatistik sunucuya gönderilmez. Kayıtlar yalnızca cihazındaki yerel depolamada durur ve sen silmek istediğinde silinir. Sayfada izleme kodu veya çerez yoktur; yalnızca sayfa sonlarındaki reklam alanları reklam sağlayıcısının kendi betiğini yükleyebilir.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Taş kağıt makasta kazanma şansı nedir?</summary><p>Rastgele oynayan bir rakibe karşı her elde üçte bir kazanma, üçte bir beraberlik ve üçte bir kaybetme şansın vardır. Ne kadar akıllı oynarsan oyna, rakip gerçekten rastgele seçiyorsa bu oranı kalıcı olarak değiştiremezsin. Öğrenen bilgisayar ise kalıp izleyen oyuncuların aleyhine çalışır.</p></details>
+      <details><summary>Öğrenen bilgisayar benim seçimimi önceden görüyor mu?</summary><p>Hayır. Bilgisayarın hamlesi yalnızca önceki ellerine bakılarak belirlenir ve o elde seçtiğin işaretten bağımsızdır. Kalıplarını yakalar ama anlık tıklamanı bilemez; bu yüzden gerçekten rastgele oynayan birini yenemez.</p></details>
+      <details><summary>Rastgele mod gerçekten rastgele mi?</summary><p>Tarayıcının sözde rastgele sayı üreteci kullanılır. Oyun için fazlasıyla yeterlidir, ancak kriptografik güvenlik gerektiren işlerde kullanılmamalıdır.</p></details>
+      <details><summary>İki oyuncu aynı klavyede nasıl oynar?</summary><p>İki oyunculu klavye modunu seç. Birinci oyuncu A, S, D tuşlarıyla taş, kağıt ve makas seçer; ikinci oyuncu J, K, L tuşlarını kullanır. Birinci oyuncunun seçimi, ikinci oyuncu seçene kadar gizli kalır, böylece kimse diğerinin hamlesini göremez.</p></details>
+      <details><summary>Skorlarım nerede saklanıyor, silebilir miyim?</summary><p>İstatistikler yalnızca tarayıcının yerel depolamasında (localStorage) tutulur, hiçbir sunucuya gönderilmez. Oyun kutusundaki "İstatistikleri sil" düğmesiyle ya da tarayıcı verilerini temizleyerek silebilirsin.</p></details>
+      <details><summary>Telefonda oynanır mı?</summary><p>Evet. Düğmeler dokunmatik ekran için büyük tutulmuştur ve 360 piksel genişliğinde bile sığar. İki oyunculu modda iki kişi aynı telefonda kendi satırındaki düğmeye dokunabilir.</p></details>
+      <details><summary>5'li modda kertenkele neye karşı kazanır?</summary><p>Kertenkele kağıdı kemirir ve uzaylıyı zehirler; taşa ve makasa yenilir. Her işaret iki işareti yener, iki işarete yenilir; tam liste yukarıdaki kurallar bölümünde.</p></details>
+      <details><summary>İnternet olmadan oynayabilir miyim?</summary><p>Evet. Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsan çevrimdışı da oynarsın.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sayi-tahmin/">Sayı Tahmin Oyunu</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a></li>
+        <li><a href="../../cekilis/">Çekiliş aracı</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-tas-kagit-makas-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Tuğla Kırma Oyna – Ücretsiz Online Tuğla Kırma (kurulumsuz)</title>
+  <meta name="description" content="Tuğla kırma oyununu tarayıcıda hemen oynayın: fare, parmak veya ok tuşlarıyla raketi sürün, 6 seviyede dayanıklı tuğlaları kırın, geniş raket ve çoklu top güçlendirmelerini toplayın. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/tugla-kirma/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .bk-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 480px; margin: 0 auto 12px; }
+    .bk-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .bk-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .bk-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; white-space: nowrap; }
+    .bk-stat.lives strong { color: var(--ba-primary); letter-spacing: .05em; }
+    .bk-buff { max-width: 480px; margin: 0 auto 8px; text-align: center; font-weight: 600; font-size: .9rem; color: var(--ba-primary); min-height: 0; }
+    .bk-stage { position: relative; width: 100%; max-width: 480px; margin: 0 auto; aspect-ratio: 4 / 5; border-radius: var(--ba-radius); overflow: hidden; background: #24272c; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; cursor: none; }
+    .bk-stage canvas { width: 100%; height: 100%; display: block; }
+    .bk-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(20, 22, 26, .84); color: #fff; cursor: auto; }
+    .bk-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .bk-overlay p { margin: 0; color: #d7d8db; max-width: 34ch; font-size: .95rem; line-height: 1.5; }
+    .bk-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bk-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .bk-overlay .ba-btn-primary { color: #1a0d10; }
+    .game-box .ba-actions { justify-content: center; }
+    .bk-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; max-width: 520px; margin: 14px auto 0; padding: 0; list-style: none; font-size: .85rem; color: var(--ba-text-2); }
+    .bk-legend li { margin: 0; display: inline-flex; align-items: center; gap: 6px; }
+    .bk-sw { width: 22px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0, 0, 0, .25); flex: none; }
+    .bk-sw.s1 { background: #c25a72; }
+    .bk-sw.s2 { background: linear-gradient(#a9adb4 0 44%, #4a4d52 44% 56%, #a9adb4 56%); }
+    .bk-sw.s3 { background: linear-gradient(#e6e4e1 0 30%, #4a4d52 30% 38%, #e6e4e1 38% 62%, #4a4d52 62% 70%, #e6e4e1 70%); }
+    .bk-sw.cap { width: 30px; height: 14px; border-radius: 7px; background: #7b2331; color: #fff; font-size: 9px; font-weight: 700; display: inline-grid; place-items: center; border-color: #e8a0b3; }
+    .bk-hint { max-width: 520px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .bk-stage { max-width: min(100%, max(200px, calc((100vh - 300px) * .8))); }
+    /* Oyun sayfasında kahraman alanı sıkıştırılır: oyun ilk ekranda görünsün. */
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Tuğla Kırma – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz tuğla kırma oyunu: 6 seviye, dayanıklı tuğlalar, geniş raket ve çoklu top güçlendirmeleri, en yüksek skor.","applicationCategory":"Game","genre":"Arcade","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/tugla-kirma/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Tuğla kırma oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Raketi fare, parmak veya ok tuşlarıyla sağa sola kaydırıp topu düşürmeden tuğlalara çarptırırsınız. Boşluk tuşu ya da dokunuş topu fırlatır. Seviyedeki tüm tuğlalar kırılınca bir sonraki seviyeye geçilir."}},
+  {"@type":"Question","name":"Top raketten hangi açıyla geri döner?","acceptedAnswer":{"@type":"Answer","text":"Açı, topun raketin neresine değdiğine bağlıdır. Orta bölge topu dik yukarı gönderir, uçlara doğru gidildikçe geniş açılı sekme elde edilir. Böylece topu istediğiniz tarafa yönlendirebilirsiniz."}},
+  {"@type":"Question","name":"Gri ve çizgili tuğlalar ne anlama geliyor?","acceptedAnswer":{"@type":"Answer","text":"Dayanıklı tuğlalardır. Pembe tuğla tek vuruşta kırılır, tek çizgili gri tuğla iki, çift çizgili açık gri tuğla üç vuruş ister. Her vuruşta rengi bir kademe açılır."}},
+  {"@type":"Question","name":"Güçlendirmeler nelerdir, nasıl kazanılır?","acceptedAnswer":{"@type":"Answer","text":"Bazı tuğlalar kırılınca G veya ×3 yazılı bir kapsül düşer. G, raketi 15 saniye boyunca genişletir; ×3 ise topu üçe böler. Kapsülü raketinizle yakalamanız gerekir."}},
+  {"@type":"Question","name":"Kaç canım var, can nasıl kaybedilir?","acceptedAnswer":{"@type":"Answer","text":"3 canla başlarsınız. Ekrandaki tüm toplar raketin altından düşerse bir can kaybedilir; canlar bitince oyun sona erer."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın yerel depolama alanında (localStorage). Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz sıfırlanır."}},
+  {"@type":"Question","name":"Telefonda nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanında parmağınızı sağa sola sürükleyerek raketi hareket ettirin; kısa bir dokunuş topu fırlatır. Parmağınız raketin üzerine gelmediği için raketi görmeye devam edersiniz."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, çevrimdışı çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt veya indirme gerekmez. Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Tuğla Kırma Oyna – Ücretsiz Online Tuğla Kırma</h1>
+      <p class="lead">Raketi fareyle, parmağınızla ya da ok tuşlarıyla sürün, topu düşürmeden tüm tuğlaları kırın. Altı farklı seviye, dayanıklı tuğlalar, geniş raket ve çoklu top güçlendirmeleri sizi bekliyor; kurulum, üyelik ve indirme yok, en yüksek skorunuz bu cihazda saklanır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Tuğla kırma oyun alanı</h2>
+      <div class="bk-hud" aria-label="Oyun bilgileri">
+        <div class="bk-stat"><span>Skor</span><strong id="score">0</strong></div>
+        <div class="bk-stat"><span>En yüksek</span><strong id="best">0</strong></div>
+        <div class="bk-stat"><span>Seviye</span><strong id="level">1/6</strong></div>
+        <div class="bk-stat lives" aria-label="Kalan can: 3"><span>Can</span><strong id="lives">♥♥♥</strong></div>
+      </div>
+      <p class="bk-buff" id="buff" hidden></p>
+
+      <div class="bk-stage" id="stage" tabindex="0" role="group" aria-label="Tuğla kırma oyun alanı. Raket için sol ve sağ ok tuşları, fare ya da parmak sürükleme; topu fırlatmak için Boşluk veya yukarı ok; duraklatmak için P.">
+        <canvas id="board" width="480" height="600" role="img" aria-label="Raket, top ve tuğlalardan oluşan oyun alanı"></canvas>
+        <div class="bk-overlay" id="overlay">
+          <h3 id="overlay-title">Tuğla Kırma</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+
+      <ul class="bk-legend" aria-label="Tuğla ve güçlendirme anahtarı">
+        <li><span class="bk-sw s1" aria-hidden="true"></span>Tek vuruş</li>
+        <li><span class="bk-sw s2" aria-hidden="true"></span>İki vuruş</li>
+        <li><span class="bk-sw s3" aria-hidden="true"></span>Üç vuruş</li>
+        <li><span class="bk-sw cap" aria-hidden="true">G</span>Geniş raket</li>
+        <li><span class="bk-sw cap" aria-hidden="true">×3</span>Çoklu top</li>
+      </ul>
+      <p class="bk-hint">Raket: fare, parmakla sürükleme ya da ← → (A D). Fırlat: Boşluk, ↑ veya dokunuş. Duraklat: P veya Boşluk. En yüksek skor yalnızca bu tarayıcıda saklanır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-tugla-kirma-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Tuğla kırma oyunu nedir?</h2>
+      <p>Tuğla kırma, ekranın altındaki bir raketi yatay olarak hareket ettirip sekip duran bir topu tuğla duvarına doğru yönlendirdiğiniz klasik bir arcade oyunudur. Top bir tuğlaya çarpınca tuğla hasar alır ya da kırılır; tüm tuğlalar yok olunca seviye tamamlanır. Topu raketle karşılayamazsanız ve alt kenardan düşerse can kaybedersiniz. Üç can bittiğinde oyun sona erer. Kuralları bir dakikada öğrenilir, ama topun açısını ve tuğla dizilimini okumak zaman ister; bu yüzden hem kısa molalar hem de uzun skor avcılığı için uygundur.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Hiçbir şey indirmeniz, hesap açmanız ya da e-posta vermeniz gerekmez. Skorunuz yalnızca tarayıcınızın yerel depolama alanında tutulur; sunucumuza hiçbir bilgi gönderilmez. Oyun alanı reklamsızdır; reklamlar yalnızca sayfa içeriğinin aralarında yer alır.</p>
+
+      <h2>Tuğla kırma nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlat'a basın.</strong> Raket oyun alanının altında, top ise raketin üzerinde bekler. Bu aşamada raketi istediğiniz yere götürebilirsiniz.</li>
+        <li><strong>Topu fırlatın.</strong> Boşluk ya da yukarı ok tuşuna basın ya da oyun alanına kısaca dokunun. Top, tuğlalara doğru hafif eğik bir açıyla çıkar.</li>
+        <li><strong>Raketi topun altında tutun.</strong> Top aşağı indiğinde raketle karşılayın. Topun raketin neresine değdiği, geri dönüş açısını belirler.</li>
+        <li><strong>Tuğlaları kırın.</strong> Dayanıklı tuğlalar birkaç vuruş ister; her vuruşta rengi bir kademe açılır. Kırılan tuğlalardan bazen güçlendirme kapsülü düşer.</li>
+        <li><strong>Seviyeyi bitirin.</strong> Son tuğla kırılınca bonus puan kazanır ve bir sonraki seviyeye geçersiniz. Altı seviyeyi de bitirirseniz oyunu kazanırsınız.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> İmleci oyun alanında sağa sola götürün; raket imleci takip eder. Tıklamak topu fırlatır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızı oyun alanında sağa sola sürükleyin. Raket, parmağınızın hareketi kadar kayar; böylece parmak raketin üzerini kapatmaz. Kısa bir dokunuş topu fırlatır.</li>
+        <li><strong>Klavye:</strong> Sol ve sağ ok tuşları (ya da A ve D) raketi sürekli hareket ettirir. Boşluk ya da yukarı ok tuşu topu fırlatır; oyun sırasında Boşluk ya da P oyunu duraklatır.</li>
+        <li><strong>Düğmeler:</strong> Başlat, Duraklat, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır.</li>
+      </ul>
+
+      <h2>Tuğla türleri ve seviyeler</h2>
+      <p>Pembe tuğlalar tek vuruşta kırılır. Tek çizgili gri tuğla iki, çift çizgili açık gri tuğla üç vuruş ister. Her vuruşta tuğlanın rengi ve çizgi sayısı azalır, böylece hangi tuğlanın kırılmaya yakın olduğunu kolayca görürsünüz. Dayanıklılık yalnızca renkle değil çizgi sayısıyla da gösterildiği için renkleri ayırt etmekte zorlansanız bile oyunu rahatça oynayabilirsiniz.</p>
+      <p>Oyunda altı seviye vardır: Düz sıra, Dama, Piramit, Koridorlar, Kale ve Kalp. İlk seviye yalnızca ısınma içindir; sonrasında dayanıklı tuğlalar ve boşluklu dizilimler devreye girer. Koridorlar seviyesinde tuğla sütunları arasında dar boşluklar vardır ve top bu boşluklardan geçip tuğlaların arkasında seker; Kale seviyesi ise merkezdeki üç vuruşluk tuğlalarla sabır ister. Seviye ilerledikçe topun temel hızı artar, ayrıca bir seviye içinde tuğlalar azaldıkça top biraz daha hızlanır.</p>
+
+      <h2>Güçlendirmeler</h2>
+      <p>Kırılan tuğlaların bir kısmı, aşağı doğru süzülen bir kapsül bırakır. Kapsülü raketinizle yakalarsanız etkisi başlar; kaçırırsanız kapsül alt kenardan kaybolur ve can kaybetmezsiniz.</p>
+      <ul>
+        <li><strong>G (geniş raket):</strong> Raket 15 saniye boyunca belirgin biçimde genişler. Süre ekranda "Geniş raket" satırında geri sayılır; yeni bir G kapsülü süreyi yeniler.</li>
+        <li><strong>×3 (çoklu top):</strong> Top üçe bölünür ve toplar farklı açılarla yayılır. Aynı anda en fazla altı top bulunabilir. Can kaybetmek için tüm topların düşmesi gerekir, bu yüzden çoklu top riski azaltır.</li>
+      </ul>
+
+      <h2>Puanlama, can ve en yüksek skor</h2>
+      <p>Bir tuğlayı kırdığınızda başlangıçtaki dayanıklılığının on katı puan alırsınız: tek vuruşluk tuğla 10, iki vuruşluk 20, üç vuruşluk 30 puandır. Kırmadan hasar verdiğiniz her vuruş 5 puandır. Çoklu top kapsülü 20 puan ekler. Her seviyenin sonunda seviye numarasının yüz katı kadar bonus verilir; örneğin üçüncü seviyeyi bitirmek 300 bonus puandır.</p>
+      <p>Oyuna üç canla başlarsınız. En yüksek skorunuz tarayıcınızın localStorage alanına yazılır; başka bir cihaza ya da tarayıcıya taşınmaz ve tarayıcı verilerini temizlediğinizde silinir.</p>
+
+      <div class="ba-ad" data-slot="oyun-tugla-kirma-b" aria-label="Reklam"></div>
+
+      <h2>Tuğla kırmada strateji ipuçları</h2>
+      <ul>
+        <li><strong>Açıyı raketle yönetin.</strong> Topu raketin ortasıyla karşılarsanız dik yukarı gider; uca yaklaştıkça açı genişler. Hedef tuğlaya doğru gitmesi için topu raketin yanıyla karşılayın.</li>
+        <li><strong>Köşelerden tüneller açın.</strong> Topu bir yan kenardaki tuğla sütununa gönderip tuğlaların arkasına geçirmek, toplu ve hızlı puan getirir. Top arkada seker, siz beklersiniz.</li>
+        <li><strong>Raketi ortaya yakın tutun.</strong> Top sizden uzağa giderken raketi ekranın ortasına yaklaştırın; hangi yöne dönerse dönsün erken ulaşırsınız.</li>
+        <li><strong>Dayanıklı tuğlaları sona bırakmayın.</strong> Üç vuruşluk tuğlalar seviye sonunda tek başına kalırsa uzun sürer. Aynı bölgeye art arda çarpıp erken kırmak daha verimlidir.</li>
+        <li><strong>Güçlendirmeleri riske atmayın.</strong> Kapsülü yakalamak için raketi uzağa götürürken top size doğru geliyorsa önce topu karşılayın; kapsül yavaş düşer, genellikle yetişirsiniz.</li>
+        <li><strong>Çoklu topta tek bir topu izlemeyin.</strong> Tüm topları gözünüzün ucuyla takip edin ve en alçaktakini karşılayın. Alttaki top düşerse diğerleri oyunda kalır.</li>
+        <li><strong>Mola verin.</strong> Dikkatiniz dağıldığında P tuşuyla duraklatın; oyun sekme arka plana alındığında da kendiliğinden durur.</li>
+      </ul>
+
+      <h2>Tuğla kırma oyununun kısa tarihi</h2>
+      <p>Tuğla kırma türünün ilk örneği 1976 yılında bir arcade makinesi olarak ortaya çıktı. Oyun, masa tenisini andıran ilk elektronik oyunlardan esinlenmişti; fark, rakip yerine kırılabilir bir duvar koymasıydı. Sonraki yıllarda ev bilgisayarları ve oyun konsolları için sayısız sürümü yapıldı, kapsül düşüren güçlendirmeler ve renkli seviyeler türün vazgeçilmezi oldu. Bugün hâlâ yeni oyunlarda aynı temel fikri görmek mümkün: bir raket, bir top ve kırılacak bir duvar.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı; hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor. Oyun alanı sabit bir ölçekte hesaplanır ve ekrana sığacak biçimde çizilir; bu sayede telefonda da bilgisayarda da aynı fizik geçerlidir.</p>
+
+      <h2>Neden Bilişim Ajans tuğla kırma oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın.</li>
+        <li><strong>Fare, klavye ve dokunmatik.</strong> 360 piksel genişliğindeki telefonlarda da sığar; sürükleme göreceli çalıştığı için parmağınız raketi kapatmaz.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun alanının ve düğmelerin yanında görünmez. Tam ekran modunda hiçbir reklam görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca rekorunuz kendi cihazınızda saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Tuğla kırma oyunu nasıl oynanır?</summary><p>Raketi fare, parmak ya da ok tuşlarıyla sağa sola kaydırıp topu düşürmeden tuğlalara çarptırırsınız. Boşluk tuşu ya da dokunuş topu fırlatır. Seviyedeki tüm tuğlalar kırılınca bir sonraki seviyeye geçilir.</p></details>
+        <details><summary>Top raketten hangi açıyla geri döner?</summary><p>Açı, topun raketin neresine değdiğine bağlıdır. Orta bölge topu dik yukarı gönderir, uçlara doğru gidildikçe geniş açılı sekme elde edilir. Böylece topu istediğiniz tarafa yönlendirebilirsiniz.</p></details>
+        <details><summary>Gri ve çizgili tuğlalar ne anlama geliyor?</summary><p>Dayanıklı tuğlalardır. Pembe tuğla tek vuruşta kırılır, tek çizgili gri tuğla iki, çift çizgili açık gri tuğla üç vuruş ister. Her vuruşta rengi bir kademe açılır.</p></details>
+        <details><summary>Güçlendirmeler nelerdir, nasıl kazanılır?</summary><p>Bazı tuğlalar kırılınca G veya ×3 yazılı bir kapsül düşer. G, raketi 15 saniye boyunca genişletir; ×3 ise topu üçe böler. Kapsülü raketinizle yakalamanız gerekir.</p></details>
+        <details><summary>Kaç canım var, can nasıl kaybedilir?</summary><p>3 canla başlarsınız. Ekrandaki tüm toplar raketin altından düşerse bir can kaybedilir; canlar bitince oyun sona erer. Can kaybedince top yeniden raketin üzerinde bekler ve siz hazır olduğunuzda fırlatırsınız.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor, silinir mi?</summary><p>Tarayıcınızın yerel depolama alanında (localStorage) saklanır. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız skor kalıcı olmaz.</p></details>
+        <details><summary>Telefonda nasıl oynarım?</summary><p>Oyun alanında parmağınızı sağa sola sürükleyerek raketi hareket ettirin; kısa bir dokunuş topu fırlatır. Raket parmağınızla birebir değil, parmağın kaydığı mesafe kadar hareket eder; böylece raketi görmeye devam edersiniz.</p></details>
+        <details><summary>Oyunu nasıl duraklatırım?</summary><p>P tuşuna ya da Duraklat düğmesine basın; top fırlatıldıktan sonra Boşluk da oyunu duraklatır. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar.</p></details>
+        <details><summary>Oyun ücretsiz mi, çevrimdışı çalışır mı?</summary><p>Tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra internet bağlantısı olmadan da oynanabilir; siteyi uygulama olarak kurmak da mümkündür.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Skorunuz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../blok-dusurme/">Blok Düşürme</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-tugla-kirma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

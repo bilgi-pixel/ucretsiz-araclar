@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Renk Eşleştirme Oyna – Ücretsiz Online Renk Eşleştirme (kurulumsuz)</title>
+  <meta name="description" content="Renk Eşleştirme (Stroop) oyununu tarayıcınızda ücretsiz oynayın: yazının rengini ya da kelimenin anlamını hızla seçin, 30 veya 60 saniyede doğruluğunuzu ölçün, 'farklı tonu bul' moduyla gözünüzü sınayın. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/renk-eslestir/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 48px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .rk-wrap { max-width: 640px; margin: 0 auto; }
+    .rk-set { border: 0; margin: 0 0 12px; padding: 0; min-width: 0; }
+    .rk-set legend { font-weight: 600; font-size: .9rem; margin: 0 0 6px; padding: 0; color: var(--ba-text); }
+    .rk-seg { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rk-seg label { position: relative; flex: 1 1 auto; display: block; }
+    .rk-seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .rk-seg span { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 44px; padding: 8px 14px; border: 2px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); font-weight: 600; font-size: .92rem; }
+    .rk-seg input:checked + span { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .rk-seg input:focus-visible + span { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .rk-seg input:disabled { cursor: not-allowed; }
+    .rk-seg input:disabled + span { opacity: .6; }
+    .rk-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 8px 0 6px; }
+    @media (min-width: 520px) { .rk-stats { grid-template-columns: repeat(4, 1fr); } }
+    .rk-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; text-align: center; }
+    .rk-stats span { display: block; font-size: .74rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .08em; text-transform: uppercase; }
+    .rk-stats strong { font-size: 1.25rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .rk-best { margin: 0 0 10px; font-size: .92rem; color: var(--ba-text-2); text-align: center; }
+    .rk-task { margin: 6px 0; min-height: 1.7em; text-align: center; font-weight: 600; color: var(--ba-text); }
+    .rk-stage { position: relative; display: grid; place-items: center; min-height: 170px; padding: 16px 12px 22px; background: #1b1d21; border: 4px solid #1b1d21; border-radius: var(--ba-radius-lg); overflow: hidden; transition: border-color .12s; }
+    .rk-stage.is-ok { border-color: #3fdc7e; }
+    .rk-stage.is-bad { border-color: #ff5a5a; }
+    .rk-word { margin: 0; font-size: clamp(2.2rem, 11vw, 4.2rem); font-weight: 700; letter-spacing: .02em; line-height: 1.1; text-align: center; overflow-wrap: anywhere; }
+    .rk-word.is-msg { font-size: clamp(1.15rem, 5vw, 1.6rem); font-weight: 600; letter-spacing: 0; color: #f1f1f2; }
+    .rk-timebar { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: #34373d; }
+    .rk-timebar i { display: block; height: 100%; width: 100%; background: #7fd3f5; }
+    .rk-grid { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 6px; width: 100%; max-width: 400px; }
+    .rk-cell { aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 8px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .rk-cell:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+    .rk-answers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+    .rk-answers[data-n="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rk-ans { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; padding: 6px 8px; font: inherit; font-weight: 700; font-size: 1.02rem; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .rk-ans:hover:not(:disabled) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .rk-ans:active:not(:disabled) { transform: translateY(1px); }
+    .rk-ans:disabled { opacity: .55; cursor: not-allowed; }
+    @media (max-width: 420px) { .rk-ans { font-size: .92rem; padding: 4px; } .rk-ans kbd { display: none; } }
+    .rk-ans kbd { font-family: var(--ba-mono); font-size: .74rem; font-weight: 400; color: var(--ba-text-2); background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 4px; padding: 1px 6px; }
+    .rk-controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 10px; }
+    .rk-controls .ba-btn { flex: 1 1 140px; }
+    .rk-controls #rk-start { flex: 2 1 200px; }
+    .rk-hint { margin: 0; font-size: .85rem; color: var(--ba-text-muted); text-align: center; }
+    .rk-result { margin-top: 14px; }
+    .rk-result dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; margin: 10px 0 0; }
+    .rk-result dt { font-size: .85rem; color: var(--ba-text-2); }
+    .rk-result dd { margin: 0 0 6px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .rk-badge-new { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--ba-primary); color: #fff; font-size: .78rem; font-weight: 600; }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .rk-stage { transition: none; } .rk-ans:active:not(:disabled) { transform: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Renk Eşleştirme – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Stroop tarzı refleks oyunu: yazının rengini veya kelimenin anlamını seç, 2-4-6 renk zorluğu, 30/60 saniye ve 'farklı tonu bul' modu.","applicationCategory":"Game","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":"SinglePlayer","genre":"Refleks","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/renk-eslestir/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Renk Eşleştirme oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun türünü, süreyi ve zorluğu seçip Başla'ya basın. Ekranda bir renk adı başka bir renkle yazılır; seçtiğiniz türe göre ya yazının rengini ya da kelimenin anlamını gösteren düğmeye basarsınız. Süre dolana kadar mümkün olduğunca çok doğru cevap vermeye çalışırsınız."}},
+  {"@type":"Question","name":"Yazının rengi ile kelimenin anlamı modu arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Yazının rengi modunda kelimeyi okumayı bastırıp harflerin boyandığı rengi seçersiniz. Kelimenin anlamı modunda ise rengi görmezden gelip yazan kelimeyi seçersiniz. Her iki modda da ekrandaki öbür bilgi dikkat dağıtıcıdır."}},
+  {"@type":"Question","name":"Stroop etkisi nedir?","acceptedAnswer":{"@type":"Answer","text":"Bir kelimenin anlamı ile yazıldığı renk çeliştiğinde rengi söylemenin yavaşlamasıdır. John Ridley Stroop 1935'te yayımladığı çalışmayla bu etkiyi tanıtmıştır. Oyun bu etkiyi eğlenceli bir refleks denemesine dönüştürür."}},
+  {"@type":"Question","name":"Puan nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Her doğru cevap 10 puandır; iki saniyeden hızlı cevaplarda en fazla 10 puan hız bonusu eklenir. Her beş doğru cevapta 10 puan seri bonusu verilir. Yanlış cevap 5 puan düşürür ve seriyi sıfırlar; puan sıfırın altına inmez."}},
+  {"@type":"Question","name":"Klavyeyle oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. 1'den 6'ya kadar tuşlar soldan sağa renk düğmelerine karşılık gelir. Boşluk veya Enter oyunu başlatır, P tuşu duraklatır. Farklı tonu bul modunda ok tuşlarıyla kareler arasında gezinir, Enter veya Boşluk ile seçersiniz."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanır?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca kendi tarayıcınızın localStorage alanında, oyun türü, süre ve zorluk birleşimi başına ayrı ayrı. Hiçbir sunucuya gönderilmez; tarayıcı verilerini silerseniz kayıt da silinir."}},
+  {"@type":"Question","name":"Renk görme güçlüğüm varsa oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Renk adı düğmeleri yazıyla gösterildiği için kelimenin anlamı modu renk algısından bağımsız oynanabilir. Yazının rengi ve farklı tonu bul modları renk ayrımı gerektirir; bu yüzden kırmızı ile mavi gibi ayrışan renklerin olduğu Kolay zorlukla başlamanız önerilir."}},
+  {"@type":"Question","name":"Telefonda çalışır mı, internet gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, düğmeler ve kareler 360 piksel genişlikteki telefonlarda bile rahat dokunulacak boyuttadır. Sayfa bir kez yüklendikten sonra oyun için internet gerekmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Renk Eşleştirme</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Ekranda bir renk adı, başka bir renkle yazılır. Siz yazının rengini ya da kelimenin anlamını bulursunuz; hem de olabildiğince hızlı. 30 veya 60 saniyede doğruluğunuzu ve tepki sürenizi ölçün, ek modda ızgaradaki tek farklı tonu yakalayın. Kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Renk Eşleştirme oyunu</h2>
+      <div class="rk-wrap">
+        <fieldset class="rk-set" id="rk-set-mode">
+          <legend>Oyun türü</legend>
+          <div class="rk-seg">
+            <label><input type="radio" name="rk-mode" value="renk" checked><span>Yazının rengi</span></label>
+            <label><input type="radio" name="rk-mode" value="anlam"><span>Kelimenin anlamı</span></label>
+            <label><input type="radio" name="rk-mode" value="ton"><span>Farklı tonu bul</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="rk-set" id="rk-set-duration">
+          <legend>Süre</legend>
+          <div class="rk-seg">
+            <label><input type="radio" name="rk-duration" value="30" checked><span>30 sn</span></label>
+            <label><input type="radio" name="rk-duration" value="60"><span>60 sn</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="rk-set" id="rk-set-diff">
+          <legend>Zorluk</legend>
+          <div class="rk-seg">
+            <label><input type="radio" name="rk-diff" value="kolay"><span>Kolay (2 renk)</span></label>
+            <label><input type="radio" name="rk-diff" value="orta" checked><span>Orta (4 renk)</span></label>
+            <label><input type="radio" name="rk-diff" value="zor"><span>Zor (6 renk)</span></label>
+          </div>
+        </fieldset>
+
+        <div class="rk-stats" role="group" aria-label="Oyun durumu">
+          <div><span>Süre</span><strong id="rk-time">30</strong></div>
+          <div><span>Skor</span><strong id="rk-score">0</strong></div>
+          <div><span>Doğruluk</span><strong id="rk-acc">–</strong></div>
+          <div><span>Ort. tepki</span><strong id="rk-rt">–</strong></div>
+        </div>
+        <p class="rk-best" id="rk-best">En yüksek skor (bu ayar): henüz yok</p>
+
+        <p class="rk-task" id="rk-task">Yazının RENGİ hangisi?</p>
+        <div class="rk-stage" id="rk-stage">
+          <p class="rk-word is-msg" id="rk-word">Başla düğmesine basın</p>
+          <div class="rk-grid" id="rk-grid" role="group" aria-label="Kareler. Ok tuşlarıyla gezinin, tek farklı kareyi Enter ile seçin." hidden></div>
+          <div class="rk-timebar" aria-hidden="true"><i id="rk-bar"></i></div>
+        </div>
+        <div class="rk-answers" id="rk-answers" role="group" aria-label="Renk seçenekleri" data-n="4"></div>
+
+        <div class="rk-controls">
+          <button class="ba-btn ba-btn-primary" id="rk-start" type="button">Başla</button>
+          <button class="ba-btn" id="rk-pause" type="button" disabled>Duraklat</button>
+          <button class="ba-btn" id="rk-full" type="button" hidden>Tam ekran</button>
+        </div>
+        <p class="rk-hint">Klavye: 1–6 renk düğmeleri · Boşluk veya Enter başlatır · P duraklatır · Ton modunda ok tuşları + Enter</p>
+        <p class="visually-hidden" id="rk-live" role="status" aria-live="polite"></p>
+
+        <div class="ba-result rk-result" id="rk-result">
+          <h3 id="rk-result-title">Süre doldu!</h3>
+          <p id="rk-result-text"></p>
+          <dl>
+            <dt>Skor</dt><dd id="rk-r-score">0</dd>
+            <dt>Doğru / yanlış</dt><dd id="rk-r-count">0 / 0</dd>
+            <dt>Doğruluk</dt><dd id="rk-r-acc">–</dd>
+            <dt>Ortalama tepki</dt><dd id="rk-r-rt">–</dd>
+            <dt>En yüksek skor (bu ayar)</dt><dd id="rk-r-best">0</dd>
+            <dt id="rk-r-extra-t">En uzun seri</dt><dd id="rk-r-extra">0</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-renk-eslestir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Renk Eşleştirme oyunu nedir?</h2>
+      <p>Renk Eşleştirme, ekranda beliren kelimenin yazıldığı renk ile anlamının çeliştiği durumlarda doğru yanıtı olabildiğince hızlı seçmeye dayanan bir refleks oyunudur. Örneğin ekranda kırmızı renkle yazılmış "MAVİ" kelimesini görürsünüz. Oyun türüne göre ya yazının rengini (kırmızı) ya da kelimenin anlamını (mavi) bulmanız gerekir. Okumak beynimizin neredeyse otomatik yaptığı bir iştir; bu yüzden iki bilgi birbiriyle çatışır, cevap biraz gecikir ve hata yapma ihtimali artar. Psikolojide bu çatışma Stroop etkisi diye bilinir ve oyunun kalbi tam olarak burada atar.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Oyun 30 ya da 60 saniye sürer; bitince puanınız, doğruluk oranınız ve ortalama tepki süreniz bir sonuç kartında görünür. Dilerseniz 2, 4 ya da 6 renkle oynayabilir, dilerseniz ızgaradaki tek farklı kareyi bulmaya dayanan "Farklı tonu bul" moduna geçebilirsiniz. Kurulum, üyelik ya da dosya indirme gerekmez; skorlarınız yalnızca kendi cihazınızda saklanır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Oyun türünü seçin.</strong> "Yazının rengi" modunda boyanmış rengi, "Kelimenin anlamı" modunda yazan kelimeyi bulursunuz. "Farklı tonu bul" modunda ise ızgaradaki rengi diğerlerinden azıcık ayrışan kareyi seçersiniz.</li>
+        <li><strong>Süreyi ve zorluğu belirleyin.</strong> 30 veya 60 saniye arasında seçim yapın. Kolay zorlukta iki, Orta zorlukta dört, Zor zorlukta altı renk kullanılır; renk sayısı arttıkça seçenekler çoğalır ve seçmek yavaşlar.</li>
+        <li><strong>Başla'ya basın.</strong> Geri sayım yoktur; süre ilk kelime göründüğü anda akmaya başlar. İsterseniz P tuşu ya da Duraklat düğmesiyle oyunu durdurabilirsiniz; durdurulan oyunda kelime gizlenir.</li>
+        <li><strong>Doğru düğmeye basın.</strong> Düğmeye tıklayın, dokunun ya da 1'den 6'ya kadar tuşları kullanın. Doğru cevapta çerçeve yeşil, yanlış cevapta kırmızı yanar ve hemen yeni kelime gelir.</li>
+        <li><strong>Sonucu inceleyin.</strong> Süre dolunca skorunuz, doğru ve yanlış sayınız, doğruluk yüzdeniz ve ortalama tepki süreniz görünür. Skor o ayardaki en yüksekten büyükse "Yeni rekor" etiketi çıkar ve değer tarayıcınıza kaydedilir.</li>
+      </ol>
+
+      <h2>Oyun türleri</h2>
+      <h3>Yazının rengi</h3>
+      <p>Bu mod klasik Stroop deneyine en yakın olanıdır. Kelimeyi okumak zorunda değilsiniz, hatta okumamak işinizi kolaylaştırır; yalnızca harflerin hangi renkte boyandığına bakıp aynı adı taşıyan düğmeye basarsınız. Çoğu zaman kelime ile renk farklıdır, ara sıra aynı olur ve bu da dikkatinizi canlı tutar.</p>
+      <h3>Kelimenin anlamı</h3>
+      <p>Bu kez tersini yaparsınız: rengi yok sayıp yazan kelimeyi seçersiniz. Okumak doğal olduğu için bu mod çoğu kişiye daha kolay gelir, ama renk dikkatinizi çaldığında yine yavaşlarsınız. İki modu arka arkaya oynayıp aradaki farkı kendiniz gözlemleyebilirsiniz.</p>
+      <h3>Farklı tonu bul</h3>
+      <p>Izgarada tüm kareler aynı renktedir; yalnızca biri biraz daha açık ya da koyudur. Doğru kareyi bulunca seviye yükselir, ızgara büyür (2×2'den 7×7'ye kadar) ve renk farkı küçülür. Bu mod renk algınızı, dikkatinizi ve sabrınızı sınar; zorluk ayarı başlangıçtaki farkı ve farkın küçülme hızını belirler.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> renk düğmelerine veya karelere tıklayın ya da dokunun.</li>
+        <li><strong>1–6 tuşları:</strong> renk düğmelerini soldan sağa, yukarıdan aşağıya seçer; her düğmenin üzerinde kendi numarası yazar.</li>
+        <li><strong>Boşluk veya Enter:</strong> oyunu başlatır ve oyun bitince yeniden başlatır.</li>
+        <li><strong>P:</strong> oyunu duraklatır ve devam ettirir. Sekmeyi değiştirdiğinizde oyun kendiliğinden duraklar.</li>
+        <li><strong>Ok tuşları ve Enter:</strong> Farklı tonu bul modunda kareler arasında gezinir ve seçimi yapar.</li>
+      </ul>
+
+      <h2>Puanlama</h2>
+      <p>Renk modlarında her doğru cevap 10 puandır. Cevabınız iki saniyeden kısa sürdüyse, ne kadar hızlıysanız o kadar, en fazla 10 puan hız bonusu eklenir. Üst üste her beş doğru cevapta 10 puanlık seri bonusu alırsınız. Yanlış cevap 5 puan düşürür ve seriyi sıfırlar; puan hiçbir zaman sıfırın altına inmez. Farklı tonu bul modunda doğru cevap 10 puan, dört saniyeden hızlı bulduysanız hız bonusu ve her iki seviyede bir ek puan getirir. Yanlış kareye basmak yine 5 puan götürür ve seviyeyi değiştirmez.</p>
+      <p>En yüksek skor; oyun türü, süre ve zorluk birleşimi için ayrı tutulur. Böylece 30 saniyelik kolay oyunun rekoru ile 60 saniyelik zor oyunun rekoru birbirine karışmaz.</p>
+
+      <div class="ba-ad" data-slot="oyun-renk-eslestir-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce doğruluk, sonra hız.</strong> Yanlış cevap puan düşürdüğü için ölçüsüz acele etmek skorunuzu artırmaz. Önce doğruluğunuzu yüzde doksanın üzerine çıkarın, sonra hızlanın.</li>
+        <li><strong>Gözünüzü kelimenin ortasına sabitleyin.</strong> Bakışınızı düğmelerle kelime arasında gezdirmek zaman kaybettirir. Düğmelerin yerini ezberleyip 1–6 tuşlarıyla oynarsanız ellerinizi ve gözlerinizi serbest bırakırsınız.</li>
+        <li><strong>Yazının rengi modunda okumayın, boyayı görün.</strong> Harfleri değil, dolgunun rengini algılamaya çalışın. Gözleri hafifçe odaktan çıkarmak ya da kelimeyi bulanık görmek bazı oyunculara yardımcı olur.</li>
+        <li><strong>Kelimenin anlamı modunda rengi yok sayın.</strong> Burada tersine, kelimenin okunuşuna odaklanın. Renk dikkatinizi çaldığında bir an durup kelimeyi yeniden okuyun.</li>
+        <li><strong>Farklı tonu bulurken ızgarayı bütün olarak tarayın.</strong> Tek tek karelere bakmak yerine ızgaranın tamamına yumuşak bir bakış atın; farklı kare çoğu zaman kenarda bir "parıltı" gibi öne çıkar. Ekran parlaklığını sabit tutmak ve yansımasız bir açıda oturmak işinizi kolaylaştırır.</li>
+        <li><strong>Kısa oyunlarla ısının, ara verin.</strong> Dikkat yorulur. 30 saniyelik birkaç turdan sonra bir mola vermek, 60 saniyelik oyunlarda daha tutarlı sonuç almanızı sağlar.</li>
+      </ul>
+
+      <h2>Stroop etkisinin kısa tarihi</h2>
+      <p>Oyunun dayandığı etki, adını Amerikalı psikolog John Ridley Stroop'tan alır. Stroop, 1935'te yayımladığı çalışmasında katılımcılara renk adlarının farklı renkli mürekkeple basıldığı kartlar gösterdi ve mürekkep rengini söylemenin, aynı renkte basılmış basit bir şekli adlandırmaya göre belirgin biçimde yavaş olduğunu ortaya koydu. Bu bulgu, o günden bugüne dikkat, otomatik süreçler ve bilişsel kontrol üzerine yapılan sayısız araştırmada ölçüm yöntemi olarak kullanıldı.</p>
+      <p>Bu sayfadaki oyun, söz konusu etkiyi eğlenceli bir refleks denemesine çevirir. Bilimsel bir ölçüm aracı, psikolojik test ya da tanı yöntemi değildir; sonuçlarınız yalnızca kendinizi eğlenceli biçimde denemeniz içindir. Dikkatinizle ilgili bir kaygınız varsa bir sağlık uzmanına danışın.</p>
+
+      <h2>Renk algısı ve erişilebilirlik</h2>
+      <p>Oyunun bir bölümü renk ayrımına dayanır. Renk adı düğmeleri yazıyla gösterildiği için "Kelimenin anlamı" modu renk algısından bağımsız oynanabilir. "Yazının rengi" ve "Farklı tonu bul" modları ise renkleri ayırt etmeyi gerektirir; renk görme biçiminiz farklıysa Kolay zorlukta iki belirgin renkle (kırmızı ve mavi) başlamak makul bir yoldur. Düğmelerin tamamı klavyeyle kullanılabilir, kontrastlar okunabilir düzeydedir ve oyun 360 piksel genişlikteki telefonlara sığar. Ekran okuyucu kullananlar için her kelimenin rengi ve anlamı okunabilir bir etiket olarak sunulur.</p>
+
+      <h2>Gizlilik</h2>
+      <p>Oyun tarayıcınızda çalışır; cevaplarınız, skorlarınız ve ayarlarınız hiçbir sunucuya gönderilmez. En yüksek skorlar yalnızca bu cihazdaki localStorage alanında tutulur ve tarayıcı verilerini sildiğinizde kaybolur. Oyun sırasında çerez, izleme ya da analiz kodu çalışmaz; sayfadaki tek dış öğe reklam alanlarıdır ve oyun alanından ayrı yerleştirilmiştir.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Renk Eşleştirme oyunu nasıl oynanır?</summary><p>Oyun türünü, süreyi ve zorluğu seçip Başla'ya basın. Ekranda bir renk adı başka bir renkle yazılır; seçtiğiniz türe göre ya yazının rengini ya da kelimenin anlamını gösteren düğmeye basarsınız. Süre dolana kadar mümkün olduğunca çok doğru cevap vermeye çalışırsınız.</p></details>
+      <details><summary>Yazının rengi ile kelimenin anlamı modu arasındaki fark nedir?</summary><p>Yazının rengi modunda kelimeyi okumayı bastırıp harflerin boyandığı rengi seçersiniz. Kelimenin anlamı modunda ise rengi görmezden gelip yazan kelimeyi seçersiniz. Her iki modda da ekrandaki öbür bilgi dikkat dağıtıcıdır.</p></details>
+      <details><summary>Stroop etkisi nedir?</summary><p>Bir kelimenin anlamı ile yazıldığı renk çeliştiğinde rengi söylemenin yavaşlamasıdır. John Ridley Stroop 1935'te yayımladığı çalışmayla bu etkiyi tanıtmıştır. Oyun bu etkiyi eğlenceli bir refleks denemesine dönüştürür.</p></details>
+      <details><summary>Puan nasıl hesaplanır?</summary><p>Her doğru cevap 10 puandır; iki saniyeden hızlı cevaplarda en fazla 10 puan hız bonusu eklenir. Her beş doğru cevapta 10 puan seri bonusu verilir. Yanlış cevap 5 puan düşürür ve seriyi sıfırlar; puan sıfırın altına inmez.</p></details>
+      <details><summary>Klavyeyle oynayabilir miyim?</summary><p>Evet. 1'den 6'ya kadar tuşlar soldan sağa renk düğmelerine karşılık gelir. Boşluk veya Enter oyunu başlatır, P tuşu duraklatır. Farklı tonu bul modunda ok tuşlarıyla kareler arasında gezinir, Enter veya Boşluk ile seçersiniz.</p></details>
+      <details><summary>En yüksek skorum nerede saklanır?</summary><p>Yalnızca kendi tarayıcınızın localStorage alanında, oyun türü, süre ve zorluk birleşimi başına ayrı ayrı. Hiçbir sunucuya gönderilmez; tarayıcı verilerini silerseniz kayıt da silinir.</p></details>
+      <details><summary>Renk görme güçlüğüm varsa oynayabilir miyim?</summary><p>Renk adı düğmeleri yazıyla gösterildiği için kelimenin anlamı modu renk algısından bağımsız oynanabilir. Yazının rengi ve farklı tonu bul modları renk ayrımı gerektirir; bu yüzden kırmızı ile mavi gibi ayrışan renklerin olduğu Kolay zorlukla başlamanız önerilir.</p></details>
+      <details><summary>Telefonda çalışır mı, internet gerekir mi?</summary><p>Evet, düğmeler ve kareler 360 piksel genişlikteki telefonlarda bile rahat dokunulacak boyuttadır. Sayfa bir kez yüklendikten sonra oyun için internet gerekmez.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul>
+        <li><a href="../kule-yigma/">Kule Yığma</a> – kayan bloğu doğru anda bırakıp kuleyi yükseltin.</li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a> – ekran renk değiştirdiğinde ne kadar hızlı basabildiğinizi ölçün.</li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a> – kapalı kartların eşlerini hatırlayarak bulun.</li>
+        <li><a href="../dizi-hafiza/">Dizi Hafıza</a> – ışık ve renk dizisini aklınızda tutup tekrarlayın.</li>
+        <li><a href="../balon-patlatma/">Balon Patlatma</a> – hızlı gözünüzle balonları yakalayın.</li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-renk-eslestir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

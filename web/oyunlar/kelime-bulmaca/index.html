@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kelime Bulmaca Oyna – Ücretsiz Online Kelime Bulmaca (kurulumsuz)</title>
+  <meta name="description" content="Günlük 5 harfli Türkçe kelime bulmacası: 6 denemede gizli kelimeyi bulun, yeşil-sarı-gri ipuçlarını izleyin, serinizi ve istatistiklerinizi görün. Ücretsiz, kayıt yok, kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kelime-bulmaca/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    :root { --kb-correct: #2f7d3b; --kb-present: #e0a800; --kb-absent: #5b5f66; }
+    .game-box { max-width: 540px; margin-left: auto; margin-right: auto; padding: 16px; }
+    @media (max-width: 480px) { .game-box { padding: 12px 10px; } }
+    .kb-top { display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .kb-modes { display: inline-flex; gap: 6px; }
+    .kb-mode, .kb-mini { min-height: 44px; padding: 8px 14px; border-radius: var(--ba-radius-sm); border: 1px solid var(--ba-border-hover); background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 600; font-size: .9rem; cursor: pointer; }
+    .kb-mode[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .kb-mode:hover, .kb-mini:hover { border-color: var(--ba-primary); }
+    .kb-top-r { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .kb-puzzle { font-family: var(--ba-mono); font-size: .8rem; color: var(--ba-text-muted); }
+    .kb-msg { min-height: 2.8em; margin: 6px 0; text-align: center; font-weight: 600; color: var(--ba-text-2); }
+    .kb-msg.is-error { color: var(--ba-danger); }
+    .kb-board { display: grid; gap: 5px; width: 100%; max-width: 330px; margin: 4px auto 14px; }
+    .kb-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+    .kb-tile, .kb-ex { aspect-ratio: 1; display: grid; place-items: center; border: 2px solid var(--ba-border-hover); border-radius: 6px; font-weight: 700; font-size: clamp(1.35rem, 7vw, 1.9rem); line-height: 1; color: var(--ba-text); background: var(--ba-surface); user-select: none; }
+    .kb-tile[data-state="typing"] { border-color: var(--ba-text-muted); }
+    [data-state="correct"] { --tile-bg: var(--kb-correct); --tile-fg: #fff; }
+    [data-state="present"] { --tile-bg: var(--kb-present); --tile-fg: #1a1a1a; }
+    [data-state="absent"] { --tile-bg: var(--kb-absent); --tile-fg: #fff; }
+    .kb-tile[data-state="correct"], .kb-tile[data-state="present"], .kb-tile[data-state="absent"],
+    .kb-ex[data-state] { background: var(--tile-bg); border-color: var(--tile-bg); color: var(--tile-fg); }
+    @keyframes kbFlip {
+      0% { transform: rotateX(0); background: var(--ba-surface); border-color: var(--ba-border-hover); color: var(--ba-text); }
+      49% { transform: rotateX(90deg); background: var(--ba-surface); border-color: var(--ba-border-hover); color: var(--ba-text); }
+      50% { transform: rotateX(90deg); background: var(--tile-bg); border-color: var(--tile-bg); color: var(--tile-fg); }
+      100% { transform: rotateX(0); background: var(--tile-bg); border-color: var(--tile-bg); color: var(--tile-fg); }
+    }
+    .kb-tile.is-flip { animation: kbFlip .5s ease both; animation-delay: var(--d, 0s); }
+    @keyframes kbShake { 10%, 90% { translate: -2px 0; } 20%, 80% { translate: 3px 0; } 30%, 50%, 70% { translate: -5px 0; } 40%, 60% { translate: 5px 0; } }
+    .kb-row.is-shake { animation: kbShake .5s; }
+    @media (prefers-reduced-motion: reduce) { .kb-tile.is-flip, .kb-row.is-shake { animation: none; } }
+    .kb-keys { display: grid; gap: 6px; max-width: 520px; margin: 0 auto; }
+    .kb-keyrow { display: flex; gap: 4px; justify-content: center; }
+    .kb-key { flex: 1 1 0; min-width: 0; height: 48px; padding: 0; border: 1px solid var(--ba-border-hover); border-radius: 6px; background: var(--ba-surface-2); color: var(--ba-text); font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; touch-action: manipulation; }
+    .kb-key.is-wide { flex: 1.6 1 0; font-size: .78rem; }
+    .kb-key:hover { border-color: var(--ba-primary); }
+    .kb-key[data-state] { background: var(--tile-bg); border-color: var(--tile-bg); color: var(--tile-fg); }
+    @media (max-width: 400px) { .kb-keyrow { gap: 3px; } .kb-key { height: 46px; font-size: .86rem; } .kb-key.is-wide { font-size: .72rem; } }
+    .kb-result { margin-top: 18px; padding: 16px; border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .kb-result[data-result="won"] { border-left-color: var(--kb-correct); }
+    .kb-result h3 { margin: 0 0 10px; font-size: 1.05rem; color: var(--ba-text); }
+    .kb-share { margin: 0 0 12px; padding: 10px 12px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-family: var(--ba-mono); font-size: .85rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ba-text); }
+    .kb-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .kb-copy { min-height: 1.4em; margin: 8px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    .kb-stats { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--ba-border); }
+    .kb-stats h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .kb-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 14px; }
+    .kb-stat-grid div { text-align: center; padding: 8px 4px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kb-stat-grid dt { font-size: .72rem; color: var(--ba-text-muted); margin: 0; }
+    .kb-stat-grid dd { margin: 2px 0 0; font-size: 1.35rem; font-weight: 700; font-family: var(--ba-mono); color: var(--ba-text); }
+    .kb-dist { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 4px; }
+    .kb-dist li { display: grid; grid-template-columns: 1.4em 1fr; gap: 6px; align-items: center; margin: 0; font-size: .85rem; }
+    .kb-bar { display: block; min-width: 1.8em; padding: 2px 6px; text-align: right; background: var(--kb-absent); color: #fff; border-radius: 3px; font-family: var(--ba-mono); font-weight: 700; }
+    .kb-bar.is-today { background: var(--kb-correct); }
+    .kb-stats p { margin: 4px 0; font-size: .88rem; color: var(--ba-text-2); }
+    /* Renk körleri için köşe işareti: ✓ doğru yer, ↔ yanlış yer (gri karede işaret yok). */
+    .kb-tile, .kb-ex { position: relative; }
+    .kb-tile[data-state="correct"]::after, .kb-ex[data-state="correct"]::after { content: "✓"; }
+    .kb-tile[data-state="present"]::after, .kb-ex[data-state="present"]::after { content: "↔"; }
+    .kb-tile::after, .kb-ex::after { position: absolute; top: 3px; right: 4px; font-size: .4em; font-weight: 700; line-height: 1; }
+    .kb-ex { display: inline-grid; width: 2.2em; height: 2.2em; aspect-ratio: auto; font-size: 1.05rem; margin-right: 3px; vertical-align: middle; }
+    .kb-exrow { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 10px 0; }
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Kelime Bulmaca","description":"Altı denemede 5 harfli gizli Türkçe kelimeyi bulduğunuz, günlük ve sınırsız modlu ücretsiz tarayıcı oyunu.","url":"https://araclar.bilisimajans.com/oyunlar/kelime-bulmaca/","inLanguage":"tr","genre":"Kelime oyunu","applicationCategory":"Game","operatingSystem":"Web tarayıcısı","gamePlatform":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Günde kaç kelime var, yarın yeni kelime ne zaman gelir?","acceptedAnswer":{"@type":"Answer","text":"Günlük modda her gün tek bir kelime vardır. Kelime, cihazınızın yerel tarihine göre gece yarısı değişir; herkes aynı gün aynı kelimeyi bulmaya çalışır. Daha fazla oynamak isterseniz Sınırsız moda geçebilirsiniz."}},
+  {"@type":"Question","name":"Yazdığım kelime neden 'sözlükte yok' uyarısı veriyor?","acceptedAnswer":{"@type":"Answer","text":"Tahminler yaklaşık 44 bin maddelik Türkçe kelime listesiyle denetlenir. Listede olmayan, yanlış yazılmış ya da çekimli bazı biçimler kabul edilmez. Uyarı aldığınızda deneme hakkınız yanmaz; harflerin imlasını (ğ, ı, ş, ç, ö, ü) kontrol edip başka bir kelime deneyin."}},
+  {"@type":"Question","name":"Sarı ve gri kareler tekrar eden harflerde nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Gizli kelimede bir harften kaç tane varsa, tahmininizde o kadarı renklenir. Önce doğru yerdeki harfler yeşil olur, kalan harf sayısı kadar yanlış yerdeki harf sarı olur, fazlası gri kalır."}},
+  {"@type":"Question","name":"Serim ne zaman sıfırlanır?","acceptedAnswer":{"@type":"Answer","text":"Seri, günlük bulmacayı art arda kazandığınız gün sayısıdır. Bir günü atlarsanız ya da günlük kelimeyi bulamazsanız sıfırlanır. Sınırsız mod seriyi etkilemez."}},
+  {"@type":"Question","name":"İstatistiklerim başka cihaza taşınır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. İstatistikler yalnızca kullandığınız tarayıcının localStorage alanında saklanır; hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da başka cihaza geçerseniz sıfırdan başlarsınız."}},
+  {"@type":"Question","name":"İnternet olmadan oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Sayfayı bir kez açtıktan sonra oyun dosyaları tarayıcıda önbelleğe alınır ve bağlantı kesilse de çalışır. Siteyi uygulama olarak yüklerseniz çevrimdışı kullanım daha da kolaylaşır."}},
+  {"@type":"Question","name":"Oyunda ipucu ya da harf satın alma var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oyun tamamen ücretsizdir, ipucu ya da jeton sistemi yoktur. Takıldığınızda yalnızca önceki tahminlerinizin renklerinden yararlanırsınız."}},
+  {"@type":"Question","name":"Sonuç paylaşımı kelimeyi ele veriyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Paylaşım metni yalnızca bulmaca numarasını, deneme sayısını ve renkli kareleri içerir; yazdığınız harfleri göstermez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Kelime Bulmaca: Günlük 5 Harfli Türkçe Kelime Oyunu</h1><p class="lead">Altı denemede gizli 5 harfli Türkçe kelimeyi bulun. Her tahminden sonra yeşil, sarı ve gri kareler size yol gösterir. Her gün yeni bir bulmaca; kurulum ve üyelik yok.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Kelime Bulmaca oyun alanı</h2>
+      <div class="kb-top">
+        <div class="kb-modes" role="group" aria-label="Oyun kipi">
+          <button type="button" id="mode-daily" class="kb-mode" aria-pressed="true">Günlük</button>
+          <button type="button" id="mode-free" class="kb-mode" aria-pressed="false">Sınırsız</button>
+        </div>
+        <div class="kb-top-r">
+          <span id="puzzle-label" class="kb-puzzle"></span>
+          <button type="button" id="new-word" class="kb-mini" hidden>Yeni kelime</button>
+          <button type="button" id="stats-toggle" class="kb-mini" aria-expanded="false" aria-controls="stats">İstatistikler</button>
+        </div>
+      </div>
+      <p id="msg" class="kb-msg" role="status" aria-live="polite"></p>
+      <div id="board" class="kb-board" role="grid" aria-label="Tahmin tahtası: 6 deneme, her denemede 5 harf"></div>
+      <div id="keyboard" class="kb-keys" role="group" aria-label="Ekran klavyesi"></div>
+      <div id="result" class="kb-result" hidden>
+        <h3 id="result-title" tabindex="-1"></h3>
+        <pre id="share-text" class="kb-share" tabindex="0" aria-label="Paylaşım metni"></pre>
+        <div class="kb-actions">
+          <button type="button" id="copy-share" class="ba-btn ba-btn-primary">Sonucu kopyala</button>
+          <button type="button" id="switch-mode" class="ba-btn">Sınırsız modda oyna</button>
+        </div>
+        <p id="copy-status" class="kb-copy" role="status"></p>
+      </div>
+      <div id="stats" class="kb-stats" hidden>
+        <h3>Günlük bulmaca istatistikleriniz</h3>
+        <dl class="kb-stat-grid">
+          <div><dt>Oynanan</dt><dd id="st-played">0</dd></div>
+          <div><dt>Kazanma</dt><dd id="st-pct">%0</dd></div>
+          <div><dt>Seri</dt><dd id="st-streak">0</dd></div>
+          <div><dt>En iyi seri</dt><dd id="st-max">0</dd></div>
+        </dl>
+        <h4 class="visually-hidden">Tahmin dağılımı</h4>
+        <ol id="st-dist" class="kb-dist" aria-label="Kaçıncı denemede kazanıldığının dağılımı"></ol>
+        <p id="st-free"></p>
+        <p>İstatistikler yalnızca bu tarayıcıda saklanır; tarayıcı verilerini silerseniz sıfırlanır.</p>
+      </div>
+    </section>
+
+    <div class="ba-note"><div><strong>Kısaca:</strong> 6 denemeniz var. <strong>Yeşil</strong> harf doğru yerde, <strong>sarı</strong> harf kelimede var ama yeri yanlış, <strong>gri</strong> harf kelimede yok. Listede olmayan bir kelime yazarsanız uyarı alırsınız ve deneme hakkınız yanmaz.</div></div>
+
+    <div class="ba-ad" data-slot="oyun-kelime-bulmaca-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Kelime Bulmaca nedir?</h2>
+      <p>Kelime Bulmaca, gizli bir 5 harfli Türkçe kelimeyi en fazla altı denemede bulmanızı isteyen ücretsiz bir tarayıcı oyunudur. Her tahminden sonra harflerin rengi değişir ve gizli kelimeye ne kadar yaklaştığınızı gösterir. Oyun kurulum, kayıt ya da üyelik gerektirmez; sayfayı açtığınız anda oynamaya başlarsınız. Telefonda, tablette ve bilgisayarda aynı şekilde çalışır, tahminleriniz ve istatistikleriniz cihazınızdan dışarı çıkmaz.</p>
+      <p>Günlük modda herkes aynı kelimeyi çözmeye çalışır; bu yüzden sonucunuzu arkadaşlarınızla kolayca kıyaslayabilirsiniz. Daha fazla oynamak isterseniz Sınırsız mod, sayısız yeni kelime sunar ve istatistik serinizi etkilemez. İster iş arasında beş dakikalık bir mola olsun, ister akşam sofrasında aile içi bir yarış, bu oyun kısa sürede bitmesi ve her seferinde yeni bir şey öğretmesiyle öne çıkar.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Ekran klavyesinden ya da kendi klavyenizden 5 harfli bir Türkçe kelime yazın. ğ, ı, ş, ç, ö ve ü harflerini ekran klavyesinde bulabilirsiniz; Türkçe klavyeniz varsa doğrudan yazabilirsiniz.</li>
+        <li>“Gir” tuşuna ya da Enter'a basın. Yazdığınız kelime sözlükte yoksa uyarı görürsünüz ve deneme hakkınız yanmaz; kelimeyi düzeltip yeniden deneyin.</li>
+        <li>Karelerin renklerine bakın: yeşil doğru yerde, sarı yanlış yerde, gri kelimede yok anlamına gelir.</li>
+        <li>Edindiğiniz bilgiyle yeni bir kelime deneyin. Yeşil harfleri yerinde bırakın, sarı harfleri farklı konumlara taşıyın, gri harfleri bir daha kullanmayın.</li>
+        <li>Altı denemede kelimeyi bulursanız kazanırsınız. Oyun bitince sonucunuzu kopyalayıp paylaşabilirsiniz.</li>
+      </ol>
+
+      <h2>Renklerin anlamı ve tekrar eden harfler</h2>
+      <p>Renk kuralı basittir ama tekrar eden harflerde dikkat ister. Gizli kelimede bir harften kaç tane varsa, tahmininizde en fazla o kadarı renklenir. Önce doğru yerdeki harfler yeşil olur; sonra kalan harf sayısı kadar yanlış yerdeki harf sarıya boyanır; fazlası gri kalır.</p>
+      <div class="kb-exrow" role="img" aria-label="Örnek: gizli kelime SABUN, tahmin KABAK. K gri, A yeşil, B yeşil, ikinci A gri, K gri.">
+        <span><span class="kb-ex" data-state="absent">K</span><span class="kb-ex" data-state="correct">A</span><span class="kb-ex" data-state="correct">B</span><span class="kb-ex" data-state="absent">A</span><span class="kb-ex" data-state="absent">K</span></span>
+      </div>
+      <p>Örneğin gizli kelime SABUN iken KABAK yazarsanız, ikinci harf olan A ile üçüncü harf olan B doğru yerde olduğu için yeşil olur. Gizli kelimede yalnızca bir A bulunduğundan dördüncü sıradaki ikinci A gri kalır; iki K'nın ikisi de kelimede olmadığı için gridir. Bu ayrıntıyı bilmek, “bu harf neden gri oldu, kelimede var gibiydi” kafa karışıklığını önler. Ekran klavyesindeki tuşlar da aynı renkleri alır: bir harfin en iyi durumu (yeşil, sarı, gri sırasıyla) tuşta görünür.</p>
+
+      <h2>Günlük kelime ve sınırsız mod</h2>
+      <p>Günlük modda her gün tek bir kelime vardır. Kelime, cihazınızın yerel tarihine göre gece yarısı değişir ve herkes aynı gün aynı kelimeyi arar. Günde bir kez oynanır; yarım bıraktığınız oyun tarayıcıda saklanır, sayfayı kapatıp açsanız bile kaldığınız satırdan devam edersiniz. Oyunu bitirdiğinizde sonucunuz ekranda kalır, ertesi gün yeni bir bulmaca sizi bekler.</p>
+      <p>Sınırsız mod ise alıştırma içindir. İstediğiniz kadar yeni kelime isteyebilir, strateji denemeleri yapabilirsiniz. Bu moddaki oyunlar günlük serinizi ve tahmin dağılımınızı etkilemez; yalnızca ayrı bir “oynanan / kazanılan” sayacında tutulur. Günlük kelimeyi bozmadan yeni açılışlar denemek için ideal bir sahadır.</p>
+
+      <h2>İstatistikler ve seri</h2>
+      <p>Günlük bulmacayı her bitirişinizde oynanan oyun sayısı, kazanma yüzdesi, güncel seri ve en iyi seri güncellenir. Tahmin dağılımı grafiği, kazandığınız oyunların kaçıncı denemede bittiğini gösterir; bir bakışta hangi satırda daha çok kazandığınızı görürsünüz. Seri, günlük bulmacayı art arda kazandığınız gün sayısıdır: bir günü atlarsanız ya da kelimeyi bulamazsanız sıfırlanır.</p>
+      <p>Bu veriler yalnızca kullandığınız tarayıcının yerel depolama alanında durur. Bilişim Ajans sunucularına gönderilmez, hesap ya da çerez gerektirmez. Bunun bedeli, tarayıcı verilerini sildiğinizde ya da başka bir cihaza geçtiğinizde istatistiklerin sıfırlanmasıdır.</p>
+
+      <h2>Sonucu paylaşma</h2>
+      <p>Oyun bitince ekrana bir paylaşım metni gelir. Metin bulmaca numarasını, kaçıncı denemede bulduğunuzu ve harf içermeyen renkli kareleri içerir; yani kelimeyi ele vermez. “Sonucu kopyala” düğmesiyle metni panoya alıp mesajlaşma uygulamalarına, sosyal medyaya ya da aile grubuna yapıştırabilirsiniz. Tarayıcınız panoya yazmaya izin vermezse kutudaki metni elle seçip kopyalamanız yeterlidir.</p>
+
+      <div class="ba-ad" data-slot="oyun-kelime-bulmaca-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <h3>İlk tahmini bilinçli seçin</h3>
+      <p>Türkçede en sık görülen harfler yaklaşık olarak A, E, İ, N, R, L, I, K, D ve M'dir. İlk tahmin için bu harflerden birkaçını içeren ve harfleri birbirinden farklı bir kelime seçmek, ilk adımda en çok bilgiyi verir. KALEM, SOKAK ya da ELMAS gibi kelimeler bu açıdan iyi başlangıçlardır. İkinci tahminde ise ilk kelimede kullanmadığınız yeni harfleri deneyin; amaç henüz şansı olmayan harfleri hızla elemektir.</p>
+      <h3>Türkçenin yapısından yararlanın</h3>
+      <p>Yumuşak g (ğ) hiçbir Türkçe kelimenin başında bulunmaz; bu yüzden ilk harfi tahmin ederken ğ'yi güvenle eleyebilirsiniz. Türkçe köken sözcüklerde ünlü uyumu geçerlidir: kalın ünlüler (a, ı, o, u) ile ince ünlüler (e, i, ö, ü) genellikle aynı kelimede karışmaz. Elinizde yeşil bir A varsa, kelimenin geri kalanında e, i, ö, ü görmek daha az olasıdır. Yabancı kökenli kelimeler (ör. kitap, hesap) bu kurala uymayabilir; ama bilgi yine de ihtimalleri daraltır.</p>
+      <h3>Kalıp tuzaklarına dikkat edin</h3>
+      <p>_ A R A K gibi tek harfi değişen çok sayıda seçenek olduğunda, tahminleri tek tek denemek altı hakkı eritebilir. Böyle durumlarda kalan seçenekleri tek kelimeyle ayıran bir tahmin yapın: kelimenin kesin olmayan harflerinden birkaçını içeren, ama bulmacanın cevabı olmayan bir kelime bile bir hak harcamaya değer olabilir. Elde edilen bilgi, sonraki iki denemeyi kesinleştirir.</p>
+      <h3>Yardımcı araçla çalışın, ama ölçülü kullanın</h3>
+      <p>Takıldığınız oyunlarda <a href="../../kelime-bulucu/">Kelime Bulucu</a> aracımızla belirli harfleri içeren ya da belirli kalıba uyan Türkçe kelimeleri listeleyebilirsiniz. Alıştırma için harika bir yoldur; günlük bulmacada kendinizi sınamak istiyorsanız ise işi önce kendi aklınıza bırakın.</p>
+
+      <h2>Türkçe harfler ve klavye düzeni</h2>
+      <p>Türk alfabesi 29 harften oluşur; Q, W ve X bu alfabede yoktur, bu yüzden ekran klavyesinde de bulunmazlar. i ile ı iki ayrı harftir: büyük hâlleri İ ve I'dır. Oyun bu farkı korur; “KIZIL” ile “KİZİL” aynı kelime sayılmaz. Ekran klavyesi Türkçe Q düzenindedir, böylece fiziksel Türkçe klavyedeki alışkanlığınızla aynı yerlerde arayabilirsiniz. İngilizce klavyeyle oynuyorsanız ğ, ı, ş, ç, ö, ü harfleri için ekran klavyesini kullanın.</p>
+
+      <h2>Kelime listesi ve sınırları</h2>
+      <p>Tahminler, MIT lisanslı açık bir Türkçe kelime listesine (yaklaşık 44 bin madde başlığı) göre denetlenir. Liste madde başlıklarından derlendiği için çoğul, iyelik ya da çekim ekli bazı biçimleri içermeyebilir; yazdığınız kelime Türkçe olsa da listede yoksa kabul edilmez ve uyarı alırsınız. Bu durumda deneme hakkınız yanmaz. Günlük ve sınırsız kelimeler ise bu listeden elle seçilmiş, yaygın bilinen yaklaşık 900 kelimelik bir havuzdan gelir; özel ad, hakaret içeren ya da çok nadir kelimeler hedef olarak kullanılmaz. Kelime listesinin lisansı <a href="../../kelime-bulucu/LICENSE-kelimeler.txt">LICENSE-kelimeler.txt</a> dosyasında yer alır.</p>
+
+      <h2>Gizlilik ve çevrimdışı kullanım</h2>
+      <p>Bu sayfada çerez, analitik ya da izleme kodu yoktur. Oyun mantığı tamamen tarayıcınızda çalışır; kelime listeleri aynı sunucudan bir kez indirilir ve sonrasında tarayıcı önbelleğinden okunur. Tahminleriniz hiçbir yere gönderilmez. Siteyi uygulama olarak yüklerseniz bağlantı olmadan da oynayabilirsiniz. Sayfadaki tek dış öğe, ücretsiz hizmetin giderlerini karşılayan ve oyun alanından uzakta duran reklam bölümleridir.</p>
+
+      <h2>Erişilebilirlik</h2>
+      <p>Oyun tamamen klavyeyle oynanabilir: harfleri yazın, Backspace ile silin, Enter ile gönderin; Tab ile ekran klavyesinde gezinebilirsiniz. Her kare, ekran okuyucular için harfi ve durumunu (“doğru yerde”, “kelimede var, yeri yanlış”, “kelimede yok”) söyleyen bir etikete sahiptir; renklere ek olarak bu bilgi metin olarak da verilir. Renk körlüğü yaşıyorsanız karelerin sağ üst köşesindeki işaretlere bakın: doğru yerdeki harfte ✓, kelimede olup yeri yanlış olan harfte ↔ görünür; gri karede işaret yoktur. Hareketi azaltma tercihi açık olan cihazlarda çevirme animasyonları kapatılır.</p>
+
+      <h2>Kelime tahmin oyunlarının kısa tarihi</h2>
+      <p>Harfleri ve konumları ipucu olarak kullanan kelime tahmin oyunlarının kökleri, kâğıt kalemle oynanan sayı ve kelime bulmacalarına kadar uzanır. Her turda “kaç harf doğru, kaçı yerinde” bilgisini veren oyunlar yıllardır çocukların ve yetişkinlerin zihin egzersizidir. Son yıllarda günlük tek bulmaca ve sonucu emojiyle paylaşma formatı, bu türü yeniden popüler hâle getirdi. Türkçe için ise ekleme dayalı yapı, ünlü uyumu ve özel harfler oyuna ayrı bir derinlik katar; 5 harfli kelimeler hem yeterince kısa hem de yeterince zengindir.</p>
+
+      <h2>Neden Bilişim Ajans'ın oyunu?</h2>
+      <p>Çünkü reklam dışında hiçbir şey satılmıyor ve hiçbir veri toplanmıyor. Sahte geri sayım, “premium” tuzağı ya da yanıltıcı düğme yoktur. Aynı yaklaşımla hazırladığımız diğer oyunlara ve onlarca ücretsiz araca <a href="../../">ana sayfadan</a> ulaşabilirsiniz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Günde kaç kelime var, yarın yeni kelime ne zaman gelir?</summary><p>Günlük modda her gün tek bir kelime vardır. Kelime, cihazınızın yerel tarihine göre gece yarısı değişir; herkes aynı gün aynı kelimeyi bulmaya çalışır. Daha fazla oynamak isterseniz Sınırsız moda geçebilirsiniz.</p></details>
+        <details><summary>Yazdığım kelime neden “sözlükte yok” uyarısı veriyor?</summary><p>Tahminler yaklaşık 44 bin maddelik Türkçe kelime listesiyle denetlenir. Listede olmayan, yanlış yazılmış ya da çekimli bazı biçimler kabul edilmez. Uyarı aldığınızda deneme hakkınız yanmaz; harflerin imlasını (ğ, ı, ş, ç, ö, ü) kontrol edip başka bir kelime deneyin.</p></details>
+        <details><summary>Sarı ve gri kareler tekrar eden harflerde nasıl çalışır?</summary><p>Gizli kelimede bir harften kaç tane varsa, tahmininizde o kadarı renklenir. Önce doğru yerdeki harfler yeşil olur, kalan harf sayısı kadar yanlış yerdeki harf sarı olur, fazlası gri kalır.</p></details>
+        <details><summary>Serim ne zaman sıfırlanır?</summary><p>Seri, günlük bulmacayı art arda kazandığınız gün sayısıdır. Bir günü atlarsanız ya da günlük kelimeyi bulamazsanız sıfırlanır. Sınırsız mod seriyi etkilemez.</p></details>
+        <details><summary>İstatistiklerim başka cihaza taşınır mı?</summary><p>Hayır. İstatistikler yalnızca kullandığınız tarayıcının localStorage alanında saklanır; hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da başka cihaza geçerseniz sıfırdan başlarsınız.</p></details>
+        <details><summary>İnternet olmadan oynayabilir miyim?</summary><p>Sayfayı bir kez açtıktan sonra oyun dosyaları tarayıcıda önbelleğe alınır ve bağlantı kesilse de çalışır. Siteyi uygulama olarak yüklerseniz çevrimdışı kullanım daha da kolaylaşır.</p></details>
+        <details><summary>Oyunda ipucu ya da harf satın alma var mı?</summary><p>Hayır. Oyun tamamen ücretsizdir, ipucu ya da jeton sistemi yoktur. Takıldığınızda yalnızca önceki tahminlerinizin renklerinden yararlanırsınız.</p></details>
+        <details><summary>Sonuç paylaşımı kelimeyi ele veriyor mu?</summary><p>Hayır. Paylaşım metni yalnızca bulmaca numarasını, deneme sayısını ve renkli kareleri içerir; yazdığınız harfleri göstermez.</p></details>
+      </div>
+
+      <section class="rh-tools" aria-labelledby="h-ilgili">
+        <h2 id="h-ilgili">İlgili oyunlar</h2>
+        <ul>
+          <li><a href="../adam-asmaca/"><strong>Adam Asmaca</strong><span>Kategorili, ipuçlu ve iki kişilik modlu klasik harf tahmin oyunu.</span></a></li>
+          <li><a href="../sudoku/"><strong>Sudoku</strong><span>Rakam yerleştirme bulmacası; kolaydan zora seviyeler.</span></a></li>
+          <li><a href="../hafiza-kartlari/"><strong>Hafıza Kartları</strong><span>Eş kartları bulun, hafızanızı çalıştırın.</span></a></li>
+          <li><a href="../../"><strong>Tüm oyunlar ve araçlar</strong><span>Bilişim Ajans ücretsiz araçlar ana sayfası.</span></a></li>
+        </ul>
+      </section>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kelime-bulmaca-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

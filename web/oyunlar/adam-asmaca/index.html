@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Adam Asmaca Oyna – Ücretsiz Online Adam Asmaca (kurulumsuz)</title>
+  <meta name="description" content="Türkçe Adam Asmaca: hayvanlar, şehirler, meslekler, yiyecekler, ülkeler ve genel kategorilerde harf tahmin edin, ipucu alın, skorunuzu ve serinizi izleyin. İki kişilik modla arkadaşınıza kelime sorun. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/adam-asmaca/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    :root { --hm-right: #2f7d3b; --hm-wrong: #a3271f; --hm-hint: #e0a800; }
+    .game-box { max-width: 580px; margin-left: auto; margin-right: auto; padding: 16px; }
+    @media (max-width: 480px) { .game-box { padding: 12px 10px; } }
+    .hm-top { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: space-between; align-items: center; }
+    .hm-modes { display: inline-flex; gap: 6px; }
+    .hm-mode, .hm-mini { min-height: 44px; padding: 8px 14px; border-radius: var(--ba-radius-sm); border: 1px solid var(--ba-border-hover); background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 600; font-size: .9rem; cursor: pointer; }
+    .hm-mode[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .hm-mode:hover, .hm-mini:hover { border-color: var(--ba-primary); }
+    .hm-cat { display: inline-flex; align-items: center; gap: 8px; }
+    .hm-cat label { font-weight: 600; font-size: .9rem; }
+    .hm-cat select { min-height: 44px; padding: 6px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); max-width: 190px; }
+    .hm-msg { min-height: 2.8em; margin: 8px 0; text-align: center; font-weight: 600; color: var(--ba-text-2); }
+    .hm-msg.is-error { color: var(--ba-danger); }
+    .hm-duo { display: grid; gap: 12px; padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .hm-duo p { margin: 0; }
+    .hm-duo label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .hm-duo input[type="text"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); }
+    .hm-duo input[type="text"]:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    /* Gizli kelime alanı: parola yöneticisi tetiklemeden noktalı gösterilir (destekleyen tarayıcılarda). */
+    #secret { -webkit-text-security: disc; text-security: disc; letter-spacing: .12em; }
+    #secret.is-shown { -webkit-text-security: none; text-security: none; letter-spacing: normal; }
+    .hm-hint { font-size: .85rem; color: var(--ba-text-muted); margin: 3px 0 0; }
+    .hm-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .hm-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .hm-error { color: var(--ba-danger); font-weight: 600; min-height: 1.4em; }
+    .hm-stage { display: grid; grid-template-columns: minmax(130px, 190px) 1fr; gap: 14px; align-items: center; margin-bottom: 8px; }
+    @media (max-width: 480px) { .hm-stage { grid-template-columns: 118px 1fr; gap: 10px; } }
+    .hm-svg { width: 100%; height: auto; max-height: 240px; }
+    .hm-svg line, .hm-svg circle, .hm-svg path { fill: none; stroke: var(--ba-text); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .hm-svg .hm-ground { opacity: .3; }
+    .hm-svg .hm-face path { stroke: var(--ba-danger); stroke-width: 3; }
+    .hm-part, .hm-face { opacity: 0; transition: opacity .25s; }
+    .hm-part.is-on, .hm-face.is-on { opacity: 1; }
+    @media (prefers-reduced-motion: reduce) { .hm-part, .hm-face { transition: none; } }
+    .hm-info p { margin: 0 0 6px; }
+    .hm-cat-line { font-weight: 600; color: var(--ba-text); font-size: .95rem; }
+    .hm-count { font-family: var(--ba-mono); font-size: 1.05rem; font-weight: 700; color: var(--ba-text); }
+    .hm-wrong { font-size: .92rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .hm-wrong span { font-weight: 700; letter-spacing: .12em; color: var(--ba-danger); }
+    .hm-actions { display: grid; gap: 8px; margin-top: 10px; }
+    .hm-actions .ba-btn { min-height: 44px; padding: 8px 14px; width: 100%; }
+    .hm-word { list-style: none; margin: 8px 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .hm-slot { width: clamp(24px, 8.4vw, 40px); height: clamp(34px, 10.5vw, 48px); margin: 0; border-bottom: 3px solid var(--ba-text); display: grid; place-items: end center; padding-bottom: 2px; font-weight: 700; font-size: clamp(1.15rem, 5.4vw, 1.6rem); color: var(--ba-text); }
+    .hm-slot.is-missed { color: var(--ba-danger); }
+    .hm-keys { display: grid; gap: 6px; max-width: 540px; margin: 0 auto; }
+    .hm-keyrow { display: flex; gap: 4px; justify-content: center; }
+    .hm-key { position: relative; flex: 1 1 0; min-width: 0; height: 48px; padding: 0; border: 1px solid var(--ba-border-hover); border-radius: 6px; background: var(--ba-surface-2); color: var(--ba-text); font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; touch-action: manipulation; }
+    .hm-key:hover { border-color: var(--ba-primary); }
+    .hm-key[aria-disabled="true"] { cursor: default; }
+    .hm-key[aria-disabled="true"]:not([data-state]) { opacity: .55; }
+    .hm-key[data-state="dogru"] { background: var(--hm-right); border-color: var(--hm-right); color: #fff; }
+    .hm-key[data-state="yanlis"] { background: var(--hm-wrong); border-color: var(--hm-wrong); color: #fff; }
+    .hm-key[data-state="ipucu"] { background: var(--hm-hint); border-color: var(--hm-hint); color: #1a1a1a; }
+    /* Renk körleri için köşe işareti: ✓ doğru, ✕ yanlış, ★ ipucu. */
+    .hm-key[data-state]::after { position: absolute; top: 2px; right: 3px; font-size: .5em; line-height: 1; }
+    .hm-key[data-state="dogru"]::after { content: "✓"; }
+    .hm-key[data-state="yanlis"]::after { content: "✕"; }
+    .hm-key[data-state="ipucu"]::after { content: "★"; }
+    @media (max-width: 400px) { .hm-keyrow { gap: 3px; } .hm-key { height: 46px; font-size: .86rem; } }
+    .hm-result { margin-top: 16px; padding: 14px 16px; border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .hm-result[data-result="won"] { border-left-color: var(--hm-right); }
+    .hm-result[data-result="lost"] { border-left-color: var(--hm-wrong); }
+    .hm-result h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--ba-text); }
+    .hm-result p { margin: 0; color: var(--ba-text-2); }
+    .hm-scores { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--ba-border); }
+    .hm-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 10px; }
+    .hm-stat-grid.is-duo { grid-template-columns: repeat(2, 1fr); }
+    .hm-stat-grid div { text-align: center; padding: 8px 4px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .hm-stat-grid dt { font-size: .72rem; color: var(--ba-text-muted); margin: 0; }
+    .hm-stat-grid dd { margin: 2px 0 0; font-size: 1.25rem; font-weight: 700; font-family: var(--ba-mono); color: var(--ba-text); }
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Adam Asmaca","description":"Altı kategoride Türkçe kelime tahmin ettiğiniz, ipuçlu, skorlu ve iki kişilik modlu ücretsiz tarayıcı oyunu.","url":"https://araclar.bilisimajans.com/oyunlar/adam-asmaca/","inLanguage":"tr","genre":"Kelime oyunu","applicationCategory":"Game","operatingSystem":"Web tarayıcısı","gamePlatform":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kaç hata hakkım var?","acceptedAnswer":{"@type":"Answer","text":"Yedi. Her yanlış harfte çizim bir adım ilerler: zemin, direk ve kiriş, kafa, gövde, kollar, sol bacak ve sağ bacak. Yedinci hatada oyun biter ve doğru kelime gösterilir."}},
+  {"@type":"Question","name":"İpucu nasıl çalışır, bedeli var mı?","acceptedAnswer":{"@type":"Answer","text":"İpucu düğmesi kategoriyi gösterir ve kelimenin ilk harfini açar. İpucu hata sayılmaz ama kazandığınızda puanınız 30 azalır. Her oyunda yalnızca bir ipucu hakkınız vardır."}},
+  {"@type":"Question","name":"Oyun sürerken yeniden başlatırsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Tek kişilik modda en az bir harf seçtiyseniz ya da ipucu aldıysanız yarım bıraktığınız oyun yenilgi sayılır ve seri sıfırlanır. Henüz hiçbir şey yapmadıysanız ceza yoktur."}},
+  {"@type":"Question","name":"İki kişilik mod nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Bir oyuncu gizli kelimeyi yazar; ekranda noktalı görünür ve oyun başlayınca silinir. Sonra diğer oyuncu harf tahmin eder. Her turdan sonra roller değişir ve iki oyuncunun puanı ayrı ayrı tutulur."}},
+  {"@type":"Question","name":"Kelimelerde Türkçe karakterler nasıl işleniyor?","acceptedAnswer":{"@type":"Answer","text":"Kelimeler büyük harfle ve Türkçe kurallarına göre işlenir: i harfi İ, ı harfi I olur ve ikisi ayrı tuşlardır. Ekran klavyesinde Ç, Ğ, Ş, Ö, Ü, İ ve I tuşları bulunur; Q, W ve X Türk alfabesinde olmadığı için yoktur."}},
+  {"@type":"Question","name":"Skorlarım nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca kullandığınız tarayıcının localStorage alanında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da başka cihaza geçerseniz skorlar sıfırlanır."}},
+  {"@type":"Question","name":"Kelime listeleri nereden geliyor, ne kadar kelime var?","acceptedAnswer":{"@type":"Answer","text":"Altı kategorinin her birinde Bilişim Ajans'ın kendi hazırladığı 60 kelime bulunur, toplam 360 kelime. Listeler tarayıcıda aynı sunucudan yüklenir ve zamanla genişletilebilir."}},
+  {"@type":"Question","name":"İnternet olmadan oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Sayfayı bir kez açtıktan sonra oyun dosyaları tarayıcıda önbelleğe alınır ve bağlantı kesilse de çalışır. Siteyi uygulama olarak yüklerseniz çevrimdışı kullanım daha da kolaylaşır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Adam Asmaca: Kategorili Türkçe Harf Tahmin Oyunu</h1><p class="lead">Hayvanlar, şehirler, meslekler, yiyecekler, ülkeler ve genel kategorilerde gizli kelimeyi 7 hata yapmadan bulun. İpucu alın, serinizi büyütün ya da iki kişilik modla arkadaşınıza kelime sorun. Kurulum ve üyelik yok.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="hm-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Adam Asmaca oyun alanı</h2>
+      <div class="hm-top">
+        <div class="hm-modes" role="group" aria-label="Oyuncu sayısı">
+          <button type="button" id="mode-single" class="hm-mode" aria-pressed="true">Tek kişilik</button>
+          <button type="button" id="mode-duo" class="hm-mode" aria-pressed="false">İki kişilik</button>
+        </div>
+        <div id="single-setup" class="hm-cat">
+          <label for="category">Kategori</label>
+          <select id="category"><option value="karisik">Karışık (gizli)</option></select>
+        </div>
+      </div>
+      <p id="hm-msg" class="hm-msg" role="status" aria-live="polite"></p>
+
+      <div id="duo-setup" hidden>
+        <form id="duo-form" class="hm-duo" autocomplete="off" novalidate>
+          <p id="duo-who"></p>
+          <div>
+            <label for="secret">Gizli kelime</label>
+            <input id="secret" name="gizli-kelime" type="text" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" aria-describedby="secret-help duo-error">
+            <p id="secret-help" class="hm-hint">3–20 harf, boşluksuz, yalnızca Türkçe harfler. Yazarken ekranı diğer oyuncudan gizleyin; oyun başlayınca kelime alandan silinir.</p>
+          </div>
+          <div>
+            <label for="secret-hint">İpucu (isteğe bağlı)</label>
+            <input id="secret-hint" name="ipucu" type="text" maxlength="40" autocomplete="off" placeholder="Örn. bir hayvan, bir şehir">
+            <p class="hm-hint">İpucu düğmesine basılırsa bu not ve kelimenin ilk harfi gösterilir.</p>
+          </div>
+          <label class="hm-check"><input id="secret-show" type="checkbox"> Kelimeyi yazarken göster</label>
+          <p id="duo-error" class="hm-error" role="alert"></p>
+          <button type="submit" class="ba-btn ba-btn-primary" id="duo-start">Kelimeyi gizle ve oyunu başlat</button>
+        </form>
+      </div>
+
+      <div id="play" hidden>
+        <div class="hm-stage">
+          <svg id="hm-svg" class="hm-svg" viewBox="0 0 180 224" role="img" aria-label="Adam asmaca çizimi: 0 / 7 hata"></svg>
+          <div class="hm-info">
+            <p id="cat-line" class="hm-cat-line"></p>
+            <p id="wrong-count" class="hm-count">Hata: 0 / 7</p>
+            <p class="hm-wrong">Yanlış harfler: <span id="wrong-letters">—</span></p>
+            <div class="hm-actions">
+              <button type="button" id="hint" class="ba-btn">İpucu al</button>
+              <button type="button" id="restart" class="ba-btn ba-btn-primary">Yeniden başlat</button>
+            </div>
+          </div>
+        </div>
+        <ul id="word" class="hm-word" aria-label="Kelime"></ul>
+        <div id="keyboard" class="hm-keys" role="group" aria-label="Ekran klavyesi"></div>
+        <div id="hm-result" class="hm-result" hidden aria-live="polite">
+          <h3 id="hm-result-title"></h3>
+          <p id="hm-result-detail"></p>
+        </div>
+      </div>
+
+      <div class="hm-scores">
+        <div id="score-single">
+          <dl class="hm-stat-grid">
+            <div><dt>Puan</dt><dd id="sc-score">0</dd></div>
+            <div><dt>Seri</dt><dd id="sc-streak">0</dd></div>
+            <div><dt>En iyi seri</dt><dd id="sc-best">0</dd></div>
+            <div><dt>Kazanılan / kaybedilen</dt><dd id="sc-record">0 / 0</dd></div>
+          </dl>
+          <button type="button" id="reset-scores" class="hm-mini">Puanı sıfırla</button>
+        </div>
+        <div id="score-duo" hidden>
+          <dl class="hm-stat-grid is-duo">
+            <div><dt>Oyuncu 1</dt><dd id="duo-p1">0</dd></div>
+            <div><dt>Oyuncu 2</dt><dd id="duo-p2">0</dd></div>
+          </dl>
+          <button type="button" id="reset-duo" class="hm-mini">İki kişilik skoru sıfırla</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-note"><div><strong>Kısaca:</strong> 7 yanlış harf hakkınız var. İpucu kategoriyi ve ilk harfi gösterir, kazanırsanız puanınızı 30 azaltır. Tek kişilik oyunu en az bir harf seçtikten sonra yarım bırakırsanız (yeniden başlat ya da kategori değiştirme) oyun yenilgi sayılır ve seri sıfırlanır.</div></div>
+
+    <div class="ba-ad" data-slot="oyun-adam-asmaca-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Adam Asmaca nedir?</h2>
+      <p>Adam Asmaca, gizli bir kelimenin harflerini tek tek tahmin ederek kelimeyi ortaya çıkarmaya çalıştığınız klasik bir kelime oyunudur. Kelimenin her harfi başlangıçta boş bir çizgiyle gösterilir. Doğru bir harf seçtiğinizde o harf kelimedeki bütün yerlerinde açılır; yanlış bir harf seçtiğinizde ise çizim bir adım ilerler. Çizim tamamlanmadan, yani yedinci hatayı yapmadan kelimeyi bulursanız kazanırsınız. Bu sayfadaki sürüm, kâğıt-kalem oyununun şiddet içermeyen, çubuk adam çizimli ve Türkçe harflere uygun bir uyarlamasıdır.</p>
+      <p>Oyun telefonda, tablette ve bilgisayarda aynı şekilde çalışır; kurulum, kayıt ya da üyelik gerektirmez. Kelime listeleri ve skorlarınız tarayıcınızda kalır. Tek başınıza kategori seçerek alıştırma yapabilir ya da iki kişilik modla arkadaşınıza, kardeşinize veya öğrencilerinize kelime sorabilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki listeden bir kategori seçin ya da “Karışık” ile bırakın. Karışık seçeneğinde kategori gizlidir; öğrenmek için ipucu almanız gerekir.</li>
+        <li>Ekran klavyesinden ya da kendi klavyenizden bir harf seçin. Ç, Ğ, İ, I, Ö, Ş ve Ü harfleri ayrı tuşlardır; Türkçe klavyeniz varsa doğrudan yazabilirsiniz.</li>
+        <li>Harf kelimede varsa tüm yerlerinde açılır. Yoksa “Yanlış harfler” listesine eklenir ve çizim bir adım ilerler.</li>
+        <li>Takıldığınızda bir kez ipucu alın: kategori gösterilir ve kelimenin ilk harfi açılır. İpucu hata sayılmaz ama kazanırsanız puanınız 30 azalır.</li>
+        <li>Bütün harfleri açarsanız kazanır, yedinci hatayı yaparsanız kaybedersiniz. Sonra “Yeni oyun” ile devam edin.</li>
+      </ol>
+
+      <h2>Kategoriler</h2>
+      <p>Her kategoride Bilişim Ajans'ın hazırladığı 60 kelime bulunur; toplam 360 kelime vardır. Oyunlar arasında kelime tekrarını azaltmak için son oynadığınız kelimeler bir süre tekrar seçilmez.</p>
+      <ul>
+        <li><strong>Hayvanlar:</strong> aslan, zürafa, kaplumbağa gibi evcil ve yabani hayvanlar.</li>
+        <li><strong>Şehirler:</strong> Türkiye'nin illeri; Adana'dan Zonguldak'a farklı uzunluklarda 60 şehir.</li>
+        <li><strong>Meslekler:</strong> öğretmenden astronota kadar bilinen meslekler.</li>
+        <li><strong>Yiyecekler:</strong> sebze, meyve, tatlı ve yemek adları.</li>
+        <li><strong>Ülkeler:</strong> komşu ülkelerden uzak kıtalardaki ülkelere.</li>
+        <li><strong>Genel:</strong> eşya, doğa, spor ve gündelik hayattan sözcükler.</li>
+      </ul>
+
+      <h2>İpucu, puan ve seri</h2>
+      <p>Tek kişilik modda her kazanılan oyun puan getirir: 50 puan artı kalan hak başına 10 puan. Hiç hata yapmadan bulursanız 120 puan alırsınız. İpucu kullandıysanız bu tutardan 30 puan düşülür; kazanılan puan hiçbir zaman 10'un altına inmez. Kaybettiğinizde puan düşmez ama seri sıfırlanır. Seri, üst üste kazandığınız oyun sayısıdır; en iyi seriniz ayrıca saklanır. Skor tablosundaki “Kazanılan / kaybedilen” alanı toplam oyun geçmişinizi gösterir. Puanlar yalnızca tarayıcınızda tutulur ve “Puanı sıfırla” düğmesiyle istediğiniz an temizlenebilir.</p>
+      <p>Yarım bırakılan oyunlar için de basit bir kural vardır: en az bir harf seçtikten ya da ipucu aldıktan sonra yeniden başlatırsanız ya da kategoriyi değiştirirseniz o oyun yenilgi sayılır. Böylece zor kelimeden kaçıp seriyi korumak mümkün olmaz; hiçbir şey yapmadan yeniden başlatmak ise serbesttir.</p>
+
+      <h2>İki kişilik mod</h2>
+      <p>İki kişilik modda bir oyuncu kelimeyi seçer, diğeri tahmin eder. Kelimeyi seçen oyuncu “Gizli kelime” alanına 3–20 harflik tek bir Türkçe kelime yazar; isterse “İpucu” alanına bir not ekler (örneğin “bir hayvan”). Alan noktalı gösterilir; “Kelimeyi yazarken göster” kutusu yazım hatalarını kontrol etmenize yardım eder. “Kelimeyi gizle ve oyunu başlat” düğmesine basınca kelime alandan silinir ve yalnızca oyunun belleğinde kalır; hiçbir yere kaydedilmez.</p>
+      <p>Oyun bitince kazanan oyuncu bir puan alır: tahmin eden kelimeyi bulursa kendisi, bulamazsa kelimeyi seçen. Yeni oyunda roller otomatik değişir ve iki oyuncunun toplam puanı ekranda tutulur. Ekranı diğer oyuncudan saklamak, kelimeyi seçen oyuncunun sorumluluğundadır; bazı tarayıcılarda alan noktalı gösterilemeyebilir, bu yüzden telefonu bir an için çevirmek iyi bir alışkanlıktır.</p>
+
+      <div class="ba-ad" data-slot="oyun-adam-asmaca-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <h3>Sık harflerle başlayın</h3>
+      <p>Türkçede en sık görülen harfler yaklaşık olarak A, E, İ, N, R, L, I, K, D ve M'dir. İlk birkaç tahminde bunları denemek, kelimenin iskeletini hızla ortaya çıkarır. Ünlü harfler (A, E, I, İ, O, Ö, U, Ü) hemen her kelimede bulunduğu için önce ünlüleri tarayıp sonra ünsüzlere geçmek sağlam bir yöntemdir. Yalnızca bir iki ünlü açıldığında bile kelimenin hecelerini tahmin etmek kolaylaşır.</p>
+      <h3>Türkçenin yapısından yararlanın</h3>
+      <p>Yumuşak g (Ğ) hiçbir Türkçe kelimenin başında bulunmaz; kelimenin ilk harfini ararken Ğ'yi denemeyin. Türkçe kökenli sözcüklerde ünlü uyumu geçerlidir: kalın ünlüler (A, I, O, U) ile ince ünlüler (E, İ, Ö, Ü) genellikle aynı kelimede karışmaz. Kelimede bir A açılmışsa diğer ünlülerin de büyük olasılıkla kalın olduğunu düşünebilirsiniz. Şehir ve ülke adlarında -LI, -İYE, -STAN, -YA gibi sık biten ekleri akılda tutmak da işe yarar.</p>
+      <h3>Kategoriden çıkarım yapın</h3>
+      <p>Kategori hayvanlarsa ve kelime yedi harfliyse aklınıza gelen yedi harfli hayvanları sıralayın; harf sayısı ve açılan ilk harf, seçenekleri hızla daraltır. Karışık modda ipucunu erken kullanmak puan kaybettirir ama kategori bilgisi çoğu zaman tek başına kelimeyi bulmaya yeter. Puan peşindeyseniz ipucunu ancak ikinci ya da üçüncü yanlıştan sonra kullanın.</p>
+      <h3>Hataları akıllıca harcayın</h3>
+      <p>Yedi hakkınız var; ilk üçünü “keşif” için kullanabilirsiniz. Nadir harfleri (J, V, F, Ğ, Ç, Ş) ancak kelimenin yapısı belirginleştiğinde deneyin. Kelimede bir harf iki kez geçiyorsa harf tek tahminle her yerinde açılır; bu yüzden tekrar eden harfler ucuz bilgidir.</p>
+
+      <h2>Ekran klavyesi ve erişilebilirlik</h2>
+      <p>Oyun tamamen klavyeyle oynanabilir: harf tuşlarına basın, Enter ile bitmiş oyunu yeniden başlatın, Tab ile ekran klavyesinde ve düğmelerde gezinin. Ekran klavyesi Türkçe Q düzenindedir; Q, W ve X Türk alfabesinde olmadığı için bulunmaz. i ile ı iki ayrı harftir (İ ve I). Seçilen tuşlar renkle ve köşe işaretiyle belirtilir: doğru harfte ✓, yanlış harfte ✕, ipucuyla açılan harfte ★ görünür; böylece renk körlüğü yaşayanlar da durumu ayırt eder. Ekran okuyucular için kelime kutuları açılmış harfleri ve harf sayısını okur, çizim ise kaç hata yapıldığını bildirir. Hareketi azaltma tercihi açık cihazlarda geçiş animasyonları kapanır.</p>
+
+      <h2>Evde ve sınıfta kullanım</h2>
+      <p>Adam Asmaca, okuma-yazma öğrenen çocuklar için eğlenceli bir imla ve kelime hazinesi çalışmasıdır. Ğ, Ş, Ç, Ö, Ü ve İ/I gibi Türkçeye özgü harfler, oyunun ekran klavyesinde ayrı tuşlar olduğu için çocukların dikkatini çeker. Öğretmenler iki kişilik modu bir tahta oyununa dönüştürebilir: bir öğrenci kelimeyi yazar, sınıf birlikte tahmin eder. Aile içinde de akşam sohbetlerine hareket katar. Kategorili oynamak, “bu ülkenin başkenti neresi?” ya da “bu hayvan nerede yaşar?” gibi küçük sohbetlere kapı aralar. Oyunda süre baskısı, jeton ya da sahte geri sayım yoktur; çocuklar kendi hızlarında oynar.</p>
+
+      <h2>Adam Asmaca'nın kısa tarihi</h2>
+      <p>Adam Asmaca'nın kâğıt-kalem sürümü yüzyılı aşkın süredir oynanan, kökeni tam olarak bilinmeyen bir sokak ve sınıf oyunudur. 19. yüzyıl sonlarına ait yazılı kaynaklarda benzer harf tahmin oyunlarına rastlanır; yirminci yüzyılda ise çocuk oyunları kitaplarının ve televizyon yarışmalarının vazgeçilmezi hâline gelmiştir. Her ülkede kendi diline uyarlanmıştır: Türkçede alfabenin 29 harfi ve özel karakterleri oyuna ayrı bir renk katar. Dijital sürümlerde çizim ve harf takibi otomatik olduğundan, oyuncu yalnızca tahmin etmeye odaklanır.</p>
+
+      <h2>Gizlilik ve çevrimdışı kullanım</h2>
+      <p>Bu sayfada çerez, analitik ya da izleme kodu yoktur. Oyun mantığı tamamen tarayıcınızda çalışır; kelime listesi aynı sunucudan bir kez indirilir ve sonrasında önbellekten okunur. Skorlarınız ve serileriniz yalnızca tarayıcınızın yerel depolama alanında saklanır, kimseyle paylaşılmaz. İki kişilik moddaki gizli kelime ve ipucu notu hiçbir yere kaydedilmez. Siteyi uygulama olarak yüklerseniz bağlantı olmadan da oynayabilirsiniz. Sayfadaki tek dış öğe, ücretsiz hizmetin giderlerini karşılayan ve oyun alanından uzakta duran reklam bölümleridir.</p>
+
+      <h2>Neden Bilişim Ajans'ın oyunu?</h2>
+      <p>Çünkü oyunun içinde reklam yok, veri toplama yok, sahte “premium” ya da yanıltıcı düğme yok. Aynı yaklaşımla hazırladığımız diğer oyunlara ve onlarca ücretsiz araca <a href="../../">ana sayfadan</a> ulaşabilirsiniz. Günlük 5 harfli bulmaca sevenler için <a href="../kelime-bulmaca/">Kelime Bulmaca</a> oyunumuz da hazır.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kaç hata hakkım var?</summary><p>Yedi. Her yanlış harfte çizim bir adım ilerler: zemin, direk ve kiriş, kafa, gövde, kollar, sol bacak ve sağ bacak. Yedinci hatada oyun biter ve doğru kelime gösterilir.</p></details>
+        <details><summary>İpucu nasıl çalışır, bedeli var mı?</summary><p>İpucu düğmesi kategoriyi gösterir ve kelimenin ilk harfini açar. İpucu hata sayılmaz ama kazandığınızda puanınız 30 azalır. Her oyunda yalnızca bir ipucu hakkınız vardır.</p></details>
+        <details><summary>Oyun sürerken yeniden başlatırsam ne olur?</summary><p>Tek kişilik modda en az bir harf seçtiyseniz ya da ipucu aldıysanız yarım bıraktığınız oyun yenilgi sayılır ve seri sıfırlanır. Henüz hiçbir şey yapmadıysanız ceza yoktur.</p></details>
+        <details><summary>İki kişilik mod nasıl oynanır?</summary><p>Bir oyuncu gizli kelimeyi yazar; ekranda noktalı görünür ve oyun başlayınca silinir. Sonra diğer oyuncu harf tahmin eder. Her turdan sonra roller değişir ve iki oyuncunun puanı ayrı ayrı tutulur.</p></details>
+        <details><summary>Kelimelerde Türkçe karakterler nasıl işleniyor?</summary><p>Kelimeler büyük harfle ve Türkçe kurallarına göre işlenir: i harfi İ, ı harfi I olur ve ikisi ayrı tuşlardır. Ekran klavyesinde Ç, Ğ, Ş, Ö, Ü, İ ve I tuşları bulunur; Q, W ve X Türk alfabesinde olmadığı için yoktur.</p></details>
+        <details><summary>Skorlarım nerede saklanıyor?</summary><p>Yalnızca kullandığınız tarayıcının localStorage alanında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da başka cihaza geçerseniz skorlar sıfırlanır.</p></details>
+        <details><summary>Kelime listeleri nereden geliyor, ne kadar kelime var?</summary><p>Altı kategorinin her birinde Bilişim Ajans'ın kendi hazırladığı 60 kelime bulunur, toplam 360 kelime. Listeler tarayıcıda aynı sunucudan yüklenir ve zamanla genişletilebilir.</p></details>
+        <details><summary>İnternet olmadan oynayabilir miyim?</summary><p>Sayfayı bir kez açtıktan sonra oyun dosyaları tarayıcıda önbelleğe alınır ve bağlantı kesilse de çalışır. Siteyi uygulama olarak yüklerseniz çevrimdışı kullanım daha da kolaylaşır.</p></details>
+      </div>
+
+      <section class="rh-tools" aria-labelledby="h-ilgili">
+        <h2 id="h-ilgili">İlgili oyunlar</h2>
+        <ul>
+          <li><a href="../kelime-bulmaca/"><strong>Kelime Bulmaca</strong><span>Günlük 5 harfli Türkçe kelimeyi 6 denemede bulun.</span></a></li>
+          <li><a href="../sudoku/"><strong>Sudoku</strong><span>Rakam yerleştirme bulmacası; kolaydan zora seviyeler.</span></a></li>
+          <li><a href="../hafiza-kartlari/"><strong>Hafıza Kartları</strong><span>Eş kartları bulun, hafızanızı çalıştırın.</span></a></li>
+          <li><a href="../../"><strong>Tüm oyunlar ve araçlar</strong><span>Bilişim Ajans ücretsiz araçlar ana sayfası.</span></a></li>
+        </ul>
+      </section>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-adam-asmaca-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

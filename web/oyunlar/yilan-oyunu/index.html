@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Yılan Oyunu Oyna – Ücretsiz Online Yılan Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Yılan oyununu tarayıcıda hemen oynayın: ok tuşları, W A S D veya parmakla kaydırma, yavaş-normal-hızlı seviyeler, duvarlı ve duvarsız mod, en yüksek skor. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/yilan-oyunu/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .yl-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 520px; margin: 0 auto 12px; }
+    .yl-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .yl-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .yl-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; }
+    .yl-stage { position: relative; width: 100%; max-width: 520px; margin: 0 auto; aspect-ratio: 1 / 1; border-radius: var(--ba-radius); overflow: hidden; background: #24272c; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .yl-stage canvas { width: 100%; height: 100%; display: block; }
+    .yl-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(20, 22, 26, .84); color: #fff; }
+    .yl-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .yl-overlay p { margin: 0; color: #d7d8db; max-width: 36ch; font-size: .95rem; line-height: 1.5; }
+    .yl-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .yl-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .yl-overlay .ba-btn-primary { color: #1a0d10; }
+    .yl-pad { display: none; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(2, 56px); gap: 8px; justify-content: center; margin: 14px auto 0; }
+    .yl-pad button { font: inherit; font-size: 1.4rem; line-height: 1; border-radius: var(--ba-radius); border: 1px solid var(--ba-border-hover); background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .yl-pad button:active { background: var(--ba-primary-soft); border-color: var(--ba-primary); }
+    .yl-pad .up { grid-column: 2; grid-row: 1; }
+    .yl-pad .left { grid-column: 1; grid-row: 2; }
+    .yl-pad .down { grid-column: 2; grid-row: 2; }
+    .yl-pad .right { grid-column: 3; grid-row: 2; }
+    @media (max-width: 720px), (pointer: coarse) { .yl-pad { display: grid; } }
+    .game-box .ba-actions { justify-content: center; }
+    .game-box .ba-options { max-width: 640px; margin-left: auto; margin-right: auto; }
+    .yl-hint { max-width: 520px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .yl-stage { max-width: min(100%, max(220px, calc(100vh - 300px))); }
+    /* Oyun sayfasında kahraman alanı sıkıştırılır: oyun ilk ekranda görünsün. */
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Yılan Oyunu – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz yılan oyunu: yavaş, normal ve hızlı seviyeler, duvarlı ve duvarsız mod, en yüksek skor.","applicationCategory":"Game","genre":"Arcade","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/yilan-oyunu/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Yılan oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Yılanı ok tuşları, W A S D veya parmağınızı kaydırarak yönlendirirsiniz. Her yem yılanı bir kare uzatır ve 10 puan kazandırır. Duvara ya da kendi gövdenize çarparsanız oyun biter."}},
+  {"@type":"Question","name":"Telefonda yılan oyununu nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Tahtanın üzerinde parmağınızı gitmek istediğiniz yöne kaydırın. Küçük ekranlarda tahtanın altında ekran okları da görünür; dilediğinizi kullanabilirsiniz."}},
+  {"@type":"Question","name":"Duvarsız (sarmalayan) mod nedir?","acceptedAnswer":{"@type":"Answer","text":"Duvarsız modda yılan bir kenardan çıkınca karşı kenardan geri girer, duvara çarpmaz. Yalnızca kendi gövdenize çarparsanız oyun biter. Çerçeve bu modda kesikli gri çizgiyle gösterilir."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın yerel depolama alanında (localStorage). Hiçbir sunucuya gönderilmez, başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz sıfırlanır."}},
+  {"@type":"Question","name":"Oyunu nasıl duraklatırım?","acceptedAnswer":{"@type":"Answer","text":"Boşluk veya P tuşuna basın ya da Duraklat düğmesini kullanın. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar."}},
+  {"@type":"Question","name":"Yendikçe hızlan seçeneği ne yapar?","acceptedAnswer":{"@type":"Answer","text":"Açıkken yılan her yem yediğinde yaklaşık yüzde 4 hızlanır ve belirli bir üst hıza kadar çıkar. Kapalıyken seçtiğiniz hız oyun boyunca sabit kalır."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, bir şey yüklemem gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt, indirme veya eklenti gerekmez. Sayfayı açıp Başlat düğmesine basmanız yeterlidir."}},
+  {"@type":"Question","name":"İnternet olmadan oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez. Siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Yılan Oyunu Oyna – Ücretsiz Online Yılan Oyunu</h1>
+      <p class="lead">Klasik yılan oyununu kurulum, üyelik ve indirme olmadan doğrudan tarayıcınızda oynayın. Ok tuşları, W A S D ya da parmağınızla kaydırarak yılanı yönlendirin; hızı ve duvarlı ya da duvarsız modu siz seçin, en yüksek skorunuz bu cihazda saklansın.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Yılan oyunu alanı</h2>
+      <div class="yl-hud" aria-label="Oyun bilgileri">
+        <div class="yl-stat"><span>Skor</span><strong id="score">0</strong></div>
+        <div class="yl-stat"><span>En yüksek</span><strong id="best">0</strong></div>
+        <div class="yl-stat"><span>Uzunluk</span><strong id="length">3</strong></div>
+        <div class="yl-stat"><span>Hız</span><strong id="speedx">1,0×</strong></div>
+      </div>
+
+      <div class="yl-stage" id="stage" tabindex="0" role="group" aria-label="Yılan oyunu tahtası. Yönlendirmek için ok tuşları veya W A S D, duraklatmak için Boşluk ya da P tuşunu kullanın.">
+        <canvas id="board" width="520" height="520" role="img" aria-label="20 x 20 kareli oyun tahtası"></canvas>
+        <div class="yl-overlay" id="overlay">
+          <h3 id="overlay-title">Yılan Oyunu</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="yl-pad" aria-label="Ekran okları">
+        <button type="button" class="up" data-pad="up" aria-label="Yukarı">▲</button>
+        <button type="button" class="left" data-pad="left" aria-label="Sola">◀</button>
+        <button type="button" class="down" data-pad="down" aria-label="Aşağı">▼</button>
+        <button type="button" class="right" data-pad="right" aria-label="Sağa">▶</button>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+
+      <div class="ba-options">
+        <div class="ba-field"><label for="opt-speed">Hız</label>
+          <select id="opt-speed"><option value="slow">Yavaş</option><option value="normal" selected>Normal</option><option value="fast">Hızlı</option></select></div>
+        <div class="ba-field"><label for="opt-mode">Oyun modu</label>
+          <select id="opt-mode"><option value="wall" selected>Duvarlı (duvara çarpınca biter)</option><option value="wrap">Duvarsız (karşı kenardan çıkar)</option></select></div>
+        <div class="ba-field"><label for="opt-accel"><input type="checkbox" id="opt-accel">Yendikçe hızlan</label>
+          <div class="hint">Her yemde yılan biraz daha hızlanır.</div></div>
+      </div>
+      <p class="yl-hint">Ayarlar oyun sürerken kilitlidir; duraklatıp değiştirirseniz oyun yeni ayarlarla baştan başlar. En yüksek skor, her mod için ayrı ve yalnızca bu tarayıcıda saklanır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-yilan-oyunu-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Yılan oyunu nedir?</h2>
+      <p>Yılan oyunu, ekranda durmadan ilerleyen bir yılanı yönlendirerek yemleri toplamaya çalıştığınız, kuralları saniyeler içinde öğrenilen ama ustalaşması zaman alan klasik bir oyundur. Yılan her yem yediğinde bir kare uzar; uzadıkça tahtada boş yer azalır ve oyun zorlaşır. Amaç, duvara ya da kendi gövdenize çarpmadan olabildiğince çok yem toplayıp en yüksek skora ulaşmaktır. Bu sayfadaki yılan oyununu hiçbir şey indirmeden, üye olmadan ve e-posta adresi vermeden doğrudan tarayıcınızda oynayabilirsiniz.</p>
+      <p>Oyun tamamen bilgisayarınızda ya da telefonunuzda çalışır. Skorunuz ve ayarlarınız yalnızca tarayıcınızın yerel depolama alanında tutulur; sunucumuza hiçbir bilgi gönderilmez. Oyun alanı reklamsızdır, sayfadaki reklamlar yalnızca oyun kutusunun dışında yer alır.</p>
+
+      <h2>Yılan oyunu nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Hızı ve modu seçin.</strong> Yavaş, normal ve hızlı seviyelerden birini, ayrıca duvarlı ya da duvarsız modu belirleyin. İlk oyun için "Normal" ve "Duvarlı" iyi bir başlangıçtır.</li>
+        <li><strong>Başlat'a basın.</strong> Yılan ortadaki üç karelik gövdesiyle sağa doğru ilerlemeye başlar. İsterseniz tahtaya odaklanıp doğrudan bir yön tuşuna da basabilirsiniz.</li>
+        <li><strong>Yılanı yönlendirin.</strong> Ok tuşları, W A S D ya da parmağınızı kaydırarak yön verin. Yılan durduramazsınız; yalnızca yönünü değiştirebilirsiniz ve bulunduğu yönün tam tersine dönemez.</li>
+        <li><strong>Yemi toplayın.</strong> Beyaz ortası bordo yuvarlak yemin üzerinden geçtiğinizde 10 puan kazanır, bir kare uzarsınız. Yeni yem her zaman boş bir karede belirir.</li>
+        <li><strong>Çarpmadan devam edin.</strong> Duvarlı modda kenara, her iki modda kendi gövdenize çarpınca oyun biter. Skorunuz ve en yüksek skorunuz ekranda görünür; "Tekrar oyna" ile hemen yeniden deneyebilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Yukarı, aşağı, sola ve sağa ok tuşları ya da W, S, A, D tuşları yılanı yönlendirir. Boşluk veya P tuşu oyunu duraklatır ve devam ettirir.</li>
+        <li><strong>Dokunmatik ekran:</strong> Tahtanın üzerinde parmağınızı gitmek istediğiniz yöne kaydırın. Parmağınızı kaldırmadan yön değiştirmeye devam edebilirsiniz.</li>
+        <li><strong>Ekran okları:</strong> Küçük ekranlarda tahtanın altında dört yön düğmesi görünür. Tek elle oynarken kaydırmadan daha rahat bulabilirsiniz.</li>
+        <li><strong>Fare:</strong> Başlat, Duraklat, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır.</li>
+      </ul>
+      <p>Hızlı oynarken iki yön tuşuna art arda basarsanız oyun bu iki hamleyi sıraya alır ve ardışık adımlarda uygular. Bu sayede dar köşelerde tek karelik U dönüşleri yapabilirsiniz; ancak geri dönüş hamlesi her zaman yok sayılır.</p>
+
+      <h2>Hız seviyeleri ve oyun modları</h2>
+      <h3>Yavaş, normal ve hızlı</h3>
+      <p>Yavaş seviyede yılan saniyede yaklaşık altı, normal seviyede yaklaşık dokuz, hızlı seviyede yaklaşık on üç kare ilerler. Tahtanın üstündeki "Hız" kutusu, normal seviyeye göre anlık çarpanı gösterir; örneğin 1,5× yılanın normal hızın bir buçuk katı olduğu anlamına gelir.</p>
+      <h3>Yendikçe hızlan</h3>
+      <p>Bu seçenek açıkken yılan her yem yediğinde yaklaşık yüzde dört hızlanır ve belirli bir üst sınıra kadar çıkar. Başlangıçta rahat, ilerledikçe gerilimli bir oyun isteyenler için idealdir. Kapalıyken seçtiğiniz hız oyun boyunca sabit kalır; bu da uzun ve sakin oyunlar için daha uygundur.</p>
+      <h3>Duvarlı ve duvarsız (sarmalayan) mod</h3>
+      <p>Duvarlı modda tahtanın kenarları duvardır ve çerçeve düz bordo çizgiyle gösterilir; yılan buraya çarparsa oyun biter. Duvarsız modda ise yılan bir kenardan çıkıp karşı kenardan geri girer, çerçeve kesikli gri çizgiyle gösterilir. Bu modda tek tehlike kendi gövdenizdir; bu yüzden yeni başlayanlar için daha bağışlayıcıdır, ama yılan uzadığında karşı kenardan çıkan başınızın kendi kuyruğunuzla karşılaşması sürpriz olabilir.</p>
+
+      <h2>Skor ve en yüksek skor</h2>
+      <p>Her yem 10 puandır. Hız seviyesi puanı değiştirmez; bu yüzden skor tablosu, hangi hızda oynarsanız oynayın aynı ölçüyle okunur. En yüksek skorunuz iki mod için ayrı ayrı tutulur, çünkü duvarsız mod doğal olarak daha kolaydır. Rekorunuz ve ayarlarınız tarayıcınızın localStorage alanına yazılır. Bu alan yalnızca sizin cihazınızdadır; başka bir tarayıcıya ya da cihaza taşınmaz ve tarayıcı verilerini temizlediğinizde silinir.</p>
+
+      <div class="ba-ad" data-slot="oyun-yilan-oyunu-b" aria-label="Reklam"></div>
+
+      <h2>Yılan oyununda strateji ipuçları</h2>
+      <ul>
+        <li><strong>Merkezde kalın.</strong> Duvarlı modda kenara yaklaştıkça hareket alanınız daralır. Yemi almak için kenara gidin, ardından yeniden merkeze dönün.</li>
+        <li><strong>İki hamle sonrasını düşünün.</strong> Her dönüşten önce kuyruğunuzun nerede olacağına bakın. Kendinizi çıkmaz sokağa sokan çoğu hata, bir hamle önce planlanmadığı için olur.</li>
+        <li><strong>Tahtayı bölmeyin.</strong> Gövdeniz uzadıkça kendi çizdiğiniz duvarlarla tahtayı iki bölmeye ayırmak kolaydır. Mümkün olduğunca tek ve geniş bir boş alan bırakın.</li>
+        <li><strong>Kıvrımlı rota izleyin.</strong> Uzun yılanlarda tahtayı satır satır, yılan gibi kıvrılarak taramak, boşlukları kapatmadan ilerlemenizi sağlar.</li>
+        <li><strong>Kuyruğunuzu takip edin.</strong> Kendi kuyruğunuzun hemen arkasından gitmek güvenli bir bekleme yoludur; kuyruk her adımda yer açtığı için çarpmazsınız.</li>
+        <li><strong>Hızlı modda erken dönün.</strong> Tepki süreniz kısalırsa dönüşü hedef yemin tam hizasında değil, bir kare önceden başlatın.</li>
+        <li><strong>Duvarsız modda kenarı kullanın.</strong> Yemin karşı kenarda olduğu durumlarda tahtayı geçmek yerine yakın kenardan çıkmak daha kısa yoldur.</li>
+        <li><strong>Mola verin.</strong> Dikkatiniz dağıldığında P tuşuyla duraklatın; hata yapmadan önce soluklanmak skoru çoğu zaman artırır.</li>
+      </ul>
+
+      <h2>Yılan oyununun kısa tarihi</h2>
+      <p>Yılan türü oyunların kökeni 1970'lerin ortasına, iki oyuncunun ardında iz bırakan çizgilerle birbirini sıkıştırmaya çalıştığı arcade makinelerine uzanır. Sonraki yıllarda ev bilgisayarlarında, tek oyunculu ve yem toplayan sürümler yaygınlaştı. 1990'ların sonunda bazı cep telefonlarına hazır yüklü gelen sürümler oyunu milyonlarca insanın tanıdığı bir klasiğe dönüştürdü. Basit kuralları, küçük ekranlarda ve zayıf donanımda bile çalışması ve "bir tur daha" dedirten yapısı sayesinde yılan oyunu onlarca yıldır sevilmeye devam ediyor.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı. Hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor; bu sayede çok hızlı yükleniyor ve çevrimdışı da çalışabiliyor.</p>
+
+      <h2>Neden Bilişim Ajans yılan oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın; e-posta, hesap ya da indirme istenmez.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişliğindeki telefonlarda da sığar; kaydırma, ekran okları ve klavye birlikte çalışır.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun tahtasının ve düğmelerin yanında asla görünmez. Tam ekran modunda hiçbir reklam görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca rekorunuz ve ayarlarınız kendi cihazınızda saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da oynayabilirsiniz; siteyi uygulama olarak kurmak da mümkündür.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yılan oyunu nasıl oynanır?</summary><p>Yılanı ok tuşları, W A S D ya da parmağınızı kaydırarak yönlendirirsiniz. Her yem yılanı bir kare uzatır ve 10 puan kazandırır. Duvara (duvarlı modda) ya da kendi gövdenize çarparsanız oyun biter. Amaç, olabildiğince uzun yaşayıp en yüksek skora ulaşmaktır.</p></details>
+        <details><summary>Telefonda yılan oyununu nasıl oynarım?</summary><p>Tahtanın üzerinde parmağınızı gitmek istediğiniz yöne kaydırın. Küçük ekranlarda tahtanın altında ekran okları da görünür; hangisi rahatınıza giderse onu kullanın. Oyun sırasında sayfa kaymaz, tahtanın dışına dokunarak sayfayı kaydırabilirsiniz.</p></details>
+        <details><summary>Duvarsız (sarmalayan) mod nedir?</summary><p>Duvarsız modda yılan bir kenardan çıkınca karşı kenardan geri girer, duvara çarpmaz. Yalnızca kendi gövdenize çarparsanız oyun biter. Çerçeve bu modda kesikli gri çizgiyle gösterilir; duvarlı modda ise düz bordo çizgidir.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor, silinir mi?</summary><p>Tarayıcınızın yerel depolama alanında (localStorage) saklanır. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız skor kalıcı olmaz.</p></details>
+        <details><summary>Oyunu nasıl duraklatırım?</summary><p>Boşluk veya P tuşuna ya da Duraklat düğmesine basın. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar, geri döndüğünüzde "Devam et" ile sürdürebilirsiniz.</p></details>
+        <details><summary>"Yendikçe hızlan" seçeneği ne yapar?</summary><p>Açıkken yılan her yem yediğinde yaklaşık yüzde dört hızlanır ve belirli bir üst hıza kadar çıkar. Kapalıyken seçtiğiniz hız oyun boyunca sabit kalır. Hız kutusundaki çarpan, yılanın anlık hızını gösterir.</p></details>
+        <details><summary>Neden ayarları oyun sırasında değiştiremiyorum?</summary><p>Hız ve mod puanı doğrudan etkilediği için oyun sürerken kilitlidir. Duraklatıp ayarı değiştirirseniz oyun yeni ayarlarla baştan başlar; böylece rekorlar karışmaz.</p></details>
+        <details><summary>Oyun ücretsiz mi, bir şey yüklemem gerekir mi?</summary><p>Tamamen ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Bilişim Ajans'ın topluluk projesi olarak sunulur ve giderler yalnızca sayfadaki reklamlarla karşılanır.</p></details>
+        <details><summary>İnternet olmadan oynayabilir miyim?</summary><p>Sayfa bir kez yüklendikten sonra oyun bağlantı gerektirmez. Siteyi tarayıcınızdan uygulama olarak kurarsanız çevrimdışı da açılır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Skorunuz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../blok-dusurme/">Blok Düşürme</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-yilan-oyunu-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

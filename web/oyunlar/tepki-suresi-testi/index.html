@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Tepki Süresi Testi Oyna – Ücretsiz Online Tepki Süresi ve Refleks Testi (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz tepki süresi testi: renk değişince tıklayın (5 deneme ortalaması), 30 saniyelik hedef vurma oyununu oynayın ve 1-25 sayı sırası testiyle refleksinizi ölçün. Kayıt yok, sonuçlarınız cihazınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/tepki-suresi-testi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; renkler ba.css token'larından gelir. Basış alanlarında sabit renk + beyaz yazı (AA). */
+    .tp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .tp-chip { min-height: 44px; padding: 8px 16px; border: 2px solid var(--ba-border); border-radius: 999px; background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+    .tp-chip:hover { border-color: var(--ba-border-hover); }
+    .tp-chip[aria-pressed="true"] { background: var(--ba-primary-soft); border-color: var(--ba-primary); color: var(--ba-primary-strong); }
+    .tp-pad { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 250px; padding: 20px; border: 0; border-radius: var(--ba-radius-lg); background: #2f3237; color: #fff; font: inherit; text-align: center; cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; transition: background-color .08s; }
+    .tp-pad[data-state="waiting"] { background: #b3261e; }
+    .tp-pad[data-state="go"] { background: #1f7a4d; }
+    .tp-pad[data-state="early"] { background: #8a4b00; }
+    .tp-pad[data-state="result"], .tp-pad[data-state="done"] { background: #7b2331; }
+    .tp-pad-big { font-size: clamp(1.6rem, 7vw, 2.5rem); font-weight: 700; line-height: 1.2; }
+    .tp-pad-sub { font-size: 1rem; max-width: 34em; }
+    .tp-help { font-size: .88rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .tp-trials { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; list-style: none; margin: 12px 0 0; padding: 0; }
+    .tp-trials li { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 6px 4px; text-align: center; min-width: 0; }
+    .tp-trials li.is-set { border-color: var(--ba-success); background: var(--ba-success-soft); }
+    .tp-trials .n { display: block; font-size: .72rem; color: var(--ba-text-muted); }
+    .tp-trials b { font-family: var(--ba-mono); font-size: 1.05rem; }
+    .tp-hud { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0 0 12px; }
+    @media (min-width: 600px) { .tp-hud { grid-template-columns: repeat(4, 1fr); } .tp-hud.c3 { grid-template-columns: repeat(3, 1fr); } }
+    .tp-hud div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 8px 12px; min-width: 0; }
+    .tp-hud .k { display: block; font-size: .78rem; color: var(--ba-text-muted); font-weight: 600; }
+    .tp-hud b { font-family: var(--ba-mono); font-size: 1.35rem; }
+    .tp-arena { position: relative; width: 100%; aspect-ratio: 1 / 1; max-height: 420px; background: var(--ba-surface-2); border: 2px dashed var(--ba-border-hover); border-radius: var(--ba-radius); overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+    @media (min-width: 600px) { .tp-arena { aspect-ratio: 16 / 9; } }
+    .tp-overlay { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 16px; text-align: center; color: var(--ba-text-2); pointer-events: none; }
+    .tp-target { position: absolute; width: 56px; height: 56px; padding: 0; border: 3px solid #fff; border-radius: 50%; background: radial-gradient(circle, #fff 0 14%, #b3261e 15% 44%, #fff 45% 60%, #b3261e 61%); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); cursor: pointer; touch-action: manipulation; animation: tpPop .12s ease-out; }
+    .tp-target:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 3px; }
+    @keyframes tpPop { from { transform: scale(.4); } to { transform: scale(1); } }
+    .tp-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 460px; margin: 0 auto; }
+    .tp-cell { display: grid; place-items: center; min-height: 48px; aspect-ratio: 1; padding: 0; border: 2px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 700; font-size: 1.3rem; cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+    .tp-cell-empty { cursor: default; color: var(--ba-text-muted); background: var(--ba-surface-2); }
+    .tp-cell.done { background: var(--ba-success-soft); border-color: var(--ba-success); color: var(--ba-success); }
+    .tp-cell.shake { border-color: var(--ba-danger); animation: tpShake .3s; }
+    @keyframes tpShake { 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+    @media (prefers-reduced-motion: reduce) { .tp-cell.shake, .tp-target { animation: none; } }
+    .tp-res-main { font-family: var(--ba-mono); font-size: 2rem; font-weight: 700; color: var(--ba-text); margin: 0 0 4px; }
+    .tp-new { font-weight: 700; color: var(--ba-success); margin: 0 0 8px; }
+    .tp-share { font-size: .92rem; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 12px; margin: 12px 0 0; user-select: all; }
+    .tp-best { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--ba-border); }
+    .tp-best div { min-width: 0; }
+    .tp-best dt { font-size: .78rem; color: var(--ba-text-muted); font-weight: 600; }
+    .tp-best dd { margin: 0; font-family: var(--ba-mono); font-weight: 600; font-size: .95rem; overflow-wrap: anywhere; }
+    .tp-best-h { font-size: 1rem; margin: 18px 0 0; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Tepki Süresi ve Refleks Testi","description":"Renk değişince tıkla (5 deneme ortalaması), 30 saniyelik hedef vurma ve 1-25 sayı sırası oyunlarından oluşan ücretsiz online tepki süresi ve refleks testi.","url":"https://araclar.bilisimajans.com/oyunlar/tepki-suresi-testi/","inLanguage":"tr","applicationCategory":"Game","genre":"Refleks oyunu","operatingSystem":"Any","gamePlatform":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ortalama tepki süresi kaç milisaniyedir?","acceptedAnswer":{"@type":"Answer","text":"Genel bilgiye göre görsel bir uyarana verilen basit tepki süresi yetişkinlerde yaklaşık 200-270 ms aralığındadır; sık verilen yuvarlak değer 250 ms'dir. Bu bir kıyas için genel bir değerdir; ekran, fare ve tarayıcı gecikmesi sonucu birkaç on milisaniye değiştirebilir."}},{"@type":"Question","name":"Sonuçlarım her denemede neden değişiyor?","acceptedAnswer":{"@type":"Answer","text":"Dikkat, yorgunluk, ortam ve cihaz gecikmesi gibi etkenler her denemede biraz farklıdır. Bu yüzden test beş denemenin ortalamasını alır. Tek denemeye bakmak yerine ortalamayı ve en iyi sonucu takip edin."}},{"@type":"Question","name":"\"Çok erken!\" uyarısı neden çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Ekran yeşile dönmeden tıkladığınız için çıkar. Yeşil olma anı 1,5 ile 4 saniye arasında rastgele seçildiğinden tahmin etmek işe yaramaz. Erken tıklama deneme sayılmaz; yeniden başlatmak için tekrar tıklayın."}},{"@type":"Question","name":"Telefonda ve dokunmatik ekranda sonuç neden farklı?","acceptedAnswer":{"@type":"Answer","text":"Dokunmatik ekranlar, ekranın ve dokunma algılamanın kendi gecikmesini ekler. Masaüstünde kullanılan fare, ekran yenileme hızı ve tarayıcı da sonucu etkiler. Bu yüzden farklı cihazlardaki sonuçları birbiriyle değil, kendi cihazınızdaki geçmiş sonuçlarınızla karşılaştırın."}},{"@type":"Question","name":"Bu test tıbbi bir ölçüm mü, tanı koyar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Test eğlence amaçlıdır; tıbbi, bilimsel ya da mesleki bir ölçüm değildir ve herhangi bir sağlık durumu hakkında yorum yapmaz. Sağlıkla ilgili endişeleriniz için bir sağlık uzmanına başvurun."}},{"@type":"Question","name":"Sonuçlarım nerede saklanıyor, başkası görebilir mi?","acceptedAnswer":{"@type":"Answer","text":"En iyi sonuçlarınız yalnızca bu cihazdaki tarayıcı belleğinde (localStorage) tutulur. Sunucuya gönderilmez ve kimse göremez. \"Kayıtlı sonuçları sil\" düğmesiyle ya da tarayıcı verilerini temizleyerek silebilirsiniz."}},{"@type":"Question","name":"Hedef vurma skoru nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Skor, 30 saniyede vurduğunuz hedef sayısıdır. Hedefin ekranda kalma süresi 1,7 saniyeden 0,95 saniyeye düşer. Hedef kaçarsa ya da boş alana basarsanız ıskalama sayılır; isabet oranı, isabetlerin isabet ve ıskalamaların toplamına bölünmesiyle bulunur."}},{"@type":"Question","name":"Klavyeyle oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Renk testi için büyük alana odaklanıp Boşluk ya da Enter tuşuna basabilirsiniz. Hedef vurma oyununda yeni beliren hedef otomatik odak alır ve Boşluk ya da Enter ile vurulur. Sayı sırasında Tab ile sayılar arasında gezip Enter ile seçebilirsiniz; ancak fare ya da dokunmatik ekran bu test için daha uygundur."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Tepki Süresi Testi</span> ve Refleks Oyunları</h1>
+      <p class="lead">Renk değişince tıklayarak tepki sürenizi milisaniye olarak ölçün, 30 saniyelik hedef vurma oyunuyla hızınızı deneyin ve 1-25 sayı sırasıyla gözünüzün tarama becerisini yarıştırın. Sonuçlar genel bilgiyle kıyaslanır, en iyileriniz yalnızca bu tarayıcıda saklanır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="game" aria-labelledby="h-game">
+      <h2 id="h-game" class="visually-hidden">Tepki süresi ve refleks testi</h2>
+
+      <div class="tp-chips" role="group" aria-label="Test türü">
+        <button type="button" class="tp-chip" data-mode="reaction" aria-pressed="true">Renk değişince tıkla</button>
+        <button type="button" class="tp-chip" data-mode="target" aria-pressed="false">Hedef vurma</button>
+        <button type="button" class="tp-chip" data-mode="number" aria-pressed="false">Sayı sırası</button>
+      </div>
+
+      <div data-panel="reaction">
+        <button type="button" id="rx-pad" class="tp-pad" data-state="idle" aria-describedby="rx-help">
+          <span class="tp-pad-big" id="rx-big">Başlamak için tıklayın</span>
+          <span class="tp-pad-sub" id="rx-sub"></span>
+        </button>
+        <p class="tp-help" id="rx-help">Kırmızı ekranda bekleyin; yeşile dönünce olabildiğince hızlı tıklayın. Yeşilden önce tıklarsanız deneme sayılmaz. Süreler milisaniye (ms) cinsindendir.</p>
+        <p id="rx-status" class="visually-hidden" role="status"></p>
+        <ol id="rx-trials" class="tp-trials" aria-label="Deneme süreleri (ms)">
+          <li><span class="n">1</span><b>–</b></li><li><span class="n">2</span><b>–</b></li><li><span class="n">3</span><b>–</b></li><li><span class="n">4</span><b>–</b></li><li><span class="n">5</span><b>–</b></li>
+        </ol>
+      </div>
+
+      <div data-panel="target" hidden>
+        <div class="ba-actions" style="margin:0 0 12px"><button type="button" id="hv-start" class="ba-btn ba-btn-primary">Başla</button></div>
+        <div class="tp-hud" aria-label="Hedef vurma durumu">
+          <div><span class="k">Kalan süre</span><b id="hv-time">30</b> sn</div>
+          <div><span class="k">İsabet</span><b id="hv-hits">0</b></div>
+          <div><span class="k">Iskalama</span><b id="hv-miss">0</b></div>
+          <div><span class="k">Ort. vurma süresi</span><b id="hv-avg">–</b></div>
+        </div>
+        <div class="tp-arena" id="hv-arena" role="group" aria-label="Hedef alanı">
+          <p class="tp-overlay" id="hv-overlay">Başla'ya basın. 30 saniye boyunca beliren yuvarlak hedeflere olabildiğince hızlı tıklayın. Klavyede hedef otomatik odaklanır; Boşluk ya da Enter ile vurun.</p>
+        </div>
+      </div>
+
+      <div data-panel="number" hidden>
+        <div class="ba-actions" style="margin:0 0 12px"><button type="button" id="nm-start" class="ba-btn ba-btn-primary">Başla</button></div>
+        <div class="tp-hud c3" aria-label="Sayı sırası durumu">
+          <div><span class="k">Süre</span><b id="nm-time">0,00</b> sn</div>
+          <div><span class="k">Sıradaki sayı</span><b id="nm-next">1</b></div>
+          <div><span class="k">Yanlış tıklama</span><b id="nm-miss">0</b></div>
+        </div>
+        <div class="tp-grid" id="nm-grid" aria-hidden="true"></div>
+        <p class="tp-help" id="nm-hint"></p>
+      </div>
+
+      <div id="result" class="ba-result" aria-live="polite">
+        <h3 id="res-title">Sonuç</h3>
+        <p id="res-new" class="tp-new" hidden>Yeni en iyi sonuç!</p>
+        <p class="tp-res-main" id="res-main"></p>
+        <p id="res-detail"></p>
+        <p id="res-comment"></p>
+        <p class="tp-help" id="res-note"></p>
+        <p class="tp-share" id="res-share"></p>
+        <div class="ba-actions">
+          <button type="button" id="res-again" class="ba-btn ba-btn-primary">Tekrar dene</button>
+          <button type="button" id="res-copy" class="ba-btn">Paylaşım metnini kopyala</button>
+        </div>
+        <p class="tp-help" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <h3 class="tp-best-h">En iyi sonuçlarım (yalnızca bu cihazda)</h3>
+      <dl class="tp-best">
+        <div><dt>Renk testi (ortalama)</dt><dd id="best-reaction">–</dd></div>
+        <div><dt>Hedef vurma</dt><dd id="best-target">–</dd></div>
+        <div><dt>Sayı sırası</dt><dd id="best-number">–</dd></div>
+      </dl>
+      <div class="ba-actions"><button type="button" id="reset-best" class="ba-btn">Kayıtlı sonuçları sil</button></div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-tepki-suresi-testi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Tepki süresi ve refleks testi nasıl yapılır?</h2>
+      <p>Bu sayfada üç ayrı test vardır ve hepsi tek tıkla başlar. Üstteki düğmelerden birini seçin:</p>
+      <ol class="ba-steps">
+        <li><strong>Renk değişince tıkla:</strong> Büyük alana tıklayarak başlayın. Alan kırmızıyken bekleyin; yeşile döndüğü anda tıklayın. Beş denemenin ortalaması alınır. Yeşilden önce tıklarsanız "Çok erken!" uyarısı çıkar ve o deneme sayılmaz.</li>
+        <li><strong>Hedef vurma:</strong> "Başla"ya basın. 30 saniye boyunca rastgele yerlerde beliren yuvarlak hedeflere tıklayın. Hedefler kısa süre sonra kaybolur ve süre ilerledikçe daha da kısa kalır. İsabet, ıskalama ve ortalama vurma süresi canlı görünür.</li>
+        <li><strong>Sayı sırası:</strong> "Başla"ya basınca 1'den 25'e kadar sayılar karışık dizilir. Sayıları sırayla, en kısa sürede bulup tıklayın. Yanlış sayıya tıklamak ceza süresi eklemez ama hata sayacına yazılır.</li>
+        <li>Test bitince sonuç kutusu açılır: ölçülen değer, kısa bir yorum ve arkadaşlarınıza gönderebileceğiniz hazır bir paylaşım metni. En iyi sonuçlarınız alttaki kutuda bu tarayıcıya kaydedilir.</li>
+      </ol>
+
+      <h2>Renk testinde neden beş deneme yapılır?</h2>
+      <p>Tek bir deneme tesadüfen çok iyi ya da çok kötü çıkabilir; bir an dalgınlık veya beklenmedik bir alkış sesi bile sonucu bozar. Bu yüzden test, beş geçerli denemenin ortalamasını alır. Her denemede yeşile dönme anı 1,5 ile 4 saniye arasında rastgele seçilir; böylece ne zaman döneceğini tahmin edemezsiniz ve ölçtüğünüz şey tahmin değil, gerçek tepkidir. Erken tıklama sayılmayan bir hata olarak işaretlenir ve o deneme yeniden yapılır. Aşağıda göreceğiniz beş kutu, her denemenin süresini milisaniye olarak gösterir; en iyi ve en yavaş denemeniz sonuç kutusunda ayrıca yazılır.</p>
+
+      <h2>Ortalama insanın tepki süresi kaç milisaniyedir?</h2>
+      <p>Genel bilgi olarak, bir görsel uyarana (örneğin renk değişimine) verilen basit tepki süresi sağlıklı yetişkinlerde ortalama 200-270 milisaniye aralığında bildirilir; sık verilen yuvarlak değer yaklaşık 250 ms'dir. Sese verilen tepki süresi çoğunlukla biraz daha kısadır. Milisaniye saniyenin binde biridir, yani 250 ms çeyrek saniyeden ibarettir: gözünüz rengi görür, bu bilgi beyne ulaşır, karar verilir ve parmağınız harekete geçer. Bu sayfadaki yorumlar kabaca bir kıyastır; kesin bir istatistik, tıbbi bir değerlendirme ya da tanı değildir. En anlamlı karşılaştırma, kendi sonucunuzu farklı günlerdeki kendi sonuçlarınızla yapmaktır.</p>
+
+      <h2>Cihazınız sonucu nasıl etkiler?</h2>
+      <p>Ölçülen süre yalnızca sizin tepkinizi değil, zincirdeki her halkanın gecikmesini de içerir. Ekran saniyede 60 kez yenileniyorsa görüntü değişimi en fazla yaklaşık 17 milisaniye geç görünebilir; 144 Hz bir monitörde bu değer 7 milisaniyenin altına iner. Kablosuz fare ve klavyeler, dokunmatik ekranlar ve bazı televizyon ekranları birkaç on milisaniye ekleyebilir. Tarayıcının o an yoğun çalışması da etkili olur. Bu yüzden telefonla ve masaüstü bilgisayarla ölçülen sonuçlar birebir kıyaslanmamalıdır. Her cihaz için kendi ortalamanızı bilmek yeterlidir; farkı değil, gelişmeyi izleyin.</p>
+
+      <h2>Hedef vurma oyunu için stratejiler</h2>
+      <ul>
+        <li><strong>Bakışınızı ortada tutun.</strong> Gözünüzü köşelere kaçırmak yerine alanın ortasına bakıp çevresel görüşle yeni hedefi yakalayın; hedefler beliren yere göz kırpmadan hareket edersiniz.</li>
+        <li><strong>Fareyi ortada bekletin.</strong> Her vuruştan sonra imleci alanın ortasına yaklaştırmak, ortalama mesafeyi kısaltır. Dokunmatik ekranda parmağınızı ortaya yakın tutmak benzer fayda sağlar.</li>
+        <li><strong>Hız ile isabeti dengeleyin.</strong> Boş alana basmak ıskalama sayılır. Çok hızlı davranıp sık ıskalamak yerine, hedefi görmeden basmamaya çalışın.</li>
+        <li><strong>Ritim kurun.</strong> Hedefler kısa bir aralıkla birbirini izler; sakin ve düzenli bir tempo, panik halindeki rastgele tıklamalardan daha çok isabet getirir.</li>
+        <li><strong>Klavyeyle de oynayabilirsiniz.</strong> Yeni beliren hedef otomatik odak alır; Boşluk ya da Enter tuşu hedefi vurur.</li>
+      </ul>
+
+      <h2>Sayı sırası testi: gözün tarama becerisi</h2>
+      <p>Sayı sırası testi, bazı kaynaklarda "Schulte tablosu" olarak anılan 5x5 sayı tablosu çalışmasına benzer. Amaç, 1'den 25'e kadar sayıları sırayla bulmaktır. Satır satır okumak yerine sıradaki sayıyı tablonun tamamında aramak, çevresel görüşü kullanmak ve gözü tablonun ortasında tutmak süreyi kısaltır. Bazı kişiler bu tür tabloları dikkat egzersizi olarak kullanır; ancak bu sayfa bunun tıbbi ya da eğitsel bir yarar sağladığını iddia etmez, yalnızca eğlenceli bir süre yarışı sunar. Her denemede sayıların yeri değiştiği için ezberleyerek hile yapılamaz.</p>
+
+      <div class="ba-ad" data-slot="oyun-tepki-suresi-testi-b" aria-label="Reklam"></div>
+
+      <h2>Refleks süresini kısaltmak için günlük ipuçları</h2>
+      <p>Tepki süresi kısa sürede çok değişen bir değer değildir, ancak testin koşullarını iyileştirerek en iyi sonucunuza ulaşabilirsiniz. İyi aydınlatılmış bir ortamda, rahat bir oturuş pozisyonunda ve dikkatinizi dağıtan bildirimleri kapatarak test yapın. Ekran parlaklığını ve fare hassasiyetini kendinize uygun bir değere getirin. Kablosuz bir fare kullanıyorsanız pilinin dolu olduğundan emin olun. Üst üste çok sayıda deneme yapmak yorgunluk yaratır; kısa molalarla birkaç set yapmak daha tutarlı sonuç verir. Bu öneriler genel bilgi niteliğindedir ve sağlık tavsiyesi yerine geçmez.</p>
+
+      <h2>Tepki ölçümünün kısa tarihi</h2>
+      <p>Uyarı ile tepki arasındaki sürenin ölçülmesi on dokuzuncu yüzyılın ortalarına dayanır. Hermann von Helmholtz, sinir uyarımının iletim hızını ölçmeye çalışan ilk bilim insanları arasındadır; Franciscus Donders ise 1860'larda tepki sürelerini kullanarak zihinsel işlemlerin ne kadar sürdüğünü araştırdı. Yirminci yüzyılda laboratuvarların, sonra da atari salonlarının ve bilgisayar oyunlarının hız ölçümleri yaygınlaştı. Bugün tarayıcıda çalışan basit testler, aynı fikrin herkesin evinde ve telefonunda erişilebilir bir sürümüdür.</p>
+
+      <h2>Gizlilik: sonuçlarınız cihazınızdan çıkmaz</h2>
+      <p>Bu sayfadaki tüm testler tarayıcınızda çalışır. Tıklamalarınız, süreleriniz ve sonuçlarınız sunucuya gönderilmez. En iyi sonuçlarınız yalnızca bu cihazın tarayıcı belleğinde (localStorage) saklanır ve "Kayıtlı sonuçları sil" düğmesiyle istediğiniz an silinir. Hesap, üyelik, kayıt ya da izleme çerezi yoktur; paylaşım metni yalnızca siz kopyalayıp başka bir yere yapıştırırsanız paylaşılır. Sayfa bir kez açıldıktan sonra internet bağlantısı olmadan da çalışır.</p>
+
+      <h2>Neden Bilişim Ajans tepki süresi testi?</h2>
+      <p>Tepki süresi siteleri çoğu zaman kayıt ister, sonuçları sıralamaya gönderir ya da sürekli yeni oyun reklamları gösterir. Burada üç oyun tek sayfada toplanmıştır, Türkçedir ve hepsi anında başlar. Düğme benzeri reklam, sahte geri sayım ya da yanıltıcı yönlendirme yoktur. Telefonda ve bilgisayarda çalışır; klavye, fare ve dokunmatik ekranla kullanılabilir. Sonucunuzu bir paylaşım metnine dönüştürüp arkadaşlarınızla yarışabilirsiniz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Ortalama tepki süresi kaç milisaniyedir?</summary><p>Genel bilgiye göre görsel bir uyarana verilen basit tepki süresi yetişkinlerde yaklaşık 200-270 ms aralığındadır; sık verilen yuvarlak değer 250 ms'dir. Bu bir kıyas için genel bir değerdir; ekran, fare ve tarayıcı gecikmesi sonucu birkaç on milisaniye değiştirebilir.</p></details>
+      <details><summary>Sonuçlarım her denemede neden değişiyor?</summary><p>Dikkat, yorgunluk, ortam ve cihaz gecikmesi gibi etkenler her denemede biraz farklıdır. Bu yüzden test beş denemenin ortalamasını alır. Tek denemeye bakmak yerine ortalamayı ve en iyi sonucu takip edin.</p></details>
+      <details><summary>"Çok erken!" uyarısı neden çıkıyor?</summary><p>Ekran yeşile dönmeden tıkladığınız için çıkar. Yeşil olma anı 1,5 ile 4 saniye arasında rastgele seçildiğinden tahmin etmek işe yaramaz. Erken tıklama deneme sayılmaz; yeniden başlatmak için tekrar tıklayın.</p></details>
+      <details><summary>Telefonda ve dokunmatik ekranda sonuç neden farklı?</summary><p>Dokunmatik ekranlar, ekranın ve dokunma algılamanın kendi gecikmesini ekler. Masaüstünde kullanılan fare, ekran yenileme hızı ve tarayıcı da sonucu etkiler. Bu yüzden farklı cihazlardaki sonuçları birbiriyle değil, kendi cihazınızdaki geçmiş sonuçlarınızla karşılaştırın.</p></details>
+      <details><summary>Bu test tıbbi bir ölçüm mü, tanı koyar mı?</summary><p>Hayır. Test eğlence amaçlıdır; tıbbi, bilimsel ya da mesleki bir ölçüm değildir ve herhangi bir sağlık durumu hakkında yorum yapmaz. Sağlıkla ilgili endişeleriniz için bir sağlık uzmanına başvurun.</p></details>
+      <details><summary>Sonuçlarım nerede saklanıyor, başkası görebilir mi?</summary><p>En iyi sonuçlarınız yalnızca bu cihazdaki tarayıcı belleğinde (localStorage) tutulur. Sunucuya gönderilmez ve kimse göremez. "Kayıtlı sonuçları sil" düğmesiyle ya da tarayıcı verilerini temizleyerek silebilirsiniz.</p></details>
+      <details><summary>Hedef vurma skoru nasıl hesaplanıyor?</summary><p>Skor, 30 saniyede vurduğunuz hedef sayısıdır. Hedefin ekranda kalma süresi 1,7 saniyeden 0,95 saniyeye düşer. Hedef kaçarsa ya da boş alana basarsanız ıskalama sayılır; isabet oranı, isabetlerin isabet ve ıskalamaların toplamına bölünmesiyle bulunur.</p></details>
+      <details><summary>Klavyeyle oynayabilir miyim?</summary><p>Renk testi için büyük alana odaklanıp Boşluk ya da Enter tuşuna basabilirsiniz. Hedef vurma oyununda yeni beliren hedef otomatik odak alır ve Boşluk ya da Enter ile vurulur. Sayı sırasında Tab ile sayılar arasında gezip Enter ile seçebilirsiniz; ancak fare ya da dokunmatik ekran bu test için daha uygundur.</p></details>
+
+      <h2>İlgili oyunlar ve araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yazma-hizi-testi/">Yazma Hızı Testi</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../dizi-hafiza/">Dizi Hafıza</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span>Size özel web yazılımı, oyun ya da araç ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-tepki-suresi-testi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kule Yığma Oyna – Ücretsiz Online Kule Yığma (kurulumsuz)</title>
+  <meta name="description" content="Kule Yığma oyununu tarayıcınızda ücretsiz oynayın: kayan bloğu doğru anda bırakın, taşan kısım kesilsin, mükemmel yerleştirmelerle bonus kazanın ve kuleyi olabildiğince yükseltin. Kurulum ve kayıt yok, tek dokunuşla oynanır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kule-yigma/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 48px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .kl-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 0 0 6px; }
+    .kl-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .kl-stats span { display: block; font-size: .6rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kl-stats strong { font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    @media (min-width: 520px) { .kl-stats { gap: 8px; } .kl-stats > div { padding: 8px 10px; } .kl-stats span { font-size: .74rem; letter-spacing: .08em; } .kl-stats strong { font-size: 1.25rem; } }
+    .kl-best { margin: 0 0 12px; font-size: .92rem; color: var(--ba-text-2); text-align: center; }
+    .kl-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+    @media (min-width: 760px) { .kl-layout { grid-template-columns: 420px minmax(0, 1fr); gap: 28px; } .kl-stage { justify-content: flex-start; } }
+    .game-box:fullscreen .kl-layout { grid-template-columns: minmax(0, 640px) minmax(0, 1fr); }
+    .kl-stage { display: flex; justify-content: center; min-width: 0; }
+    #kl-canvas { display: block; max-width: 100%; border-radius: var(--ba-radius-lg); background: #121a33; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; cursor: pointer; box-shadow: var(--ba-shadow-card); }
+    #kl-canvas:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 3px; }
+    .kl-controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 12px; }
+    .kl-controls .ba-btn { flex: 1 1 140px; }
+    .kl-controls #kl-start { flex: 2 1 200px; }
+    .kl-side h3 { margin: 0 0 6px; font-size: 1.05rem; }
+    .kl-hint { margin: 0 0 12px; font-size: .92rem; color: var(--ba-text-2); }
+    .kl-hint kbd { font-family: var(--ba-mono); font-size: .78rem; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 4px; padding: 1px 6px; color: var(--ba-text); }
+    .kl-result dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; margin: 10px 0 0; }
+    .kl-result dt { font-size: .85rem; color: var(--ba-text-2); }
+    .kl-result dd { margin: 0 0 6px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Kule Yığma – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz zamanlama oyunu: kayan bloğu doğru anda bırak, taşan kısım kesilsin, mükemmel yerleştirmeyle bonus kazan, kuleyi yükselt.","applicationCategory":"Game","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":"SinglePlayer","genre":"Zamanlama","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/kule-yigma/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kule Yığma nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Yatayda kayan bloğu, kulenin en üstündeki bloğun tam üzerine gelince tıklayarak, dokunarak ya da Boşluk tuşuyla bırakırsınız. Üst bloğun dışına taşan kısım kesilir, kalan parça kulenin yeni tepesi olur. Hiç üst üste binemeyen blok oyunu bitirir."}},
+  {"@type":"Question","name":"Mükemmel yerleştirme nedir?","acceptedAnswer":{"@type":"Answer","text":"Bloğu alttaki bloğun neredeyse tam hizasında bıraktığınızda blok kesilmez ve genişliğini korur. Ayrıca bonus puan kazanırsınız; üst üste her mükemmel bırakışta bonus büyür. Arka arkaya üç mükemmel yerleştirmeden sonra blok biraz genişler."}},
+  {"@type":"Question","name":"Neden blok gittikçe daralıyor?","acceptedAnswer":{"@type":"Answer","text":"Her kesik, bir sonraki bloğun genişliğini azaltır. Bu yüzden hatalı yerleştirmeler sizi giderek daha dar bir bloğa mahkûm eder. Mükemmel yerleştirmeler genişliği korur ve ara sıra geri kazandırır."}},
+  {"@type":"Question","name":"Oyun neden hızlanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her yeni katta blok biraz daha hızlı kayar. Hız bir üst sınıra ulaşınca artış durur; bundan sonra zorluğu yalnızca daralan blok belirler."}},
+  {"@type":"Question","name":"Puan nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Her başarılı yerleştirme 10 puandır. Mükemmel yerleştirmede ek bonus verilir: ilkinde 10, ardışık her mükemmelde 10 daha, en fazla 50 puan. Mükemmel seri kesilince bonus sıfırdan başlar."}},
+  {"@type":"Question","name":"Klavyeyle ve telefonda oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Bilgisayarda Boşluk ya da Enter tuşuyla veya fareyle, telefonda oyun alanına dokunarak oynarsınız. P tuşu oyunu duraklatır. Oyun alanı 360 piksel genişliğe kadar küçülür."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanır?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca kendi tarayıcınızın localStorage alanında. Hiçbir sunucuya gönderilmez; tarayıcı verilerini silerseniz kayıt da silinir."}},
+  {"@type":"Question","name":"İnternet olmadan oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; tüm çizimler tarayıcıda üretilir. Siteyi uygulama olarak yüklerseniz çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Kule Yığma</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Kayan bloğu tam doğru anda bırakın, taşan kısım kesilsin, kule yükselsin. Blok daraldıkça ve hızlandıkça zorlaşır; mükemmel yerleştirmeler bonus kazandırır. Tek dokunuşla oynanır, kurulum, üyelik ve indirme gerekmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Kule Yığma oyunu</h2>
+      <div class="kl-stats" role="group" aria-label="Oyun durumu">
+        <div><span>Skor</span><strong id="kl-score">0</strong></div>
+        <div><span>Kat</span><strong id="kl-floors">0</strong></div>
+        <div><span>Mükemmel</span><strong id="kl-perfect">0</strong></div>
+        <div><span>En yüksek</span><strong id="kl-best-num">0</strong></div>
+      </div>
+      <p class="kl-best" id="kl-best">En yüksek skor: henüz yok</p>
+
+      <div class="kl-layout">
+        <div class="kl-stage" id="kl-stage">
+          <canvas id="kl-canvas" width="300" height="400" tabindex="0" role="button" aria-label="Oyun alanı. Bloğu bırakmak için tıklayın, dokunun ya da Boşluk tuşuna basın."></canvas>
+        </div>
+        <div class="kl-side">
+          <div class="kl-controls">
+            <button class="ba-btn ba-btn-primary" id="kl-start" type="button">Başla</button>
+            <button class="ba-btn" id="kl-pause" type="button" disabled>Duraklat</button>
+            <button class="ba-btn" id="kl-full" type="button" hidden>Tam ekran</button>
+          </div>
+          <p class="kl-hint">Bırakmak için oyun alanına <strong>tıklayın</strong>, <strong>dokunun</strong> ya da <kbd>Boşluk</kbd> tuşuna basın. <kbd>P</kbd> oyunu duraklatır.</p>
+          <p class="visually-hidden" id="kl-live" role="status" aria-live="polite"></p>
+
+          <div class="ba-result kl-result kl-side-result" id="kl-result">
+            <h3 id="kl-result-title">Kule yıkıldı!</h3>
+            <p id="kl-result-text"></p>
+            <dl>
+              <dt>Skor</dt><dd id="kl-r-score">0</dd>
+              <dt>Kat</dt><dd id="kl-r-floors">0</dd>
+              <dt>Mükemmel yerleştirme</dt><dd id="kl-r-perfect">0</dd>
+              <dt>En yüksek skor</dt><dd id="kl-r-best">0</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kule-yigma-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Kule Yığma nedir?</h2>
+      <p>Kule Yığma, tek bir hareketle oynanan ama ustalaşması zaman alan bir zamanlama ve hassasiyet oyunudur. Ekranın üstünde yatayda bir blok sağa sola kayar. Sizin göreviniz, bu bloğu kulenin tepesindeki bloğun tam üzerine geldiği anda bırakmaktır. Blok alttakinin dışına taşarsa taşan kısım kesilip aşağı düşer ve geriye kalan dar parça kulenin yeni tepesi olur. Her kesik bir sonraki bloğu daraltır; blok daraldıkça hedefi tutturmak zorlaşır. Hiç üst üste binemeyen bir blok bırakırsanız kule biter.</p>
+      <p>Oyun tamamen tarayıcınızda çalışır. Bloklar, geçişli renkler, arka plan ve kamera hareketi sayfada canvas ile çizilir; dışarıdan hiçbir görsel indirilmez. Kule yükseldikçe kamera yukarı kayar, oyun bitince kulenin tamamını görebilmeniz için uzaklaşır. Kurulum, üyelik ya da dosya indirme gerekmez; en yüksek skorunuz yalnızca kendi cihazınızda saklanır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başla'ya basın.</strong> Oyun alanına tıklamak, dokunmak ya da Boşluk tuşuna basmak da oyunu başlatır. Zemindeki geniş bir blok ilk katınızdır; üstünde yatayda kayan yeni bir blok görünür.</li>
+        <li><strong>Doğru anı bekleyin.</strong> Blok soldan sağa ve sağdan sola gidip gelir. Alttaki bloğun hizasına yaklaştığı anı gözünüzle yakalayın.</li>
+        <li><strong>Bloğu bırakın.</strong> Fareyle tıklayın, ekrana dokunun ya da Boşluk tuşuna basın. Blok bulunduğu yerde kulenin üstüne oturur.</li>
+        <li><strong>Taşan kısım kesilir.</strong> Alttaki bloğun dışına çıkan parça düşer; kalan kısım yeni tepe olur ve sonraki blok bu genişlikte gelir. Tam hizayı tutturursanız hiçbir şey kesilmez ve bonus kazanırsınız.</li>
+        <li><strong>Kuleyi yükseltin.</strong> Kule yükseldikçe kamera kayar, blok hızlanır. Bir blok hiç üst üste binemezse oyun biter; skorunuz, katınız ve en yüksek skorunuz sonuç kartında görünür.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> oyun alanına tıklayarak bloğu bırakırsınız.</li>
+        <li><strong>Dokunmatik ekran:</strong> oyun alanına dokunmanız yeterlidir; sayfa kaydırması oyun alanında kapalıdır, bu yüzden kaydırmak için alanın dışına dokunun.</li>
+        <li><strong>Boşluk veya Enter:</strong> oyunu başlatır, bloğu bırakır ve oyun bittikten kısa bir süre sonra yeniden başlatır. Sekme ile oyun alanına gelip klavyeyle oynayabilirsiniz.</li>
+        <li><strong>P:</strong> oyunu duraklatır ve sürdürür. Sekmeyi değiştirdiğinizde oyun kendiliğinden duraklar.</li>
+        <li><strong>Tam ekran:</strong> destekleyen tarayıcılarda oyun alanını büyütür.</li>
+      </ul>
+
+      <h2>Puanlama ve mükemmel yerleştirme</h2>
+      <p>Her başarılı yerleştirme 10 puandır ve kuleye bir kat ekler. Bloğu alttaki bloğun neredeyse tam hizasında, yani birkaç pikselden daha az bir sapmayla bırakırsanız yerleştirme "mükemmel" sayılır. Mükemmel yerleştirmede blok kesilmez ve genişliğini korur; ayrıca bonus puan alırsınız. İlk mükemmel bırakış 10 puan bonus getirir, arka arkaya her yeni mükemmel bırakış bonusu 10 puan daha büyütür ve bonus en fazla 50 puana çıkar. Seri bir kez bozulursa bonus yeniden sıfırdan başlar.</p>
+      <p>Üst üste üç ve daha fazla mükemmel yerleştirme yapan oyuncuyu oyun ödüllendirir: blok her mükemmel bırakışta biraz genişler, ama başlangıçtaki zemin bloğunun genişliğini asla aşmaz. Böylece cesur ve hassas oynamak, kuleyi daha uzun süre ayakta tutmanın en güvenilir yoludur.</p>
+
+      <h2>Zorluk nasıl artar?</h2>
+      <p>İki şey birlikte zorlaşır. Birincisi blok genişliğidir: her kesik yeni bloğu daraltır ve dar bloğu doğru yere oturtmak için çok daha hassas olmanız gerekir. İkincisi hızdır: her yeni katta blok biraz daha hızlı kayar. Hız yaklaşık kırkıncı katta bir üst sınıra ulaşır ve artış durur; ondan sonra zorluğu yalnızca genişlik belirler. Başlangıçtaki yavaş bloklar bu yüzden ısınmak ve geniş bir taban oluşturmak için en değerli fırsattır.</p>
+
+      <div class="ba-ad" data-slot="oyun-kule-yigma-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>İlk katlarda mükemmeli hedefleyin.</strong> Bloklar geniş ve yavaşken iyi bir seri yapmak hem puan kazandırır hem de genişliği korur. İlk on katta kesik vermemek, ilerideki zor bölümleri çok daha rahat geçmenizi sağlar.</li>
+        <li><strong>Gözünüzü kayan bloğa değil, alttaki bloğun kenarına sabitleyin.</strong> Hareketli bloğun kenarı alttaki bloğun kenarıyla çakıştığı anda bırakın. Hareketli nesneyi takip etmek yerine hedef noktayı izlemek tepkinizi hızlandırır.</li>
+        <li><strong>Ritmi yakalayın.</strong> Blok sabit hızla gider gelir; hız yavaş artar. Bir iki blok boyunca ritmi içinizden sayarsanız bırakma anını tahmin etmek kolaylaşır. Hız arttıkça ritmi yeniden ayarlayın.</li>
+        <li><strong>Küçük kesikten korkmayın, büyük kesikten kaçının.</strong> Birkaç piksellik taşma çok az genişlik kaybettirir. Asıl tehlike, aceleyle blokları kenarlardan bırakmaktır; yarım blok kaybetmek tek hamlede oyunu zorlaştırır.</li>
+        <li><strong>Dar blokta sabırlı olun.</strong> Blok çok daraldığında bir tur beklemek yerine doğru anı yakalamaya çalışın; blok her turda aynı yolu izler, kaçırdığınız anın bir sonraki gelişini yakalayabilirsiniz.</li>
+        <li><strong>Dinlenin.</strong> Dikkat dağıldığında duraklatın. Kısa bir moladan sonra dönünce skorunuz bozulmaz.</li>
+      </ul>
+
+      <h2>Yığma oyunlarının kısa tarihi</h2>
+      <p>Üst üste dizme ve zamanlama üzerine kurulu oyunlar yeni değildir. Atari salonlarındaki ödüllü zamanlama makineleri, yanıp sönen ışıkları tam doğru anda durdurmayı gerektiren benzer bir mantığa dayanır. Akıllı telefonlarla birlikte bu fikir, tek dokunuşla oynanan ve kısa turlarda ustalaşılan oyunlar olarak yeniden yaygınlaştı. Kule Yığma da bu geleneği izler: kural tek cümleyle anlatılır, ama iyi bir skor ritim, dikkat ve sabır ister. Bu sayfadaki sürüm bilinen herhangi bir oyunun kopyası değildir; mantığı ve çizimleri Bilişim Ajans tarafından sıfırdan yazılmıştır.</p>
+
+      <h2>Erişilebilirlik ve gizlilik</h2>
+      <p>Oyunun merkezinde hareket ve zamanlama vardır. Yine de tamamen klavyeyle oynanabilir, her yerleştirmede kat ve skor ekran okuyucuya duyurulur, oyun alanı 360 piksel genişlikteki telefonlara sığar ve Duraklat düğmesiyle istediğiniz an oyunu durdurabilirsiniz. Tarayıcınız hareketi azaltma tercihini bildiriyorsa kamera hareketi yumuşatılmadan uygulanır ve ek efektler kapatılır. Çerez, izleme ya da analiz kodu çalışmaz; skorlarınız ve ayarlarınız hiçbir sunucuya gönderilmez, yalnızca bu cihazdaki localStorage alanında tutulur.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Kule Yığma nasıl oynanır?</summary><p>Yatayda kayan bloğu, kulenin en üstündeki bloğun tam üzerine gelince tıklayarak, dokunarak ya da Boşluk tuşuyla bırakırsınız. Üst bloğun dışına taşan kısım kesilir, kalan parça kulenin yeni tepesi olur. Hiç üst üste binemeyen blok oyunu bitirir.</p></details>
+      <details><summary>Mükemmel yerleştirme nedir?</summary><p>Bloğu alttaki bloğun neredeyse tam hizasında bıraktığınızda blok kesilmez ve genişliğini korur. Ayrıca bonus puan kazanırsınız; üst üste her mükemmel bırakışta bonus büyür. Arka arkaya üç mükemmel yerleştirmeden sonra blok biraz genişler.</p></details>
+      <details><summary>Neden blok gittikçe daralıyor?</summary><p>Her kesik, bir sonraki bloğun genişliğini azaltır. Bu yüzden hatalı yerleştirmeler sizi giderek daha dar bir bloğa mahkûm eder. Mükemmel yerleştirmeler genişliği korur ve ara sıra geri kazandırır.</p></details>
+      <details><summary>Oyun neden hızlanıyor?</summary><p>Her yeni katta blok biraz daha hızlı kayar. Hız bir üst sınıra ulaşınca artış durur; bundan sonra zorluğu yalnızca daralan blok belirler.</p></details>
+      <details><summary>Puan nasıl hesaplanır?</summary><p>Her başarılı yerleştirme 10 puandır. Mükemmel yerleştirmede ek bonus verilir: ilkinde 10, ardışık her mükemmelde 10 daha, en fazla 50 puan. Mükemmel seri kesilince bonus sıfırdan başlar.</p></details>
+      <details><summary>Klavyeyle ve telefonda oynanır mı?</summary><p>Evet. Bilgisayarda Boşluk ya da Enter tuşuyla veya fareyle, telefonda oyun alanına dokunarak oynarsınız. P tuşu oyunu duraklatır. Oyun alanı 360 piksel genişliğe kadar küçülür.</p></details>
+      <details><summary>En yüksek skorum nerede saklanır?</summary><p>Yalnızca kendi tarayıcınızın localStorage alanında. Hiçbir sunucuya gönderilmez; tarayıcı verilerini silerseniz kayıt da silinir.</p></details>
+      <details><summary>İnternet olmadan oynanır mı?</summary><p>Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; tüm çizimler tarayıcıda üretilir. Siteyi uygulama olarak yüklerseniz çevrimdışı da açılır.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a> – topu sektirip tuğlaları kırın.</li>
+        <li><a href="../blok-dusurme/">Blok Düşürme</a> – düşen blokları satır tamamlayacak biçimde yerleştirin.</li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a> – tepki hızınızı milisaniye ile ölçün.</li>
+        <li><a href="../renk-eslestir/">Renk Eşleştirme</a> – yazının rengini ya da kelimenin anlamını hızla seçin.</li>
+        <li><a href="../balon-patlatma/">Balon Patlatma</a> – balonları zamanında patlatın.</li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-kule-yigma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Sayı Tahmin Oyunu Oyna – Ücretsiz Online Sayı Tahmin Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Sayı Tahmin Oyunu'nu tarayıcınızda ücretsiz oynayın: 1-100, 1-1000 veya özel aralık, büyük-küçük ipuçları, en iyi skor, süreli mod ve bilgisayarın sizin sayınızı ikili aramayla bulduğu ters mod. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/sayi-tahmin/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    .sy-options { display: grid; gap: 14px; padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .sy-fs { border: 0; margin: 0; padding: 0; min-width: 0; }
+    .sy-fs legend { font-weight: 600; font-size: .9rem; padding: 0; margin-bottom: 6px; }
+    .sy-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sy-pill { position: relative; display: inline-flex; }
+    .sy-pill input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .sy-pill span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid var(--ba-border-hover); border-radius: 999px; background: var(--ba-surface); font-size: .92rem; font-weight: 500; color: var(--ba-text); }
+    .sy-pill input:hover + span { border-color: var(--ba-primary); }
+    .sy-pill input:checked + span { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .sy-pill input:focus-visible + span { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    :root[data-theme="dark"] .sy-pill input:checked + span { color: #1a0d10; }
+    .sy-custom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; max-width: 420px; }
+    .sy-custom .ba-field { min-width: 0; }
+    .sy-timed { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .sy-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 600; font-size: .92rem; cursor: pointer; }
+    .sy-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .sy-timed select { min-height: 44px; padding: 6px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); }
+    .sy-info { margin: 12px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    .game-box .ba-error { margin: 12px 0 0; }
+
+    .sy-range { margin: 16px 0 8px; font-weight: 600; text-align: center; }
+    .sy-bar { position: relative; height: 12px; margin: 0 0 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 999px; overflow: hidden; }
+    .sy-bar span { position: absolute; top: 0; bottom: 0; left: var(--left, 0%); width: var(--width, 100%); background: linear-gradient(90deg, var(--ba-primary-strong), var(--ba-accent)); border-radius: 999px; transition: left .3s var(--ba-ease-out, ease-out), width .3s var(--ba-ease-out, ease-out); }
+    .sy-form { display: flex; align-items: flex-end; gap: 10px; }
+    .sy-form .ba-field { flex: 1 1 auto; min-width: 0; }
+    .sy-form .ba-field input { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+    .sy-form .ba-btn { flex: 0 0 auto; }
+    .ba-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+    .sy-hint { min-height: 3.2em; margin: 14px 0 6px; font-size: 1.12rem; font-weight: 600; text-align: center; }
+    .sy-hint[data-dir="up"]::before { content: "▲ "; color: var(--ba-primary); }
+    .sy-hint[data-dir="down"]::before { content: "▼ "; color: var(--ba-primary); }
+    .sy-hint[data-dir="win"] { color: var(--ba-success); }
+    .sy-hint[data-dir="win"]::before { content: "✓ "; }
+    .sy-hint[data-dir="lose"] { color: var(--ba-danger); }
+    .sy-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+    .sy-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; text-align: center; min-width: 0; }
+    .sy-stats span { display: block; font-size: .75rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .06em; text-transform: uppercase; }
+    .sy-stats strong { font-size: 1.2rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .sy-history { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+    .sy-history li { margin: 0; padding: 4px 10px; border: 1px solid var(--ba-border); border-radius: 999px; background: var(--ba-surface); font-size: .85rem; font-variant-numeric: tabular-nums; }
+
+    .sy-cpu { margin: 6px 0; text-align: center; font-size: 3.4rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--ba-primary); overflow-wrap: anywhere; }
+    .sy-msg { min-height: 3.2em; margin: 0 0 12px; text-align: center; font-weight: 600; }
+    .sy-msg[data-dir="win"] { color: var(--ba-success); }
+    .sy-answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .sy-answers .ba-btn { min-height: 56px; padding: 8px 6px; justify-content: center; text-align: center; line-height: 1.2; }
+    @media (max-width: 420px) { .sy-answers { grid-template-columns: 1fr; } }
+    .sy-undo { margin: 10px 0 14px; }
+    .sy-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .ba-content { overflow-wrap: anywhere; }
+    .sy-ex { font-family: var(--ba-mono); font-size: .9rem; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 12px; margin: 0 0 1em; overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .sy-bar span { transition: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Sayı Tahmin Oyunu","description":"1-100, 1-1000 veya özel aralıkta bilgisayarın tuttuğu sayıyı bulmaya çalıştığınız ya da bilgisayarın sizin sayınızı ikili aramayla tahmin ettiği ücretsiz online sayı tahmin oyunu.","url":"https://araclar.bilisimajans.com/oyunlar/sayi-tahmin/","inLanguage":"tr","applicationCategory":"Game","operatingSystem":"Web tarayıcısı (kurulum gerekmez)","genre":"Zeka oyunu","numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":1},"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Sayı tahmin oyununda en iyi strateji nedir?","acceptedAnswer":{"@type":"Answer","text":"İkili arama: her tahmini, kalan aralığın tam ortasından yapın. Her ipucu olasılıkların yarısını eler; 1-100 aralığında sayı en fazla 7 denemede bulunur."}},
+  {"@type":"Question","name":"1-100 arasındaki sayı en az kaç denemede bulunur?","acceptedAnswer":{"@type":"Answer","text":"Şans eseri ilk tahminde bulunabilir. Garantili yöntem olan ikili aramayla en kötü durumda 7 deneme yeter, 1-1000 aralığında bu sayı 10 olur."}},
+  {"@type":"Question","name":"Bilgisayar sayıyı nasıl seçiyor, önceden tahmin edilebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Her yeni oyunda tarayıcının rastgele sayı üreteciyle seçilir ve yalnızca sayfanın belleğinde durur. Önceden tahmin edilemez; sayfayı yenileyip tekrar denerseniz farklı bir sayı çıkar."}},
+  {"@type":"Question","name":"Ters modda bilgisayar neden en fazla 7 denemede buluyor?","acceptedAnswer":{"@type":"Answer","text":"Bilgisayar ikili arama kullanır: her tahminde kalan aralığı ikiye böler. 1-100 aralığında 100 olasılık 7 bölmede tek sayıya iner."}},
+  {"@type":"Question","name":"Ters modda yanlış düğmeye bastım, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Son cevabı geri al düğmesine basın; önceki tahmine dönersiniz. Cevaplar birbiriyle çelişirse oyun bunu fark edip uyarır."}},
+  {"@type":"Question","name":"Süreli mod nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Süreli modu açıp 30, 60 veya 120 saniye seçin. Süre ilk tahminle başlar; bitmeden sayıyı bulamazsanız oyun biter ve aranan sayı gösterilir."}},
+  {"@type":"Question","name":"En iyi skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her aralık için en az deneme sayınız yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur; hiçbir sunucuya gönderilmez."}},
+  {"@type":"Question","name":"Özel aralığın sınırı var mı?","acceptedAnswer":{"@type":"Answer","text":"Alt ve üst sınır tam sayı olmalı, alt sınır üst sınırdan küçük olmalı ve mutlak değerleri bir milyarı aşmamalıdır. Aralık büyüdükçe gereken en fazla deneme yalnızca logaritmik artar."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Sayı Tahmin Oyunu</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Bilgisayarın tuttuğu sayıyı "daha büyük, daha küçük" ipuçlarıyla bul ya da rolleri değiştir: sen bir sayı tut, bilgisayar ikili aramayla (1-100 aralığında) en fazla 7 denemede bulsun. 1-100, 1-1000 veya kendi aralığın; istersen süreli. Kurulum ve üyelik yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Sayı Tahmin Oyunu</h2>
+      <noscript><p class="ba-error is-active">Oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır. Ayarlardan JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+      <div class="sy-options">
+        <fieldset class="sy-fs"><legend>Mod</legend>
+          <div class="sy-pills">
+            <label class="sy-pill"><input type="radio" name="sy-mode" value="guess" checked><span>Ben tahmin edeyim</span></label>
+            <label class="sy-pill"><input type="radio" name="sy-mode" value="reverse"><span>Bilgisayar tahmin etsin</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="sy-fs"><legend>Sayı aralığı</legend>
+          <div class="sy-pills">
+            <label class="sy-pill"><input type="radio" name="sy-range" value="100" checked><span>1 – 100</span></label>
+            <label class="sy-pill"><input type="radio" name="sy-range" value="1000"><span>1 – 1000</span></label>
+            <label class="sy-pill"><input type="radio" name="sy-range" value="custom"><span>Özel aralık</span></label>
+          </div>
+          <div class="sy-custom" id="sy-custom" hidden>
+            <div class="ba-field"><label for="sy-min">Alt sınır</label><input id="sy-min" type="number" inputmode="numeric" step="1" value="1"></div>
+            <div class="ba-field"><label for="sy-max">Üst sınır</label><input id="sy-max" type="number" inputmode="numeric" step="1" value="500"></div>
+          </div>
+        </fieldset>
+        <div class="sy-timed" id="sy-timed-wrap">
+          <label class="sy-check"><input type="checkbox" id="sy-timed"> Süreli mod</label>
+          <label for="sy-time" class="visually-hidden">Süre</label>
+          <select id="sy-time"><option value="30">30 saniye</option><option value="60" selected>60 saniye</option><option value="120">120 saniye</option></select>
+        </div>
+      </div>
+      <p class="sy-info" id="sy-info"></p>
+      <div id="sy-error" class="ba-error" role="alert"></div>
+
+      <div id="sy-guess-panel">
+        <p class="sy-range" id="sy-range-info"></p>
+        <div class="sy-bar" id="sy-bar" aria-hidden="true"><span></span></div>
+        <form class="sy-form" id="sy-form" novalidate autocomplete="off">
+          <div class="ba-field"><label for="sy-input">Tahminin</label><input id="sy-input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="go"></div>
+          <button class="ba-btn ba-btn-primary" id="sy-submit" type="submit">Tahmin et</button>
+        </form>
+        <p class="sy-hint" id="sy-hint" role="status" aria-live="polite"></p>
+        <div class="sy-stats" role="group" aria-label="Oyun durumu">
+          <div><span>Deneme</span><strong id="sy-attempts">0</strong></div>
+          <div><span>En iyi</span><strong id="sy-best">henüz yok</strong></div>
+          <div id="sy-timer-box" hidden><span>Kalan süre</span><strong id="sy-timer">60 sn</strong></div>
+        </div>
+        <ol class="sy-history" id="sy-history" aria-label="Tahmin geçmişi"></ol>
+      </div>
+
+      <div id="sy-reverse-panel" hidden>
+        <div id="sy-rev-intro">
+          <p class="sy-range">Aklından bir sayı tut, kimseye söyleme.</p>
+          <p>Hazır olunca başla düğmesine bas. Bilgisayar tahmin eder; sen her tahminde "daha büyük", "daha küçük" ya da "doğru" dersin. Dürüst cevap ver, bilgisayar çelişkiyi fark eder.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="sy-rev-start">Başla</button>
+        </div>
+        <div id="sy-rev-play" hidden>
+          <p class="sy-range">Bilgisayarın tahmini</p>
+          <div class="sy-cpu" id="sy-cpu-guess" aria-live="polite">—</div>
+          <p class="sy-msg" id="sy-rv-msg" role="status" aria-live="polite"></p>
+          <div class="sy-answers">
+            <button type="button" class="ba-btn" id="sy-higher" aria-label="Benim sayım daha büyük">Daha büyük ▲</button>
+            <button type="button" class="ba-btn" id="sy-lower" aria-label="Benim sayım daha küçük">Daha küçük ▼</button>
+            <button type="button" class="ba-btn ba-btn-success" id="sy-correct">Doğru ✓</button>
+          </div>
+          <button type="button" class="ba-btn sy-undo" id="sy-undo" hidden>Son cevabı geri al</button>
+          <div class="sy-bar" id="sy-rv-bar" aria-hidden="true"><span></span></div>
+          <p class="sy-range" id="sy-rv-range"></p>
+          <div class="sy-stats" role="group" aria-label="Bilgisayarın durumu">
+            <div><span>Deneme</span><strong id="sy-rv-attempts">0</strong></div>
+          </div>
+          <ol class="sy-history" id="sy-rv-history" aria-label="Bilgisayarın tahminleri"></ol>
+        </div>
+      </div>
+
+      <div class="sy-actions">
+        <button type="button" class="ba-btn" id="sy-new">Yeni oyun</button>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-sayi-tahmin-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Sayı tahmin oyunu nasıl oynanır?</h2>
+      <p>Sayı tahmin oyunu, en sade ama en öğretici zeka oyunlarından biridir. Bilgisayar belirli bir aralıkta gizli bir sayı tutar, sen tahmin edersin ve her tahminden sonra "daha büyük" ya da "daha küçük" ipucu alırsın. Amaç, sayıyı en az denemede bulmaktır. Bu sayfada oyunu üç farklı aralıkta, süreli ya da süresiz oynayabilir, istersen rolleri değiştirip bilgisayarın senin tuttuğun sayıyı tahmin etmesini izleyebilirsin.</p>
+      <ol class="ba-steps">
+        <li>Mod seç: "Ben tahmin edeyim" ya da "Bilgisayar tahmin etsin". Ardından 1–100, 1–1000 veya kendi belirlediğin özel aralığı seç.</li>
+        <li>İstersen süreli modu aç ve 30, 60 ya da 120 saniyeden birini seç. Süre ilk tahminle başlar.</li>
+        <li>Tahmin kutusuna bir tam sayı yaz ve "Tahmin et" düğmesine bas ya da klavyede Enter'a bas.</li>
+        <li>İpucunu oku: "Daha büyük" sayının tahminden yüksek olduğunu, "Daha küçük" düşük olduğunu söyler. Kalan aralık çubuğu ve geçmiş listesi ipucuyla birlikte güncellenir.</li>
+        <li>Sayıyı bulunca deneme sayın ve en iyi skorun görünür. "Yeni oyun" ile yeni bir sayı tutulur.</li>
+      </ol>
+
+      <h2>Oyun modları</h2>
+      <h3>Ben tahmin edeyim</h3>
+      <p>Klasik mod budur. Bilgisayar seçtiğin aralıkta rastgele bir sayı tutar. Her geçerli tahmin deneme sayısına eklenir. Aralık dışındaki, harf içeren veya daha önce denediğin girişler deneme sayılmaz; oyun bunu açıkça söyler. Her aralık için en az deneme sayın tarayıcında saklanır, böylece kendi rekorunu kırmaya çalışabilirsin.</p>
+      <h3>Bilgisayar tahmin etsin (ters mod)</h3>
+      <p>Bu modda sen aklından bir sayı tutarsın, bilgisayar tahmin eder. Her tahminden sonra "daha büyük", "daha küçük" ya da "doğru" dersin. Bilgisayar ikili arama kullandığı için 1–100 aralığında hangi sayıyı tutarsan tut en fazla 7 denemede bulur. Yanlış düğmeye bastığında "Son cevabı geri al" ile bir adım geri dönebilirsin. Cevapların birbiriyle çelişirse, örneğin tutabileceğin hiçbir sayı kalmadıysa, oyun bunu fark edip uyarır.</p>
+      <h3>Süreli mod</h3>
+      <p>Süreli modda geri sayım ilk tahminle başlar. Süre dolmadan sayıyı bulamazsan oyun biter ve aranan sayı gösterilir. Bu mod, ikili aramayı kafadan hızlıca uygulama pratiği için idealdir: orta noktayı hızlı hesaplayabilen oyuncu süreyi rahatça yetiştirir.</p>
+      <h3>Özel aralık</h3>
+      <p>Alt ve üst sınırı kendin belirleyebilirsin; örneğin 1–10 çocuklar için, 1–1.000.000 ise ikili aramanın gücünü görmek için uygundur. Sınırlar tam sayı olmalı, alt sınır üst sınırdan küçük olmalı ve mutlak değerleri bir milyarı aşmamalıdır. Geçersiz bir giriş yaparsan oyun neyi düzeltmen gerektiğini yazar.</p>
+
+      <h2>İkili arama stratejisi: sayıyı en az denemede bulma</h2>
+      <p>Bu oyunun matematiği şaşırtıcı derecede güzeldir. Her tahmin yaptığında, ipucu kalan olasılıkları iki parçaya böler ve parçalardan birini tamamen eler. En çok eleme için tahmini kalan aralığın tam ortasından yapmak gerekir. Buna ikili arama denir.</p>
+      <p>1–100 aralığında gizli sayı 73 olsun. İlk tahmin 50: "daha büyük", aralık 51–100 olur. Sonra 75: "daha küçük", aralık 51–74. Ardından 62: "daha büyük", aralık 63–74. Sonra 68, 71 ve 73. Altı denemede bulundu.</p>
+      <p class="sy-ex">Tahminler: 50 → büyük · 75 → küçük · 62 → büyük · 68 → büyük · 71 → büyük · 73 → doğru</p>
+      <p>Aralık her adımda yarıya indiği için gereken en fazla deneme sayısı, aralığın büyüklüğünün 2 tabanında logaritmasının tam kısmına bir eklenerek bulunur. Bazı örnekler:</p>
+      <ul>
+        <li><strong>1–100:</strong> en fazla 7 deneme</li>
+        <li><strong>1–1000:</strong> en fazla 10 deneme</li>
+        <li><strong>1–10.000:</strong> en fazla 14 deneme</li>
+        <li><strong>1–1.000.000:</strong> en fazla 20 deneme</li>
+        <li><strong>1–1.000.000.000:</strong> en fazla 30 deneme</li>
+      </ul>
+      <p>Aralığı bin kat büyütmek, gereken denemeyi yalnızca on adım artırır. İkili aramanın bilgisayar biliminde bu kadar önemli olmasının nedeni budur: sıralı bir listede ya da sözlükte bir şeyi bulmak, bir hatanın hangi değişiklikle başladığını sürümler arasında aramak ya da bir değer için doğru ayarı bulmak aynı mantıkla çalışır.</p>
+
+      <div class="ba-ad" data-slot="oyun-sayi-tahmin-b" aria-label="Reklam"></div>
+
+      <h2>Pratik ipuçları</h2>
+      <ul>
+        <li><strong>Kenarlardan başlama.</strong> 1 ya da 100 gibi uç değerler en az bilgi veren tahminlerdir. İlk tahmin 50 olsun.</li>
+        <li><strong>Sınırları yaz.</strong> Kalan aralığın alt ve üst sınırını aklında tut; oyun bu bilgiyi aralık çubuğu ve "Sayı ... ile ... arasında" satırıyla zaten gösterir.</li>
+        <li><strong>Orta noktayı hızlı hesapla.</strong> Alt ve üst sınırı topla, ikiye böl. Sonuç ondalıklıysa aşağı ya da yukarı yuvarla; hangisini seçtiğin en kötü durumu en fazla bir adım değiştirir.</li>
+        <li><strong>İpucunu gözden kaçırma.</strong> Hızlı oynarken "büyük" ile "küçük"ü karıştırmak sık yapılan bir hatadır. Ok işaretleri yönü gösterir: yukarı ok daha büyük, aşağı ok daha küçük.</li>
+        <li><strong>Tahmini tekrarlama.</strong> Aynı sayıyı iki kez denemek anlamsızdır; oyun bunu sayıma katmaz ve seni uyarır.</li>
+        <li><strong>Şansa güvenme.</strong> Rastgele tahmin ortalamada çok daha fazla deneme gerektirir. Sistematik oynayan, uzun vadede her zaman kazanır.</li>
+      </ul>
+
+      <h2>Ters mod bilgisayar tarafında nasıl çalışıyor?</h2>
+      <p>Bilgisayar tahminini kalan aralığın ortasından yapar. "Daha büyük" cevabı gelirse alt sınırı tahminin bir fazlasına, "daha küçük" gelirse üst sınırı tahminin bir eksiğine çeker. Alt sınır üst sınırı aşarsa, yani aralıkta hiç sayı kalmazsa, cevapların çeliştiğini söyler. Bu davranış sayesinde hem kazanma garantisi hem de hatalı cevabı yakalama özelliği vardır. Her cevap geri alınabildiği için yanlış basma kaybı olmaz.</p>
+
+      <h2>Sayı tahmin oyununun kısa tarihi</h2>
+      <p>Sayı tahmin oyunları, bilgisayarların eğitim amaçlı kullanılmaya başlandığı ilk yıllardan beri programlama kitaplarında ve derslerinde yer alır. Rastgele sayı üretmeyi, kullanıcıdan girdi almayı ve koşullu dallanmayı bir arada öğretmek için ideal olduğundan, yeni başlayanların ilk alıştırmalarından biri hâline gelmiştir. Benzer mantık "yirmi soru" gibi masa başı oyunlarda da görülür. Bu sayfadaki oyun aynı sade fikri alır; ikili arama anlatımı ve ters modla bir adım ötesine taşır.</p>
+
+      <h2>Kimler için uygun?</h2>
+      <p>Çocuklar için küçük aralıklarla sayı hissi ve karşılaştırma becerisi pratiği, öğrenciler için logaritma ve algoritma kavramının eğlenceli bir girişi, yetişkinler için ise kısa bir zihin molasıdır. Öğretmenler, ters modu sınıfta projeksiyonla göstererek bir sayının "kaç soruda" bulunabileceğini tartıştırabilir.</p>
+
+      <h2>Gizlilik ve veriler</h2>
+      <p>Oyun tamamen tarayıcında çalışır. Tahminlerin, aralık seçimin ve en iyi skorların hiçbiri sunucuya gönderilmez; yalnızca bu cihazdaki yerel depolamada tutulur. Tarayıcı verilerini temizlediğinde skorlar da silinir. Sayfada izleme kodu veya çerez yoktur.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Sayı tahmin oyununda en iyi strateji nedir?</summary><p>İkili arama: her tahmini kalan aralığın tam ortasından yap. Her ipucu olasılıkların yarısını eler; 1–100 aralığında sayı en fazla 7 denemede bulunur.</p></details>
+      <details><summary>1-100 arasındaki sayı en az kaç denemede bulunur?</summary><p>Şans eseri ilk tahminde bulunabilir. Garantili yöntem olan ikili aramayla en kötü durumda 7 deneme yeter; 1–1000 aralığında bu sayı 10 olur.</p></details>
+      <details><summary>Bilgisayar sayıyı nasıl seçiyor, önceden tahmin edilebilir mi?</summary><p>Her yeni oyunda tarayıcının rastgele sayı üreteciyle seçilir ve yalnızca sayfanın belleğinde durur. Önceden tahmin edilemez; sayfayı yenileyip tekrar denersen farklı bir sayı çıkar.</p></details>
+      <details><summary>Ters modda bilgisayar neden en fazla 7 denemede buluyor?</summary><p>Bilgisayar ikili arama kullanır: her tahminde kalan aralığı ikiye böler. 1–100 aralığında 100 olasılık 7 bölmede tek sayıya iner.</p></details>
+      <details><summary>Ters modda yanlış düğmeye bastım, ne yapmalıyım?</summary><p>"Son cevabı geri al" düğmesine bas; önceki tahmine dönersin. Cevapların birbiriyle çelişirse oyun bunu fark edip uyarır, sen de geri alarak ya da yeni oyun başlatarak devam edersin.</p></details>
+      <details><summary>Süreli mod nasıl çalışır?</summary><p>Süreli modu açıp 30, 60 veya 120 saniye seç. Süre ilk tahminle başlar; bitmeden sayıyı bulamazsan oyun biter ve aranan sayı gösterilir. Süreli oyunlar en iyi skoru yalnızca sayıyı süre içinde bulduğunda günceller.</p></details>
+      <details><summary>En iyi skorum nerede saklanıyor?</summary><p>Her aralık için en az deneme sayın yalnızca tarayıcının yerel depolamasında (localStorage) tutulur; hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlersen silinir.</p></details>
+      <details><summary>Özel aralığın sınırı var mı?</summary><p>Alt ve üst sınır tam sayı olmalı, alt sınır üst sınırdan küçük olmalı ve mutlak değerleri bir milyarı aşmamalıdır. Aralık büyüdükçe gereken en fazla deneme yalnızca logaritmik artar.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tas-kagit-makas/">Taş Kağıt Makas</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../rastgele-sayi/">Rastgele sayı üretici</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-sayi-tahmin-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
