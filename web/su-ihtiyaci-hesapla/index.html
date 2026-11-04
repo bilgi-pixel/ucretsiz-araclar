@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Günlük Su İhtiyacı Hesaplama – Kilo, Yaş ve Aktiviteye Göre Ne Kadar Su İçmeli?</title>
+  <meta name="description" content="Kilonuzu, yaşınızı, egzersiz sürenizi ve iklimi girin; günlük su ihtiyacınızı litre ve ml olarak, kaç bardak ve şişe ettiğini ve gün içine yayılmış 8 dilimlik içme planını görün. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/su-ihtiyaci-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.2rem; color: var(--ba-text); }
+    .kdv-note { font-size: .88rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .vki-warn { font-weight: 600; color: var(--ba-text); }
+    /* İçme planı tablosu */
+    .su-tablewrap { overflow-x: auto; margin: 12px 0 0; }
+    table.su-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    table.su-table th, table.su-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    table.su-table thead th { font-size: .85rem; color: var(--ba-text-2); }
+    table.su-table tbody th { font-weight: 600; }
+    table.su-table tbody th small { display: block; font-weight: 400; color: var(--ba-text-muted); font-size: .8rem; }
+    table.su-table td { white-space: nowrap; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Günlük Su İhtiyacı Hesaplama – Bilişim Ajans","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/su-ihtiyaci-hesapla/","inLanguage":"tr","description":"Kilo, yaş, egzersiz, iklim ve hamilelik/emzirme durumuna göre günlük su ihtiyacını hesaplar; bardak ve şişe karşılığı ile gün içine yayılmış içme planı sunar. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Günlük su ihtiyacı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Araç kilonuzu yaşa göre belirlenen bir katsayıyla çarpar: 30 yaşın altında kilo başına 40 ml, 30-55 yaş arasında 35 ml, 55 yaşın üzerinde 30 ml. Üzerine egzersiz (saat başına 350 ml), sıcak iklim (yüzde 10) ve hamilelik ya da emzirme için ek miktarlar eklenir."}},
+  {"@type":"Question","name":"Günde 2 litre su herkes için yeterli mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. İhtiyaç kiloya, yaşa, aktiviteye ve havaya göre değişir. 70 kilo ağırlığındaki 35 yaşında hareketsiz bir kişi için bu araç yaklaşık 2.450 ml sonucunu verir; bu değerin bir kısmı yiyeceklerden gelir."}},
+  {"@type":"Question","name":"Egzersiz yaparsam ne kadar fazla su içmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Araç her egzersiz saati için yaklaşık 350 ml ekler. Gerçek ihtiyaç terleme miktarına, ortam sıcaklığına ve egzersizin türüne göre değişir."}},
+  {"@type":"Question","name":"Sıcak havada su ihtiyacı ne kadar artar?","acceptedAnswer":{"@type":"Answer","text":"Sıcak iklim seçildiğinde temel ihtiyaç ve egzersiz toplamının yüzde 10'u eklenir. Çok sıcak ve nemli havada ihtiyaç bundan fazla olabilir."}},
+  {"@type":"Question","name":"Hamilelikte ve emzirirken su ihtiyacı değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Araç hamilelikte yaklaşık 300 ml, emzirme döneminde yaklaşık 700 ml ek sıvı ekler. Kişisel öneri için hekiminize ya da ebenize danışın."}},
+  {"@type":"Question","name":"Çay, kahve ve yiyecekler su ihtiyacına sayılır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet, bir kısmı sayılır. Çorba, meyve ve sebzeler toplam sıvının yaklaşık beşte birini karşılayabilir; şekersiz içecekler de katkı sağlar. Alkol su ihtiyacını karşılamaz."}},
+  {"@type":"Question","name":"Çok fazla su içmek zararlı mı, böbrek ya da kalp hastalığı olanlar ne yapmalı?","acceptedAnswer":{"@type":"Answer","text":"Kısa sürede çok fazla su içmek kandaki tuz dengesini bozabilir. Böbrek, kalp ya da karaciğer hastalığı olanlar ve sıvı kısıtlaması önerilen kişiler bu hesabı kullanmamalı, hekimlerinin önerisine uymalıdır."}},
+  {"@type":"Question","name":"Girdiğim bilgiler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; kilo, yaş ve diğer bilgiler sunucuya iletilmez ve saklanmaz."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Günlük Su İhtiyacı Hesaplama</span> – Ne Kadar Su İçmeliyim?</h1>
+      <p class="lead">Kilonuzu, yaşınızı, egzersiz sürenizi ve yaşadığınız iklimi girin; günde yaklaşık kaç litre sıvıya ihtiyacınız olduğunu, bunun kaç bardak ve kaç şişe ettiğini ve gün içine yayılmış bir içme planını görün. Girdiğiniz bilgiler bilgisayarınızdan çıkmaz.</p>
+      <p class="vki-warn" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Böbrek, kalp ya da karaciğer hastalığı olanlar, sıvı kısıtlaması önerilen kişiler ve idrar söktürücü ilaç kullananlar bu sonucu değil, hekimlerinin önerisini esas almalıdır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="weight">Kilo (kg)</label><input id="weight" type="text" inputmode="decimal" autocomplete="off"><div class="hint">25–250 kg arası; örn. 70 ya da 72,5.</div></div>
+          <div class="ba-field"><label for="age">Yaş</label><input id="age" type="text" inputmode="numeric" autocomplete="off"><div class="hint">14 yaş ve üzeri için.</div></div>
+          <div class="ba-field"><label for="sex">Cinsiyet</label><select id="sex"><option value="male">Erkek</option><option value="female">Kadın</option></select></div>
+          <div class="ba-field"><label for="activity">Günlük egzersiz süresi</label><select id="activity">
+            <option value="0">Hareketsiz – düzenli egzersiz yok</option>
+            <option value="0.5">Hafif – günde yaklaşık 30 dakika</option>
+            <option value="1">Orta – günde yaklaşık 1 saat</option>
+            <option value="1.5">Orta-yoğun – günde yaklaşık 1,5 saat</option>
+            <option value="2">Yoğun – günde yaklaşık 2 saat</option>
+            <option value="3">Çok yoğun – günde yaklaşık 3 saat</option>
+          </select></div>
+          <div class="ba-field"><label for="climate">İklim</label><select id="climate"><option value="mild">Ilıman</option><option value="hot">Sıcak (yaz sıcağı, sıcak ortam)</option></select></div>
+          <div class="ba-field" id="status-wrap" hidden><label for="status">Hamilelik / emzirme</label><select id="status"><option value="none">Hiçbiri</option><option value="pregnant">Hamileyim</option><option value="nursing">Emziriyorum</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Su ihtiyacını hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" hidden>
+        <h3>Sonuç</h3>
+        <div aria-live="polite">
+          <dl class="kdv-results">
+            <div class="kdv-row is-strong"><dt>Günlük toplam sıvı ihtiyacı</dt><dd id="r-liters"></dd></div>
+            <div class="kdv-row is-strong"><dt>Mililitre</dt><dd id="r-ml"></dd></div>
+            <div class="kdv-row"><dt>Su bardağı</dt><dd id="r-cups"></dd></div>
+            <div class="kdv-row"><dt>Pet şişe</dt><dd id="r-bottles"></dd></div>
+            <div class="kdv-row"><dt>Temel ihtiyaç</dt><dd id="r-base"></dd></div>
+            <div class="kdv-row" id="row-exercise"><dt>Egzersiz ilavesi</dt><dd id="r-exercise"></dd></div>
+            <div class="kdv-row" id="row-climate"><dt>Sıcak iklim ilavesi (%10)</dt><dd id="r-climate"></dd></div>
+            <div class="kdv-row" id="row-state"><dt id="r-state-label">Hamilelik ilavesi</dt><dd id="r-state"></dd></div>
+          </dl>
+        </div>
+        <p class="kdv-note">Bu miktar yaklaşık bir tahmindir ve toplam sıvıyı ifade eder: çorba, meyve, sebze ve diğer içecekler de buna katkı sağlar.</p>
+        <p class="vki-warn" id="r-disclaimer" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Böbrek, kalp ya da karaciğer hastalığı olanlar ve sıvı kısıtlaması önerilen kişiler bu sonuca göre su içmemeli, hekimlerinin önerisine uymalıdır.</p>
+
+        <h4>Gün içine yayılmış içme planı</h4>
+        <p class="kdv-note">Miktarlar yaklaşıktır ve 10 ml'ye yuvarlanmıştır. Uyku saatlerinize göre kaydırın; susadıkça ek içebilirsiniz.</p>
+        <div class="su-tablewrap"><table class="su-table"><caption class="visually-hidden">Günün saatlerine göre içilecek su miktarı</caption><thead><tr><th scope="col">Saat aralığı</th><th scope="col">Miktar</th><th scope="col">Bardak</th></tr></thead><tbody id="plan-body"></tbody></table></div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="su-ihtiyaci-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Kilonuzu kilogram cinsinden yazın. Virgüllü değerleri de girebilirsiniz; örneğin 72,5.</li>
+        <li>Yaşınızı yazın. Katsayı yaşa göre değiştiği için bu alan sonucu etkiler. Cinsiyet seçimi, yalnızca kadınlarda görünen hamilelik ve emzirme seçeneğini açmak için vardır.</li>
+        <li>Günlük egzersiz sürenizi listeden seçin. Yürüyüş, koşu, spor salonu, bisiklet gibi terlemenize neden olan hareketleri sayın; sıradan günlük işleri saymayın.</li>
+        <li>Yaşadığınız ortam sıcaksa "Sıcak" iklimi seçin. Kadınsanız ve uygunsa hamilelik ya da emzirme durumunu işaretleyin.</li>
+        <li>"Su ihtiyacını hesapla" düğmesine basın. Litre ve mililitre karşılığı, bardak ve şişe sayısı, ihtiyacın hangi kalemlerden oluştuğu ve gün içine yayılmış 8 dilimlik bir plan görünür.</li>
+      </ol>
+
+      <h2>Günlük su ihtiyacı nasıl hesaplanır?</h2>
+      <p>Günlük su ihtiyacı için herkese uyan tek bir sayı yoktur. Bu araç, yaygın olarak kullanılan pratik bir yaklaşımı izler: kilonuzu, yaşınıza göre seçilen bir katsayı ile çarpar. Otuz yaşın altındakiler için kilo başına 40 ml, 30 ile 55 yaş arasındakiler için 35 ml, 55 yaşın üzerindekiler için 30 ml kullanılır. Yaş bantları ve katsayılar kesin bilimsel eşikler değil, yaygın kabul gören kaba değerlerdir; bu yüzden sonuç bir tanı ya da reçete değil, yalnızca bir başlangıç noktasıdır.</p>
+      <p>Örnek: 70 kilo ağırlığında, 35 yaşında, hareketsiz ve ılıman bir iklimde yaşayan bir kişi için hesap 70 × 35 = 2.450 ml eder. Aynı kişi günde bir saat egzersiz yapıyorsa 350 ml eklenir ve toplam 2.800 ml olur. Sonucun hangi kalemlerden oluştuğunu sonuç kutusundaki satırlardan görebilirsiniz.</p>
+
+      <h2>Egzersiz, sıcak iklim, hamilelik ve emzirme</h2>
+      <p>Temel ihtiyacın üzerine eklenen kalemler şunlardır. <strong>Egzersiz:</strong> terleme yoluyla kaybedilen suyu karşılamak için her egzersiz saati başına 350 ml eklenir. Bu, yaygın bir pratik değerdir; gerçek kayıp kişiden kişiye, ortam sıcaklığına ve egzersizin türüne göre belirgin biçimde değişir. <strong>Sıcak iklim:</strong> seçildiğinde temel ihtiyaç ile egzersiz toplamının yüzde 10'u eklenir. Çok sıcak ve nemli havada ihtiyaç bundan da fazla olabilir. <strong>Hamilelik:</strong> yaklaşık 300 ml eklenir. <strong>Emzirme:</strong> süt üretimi nedeniyle yaklaşık 700 ml eklenir. Bu iki sabit miktar yüzde 10'luk iklim ilavesinden sonra, doğrudan toplama katılır.</p>
+      <p>Hesap sırası şöyledir: temel ihtiyaç ve egzersiz toplanır, sıcak iklimde bu toplamın yüzde 10'u eklenir, en son hamilelik ya da emzirme miktarı katılır. Sonuç mililitre cinsinden tam sayı olarak gösterilir.</p>
+
+      <h2>"Günde 8 bardak" kuralı ve genel öneriler</h2>
+      <p>"Günde sekiz bardak su" sözü çok yaygındır ancak bilimsel bir kesinliği yoktur; yaklaşık iki litreye denk gelen bu sayı herkese uymaz. Avrupa Gıda Güvenliği Otoritesi (EFSA) gibi kuruluşlar yetişkin kadınlar için günde yaklaşık 2,0, erkekler için yaklaşık 2,5 litre toplam su alımını yeterli sayar; ancak bu değerler yiyeceklerden gelen suyu da içerir ve kaynaklara göre değişebilir. Yani 2,5 litrelik bir hedefin tamamını bardakla içmeniz gerekmez. Kilosu fazla olan, çok hareket eden ya da sıcak bir yerde yaşayan biri bu ortalamaların üzerine çıkabilir; küçük yapılı ve hareketsiz biri ise altında kalabilir. Bu araç ortalamaları değil, sizin bilgilerinizi kullanarak kişiselleştirilmiş bir tahmin üretir.</p>
+
+      <div class="ba-ad" data-slot="su-ihtiyaci-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Yiyecek ve içeceklerden gelen su</h2>
+      <p>Aldığımız sıvının önemli bir kısmı sofradan gelir. Çorbalar, sebzeler, meyveler (özellikle karpuz, salatalık, portakal), yoğurt ve ayran büyük oranda sudur. Genel kabul gören bir tahmine göre toplam sıvı alımının yaklaşık beşte biri yiyeceklerden karşılanır. Çay, kahve, süt ve şekersiz bitki çayları da toplama katkı verir; ölçülü tüketildiğinde idrar söktürücü etkileri bu katkıyı sıfırlamaz. Şekerli ve asitli içecekler ise sıvı sağlasa da şeker yükü nedeniyle düzenli su yerine geçmemelidir. Alkol bir sıvı olsa da su ihtiyacını karşılamaz, aksine vücuttan su kaybını artırabilir. Bu nedenle sonuçtaki litre miktarını "yalnızca düz su" olarak okumayın; toplam sıvı hedefi olarak düşünün.</p>
+
+      <h2>Suyu güne nasıl yaymalı?</h2>
+      <p>Tüm miktarı birkaç büyük yudumda içmek yerine gün boyunca dağıtmak hem daha rahat hem de daha dengelidir. Araç, sabah 07:00 ile gece 23:00 arasını sekiz dilime böler. İlk dilime biraz daha fazla pay verilir; çünkü gece boyunca su almadığınız için sabah susuz uyanmak yaygındır. Öğün saatlerinde bir bardak su içmek alışkanlık kazanmanın kolay bir yoludur. Son dilim, geceleri tuvalete kalkmamanız için daha küçük tutulur. Planı kendi uyku düzeninize göre kaydırabilirsiniz; önemli olan toplamın gün içine yayılmasıdır. Yanınızda bir şişe taşımak, telefonunuza hatırlatıcı kurmak ya da her işe başlarken bir bardak içmek pratik yöntemlerdir.</p>
+
+      <h2>Yeterince su içiyor muyum? Nasıl anlarım?</h2>
+      <p>Susuzluk hissi, vücudun bir uyarısıdır ve gün içinde susadıkça içmek çoğu sağlıklı yetişkin için iyi bir rehberdir. Bir diğer pratik ipucu idrar rengidir: açık sarı genellikle yeterli sıvı alındığını, koyu sarı ya da kehribar rengi ise daha fazla sıvıya ihtiyaç olabileceğini düşündürür. Ancak vitaminler, bazı ilaçlar ve yiyecekler idrar rengini değiştirebilir. Ağız kuruluğu, baş ağrısı, baş dönmesi, yorgunluk ve konsantrasyon güçlüğü de sıvı eksikliğiyle birlikte görülebilen belirtilerdir; fakat bu belirtilerin başka nedenleri de vardır. Belirtiler sürüyorsa ya da şiddetliyse sebebini araştırmak için hekime başvurun. Bu sayfa tanı koymaz.</p>
+
+      <h2>Çok fazla su içmek ve hekime danışması gerekenler</h2>
+      <p>Su sağlıklı yaşamın temel parçasıdır ama "ne kadar çok o kadar iyi" değildir. Böbreklerin işleyebileceği su miktarı bir sınıra sahiptir; kısa sürede çok fazla su içmek kandaki tuz dengesini bozabilir ve ciddi sonuçlar doğurabilir. Bu yüzden hesaplanan miktarı gün içine yayın, tek seferde litrelerce su içmeyin.</p>
+      <p><strong>Önemli:</strong> Böbrek hastalığı, kalp yetmezliği, karaciğer hastalığı olanlar, hekimi sıvı kısıtlaması önermiş kişiler ve idrar söktürücü ilaç kullananlar için bu aracın sonuçları geçerli değildir; bu kişiler hekimlerinin belirlediği miktara uymalıdır. Hamilelik ve emzirme döneminde de kişisel öneri için hekiminize ya da ebenize danışın. Çocuklar için günlük sıvı ihtiyacı yetişkin formülüyle hesaplanamaz; bu nedenle araç 14 yaşın altında sonuç vermez.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; kilonuz ve yaşınız hiçbir sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Şeffaf formül.</strong> Katsayılar ve eklemeler sayfada açıkça yazılıdır; sonucun hangi kalemlerden oluştuğu satır satır görünür.</li>
+        <li><strong>Pratik çıktı.</strong> Yalnızca litre değil, bardak ve şişe karşılığı ile gün içine yayılmış bir plan da sunar.</li>
+        <li><strong>Üyelik ve "Premium" tuzağı yok.</strong> Kayıt istenmez, sonuçlar bir kilidin arkasına saklanmaz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Günlük su ihtiyacı nasıl hesaplanır?</summary><p>Araç kilonuzu yaşa göre belirlenen bir katsayıyla çarpar: 30 yaşın altında kilo başına 40 ml, 30-55 yaş arasında 35 ml, 55 yaşın üzerinde 30 ml. Üzerine egzersiz (saat başına 350 ml), sıcak iklim (yüzde 10) ve hamilelik ya da emzirme için ek miktarlar eklenir.</p></details>
+        <details><summary>Günde 2 litre su herkes için yeterli mi?</summary><p>Hayır. İhtiyaç kiloya, yaşa, aktiviteye ve havaya göre değişir. 70 kilo ağırlığındaki 35 yaşında hareketsiz bir kişi için bu araç yaklaşık 2.450 ml sonucunu verir; bu değerin bir kısmı yiyeceklerden gelir.</p></details>
+        <details><summary>Egzersiz yaparsam ne kadar fazla su içmeliyim?</summary><p>Araç her egzersiz saati için yaklaşık 350 ml ekler. Gerçek ihtiyaç terleme miktarına, ortam sıcaklığına ve egzersizin türüne göre değişir.</p></details>
+        <details><summary>Sıcak havada su ihtiyacı ne kadar artar?</summary><p>Sıcak iklim seçildiğinde temel ihtiyaç ve egzersiz toplamının yüzde 10'u eklenir. Çok sıcak ve nemli havada ihtiyaç bundan fazla olabilir.</p></details>
+        <details><summary>Hamilelikte ve emzirirken su ihtiyacı değişir mi?</summary><p>Evet. Araç hamilelikte yaklaşık 300 ml, emzirme döneminde yaklaşık 700 ml ek sıvı ekler. Kişisel öneri için hekiminize ya da ebenize danışın.</p></details>
+        <details><summary>Çay, kahve ve yiyecekler su ihtiyacına sayılır mı?</summary><p>Evet, bir kısmı sayılır. Çorba, meyve ve sebzeler toplam sıvının yaklaşık beşte birini karşılayabilir; şekersiz içecekler de katkı sağlar. Alkol su ihtiyacını karşılamaz.</p></details>
+        <details><summary>Çok fazla su içmek zararlı mı, böbrek ya da kalp hastalığı olanlar ne yapmalı?</summary><p>Kısa sürede çok fazla su içmek kandaki tuz dengesini bozabilir. Böbrek, kalp ya da karaciğer hastalığı olanlar ve sıvı kısıtlaması önerilen kişiler bu hesabı kullanmamalı, hekimlerinin önerisine uymalıdır.</p></details>
+        <details><summary>Girdiğim bilgiler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Kilo, yaş ve diğer bilgileriniz bir sunucuya iletilmez, kaydedilmez ve çerez ya da analiz kodu kullanılmaz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sayfa tanı, tedavi ya da ilaç önerisi sunmaz. Böbrek, kalp veya karaciğer hastalığı olanlar ve sıvı kısıtlaması önerilen kişiler hekimlerinin belirlediği miktara uymalıdır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../vki-hesapla/">VKİ Hesaplama (Vücut Kitle İndeksi)</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../gebelik-hesapla/">Gebelik Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="su-ihtiyaci-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

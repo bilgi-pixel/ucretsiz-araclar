@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Günlük Kalori İhtiyacı Hesaplama – BMR, TDEE ve Makro Hesaplayıcı</title>
+  <meta name="description" content="Boy, kilo, yaş ve aktivite düzeyinize göre günlük kalori ihtiyacınızı (BMR ve TDEE) Mifflin-St Jeor ya da Harris-Benedict formülüyle hesaplayın; kalori farkı ve makro gram tablosunu görün. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kalori-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; min-width: 0; }
+    .kdv-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .88rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kal-sub { display: block; font-size: .8rem; color: var(--ba-text-2); margin-top: 2px; }
+    .kal-low { display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 999px; background: #8a5a0b; color: #fff; font-family: inherit; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+    .kal-warn { font-weight: 600; color: var(--ba-text); }
+    .kal-macro-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .kal-group-l { display: block; font-weight: 600; margin-bottom: 6px; }
+    .kal-h4 { font-size: 1rem; margin: 18px 0 6px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Günlük Kalori İhtiyacı Hesaplama – Bilişim Ajans","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kalori-hesapla/","inLanguage":"tr","description":"Boy, kilo, yaş ve aktiviteden bazal metabolizma hızı (BMR), günlük enerji ihtiyacı (TDEE) ve makro gram tahmini. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Günlük kalori ihtiyacım nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Önce Mifflin-St Jeor ya da Harris-Benedict formülüyle bazal metabolizma hızı (BMR) bulunur, sonra aktivite çarpanıyla (1,2 ile 1,9 arası) çarpılır. Sonuç, kilonuzu korumanıza yaklaşık olarak yetecek enerjidir ve bir tahmindir."}},
+  {"@type":"Question","name":"BMR ile TDEE arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"BMR, vücudun tam dinlenme halinde harcadığı enerjidir. TDEE ise BMR'ye günlük hareket, egzersiz ve yemeğin sindirimi için harcanan enerjinin eklenmesiyle bulunan toplam günlük harcamadır."}},
+  {"@type":"Question","name":"Mifflin-St Jeor mu, Harris-Benedict mi daha doğru?","acceptedAnswer":{"@type":"Answer","text":"İkisi de istatistiksel tahmindir. Mifflin-St Jeor 1990'da yayımlandı ve günümüz beslenme kaynaklarında sık tercih edilir; Harris-Benedict 1919'a dayanır, 1984'te yeniden düzenlenmiştir. Sonuçlar genellikle yüz kalori kadar farklıdır; araç ikisini de gösterir."}},
+  {"@type":"Question","name":"Aktivite düzeyimi nasıl seçmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Haftalık gerçek hareketinize bakın. Masa başı çalışıp az hareket ediyorsanız hareketsiz, haftada 1-3 gün egzersiz yapıyorsanız hafif aktif seçin. Emin değilseniz bir alt seviyeyi seçmek genellikle daha gerçekçi olur."}},
+  {"@type":"Question","name":"Kilo vermek için kaç kalori yemeliyim?","acceptedAnswer":{"@type":"Answer","text":"Bu araç kişisel hedef önermez. Yalnızca bakım kalorisinden 250 ve 500 kalorilik farkları matematiksel olarak gösterir. Size uygun hedef yaşınıza, sağlık durumunuza ve ilaçlarınıza bağlıdır; bunun için hekim ya da diyetisyene danışın."}},
+  {"@type":"Question","name":"Neden bazı satırlarda 1.200 kcal altında uyarısı çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Günlük 1.200 kcal altına düşen değerler işaretlenir, çünkü bu kadar düşük enerji alımı bazı kişiler için yetersiz olabilir. Bu eşik bir öneri değil, uzmana danışmanız gereken noktayı gösteren bir uyarıdır."}},
+  {"@type":"Question","name":"Makro dağılımı nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Seçtiğiniz kalori hedefi yüzdelere bölünür. Protein ve karbonhidrat gram başına 4 kcal, yağ 9 kcal olduğundan gram sayısı kalori çarpı yüzde bölü 100 bölü 4 (ya da 9) ile bulunur. Üç yüzdenin toplamı 100 olmalıdır."}},
+  {"@type":"Question","name":"Hamilelikte, emzirmede ya da 18 yaş altında kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bu formüller sağlıklı yetişkinler için geliştirilmiştir. Gebelik, emzirme ve büyüme çağındaki çocuklarda enerji ihtiyacı farklı kurallara bağlıdır; hekiminizin ya da diyetisyeninizin yönlendirmesini esas alın."}},
+  {"@type":"Question","name":"Girdiğim bilgiler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; boy, kilo, yaş gibi değerler sunucuya iletilmez ve saklanmaz."}},
+  {"@type":"Question","name":"Boy 100-250 cm arasında olmalıdır hatası alıyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Boyu metre değil santimetre olarak yazın; 1,75 yerine 175 girin. Kilo için 20-400 kg, yaş için 18-120 aralığı geçerlidir."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Günlük Kalori İhtiyacı</span> Hesaplama (BMR ve TDEE)</h1>
+      <p class="lead">Boy, kilo, yaş, cinsiyet ve aktivite düzeyinizi girin; bazal metabolizma hızınızı (BMR), günlük kalori ihtiyacınızı (TDEE), kalori farkı tablosunu ve protein–karbonhidrat–yağ gram dağılımını görün. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <p class="kal-warn" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong></p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="height">Boy (cm)</label><input id="height" type="text" inputmode="decimal" autocomplete="off" placeholder="180"><div class="hint">Santimetre olarak, örneğin 180.</div></div>
+          <div class="ba-field"><label for="weight">Kilo (kg)</label><input id="weight" type="text" inputmode="decimal" autocomplete="off" placeholder="80"><div class="hint">Kilogram olarak, örneğin 80 ya da 80,5.</div></div>
+          <div class="ba-field"><label for="age">Yaş</label><input id="age" type="text" inputmode="numeric" autocomplete="off" placeholder="30"><div class="hint">18 ve üzeri yetişkinler için.</div></div>
+          <div class="ba-field"><span id="sex-l" class="kal-group-l">Cinsiyet</span>
+            <div class="kdv-modes" role="radiogroup" aria-labelledby="sex-l"><label><input type="radio" name="sex" value="k"> Kadın</label><label><input type="radio" name="sex" value="e"> Erkek</label></div>
+            <div class="hint">Formüller cinsiyete göre farklı sabit kullanır.</div></div>
+          <div class="ba-field"><label for="activity">Aktivite düzeyi</label>
+            <select id="activity"><option value="1.2">Hareketsiz (masa başı, az hareket) ×1,2</option><option value="1.375" selected>Hafif aktif (haftada 1–3 gün egzersiz) ×1,375</option><option value="1.55">Orta aktif (haftada 3–5 gün) ×1,55</option><option value="1.725">Çok aktif (haftada 6–7 gün) ×1,725</option><option value="1.9">Aşırı aktif (ağır fiziksel iş / günde iki antrenman) ×1,9</option></select></div>
+          <div class="ba-field"><label for="formula">Formül</label>
+            <select id="formula"><option value="mifflin" selected>Mifflin-St Jeor (varsayılan)</option><option value="harris">Harris-Benedict (revize 1984)</option></select></div>
+        </div>
+        <div class="ba-field" role="group" aria-labelledby="macro-l">
+          <span id="macro-l" class="kal-group-l">Makro dağılımı (isteğe bağlı, toplam %100)</span>
+          <div class="kal-macro-grid">
+            <div><label for="m-protein">Protein %</label><input id="m-protein" type="text" inputmode="decimal" autocomplete="off" value="30"></div>
+            <div><label for="m-carb">Karbonhidrat %</label><input id="m-carb" type="text" inputmode="decimal" autocomplete="off" value="40"></div>
+            <div><label for="m-fat">Yağ %</label><input id="m-fat" type="text" inputmode="decimal" autocomplete="off" value="30"></div>
+          </div>
+          <div class="hint">Varsayılan 30 / 40 / 30 yalnızca bir hesap örneğidir; resmî bir öneri değildir.</div>
+        </div>
+        <div class="ba-field"><label for="m-target">Makro hesabı hangi kalori satırına göre yapılsın?</label>
+          <select id="m-target"><option value="-500">Kilo verme (−500 kcal)</option><option value="-250">Hafif kilo verme (−250 kcal)</option><option value="0" selected>Bakım (kilonuzu koruma)</option><option value="250">Hafif kilo alma (+250 kcal)</option><option value="500">Kilo alma (+500 kcal)</option></select></div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Kalori hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Kullanılan formül</dt><dd id="r-formula"></dd></div>
+          <div class="kdv-row"><dt>Bazal metabolizma hızı (BMR)</dt><dd id="r-bmr"></dd></div>
+          <div class="kdv-row"><dt id="r-other-l">Karşılaştırma</dt><dd id="r-other"></dd></div>
+          <div class="kdv-row"><dt>Aktivite çarpanı</dt><dd id="r-factor"></dd></div>
+          <div class="kdv-row is-strong"><dt>Bakım kalorisi (TDEE)</dt><dd id="r-tdee"></dd></div>
+        </dl>
+        <h4 class="kal-h4">Kalori farkı tablosu</h4>
+        <dl class="kdv-results" id="targets"></dl>
+        <p class="kdv-note" id="r-low" role="note" hidden><strong>Hekim ya da diyetisyene danışın:</strong> Tablodaki işaretli satırlar günlük 1.200 kcal'in altına düşüyor. Bu kadar düşük enerji alımı bazı kişiler için yetersiz olabilir; böyle bir hedef düşünüyorsanız önce bir hekim ya da diyetisyene danışın.</p>
+        <h4 class="kal-h4">Makro dağılımı</h4>
+        <p class="kdv-note" id="r-macro-t" style="margin-top:0"></p>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Protein</dt><dd id="r-prot"></dd></div>
+          <div class="kdv-row"><dt>Karbonhidrat</dt><dd id="r-carb"></dd></div>
+          <div class="kdv-row"><dt>Yağ</dt><dd id="r-fat"></dd></div>
+        </dl>
+        <p class="kdv-note" id="r-macro-low" role="note" hidden><strong>Hekim ya da diyetisyene danışın:</strong> Makro hesabı için seçtiğiniz satır günlük 1.200 kcal'in altında.</p>
+        <p class="kdv-note">Değerler istatistiksel tahmindir; gerçek harcama kas oranı, uyku, hormonlar, ilaçlar ve sağlık durumuna göre yüzlerce kcal sapabilir. Teorik haftalık değişim, 1 kg için yaklaşık 7.700 kcal kaba kuralına dayanır ve gerçekte doğrusal değildir.</p>
+        <p class="kal-warn" id="r-disclaimer" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sonuç tanı, tedavi, ilaç, takviye ya da kişisel diyet önerisi içermez.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="kalori-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Boyunuzu santimetre, kilonuzu kilogram cinsinden yazın. Ondalık için virgül ya da nokta kullanabilirsiniz (72,5 gibi). Yaşınız 18 ya da üzeri olmalıdır; çocuk ve ergenlerin enerji ihtiyacı büyümeye göre değiştiği için bu araç onlara göre tasarlanmamıştır.</li>
+        <li>Cinsiyetinizi ve aktivite düzeyinizi seçin. Aktiviteyi dürüstçe seçmek sonucun en büyük belirleyicisidir: çoğu insan günlük hareketini olduğundan fazla tahmin eder, bu yüzden emin değilseniz bir alt seviyeyi seçmek daha gerçekçi olur.</li>
+        <li>Formülü belirleyin. Varsayılan Mifflin-St Jeor'dur; Harris-Benedict'i seçerseniz aynı verilerle biraz farklı bir sonuç görürsünüz. Sonuç alanında, karşılaştırma için diğer formülün bazal değeri de ayrıca gösterilir.</li>
+        <li>İsterseniz makro yüzdelerini (varsayılan 30 / 40 / 30) ve makro hesabının hangi kalori satırına göre yapılacağını değiştirin. Üç yüzdenin toplamı 100 olmalıdır; aksi hâlde araç size nasıl düzelteceğinizi söyler.</li>
+        <li>"Kalori hesapla" düğmesine basın. Sonuçta bazal metabolizma hızı, bakım kalorisi, kalori farkı tablosu ve gram cinsinden makro dağılımı görünür. "Sonucu kopyala" ile özeti panoya alabilirsiniz. Değerleri mutlaka bir sağlık profesyoneliyle birlikte yorumlayın.</li>
+      </ol>
+
+      <h2>Günlük kalori ihtiyacı nedir? BMR ve TDEE</h2>
+      <p>Vücudunuz hareketsiz yatarken bile enerji harcar: kalp atar, akciğerler çalışır, vücut ısısı korunur, hücreler kendini yeniler. Bu en düşük düzeydeki harcamaya bazal metabolizma hızı, İngilizce kısaltmasıyla BMR (Basal Metabolic Rate) denir. Günlük toplam harcamanın büyük bölümünü oluşturur ve kişinin boyu, kilosu, yaşı ve cinsiyetiyle birlikte kas kütlesi gibi etkenlere bağlıdır.</p>
+      <p>Gün boyunca yaptığınız yürüyüş, iş, ev işleri, egzersiz ve yemeklerin sindirilmesi için harcanan enerji BMR'nin üzerine eklenir. Bunların toplamına toplam günlük enerji harcaması, kısaca TDEE (Total Daily Energy Expenditure) denir. Basit bir tahminle TDEE, BMR ile aktivite çarpanının çarpımıdır. Kilonuzu korumanıza yaklaşık olarak yetecek enerjiye "bakım kalorisi" denir ve bu araçta TDEE ile aynı değerdir.</p>
+
+      <h2>Kullanılan formüller: Mifflin-St Jeor ve Harris-Benedict</h2>
+      <p><strong>Mifflin-St Jeor</strong> denklemi 1990'da yayımlandı ve günümüzde birçok beslenme kaynağında tercih edilir. Erkekler için BMR = 10 × kilo (kg) + 6,25 × boy (cm) − 5 × yaş + 5; kadınlar için aynı denklemin sonundaki sabit −161'dir. Örneğin 30 yaşında, 180 cm boyunda, 80 kg bir erkek için: 800 + 1.125 − 150 + 5 = 1.780 kcal olur. Aktivite düzeyi "orta aktif" (×1,55) seçildiğinde bakım kalorisi 1.780 × 1,55 = 2.759 kcal'dir.</p>
+      <p><strong>Harris-Benedict</strong> denklemi 1919'a dayanır ve 1984'te Roza ve Shizgal tarafından yeniden düzenlenmiştir. Erkekler için BMR = 88,362 + 13,397 × kilo + 4,799 × boy − 5,677 × yaş; kadınlar için BMR = 447,593 + 9,247 × kilo + 3,098 × boy − 4,330 × yaş biçimindedir. Aynı erkek için sonuç yaklaşık 1.854 kcal çıkar; yani iki formül arasında yüz kalori civarında bir fark vardır. 25 yaşında, 165 cm, 60 kg bir kadın için Mifflin-St Jeor 1.345,25 kcal verir.</p>
+      <p>İki formül de büyük gruplardan toplanan verilere dayanan istatistiksel tahmindir; sizin kişisel metabolizmanızı ölçmez. Bu nedenle sonucu "kesin değer" değil, "makul bir başlangıç noktası" olarak görmek gerekir. Gerçek harcamayı ancak laboratuvar ölçümleri ya da uzun süreli, düzenli takip belirgin biçimde netleştirebilir.</p>
+
+      <h2>Aktivite çarpanları ne anlama geliyor?</h2>
+      <ul>
+        <li><strong>1,2 – Hareketsiz:</strong> Masa başı iş, günün çoğu oturarak geçiyor, planlı egzersiz yok ya da çok az.</li>
+        <li><strong>1,375 – Hafif aktif:</strong> Haftada bir ile üç gün hafif egzersiz ya da düzenli yürüyüş.</li>
+        <li><strong>1,55 – Orta aktif:</strong> Haftada üç ile beş gün orta tempolu egzersiz ya da ayakta geçen bir iş.</li>
+        <li><strong>1,725 – Çok aktif:</strong> Haftanın altı ya da yedi günü yoğun egzersiz ya da fiziksel olarak yorucu iş.</li>
+        <li><strong>1,9 – Aşırı aktif:</strong> Çok ağır fiziksel iş ya da günde iki antrenman gibi olağanüstü yoğun bir program.</li>
+      </ul>
+      <p>Çarpanlar yaygın kabul gören yaklaşık değerlerdir ve aralarındaki geçiş keskin değildir. İki seçenek arasında kalırsanız genellikle düşük olanı seçmek, gerçek hayatta aşırı tahmin riskini azaltır.</p>
+
+      <h2>Kalori farkı tablosunu nasıl okumalı?</h2>
+      <p>Tablo, bakım kalorisinin 500 ve 250 kcal altını ve üstünü gösterir. Bu satırlar bir hedef önerisi değil, enerji dengesinin aritmetiğidir: bakım kalorisinin altında kalan günlük alım zamanla vücut ağırlığında azalmayla, üstünde kalan alım artışla ilişkilendirilir. Kaba bir kural olarak yaklaşık 7.700 kcal'lik birikimli fark 1 kg vücut yağına denk sayılır; bu nedenle günde 500 kcal'lik fark haftada teorik olarak yaklaşık 0,45 kg eder. Gerçekte vücut zamanla uyum sağlar, su ve glikojen dengesi dalgalanır, metabolizma değişir ve ilerleme doğrusal olmaz. Tablodaki teorik haftalık değerleri bu yüzden yalnızca matematiksel bir gösterim olarak düşünün.</p>
+      <p>Tablodaki herhangi bir satır günlük 1.200 kcal'in altına düşerse araç o satırı işaretler ve "hekim ya da diyetisyene danışın" uyarısı gösterir. Bu eşik bir tavsiye değildir; yalnızca uzman görüşüne başvurmanız gereken çizgiyi belirtir. Kişinin yaşı, boyu, sağlık durumu, kullandığı ilaçlar ve geçmişi uygun enerji miktarını değiştirebilir. Gebelik, emzirme, kronik hastalık, yeme bozukluğu öyküsü ya da düzenli ilaç kullanımı varsa kalori hedefleriyle ilgili hiçbir kararı bu araca dayandırmayın.</p>
+
+      <div class="ba-ad" data-slot="kalori-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Makro besin dağılımı nasıl hesaplanıyor?</h2>
+      <p>Protein ve karbonhidratın her gramı yaklaşık 4 kcal, yağın her gramı yaklaşık 9 kcal enerji sağlar. Araç, seçtiğiniz kalori satırını yüzdelere böler ve gramlara çevirir: gram = kalori × yüzde ÷ 100 ÷ (4 ya da 9). Örneğin 2.759 kcal ve 30 / 40 / 30 dağılımı için yaklaşık 207 g protein, 276 g karbonhidrat ve 92 g yağ çıkar.</p>
+      <p>Varsayılan 30 / 40 / 30 dağılımı yalnızca tanıdık bir hesap örneğidir, resmî bir öneri değildir. Kurumların referans aralıkları daha geniştir: ABD Ulusal Tıp Akademileri'nin kabul edilebilir makro besin dağılım aralıkları, yetişkinlerde enerjinin yaklaşık yüzde 10–35'inin protein, yüzde 45–65'inin karbonhidrat ve yüzde 20–35'inin yağdan gelmesi biçimindedir. Bu yüzden yüzdeleri değiştirebilirsiniz; araç yalnızca aritmetik yapar ve hangi dağılımın sizin için uygun olduğunu söylemez. Bu konuda karar vermek için bir diyetisyenden yardım alın.</p>
+
+      <h2>Hesabın sınırları</h2>
+      <ul>
+        <li><strong>Formüller tahmindir.</strong> Aynı boy, kilo ve yaştaki iki kişinin gerçek harcaması yüzlerce kcal farklı olabilir.</li>
+        <li><strong>Kas oranı hesaba katılmaz.</strong> Kas dokusu yağ dokusundan daha fazla enerji harcar; kas oranı yüksek kişilerde gerçek harcama tahminin üzerinde kalabilir.</li>
+        <li><strong>Gebelik ve emzirme dışındadır.</strong> Bu dönemlerde enerji ihtiyacı farklı kurallara bağlıdır; hekiminizin takibini esas alın.</li>
+        <li><strong>Çocuk ve ergenlere uygun değildir.</strong> Büyüme çağında enerji ihtiyacı yaş ve gelişim evresine göre belirlenir; çocuk hekimine başvurun.</li>
+        <li><strong>Hastalıklar ve ilaçlar.</strong> Tiroid hastalıkları, bazı hormonal durumlar ve bazı ilaçlar enerji harcamasını değiştirebilir.</li>
+        <li><strong>Çok uç değerler.</strong> Çok düşük ya da çok yüksek kilo ve boylarda formüllerin hata payı büyür.</li>
+      </ul>
+
+      <h2>Kalori hesaplarken sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Aktiviteyi olduğundan yüksek seçmek.</strong> Haftada iki kez yarım saat yürümek "çok aktif" değildir. Bakım kalorisi şişince hedefler gerçeğin üzerinde çıkar.</li>
+        <li><strong>Tek günü esas almak.</strong> Enerji dengesi günlük değil, haftalık ve aylık ortalamalarla anlam kazanır. Bir günlük sapma büyük bir şey ifade etmez.</li>
+        <li><strong>Birimleri karıştırmak.</strong> Boyu metre yerine santimetre, kiloyu pound yerine kilogram yazdığınızdan emin olun.</li>
+        <li><strong>Sonucu kesin hedef saymak.</strong> Tahmin bir başlangıç noktasıdır; kişisel durumunuz için uzman yorumu gerekir.</li>
+        <li><strong>Etiketlere ve porsiyonlara körü körüne güvenmek.</strong> Paketli gıdalardaki kalori değerlerinin de belirli bir toleransı vardır; ev yemeklerinin enerjisi ise porsiyona göre ciddi biçimde değişir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Boy, kilo ve yaş gibi hassas bilgiler tarayıcınızda işlenir; sunucuya iletilmez, saklanmaz.</li>
+        <li><strong>Açık formül.</strong> Kullanılan her denklem ve sabit bu sayfada yazılıdır; kara kutu yoktur.</li>
+        <li><strong>İki formül yan yana.</strong> Seçtiğiniz formülün yanında diğerinin bazal değeri de gösterilir; tahminlerin ne kadar farklılaşabildiğini görürsünüz.</li>
+        <li><strong>Abartısız.</strong> Mucize vaadi, ürün yönlendirmesi, takviye ya da ilaç önerisi yok.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; telefonda rahat okunur.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Günlük kalori ihtiyacım nasıl hesaplanıyor?</summary><p>Önce Mifflin-St Jeor ya da Harris-Benedict formülüyle bazal metabolizma hızınız (BMR) bulunur, ardından aktivite çarpanıyla (1,2 ile 1,9 arası) çarpılır. Sonuç, kilonuzu korumanıza yaklaşık olarak yetecek enerjidir ve bir tahmindir.</p></details>
+        <details><summary>BMR ile TDEE arasındaki fark nedir?</summary><p>BMR, vücudun tam dinlenme hâlinde harcadığı enerjidir. TDEE ise BMR'ye günlük hareket, egzersiz ve yemeğin sindirimi için harcanan enerjinin eklenmesiyle bulunan toplam günlük harcamadır. Bu araçta bakım kalorisi TDEE ile aynıdır.</p></details>
+        <details><summary>Mifflin-St Jeor mu, Harris-Benedict mi daha doğru?</summary><p>İkisi de istatistiksel tahmindir. Mifflin-St Jeor 1990'da yayımlandı ve günümüz beslenme kaynaklarında sık tercih edilir; Harris-Benedict 1919'a dayanır, 1984'te yeniden düzenlenmiştir. Sonuçlar genellikle yüz kalori kadar farklıdır. Hangisinin size daha uygun olduğunu bir diyetisyen değerlendirebilir; araç ikisini de gösterir.</p></details>
+        <details><summary>Aktivite düzeyimi nasıl seçmeliyim?</summary><p>Haftalık gerçek hareketinize bakın. Masa başı çalışıp az hareket ediyorsanız hareketsiz, haftada bir ile üç gün egzersiz yapıyorsanız hafif aktif seçin. Emin değilseniz bir alt seviyeyi seçmek genellikle daha gerçekçidir; çünkü insanlar hareketlerini sıklıkla olduğundan fazla tahmin eder.</p></details>
+        <details><summary>Kilo vermek için kaç kalori yemeliyim?</summary><p>Bu araç kişisel hedef önermez. Yalnızca bakım kalorisinden 250 ve 500 kcal'lik farkları matematiksel olarak gösterir. Size uygun miktar yaşınıza, sağlık durumunuza, ilaçlarınıza ve yaşam tarzınıza bağlıdır; bu karar için hekim ya da diyetisyene danışın.</p></details>
+        <details><summary>Neden bazı satırlarda "1.200 kcal altında" uyarısı çıkıyor?</summary><p>Günlük 1.200 kcal altına düşen değerler işaretlenir, çünkü bu kadar düşük enerji alımı bazı kişiler için yetersiz olabilir. Bu eşik bir öneri değil, uzmana danışmanız gereken noktayı gösteren bir uyarıdır; araç böyle bir hedefi önermez.</p></details>
+        <details><summary>Makro dağılımı nasıl hesaplanıyor?</summary><p>Seçtiğiniz kalori satırı yüzdelere bölünür. Protein ve karbonhidrat gram başına 4 kcal, yağ 9 kcal olduğundan gram sayısı kalori × yüzde ÷ 100 ÷ 4 (yağ için 9) ile bulunur. Üç yüzdenin toplamı 100 olmalıdır; olmazsa araç hata mesajıyla düzeltmenizi ister.</p></details>
+        <details><summary>Hamilelikte, emzirmede ya da 18 yaş altında kullanılabilir mi?</summary><p>Hayır. Bu formüller sağlıklı yetişkinler için geliştirilmiştir. Gebelik, emzirme ve büyüme çağındaki çocuklarda enerji ihtiyacı farklı kurallara bağlıdır; hekiminizin ya da diyetisyeninizin yönlendirmesini esas alın. 18 yaşın altını girerseniz hesap yapılmaz.</p></details>
+        <details><summary>Girdiğim bilgiler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Sayfa boy, kilo ve yaş gibi değerleri bir sunucuya iletmez, kaydetmez ve çerez ya da analiz kodu içermez.</p></details>
+        <details><summary>"Boy 100–250 cm arasında olmalıdır" hatası alıyorum, ne yapmalıyım?</summary><p>Boyu metre değil santimetre olarak yazın; 1,80 yerine 180 girin. Kilo için 20–400 kg, yaş için 18–120 aralığı geçerlidir. Alanı temizleyip değeri yeniden yazın; makro yüzdelerinin toplamının 100 olduğundan da emin olun.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sayfa tanı, tedavi, ilaç, takviye ya da kişisel diyet önerisi sunmaz. Sağlığınızla ilgili endişeleriniz için bir sağlık profesyoneline başvurun.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../vki-hesapla/">VKİ Hesaplama (Vücut Kitle İndeksi)</a></li>
+        <li><a href="../ideal-kilo-hesapla/">İdeal Kilo Hesaplama</a></li>
+        <li><a href="../yas-hesapla/">Yaş Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kalori-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

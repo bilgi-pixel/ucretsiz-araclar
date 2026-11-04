@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Sudoku Oyna – Ücretsiz Online Sudoku (kurulumsuz)</title>
+  <meta name="description" content="Sudoku'yu tarayıcınızda ücretsiz oynayın: kolay, orta, zor ve uzman seviye, tek çözümlü bulmacalar, not modu, ipucu, günlük bulmaca ve yazdırma. Kurulum ve kayıt yok.">
+  <meta name="keywords" content="sudoku oyna, sudoku, online sudoku, günlük sudoku, sudoku yazdır, bulmaca oyunları, ücretsiz oyun">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/sudoku/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+
+    /* Sudoku — renkler token'lara bağlı; koyu temada vurgu renkleri ayrıca tanımlı */
+    .game-box { --sd-line: #cfcac5; --sd-line-strong: #4a4d53; --sd-peer: #f1eeeb; --sd-sel: #ecc9d1; --sd-same: #f4dfe3; --sd-wrong-bg: #fbe0dd; --sd-wrong: #a3271f; position: relative; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .game-box { --sd-line: #3d4046; --sd-line-strong: #a6a8ad; --sd-peer: #2a2d32; --sd-sel: #5a2a35; --sd-same: #3f2530; --sd-wrong-bg: #4b2320; --sd-wrong: #ff9b92; } }
+    :root[data-theme="dark"] .game-box { --sd-line: #3d4046; --sd-line-strong: #a6a8ad; --sd-peer: #2a2d32; --sd-sel: #5a2a35; --sd-same: #3f2530; --sd-wrong-bg: #4b2320; --sd-wrong: #ff9b92; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 20px; margin: 0; border-radius: 0; }
+    .sd-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-bottom: 12px; }
+    .sd-info { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-weight: 600; color: var(--ba-text-2); font-size: .92rem; }
+    .sd-lcd { font-family: var(--ba-mono); font-size: 1.3rem; font-weight: 500; letter-spacing: .08em; background: var(--ba-ink); color: #ff8a7a; padding: 6px 12px; border-radius: var(--ba-radius-sm); min-width: 84px; text-align: center; }
+    .sd-controls { display: grid; gap: 12px; }
+    @media (min-width: 640px) { .sd-controls { grid-template-columns: minmax(200px, 260px) 1fr; align-items: end; } }
+    .sd-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sd-btns .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .sd-btns .ba-btn[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .sd-btns .ba-btn[data-armed] { background: var(--ba-danger); border-color: var(--ba-danger); color: #fff; }
+    .sd-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .sd-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .sd-board-wrap { position: relative; width: min(100%, 468px); margin: 14px auto 0; }
+    .sd-board { display: grid; grid-template-rows: repeat(9, 1fr); border: 2px solid var(--sd-line-strong); background: var(--ba-surface); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+    .is-paused .sd-board { visibility: hidden; }
+    .sd-row { display: grid; grid-template-columns: repeat(9, 1fr); }
+    .sd-cell { position: relative; aspect-ratio: 1; display: grid; place-items: center; min-width: 0; border-right: 1px solid var(--sd-line); border-bottom: 1px solid var(--sd-line); font-family: var(--ba-font); font-size: clamp(1.05rem, 5.2vw, 1.65rem); line-height: 1; color: var(--ba-primary); cursor: pointer; background: var(--ba-surface); -webkit-tap-highlight-color: transparent; }
+    .sd-cell[data-c="2"], .sd-cell[data-c="5"] { border-right: 2px solid var(--sd-line-strong); }
+    .sd-cell[data-c="8"] { border-right: 0; }
+    .sd-row:nth-child(3) .sd-cell, .sd-row:nth-child(6) .sd-cell { border-bottom: 2px solid var(--sd-line-strong); }
+    .sd-row:nth-child(9) .sd-cell { border-bottom: 0; }
+    .sd-cell.is-given { color: var(--ba-text); font-weight: 700; }
+    .sd-cell.is-hint { color: var(--ba-success); font-weight: 600; }
+    .sd-cell.is-peer { background: var(--sd-peer); }
+    .sd-cell.is-same { background: var(--sd-same); }
+    .sd-cell.is-selected { background: var(--sd-sel); outline: 2px solid var(--ba-primary); outline-offset: -2px; z-index: 1; }
+    .sd-cell.is-wrong { background: var(--sd-wrong-bg); color: var(--sd-wrong); font-weight: 700; }
+    .sd-cell:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: -3px; border-radius: 0; z-index: 2; }
+    .sd-n { position: absolute; inset: 1px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); font-size: clamp(.55rem, 2.6vw, .75rem); line-height: 1; color: var(--ba-text-2); pointer-events: none; }
+    .sd-n i { font-style: normal; display: grid; place-items: center; }
+    .sd-pause { position: absolute; inset: 0; display: grid; place-content: center; gap: 12px; text-align: center; background: var(--ba-surface-2); border: 2px solid var(--sd-line-strong); }
+    .sd-pause p { margin: 0; font-weight: 600; }
+    .sd-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: min(100%, 468px); margin: 14px auto 0; }
+    @media (min-width: 560px) { .sd-pad { grid-template-columns: repeat(10, 1fr); width: min(100%, 560px); } }
+    .sd-key { min-height: 52px; padding: 4px 0; display: grid; place-items: center; gap: 0; font: inherit; font-size: 1.3rem; font-weight: 600; line-height: 1.1; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .sd-key:hover { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .sd-key small { font-size: .68rem; font-weight: 500; color: var(--ba-text-muted); }
+    .sd-key.is-done { background: var(--ba-surface-2); color: var(--ba-text-muted); }
+    .sd-key[data-d="0"] { font-size: .95rem; }
+    .sd-status { margin: 14px 0 0; min-height: 3.2em; font-weight: 500; color: var(--ba-text-2); }
+    .is-won .sd-status { color: var(--ba-success); font-weight: 700; }
+    .sd-h { font-size: 1.05rem; margin: 16px 0 6px; }
+    .sd-best { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+    .sd-best li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); font-size: .92rem; }
+    .sd-best strong { font-family: var(--ba-mono); font-weight: 500; white-space: nowrap; }
+    .sd-help { font-size: .88rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    /* Yazdırma: yalnızca boş bulmaca sayfası basılır */
+    #sd-baski { display: none; }
+    @media print {
+      @page { margin: 1.5cm; }
+      body > *:not(#sd-baski) { display: none !important; }
+      #sd-baski { display: block !important; color: #000; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+      #sd-baski h2 { font-size: 20pt; margin: 0 0 6pt; }
+      #sd-baski p { font-size: 10pt; margin: 0 0 6pt; color: #000; }
+      .sd-print-grid { border-collapse: collapse; width: 17cm; height: 17cm; margin: 14pt auto; table-layout: fixed; border: 3px solid #000; }
+      .sd-print-grid td { border: 1px solid #000; text-align: center; vertical-align: middle; font-size: 24pt; font-weight: 700; }
+      .sd-print-grid tr:nth-child(3n) td { border-bottom: 3px solid #000; }
+      .sd-print-grid td:nth-child(3n) { border-right: 3px solid #000; }
+      .sd-print-note { text-align: center; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Sudoku","description":"Sudoku'yu tarayıcınızda ücretsiz oynayın: kolay, orta, zor ve uzman seviye, tek çözümlü bulmacalar, not modu, ipucu, günlük bulmaca ve yazdırma. Kurulum ve kayıt yok.","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/sudoku/","genre":"Bulmaca","applicationCategory":"Game","operatingSystem":"Web tarayıcısı","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Her Sudoku bulmacasının tek bir çözümü var mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Üretici, her kare silindiğinde çözümün benzersiz olup olmadığını denetler; benzersizliği bozan silmeyi geri alır. Böylece bulmacayı mantıkla çözebilirsiniz, tahmin etmeniz gerekmez."}},{"@type":"Question","name":"Günlük bulmaca herkes için aynı mı?","acceptedAnswer":{"@type":"Answer","text":"Aynı takvim gününde, aynı tarihi gösteren cihazlarda evet. Bulmaca tarihten üretilen bir tohumdan tarayıcınızda hesaplanır; bu yüzden bir sunucuya bağlanmaz. Cihazınızın saati yanlışsa farklı bir günün bulmacasını görebilirsiniz."}},{"@type":"Question","name":"Oyunum kaybolur mu?","acceptedAnswer":{"@type":"Answer","text":"Her hamlede oyun tarayıcınızın yerel belleğine kaydedilir. Sayfayı kapatıp açtığınızda kaldığınız yerden devam edersiniz. Tarayıcı verilerini temizler ya da gizli sekme kullanırsanız kayıt silinebilir. Yeni oyun düğmesi, ilerleme varsa önce onay ister."}},{"@type":"Question","name":"İpucu kullanırsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"İpucu, seçili boş kareyi ya da en kolay kareyi doğru rakamla doldurur ve o kare kilitlenir. İpucu kullanılan oyun bitince tebrik mesajı görürsünüz; ancak adil bir kıyaslama için bu süre en iyi süreler listesine yazılmaz."}},{"@type":"Question","name":"Not (kalem) modu nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Not modunu açtığınızda rakam düğmeleri karenin içine küçük aday notu ekler. Aynı rakama tekrar basmak notu kaldırır. Bir karede rakamı kesinleştirdiğinizde, aynı satır, sütun ve kutudaki o rakama ait notlar otomatik silinir."}},{"@type":"Question","name":"Bulmacayı yazdırabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Boş bulmacayı yazdır düğmesi yalnızca verilen rakamları içeren sade bir A4 sayfası hazırlar. Yazdırma penceresinde \"PDF olarak kaydet\" seçeneğini seçerseniz dosya kendi cihazınıza iner; hiçbir dosya sunucuya gönderilmez."}},{"@type":"Question","name":"Uzman seviyesi neden bu kadar zor?","acceptedAnswer":{"@type":"Answer","text":"Uzman bulmacalarda yalnızca 22–24 rakam verilir ve tek aday ile gizli tek teknikleri çoğu zaman yetmez. Çıplak çift, işaret eden çiftler, X-Wing gibi eleme teknikleri ve uzun mantık zincirleri gerekir. Önce kolay ve orta seviyede pratik yapmanızı öneririz."}},{"@type":"Question","name":"Oyun ücretli mi, üyelik gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilişim Ajans'ın topluluk projesi olarak tamamen ücretsizdir, kayıt gerektirmez ve sınırsız oynanır. Giderler yalnızca sayfadaki reklamlarla karşılanır; reklamlar oyun alanından uzakta durur."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../../#oyunlar">Oyunlar</a></li></ol>
+      <h1><span class="ba-grad">Sudoku</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Her biri tek çözümlü Sudoku bulmacalarını tarayıcınızda oynayın. Kolaydan uzmana dört seviye, kalem notları, ipucu, geri alma, otomatik kayıt, günlük bulmaca ve yazdırma seçeneği. Kurulum, kayıt ve dosya yükleme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="sd-oyun" data-ready="0" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Sudoku oyun alanı</h2>
+      <div class="sd-top">
+        <div class="sd-info"><span id="sd-mod">Hazırlanıyor…</span><span>İpucu: <strong id="sd-ipucu-sayi">0</strong></span></div>
+        <div class="sd-info"><span id="k-sure">Süre</span><span class="sd-lcd" id="sd-sure" role="timer" aria-labelledby="k-sure">00:00</span></div>
+      </div>
+      <div class="sd-controls">
+        <div class="ba-field"><label for="sd-seviye">Seviye</label>
+          <select id="sd-seviye">
+            <option value="kolay">Kolay</option>
+            <option value="orta" selected>Orta</option>
+            <option value="zor">Zor</option>
+            <option value="uzman">Uzman</option>
+          </select>
+        </div>
+        <div class="sd-btns">
+          <button class="ba-btn ba-btn-primary" id="sd-yeni" type="button">Yeni oyun</button>
+          <button class="ba-btn" id="sd-gunluk" type="button">Günlük bulmaca</button>
+        </div>
+      </div>
+      <div class="sd-board-wrap" id="sd-tahta-kutu">
+        <div class="sd-board" id="sd-tahta" role="grid" aria-label="Sudoku tahtası, 9 satır 9 sütun" aria-rowcount="9" aria-colcount="9"></div>
+        <div class="sd-pause" id="sd-duraklatildi" hidden><p>Oyun duraklatıldı</p><button class="ba-btn ba-btn-primary" id="sd-devam" type="button">Devam et</button></div>
+      </div>
+      <div class="sd-pad" id="sd-rakamlar" role="group" aria-label="Rakam tuşları">
+        <button class="sd-key" type="button" data-d="1">1<small>9</small></button>
+        <button class="sd-key" type="button" data-d="2">2<small>9</small></button>
+        <button class="sd-key" type="button" data-d="3">3<small>9</small></button>
+        <button class="sd-key" type="button" data-d="4">4<small>9</small></button>
+        <button class="sd-key" type="button" data-d="5">5<small>9</small></button>
+        <button class="sd-key" type="button" data-d="6">6<small>9</small></button>
+        <button class="sd-key" type="button" data-d="7">7<small>9</small></button>
+        <button class="sd-key" type="button" data-d="8">8<small>9</small></button>
+        <button class="sd-key" type="button" data-d="9">9<small>9</small></button>
+        <button class="sd-key" type="button" data-d="0" id="sd-sil" aria-label="Seçili kareyi sil">Sil</button>
+      </div>
+      <div class="sd-btns" style="margin-top:12px;justify-content:center">
+        <button class="ba-btn" id="sd-not" type="button" aria-pressed="false">Not modu: kapalı</button>
+        <button class="ba-btn" id="sd-geri" type="button" disabled>Geri al</button>
+        <button class="ba-btn" id="sd-ipucu" type="button">İpucu</button>
+        <button class="ba-btn" id="sd-duraklat" type="button">Duraklat</button>
+        <button class="ba-btn" id="sd-yazdir" type="button">Boş bulmacayı yazdır</button>
+        <button class="ba-btn" id="sd-tamekran" type="button">Tam ekran</button>
+      </div>
+      <label class="sd-check"><input type="checkbox" id="sd-hata" checked> Hataları göster (yanlış rakamlar kırmızı olur)</label>
+      <p class="sd-status" id="sd-durum" role="status" aria-live="polite">Bulmaca üretiliyor…</p>
+      <h3 class="sd-h">En iyi süreler (yalnızca bu cihazda saklanır)</h3>
+      <ul class="sd-best" id="sd-en-iyi"></ul>
+      <p class="sd-help">Klavye: oklarla gezin, 1–9 rakam girer, Backspace siler, N not modunu açar, H ipucu verir, Ctrl+Z geri alır. İlerlemeniz otomatik kaydedilir; ipucu kullanılan oyunlar en iyi süreye yazılmaz.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-sudoku-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Sudoku nedir?</h2>
+      <p>Sudoku, 9×9 bir ızgarayı rakamlarla dolduran mantık bulmacasıdır. Izgara, üçer kareden oluşan dokuz kutuya bölünmüştür ve bazı kareler baştan doludur. Amacınız boş kareleri 1'den 9'a kadar rakamlarla öyle doldurmaktır ki her satırda, her sütunda ve her 3×3 kutuda her rakam tam bir kez bulunsun. Aritmetik gerekmez; yalnızca eleme ve mantık yürütme yeter. Bu sayfadaki Sudoku tarayıcınızda çalışır: kurulum, kayıt ya da üyelik yoktur ve bulmacalarınız, notlarınız ve süreleriniz hiçbir sunucuya gönderilmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Seviyeyi seçip Yeni oyun düğmesine basın ya da Günlük bulmaca ile bugünün ortak bulmacasını açın. Tahta birkaç saniye içinde hazır olur.</li>
+        <li>Boş bir kareye tıklayın ya da ok tuşlarıyla gidin. Seçtiğiniz karenin satırı, sütunu ve kutusu hafifçe vurgulanır; aynı rakamı içeren kareler de işaretlenir.</li>
+        <li>Klavyeden 1–9 tuşlarına ya da ekrandaki rakam düğmelerine basarak rakamı girin. Düğmelerin altındaki küçük sayı, o rakamdan kaç tane kaldığını gösterir.</li>
+        <li>Emin olmadığınız karelerde Not modunu açın ve olası rakamları küçük kalem notları olarak yazın. Bir rakamı kesinleştirdiğinizde aynı satır, sütun ve kutudaki notlardan otomatik silinir.</li>
+        <li>Takıldığınızda İpucu düğmesi bir kareyi sizin için doldurur. Tüm kareler doğru dolunca bulmaca çözülür ve süreniz kaydedilir.</li>
+      </ol>
+
+      <h2>Bu sayfadaki özellikler</h2>
+      <ul>
+        <li><strong>Her bulmacanın tek çözümü vardır.</strong> Üretici önce eksiksiz bir çözüm kurar, ardından kareleri tek tek siler ve her silmeden sonra çözümün hâlâ benzersiz olup olmadığını denetler. Yani tahmin yürütmeniz gerekmez; mantık her zaman yeter.</li>
+        <li><strong>Not (kalem) modu.</strong> Aday rakamları karelere küçük yazı olarak ekler. Not modu açıkken aynı rakama tekrar basmak notu kaldırır.</li>
+        <li><strong>Hata vurgulama.</strong> Seçenek açıkken çözümle uyuşmayan rakamlar kırmızı görünür. Kendinizi sınamak istiyorsanız kapatabilirsiniz; tercihiniz hatırlanır.</li>
+        <li><strong>İpucu.</strong> Seçili boş kareyi, seçili değilse en kolay kareyi doldurur. İpucuyla açılan kareler yeşil görünür ve değiştirilemez.</li>
+        <li><strong>Geri al.</strong> Rakam, not, silme ve ipucu dahil son hamleleri sırayla geri alır; Ctrl+Z kısayolu da çalışır.</li>
+        <li><strong>Kaydet ve devam et.</strong> Oyun her hamlede otomatik kaydedilir. Sayfayı kapatıp tekrar açtığınızda kaldığınız yerden, süreniz de korunarak devam edersiniz.</li>
+        <li><strong>Günlük bulmaca.</strong> Tarihe bağlı bir tohumdan üretilir; aynı gün herkes aynı bulmacayı çözer ve süresini kendi cihazında saklar.</li>
+        <li><strong>Boş bulmacayı yazdır.</strong> Yazdır düğmesi yalnızca verilen rakamları içeren temiz bir A4 sayfası hazırlar; PDF'e kaydetmek için yazıcı seçiminden "PDF olarak kaydet"i kullanabilirsiniz.</li>
+      </ul>
+
+      <h2>Zorluk seviyeleri</h2>
+      <p>Seviyeler yalnızca verilen rakam sayısına değil, bulmacayı çözmek için gereken tekniğe de bağlıdır. Kolay seviyede 40 rakam verilir ve bulmaca baştan sona yalnızca "tek aday" kuralıyla çözülebilir: bir karede tek rakam mümkünse o rakam oraya aittir. Orta seviyede 32 rakam verilir ve "gizli tek" tekniği de gerekir. Zor seviyede 28 civarında, uzman seviyede 22–24 civarında rakam kalır; bu bulmacalarda adaylar arasında daha derin eleme yapmanız gerekebilir. Her seviyede çözümün benzersiz olması garanti edilir.</p>
+      <table>
+        <thead><tr><th>Seviye</th><th>Verilen rakam (yaklaşık)</th><th>Gereken teknik</th></tr></thead>
+        <tbody>
+          <tr><td>Kolay</td><td>40</td><td>Tek aday</td></tr>
+          <tr><td>Orta</td><td>32</td><td>Tek aday + gizli tek</td></tr>
+          <tr><td>Zor</td><td>28</td><td>İleri eleme teknikleri</td></tr>
+          <tr><td>Uzman</td><td>22–24</td><td>İleri eleme, uzun mantık zincirleri</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ba-ad" data-slot="oyun-sudoku-b" aria-label="Reklam"></div>
+
+
+      <h2>Çözüm teknikleri ve ipuçları</h2>
+      <p>Sudoku'da ustalaşmak, birkaç temel tekniği doğru sırayla uygulamaktan geçer. En çok işinize yarayacaklar şunlar:</p>
+      <ul>
+        <li><strong>Tek aday (çıplak tek).</strong> Bir karenin satırında, sütununda ve kutusunda sekiz rakam zaten varsa, kalan dokuzuncu rakam o kareye yazılır.</li>
+        <li><strong>Gizli tek.</strong> Bir satır, sütun veya kutuda bir rakam yalnızca tek karede mümkünse, o karede başka adaylar görünse bile rakam oraya aittir.</li>
+        <li><strong>Tarama.</strong> Bir rakamı seçin ve tahtada bulunduğu satır, sütun ve kutuları zihninizde karartın; bir kutuda geriye tek boş kare kalıyorsa rakam oradadır.</li>
+        <li><strong>Notları düzenli tutun.</strong> Not modunda her karenin adaylarını yazın. Bir rakamı kesinleştirdiğinizde notların otomatik temizlenmesi, hatalı eleme riskini azaltır.</li>
+        <li><strong>Çıplak çift.</strong> Aynı birimdeki (satır, sütun veya kutu) iki karede yalnızca aynı iki aday varsa, bu iki rakam o birimin diğer karelerinden elenir.</li>
+        <li><strong>İşaret eden çiftler.</strong> Bir kutuda bir rakamın adayları tek satırda ya da tek sütunda toplanıyorsa, o rakam aynı satırın ya da sütunun kutu dışındaki karelerinden elenir.</li>
+        <li><strong>X-Wing.</strong> Bir rakamın adayları iki satırda yalnızca aynı iki sütunda yer alıyorsa, bu iki sütunun diğer karelerinden o rakam elenir.</li>
+      </ul>
+      <p>Yeni başlıyorsanız kolay seviyede tek aday ve tarama alıştırması yapın; orta seviyede gizli tek ve not tutmayı pekiştirin. Zor ve uzman seviyede ise çıplak çift, işaret eden çiftler ve X-Wing gibi teknikler devreye girer. Tahmin etmek yerine yeni bir eleme aramak her zaman daha güvenli yoldur, çünkü bulmacaların tek çözümü vardır.</p>
+
+      <h2>Günlük bulmaca nasıl çalışır?</h2>
+      <p>Günlük bulmaca, cihazınızın saatindeki tarihten üretilen bir tohumla oluşturulur. Aynı tarih aynı tohumu verdiğinden, aynı gün bu sayfayı açan herkes aynı bulmacayı görür; sunucudan bir şey indirilmez, bulmaca tarayıcınızda hesaplanır. Günlük bulmaca orta seviyededir. Çözdüğünüzde süreniz, bugünün tarihiyle birlikte yalnızca kendi tarayıcınızda saklanır. Gece yarısından sonra yeni bir tarih, dolayısıyla yeni bir bulmaca başlar. Bir arkadaşınızla aynı bulmacayı çözüp sürelerinizi kıyaslamak istiyorsanız, ikinizin de Günlük bulmaca düğmesini kullanması yeterlidir.</p>
+
+      <h2>Boş bulmacayı yazdırma</h2>
+      <p>Kâğıt üzerinde çözmeyi sevenler için Boş bulmacayı yazdır düğmesi, ekrandaki bulmacanın yalnızca verilen rakamlarını içeren sade bir sayfa oluşturur; sizin girdiğiniz rakamlar, notlar ve çözüm basılmaz. Sayfa A4 boyutuna göre ayarlıdır ve başlıkta seviye ile bulmaca türü yazar. Düğmeye bastığınızda tarayıcının yazdırma penceresi açılır; yazıcı yerine "PDF olarak kaydet" seçeneğini seçerek dosyayı kendi cihazınıza kaydedebilir ya da çocuklar, sınıf etkinliği veya yolculuk için birden çok kopya basabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans Sudoku?</h2>
+      <p>Pek çok bulmaca sitesi hesap açmanızı, çerez onayı vermenizi ya da uygulama indirmenizi ister. Burada hiçbiri yoktur. Oyun tarayıcınızda çalışır; bir kez yüklendikten sonra internet bağlantısı olmadan da oynayabilirsiniz ve siteyi uygulama olarak ana ekranınıza ekleyebilirsiniz. Kayıtlı oyununuz, en iyi süreleriniz ve tercihleriniz yalnızca bu cihazın tarayıcı belleğinde tutulur; tarayıcı verilerini temizlerseniz silinir. Tahta 360 piksel genişliğindeki telefonlarda da rahat kullanılır ve yalnızca klavyeyle de oynanabilir.</p>
+
+      <h2>Sudoku'nun kısa tarihi</h2>
+      <p>Sudoku'nun atası, 18. yüzyılda matematikçi Leonhard Euler'in incelediği Latin karelerine uzanır: her satır ve sütunda her simgenin bir kez geçtiği tablolar. Bugünkü bulmaca biçimi ise 1979'da bir Amerikan bulmaca dergisinde "Number Place" adıyla yayımlandı. Japonya'da 1980'li yıllarda yayımcı Nikoli tarafından benimsenip geliştirildi ve "rakamlar tek kalmalı" anlamına gelen bir ifadenin kısaltması olan Sudoku adıyla tanındı. 2000'li yılların başında gazetelerde ve internet sitelerinde yer almasıyla dünya çapında yaygınlaştı. Bugün Sudoku, her yaştan insanın günlük zihin egzersizi olarak çözdüğü bulmacalardan biridir.</p>
+
+      <h2>Erişilebilirlik ve klavyeyle oynama</h2>
+      <p>Tahta tek bir sekme durağıdır: Tab ile tahtaya girin, ok tuşlarıyla gezinin, 1–9 ile rakam girin. Her karenin satır, sütun ve içerik bilgisini taşıyan bir etiketi vardır; ekran okuyucunuz "Satır 3, sütun 4, boş" ya da "verilen 7" gibi duyurur. Yanlış rakamlar yalnızca renkle değil, etiketle de belirtilir. Durum mesajları, bulmaca hazır olduğunda, ipucu alındığında ve çözüldüğünde otomatik olarak okunur.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Her Sudoku bulmacasının tek bir çözümü var mı?</summary><p>Evet. Üretici, her kare silindiğinde çözümün benzersiz olup olmadığını denetler; benzersizliği bozan silmeyi geri alır. Böylece bulmacayı mantıkla çözebilirsiniz, tahmin etmeniz gerekmez.</p></details>
+      <details><summary>Günlük bulmaca herkes için aynı mı?</summary><p>Aynı takvim gününde, aynı tarihi gösteren cihazlarda evet. Bulmaca tarihten üretilen bir tohumdan tarayıcınızda hesaplanır; bu yüzden bir sunucuya bağlanmaz. Cihazınızın saati yanlışsa farklı bir günün bulmacasını görebilirsiniz.</p></details>
+      <details><summary>Oyunum kaybolur mu?</summary><p>Her hamlede oyun tarayıcınızın yerel belleğine kaydedilir. Sayfayı kapatıp açtığınızda kaldığınız yerden devam edersiniz. Tarayıcı verilerini temizler ya da gizli sekme kullanırsanız kayıt silinebilir. Yeni oyun düğmesi, ilerleme varsa önce onay ister.</p></details>
+      <details><summary>İpucu kullanırsam ne olur?</summary><p>İpucu, seçili boş kareyi ya da en kolay kareyi doğru rakamla doldurur ve o kare kilitlenir. İpucu kullanılan oyun bitince tebrik mesajı görürsünüz; ancak adil bir kıyaslama için bu süre en iyi süreler listesine yazılmaz.</p></details>
+      <details><summary>Not (kalem) modu nasıl çalışır?</summary><p>Not modunu açtığınızda rakam düğmeleri karenin içine küçük aday notu ekler. Aynı rakama tekrar basmak notu kaldırır. Bir karede rakamı kesinleştirdiğinizde, aynı satır, sütun ve kutudaki o rakama ait notlar otomatik silinir.</p></details>
+      <details><summary>Bulmacayı yazdırabilir miyim?</summary><p>Evet. Boş bulmacayı yazdır düğmesi yalnızca verilen rakamları içeren sade bir A4 sayfası hazırlar. Yazdırma penceresinde "PDF olarak kaydet" seçeneğini seçerseniz dosya kendi cihazınıza iner; hiçbir dosya sunucuya gönderilmez.</p></details>
+      <details><summary>Uzman seviyesi neden bu kadar zor?</summary><p>Uzman bulmacalarda yalnızca 22–24 rakam verilir ve tek aday ile gizli tek teknikleri çoğu zaman yetmez. Çıplak çift, işaret eden çiftler, X-Wing gibi eleme teknikleri ve uzun mantık zincirleri gerekir. Önce kolay ve orta seviyede pratik yapmanızı öneririz.</p></details>
+      <details><summary>Oyun ücretli mi, üyelik gerekiyor mu?</summary><p>Hayır. Bilişim Ajans'ın topluluk projesi olarak tamamen ücretsizdir, kayıt gerektirmez ve sınırsız oynanır. Giderler yalnızca sayfadaki reklamlarla karşılanır; reklamlar oyun alanından uzakta durur.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+      </ul>
+      <p>Tüm oyunları ve ücretsiz araçları <a href="../../">ana sayfada</a> bulabilirsiniz. Yazılım, web ve bilişim altyapısı ihtiyaçlarınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-sudoku-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <div id="sd-baski" aria-hidden="true"></div>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

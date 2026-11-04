@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Dama Oyna – Ücretsiz Online Dama (kurulumsuz)</title>
+  <meta name="description" content="Türk daması oyna: bilgisayara karşı üç zorluk seviyesinde ya da aynı cihazda iki kişilik. Zorunlu alma, çoklu alma ve dama kuralları, geçerli hamle vurgusu, geri al. Ücretsiz, kayıtsız, kurulumsuz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/dama/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .dm-layout { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .dm-layout { grid-template-columns: minmax(0, 580px) minmax(0, 1fr); align-items: start; } }
+    .dm-boardcol, .dm-side { min-width: 0; }
+    .dm-status { margin: 0 0 12px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .dm-status.is-forced { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .dm-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .dm-boardwrap { display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 18px; max-width: 580px; margin: 0 auto; }
+    .dm-ranks { grid-column: 1; grid-row: 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px 0; }
+    .dm-files { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat(8, 1fr); padding: 0 6px; }
+    .dm-ranks span, .dm-files span { display: flex; align-items: center; justify-content: center; font-size: .72rem; color: var(--ba-text-muted); font-family: var(--ba-mono); }
+    .dm-board { grid-column: 2; grid-row: 1; width: 100%; aspect-ratio: 1 / 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px; box-sizing: border-box; background: #6b4423; border-radius: 8px; box-shadow: 0 4px 14px rgba(30, 33, 38, .25); touch-action: manipulation; }
+    .dm-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); min-height: 0; }
+    .sq { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 1px solid rgba(60, 35, 10, .38); background: #dcbb8c; font: inherit; cursor: pointer; border-radius: 0; -webkit-tap-highlight-color: transparent; }
+    .dm-row:nth-child(odd) .sq:nth-child(even), .dm-row:nth-child(even) .sq:nth-child(odd) { background: #d0a96f; }
+    .sq:focus-visible { outline: 3px solid #1d4ed8; outline-offset: -3px; z-index: 2; }
+    .pc { display: none; position: relative; z-index: 1; width: 76%; height: 76%; border-radius: 50%; box-sizing: border-box; transition: transform .12s ease, opacity .12s ease; }
+    .pc-w, .pc-b { display: block; }
+    .pc-w { background: radial-gradient(circle at 35% 30%, #fffdf6 0%, #efe4cb 55%, #d6c59c 100%); border: 2px solid #6b5530; box-shadow: 0 2px 3px rgba(0, 0, 0, .35); color: #7a5410; }
+    .pc-b { background: radial-gradient(circle at 35% 30%, #62626b 0%, #2a2a2f 55%, #111114 100%); border: 2px solid #000; box-shadow: 0 2px 3px rgba(0, 0, 0, .45); color: #f1c94b; }
+    .pc-k svg { position: absolute; inset: 0; margin: auto; width: 62%; height: 62%; }
+    .pc.is-taken { opacity: .3; }
+    .sq.is-last { background: #e6cf7e !important; }
+    .sq.is-selected { background: #f1dd91 !important; box-shadow: inset 0 0 0 3px #0b5d33; }
+    .sq.is-selected .pc { transform: scale(1.06); }
+    .sq.is-dest::after, .sq.is-dest-cap::after { content: ""; position: absolute; z-index: 3; border-radius: 50%; pointer-events: none; }
+    .sq.is-dest::after { width: 28%; height: 28%; background: #0b5d33; opacity: .9; }
+    .sq.is-dest-cap::after { width: 52%; height: 52%; border: 3px solid #a3271f; background: rgba(163, 39, 31, .22); }
+    .dm-hints .sq.is-movable .pc { outline: 2px dashed #0b5d33; outline-offset: 2px; }
+    .sq.is-must .pc { outline: 3px solid #a3271f; outline-offset: 2px; }
+    .dm-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .dm-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .dm-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .dm-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .dm-field select:focus-visible { border-color: var(--ba-primary); }
+    .dm-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .dm-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .dm-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .dm-actions .ba-btn { flex: 1 1 140px; }
+    .dm-counter { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 12px; }
+    .dm-count { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 8px 10px; }
+    .dm-count strong { display: flex; align-items: center; gap: 8px; font-size: .95rem; }
+    .dm-count .chip { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #6b5530; flex: none; }
+    .dm-count .chip-w { background: #efe4cb; }
+    .dm-count .chip-b { background: #1c1c20; border-color: #000; }
+    .dm-count .num { display: block; font-family: var(--ba-mono); font-size: 1.5rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .dm-count small { color: var(--ba-text-muted); font-size: .8rem; }
+    .dm-stats { margin: 0 0 14px; font-size: .85rem; color: var(--ba-text-muted); }
+    .dm-side h3 { margin: 0 0 8px; font-size: 1rem; }
+    .dm-history { margin: 0; padding: 8px 8px 8px 34px; max-height: 190px; overflow-y: auto; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text); }
+    .dm-history li { padding: 2px 0; }
+    .dm-history li span { display: inline-block; min-width: 7.5ch; margin-right: 12px; }
+    .dm-history li.is-empty { list-style: none; margin-left: -26px; font-family: var(--ba-font); color: var(--ba-text-muted); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.dm-ad-a { margin-top: 56px; }
+    @media (prefers-reduced-motion: reduce) { .pc { transition: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Dama (Türk Daması) – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Türk daması: bilgisayara karşı üç zorluk seviyesi veya aynı cihazda iki kişilik.","inLanguage":"tr","genre":["Masa oyunu","Strateji"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/dama/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Türk damasında taşlar nasıl hareket eder?","acceptedAnswer":{"@type":"Answer","text":"Normal taşlar sırası geldiğinde bir kare ileri ya da sağa veya sola gider. Geriye ve çapraza gidemezler. Son sıraya ulaşan taş dama olur ve dört yönde istediği kadar kare ilerleyebilir."}},
+  {"@type":"Question","name":"Alma zorunlu mu, birden çok seçenek varsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Evet. Alma yapabiliyorsanız başka bir hamle oynayamazsınız. Birden çok alma yolu varsa en çok taş alan yolu seçmeniz gerekir; oyun yalnızca bu yolları vurgular."}},
+  {"@type":"Question","name":"Bilgisayara karşı kaç zorluk seviyesi var?","acceptedAnswer":{"@type":"Answer","text":"Üç seviye var: Kolay, Orta ve Zor. Kolay seviyede bilgisayar bir hamle ilerisini görür ve ara sıra rastgele oynar; Orta iki, Zor üç hamle ilerisini hesaplar. Taş sayısı azaldığında Zor seviye daha derin arar."}},
+  {"@type":"Question","name":"Yanlış hamle yaparsam geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Geri al düğmesi bilgisayara karşı oynarken sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda tek hamle geri alınır."}},
+  {"@type":"Question","name":"Aynı cihazda iki kişi oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun türü listesinden İki kişilik seçeneğini seçin. Beyaz ve siyah sırayla aynı tahtada oynar; ekran dönmez, bu yüzden telefon ya da tableti iki oyuncu arasında paylaşmak kolaydır."}},
+  {"@type":"Question","name":"Oyun internet gerektirir mi, hamlelerim kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun sayfa yüklendikten sonra tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı kazanma ve kaybetme sayınız bu cihazın tarayıcı depolamasında tutulur."}},
+  {"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Taşa dokunun, sonra ışıklı kareye dokunun. Çok taş alınan hamlelerde her inişte ışıklı kareye yeniden dokunarak zinciri tamamlarsınız."}},
+  {"@type":"Question","name":"Türk daması ile uluslararası dama aynı mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Uluslararası damada taşlar koyu karelerde çapraz gider ve tahta 10 x 10'dur. Türk damasında taşlar düz gider, tahta 8 x 8'dir ve her oyuncunun 16 taşı vardır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Dama Oyna</span> – Ücretsiz Online Türk Daması</h1>
+      <p class="lead">Bilgisayara karşı ya da aynı cihazda arkadaşınızla Türk daması oynayın. Alma zorunluluğu, çoklu alma ve dama kuralları uygulanır; geçerli hamleler tahtada vurgulanır. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Dama oyunu</h2>
+      <div class="dm-layout">
+        <div class="dm-boardcol">
+          <p id="dm-status" class="dm-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <div class="dm-boardwrap">
+            <div id="dm-ranks" class="dm-ranks" aria-hidden="true"></div>
+            <div id="dm-board" class="dm-board" role="grid" aria-label="Dama tahtası, 8 x 8"></div>
+            <div id="dm-files" class="dm-files" aria-hidden="true"></div>
+          </div>
+          <p class="dm-help">Taşa dokunun, sonra ışıklı kareye dokunun. Alma varsa yapmak zorundasınız; kırmızı halka almanız gereken taşları gösterir. Klavyede ok tuşları ve Enter kullanın.</p>
+        </div>
+        <div class="dm-side">
+          <div class="dm-controls">
+            <div class="dm-field"><label for="dm-mode">Oyun türü</label><select id="dm-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişilik (aynı cihaz)</option></select></div>
+            <div class="dm-field"><label for="dm-level">Zorluk</label><select id="dm-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+            <div class="dm-field"><label for="dm-color">Taş rengi (beyaz önce başlar)</label><select id="dm-color"><option value="w">Beyaz</option><option value="b">Siyah</option></select></div>
+            <label class="dm-check"><input type="checkbox" id="dm-hints" checked> Oynayabilen taşları işaretle</label>
+          </div>
+          <div class="dm-actions"><button id="dm-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button><button id="dm-undo" class="ba-btn" type="button" disabled>Geri al</button></div>
+          <div class="dm-counter" aria-label="Taş sayacı">
+            <div class="dm-count"><strong><span class="chip chip-w" aria-hidden="true"></span>Beyaz</strong><span class="num" id="dm-count-w">16</span><small><span id="dm-king-w">0</span> dama · <span id="dm-lost-w">0</span> kayıp</small></div>
+            <div class="dm-count"><strong><span class="chip chip-b" aria-hidden="true"></span>Siyah</strong><span class="num" id="dm-count-b">16</span><small><span id="dm-king-b">0</span> dama · <span id="dm-lost-b">0</span> kayıp</small></div>
+          </div>
+          <p id="dm-stats" class="dm-stats"></p>
+          <h3 id="dm-hist-h">Hamle geçmişi</h3>
+          <ol id="dm-history" class="dm-history" aria-labelledby="dm-hist-h"></ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad dm-ad-a" data-slot="oyun-dama-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Dama nedir? Kısaca Türk daması</h2>
+      <p>Dama, 8 x 8 kareli bir tahtada iki oyuncunun on altışar taşla oynadığı bir zekâ oyunudur. Türkiye'de kahvehanelerde, evlerde, okul bahçelerinde ve turnuvalarda nesillerdir oynanır. Uluslararası damadan (İngiliz ve Amerikan "checkers" ya da 10 x 10'luk uluslararası dama) en büyük farkı, taşların çapraz değil düz gitmesidir: ileri ve yanlara. Bu küçük kural farkı oyunu hem açık hem de hesaplama bakımından zengin kılar. Bu sayfada Türk damasını ücretsiz, kurulum yapmadan ve kayıt olmadan, istediğiniz zaman bilgisayara karşı ya da aynı cihazda bir arkadaşınızla oynayabilirsiniz.</p>
+
+      <h2>Dama nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlangıç dizilimi.</strong> Beyaz taşlar alttan ikinci ve üçüncü sırada, siyah taşlar üstten ikinci ve üçüncü sırada durur. Her oyuncunun 16 taşı vardır; en alt ve en üst sıra boştur. Beyaz oynamaya başlar, sonra sıra değişir.</li>
+        <li><strong>Taşın hareketi.</strong> Normal bir taş sırası geldiğinde bir kare ileri ya da bir kare sağa veya sola gider. Geriye ve çapraza gidemez. Hedef kare boş olmalıdır.</li>
+        <li><strong>Alma.</strong> Yanınızdaki (ileri, sağ ya da sol) kare rakibin taşıyla doluysa ve onun hemen arkasındaki kare boşsa, taşın üzerinden atlayarak onu alırsınız. İndiğiniz karede yeniden alma olanağı varsa aynı hamlede devam edersiniz; buna çoklu alma denir.</li>
+        <li><strong>Alma zorunludur.</strong> Almak mümkünse başka bir hamle oynayamazsınız. Birden fazla alma yolu varsa en çok taş alan yolu seçmeniz gerekir. Oyun bunu sizin yerinize denetler: yalnızca geçerli taşlar ve kareler seçilebilir.</li>
+        <li><strong>Dama olmak.</strong> Rakibin son sırasına ulaşan taş dama olur. Dama dört yönde (ileri, geri, sağ, sol) boş olduğu sürece istediği kadar kare gider. Alırken de uzaktan çalışır: yolunda tek bir rakip taş varsa üzerinden uçar ve arkasındaki boş karelerden birine iner.</li>
+        <li><strong>Kazanmak.</strong> Rakibin tüm taşlarını alırsanız ya da rakip hiç hamle yapamaz hale gelirse oyunu kazanırsınız. İki tarafta da yalnızca birer dama kalırsa ya da 20 hamledir alma ve taş ilerlemesi olmazsa oyun berabere biter.</li>
+      </ol>
+      <p>Bu oyunda alma sırasında son sıraya ulaşan taş dama olur ve zincire dama gibi devam eder. Federasyon kuralları ve kaynaklar bu tür ayrıntılarda küçük farklılıklar gösterebilir; kendi çevrenizde farklı bir uygulama varsa oyundan önce karşılıklı kararlaştırmak iyi olur.</p>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Taşa tıklayın ya da dokunun, gidebileceği kareler yeşil nokta ile, alma yapılacak kareler kırmızı halka ile belirir. Hedef kareye dokununca hamle oynanır. Çoklu almada her inişten sonra bir sonraki işaretli kareye dokunarak zinciri tamamlarsınız.</li>
+        <li><strong>Klavye:</strong> Ok tuşlarıyla tahtada gezin, Enter veya Boşluk ile taşı seçin ve hedefe gidip yine Enter'a basın. Esc seçimi iptal eder. Her karenin ekran okuyucu etiketi "c3, beyaz taş" biçimindedir.</li>
+        <li><strong>Geri al:</strong> Bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek hamle geri gider.</li>
+        <li><strong>Hamle geçmişi:</strong> Oynanan her hamle "c3-c4" (sade hamle) ya da "c4xc6" (alma) biçiminde listelenir. Harf sütunu, rakam sırayı gösterir ve beyaz taşlar 1. sıradan başlar.</li>
+        <li><strong>Taş sayacı:</strong> Her iki rengin kalan taş, dama ve kayıp sayısı tahtanın yanında görünür.</li>
+        <li><strong>Taş rengi:</strong> Siyahı seçerseniz tahta size göre çevrilir ve bilgisayar beyazla başlar.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünür?</h2>
+      <p>Bilgisayar rakibi, alfa-beta budamalı minimax algoritmasıyla çalışır: olası hamlelerin ağacını belli bir derinliğe kadar gezer, her konumu taş değeri, taşların ilerlemesi ve dama sayısına göre puanlar, rakibin en iyi cevabını varsayarak en yüksek puanlı hamleyi seçer. Almalar zorunlu olduğu için hesap sırasında alma zincirleri biraz daha uzatılır; böylece bilgisayar bir taşı karşılıksız vermez.</p>
+      <ul>
+        <li><strong>Kolay:</strong> Bir hamle ileriyi görür ve zaman zaman rastgele bir hamle oynar. Kuralları yeni öğrenenler için uygundur.</li>
+        <li><strong>Orta:</strong> İki hamle ileriyi hesaplar. Basit hileleri ve takasları görür, ancak uzun planlar kuramaz.</li>
+        <li><strong>Zor:</strong> Üç hamle ileriyi hesaplar, tahtada az taş kaldığında dördüncü hamleye kadar iner. Düzenli oyuncuları bile zorlar ama uzun vadeli planlarda yenilebilir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-dama-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Taşlarınızı yan yana tutun.</strong> Yan yana duran iki taş birbirini korur: rakip birini almak istediğinde arkasındaki kare dolu olduğu için atlayamaz.</li>
+        <li><strong>Arka sıradan acele etmeyin.</strong> Son sıradaki birkaç taş, rakibin dama olmasını engelleyen son savunmanızdır. Hepsini ileri sürerseniz arkada koridor açılır.</li>
+        <li><strong>Zorunlu almayı silaha çevirin.</strong> Alma zorunlu olduğu için bir taşınızı feda ederek rakibin taşını istediğiniz kareye çekebilir, ardından çoklu alma yapabilirsiniz. Bilgisayara karşı da rakibin böyle bir tuzağı olup olmadığına hamleden önce bakın.</li>
+        <li><strong>Takas yapmadan önce sayın.</strong> Bir taşa karşılık bir taş almak her zaman iyi değildir. Takastan sonra rakibin sıranızı kötüleştiren bir alma zinciri kalıp kalmadığını kontrol edin.</li>
+        <li><strong>Damayı erken yapın ama bedelini düşünün.</strong> Dama, tahtanın en güçlü taşıdır; üç dört normal taşa bedeldir. Ancak yola çıkarken aldığınız risklerin değip değmediğini hesaplayın.</li>
+        <li><strong>Merkezi ve kanatları dengeleyin.</strong> Tek kanata yüklenmek rakibe diğer kanattan koşu yolu açar.</li>
+        <li><strong>Bitişte hamle sayısını sayın.</strong> Az taşlı bitişlerde, damanıza rakibin taşlarını yan yana yakalama fırsatı bırakın; sırayı kaybetmemek çoğu zaman oyunu belirler.</li>
+      </ul>
+
+      <h2>Türk daması ile diğer dama oyunları</h2>
+      <p>Dama ailesinin kökleri binlerce yıllık tahta oyunlarına uzanır; ayrıntılı kökeni tarihçiler arasında tartışmalıdır. Zaman içinde farklı ülkelerde farklı kurallar gelişmiştir. Başlıca farklar şunlardır:</p>
+      <ul>
+        <li><strong>Hareket yönü:</strong> Türk damasında taşlar düz (ileri ve yanlara) gider; uluslararası ve İngiliz damasında koyu karelerde çapraz.</li>
+        <li><strong>Tahta ve taş sayısı:</strong> Türk damasında 8 x 8 tahta ve 16'şar taş vardır, tüm kareler kullanılır. Uluslararası damada 10 x 10 tahtada 20'şer taş bulunur.</li>
+        <li><strong>Damanın gücü:</strong> Türk damasında dama dört yönde uzun gider; bu yüzden tek bir dama bile birçok taşa karşı tehlikelidir.</li>
+        <li><strong>Alma zorunluluğu:</strong> Çoğu dama türünde alma zorunludur; Türk damasında ayrıca en çok taş alan yolun seçilmesi şarttır.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da hamle sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır; hamleleriniz bir sunucuya iletilmez. Yalnızca bilgisayara karşı kazanma ve kaybetme sayınız bu cihazda tutulur.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da oyun çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile tahta sığar, dokunma ve klavye ile oynanır.</li>
+        <li><strong>Adil kurallar.</strong> Zorunlu alma ve en çok taş alma kuralı otomatik uygulanır; kural bilmeyenler de rahatça oynayabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Türk damasında taşlar nasıl hareket eder?</summary><p>Normal taşlar sırası geldiğinde bir kare ileri ya da sağa veya sola gider. Geriye ve çapraza gidemezler. Son sıraya ulaşan taş dama olur ve dört yönde istediği kadar kare ilerleyebilir.</p></details>
+        <details><summary>Alma zorunlu mu, birden çok seçenek varsa ne olur?</summary><p>Evet. Alma yapabiliyorsanız başka bir hamle oynayamazsınız. Birden çok alma yolu varsa en çok taş alan yolu seçmeniz gerekir; oyun yalnızca bu yolları vurgular.</p></details>
+        <details><summary>Bilgisayara karşı kaç zorluk seviyesi var?</summary><p>Üç seviye var: Kolay, Orta ve Zor. Kolay seviyede bilgisayar bir hamle ilerisini görür ve ara sıra rastgele oynar; Orta iki, Zor üç hamle ilerisini hesaplar. Taş sayısı azaldığında Zor seviye daha derin arar.</p></details>
+        <details><summary>Yanlış hamle yaparsam geri alabilir miyim?</summary><p>Evet. Geri al düğmesi bilgisayara karşı oynarken sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda tek hamle geri alınır.</p></details>
+        <details><summary>Aynı cihazda iki kişi oynayabilir miyim?</summary><p>Evet. Oyun türü listesinden "İki kişilik" seçeneğini seçin. Beyaz ve siyah sırayla aynı tahtada oynar; ekran dönmez, bu yüzden telefon ya da tableti iki oyuncu arasında paylaşmak kolaydır.</p></details>
+        <details><summary>Oyun internet gerektirir mi, hamlelerim kaydediliyor mu?</summary><p>Oyun sayfa yüklendikten sonra tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı kazanma ve kaybetme sayınız bu cihazın tarayıcı depolamasında tutulur.</p></details>
+        <details><summary>Telefonda nasıl oynanır?</summary><p>Taşa dokunun, sonra ışıklı kareye dokunun. Çok taş alınan hamlelerde her inişte ışıklı kareye yeniden dokunarak zinciri tamamlarsınız. Tahta ekrana sığacak biçimde küçülür.</p></details>
+        <details><summary>Türk daması ile uluslararası dama aynı mı?</summary><p>Hayır. Uluslararası damada taşlar koyu karelerde çapraz gider ve tahta 10 x 10'dur. Türk damasında taşlar düz gider, tahta 8 x 8'dir ve her oyuncunun 16 taşı vardır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../blok-dusurme/">Düşen Bloklar</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-dama-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

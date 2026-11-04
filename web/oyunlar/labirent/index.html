@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Labirent Oyunu Oyna – Ücretsiz Online Labirent (kurulumsuz)</title>
+  <meta name="description" content="Labirent oyununu tarayıcınızda ücretsiz oynayın: her seferinde yeni rastgele labirent, 10×10, 20×20 ve 30×30 boyut, süre ve hamle sayacı, çözüm yolu, karanlık mod ve yazdırılabilir labirent. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/labirent/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .lb-group, .lb-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+    .lb-actions { margin-bottom: 14px; }
+    .lb-toggle[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; box-shadow: var(--ba-shadow-btn); }
+    .lb-toggle[aria-pressed="true"]:hover { background: var(--ba-primary-strong); border-color: var(--ba-primary-strong); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lb-toggle[aria-pressed="true"], :root:not([data-theme="light"]) .lb-toggle[aria-pressed="true"]:hover { color: #1a0d10; } }
+    :root[data-theme="dark"] .lb-toggle[aria-pressed="true"], :root[data-theme="dark"] .lb-toggle[aria-pressed="true"]:hover { color: #1a0d10; }
+    .lb-toggle small { display: block; font-size: .72rem; font-weight: 500; line-height: 1.1; }
+    @media (max-width: 520px) {
+      .lb-group { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .lb-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .lb-group .ba-btn, .lb-actions .ba-btn { min-height: 44px; padding: 6px; font-size: .9rem; justify-content: center; text-align: center; }
+    }
+    .lb-hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 600px; margin: 0 auto 12px; }
+    .lb-hud > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .lb-hud dt { font-size: .7rem; font-family: var(--ba-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .lb-hud dd { margin: 0; font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+    .lb-frame { position: relative; width: 100%; max-width: 600px; margin: 0 auto; border: 2px solid var(--ba-border); border-radius: var(--ba-radius); overflow: hidden; }
+    .game-box:fullscreen .lb-frame { max-width: min(100%, 600px, calc(100vh - 340px)); }
+    .lb-canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; background: #fffdf7; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    .lb-canvas:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: -3px; }
+    .lb-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; text-align: center; background: rgba(255, 253, 247, .94); color: #1e2126; }
+    .lb-overlay h3 { margin: 0; font-size: 1.4rem; color: #7b2331; }
+    .lb-overlay p { margin: 0; max-width: 34ch; color: #33363c; }
+    .lb-overlay .ba-btn-lg { width: auto; }
+    .lb-dpad { display: none; grid-template-areas: ". up ." "left down right"; grid-template-columns: repeat(3, 64px); gap: 8px; justify-content: center; margin: 14px auto 0; }
+    @media (max-width: 720px), (pointer: coarse) { .lb-dpad { display: grid; } }
+    .lb-dpad .ba-btn { min-height: 56px; padding: 0; justify-content: center; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+    .lb-dpad svg { width: 26px; height: 26px; }
+    #dp-up { grid-area: up; } #dp-left { grid-area: left; } #dp-down { grid-area: down; } #dp-right { grid-area: right; }
+    .lb-note { max-width: 600px; margin: 12px auto 0; font-size: .9rem; color: var(--ba-text-2); text-align: center; min-height: 1.4em; }
+    .lb-print { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; justify-content: center; margin: 14px auto 0; }
+    .lb-print label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: .92rem; color: var(--ba-text-2); cursor: pointer; }
+    .lb-print input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .lb-help { max-width: 600px; margin: 10px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .ba-content { overflow-wrap: anywhere; }
+    /* Yazdırılabilir labirent: yalnızca #print-sheet basılır (yazdır düğmesi içeriği doldurur) */
+    .print-sheet { display: none; }
+    @media print {
+      @page { margin: 12mm; }
+      body > *:not(.print-sheet) { display: none !important; }
+      .print-sheet { display: block; background: #fff; color: #000; }
+      .ps-page { text-align: center; break-after: page; }
+      .ps-page:last-child { break-after: auto; }
+      .ps-page h2 { margin: 0 0 6px; font-size: 20pt; color: #000; }
+      .ps-meta { margin: 0 0 8px; font-size: 11pt; color: #000; }
+      .ps-page img { display: block; width: 100%; max-width: 17cm; height: auto; margin: 0 auto; }
+      .ps-foot { margin: 8px 0 0; font-size: 9pt; color: #333; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Labirent Oyunu – Bilişim Ajans","applicationCategory":"Game","genre":"Bulmaca","operatingSystem":"Web","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/labirent/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Labirent her seferinde farklı mı, çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, her yeni labirent sıfırdan rastgele üretilir. Üretim algoritması her hücreyi tek bir yolla birbirine bağladığı için girişten çıkışa giden yol her zaman vardır; çözülemeyen labirent oluşmaz."}},
+  {"@type":"Question","name":"Süre ne zaman başlıyor?","acceptedAnswer":{"@type":"Answer","text":"Süre, topu ilk kez hareket ettirdiğiniz anda başlar. Labirenti incelemek için istediğiniz kadar bekleyebilirsiniz; süre işlemez."}},
+  {"@type":"Question","name":"Çözümü göstermek en iyi süreyi etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Bir turda çözüm yolunu bir kez bile gösterirseniz o tur en iyi süreye yazılmaz. Böylece rekorlar yalnızca kendi başınıza bulduğunuz çıkışları yansıtır."}},
+  {"@type":"Question","name":"Karanlık mod nedir?","acceptedAnswer":{"@type":"Answer","text":"Karanlık modda labirentin yalnızca topun çevresindeki küçük bölümü görünür; geri kalanı karanlıktır. Haritayı ezberleyerek ve koridorları tek tek keşfederek ilerlemeniz gerekir. İstediğiniz an açıp kapatabilirsiniz."}},
+  {"@type":"Question","name":"Labirenti nasıl yazdırırım?","acceptedAnswer":{"@type":"Answer","text":"Boyutu seçip beğendiğiniz labirenti ekrana getirin, Yazdırılabilir labirent düğmesine basın. Tarayıcının yazdırma penceresi açılır; A4 dikey yazdırabilir ya da PDF olarak kaydedebilirsiniz. İsterseniz çözüm sayfasını da ekleyebilirsiniz. Görsel cihazınızda üretilir, hiçbir yere yüklenmez."}},
+  {"@type":"Question","name":"Telefonda oynarken sayfa kayıyor, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Labirent alanı üzerinde parmak kaydırma sayfayı değil topu hareket ettirir. Sayfayı kaydırmak için labirentin dışındaki bir alana dokunup sürükleyin. Küçük ekranlarda labirentin altındaki yön düğmelerini de kullanabilirsiniz."}},
+  {"@type":"Question","name":"En iyi sürem nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her boyut için en iyi süre yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir; başka cihazda görünmez."}},
+  {"@type":"Question","name":"Klavyeyle oynamak için nereye tıklamalıyım?","acceptedAnswer":{"@type":"Answer","text":"Sayfada hiçbir kutuya yazmıyorsanız ve labirent ekrandaysa ok tuşları ya da W A S D doğrudan çalışır. Çalışmazsa labirente bir kez tıklayın ya da Tab ile odaklanın."}},
+  {"@type":"Question","name":"İnternet olmadan oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Labirent Oyunu</span> Oyna – Ücretsiz Online</h1>
+      <p class="lead">Rastgele üretilen labirentte topu sol üstten sağ alttaki yıldıza ulaştırın. Üç boyut, süre ve hamle sayacı, çözüm yolu, yalnızca yakın çevrenin göründüğü karanlık mod ve çocuklar için yazdırılabilir labirent var. Kurulum ve üyelik yok, her şey tarayıcınızda çalışır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Labirent oyunu</h2>
+      <div class="lb-group" role="group" aria-label="Labirent boyutu">
+        <button id="size-10" class="ba-btn lb-toggle" type="button" aria-pressed="true">10×10<small>Kolay</small></button>
+        <button id="size-20" class="ba-btn lb-toggle" type="button" aria-pressed="false">20×20<small>Orta</small></button>
+        <button id="size-30" class="ba-btn lb-toggle" type="button" aria-pressed="false">30×30<small>Zor</small></button>
+      </div>
+      <div class="lb-actions">
+        <button id="btn-new" class="ba-btn ba-btn-primary" type="button">Yeni labirent</button>
+        <button id="btn-restart" class="ba-btn" type="button" disabled>Baştan başla</button>
+        <button id="btn-solve" class="ba-btn" type="button">Çözümü göster</button>
+        <button id="btn-dark" class="ba-btn lb-toggle" type="button" aria-pressed="false">Karanlık mod</button>
+        <button id="btn-full" class="ba-btn" type="button">Tam ekran</button>
+      </div>
+      <dl class="lb-hud" aria-label="Oyun durumu">
+        <div><dt>Süre</dt><dd id="hud-time">0,0 sn</dd></div>
+        <div><dt>Hamle</dt><dd id="hud-moves">0</dd></div>
+        <div><dt>En iyi</dt><dd id="hud-best">yok</dd></div>
+      </dl>
+      <div class="lb-frame">
+        <canvas id="game-canvas" class="lb-canvas" width="600" height="600" tabindex="0" aria-label="Labirent. Ok tuşları ya da W A S D ile topu sağ alttaki yıldıza götürün; parmakla kaydırarak da oynayabilirsiniz." aria-describedby="lb-help"></canvas>
+        <div id="overlay" class="lb-overlay" hidden>
+          <h3 id="ov-title">Tebrikler, çıkışı buldun!</h3>
+          <p id="ov-text"></p>
+          <button id="ov-primary" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Yeni labirent</button>
+        </div>
+      </div>
+      <div class="lb-dpad" role="group" aria-label="Yön düğmeleri">
+        <button id="dp-up" class="ba-btn" type="button" aria-label="Yukarı"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6l8 12H4z" fill="currentColor"/></svg></button>
+        <button id="dp-left" class="ba-btn" type="button" aria-label="Sola"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12l12-8v16z" fill="currentColor"/></svg></button>
+        <button id="dp-down" class="ba-btn" type="button" aria-label="Aşağı"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18L4 6h16z" fill="currentColor"/></svg></button>
+        <button id="dp-right" class="ba-btn" type="button" aria-label="Sağa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 12L6 4v16z" fill="currentColor"/></svg></button>
+      </div>
+      <p id="lb-note" class="lb-note">İlk harekette süre başlar.</p>
+      <div class="lb-print">
+        <button id="btn-print" class="ba-btn" type="button">Yazdırılabilir labirent</button>
+        <label><input id="chk-print-solution" type="checkbox"> Çözüm sayfası da yazdırılsın</label>
+      </div>
+      <p id="lb-help" class="lb-help">Oklar ya da W A S D ile hareket edin; telefonda labirentin üzerinde parmağınızı kaydırın. Yazdırma işlemi cihazınızda yapılır, hiçbir şey yüklenmez.</p>
+      <p id="live" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-labirent-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Labirent oyunu nedir?</h2>
+      <p>Labirent oyunu, duvarlarla örülmüş bir ağın içinden girişten çıkışa giden yolu bulma oyunudur. Bu sayfadaki labirent her seferinde bilgisayar tarafından sıfırdan üretilir; yani aynı labirenti iki kez görme ihtimaliniz yok denecek kadar azdır. Topunuz sol üst köşedeki yeşil hücreden başlar, hedef sağ alt köşedeki sarı yıldızdır. Süre ve hamle sayacı, kendinizle yarışmanızı sağlar; üç boyut seçeneği sayesinde hem küçük bir çocuk hem de zorlu bir bulmacayı seven yetişkin kendi seviyesini bulabilir.</p>
+      <p>Oyun tamamen tarayıcınızda çalışır; kurulum, üyelik ya da dosya indirme gerekmez. Bilgisayarda ok tuşlarıyla ya da W A S D ile, telefonda ve tablette parmağınızı kaydırarak ya da ekrandaki yön düğmeleriyle oynayabilirsiniz. Öğretmenler ve ebeveynler için labirenti kâğıda yazdırma özelliği de vardır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki düğmelerden boyutu seçin: 10×10 kolay, 20×20 orta, 30×30 zor. Her seçimde yeni bir labirent üretilir.</li>
+        <li>Topu ok tuşları, W A S D, parmakla kaydırma ya da ekrandaki yön düğmeleriyle hareket ettirin. Top her hamlede bir hücre ilerler; duvara çarparsanız yerinde kalır ve hamle sayılmaz.</li>
+        <li>İlk hamlede süre başlar. Çıkmaz sokağa girerseniz geri dönün; hamle sayacı geri dönüşler dahil her adımı sayar.</li>
+        <li>Sağ alt köşedeki sarı yıldıza ulaştığınızda süreniz, hamle sayınız ve varsa yeni en iyi süreniz görünür.</li>
+        <li>“Yeni labirent” ile başka bir labirente geçin ya da “Baştan başla” ile aynı labirenti daha az hamleyle yeniden deneyin.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Ok tuşları ve W A S D topu bir hücre hareket ettirir; tuşu basılı tutarsanız hareket tekrarlanır. Labirent ekrandayken ve bir yazı kutusuna odaklanmadığınızda tuşlar sayfanın herhangi bir yerinde çalışır. Labirent ekranda değilken ok tuşları sayfayı kaydırmaya devam eder.</li>
+        <li><strong>Dokunmatik kaydırma:</strong> Parmağınızı labirentin üzerinde istediğiniz yöne kaydırın. Parmağınızı kaldırmadan yön değiştirebilirsiniz; her kısa kaydırma bir hücre ilerletir.</li>
+        <li><strong>Ekran okları:</strong> Küçük ekranlarda ve dokunmatik cihazlarda labirentin altında dört yön düğmesi görünür. Düğmeye basılı tutarsanız top kendiliğinden ilerlemeye devam eder.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu büyütür; tablette ve masaüstünde labirenti daha rahat okursunuz.</li>
+      </ul>
+
+      <h2>Boyutlar ve en iyi süre</h2>
+      <p>10×10 labirent 100 hücreden oluşur ve genellikle bir iki dakikada çözülür; okul öncesi çocuklar ve ısınma turları için idealdir. 20×20 labirentte 400 hücre vardır; koridorlar uzar, çıkmaz sokaklar çoğalır. 30×30 labirent 900 hücrelik gerçek bir sabır sınavıdır. Her boyut için en iyi süreniz ayrı tutulur ve sayacın yanındaki “En iyi” kutusunda görünür.</p>
+      <p>En iyi süre yalnızca çözümü hiç göstermeden bitirdiğiniz turlar için kaydedilir. Böylece rekorlarınız gerçekten kendi başınıza bulduğunuz çıkışları yansıtır. Rekorlar cihazınızın tarayıcı belleğinde saklanır; hiçbir sunucuya gönderilmez ve tarayıcı verilerini temizlediğinizde silinir.</p>
+
+      <div class="ba-ad" data-slot="oyun-labirent-b" aria-label="Reklam"></div>
+
+      <h2>Çözümü göster: en kısa yolu görün</h2>
+      <p>Takıldığınızda “Çözümü göster” düğmesine basarsanız topun bulunduğu hücreden hedefe giden en kısa yol turuncu bir çizgiyle çizilir. Yol, genişlik öncelikli arama (BFS) ile bulunur ve siz ilerledikçe topun yeni konumundan yeniden hesaplanır. Çizgiyi “Çözümü gizle” ile kapatabilirsiniz. Çözüm göstermek oyunu bitirmez; yolu görüp kendiniz yürümeniz gerekir. Çocuklara yol bulmayı anlatırken ya da bir labirentin neden zor olduğunu incelerken çok işe yarar. Unutmayın: çözümü bir kez gösterdiğiniz tur en iyi süreye yazılmaz.</p>
+
+      <h2>Karanlık mod: yalnızca yakın çevre görünür</h2>
+      <p>Karanlık mod açıldığında labirentin geri kalanı kararır ve yalnızca topun çevresindeki küçük bir alan aydınlık kalır. Haritayı bir bakışta görme avantajı ortadan kalktığı için koridorları keşfetmek, çıkmaz sokakları aklınızda tutmak ve yön duygunuzu kullanmak zorundasınız. Karanlık modu istediğiniz an açıp kapatabilirsiniz. 10×10 boyutunda başlamak ve duvar takip yöntemini denemek iyi bir başlangıçtır; 30×30 karanlık labirent ise gerçek bir hafıza oyununa dönüşür.</p>
+
+      <h2>Yazdırılabilir labirent: çocuklar, öğretmenler ve ebeveynler için</h2>
+      <p>Ekrandaki labirenti kâğıda dökmek de mümkündür. Etkinlik hazırlayan öğretmenler, çocuğuyla kalemle oynamak isteyen ebeveynler ve seyahatte telefondan uzak bir oyun arayanlar için hızlı bir yöntemdir.</p>
+      <ol class="ba-steps">
+        <li>Boyutu seçin. Okul öncesi ve ilkokul birinci sınıf için 10×10, ilerleyen yaşlar için 20×20, büyükler için 30×30 uygundur.</li>
+        <li>“Yeni labirent” düğmesiyle beğendiğiniz labirenti bulun; yazdırılacak olan, ekrandaki labirenttir.</li>
+        <li>İsterseniz “Çözüm sayfası da yazdırılsın” kutusunu işaretleyin. İkinci sayfada çözüm yolu kırmızı çizgiyle gösterilir; öğretmen anahtarı olarak kullanılabilir.</li>
+        <li>“Yazdırılabilir labirent” düğmesine basın. Tarayıcının yazdırma penceresi açılır; A4 dikey yön ve varsayılan kenar boşlukları idealdir. Yazıcınız yoksa hedef olarak “PDF olarak kaydet” seçebilirsiniz.</li>
+        <li>Çocuğa kalem ya da pastel verin: “Başla” okundan “Bitiş” okuna kadar yolu çizmesini söyleyin.</li>
+      </ol>
+      <p>Yazdırma görseli beyaz zemin ve siyah duvarlarla hazırlanır; böylece mürekkep tasarrufu sağlar ve fotokopiyle çoğaltmak kolaylaşır. Sayfanın üstünde ad, tarih ve süre için boş satırlar bulunur. Görsel tamamen cihazınızda üretilir, hiçbir yere yüklenmez.</p>
+
+      <h2>Labirent çözme stratejileri</h2>
+      <ul>
+        <li><strong>Duvar takibi (sağ el kuralı):</strong> Bir elinizi hep aynı duvara dayayıp yürüdüğünüzü düşünün. Bu sayfadaki gibi döngüsüz labirentlerde yöntem sizi mutlaka çıkışa götürür; yalnızca en kısa yol olmayabilir.</li>
+        <li><strong>Çıkışı baz alarak geriye doğru düşünün:</strong> Gözünüzle hedeften girişe doğru bir yol aramak, çıkmaz sokakları daha ilk bakışta eler.</li>
+        <li><strong>Çıkmaz sokakları işaretleyin:</strong> Bir koridorun bittiğini gördüğünüzde onu kafanızda “kapalı” sayın ve bir daha girmeyin. Kâğıda yazdırılmış labirentte kalemle üstünü çizmek çok yardımcı olur.</li>
+        <li><strong>Genel yönü unutmayın:</strong> Hedef sağ alt köşede olduğundan sağa ve aşağıya giden yollar çoğunlukla daha umut vericidir; ama labirentler bazen sizi önce ters yöne yürütür.</li>
+        <li><strong>Hamle sayınızı azaltın:</strong> Rekor yalnızca süreyle değil, geri dönüşlerle de ilgilidir. İlerlemeden önce birkaç hücrelik görüş alanını okuyun.</li>
+        <li><strong>Büyük labirentte bölümlere ayırın:</strong> 30×30 labirenti bir bütün olarak değil, dört beş küçük hedefe bölerek çözün.</li>
+      </ul>
+
+      <h2>Labirentler nasıl üretiliyor?</h2>
+      <p>Oyun, “recursive backtracker” (özyinelemeli geri izleme) adıyla bilinen rastgele derinlik öncelikli arama algoritmasını kullanır. Algoritma ızgaranın bir hücresinden başlar, rastgele seçtiği henüz ziyaret edilmemiş bir komşuya duvarı yıkarak geçer ve bunu tekrarlar. Gidecek komşu kalmadığında bir önceki hücreye döner. Tüm hücreler ziyaret edildiğinde labirent hazırdır. Bu yöntem her hücreyi birbirine tek bir yolla bağlayan, döngüsüz “mükemmel labirentler” üretir; bu yüzden her labirentin çözümü vardır ve çözüm tektir. Algoritmanın uzun, kıvrımlı koridorlar çıkarma eğilimi, labirentlerin keyifli derecede dolambaçlı olmasını sağlar. Çözüm yolu ise BFS ile hesaplanır: aranan hücreye ulaşana kadar bütün komşular dalga dalga taranır ve ilk ulaşan yol en kısa yoldur.</p>
+
+      <h2>Labirentin kısa tarihi</h2>
+      <p>“Labirent” sözcüğü Eski Yunanca labyrinthos kelimesinden gelir ve Girit Kralı Minos için Daidalos'un yaptığına inanılan, içinde Minotor'un yaşadığı efsanevi yapıyla anılır. Eski çağlardan beri labirent motifi tek yollu dolambaçlı desenler hâlinde zemin mozaiklerinde ve taş işlemelerinde görülür. Orta Çağ'da bazı kilise zeminlerine, örneğin Fransa'daki Chartres Katedrali'ne, manevi yolculuğu simgeleyen labirentler döşendi. Sonraki yüzyıllarda ise çit labirentleri bahçe sanatının gözde öğesi oldu; İngiltere'deki Hampton Court Sarayı'nın labirenti yaklaşık 1700 yıllarında dikilmiş ve en çok ziyaret edilen örneklerden biridir.</p>
+      <p>Günümüzde dallanan ve yanlış yola sapma ihtimali bulunan yapılara “maze”, tek yollu olanlara “labyrinth” denmesi yaygındır; Türkçede ikisi için de “labirent” kullanılır. Bilgisayar biliminde labirent üretimi ve çözümü, graf algoritmalarını öğretmenin en sevilen yollarından biridir; bu sayfadaki oyun da aynı fikrin eğlenceli bir uygulamasıdır.</p>
+
+      <h2>Neden Bilişim Ajans'ın labirent oyunu?</h2>
+      <ul>
+        <li><strong>Her labirent yeni ve çözülebilir.</strong> Üretim algoritması çıkışa ulaşılabilmesini garanti eder; aynı labirent tekrar karşınıza çıkmaz.</li>
+        <li><strong>Kurulum ve kayıt yok.</strong> Sayfayı açın ve oynayın. Hesap, e-posta ya da indirme gerekmez.</li>
+        <li><strong>Verileriniz cihazınızda kalır.</strong> Oyun hiçbir bilgiyi sunucuya göndermez. Yazdırma görseli bile tarayıcınızda üretilir.</li>
+        <li><strong>Her cihaza uygun.</strong> Klavye, fare, parmak kaydırma ve ekran okları desteklenir; 360 piksel genişlikteki telefonlarda da sorunsuz çalışır.</li>
+        <li><strong>Dürüst tasarım.</strong> Sahte geri sayım, yanıltıcı düğme ya da oyunu bölen açılır pencere yoktur. Reklam alanları oyunun ve düğmelerin dışında, sayfanın aşağısındadır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Labirent her seferinde farklı mı, çözülebilir mi?</summary><p>Evet, her yeni labirent sıfırdan rastgele üretilir. Üretim algoritması her hücreyi tek bir yolla birbirine bağladığı için girişten çıkışa giden yol her zaman vardır; çözülemeyen labirent oluşmaz.</p></details>
+        <details><summary>Süre ne zaman başlıyor?</summary><p>Süre, topu ilk kez hareket ettirdiğiniz anda başlar. Labirenti incelemek için istediğiniz kadar bekleyebilirsiniz; süre işlemez.</p></details>
+        <details><summary>Çözümü göstermek en iyi süreyi etkiler mi?</summary><p>Evet. Bir turda çözüm yolunu bir kez bile gösterirseniz o tur en iyi süreye yazılmaz. Böylece rekorlar yalnızca kendi başınıza bulduğunuz çıkışları yansıtır.</p></details>
+        <details><summary>Karanlık mod nedir?</summary><p>Karanlık modda labirentin yalnızca topun çevresindeki küçük bölümü görünür; geri kalanı karanlıktır. Haritayı ezberleyerek ve koridorları tek tek keşfederek ilerlemeniz gerekir. İstediğiniz an açıp kapatabilirsiniz.</p></details>
+        <details><summary>Labirenti nasıl yazdırırım?</summary><p>Boyutu seçip beğendiğiniz labirenti ekrana getirin, “Yazdırılabilir labirent” düğmesine basın. Tarayıcının yazdırma penceresi açılır; A4 dikey yazdırabilir ya da PDF olarak kaydedebilirsiniz. İsterseniz çözüm sayfasını da ekleyebilirsiniz. Görsel cihazınızda üretilir, hiçbir yere yüklenmez.</p></details>
+        <details><summary>Telefonda oynarken sayfa kayıyor, ne yapmalıyım?</summary><p>Labirent alanı üzerinde parmak kaydırma sayfayı değil topu hareket ettirir. Sayfayı kaydırmak için labirentin dışındaki bir alana dokunup sürükleyin. Küçük ekranlarda labirentin altındaki yön düğmelerini de kullanabilirsiniz.</p></details>
+        <details><summary>En iyi sürem nerede saklanıyor?</summary><p>Her boyut için en iyi süre yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir; başka bir cihazda ya da tarayıcıda görünmez.</p></details>
+        <details><summary>Klavyeyle oynamak için nereye tıklamalıyım?</summary><p>Sayfada hiçbir kutuya yazmıyorsanız ve labirent ekrandaysa ok tuşları ya da W A S D doğrudan çalışır. Çalışmazsa labirente bir kez tıklayın ya da Tab ile odaklanın.</p></details>
+        <details><summary>İnternet olmadan oynanabilir mi?</summary><p>Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../balon-patlatma/">Balon Patlatma</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../nonogram/">Nonogram</a></li>
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../../">Tüm oyunlar ve araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span><strong>Not:</strong> Labirent oyunu eğlence ve zihin egzersizi amaçlıdır. Çocukların ekran süresini yaşlarına uygun biçimde sınırlamanızı; uzun oyun seanslarında gözlerinizi dinlendirmenizi öneririz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-labirent-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <section id="print-sheet" class="print-sheet" aria-hidden="true"></section>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

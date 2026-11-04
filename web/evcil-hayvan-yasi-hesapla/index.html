@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Köpek ve Kedi Yaşı İnsan Yaşına Çevirme – Evcil Hayvan Yaşı Hesaplama</title>
+  <meta name="description" content="Köpeğinizin ya da kedinizin yaşını insan yaşına çevirin: boyuta göre köpek tablosu, UCSD epigenetik formülü karşılaştırması, yaşam evresi ve kısa bakım notu. Ücretsiz, kayıt yok, bilgileriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/evcil-hayvan-yasi-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .pet-form .ba-field { margin-bottom: 12px; }
+    .pet-form select, .pet-form input[type="number"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .pet-form select:focus, .pet-form input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .pet-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .pet-grid { grid-template-columns: 1fr 1fr; } }
+    .pet-species { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 14px; padding: 0; border: 0; }
+    .pet-species legend { font-weight: 600; font-size: .9rem; margin-bottom: 6px; padding: 0; }
+    .pet-species label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .pet-species input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .pet-results { margin: 0; display: grid; gap: 6px; }
+    .pet-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .pet-row:last-child { border-bottom: 0; }
+    .pet-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .pet-row dd { margin: 0; font-size: 1.02rem; text-align: right; }
+    .pet-big { font-size: 1.5rem; font-weight: 700; margin: 0 0 10px; color: var(--ba-primary); }
+    .pet-care { margin: 12px 0 0; font-size: .95rem; }
+    .pet-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .pet-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .pet-table { border-collapse: collapse; width: 100%; margin: 12px 0 4px; font-size: .95rem; }
+    .pet-table caption { text-align: left; font-weight: 600; padding: 0 0 6px; }
+    .pet-table th, .pet-table td { border: 1px solid var(--ba-border); padding: 6px 10px; text-align: left; }
+    .pet-table th { background: var(--ba-surface-2); font-weight: 600; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Evcil Hayvan Yaşı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/evcil-hayvan-yasi-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Köpek yılı insan yılına nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"İlk yıl yaklaşık 15, ikinci yıl 9 insan yılı sayılır; yani 2 yaşındaki köpek yaklaşık 24 yaşındadır. Sonraki her yıl için küçük ırklarda 4, orta ırklarda 5, büyük ırklarda 6, dev ırklarda 7 yıl eklenir. Orta boy 5 yaşındaki bir köpek 24 + 3 × 5 = 39 insan yaşına denk gelir."}},
+  {"@type":"Question","name":"Bir köpek yılı gerçekten 7 insan yılı mıdır?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Yedi ile çarpma kuralı yaygın bir efsanedir. Köpekler ilk iki yılda çok hızlı olgunlaşır, sonra yaşlanma hızı boyuta göre değişir. Bu nedenle tek bir çarpan hiçbir köpek için doğru sonuç vermez."}},
+  {"@type":"Question","name":"Kedi yaşı insan yaşına nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Kedilerde ilk yıl 15, ikinci yıl 9 insan yılı sayılır; sonraki her yıl 4 insan yılı eklenir. Üç yaşındaki bir kedi 28, on yaşındaki bir kedi 56 insan yaşına denk gelir."}},
+  {"@type":"Question","name":"UCSD formülü nedir ve neden tablodan farklı sonuç verir?","acceptedAnswer":{"@type":"Answer","text":"Kaliforniya Üniversitesi San Diego araştırmacıları, Labrador köpeklerinin DNA metilasyon değişimini insanlarınkiyle karşılaştırarak 16 × ln(köpek yaşı) + 31 formülünü önerdi. Tablo gelişim evrelerine, formül moleküler yaşlanmaya dayanır; bu yüzden ilk yıllarda formül daha yüksek bir insan yaşı verir."}},
+  {"@type":"Question","name":"Büyük ırk köpekler neden daha erken yaşlanır?","acceptedAnswer":{"@type":"Answer","text":"Araştırmalar iri ırkların ortalama olarak daha kısa yaşadığını gösterir. Bu yüzden tabloda büyük ve dev ırkların yıllık insan yaşı artışı daha yüksektir. Kesin nedenler hâlâ araştırılmaktadır."}},
+  {"@type":"Question","name":"Köpeğimin hangi boyut sınıfında olduğunu nasıl anlarım?","acceptedAnswer":{"@type":"Answer","text":"Yetişkin ağırlığına bakın: yaklaşık 9 kg altı küçük, 9 ile 23 kg arası orta, 23 ile 41 kg arası büyük, 41 kg üzeri dev kabul edilir. Sınırlar kaynaklara göre değişir; melez köpeklerde yetişkin ağırlığı için veteriner hekiminizin tahminine başvurun."}},
+  {"@type":"Question","name":"Bu sonuçlar veteriner hekim tavsiyesinin yerine geçer mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sonuçlar genel tahminlerdir; hayvanınızın sağlığı, ırkı ve yaşam koşulları farklı olabilir. Beslenme, aşı ve tedavi kararları için veteriner hekiminize danışın."}},
+  {"@type":"Question","name":"Girdiğim bilgiler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; yaş ve boyut bilgileriniz sunucuya iletilmez, saklanmaz."}}
+  ,{"@type":"Question","name":"Ay değeri 0 ile 11 arasında olmalıdır uyarısı ne demek?","acceptedAnswer":{"@type":"Answer","text":"Ay kutusuna 12 ve üzeri bir sayı yazdığınızda bu uyarıyı alırsınız. Örneğin 14 ay için yıl kutusuna 1, ay kutusuna 2 yazın. Yıl ve ay kutularına ondalık değil, tam sayı girilmelidir."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Evcil Hayvan Yaşı</span>: Köpek ve Kedi Yaşını İnsan Yaşına Çevirin</h1>
+      <p class="lead">Köpeğinizin ya da kedinizin yaşını girin; insan yaşı karşılığını, yaşam evresini ve kısa bir bakım notunu görün. Köpeklerde boyuta göre tabloyu ve UCSD epigenetik formülünü yan yana karşılaştırabilirsiniz. Sonuçlar genel tahmindir ve veteriner hekim tavsiyesi yerine geçmez. Girdiğiniz bilgiler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="pet-form" novalidate>
+        <fieldset class="pet-species">
+          <legend>Hayvanınızın türü</legend>
+          <label><input type="radio" id="sp-dog" name="species" value="dog" checked> Köpek</label>
+          <label><input type="radio" id="sp-cat" name="species" value="cat"> Kedi</label>
+        </fieldset>
+        <div id="size-field" class="ba-field">
+          <label for="size">Köpeğin boyut sınıfı</label>
+          <select id="size">
+            <option value="small">Küçük (yaklaşık 9 kg altı)</option>
+            <option value="medium" selected>Orta (yaklaşık 9–23 kg)</option>
+            <option value="large">Büyük (yaklaşık 23–41 kg)</option>
+            <option value="giant">Dev (yaklaşık 41 kg üzeri)</option>
+          </select>
+          <div class="hint">Yetişkin ağırlığına göre seçin. Sınırlar kaynaklara göre değişebilir.</div>
+        </div>
+        <div class="pet-grid">
+          <div class="ba-field"><label for="years">Yaş – yıl</label><input id="years" type="number" inputmode="numeric" min="0" max="30" step="1" placeholder="örn. 5"><div class="hint">1 yaşından küçükse 0 yazın.</div></div>
+          <div class="ba-field"><label for="months">Yaş – ay (0–11)</label><input id="months" type="number" inputmode="numeric" min="0" max="11" step="1" placeholder="örn. 6"><div class="hint">İsteğe bağlı; boş bırakılabilir.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">İnsan yaşını hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="pet-big" id="r-human"></p>
+        <dl class="pet-results">
+          <div class="pet-row"><dt>Hayvanınız</dt><dd id="r-kind"></dd></div>
+          <div class="pet-row"><dt>Girdiğiniz yaş</dt><dd id="r-real"></dd></div>
+          <div class="pet-row"><dt>Yaşam evresi</dt><dd id="r-stage"></dd></div>
+          <div class="pet-row" id="r-ucsd-row"><dt>UCSD epigenetik formülü (karşılaştırma)</dt><dd id="r-ucsd"></dd></div>
+        </dl>
+        <p class="pet-care" id="r-care"></p>
+        <table class="pet-table"><caption id="t-caption"></caption><thead><tr id="t-head"></tr></thead><tbody id="t-body"></tbody></table>
+        <p class="pet-note"><strong>Önemli:</strong> Bu sonuç genel bir tahmindir; veteriner hekim tavsiyesi yerine geçmez. Hayvanınızın sağlığı, beslenmesi ve aşıları için veteriner hekiminize danışın.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="pet-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="evcil-hayvan-yasi-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Türü seçin.</strong> Köpek ya da kediyi işaretleyin. Köpek seçiliyse altta boyut sınıfı listesi görünür; kedilerde boyut ayrımı yapılmaz.</li>
+        <li><strong>Boyutu belirleyin.</strong> Köpeğinizin yetişkin ağırlığına en yakın sınıfı seçin: küçük, orta, büyük ya da dev. Karar veremezseniz "orta" ile başlayıp diğer sınıflarla karşılaştırabilirsiniz.</li>
+        <li><strong>Yaşı yazın.</strong> Yıl kutusuna tam yılı, ay kutusuna kalan ayı girin. Üç aylık bir yavru için 0 yıl 3 ay, beş buçuk yaşındaki bir köpek için 5 yıl 6 ay yazmanız yeterlidir.</li>
+        <li><strong>Sonucu okuyun.</strong> "İnsan yaşını hesapla" düğmesine basın. Sonuç kutusunda tablo yöntemine göre insan yaşı, yaşam evresi, köpekler için UCSD formülünün karşılaştırması ve kısa bir bakım notu görünür. İsterseniz "Sonucu kopyala" ile metni panoya alabilirsiniz.</li>
+      </ol>
+
+      <h2>Köpek yaşı insan yaşına nasıl çevrilir?</h2>
+      <p>Yıllardır duyduğumuz "bir köpek yılı yedi insan yılıdır" kuralı kulağa hoş gelir ama gerçeği yansıtmaz. Köpekler ilk yıllarında çok hızlı büyür ve olgunlaşır: bir yaşındaki köpek çoğu zaman üreme çağına gelmiş, davranışsal olarak genç bir yetişkindir. Bu yüzden veteriner kaynaklarında yaygın olan yöntem, ilk iki yılı ayrı sayar. İlk yıl yaklaşık 15, ikinci yıl 9 insan yılı kabul edilir; iki yaşındaki bir köpek böylece yaklaşık 24 yaşındaki bir insana denk sayılır. Bu bölüm AVMA gibi veteriner kuruluşlarının kılavuzlarında görülen yaklaşımla uyumludur.</p>
+      <p>İkinci yıldan sonra yıllık artış köpeğin boyutuna bağlıdır. Bu araçtaki tabloda küçük ırklar için yılda 4, orta ırklar için 5, büyük ırklar için 6 ve dev ırklar için 7 insan yılı eklenir. Örneğin orta boy, beş yaşındaki bir köpek için hesap şöyledir: 24 + 3 × 5 = 39. Aynı yaştaki küçük bir köpek 36, büyük bir köpek 42, dev bir köpek ise 45 yaşına karşılık gelir. Aradaki yaşlar için (örneğin 1 yıl 6 ay) değerler doğrusal olarak hesaplanır; böylece sonuç aniden sıçramaz.</p>
+      <p>Büyük ırkların daha hızlı yaşlanması bir tercih değil, gözlemdir: araştırmalar iri köpeklerin ortalama olarak daha kısa yaşadığını gösterir. Kesin nedenler hâlâ tartışılsa da, bu fark tabloya yıllık artış farkı olarak yansıtılır. Bu yüzden doğru boyut sınıfını seçmek sonucu doğrudan etkiler.</p>
+
+      <h2>Köpek yaşı tablosu (boyuta göre)</h2>
+      <table class="pet-table">
+        <caption>Köpek yaşı ve yaklaşık insan yaşı karşılığı</caption>
+        <thead><tr><th scope="col">Köpek yaşı</th><th scope="col">Küçük</th><th scope="col">Orta</th><th scope="col">Büyük</th><th scope="col">Dev</th></tr></thead>
+        <tbody>
+          <tr><td>1 yıl</td><td>15</td><td>15</td><td>15</td><td>15</td></tr>
+          <tr><td>2 yıl</td><td>24</td><td>24</td><td>24</td><td>24</td></tr>
+          <tr><td>3 yıl</td><td>28</td><td>29</td><td>30</td><td>31</td></tr>
+          <tr><td>5 yıl</td><td>36</td><td>39</td><td>42</td><td>45</td></tr>
+          <tr><td>7 yıl</td><td>44</td><td>49</td><td>54</td><td>59</td></tr>
+          <tr><td>10 yıl</td><td>56</td><td>64</td><td>72</td><td>80</td></tr>
+          <tr><td>12 yıl</td><td>64</td><td>74</td><td>84</td><td>94</td></tr>
+          <tr><td>15 yıl</td><td>76</td><td>89</td><td>102</td><td>115</td></tr>
+        </tbody>
+      </table>
+      <p>Tablodaki son satırlar matematiksel olarak doğru olsa da gerçekçi olmayabilir: dev ırkların çoğu 12-15 yaşa ulaşmaz. Tablo, yaşlanma hızını karşılaştırmak için bir ölçüdür; bir köpeğin kaç yıl yaşayacağını söylemez. Kaynaklar arasında küçük farklar bulunur; bu araç tek bir tutarlı yöntemi uygular.</p>
+
+      <h2>Kedi yaşı insan yaşına nasıl çevrilir?</h2>
+      <p>Kediler için hesap daha basittir, çünkü boyut farkı köpeklerdeki kadar büyük değildir. İlk yıl 15, ikinci yıl 9 insan yılıdır; sonrasında her kedi yılı 4 insan yılı ekler. Üç yaşındaki bir kedi 28, beş yaşındaki 36, on yaşındaki 56, on beş yaşındaki ise 76 insan yaşına denk gelir. Ev kedileri çoğu zaman 12-18 yaş aralığında yaşar; kapalı alanda yaşayan, düzenli kontrole götürülen kediler bu aralığın üst ucuna yaklaşabilir.</p>
+      <table class="pet-table">
+        <caption>Kedi yaşı ve yaklaşık insan yaşı karşılığı</caption>
+        <thead><tr><th scope="col">Kedi yaşı</th><th scope="col">İnsan yaşı</th></tr></thead>
+        <tbody>
+          <tr><td>1 yıl</td><td>15</td></tr>
+          <tr><td>2 yıl</td><td>24</td></tr>
+          <tr><td>3 yıl</td><td>28</td></tr>
+          <tr><td>5 yıl</td><td>36</td></tr>
+          <tr><td>8 yıl</td><td>48</td></tr>
+          <tr><td>10 yıl</td><td>56</td></tr>
+          <tr><td>12 yıl</td><td>64</td></tr>
+          <tr><td>15 yıl</td><td>76</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ba-ad" data-slot="evcil-hayvan-yasi-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>UCSD epigenetik formülü nedir?</h2>
+      <p>Kaliforniya Üniversitesi San Diego (UCSD) araştırmacıları, yaşlanmayı gelişim evrelerine değil moleküler düzeyde ölçmeye çalıştı. Yaklaşık yüz Labrador retriever köpeğinin DNA'sındaki metilasyon örüntülerini, insanlarda görülen yaşa bağlı değişimlerle karşılaştırdılar. Sonuç, köpeğin yaşını insan yaşına çeviren şu formüldü: <strong>insan yaşı = 16 × ln(köpek yaşı) + 31</strong>. Çalışma önce 2019'da ön baskı olarak duyuruldu, 2020'de bilimsel bir dergide (Cell Systems) yayımlandı.</p>
+      <p>Formüle göre bir yaşındaki köpek yaklaşık 31, iki yaşındaki yaklaşık 42, beş yaşındaki yaklaşık 56,8, on yaşındaki yaklaşık 67,8 yaşında bir insana benzer. İlk yıllarda tablodan çok daha yüksek değerler çıkması şaşırtıcı değildir: formül, "ne kadar olgunlaştı" sorusunu değil "hücreler ne kadar yaşlanmış görünüyor" sorusunu yanıtlar. Bu iki yöntem aynı şeyi ölçmediği için sonuçların farklı çıkması normaldir.</p>
+      <p>Bu formülün sınırlarını bilmek gerekir. Çalışma tek bir ırkla (Labrador) yapıldı ve her ırk için geçerli olduğu kanıtlanmadı. Çok genç köpeklerde formül anlamsız değerlere ulaştığından araç, üç aydan küçük yavrular için karşılaştırma değeri göstermez. Kediler için benzer bir formül bu araçta kullanılmaz. Formülü, tabloyla birlikte bir "ikinci görüş" olarak okuyun.</p>
+
+      <h2>Yaşam evreleri: yavru, genç, yetişkin, yaşlı</h2>
+      <p>Araç, insan yaşının yanında hayvanınızın hangi yaşam evresinde olduğunu da gösterir. Kedilerde bir yaşa kadar yavru, bir ile üç yaş arası genç, üç yaştan on bir yaşa kadar yetişkin, on bir yaştan sonrası yaşlı kabul edilir. Köpeklerde yavruluk küçük ve orta ırklarda bir yaşa, büyük ve dev ırklarda bir buçuk yaşa kadar sürer; üç yaşa kadar genç, ardından yetişkin evresi gelir. Yaşlılık eşiği boyuta göre değişir: küçük ırklarda yaklaşık 10, orta ırklarda 9, büyük ırklarda 7 ve dev ırklarda 6 yaş.</p>
+      <p>Bu eşikler genel rehberlerden türetilmiş yaklaşık değerlerdir. Bireysel farklar büyüktür: iyi bakılan bir köpek eşiğin ötesinde de zinde olabilir. Evrelere göre bakım notları ise yalnızca genel hatırlatmadır; aşı takvimi, kısırlaştırma zamanı, beslenme ve tedavi kararları için mutlaka veteriner hekiminize danışın.</p>
+
+      <h2>Yaşlanan dostunuz için genel ipuçları</h2>
+      <ul>
+        <li><strong>Düzenli kontrol:</strong> Yaşlı hayvanlarda sorunlar sessiz başlayabilir. Kontrol sıklığını veteriner hekiminizle belirleyin.</li>
+        <li><strong>Kilo takibi:</strong> Ani kilo kaybı ya da artışı not edilmelidir. Aylık tartı kayıtları veteriner ziyaretinde işe yarar.</li>
+        <li><strong>Konfor:</strong> Kaymayan zemin, yumuşak yatak, kolay ulaşılan su ve tuvalet, eklem sertliği olan hayvanlar için hayatı kolaylaştırır.</li>
+        <li><strong>Davranış değişimleri:</strong> Huzursuzluk, gece gezinmeleri, iştah ya da su tüketimi değişimi, tuvalet alışkanlıklarında bozulma gibi belirtileri gördüğünüzde beklemeden veteriner hekime başvurun.</li>
+        <li><strong>Zihinsel uyarı:</strong> Kısa ve sık yürüyüşler, koklama oyunları ve sevgi dolu ilgi, yaşlı hayvanın yaşam kalitesine katkı sağlar.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; yaş ve boyut bilgileriniz hiçbir sunucuya iletilmez, saklanmaz.</li>
+        <li><strong>İki yöntem yan yana.</strong> Boyuta göre tablo ile UCSD epigenetik formülünü aynı ekranda karşılaştırırsınız.</li>
+        <li><strong>Ay hassasiyeti.</strong> Yıl ve ay girerek yavrular için de anlamlı bir sonuç alırsınız.</li>
+        <li><strong>Dürüst sınırlar.</strong> Sonuçların tahmin olduğu ve veteriner tavsiyesi yerine geçmediği, sayfanın her yerinde açıkça yazılıdır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Köpek yılı insan yılına nasıl çevrilir?</summary><p>İlk yıl yaklaşık 15, ikinci yıl 9 insan yılı sayılır; yani 2 yaşındaki köpek yaklaşık 24 yaşındadır. Sonraki her yıl için küçük ırklarda 4, orta ırklarda 5, büyük ırklarda 6, dev ırklarda 7 yıl eklenir. Orta boy 5 yaşındaki bir köpek 24 + 3 × 5 = 39 insan yaşına denk gelir.</p></details>
+        <details><summary>Bir köpek yılı gerçekten 7 insan yılı mıdır?</summary><p>Hayır. Yedi ile çarpma kuralı yaygın bir efsanedir. Köpekler ilk iki yılda çok hızlı olgunlaşır, sonra yaşlanma hızı boyuta göre değişir. Bu nedenle tek bir çarpan hiçbir köpek için doğru sonuç vermez.</p></details>
+        <details><summary>Kedi yaşı insan yaşına nasıl çevrilir?</summary><p>Kedilerde ilk yıl 15, ikinci yıl 9 insan yılı sayılır; sonraki her yıl 4 insan yılı eklenir. Üç yaşındaki bir kedi 28, on yaşındaki bir kedi 56 insan yaşına denk gelir.</p></details>
+        <details><summary>UCSD formülü nedir ve neden tablodan farklı sonuç verir?</summary><p>Kaliforniya Üniversitesi San Diego araştırmacıları, Labrador köpeklerinin DNA metilasyon değişimini insanlarınkiyle karşılaştırarak 16 × ln(köpek yaşı) + 31 formülünü önerdi. Tablo gelişim evrelerine, formül moleküler yaşlanmaya dayanır; bu yüzden ilk yıllarda formül daha yüksek bir insan yaşı verir.</p></details>
+        <details><summary>Büyük ırk köpekler neden daha erken yaşlanır?</summary><p>Araştırmalar iri ırkların ortalama olarak daha kısa yaşadığını gösterir. Bu yüzden tabloda büyük ve dev ırkların yıllık insan yaşı artışı daha yüksektir. Kesin nedenler hâlâ araştırılmaktadır.</p></details>
+        <details><summary>Köpeğimin hangi boyut sınıfında olduğunu nasıl anlarım?</summary><p>Yetişkin ağırlığına bakın: yaklaşık 9 kg altı küçük, 9 ile 23 kg arası orta, 23 ile 41 kg arası büyük, 41 kg üzeri dev kabul edilir. Sınırlar kaynaklara göre değişir; melez köpeklerde yetişkin ağırlığı için veteriner hekiminizin tahminine başvurun.</p></details>
+        <details><summary>Bu sonuçlar veteriner hekim tavsiyesinin yerine geçer mi?</summary><p>Hayır. Sonuçlar genel tahminlerdir; hayvanınızın sağlığı, ırkı ve yaşam koşulları farklı olabilir. Beslenme, aşı ve tedavi kararları için veteriner hekiminize danışın.</p></details>
+        <details><summary>Girdiğim bilgiler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; yaş ve boyut bilgileriniz sunucuya iletilmez, saklanmaz.</p></details>
+        <details><summary>"Ay değeri 0 ile 11 arasında olmalıdır" uyarısı ne demek?</summary><p>Ay kutusuna 12 ve üzeri bir sayı yazdığınızda bu uyarıyı alırsınız. Örneğin 14 ay için yıl kutusuna 1, ay kutusuna 2 yazın. Yıl ve ay kutularına ondalık değil, tam sayı girilmelidir.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç eğlence ve genel bilgi amaçlıdır; tanı, tedavi ya da beslenme önerisi vermez. Hayvanınızın sağlığıyla ilgili kararlar için veteriner hekiminize danışın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yas-hesapla/">Yaş Hesaplama</a></li>
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../kac-gun-kaldi/">Kaç Gün Kaldı?</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="evcil-hayvan-yasi-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Online Metronom – Ücretsiz BPM Metronom, Tap Tempo ve Ölçü Ayarı (kurulumsuz)</title>
+  <meta name="description" content="Online metronom: 30–300 BPM, 2/4'ten 7/8'e ölçüler, ilk vuruş vurgusu, sekizlik ve üçleme alt bölüm, tap tempo, görsel gösterge. Ücretsiz, kayıt yok, tarayıcıda çalışır, çevrimdışı kullanılır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/metronom/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .mt-stage { text-align: center; padding: 8px 0 4px; }
+    .mt-light { width: clamp(130px, 44vw, 210px); aspect-ratio: 1; border-radius: 50%; margin: 0 auto 14px; background: var(--ba-surface-2); border: 6px solid var(--ba-border); transition: background .08s linear, border-color .08s linear, box-shadow .12s linear; }
+    .mt-light.is-on { background: var(--ba-primary); border-color: var(--ba-primary-strong); box-shadow: 0 0 0 10px var(--ba-primary-soft); }
+    .mt-light.is-on.is-accent { background: var(--ba-success); border-color: var(--ba-success); box-shadow: 0 0 0 14px var(--ba-success-soft); }
+    .mt-light.is-off { display: none; }
+    .mt-dots { display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 30px; flex-wrap: wrap; }
+    .mt-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--ba-surface-2); border: 2px solid var(--ba-border-hover); transition: background .06s linear; }
+    .mt-dot.is-medium { width: 22px; height: 22px; }
+    .mt-dot.is-strong { width: 28px; height: 28px; border-color: var(--ba-primary); }
+    .mt-dot.is-active { background: var(--ba-primary); border-color: var(--ba-primary-strong); }
+    .mt-dot.is-active.is-accent { background: var(--ba-success); border-color: var(--ba-success); }
+    .mt-readout { text-align: center; margin: 10px 0 6px; }
+    .mt-bpm-label { display: block; font-size: .85rem; font-weight: 600; color: var(--ba-text-2); letter-spacing: .08em; text-transform: uppercase; }
+    .mt-bpm { width: 5.2ch; max-width: 100%; font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: clamp(2.8rem, 16vw, 4.6rem); line-height: 1.1; text-align: center; color: var(--ba-text); background: transparent; border: 0; border-bottom: 3px solid var(--ba-border-hover); border-radius: 0; padding: 0 4px; -moz-appearance: textfield; appearance: textfield; }
+    .mt-bpm::-webkit-outer-spin-button, .mt-bpm::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .mt-bpm:focus { border-bottom-color: var(--ba-primary); outline-offset: 4px; }
+    .mt-tempo { margin: 2px 0 0; font-weight: 600; font-size: 1.15rem; color: var(--ba-primary); min-height: 1.5em; font-style: italic; }
+    .mt-steps { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0 10px; }
+    .mt-steps .ba-btn { min-width: 62px; min-height: 48px; font-family: var(--ba-mono); font-weight: 600; justify-content: center; }
+    .mt-slider { width: 100%; accent-color: var(--ba-primary); height: 32px; margin: 4px 0 6px; }
+    .mt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .mt-actions .ba-btn-lg { flex: 1 1 200px; }
+    .mt-tapbtn { flex: 1 1 160px; min-height: 54px; font-size: 1.05rem; font-weight: 600; }
+    .mt-info { min-height: 1.4em; font-size: .9rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .mt-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 18px 0 8px; }
+    .mt-opts .ba-field select, .mt-opts .ba-field input[type="range"] { width: 100%; }
+    .mt-opts input[type="range"] { accent-color: var(--ba-primary); height: 32px; }
+    .mt-check { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-weight: 500; }
+    .mt-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); flex: none; }
+    .mt-hint { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .mt-note { font-size: .92rem; color: var(--ba-text-2); margin: 8px 0 0; }
+    #mt-tempo-table tr.is-current { background: var(--ba-primary-soft); font-weight: 600; }
+    #mt-tempo-table th, #mt-tempo-table td { text-align: left; padding: 8px 12px; }
+    #mt-tempo-table { border-collapse: collapse; width: 100%; max-width: 640px; }
+    #mt-tempo-table td, #mt-tempo-table th { border-bottom: 1px solid var(--ba-border); }
+    @media (prefers-reduced-motion: reduce) { .mt-light, .mt-dot { transition: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Online Metronom – Bilişim Ajans","applicationCategory":"MusicApplication","operatingSystem":"Web","inLanguage":"tr","isAccessibleForFree":true,"description":"30–300 BPM, 2/4'ten 7/8'e ölçüler, vurgu, alt bölüm ve tap tempo özellikli, tarayıcıda çalışan ücretsiz metronom.","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/metronom/"}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Yardımcı</a></li></ol>
+      <h1><span class="ba-grad">Online Metronom</span>: BPM, Ölçü ve Vurgu Ayarlı</h1>
+      <p class="lead">Kurulum ve kayıt gerektirmeyen, tarayıcıda çalışan hassas bir metronom. 30–300 BPM, 2/4'ten 7/8'e ölçüler, ilk vuruşta farklı ton, sekizlik ve üçleme alt bölüm, tap tempo ve görsel vuruş göstergesi. Sesler cihazınızda üretilir; hiçbir veri gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" id="mt-box" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Metronom</h2>
+
+      <div id="mt-stage" class="mt-stage">
+        <div id="mt-light" class="mt-light" data-beat="0" aria-hidden="true"></div>
+        <div id="mt-dots" class="mt-dots" aria-hidden="true"></div>
+      </div>
+
+      <div class="mt-readout">
+        <label class="mt-bpm-label" for="mt-bpm">BPM (dakikadaki vuruş)</label>
+        <input id="mt-bpm" class="mt-bpm" type="number" inputmode="numeric" min="30" max="300" step="1" value="120">
+        <p id="mt-tempo" class="mt-tempo" aria-label="Tempo terimi">Allegro</p>
+      </div>
+      <div class="mt-steps" role="group" aria-label="BPM ayarı">
+        <button id="mt-minus5" class="ba-btn" type="button" aria-label="BPM'i 5 azalt">−5</button>
+        <button id="mt-minus" class="ba-btn" type="button" aria-label="BPM'i 1 azalt">−1</button>
+        <button id="mt-plus" class="ba-btn" type="button" aria-label="BPM'i 1 artır">+1</button>
+        <button id="mt-plus5" class="ba-btn" type="button" aria-label="BPM'i 5 artır">+5</button>
+      </div>
+      <input id="mt-slider" class="mt-slider" type="range" min="30" max="300" step="1" value="120" aria-label="BPM kaydırıcısı">
+
+      <div class="mt-actions">
+        <button id="mt-start" class="ba-btn ba-btn-primary ba-btn-lg" type="button" aria-pressed="false" data-running="false">Başlat</button>
+        <button id="mt-tap" class="ba-btn mt-tapbtn" type="button">Tap tempo (ritmi dokunarak ver)</button>
+      </div>
+      <p id="mt-tap-info" class="mt-info" aria-live="polite"></p>
+      <p id="mt-status" class="mt-info" aria-live="polite">Hazır.</p>
+
+      <div class="mt-opts">
+        <div class="ba-field"><label for="mt-meter">Ölçü</label>
+          <select id="mt-meter"><option value="2/4">2/4</option><option value="3/4">3/4</option><option value="4/4" selected>4/4</option><option value="5/4">5/4</option><option value="6/8">6/8</option><option value="7/8">7/8</option></select></div>
+        <div class="ba-field"><label for="mt-sub">Alt bölüm</label>
+          <select id="mt-sub"><option value="1" selected>Yok</option><option value="2">Sekizlik (2'li)</option><option value="3">Üçleme (3'lü)</option><option value="4">Onaltılık (4'lü)</option></select></div>
+        <div class="ba-field"><label for="mt-sound">Ses türü</label>
+          <select id="mt-sound"><option value="click" selected>Tık</option><option value="wood">Ahşap</option><option value="beep">Bip</option></select></div>
+        <div class="ba-field"><label for="mt-volume">Ses seviyesi</label>
+          <input id="mt-volume" type="range" min="0" max="100" step="1" value="80"></div>
+      </div>
+      <div class="mt-check"><input type="checkbox" id="mt-accent" checked><label for="mt-accent">İlk vuruşu vurgula (farklı ton, daha güçlü)</label></div>
+      <div class="mt-check"><input type="checkbox" id="mt-visual" checked><label for="mt-visual">Işık göstergesini göster</label></div>
+      <p id="mt-meter-note" class="mt-note" hidden>6/8 ve 7/8 ölçülerinde BPM değeri sekizlik vuruşları sayar (6/8'de altı, 7/8'de yedi vuruş).</p>
+      <div id="error" class="ba-error" role="alert"></div>
+      <p class="mt-hint">Kısayollar: <kbd>Boşluk</kbd> başlat/durdur, <kbd>↑</kbd> <kbd>→</kbd> BPM artır, <kbd>↓</kbd> <kbd>←</kbd> BPM azalt (<kbd>Shift</kbd> ile 5'er), <kbd>T</kbd> tap tempo. Hızlı yanıp sönen ışık ışığa duyarlı kişileri rahatsız edebilir; gerekirse ışık göstergesini kapatın, ses çalmaya devam eder.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="metronom-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Hassas, kurulumsuz ve ücretsiz online metronom</h2>
+      <p>Metronom, müzik çalışmanın en sade ve en etkili araçlarından biridir: dakikada kaç vuruş olacağını siz seçersiniz, o da eşit aralıklarla tık sesi verir. Gitar, piyano, bağlama, keman ya da davul çalıyor olun; bir parçayı öğrenirken, bir pasajı temizlerken, bir ritim kalıbını oturturken ya da şarkı sözü yazarken tempoyu sabit tutmak için aynı cihaza ihtiyaç duyarsınız. Bu sayfadaki metronom, bunu telefonunuzda, tabletinizde ya da bilgisayarınızda uygulama indirmeden yapar.</p>
+      <p>Tıklamalar tarayıcının ses motoru olan Web Audio ile üretilir ve ses saatine göre önceden planlanır. Yani vuruşlar, sayfa başka işlerle meşgulken bile birbirinden aynı aralıkla gelir; sıradan bir "her yüz milisaniyede bir çal" döngüsünün yaşattığı kayma ya da hızlanıp yavaşlama burada yoktur. Ses dosyası indirilmez, tüm sesler anında sentezlenir; bu yüzden sayfa bir kez açıldıktan sonra internet olmadan da çalışır.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Tempoyu seçin.</strong> Büyük BPM kutusuna bir sayı yazın, kaydırıcıyı sürükleyin ya da −1, +1, −5, +5 düğmelerini kullanın. Seçtiğiniz değerin altında "Andante" ya da "Allegro" gibi tempo teriminin adı görünür.</li>
+        <li><strong>Ölçüyü belirleyin.</strong> Çalacağınız parçanın ölçüsünü listeden seçin: 2/4, 3/4, 4/4, 5/4, 6/8 ya da 7/8. Ekrandaki noktalar ölçüdeki vuruş sayısını gösterir; büyük nokta ilk vuruştur.</li>
+        <li><strong>İsterseniz alt bölüm ekleyin.</strong> Alt bölüm, her vuruşu eşit parçalara böler: sekizlik iki, üçleme üç, onaltılık dört tık verir. Ara tıklar daha hafif çalar, böylece ana vuruşu kaybetmezsiniz.</li>
+        <li><strong>"Başlat"a basın.</strong> Boşluk tuşu da aynı işi görür. Işık ve noktalar sesle birlikte hareket eder. Tempoyu çalarken değiştirmek mümkündür; yeni değer bir sonraki vuruştan itibaren geçerli olur.</li>
+        <li><strong>Tempoyu kulaktan bulun.</strong> Parçanın hızını bilmiyorsanız "Tap tempo" düğmesine şarkının vuruşlarıyla birlikte dokunun; dört beş dokunuştan sonra BPM kendiliğinden hesaplanır.</li>
+      </ol>
+
+      <h2>Ayarlar ne işe yarar?</h2>
+      <p><strong>BPM</strong>, "beats per minute" ifadesinin kısaltmasıdır ve dakikadaki vuruş sayısını anlatır. 60 BPM saniyede bir, 120 BPM saniyede iki vuruş demektir. Bu araç 30 ile 300 arasındaki değerleri destekler; çoğu müzik 60 ile 180 arasında kalır. <strong>Ölçü</strong>, vuruşların nasıl gruplandığını belirler. 4/4'te dört vuruşluk gruplar halinde sayarsınız, 3/4'te vals gibi üçlü gruplar oluşur. 5/4 üç artı iki, 6/8 üç artı üç, 7/8 ise iki artı iki artı üç biçiminde gruplanır; bu gruplamalardaki ikinci güçlü vuruşlar orta şiddette bir tonla belirtilir.</p>
+      <p><strong>Vurgu</strong> açıkken ölçünün ilk vuruşu daha tiz ve daha güçlü çalar. Böylece "bir" in nerede olduğunu kaybetmeden sayabilirsiniz. Vurguyu kapattığınızda bütün vuruşlar eşit çalar; bu, kendi vurgunuzu kendiniz koymak istediğiniz çalışmalarda işe yarar. <strong>Ses türü</strong> olarak keskin bir tık, ahşap blok sesi ya da bip seçebilirsiniz. Davul ve perküsyon çalanlar çoğu zaman ahşabı, kulaklıkla çalışanlar tıkı, gürültülü bir odada çalışanlar ise bipi daha kolay duyar. <strong>Ses seviyesi</strong> kaydırıcısı yalnızca metronomun çıkışını ayarlar; cihazınızın genel sesi ayrıca etkilidir.</p>
+      <p>6/8 ve 7/8 ölçülerinde bu araç BPM değerini sekizlik vuruşlar için sayar. Bazı müzisyenler 6/8'i noktalı dörtlük üzerinden, dakikada iki büyük vuruş olarak düşünür; böyle çalışıyorsanız BPM değerini üçle çarparak girin. Örneğin dakikada 60 noktalı dörtlük, burada 180 sekizlik vuruşa karşılık gelir.</p>
+
+      <div class="ba-ad" data-slot="metronom-b" aria-label="Reklam"></div>
+
+      <h2>Tap tempo: tempoyu dokunarak ölçün</h2>
+      <p>Bir şarkıyı çalmaya hazırlanırken tempo bilgisi elinizde olmayabilir. Tap tempo bu durumda devreye girer. Şarkıyı dinleyin, her vuruşta "Tap tempo" düğmesine ya da T tuşuna dokunun. Araç, dokunuşlar arasındaki sürelerin ortalamasını alır ve bunu BPM'e çevirir. Dokunuş sayısı arttıkça sonuç daha kararlı hale gelir; en fazla son sekiz dokunuş hesaba katılır. İki saniyeden uzun bir ara verirseniz ölçüm sıfırlanır, böylece yeni bir şarkıya temiz başlarsınız. Elde edilen değer 30–300 aralığının dışına çıkarsa araç sizi uyarır.</p>
+
+      <h2>Tempo işaretleri: Largo, Andante, Allegro</h2>
+      <p>Notalarda tempo çoğu zaman sayı yerine İtalyanca bir terimle belirtilir. Aşağıdaki tablo, en yaygın terimleri ve yaklaşık BPM aralıklarını gösterir. Aralıklar kaynaktan kaynağa birkaç BPM değişir; bunlar kesin sınırlar değil, yol gösteren yaklaşık değerlerdir. Metronomun BPM değeri tablodaki aralıklardan birine girdiğinde ilgili satır vurgulanır.</p>
+      <table id="mt-tempo-table">
+        <caption class="visually-hidden">Tempo terimleri ve yaklaşık BPM aralıkları</caption>
+        <thead><tr><th scope="col">Terim</th><th scope="col">BPM</th><th scope="col">Anlamı</th></tr></thead>
+        <tbody>
+          <tr data-name="Grave"><td>Grave</td><td>30–39</td><td>Çok ağır, ciddi</td></tr>
+          <tr data-name="Largo"><td>Largo</td><td>40–59</td><td>Geniş, çok yavaş</td></tr>
+          <tr data-name="Larghetto"><td>Larghetto</td><td>60–65</td><td>Biraz geniş, yavaş</td></tr>
+          <tr data-name="Adagio"><td>Adagio</td><td>66–75</td><td>Yavaş, rahat</td></tr>
+          <tr data-name="Andante"><td>Andante</td><td>76–107</td><td>Yürüyüş hızında</td></tr>
+          <tr data-name="Moderato"><td>Moderato</td><td>108–119</td><td>Ölçülü, orta hızlı</td></tr>
+          <tr data-name="Allegro"><td>Allegro</td><td>120–155</td><td>Canlı, hızlı</td></tr>
+          <tr data-name="Vivace"><td>Vivace</td><td>156–167</td><td>Çok canlı</td></tr>
+          <tr data-name="Presto"><td>Presto</td><td>168–199</td><td>Çok hızlı</td></tr>
+          <tr data-name="Prestissimo"><td>Prestissimo</td><td>200–300</td><td>Olabildiğince hızlı</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Metronomla etkili çalışmak için öneriler</h2>
+      <p>Zor bir pasajı hedef temponun yüzde ellisi ya da altmışı kadar yavaş başlayarak çalın ve hatasız çaldığınızda tempoyu 4–5 BPM artırın. Hata çıkarsa bir önceki hıza dönün. Bu yavaş ve kademeli yöntem, acele ederek kasları yanlış hareketlere alıştırmaktan çok daha verimlidir. Hedef tempoya ulaştığınızda bile bir iki gün sonra yeniden yavaşa dönüp pasajı rahatça çalabildiğinizi kontrol edin.</p>
+      <p>Ritmik duygunuzu geliştirmek için tık sesini yalnızca ölçünün birinci vuruşunda duymak, kalan vuruşları ise kendiniz saymak iyi bir alıştırmadır. Alt bölümü sekizliğe ya da üçlemeye ayarlayarak arada kalan vuruşları içselleştirebilirsiniz. Sekizlik alt bölüm, duraklı ve senkoplu ritimlerde yön bulmaya yardım eder; üçleme ise 12/8 hissi ya da caz salınımı çalışırken işe yarar. Kayıt yaparken ya da bir grupla çalarken kulaklık kullanırsanız tık sesi mikrofona karışmaz.</p>
+
+      <h2>Zamanlama neden güvenilir?</h2>
+      <p>Tarayıcılarda zamanlayıcı fonksiyonları, sayfa yoğunken ya da sekme arka plandayken sapabilir; bu yüzden yalnızca "her X milisaniyede bir çal" yazan bir metronom zamanla hızlanır, yavaşlar ve düzensiz çalar. Bu araç farklı çalışır: kısa aralıklarla uyanan bir planlayıcı, ses motorunun kendi saatine göre önümüzdeki yaklaşık 0,12 saniyedeki vuruşları kuyruğa alır ve ses motoru bunları örnekleme hassasiyetinde çalar. Planlayıcı biraz gecikse bile vuruşlar zamanında çıkar. Çalışmayı arka plana alabilirsiniz; ancak telefonunuzun ekran kilidi, işletim sisteminin pil tasarrufu kuralları nedeniyle sesi durdurabilir. Uzun çalışmalarda ekranı açık tutmak en güvenli yoldur.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Hiçbir şey cihazdan çıkmaz.</strong> Ses tarayıcınızda üretilir; kayıt, yükleme, çerez ya da izleme yoktur. Ayarlarınız yalnızca bu cihazın tarayıcı belleğinde saklanır.</li>
+        <li><strong>Araç kutusu sade.</strong> Düğmelerin yanında reklam, sahte "premium" uyarısı ya da geri sayım yoktur; sayfadaki reklam alanları araç kutusundan ayrı ve aşağıdadır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da kullanabilir, masaüstüne ya da telefonunuza uygulama gibi yükleyebilirsiniz.</li>
+        <li><strong>Klavyeyle ve ekran okuyucuyla kullanılabilir.</strong> Tüm denetimler etiketlidir; kısayollar elleriniz çalgıdayken bile işe yarar.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Metronom sesi gelmiyor, ne yapmalıyım?</summary><p>Önce cihazın ses düzeyine ve sessiz modunda olup olmadığına bakın; telefonlarda yan sessiz anahtarı bazı sürümlerde tarayıcı sesini de kısabilir. Sekmenin tarayıcıda sessize alınmadığını ve sayfadaki ses seviyesi kaydırıcısının sıfırda olmadığını kontrol edin. Tarayıcılar sesi yalnızca kullanıcı bir düğmeye bastıktan sonra başlatmaya izin verir; bu yüzden "Başlat"a bir kez daha basmak çoğu zaman sorunu çözer. Bluetooth kulaklık kullanıyorsanız çıkışın doğru cihaza yönlendiğinden emin olun.</p></details>
+        <details><summary>BPM tam olarak ne demek?</summary><p>BPM, dakikadaki vuruş sayısıdır. 60 BPM'de her vuruş bir saniye sürer, 120 BPM'de yarım saniye sürer. Değer büyüdükçe müzik hızlanır. Bir şarkının BPM değerini bilmiyorsanız tap tempo ile ölçebilir ya da notanın başındaki tempo işaretine bakabilirsiniz.</p></details>
+        <details><summary>6/8 ve 7/8 ölçülerinde BPM neyi sayıyor?</summary><p>Bu metronomda 6/8 ve 7/8 ölçülerinde BPM, sekizlik vuruşları sayar: 6/8'de ölçü başına altı, 7/8'de yedi tık çalar. 6/8'i noktalı dörtlük üzerinden saymaya alışkınsanız BPM değerini üçle çarparak girmeniz gerekir. Örneğin noktalı dörtlük 60 ise sekizlik 180 BPM'dir.</p></details>
+        <details><summary>Tap tempo ne kadar doğru ölçer?</summary><p>Sonuç, dokunuşlarınızın ne kadar düzenli olduğuna bağlıdır. Araç son sekiz dokunuşun ortalamasını alır, bu da tek bir dokunuşun sapmasını büyük ölçüde törpüler. Daha kararlı sonuç için en az beş altı kez dokunun ve şarkıyı dinlerken dokunun. Ölçüm, aralarında iki saniyeden uzun bir boşluk olursa sıfırlanır.</p></details>
+        <details><summary>Telefonun ekranı kapanınca ya da başka sekmeye geçince çalışmaya devam eder mi?</summary><p>Araç, vuruşları arka planda da planlayabilecek biçimde yazıldı; masaüstü tarayıcılarda başka sekmeye geçmek genellikle metronomu durdurmaz. Telefonlarda ise ekran kilitlenince işletim sistemi sesi kesebilir. Uzun çalışmalarda ekranı açık tutun ya da aracı uygulama gibi yükleyin.</p></details>
+        <details><summary>Ayarlarım kaydediliyor mu?</summary><p>Evet. BPM, ölçü, alt bölüm, ses türü, ses seviyesi ve vurgu tercihleriniz yalnızca bu cihazdaki tarayıcının yerel depolama alanına yazılır; sayfayı yeniden açtığınızda aynı ayarlarla karşılaşırsınız. Bu bilgi hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz ayarlar varsayılana döner.</p></details>
+        <details><summary>İnternet olmadan kullanabilir miyim?</summary><p>Evet. Sayfa bir kez yüklendikten sonra tüm sesler cihazınızda üretildiği için çevrimdışı çalışır. Tarayıcınızın "Uygulama olarak yükle" seçeneğini kullanırsanız metronom ana ekranınızda ya da masaüstünüzde kendi penceresinde açılır.</p></details>
+        <details><summary>Yanıp sönen ışık beni rahatsız ediyor, kapatabilir miyim?</summary><p>Evet. "Işık göstergesini göster" kutusunun işaretini kaldırdığınızda büyük daire gizlenir; yalnızca ölçüdeki küçük noktalar ve ses kalır. Hızlı tempolarda yanıp sönen ışıklar ışığa duyarlı kişilerde rahatsızlık yaratabileceği için bu seçeneği bilerek ekledik.</p></details>
+        <details><summary>Bluetooth kulaklıkta ses neden geç geliyor?</summary><p>Bluetooth bağlantılarında ses birkaç on milisaniyeden fazla gecikebilir. Vuruşlar arasındaki aralık yine eşittir, yani tempo bozulmaz; yalnızca ışık ve ses arasında kayma olur. Çalgınızla birebir senkron istiyorsanız kablolu kulaklık ya da hoparlör kullanın.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../akort-aleti/">Akort Aleti</a></li>
+        <li><a href="../zamanlayici/">Zamanlayıcı ve Kronometre</a></li>
+        <li><a href="../ses-kaydedici/">Online Ses Kaydedici</a></li>
+      </ul>
+      <p class="ba-note">Müzik atölyeleri, eğitim materyalleri ya da kurumunuza özel web araçları için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibiyle görüşebilirsiniz.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="metronom-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

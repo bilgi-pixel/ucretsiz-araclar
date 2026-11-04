@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Yumurtlama Hesaplama – Doğurgan Günler ve Ovülasyon Takvimi</title>
+  <meta name="description" content="Son adet başlangıç tarihinizi ve döngü uzunluğunuzu girin; tahmini yumurtlama gününüzü, doğurgan günlerinizi, sonraki adet tarihini ve 6 döngülük takvimi görün. Tahmindir, tıbbi tavsiye değildir; doğum kontrol yöntemi olarak kullanılmaz. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/yumurtlama-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form input[type="date"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.1rem; color: var(--ba-text); }
+    .kdv-note { font-size: .88rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .vki-warn { font-weight: 600; color: var(--ba-text); }
+    /* Döngü tablosu */
+    .ov-tablewrap { overflow-x: auto; margin: 12px 0 0; }
+    table.ov-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    table.ov-table th, table.ov-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    table.ov-table thead th { font-size: .85rem; color: var(--ba-text-2); }
+    table.ov-table tbody th { font-weight: 600; }
+    table.ov-table tbody th small { display: block; font-weight: 400; color: var(--ba-text-muted); font-size: .78rem; }
+    /* Takvim görünümü: yalnızca renge güvenmez; her durumun harf işareti ve kenar çizgisi türü vardır. */
+    .cal { margin-top: 18px; }
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 0 10px; }
+    .cal-nav strong { text-align: center; flex: 1 1 auto; text-transform: capitalize; }
+    .cal-nav .ba-btn { min-height: 44px; padding-left: 12px; padding-right: 12px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+    .cal-h { text-align: center; font-size: .78rem; font-weight: 600; color: var(--ba-text-2); padding: 4px 0; }
+    .cal-d { min-height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; border-radius: var(--ba-radius-sm); border: 1px solid transparent; background: var(--ba-surface-2); color: var(--ba-text); font-size: .92rem; min-width: 0; }
+    .cal-m { font-size: .68rem; font-weight: 700; letter-spacing: .02em; }
+    .cal-d.is-period { background: var(--ba-danger-soft); color: var(--ba-danger); border: 1px dashed var(--ba-danger); }
+    .cal-d.is-fertile { background: var(--ba-success-soft); color: var(--ba-success); border: 1px solid var(--ba-success); }
+    .cal-d.is-period.is-fertile { border-style: dashed; box-shadow: inset 0 -4px 0 var(--ba-success); }
+    .cal-d.is-ovulation { background: var(--ba-success); color: var(--ba-bg); border-color: var(--ba-success); font-weight: 700; box-shadow: none; }
+    .cal-d.is-today { outline: 2px solid var(--ba-primary); outline-offset: 1px; }
+    .cal-legend { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .88rem; color: var(--ba-text-2); }
+    .cal-legend li { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
+    .cal-sw { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 5px; font-size: .72rem; font-weight: 700; border: 1px solid transparent; background: var(--ba-surface-2); color: var(--ba-text); }
+    .cal-sw.is-period { background: var(--ba-danger-soft); color: var(--ba-danger); border: 1px dashed var(--ba-danger); }
+    .cal-sw.is-fertile { background: var(--ba-success-soft); color: var(--ba-success); border: 1px solid var(--ba-success); }
+    .cal-sw.is-ovulation { background: var(--ba-success); color: var(--ba-bg); border-color: var(--ba-success); }
+    .cal-sw.is-today { outline: 2px solid var(--ba-primary); outline-offset: 1px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Yumurtlama Hesaplama – Bilişim Ajans","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/yumurtlama-hesapla/","inLanguage":"tr","description":"Son adet tarihinden tahmini yumurtlama günü, doğurgan günler, sonraki adet tarihi ve 6 döngülük takvim hesaplama. Tahmindir, tıbbi tavsiye değildir; doğum kontrol yöntemi olarak kullanılmaz."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Yumurtlama günü nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Son adet başlangıç tarihine döngü uzunluğu eklenerek sonraki adet tarihi bulunur; bu tarihten 14 gün çıkarılınca tahmini yumurtlama günü elde edilir. 28 günlük bir döngüde yumurtlama 14. günde olur."}},
+  {"@type":"Question","name":"Doğurgan günler hangi günlerdir?","acceptedAnswer":{"@type":"Answer","text":"Araç, yumurtlamadan 5 gün önce başlayıp yumurtlamadan 1 gün sonra biten 7 günlük pencereyi doğurgan gün olarak gösterir; çünkü spermler yaklaşık 5 gün canlı kalabilir, yumurta ise yumurtlamadan sonra yaklaşık 12-24 saat döllenebilir."}},
+  {"@type":"Question","name":"Döngüm 28 günden farklıysa sonuç değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Yumurtlama günü sonraki adetten geriye doğru sayıldığı için döngü uzunluğunu doğru girmek önemlidir. 30 günlük bir döngüde yumurtlama 16. güne, 24 günlük bir döngüde 10. güne denk gelir."}},
+  {"@type":"Question","name":"Düzensiz adet görüyorsam bu araç işe yarar mı?","acceptedAnswer":{"@type":"Answer","text":"Güvenilir değildir. Döngü uzunluğu aydan aya çok değişiyorsa yumurtlama günü tahmini kayar. Bu durumda hekiminize danışın."}},
+  {"@type":"Question","name":"Bu hesap doğum kontrol yöntemi olarak kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bu araç yalnızca bilgilendirme amaçlı bir tahmin üretir ve doğum kontrol yöntemi değildir. Korunma için hekiminizin ya da sağlık ocağınızın önerdiği yöntemleri kullanın."}},
+  {"@type":"Question","name":"Yumurtlama günü gebe kalma şansının en yüksek olduğu gün müdür?","acceptedAnswer":{"@type":"Answer","text":"Şans yumurtlamadan önceki 2 gün ve yumurtlama günü en yüksektir. Bu nedenle araç pencereyi yumurtlamadan 5 gün öncesine kadar genişletir ve yumurtlama gününü ayrıca işaretler."}},
+  {"@type":"Question","name":"Gebelik testini ne zaman yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Ev tipi testlerin çoğu beklenen adet tarihinin gecikmesinden itibaren daha güvenilirdir. Araç, beklenen adetin ertesi gününü gösterir. Test kutusundaki talimata uyun; sonucu hekiminizle doğrulayın."}},
+  {"@type":"Question","name":"Girdiğim tarihler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; tarihler sunucuya iletilmez ve saklanmaz."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Yumurtlama Hesaplama</span> – Doğurgan Günler ve Ovülasyon Takvimi</h1>
+      <p class="lead">Son adet kanamanızın ilk gününü ve döngü uzunluğunuzu girin; tahmini yumurtlama gününüzü, doğurgan günlerinizi, sonraki adet tarihinizi ve önümüzdeki 6 döngünün takvimini görün. Girdiğiniz tarihler bilgisayarınızdan çıkmaz.</p>
+      <p class="vki-warn" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Sonuçlar bir tahmindir; düzensiz döngülerde güvenilir değildir ve doğum kontrol yöntemi olarak kullanılmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid c3">
+          <div class="ba-field"><label for="lmp">Son adet başlangıç tarihi</label><input id="lmp" type="date" min="2000-01-01" max="2100-12-31"><div class="hint">Son adet kanamanızın ilk günü.</div></div>
+          <div class="ba-field"><label for="cycle">Döngü uzunluğu (gün)</label><input id="cycle" type="text" inputmode="numeric" value="28" autocomplete="off"><div class="hint">21–35 arası. Bilmiyorsanız 28.</div></div>
+          <div class="ba-field"><label for="period">Adet süresi (gün)</label><input id="period" type="text" inputmode="numeric" value="5" autocomplete="off"><div class="hint">2–8 arası.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Yumurtlamayı hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" hidden>
+        <h3>Sonuç</h3>
+        <div aria-live="polite">
+          <dl class="kdv-results">
+            <div class="kdv-row is-strong"><dt>Tahmini yumurtlama günü</dt><dd id="r-ovulation"></dd></div>
+            <div class="kdv-row is-strong"><dt>Doğurgan günler</dt><dd id="r-fertile"></dd></div>
+            <div class="kdv-row"><dt>Sonraki adet (beklenen)</dt><dd id="r-next"></dd></div>
+            <div class="kdv-row"><dt>Girdiğiniz adet dönemi</dt><dd id="r-period"></dd></div>
+            <div class="kdv-row"><dt>Döngü uzunluğu</dt><dd id="r-cycle"></dd></div>
+            <div class="kdv-row"><dt>Gebelik testi için en erken önerilen tarih</dt><dd id="r-test"></dd></div>
+          </dl>
+          <p class="kdv-note" id="r-stale" hidden>Girdiğiniz tarih eskide kaldı; sonuçlar geçmiş bir döngüyü gösteriyor. Güncel tahmin için en son adet başlangıç tarihinizi girin.</p>
+        </div>
+        <p class="kdv-note">Test tarihi, beklenen adetin ertesi günüdür; ev tipi testler adet gecikmesinden sonra daha güvenilirdir. Test kutusundaki talimata uyun ve sonucu hekiminizle doğrulayın.</p>
+        <p class="vki-warn" id="r-disclaimer" role="note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sonuç bir tahmindir; düzensiz döngülerde güvenilir değildir ve doğum kontrol yöntemi olarak kullanılmaz.</p>
+
+        <section class="cal" aria-labelledby="cal-h">
+          <h4 id="cal-h">Takvim görünümü</h4>
+          <div class="cal-nav">
+            <button id="cal-prev" class="ba-btn" type="button" aria-label="Önceki ay">‹ Önceki</button>
+            <strong id="cal-title" aria-live="polite"></strong>
+            <button id="cal-next" class="ba-btn" type="button" aria-label="Sonraki ay">Sonraki ›</button>
+          </div>
+          <div id="cal-grid" class="cal-grid" role="group" aria-labelledby="cal-title"></div>
+          <ul class="cal-legend" aria-label="Takvim açıklaması">
+            <li><span class="cal-sw is-period" aria-hidden="true">A</span> Adet günü</li>
+            <li><span class="cal-sw is-fertile" aria-hidden="true">D</span> Doğurgan gün</li>
+            <li><span class="cal-sw is-ovulation" aria-hidden="true">Y</span> Tahmini yumurtlama</li>
+            <li><span class="cal-sw is-today" aria-hidden="true">·</span> Bugün</li>
+          </ul>
+        </section>
+
+        <h4>Önümüzdeki 6 döngü</h4>
+        <p class="kdv-note">İlk satır girdiğiniz döngüdür; sonraki satırlar aynı döngü uzunluğunun tekrarlandığı varsayımıyla hesaplanır.</p>
+        <div class="ov-tablewrap"><table class="ov-table"><caption class="visually-hidden">Döngülere göre adet başlangıcı, doğurgan günler ve tahmini yumurtlama</caption><thead><tr><th scope="col">Adet başlangıcı</th><th scope="col">Doğurgan günler</th><th scope="col">Yumurtlama</th></tr></thead><tbody id="cycle-body"></tbody></table></div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="yumurtlama-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Son adet başlangıç tarihi" alanına son adet kanamanızın <strong>ilk gününü</strong> girin. Takvim simgesinden seçebilir ya da klavyeyle gün, ay ve yılı yazabilirsiniz.</li>
+        <li>Döngü uzunluğunuzu yazın. Döngü, bir adet kanamasının ilk gününden bir sonraki adet kanamasının ilk gününe kadar geçen gün sayısıdır. Bilmiyorsanız 28 bırakın; son üç ayın ortalamasını girmek daha doğru sonuç verir.</li>
+        <li>Adet süresini girin. Bu değer yalnızca takvimde adet günlerinin işaretlenmesi için kullanılır, yumurtlama hesabını etkilemez.</li>
+        <li>"Yumurtlamayı hesapla" düğmesine basın. Tahmini yumurtlama günü, doğurgan günler, sonraki adet tarihi, ay ay gezebileceğiniz bir takvim ve 6 döngülük bir tablo görünür.</li>
+        <li>Sonucu "Sonucu kopyala" ile panoya alabilirsiniz. Unutmayın: bu bir tahmindir ve tıbbi değerlendirmenin yerini tutmaz.</li>
+      </ol>
+
+      <h2>Yumurtlama nedir, ne zaman olur?</h2>
+      <p>Yumurtlama (ovülasyon), yumurtalıktan olgunlaşmış bir yumurta hücresinin salınmasıdır. Bu hücre salındıktan sonra yaklaşık 12 ile 24 saat boyunca döllenebilir. Yumurtlama genellikle bir sonraki adet kanamasının başlamasından yaklaşık 14 gün önce gerçekleşir. Yani yumurtlamayı belirleyen şey, döngünün başından sayılan gün değil, adete kalan gündür. Döngüsü 28 gün olan biri için yumurtlama 14. güne denk gelir; 32 günlük döngüde 18. güne, 24 günlük döngüde ise 10. güne kayar.</p>
+      <p>Bu yüzden "herkes 14. günde yumurtlar" bilgisi yalnızca 28 günlük döngülerde doğrudur. Döngünüz kısaysa yumurtlama erken, uzunsa geç olur. Araç tam da bu nedenle önce sonraki adet tarihini bulur, sonra 14 gün geriye gider.</p>
+
+      <h2>Hesap nasıl yapılıyor?</h2>
+      <p>Hesap üç basit adımdan oluşur. Birincisi, son adet başlangıç tarihine döngü uzunluğunu ekleyerek sonraki adetin beklenen tarihini bulur. İkincisi, bu tarihten 14 gün çıkararak tahmini yumurtlama gününü belirler. Üçüncüsü, yumurtlamadan 5 gün öncesinden yumurtlamadan 1 gün sonrasına kadar uzanan 7 günlük pencereyi doğurgan günler olarak işaretler.</p>
+      <p>Örnek: son adetiniz 1 Mart 2026'da başladı ve döngünüz 28 gün. Sonraki adet 29 Mart'ta beklenir. Buradan 14 gün geri gidince yumurtlama 15 Mart olur. Doğurgan günler 10 Mart'tan 16 Mart'a kadardır. Aynı tarihle döngünüz 30 gün olsaydı sonraki adet 31 Mart, yumurtlama ise 17 Mart olurdu. Tüm hesap takvim günü üzerinden yapılır; saat dilimi ya da yaz saati uygulaması sonucu bir gün kaydırmaz.</p>
+
+      <h2>Doğurgan günler neden tek gün değil, yedi gün?</h2>
+      <p>Yumurta hücresi yalnızca yarım gün ile bir gün arasında döllenebilir. Buna karşılık spermler uygun koşullarda üreme yollarında yaklaşık 5 güne kadar canlı kalabilir. Bu nedenle yumurtlamadan birkaç gün önce başlayan ilişki de gebelikle sonuçlanabilir. Araştırmalara göre ihtimal, yumurtlamadan önceki iki günde ve yumurtlama gününde en yüksektir; yumurtlamadan sonraki günlerde hızla düşer. Araç pencereyi bu bilgiye dayanarak yumurtlamadan 5 gün öncesine ve 1 gün sonrasına kadar genişletir. Takvimde yumurtlama günü ayrıca daha koyu renkte ve "Y" harfiyle gösterilir.</p>
+
+      <div class="ba-ad" data-slot="yumurtlama-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Döngü uzunluğunuzu nasıl bulursunuz?</h2>
+      <p>Döngü uzunluğu, adet kanamasının ilk günü ile bir sonraki adet kanamasının ilk günü arasındaki gün sayısıdır; ilk gün de sayılır, bir sonraki adetin ilk günü sayılmaz. Örneğin 1 Mart'ta başlayan adet ile 29 Mart'ta başlayan adet arasında 28 gün vardır. Yetişkinlerde döngü uzunluğunun 21 ile 35 gün arasında olması olağan kabul edilir. Doğru bir ortalama için son üç ila altı döngünün başlangıç tarihlerini bir takvime ya da telefon notlarına yazmanız yeterlidir. Ardından aralarındaki günleri sayıp ortalamasını alın. Bir döngü 26, bir sonraki 31 gün sürüyorsa bu, döngünüzün düzensiz olduğuna işaret eder ve tek bir sayıyla tahmin yapmak güvenilir olmaz.</p>
+
+      <h2>Yumurtlamaya eşlik edebilen belirtiler</h2>
+      <p>Bazı kişiler yumurtlama sırasında bedenlerinde değişiklikler fark eder. Sık anlatılanlar şunlardır: yumurta akına benzeyen, saydam ve uzayabilen rahim ağzı salgısı, alt karında tek taraflı hafif bir sızı, bazal vücut ısısında yumurtlamadan sonra görülen küçük bir yükseliş ve cinsel isteğin artması. Bu belirtiler kişiden kişiye çok değişir, her döngüde ortaya çıkmayabilir ve hiçbiri tek başına kesin kanıt sayılmaz. Ağrı şiddetliyse, uzun sürüyorsa ya da kanama gibi başka bulgularla birlikteyse hekime başvurun. Bu araç belirti değerlendirmesi yapmaz; yalnızca tarihlere dayalı bir tahmin sunar.</p>
+
+      <h2>Bu hesabın sınırları</h2>
+      <p>Takvim yöntemi, döngünüzün düzenli olduğunu ve yumurtlamanın adetten yaklaşık 14 gün önce gerçekleştiğini varsayar. Gerçek hayatta stres, hastalık, uyku düzeninin bozulması, seyahat, kilo değişimleri, emzirme dönemi, doğum kontrol yöntemlerinin bırakılmasından sonraki ilk aylar ve menopoza yaklaşırken görülen değişiklikler yumurtlama zamanını kaydırabilir. Bu koşullarda tahmin yanlış çıkabilir. Düzensiz döngülerde sonuç güvenilir değildir.</p>
+      <p><strong>Önemli:</strong> Bu araç doğum kontrol yöntemi değildir. "Güvenli gün" hesabı olarak kullanılmamalıdır; doğurgan pencerenin dışında kalan günlerde de gebelik oluşabilir. İstenmeyen gebeliği önlemek için hekiminizin ya da sağlık ocağınızın önerdiği yöntemlere başvurun.</p>
+
+      <h2>Gebelik testi ne zaman yapılır?</h2>
+      <p>Ev tipi gebelik testleri idrardaki gebelik hormonunu ölçer ve çoğu, beklenen adet tarihinin gecikmesinden itibaren daha güvenilir sonuç verir. Çok erken yapılan testte hormon düzeyi henüz yeterince yükselmediği için gebelik olsa bile test negatif görünebilir. Sonuç sekmesindeki test tarihi, beklenen adetin ertesi gününü gösterir. Bu bir hatırlatmadır; kullandığınız testin kutusundaki talimat esastır. Sonucunuz pozitifse ya da adetiniz gecikmesine rağmen test negatifse hekiminizle görüşün.</p>
+
+      <h2>Ne zaman hekime başvurmalı?</h2>
+      <p>Genel kabul gören yaklaşıma göre 35 yaşın altında, düzenli ilişkiye rağmen bir yıl içinde gebelik olmadıysa; 35 yaş ve üzerinde ise altı ay sonunda bir hekime danışmak önerilir. Adetler çok seyrek, çok sık ya da çok düzensizse, adet aylarca kesiliyorsa ya da şiddetli ağrı veya olağandışı kanama yaşıyorsanız beklemeden başvurun. Bu sayfadaki sonuçlar hiçbir durumda muayene ya da tetkik yerine geçmez.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; adet tarihleriniz hiçbir sunucuya iletilmez, saklanmaz, çerezle izlenmez. Sağlıkla ilgili bu tür kişisel tarihlerin sizde kalması önemlidir.</li>
+        <li><strong>Şeffaf yöntem.</strong> Formül sayfada açıkça yazılıdır: sonraki adet eksi 14 gün, doğurgan pencere ise yumurtlama eksi 5 ile artı 1 gün.</li>
+        <li><strong>Görsel takvim.</strong> Renge ek olarak harf işaretleri kullanıldığı için renk körlüğü olanlar da takvimi okuyabilir.</li>
+        <li><strong>Üyelik ve reklam tuzağı yok.</strong> Kayıt istenmez, sonuçlar "Premium" kilidi arkasına saklanmaz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yumurtlama günü nasıl hesaplanır?</summary><p>Son adet başlangıç tarihine döngü uzunluğu eklenerek sonraki adet tarihi bulunur. Bu tarihten 14 gün çıkarıldığında tahmini yumurtlama günü elde edilir. 28 günlük bir döngüde yumurtlama 14. güne denk gelir.</p></details>
+        <details><summary>Doğurgan günler hangi günlerdir?</summary><p>Araç, yumurtlamadan 5 gün önce başlayıp yumurtlamadan 1 gün sonra biten 7 günlük pencereyi gösterir. Spermler yaklaşık 5 gün canlı kalabildiği ve yumurta yumurtlamadan sonra yaklaşık 12-24 saat döllenebildiği için pencere bu şekilde seçilmiştir.</p></details>
+        <details><summary>Döngüm 28 günden farklıysa sonuç değişir mi?</summary><p>Evet. Yumurtlama günü sonraki adetten geriye doğru sayıldığı için döngü uzunluğunu doğru girmek önemlidir. 30 günlük döngüde yumurtlama 16. güne, 24 günlük döngüde 10. güne denk gelir.</p></details>
+        <details><summary>Düzensiz adet görüyorsam bu araç işe yarar mı?</summary><p>Güvenilir değildir. Döngü uzunluğu aydan aya çok değişiyorsa yumurtlama günü tahmini kayar ve araç yanıltıcı olabilir. Bu durumda hekiminize danışın.</p></details>
+        <details><summary>Bu hesap doğum kontrol yöntemi olarak kullanılabilir mi?</summary><p>Hayır. Bu araç yalnızca bilgilendirme amaçlı bir tahmin üretir ve doğum kontrol yöntemi değildir. Doğurgan pencerenin dışındaki günlerde de gebelik oluşabilir. Korunma için hekiminizin önerdiği yöntemleri kullanın.</p></details>
+        <details><summary>Yumurtlama günü gebe kalma şansının en yüksek olduğu gün müdür?</summary><p>Şans, yumurtlamadan önceki iki günde ve yumurtlama gününde en yüksektir. Bu nedenle araç pencereyi yumurtlamadan 5 gün öncesine kadar genişletir ve yumurtlama gününü ayrıca işaretler.</p></details>
+        <details><summary>Gebelik testini ne zaman yapmalıyım?</summary><p>Ev tipi testlerin çoğu, beklenen adet tarihinin gecikmesinden itibaren daha güvenilirdir. Araç beklenen adetin ertesi gününü gösterir. Test kutusundaki talimata uyun ve sonucu hekiminizle doğrulayın.</p></details>
+        <details><summary>Girdiğim tarihler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Sayfa tarih bilginizi bir sunucuya iletmez, kaydetmez ve çerez ya da analiz kodu içermez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong> Bu sayfa tanı, tedavi, ilaç ya da korunma yöntemi önermez. Sonuçlar bir tahmindir; düzensiz döngülerde güvenilir değildir ve doğum kontrol yöntemi olarak kullanılmaz.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../gebelik-hesapla/">Gebelik Hesaplama</a></li>
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../takvim-olustur/">Takvim Oluştur</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="yumurtlama-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

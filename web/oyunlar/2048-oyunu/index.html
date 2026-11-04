@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>2048 Oyunu Oyna – Ücretsiz Online 2048 (kurulumsuz)</title>
+  <meta name="description" content="2048 oyununu ücretsiz oyna: ok tuşları, WASD veya parmak kaydırmayla, 3×3'ten 6×6'ya tahta boyutu seçerek, geri al ve en yüksek skor özelliğiyle. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/2048-oyunu/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri tema değişse de sabittir (bordo tonları). */
+    .ba-hero.game-hero { padding: 28px 0 64px; }
+    .game-hero .lead { margin-bottom: .8em; }
+    .game-hero .ba-badges { margin-bottom: 0; }
+    .game-box { max-width: 560px; margin-left: auto; margin-right: auto; }
+    .g-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .g-stat { position: relative; background: #5e1a25; color: #fff; border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .g-label { display: block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: #f0d3da; }
+    .g-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.35rem; line-height: 1.3; overflow-wrap: anywhere; }
+    .plus { position: absolute; right: 8px; top: 2px; color: #fff; font-weight: 700; pointer-events: none; animation: gPlus .7s ease-out forwards; }
+    @keyframes gPlus { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 0 -26px; } }
+    .g-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin: 14px 0 0; }
+    .g-bar .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .g-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+    .g-seg button { min-height: 44px; min-width: 52px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); }
+    .g-seg button:hover { border-color: var(--ba-primary); }
+    .g-seg button[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .g-seg button[aria-pressed="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .g-seg button[aria-pressed="true"] { color: #1a0d10; }
+
+    .board-wrap { position: relative; width: 100%; max-width: 480px; margin: 14px auto 0; }
+    .board { --gk: 2.2; position: relative; width: 100%; aspect-ratio: 1 / 1; background: #bfa0a9; border-radius: 10px; touch-action: none; user-select: none; -webkit-user-select: none; container-type: inline-size; }
+    .board[data-size="5"] { --gk: 1.9; }
+    .board[data-size="6"] { --gk: 1.6; }
+    .board:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 3px; }
+    .cells, .tiles { --gap: calc(var(--gk) * 1cqw); position: absolute; inset: var(--gap); }
+    .cells { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); grid-template-rows: repeat(var(--n, 4), 1fr); gap: var(--gap); }
+    .cells div { background: #d3bcc2; border-radius: 6px; }
+    .tile {
+      position: absolute; left: 0; top: 0;
+      width: calc((100% - (var(--n, 4) - 1) * var(--gap)) / var(--n, 4));
+      height: calc((100% - (var(--n, 4) - 1) * var(--gap)) / var(--n, 4));
+      translate: calc(var(--c, 0) * (100% + var(--gap))) calc(var(--r, 0) * (100% + var(--gap)));
+      transition: translate .11s ease-in-out;
+      display: grid; place-items: center; border-radius: 6px; font-weight: 700; line-height: 1;
+      font-size: clamp(14px, 6vw, 40px);
+      font-size: calc(100cqw / var(--n, 4) * .44);
+      background: #4a1220; color: #ffd98a;
+    }
+    .tile[data-len="3"] { font-size: calc(100cqw / var(--n, 4) * .36); }
+    .tile[data-len="4"] { font-size: calc(100cqw / var(--n, 4) * .3); }
+    .tile[data-len="5"] { font-size: calc(100cqw / var(--n, 4) * .25); }
+    .tile[data-len="6"] { font-size: calc(100cqw / var(--n, 4) * .21); }
+    .tile.gone { z-index: 0; }
+    .tile.pop { z-index: 2; animation: tPop .2s ease .1s backwards; }
+    .tile.appear { z-index: 1; animation: tAppear .18s ease .1s backwards; }
+    @keyframes tAppear { from { scale: 0; opacity: 0; } to { scale: 1; opacity: 1; } }
+    @keyframes tPop { 0% { scale: .6; opacity: 0; } 60% { scale: 1.15; opacity: 1; } 100% { scale: 1; opacity: 1; } }
+    /* Bordo tonlarında palet; her çift yazı rengiyle AA kontrastı sağlar. */
+    .tile[data-v="2"] { background: #f7ebee; color: #4a1520; }
+    .tile[data-v="4"] { background: #f0d3da; color: #4a1520; }
+    .tile[data-v="8"] { background: #e6b0bd; color: #3a0e17; }
+    .tile[data-v="16"] { background: #d9899e; color: #2f0a12; }
+    .tile[data-v="32"] { background: #b84c69; color: #fff; }
+    .tile[data-v="64"] { background: #a23a56; color: #fff; }
+    .tile[data-v="128"] { background: #8f2c47; color: #fff; }
+    .tile[data-v="256"] { background: #7b2331; color: #fff; }
+    .tile[data-v="512"] { background: #6a1c2b; color: #fff; }
+    .tile[data-v="1024"] { background: #591724; color: #fff; }
+    .tile[data-v="2048"] { background: #3a0d18; color: #ffd98a; box-shadow: 0 0 0 2px #ffd98a inset; }
+
+    .overlay { position: absolute; inset: 0; z-index: 5; border-radius: 10px; background: rgba(58, 14, 23, .92); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 16px; animation: gFade .35s ease both; }
+    .overlay strong { font-size: 1.5rem; }
+    .overlay span { max-width: 32ch; }
+    .ov-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+    .overlay .ba-btn { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .75); box-shadow: none; }
+    .overlay .ba-btn:hover { background: #fff; color: #3a0e17; border-color: #fff; }
+    .overlay .ba-btn-primary { background: #fff; color: #5e1a25; border-color: #fff; }
+    .overlay .ba-btn-primary:hover { background: #f0d3da; color: #3a0e17; border-color: #f0d3da; }
+    @keyframes gFade { from { opacity: 0; } to { opacity: 1; } }
+
+    .dpad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 52px); gap: 8px; justify-content: center; margin: 18px auto 0; }
+    .dpad button { padding: 0; min-height: 52px; font-size: 1.4rem; line-height: 1; }
+    .dpad [data-dir="up"] { grid-column: 2; grid-row: 1; }
+    .dpad [data-dir="left"] { grid-column: 1; grid-row: 2; }
+    .dpad [data-dir="down"] { grid-column: 2; grid-row: 2; }
+    .dpad [data-dir="right"] { grid-column: 3; grid-row: 2; }
+    .g-hint { text-align: center; font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    /* Oyun kontrol düğmeleri ile reklam arasında geniş boşluk (yanlışlıkla tıklamayı önler). */
+    .game-ad-a { margin-top: clamp(96px, 30vh, 240px); }
+    @media (max-width: 480px) { #btn-full { display: none; } }
+    .game-box:fullscreen { max-width: none; border-radius: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--ba-surface); }
+    .game-box:fullscreen .board-wrap { max-width: min(70vh, 90vw); }
+    @media (prefers-reduced-motion: reduce) {
+      .tile { transition: none; }
+      .tile.pop, .tile.appear, .plus, .overlay { animation: none; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"2048 Oyunu – Bilişim Ajans","applicationCategory":"GameApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/2048-oyunu/"},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"2048 oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Ok tuşları, W A S D tuşları, parmak kaydırma ya da ekran okları ile tüm taşları bir yöne kaydırırsınız. Aynı sayıdaki iki taş yan yana gelirse toplanıp tek taş olur. Amaç 2048 yazan taşı elde etmektir."}},
+  {"@type":"Question","name":"2048 oyunu bitmek zorunda mı, 2048'den sonra devam edebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır. 2048 taşına ulaştığınızda Devam et düğmesiyle oynamayı sürdürebilir ve 4096, 8192 gibi daha büyük taşlar yapabilirsiniz. Oyun yalnızca tahtada hamle kalmadığında biter."}},
+  {"@type":"Question","name":"Yanlış hamle yaptım, geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Geri al düğmesi son hamleyi ve o hamlede kazandığınız skoru geri alır. Tek adımlıktır; üst üste birden çok hamleyi geri alamazsınız."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz sıfırlanır. Her tahta boyutunun en yüksek skoru ayrı tutulur."}},
+  {"@type":"Question","name":"Telefonda nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Parmağınızı tahtanın üzerinde sola, sağa, yukarı veya aşağı kaydırın. İsterseniz tahtanın altındaki ekran okları düğmelerini de kullanabilirsiniz."}},
+  {"@type":"Question","name":"3×3 tahtada neden hedef 256?","acceptedAnswer":{"@type":"Answer","text":"9 karelik bir tahtada 2048 taşını oluşturmak teorik olarak bile mümkün değildir. Bu yüzden 3×3 modunda hedef 256 taşı olarak belirlendi. 4×4, 5×5 ve 6×6 modlarında hedef 2048'dir."}},
+  {"@type":"Question","name":"Oyun ücretli mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilişim Ajans'ın 2048 oyunu tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez. Giderler sayfadaki reklamlarla karşılanır."}},
+  {"@type":"Question","name":"İnternet olmadan oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Sayfayı bir kez açtıktan sonra oyun tarayıcı önbelleğinden çalışır; ayrıca siteyi uygulama olarak yükleyerek çevrimdışı da oynayabilirsiniz. Oyun hiçbir veriyi dışarıya göndermez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool game-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>2048 Oyunu Oyna – Ücretsiz Online 2048</h1><p class="lead">Taşları kaydırın, aynı sayıları birleştirin, 2048'e ulaşın. Klavye, parmak kaydırma veya ekran okları; 3×3'ten 6×6'ya boyut; geri al ve en yüksek skor. Kurulum yok.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">2048 oyun alanı</h2>
+      <div class="g-stats">
+        <div class="g-stat" id="score-box"><span class="g-label">Skor</span><strong id="score">0</strong></div>
+        <div class="g-stat"><span class="g-label">En yüksek</span><strong id="best">0</strong></div>
+        <div class="g-stat"><span class="g-label">Hedef</span><strong id="target">2048</strong></div>
+      </div>
+      <div class="g-bar">
+        <div class="g-seg" role="group" aria-label="Tahta boyutu">
+          <button type="button" data-size-btn="3" aria-pressed="false">3×3</button>
+          <button type="button" data-size-btn="4" aria-pressed="true">4×4</button>
+          <button type="button" data-size-btn="5" aria-pressed="false">5×5</button>
+          <button type="button" data-size-btn="6" aria-pressed="false">6×6</button>
+        </div>
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-new">Yeni oyun</button>
+        <button type="button" class="ba-btn" id="btn-undo" disabled>Geri al</button>
+        <button type="button" class="ba-btn" id="btn-full" hidden>Tam ekran</button>
+      </div>
+      <div class="board-wrap">
+        <div class="board" id="board" data-size="4" tabindex="0" role="group" aria-label="2048 tahtası. Ok tuşları veya W A S D ile taşları kaydırın." aria-describedby="board-desc">
+          <div class="cells" id="cells" aria-hidden="true"></div>
+          <div class="tiles" id="tiles"></div>
+        </div>
+        <div class="overlay" id="overlay" role="group" aria-label="Oyun durumu" hidden></div>
+      </div>
+      <div class="dpad" role="group" aria-label="Ekran okları">
+        <button type="button" class="ba-btn" data-dir="up" aria-label="Yukarı kaydır">↑</button>
+        <button type="button" class="ba-btn" data-dir="left" aria-label="Sola kaydır">←</button>
+        <button type="button" class="ba-btn" data-dir="down" aria-label="Aşağı kaydır">↓</button>
+        <button type="button" class="ba-btn" data-dir="right" aria-label="Sağa kaydır">→</button>
+      </div>
+      <p class="g-hint">Ok tuşları veya W A S D · telefonda tahtanın üzerinde parmağınızı kaydırın.</p>
+      <p class="g-hint" id="hint-3" hidden>3×3 tahtada 2048 mümkün değildir; hedef 256 taşıdır.</p>
+      <p class="visually-hidden" id="board-desc"></p>
+      <p class="visually-hidden" id="live" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad game-ad-a" data-slot="oyun-2048-oyunu-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>2048 nedir?</h2>
+      <p>2048, kare bir ızgara üzerinde sayı taşlarını kaydırarak oynanan bir bulmaca oyunudur. Her hamlede tahtadaki bütün taşlar seçtiğiniz yöne doğru kayar. Aynı sayıyı taşıyan iki taş yan yana gelirse toplanıp tek bir taş olur: 2 ile 2 birleşince 4, 4 ile 4 birleşince 8, 8 ile 8 birleşince 16 elde edilir. Hedef, üzerinde 2048 yazan taşı oluşturmaktır. Her geçerli hamleden sonra boş bir kareye rastgele yeni bir taş gelir; bu taş çoğunlukla 2, ara sıra 4 olur. Tahta dolduğunda ve yan yana eşit iki taş kalmadığında oyun biter.</p>
+      <p>Kuralları iki dakikada öğrenilir, ustalaşmak ise günler alabilir. Bu sayfadaki sürüm tarayıcınızda çalışır; bir şey indirmenizi, hesap açmanızı ya da bilgi vermenizi istemez. Skorunuz yalnızca sizin cihazınızda tutulur.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Tahtaya bakın.</strong> Oyun iki taşla başlar. Hangi taşların aynı satır ya da sütunda olduğuna göz atın.</li>
+        <li><strong>Bir yön seçin.</strong> Klavyede ok tuşlarına ya da W A S D tuşlarına basın; telefonda tahtanın üzerinde parmağınızı kaydırın; isterseniz tahtanın altındaki ekran oklarına dokunun.</li>
+        <li><strong>Aynı sayıları birleştirin.</strong> Hareket yönünde yan yana gelen eşit taşlar toplanır ve toplamları skorunuza eklenir.</li>
+        <li><strong>Yeni taşı takip edin.</strong> Her hamleden sonra boş bir kareye yeni bir taş gelir; tahtayı dolmaktan korumak için boş kare sayısını yüksek tutun.</li>
+        <li><strong>Hedefe ulaşın.</strong> 2048 taşını yaptığınızda oyun size sorar: Devam et ile daha büyük taşlar yapmayı deneyebilir ya da Yeni oyun ile baştan başlayabilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Bilgisayar:</strong> Ok tuşları ya da W (yukarı), A (sol), S (aşağı), D (sağ). Tahta ekranda görünürken bu tuşlar oyunu yönetir; tahtayı kaydırarak ekrandan çıkardığınızda sayfa her zamanki gibi ok tuşlarıyla kayar.</li>
+        <li><strong>Telefon ve tablet:</strong> Tahtanın üzerinde parmağınızı istediğiniz yöne doğru kaydırın. Kısa dokunuşlar hamle sayılmaz.</li>
+        <li><strong>Ekran okları:</strong> Tahtanın altındaki dört düğme, klavyesi ya da kaydırma hareketi olmayan kullanıcılar için aynı işi yapar. Tahta ve düğmeler klavyeyle de odaklanabilir.</li>
+        <li><strong>Geri al:</strong> Son hamleyi ve o hamlede kazandığınız puanı geri alır. Tek adımlıktır.</li>
+        <li><strong>Yeni oyun:</strong> Tahtayı sıfırlar. Seçili boyutun en yüksek skoru korunur.</li>
+        <li><strong>Tam ekran:</strong> Destekleyen tarayıcılarda oyunu ekranı kaplayacak şekilde büyütür.</li>
+      </ul>
+
+      <h2>Tahta boyutları ve hedefler</h2>
+      <p>Klasik 4×4 tahtanın yanında üç farklı boyut sunuyoruz. <strong>3×3</strong> tahta çok dardır ve hızlı biter; burada 2048 yapmak teorik olarak bile mümkün olmadığı için hedef 256 olarak belirlendi. <strong>4×4</strong> klasik deneyimdir ve 2048 hedefi gerçek bir meydan okumadır. <strong>5×5</strong> tahta daha fazla manevra alanı verir, yeni başlayanlar için rahat bir seçimdir. <strong>6×6</strong> tahta uzun soluklu oynayanlara göredir; 2048'e ulaşmak kolaylaşır, asıl iş çok büyük taşlar yapmaktır. Boyutu değiştirdiğinizde her boyutun kendi oyunu ve kendi en yüksek skoru vardır; geri döndüğünüzde kaldığınız yerden devam edersiniz.</p>
+
+      <h2>Geri al, otomatik kayıt ve en yüksek skor</h2>
+      <p>Oyununuz her hamleden sonra tarayıcınızın localStorage alanına kaydedilir. Sekmeyi kapatıp yarın dönseniz de tahtanız aynı yerde bekler. En yüksek skorunuz da aynı yerde, boyuta göre ayrı ayrı saklanır. Bu bilgiler hiçbir sunucuya gönderilmez, çerez olarak kullanılmaz ve başka bir sitede görünmez. Tarayıcı verilerini temizlerseniz ya da başka bir cihaza geçerseniz sıfırlanırlar; bunun için bir hesap sistemi bulunmadığından skorları cihazlar arasında taşımak mümkün değildir.</p>
+
+      <div class="ba-ad" data-slot="oyun-2048-oyunu-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Büyük taşı köşede tutun.</strong> En büyük taşı bir köşeye yerleştirin ve oradan ayırmayın. Köşe, taşın iki yönde de sıkışmasını engeller.</li>
+        <li><strong>Tek bir kenar boyunca azalan bir sıra kurun.</strong> Örneğin üst satırda soldan sağa 512, 256, 128, 64 gibi sıralanmış taşlar, zincirleme birleşmeleri mümkün kılar.</li>
+        <li><strong>Çoğunlukla iki yönü kullanın.</strong> Köşenizi sol üstte seçtiyseniz önceliğiniz sol ve yukarı olsun. Sağa hamleyi yalnızca başka çareniz kalmadığında yapın; yoksa büyük taş köşeden kayabilir.</li>
+        <li><strong>Boş kareleri sayın.</strong> Her hamleden önce hangi hamlenin daha fazla birleşme ve daha fazla boş kare bırakacağına bakın. Boş kare sayısı sağlığınızın göstergesidir.</li>
+        <li><strong>Küçük taşları ihmal etmeyin.</strong> Tahtanın serbest tarafında dağınık duran 2 ve 4'ler zamanla sorun çıkarır; fırsat buldukça birleştirin.</li>
+        <li><strong>Bir hamle ilerisini düşünün.</strong> Birleşme ihtimali olan iki taşı yan yana getirmek çoğu zaman anlık puandan daha değerlidir.</li>
+        <li><strong>Geri al düğmesini akıllıca kullanın.</strong> Tek adımlık olduğu için yalnızca çok pahalı bir hata yaptığınızda başvurun.</li>
+      </ul>
+
+      <h2>2048'in kısa hikâyesi</h2>
+      <p>Bu türün en bilinen örneği, Mart 2014'te genç bir İtalyan geliştirici olan Gabriele Cirulli tarafından web için yayımlandı ve kısa sürede dünya çapında yayıldı. Oyun, o dönemde zaten var olan 1024 ve Threes gibi sayı kaydırma oyunlarından esinleniyordu; açık kaynak olarak paylaşılan kodu sayesinde yüzlerce uyarlaması yapıldı. Basit kuralı, hızlı turları ve bir turu daha oynama isteği uyandıran yapısı onu mobil çağın klasiklerinden biri haline getirdi. Bu sayfadaki oyunun mantığı ve çizimleri Bilişim Ajans tarafından sıfırdan yazıldı; herhangi bir üçüncü taraf kütüphane ya da görsel kullanılmadı.</p>
+
+      <h2>Neden Bilişim Ajans'ın 2048'i?</h2>
+      <ul>
+        <li><strong>Kurulum yok:</strong> Tarayıcı yeterlidir; bilgisayar, telefon ve tablette aynı sayfa çalışır.</li>
+        <li><strong>Kayıt yok, izleme yok:</strong> Hesap açmazsınız; skorunuz yalnızca cihazınızda kalır.</li>
+        <li><strong>Boyut seçeneği:</strong> 3×3, 4×4, 5×5 ve 6×6 ile her seviyeye uygun oyun.</li>
+        <li><strong>Erişilebilirlik:</strong> Klavye ve ekran okları ile tam kontrol, yüksek kontrastlı bordo tonlar ve ekran okuyucular için hamle duyuruları.</li>
+        <li><strong>Hareket hassasiyetine saygı:</strong> Sisteminizde "hareketi azalt" seçiliyse animasyonlar kapanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>2048 oyunu nasıl oynanır?</summary><p>Ok tuşları, W A S D tuşları, parmak kaydırma ya da ekran okları ile tüm taşları bir yöne kaydırırsınız. Aynı sayıdaki iki taş yan yana gelirse toplanıp tek taş olur. Amaç 2048 yazan taşı elde etmektir.</p></details>
+      <details><summary>2048'den sonra devam edebilir miyim?</summary><p>Evet. 2048 taşına ulaştığınızda Devam et düğmesiyle oynamayı sürdürebilir, 4096 ve daha büyük taşlar yapabilirsiniz. Oyun yalnızca tahtada hamle kalmadığında biter.</p></details>
+      <details><summary>Yanlış hamle yaptım, geri alabilir miyim?</summary><p>Evet. Geri al düğmesi son hamleyi ve o hamlede kazandığınız skoru geri alır. Tek adımlıktır; üst üste birden çok hamleyi geri alamazsınız.</p></details>
+      <details><summary>En yüksek skorum nerede saklanıyor?</summary><p>Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz sıfırlanır. Her tahta boyutunun en yüksek skoru ayrı tutulur.</p></details>
+      <details><summary>Telefonda nasıl oynarım?</summary><p>Parmağınızı tahtanın üzerinde sola, sağa, yukarı ya da aşağı kaydırın. İsterseniz tahtanın altındaki ekran oklarını da kullanabilirsiniz. Tahtanın üzerindeyken sayfa kaymaz; sayfayı kaydırmak için tahtanın dışına dokunun.</p></details>
+      <details><summary>3×3 tahtada neden hedef 256?</summary><p>9 karelik bir tahtada 2048 taşını oluşturmak teorik olarak bile mümkün değildir. Bu yüzden 3×3 modunda hedef 256 taşı olarak belirlendi. 4×4, 5×5 ve 6×6 modlarında hedef 2048'dir.</p></details>
+      <details><summary>Oyun ücretli mi, kayıt gerekiyor mu?</summary><p>Hayır. Bilişim Ajans'ın 2048 oyunu tamamen ücretsizdir; hesap açmanız ya da bir şey kurmanız gerekmez. Giderler sayfadaki reklamlarla karşılanır.</p></details>
+      <details><summary>İnternet olmadan oynayabilir miyim?</summary><p>Sayfayı bir kez açtıktan sonra oyun tarayıcı önbelleğinden çalışır; ayrıca siteyi uygulama olarak yükleyerek çevrimdışı da oynayabilirsiniz. Oyun hiçbir veriyi dışarıya göndermez.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Sayı Bulmacası</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-2048-oyunu-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
