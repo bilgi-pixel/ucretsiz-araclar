@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Tarif Ölçekle – Porsiyon Hesaplama ve Kalıp Boyutu Dönüştürme</title>
+  <meta name="description" content="Tarifi 4 kişiden 6 kişiye çevirin: malzemeleri yapıştırın, miktarlar orantılı ölçeklensin ve ½, ⅓, ¼ gibi pratik kesirlere yuvarlansın. Kalıp boyutu (22 cm → 26 cm) dönüştürme ve fırın süresi uyarısı. Ücretsiz, kayıt yok, tarifiniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/tarif-olcekle/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .ts-form { display: grid; gap: 14px; }
+    .ts-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 600px) { .ts-grid { grid-template-columns: 1fr 1fr; } }
+    .ts-pan-set { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 12px; margin: 0; min-width: 0; display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+    .ts-pan-set legend { font-weight: 600; font-size: .95rem; padding: 0 6px; }
+    .ts-pan-set .ba-field:first-of-type { grid-column: 1 / -1; }
+    .ts-form textarea { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); box-sizing: border-box; resize: vertical; min-height: 140px; }
+    .ts-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .ts-form .ba-field input[type="text"] { width: 100%; box-sizing: border-box; }
+    .ts-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .ts-hint { font-size: .88rem; color: var(--ba-text-muted); margin: 0; }
+    .ts-pan { margin: 0; padding: 10px 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); overflow-wrap: anywhere; }
+    .ts-pan strong { font-family: var(--ba-mono); font-size: 1.15rem; }
+    .ts-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .ts-box:not(.is-active) { display: none; }
+    .ts-box h3 { margin: 0 0 4px; font-size: 1.1rem; overflow-wrap: anywhere; }
+    .ts-how { margin: 0 0 10px; font-size: .9rem; color: var(--ba-text-muted); font-family: var(--ba-mono); overflow-wrap: anywhere; }
+    .ts-list { list-style: none; margin: 0; padding: 0; }
+    .ts-item { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); overflow-wrap: anywhere; }
+    .ts-new { font-weight: 700; font-size: 1.05rem; }
+    .ts-old { font-size: .85rem; color: var(--ba-text-muted); }
+    .ts-note { flex-basis: 100%; font-size: .85rem; color: var(--ba-text-2); }
+    .ts-item.is-approx .ts-new::after { content: " ≈"; color: var(--ba-text-muted); font-weight: 400; }
+    .ts-oven { margin-top: 14px; padding: 10px 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .92rem; }
+    .ts-oven p { margin: 4px 0 0; }
+    .ts-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content thead th { background: var(--ba-surface-2); }
+    /* Yazdırma: yalnızca ölçeklenmiş tarif kalsın */
+    @media print {
+      .ba-topbar, .ba-header, .ba-hero, .ba-ad, .ba-content, .ba-footer, .ts-form, .ba-actions, .ts-status, #error { display: none !important; }
+      .ts-box { border: 0; padding: 0; margin: 0; display: block !important; }
+      .ba-tool { border: 0; box-shadow: none; padding: 0; background: none; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tarif Ölçekle – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/tarif-olcekle/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Tarif 4 kişiden 6 kişiye nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Hedef porsiyonu özgün porsiyona bölün: 6 / 4 = 1,5. Her malzeme miktarını bu çarpanla çarpın; 2 su bardağı un 3 su bardağı, 1 çay kaşığı tuz ise 1 ½ çay kaşığı olur. Araç bu işlemi listenin tamamına aynı anda uygular."}},{"@type":"Question","name":"Kalıp boyutu değişince malzemeler nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Malzemeler kalıp alanıyla orantılı değişir. Yuvarlak kalıpta alan çapın karesiyle büyür: 22 cm kalıptan 26 cm kalıba geçerken alan oranı (26 / 22)² ≈ 1,40 olur, yani malzemeleri yaklaşık 1,4 ile çarpmanız gerekir. Kalıp yüksekliğinin aynı olduğu varsayılır."}},{"@type":"Question","name":"Fırın süresi de aynı oranda değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır, pişme süresi orantılı değişmez. Süre; hamurun kalınlığına, kalıbın malzemesine ve fırının ısı dağılımına bağlıdır. Süreyi çarpanla çarpmak yerine tarifteki sürenin yaklaşık yüzde 75-80'inde kontrol etmeye başlayın ve kürdan ya da renk ile doğrulayın."}},{"@type":"Question","name":"Yumurta bölünemiyorsa ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Araç yumurtayı tam sayıya yuvarlar ve hesaplanan değeri yanında gösterir. Tam oran gerekiyorsa yumurtayı çırpıp ölçün: kabuksuz bir orta boy yumurta yaklaşık 45-50 gramdır; yarım yumurta için çırpılmış yumurtanın yarısını kullanabilirsiniz."}},{"@type":"Question","name":"Tuz ve baharat da aynı çarpanla mı artmalı?","acceptedAnswer":{"@type":"Answer","text":"Her zaman değil. Lezzeti güçlü malzemeler büyük çarpanlarda tam orantılı artınca fazla gelebilir. Hesaplanan miktarın biraz altıyla başlayın, pişirirken tadarak ayarlayın. Araç bu satırlara tadarak ayarlama notu ekler."}},{"@type":"Question","name":"Kabartma tozu ve maya nasıl ölçeklenir?","acceptedAnswer":{"@type":"Answer","text":"Kabartıcılar çarpanla ölçeklenir ama kabarma yalnızca miktara değil hamurun ve kalıbın şekline de bağlıdır. Tarifi üç dört katından fazla büyütüyorsanız iki parti hâlinde yapmak genellikle daha güvenlidir."}},{"@type":"Question","name":"Hangi yazım biçimleri anlaşılıyor?","acceptedAnswer":{"@type":"Answer","text":"Tam sayı, ondalık (1,5), kesir (1/2), karışık sayı (1 1/2 ya da 1½), yarım ve bir buçuk gibi sözcükler ve 2-3 gibi aralıklar okunur. Miktardan sonra su bardağı, çay kaşığı, gram gibi bir birim, ardından malzeme adı gelmelidir. Süre ve sıcaklık satırları ölçeklenmez."}},{"@type":"Question","name":"Tarifi yarıya indirirken nelere dikkat etmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Çarpana 0,5 yazın. Tek yumurtalı tariflerde yumurtayı çırpıp yarısını kullanın, daha küçük bir kalıp seçin ve pişirme süresini erken kontrol edin; ince hamur daha çabuk pişer."}},{"@type":"Question","name":"Girdiğim tarif sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesaplar tarayıcınızda yapılır; yazdığınız tarif sunucuya gitmez ve hiçbir yerde saklanmaz. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Tarif Ölçekle: Porsiyon Hesaplama</span></h1>
+      <p class="lead">Tarifi kaç kişilik yapmak istiyorsanız yazın; malzeme listenizi yapıştırın, miktarlar orantılı olarak ölçeklensin ve ½, ⅓, ¼ gibi pratik kesirlere yuvarlansın. Kalıp boyutunu değiştiriyorsanız (örneğin 22 cm yerine 26 cm) alan oranıyla çarpanı bulun. Tarifiniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ts-form" novalidate>
+        <div class="ba-field"><label for="mode">Ölçekleme yöntemi</label>
+          <select id="mode"><option value="porsiyon">Porsiyon sayısına göre</option><option value="kalip">Kalıp boyutuna göre</option><option value="elle">Elle çarpan</option></select></div>
+
+        <div id="panel-porsiyon" class="ts-grid">
+          <div class="ba-field"><label for="p-orig">Tarifin özgün porsiyonu</label><input id="p-orig" type="text" inputmode="decimal" autocomplete="off" value="4"></div>
+          <div class="ba-field"><label for="p-target">Hedef porsiyon</label><input id="p-target" type="text" inputmode="decimal" autocomplete="off" value="6"></div>
+        </div>
+
+        <div id="panel-kalip" hidden>
+          <div class="ts-grid">
+            <fieldset class="ts-pan-set"><legend>Özgün kalıp</legend>
+              <div class="ba-field"><label for="p0-shape">Şekil</label><select id="p0-shape"><option value="yuvarlak">Yuvarlak</option><option value="kare">Kare</option><option value="dikdortgen">Dikdörtgen</option></select></div>
+              <div class="ba-field"><label for="p0-d1" id="p0-d1-label">Çap</label><input id="p0-d1" type="text" inputmode="decimal" autocomplete="off" value="22"></div>
+              <div class="ba-field" id="p0-d2-wrap" hidden><label for="p0-d2">Boy</label><input id="p0-d2" type="text" inputmode="decimal" autocomplete="off"></div>
+              <div class="ba-field"><label for="p0-unit">Birim</label><select id="p0-unit"><option value="cm">cm</option><option value="inc">inç</option></select></div>
+            </fieldset>
+            <fieldset class="ts-pan-set"><legend>Hedef kalıp</legend>
+              <div class="ba-field"><label for="p1-shape">Şekil</label><select id="p1-shape"><option value="yuvarlak">Yuvarlak</option><option value="kare">Kare</option><option value="dikdortgen">Dikdörtgen</option></select></div>
+              <div class="ba-field"><label for="p1-d1" id="p1-d1-label">Çap</label><input id="p1-d1" type="text" inputmode="decimal" autocomplete="off" value="26"></div>
+              <div class="ba-field" id="p1-d2-wrap" hidden><label for="p1-d2">Boy</label><input id="p1-d2" type="text" inputmode="decimal" autocomplete="off"></div>
+              <div class="ba-field"><label for="p1-unit">Birim</label><select id="p1-unit"><option value="cm">cm</option><option value="inc">inç</option></select></div>
+            </fieldset>
+          </div>
+          <p class="ts-pan" id="pan-summary" hidden role="status"><strong>Alan oranı: <span id="pan-ratio"></span></strong> <span id="pan-areas"></span></p>
+          <p class="ts-hint">Kalıp yüksekliğinin aynı olduğu varsayılır; malzemeler alan oranıyla çarpılır.</p>
+        </div>
+
+        <div id="panel-elle" hidden>
+          <div class="ba-field"><label for="f-manual">Çarpan</label><input id="f-manual" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 2 (iki katı) veya 0,5 (yarısı)"></div>
+        </div>
+
+        <div class="ba-field"><label for="list">Malzeme listesi (her satıra bir malzeme)</label>
+          <textarea id="list" rows="8" placeholder="2 su bardağı un&#10;1/2 çay kaşığı tuz&#10;1 1/2 kg domates&#10;3 yumurta&#10;250 g tereyağı" aria-describedby="list-hint"></textarea>
+          <div class="hint" id="list-hint">Kesir (1/2), karışık sayı (1 1/2), ondalık (1,5) ve «yarım» yazabilirsiniz.</div></div>
+        <label class="ts-check"><input type="checkbox" id="decimal"> Kesir yerine ondalık göster (0,5)</label>
+        <div class="ba-actions"><button id="sample" type="button" class="ba-btn">Örnek tarifi yükle</button><button id="clear" type="button" class="ba-btn">Listeyi temizle</button></div>
+        <button type="submit" class="visually-hidden">Ölçekle</button>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ts-box" aria-live="polite">
+        <h3 id="r-title"></h3>
+        <p class="ts-how" id="r-how"></p>
+        <ul class="ts-list" id="r-list"></ul>
+        <div class="ts-oven"><strong>Fırın süresi notu</strong><p id="oven-text"></p></div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button><button id="print" class="ba-btn" type="button">Yazdır</button></div>
+        <p class="ts-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="tarif-olcekle-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Ölçekleme yöntemi" listesinden birini seçin: porsiyon sayısına göre (varsayılan), kalıp boyutuna göre ya da elle çarpan.</li>
+        <li>Porsiyon yönteminde tarifin özgün ve hedef porsiyonunu yazın. Kalıp yönteminde iki kalıbın şeklini ve ölçüsünü girin; araç alan oranını hemen gösterir. Elle yöntemde 2 (iki katı) ya da 0,5 (yarısı) gibi bir çarpan yazın.</li>
+        <li>Malzemeleri her satıra bir malzeme gelecek biçimde yazın veya yapıştırın: <code>2 su bardağı un</code>. Denemek için "Örnek tarifi yükle" düğmesini kullanabilirsiniz.</li>
+        <li>Sonuç siz yazarken belirir: yeni miktar kalın, özgün satır solukça görünür. Yuvarlama nedeniyle sapan satırlar "≈" ile işaretlenir ve hesaplanan değer yanında yazılır.</li>
+        <li>"Sonucu kopyala" ile listeyi mesajınıza alın ya da "Yazdır" ile yalnızca ölçeklenmiş tarifi, mutfağa asmak üzere çıktı alın.</li>
+      </ol>
+
+      <h2>Tarif ölçekleme nasıl çalışır?</h2>
+      <p>Mantık basittir: önce bir çarpan bulunur, sonra her malzeme bu çarpanla çarpılır. Porsiyon yönteminde çarpan, hedef porsiyonun özgün porsiyona oranıdır. 4 kişilik tarifi 6 kişiye çevirmek için çarpan 6 / 4 = 1,5'tir; böylece 2 su bardağı un 3 su bardağı, 1 çay kaşığı tuz 1 ½ çay kaşığı, 250 gram tereyağı ise 375 gram olur. Çarpanı elle de yazabilirsiniz: tarifi ikiye katlamak için 2, yarıya indirmek için 0,5 yeterlidir. Çarpma işlemi kolaydır; asıl zorluk, çıkan sayıyı mutfakta ölçülebilir bir miktara çevirmektir. 1,5 ile çarpılmış 1 yemek kaşığı 1,5 kaşıktır ama 3,33 su bardağını hiçbir bardakla ölçemezsiniz. Araç bu yüzden her satırı birimine uygun biçimde yuvarlar.</p>
+
+      <h2>Hangi yazım biçimlerini anlar?</h2>
+      <p>Tarifler her yerde aynı biçimde yazılmaz; araç en yaygın yazımları tanır. Bir satır miktarla başlamalı, ardından (varsa) birim ve malzeme adı gelmelidir. Aşağıdaki tabloda örnekler ve nasıl yorumlandıkları görülür.</p>
+      <table>
+        <thead><tr><th scope="col">Yazdığınız satır</th><th scope="col">Nasıl anlaşılır</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">2 su bardağı un</th><td>miktar 2, birim su bardağı, malzeme un</td></tr>
+          <tr><th scope="row">1/2 çay kaşığı tuz</th><td>yarım çay kaşığı</td></tr>
+          <tr><th scope="row">1 1/2 kg domates veya 1½ kg</th><td>bir buçuk kilogram</td></tr>
+          <tr><th scope="row">1,5 su bardağı süt</th><td>virgüllü ondalık sayı</td></tr>
+          <tr><th scope="row">yarım su bardağı sıvı yağ</th><td>0,5 su bardağı</td></tr>
+          <tr><th scope="row">bir tutam tuz</th><td>«bir» sözcüğü 1 sayılır</td></tr>
+          <tr><th scope="row">2-3 diş sarımsak</th><td>aralık; iki uç da ölçeklenir</td></tr>
+          <tr><th scope="row">3 yumurta</th><td>birimsiz sayılan malzeme, tam sayıya yuvarlanır</td></tr>
+          <tr><th scope="row">180 derece fırın</th><td>sıcaklık, süre ve ölçü satırları ölçeklenmez</td></tr>
+          <tr><th scope="row">süzme yoğurt (miktarsız)</th><td>olduğu gibi bırakılır</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Pratik kesirler ve yuvarlama</h2>
+      <p>Ölçü bardakları ve kaşık setleri genellikle ¼, ⅓, ½ ve ¾ gibi kesirlere göre bölünür. Araç bardak, kaşık, fincan, kilogram ve litre gibi birimlerdeki miktarı bu kesirlerden en yakınına yuvarlar: 2,27 su bardağı "2 ¼" olur, 0,4 çay kaşığı "⅓" olur. Çok küçük miktarlar için ⅛ kullanılır; bundan da azsa "bir tutam" önerilir. Gram ve mililitrede ise tartıya uygun yuvarlama yapılır: 100 ve üzerinde 5'in katlarına, 10 ile 100 arasında tam sayıya. Yuvarlama sonucu özgün değerden yüzde 2'den fazla saparsa satır "≈" ile işaretlenir ve hesaplanan değer yazılır; böylece neyin değiştiğini görürsünüz. Kesir yerine ondalık görmeyi tercih ederseniz "Kesir yerine ondalık göster" kutusunu işaretleyin. Bardak ve kaşık ölçülerini gram ya da mililitreye çevirmek için Mutfak Ölçü Dönüştürücü aracımızı kullanabilirsiniz.</p>
+
+      <h2>Yumurta ve bölünemeyen malzemeler</h2>
+      <p>Yumurta, diş sarımsak, dilim, yaprak ve paket gibi sayılan malzemeler kesirli ölçülemez. Araç bu malzemeleri tam sayıya yuvarlar ve satıra "yaklaşık" notu ekler. Örneğin 3 yumurtalık bir tarifi 1,5 katına çıkardığınızda hesap 4,5 yumurta verir; araç 5 yazar ve 4,5 değerini yanında gösterir. Tam oranı yakalamak istiyorsanız yumurtaları bir kapta çırpın ve gerektiği kadarını kullanın: kabuksuz bir orta boy yumurta kabaca 45 ile 50 gramdır. Yarım yumurta gereken küçük tariflerde de aynı yöntem işe yarar. Maya ve kabartma tozu gibi paketli malzemelerde paketi bölmek zorunda kalıyorsanız çay kaşığı cinsinden ölçmek daha güvenlidir.</p>
+
+      <h2>Kalıp boyutunu değiştirmek</h2>
+      <p>Elinizde tarifte yazan kalıp yoksa porsiyon sayısı değil, kalıbın alanı belirleyicidir. Malzeme miktarı alanla orantılı olmalıdır; yoksa hamur ya çok ince yayılır ya da kalınlaşıp ortası pişmeden üstü yanar. Yuvarlak kalıpta alan π × (çap/2)² olduğundan çapın oranının karesi kadar büyür: çap yüzde 18 artarsa (22 cm yerine 26 cm) alan yüzde 40 artar, çünkü (26 / 22)² ≈ 1,40'tır. Kare kalıpta alan kenarın karesi, dikdörtgen kalıpta en ile boyun çarpımıdır. Aşağıdaki tablo, sık karşılaşılan geçişlerin alan oranlarını gösterir. Araçta kalıp yöntemini seçerek her kombinasyonu inç veya santimetre cinsinden hesaplayabilirsiniz.</p>
+      <table>
+        <thead><tr><th scope="col">Özgün → hedef kalıp</th><th scope="col">Alan oranı (çarpan)</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">18 cm → 22 cm yuvarlak</th><td>1,49</td></tr>
+          <tr><th scope="row">20 cm → 24 cm yuvarlak</th><td>1,44</td></tr>
+          <tr><th scope="row">22 cm → 26 cm yuvarlak</th><td>1,40</td></tr>
+          <tr><th scope="row">24 cm → 28 cm yuvarlak</th><td>1,36</td></tr>
+          <tr><th scope="row">20 cm → 24 cm kare</th><td>1,44</td></tr>
+          <tr><th scope="row">20 cm yuvarlak → 20 cm kare</th><td>1,27</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ba-ad" data-slot="tarif-olcekle-b" aria-label="Reklam"></div>
+
+      <h2>Fırın süresi neden orantılı değildir?</h2>
+      <p>Malzemeyi iki katına çıkarmak pişirme süresini iki katına çıkarmaz. Süreyi asıl belirleyen hamurun kalınlığı ve ısının merkeze ulaşma hızıdır; ağırlık değil. Aynı kalıpta miktarı artırırsanız hamur kalınlaşır, süre uzar ve üst yüzey yanmasın diye sıcaklığı 10 ile 15 derece düşürmek gerekebilir. Daha büyük bir kalıba yayarsanız hamur aynı kalınlıkta kalır ve süre çoğu zaman benzerdir, hatta biraz kısalabilir. Miktarı azaltıp aynı kalıbı kullanırsanız hamur incelir ve süre kısalır. Bu yüzden araç, çarpan 1'den farklı olduğunda sonuç kutusuna bir fırın notu ekler. Genel öneri, tarifteki sürenin yaklaşık yüzde 75 ile 80'inde kontrole başlamaktır: kekte kürdan temiz çıkmalı, ekmek ve börekte alt yüzey rengini almalıdır. Fırınlar birbirinden farklı ısındığı için kendi fırınınızın davranışını tanımak her zaman en iyi rehberdir.</p>
+
+      <h2>Tuz, baharat ve kabartıcılar</h2>
+      <p>Lezzeti güçlü malzemeler ölçek büyüdükçe birebir orantılı artınca fazla gelebilir; özellikle tuz, pul biber, kimyon ve kekik gibi malzemelerde hesaplanan miktarın biraz altıyla başlayıp tadarak ilerlemek güvenlidir. Kabartma tozu, karbonat ve maya ise çarpanla ölçeklenir, ancak kabarma yalnızca miktara değil hamurun hacmine ve kalıbın şekline de bağlıdır. Tarifi üç dört katından fazla büyütüyorsanız tek büyük parti yerine iki parti yapmak çoğu zaman daha tutarlı sonuç verir. Araç bu satırlara bir not ekleyerek sizi hatırlatır.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Pişirme süresini çarpanla çarpmak.</strong> Süre orantılı değildir; erken kontrol edin.</li>
+        <li><strong>Kalıbı hesaba katmamak.</strong> Miktarı artırıp aynı kalıbı kullanmak hamuru kalınlaştırır; ortası çiğ kalabilir.</li>
+        <li><strong>Çapı alanla karıştırmak.</strong> Kalıp çapı yüzde 20 artarsa malzeme yüzde 44 artmalıdır; yüzde 20 değil.</li>
+        <li><strong>Yumurtayı yuvarlayıp unutmak.</strong> Yuvarlanan yumurta sayısı hamurun nemini değiştirir; gerekirse un ya da sıvıyı birkaç yemek kaşığı ayarlayın.</li>
+        <li><strong>Birimleri karıştırmak.</strong> Gram ve bardak aynı satırda karışık yazılırsa kontrol zorlaşır; her satırı tek birimle yazın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Tarif metniniz tarayıcınızda işlenir; sunucuya gönderilmez, saklanmaz.</li>
+        <li><strong>Serbest metni anlar.</strong> Tabloya alan alan veri girmek yerine tarifi yapıştırırsınız.</li>
+        <li><strong>Şeffaf yuvarlama.</strong> Değişen satırlar işaretlenir; hesaplanan gerçek değeri her zaman görürsünüz.</li>
+        <li><strong>Kayıt ve limit yok.</strong> Sayfa çevrimdışı da çalışır; sonucu kopyalayabilir veya yazdırabilirsiniz.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span>Sonuçlar mutfak pratiği için hazırlanmış yaklaşık hesaplardır. Alerji, diyet ya da beslenme planı söz konusuysa ambalaj etiketini ve uzman görüşünü esas alın.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Tarif 4 kişiden 6 kişiye nasıl çevrilir?</summary><p>Hedef porsiyonu özgün porsiyona bölün: 6 / 4 = 1,5. Her malzeme miktarını bu çarpanla çarpın; 2 su bardağı un 3 su bardağı, 1 çay kaşığı tuz ise 1 ½ çay kaşığı olur. Araç bu işlemi listenin tamamına aynı anda uygular.</p></details>
+        <details><summary>Kalıp boyutu değişince malzemeler nasıl hesaplanır?</summary><p>Malzemeler kalıp alanıyla orantılı değişir. Yuvarlak kalıpta alan çapın karesiyle büyür: 22 cm kalıptan 26 cm kalıba geçerken alan oranı (26 / 22)² ≈ 1,40 olur, yani malzemeleri yaklaşık 1,4 ile çarpmanız gerekir. Kalıp yüksekliğinin aynı olduğu varsayılır.</p></details>
+        <details><summary>Fırın süresi de aynı oranda değişir mi?</summary><p>Hayır, pişme süresi orantılı değişmez. Süre; hamurun kalınlığına, kalıbın malzemesine ve fırının ısı dağılımına bağlıdır. Süreyi çarpanla çarpmak yerine tarifteki sürenin yaklaşık yüzde 75-80'inde kontrol etmeye başlayın ve kürdan ya da renk ile doğrulayın.</p></details>
+        <details><summary>Yumurta bölünemiyorsa ne yapmalıyım?</summary><p>Araç yumurtayı tam sayıya yuvarlar ve hesaplanan değeri yanında gösterir. Tam oran gerekiyorsa yumurtayı çırpıp ölçün: kabuksuz bir orta boy yumurta yaklaşık 45-50 gramdır; yarım yumurta için çırpılmış yumurtanın yarısını kullanabilirsiniz.</p></details>
+        <details><summary>Tuz ve baharat da aynı çarpanla mı artmalı?</summary><p>Her zaman değil. Lezzeti güçlü malzemeler büyük çarpanlarda tam orantılı artınca fazla gelebilir. Hesaplanan miktarın biraz altıyla başlayın, pişirirken tadarak ayarlayın. Araç bu satırlara tadarak ayarlama notu ekler.</p></details>
+        <details><summary>Kabartma tozu ve maya nasıl ölçeklenir?</summary><p>Kabartıcılar çarpanla ölçeklenir ama kabarma yalnızca miktara değil hamurun ve kalıbın şekline de bağlıdır. Tarifi üç dört katından fazla büyütüyorsanız iki parti hâlinde yapmak genellikle daha güvenlidir.</p></details>
+        <details><summary>Hangi yazım biçimleri anlaşılıyor?</summary><p>Tam sayı, ondalık (1,5), kesir (1/2), karışık sayı (1 1/2 ya da 1½), yarım ve bir buçuk gibi sözcükler ve 2-3 gibi aralıklar okunur. Miktardan sonra su bardağı, çay kaşığı, gram gibi bir birim, ardından malzeme adı gelmelidir. Süre ve sıcaklık satırları ölçeklenmez.</p></details>
+        <details><summary>Tarifi yarıya indirirken nelere dikkat etmeliyim?</summary><p>Çarpana 0,5 yazın. Tek yumurtalı tariflerde yumurtayı çırpıp yarısını kullanın, daha küçük bir kalıp seçin ve pişirme süresini erken kontrol edin; ince hamur daha çabuk pişer.</p></details>
+        <details><summary>Girdiğim tarif sunucuya gönderiliyor mu?</summary><p>Hayır. Tüm hesaplar tarayıcınızda yapılır; yazdığınız tarif sunucuya gitmez ve hiçbir yerde saklanmaz. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul>
+        <li><a href="../mutfak-olcu-donustur/">Mutfak Ölçü Dönüştürücü</a> — su bardağı, kaşık ve cup ölçülerini ml ve grama çevirin</li>
+        <li><a href="../oran-oranti-hesapla/">Oran Orantı Hesaplama</a> — doğru, ters ve bileşik orantı</li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a> — ağırlık, hacim ve sıcaklık birimleri</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Özel hesaplama aracı ya da kurumsal web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="tarif-olcekle-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

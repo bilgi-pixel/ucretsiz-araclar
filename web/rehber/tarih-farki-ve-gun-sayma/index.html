@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İki Tarih Arası Gün Hesaplama ve Geri Sayım: Kaç Gün Kaldı, İş Günü, Hafta ve Yıl Farkı</title>
+  <meta name="description" content="İki tarih arası gün hesaplama nasıl yapılır? Başlangıç günü dahil mi, iş günü mü takvim günü mü, artık yıl, ISO hafta numarası, Excel DATEDIF ve kaç gün kaldı geri sayımı; sınav, düğün, emeklilik ve tatil için ücretsiz araçlar.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/rehber/tarih-farki-ve-gun-sayma/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"İki Tarih Arası Gün Hesaplama ve Geri Sayım: Kaç Gün Kaldı, İş Günü, Hafta ve Yıl Farkı","description":"İki tarih arasındaki gün, hafta, ay ve yıl farkını doğru hesaplama; başlangıç günü dahil mi sorusu, iş günü ve resmî tatil düşme, artık yıl, saat dilimi, ISO hafta numarası, Excel DATEDIF ve NETWORKDAYS ile kaç gün kaldı geri sayımı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/rehber/tarih-farki-ve-gun-sayma/","dateModified":"2026-11-04","author":{"@type":"Organization","name":"Bilişim Ajans"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"İki tarih arasındaki gün sayısına başlangıç günü dahil mi?","acceptedAnswer":{"@type":"Answer","text":"Matematiksel fark başlangıç gününü saymaz: 1 Ocak ile 10 Ocak arasında 9 gün vardır. Her iki günü de saymak isterseniz, örneğin kaç gün konaklandığını ya da kaç gün çalışıldığını bulurken, sonuca 1 eklenir. Tarih Farkı aracındaki 'Başlangıç ve bitiş gününü ikisini de say' seçeneği bunu yapar."}},
+  {"@type":"Question","name":"İş günü ile takvim günü arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Takvim günü, hafta sonu ve tatil ayırt etmeden her günü sayar. İş günü hesabında cumartesi, pazar ve resmî tatiller düşülür. 30 takvim günü, tatile denk gelen günlere göre genellikle 20 ile 22 iş gününe karşılık gelir."}},
+  {"@type":"Question","name":"Kaç gün kaldı hesabı bugünü sayar mı?","acceptedAnswer":{"@type":"Answer","text":"Araçlarımızda 'bugün' cihazınızın tarihidir ve hedef tarihe kalan gün sayısı bugün hariç, hedef gün dahil olacak biçimde hesaplanır. Yani yarın için sonuç 1 gün, bugün için 0 gündür. Saat seçilirse geri sayım saniyeye kadar iner."}},
+  {"@type":"Question","name":"Artık yıl gün hesabını etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. 4'e bölünen yıllar, 100'e bölünüp 400'e bölünmeyenler hariç, 366 gündür ve 29 Şubat'ı içerir. 2024 ve 2028 artık yıl, 2026 ve 2027 değildir. Tarih aracı bunu otomatik hesaplar; elle sayarken 29 Şubat sıkça atlanır."}},
+  {"@type":"Question","name":"Yılın kaçıncı haftasındayız sorusu neden farklı cevaplar veriyor?","acceptedAnswer":{"@type":"Answer","text":"İki ayrı sayım vardır. ISO 8601 standardında hafta pazartesi başlar ve yılın ilk haftası, 4 Ocak'ı içeren haftadır; bu nedenle 1 Ocak önceki yılın 52. veya 53. haftasına düşebilir. Bazı takvimler ise 1 Ocak'ı doğrudan 1. hafta sayar. Türkiye'de ve Avrupa'da ISO standardı yaygındır."}},
+  {"@type":"Question","name":"Excel'de iki tarih arasındaki gün farkı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"İki tarih hücresini birbirinden çıkarmak yeterlidir: =B1-A1. Yıl, ay veya gün kırılımı için DATEDIF(A1;B1;\"Y\"), \"M\" veya \"D\"; iş günü için NETWORKDAYS(A1;B1;tatiller) kullanılır. Hücre biçimi 'Sayı' olmalı, aksi hâlde sonuç tarih gibi görünür."}},
+  {"@type":"Question","name":"Hamilelik haftası ya da bebeğin yaşı için bu araç kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Araç yalnızca iki tarih arasındaki gün ve hafta sayısını verir; tıbbi bir değerlendirme yapmaz. Son adet tarihi ile bugün arasındaki hafta sayısı yaklaşık bir fikir verir, ancak gebelik haftası ve bebeğin gelişimi için hekiminizin yaptığı hesaplama ve ultrason ölçümleri esastır. Bu sağlık tavsiyesi değildir."}},
+  {"@type":"Question","name":"İhale, dava ya da kira süresi hesabında aracın sonucuna güvenebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Araç takvim ve iş günü farkını doğru hesaplar, ancak resmî sürelerde sürenin hangi günden başlayacağı, son günün tatile denk gelmesi gibi kurallar ilgili mevzuatta ayrıca düzenlenir. Sonucu kontrol amaçlı kullanın; resmî süre hesabında ilgili mevzuat esastır ve bu rehber hukuki tavsiye değildir."}},
+  {"@type":"Question","name":"Tarihlerim bilgisayarımdan dışarı gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tarih Farkı, Kaç Gün Kaldı ve diğer takvim araçları tamamen tarayıcınızda çalışır; girdiğiniz tarih, doğum günü ya da hedef bir sunucuya gitmez. Kayıt ve üyelik yoktur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Rehber</li></ol><h1>İki Tarih Arası Gün Hesaplama ve Geri Sayım: Kaç Gün Kaldı, İş Günü, Hafta ve Yıl Farkı</h1><p class="lead">İki tarih arası gün hesaplama basit görünür ama "başlangıç günü sayılır mı", "iş günü mü takvim günü mü", "29 Şubat araya giriyor mu" gibi sorular sonucu bir iki gün oynatır ve bu fark bir ihale süresinde, bir sınav planında ya da bir kira sözleşmesinde önemli olabilir. Bu rehber, sınava, düğüne, doğum gününe, emekliliğe ya da tatile kaç gün kaldı sorusunu doğru cevaplamayı, hafta ve ay farkını okumayı, Excel'de aynı hesabı kurmayı ve en sık yapılan hataları anlatır. Tüm araçlar tarayıcınızda çalışır; girdiğiniz tarihler cihazınızdan çıkmaz.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu rehberde kullanılan araçlar</h2>
+      <ul>
+          <li><a href="../../tarih-farki/"><strong>Tarih Farkı</strong><span>İki tarih arasındaki gün, hafta, ay ve yıl farkı; isteğe bağlı iş günü ve resmî tatil düşme.</span></a></li>
+          <li><a href="../../kac-gun-kaldi/"><strong>Kaç Gün Kaldı</strong><span>Yılbaşı, bayram, sınav ya da özel bir tarihe gün, saat, dakika ve saniye geri sayımı.</span></a></li>
+          <li><a href="../../hafta-numarasi/"><strong>Hafta Numarası</strong><span>Bugün yılın kaçıncı haftası ve kaçıncı günü; ISO 8601 standardıyla.</span></a></li>
+          <li><a href="../../takvim-olustur/"><strong>Takvim Oluştur</strong><span>Aylık, haftalık ya da yıllık yazdırılabilir PDF takvim; hedefinizi işaretleyip duvara asın.</span></a></li>
+          <li><a href="../../yas-hesapla/"><strong>Yaş Hesapla</strong><span>Doğum tarihinden yıl, ay, gün olarak yaş ve bir sonraki doğum gününe kalan gün.</span></a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="rehber-tarih-farki-ve-gun-sayma-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Gün farkı neden göründüğü kadar basit değil?</h2>
+      <p>Bir takvime bakıp parmakla saymak, iki hafta içindeki tarihler için işe yarar. Ay sınırları, 30 ve 31 günlük aylar, 28 ya da 29 günlük Şubat ve yıllar araya girince elle sayım hata yapmaya başlar. Üstelik aynı iki tarih için birden fazla "doğru" cevap vardır: 1 Mart ile 31 Mart arasında 30 gün mü, 31 gün mü vardır? Kiracı için "Mart ayı boyunca" 31 gündür; bir gönderi için "1 Mart'ta çıktı, 31 Mart'ta teslim edildi" 30 günlük bir süredir. Fark, başlangıç gününü sayıp saymadığınızdan gelir.</p>
+      <p>Bu yüzden hesap yapmadan önce iki şeye karar verin: hangi günlerin sayılacağı (takvim günü mü, iş günü mü) ve uç günlerin dahil olup olmadığı. Bu iki karar netleştiğinde <a href="../../tarih-farki/">Tarih Farkı</a> aracı gerisini saniyede halleder.</p>
+
+      <h2>Tarih Farkı aracı: seçenekler ne anlama geliyor?</h2>
+      <p>Araç iki modla açılır. "İki tarih arasındaki fark" modunda başlangıç ve bitiş tarihini seçersiniz; sonuç toplam gün, hafta ve kalan gün, ayrıca yıl-ay-gün kırılımı olarak gelir. "Bugünden hedef tarihe kaç gün kaldı" modunda yalnızca hedef tarih girilir, başlangıç cihazınızın bugünkü tarihidir. Üç onay kutusu sonucu şekillendirir:</p>
+      <ul>
+        <li><strong>Başlangıç ve bitiş gününü ikisini de say (dahil):</strong> Varsayılan hesap matematiksel farktır; 10 Ocak eksi 1 Ocak 9 gündür. Bu kutuyu işaretlerseniz sonuca 1 eklenir ve 10 gün olur. Konaklama gecesi değil gün sayısı, çalışılan gün, ilaç kullanım günü gibi "her iki uç da yaşandı" durumlarında kullanılır.</li>
+        <li><strong>İş günü sayısını da hesapla:</strong> Cumartesi ve pazarları düşerek ikinci bir sayı verir. Teslim süresi, izin planı, proje takvimi için gereken budur.</li>
+        <li><strong>Resmî tatilleri de düş (2026 listesi):</strong> İş günü seçeneği açıldığında görünür. Yılbaşı, 23 Nisan, 1 Mayıs, 19 Mayıs, 15 Temmuz, 30 Ağustos, 29 Ekim ile Ramazan ve Kurban Bayramı günleri iş günü sayılmaz. Arife günleri yarım gün tatildir; araç bu yarım günü kurum uygulamasına bıraktığı için sonuç kendi iş yerinizin takvimine göre yarım gün oynayabilir.</li>
+      </ul>
+      <p>"Tarihleri yer değiştir" düğmesi, yanlışlıkla ters girilen tarihleri düzeltir; araç zaten ters sırayı algılayıp farkı pozitif verir. "Sonucu kopyala" ile hesabı bir mesaja ya da belgeye yapıştırabilirsiniz.</p>
+
+      <h2>Gün, hafta, ay ve yıl farkını okumak</h2>
+      <p>Gün farkı tektir ve kesindir. Hafta farkı da öyle: toplam gün 7'ye bölünür, kalan gün ayrıca yazılır; 100 gün, 14 hafta 2 gündür. Ay ve yıl farkı ise yoruma açıktır çünkü aylar eşit uzunlukta değildir. Yaygın yöntem, önce tam yılları, sonra tam ayları saymak ve artanı gün olarak bırakmaktır. 31 Ocak'tan 1 Mart'a fark bu yönteme göre 1 ay 1 gündür; bazı araçlar aynı aralığı "0 ay 29 gün" ya da artık yılda "1 ay 0 gün" diye gösterebilir. Hangi sitenin "haklı" olduğunu tartışmak yerine kuralın ne olduğunu bilmek yeterlidir: toplam gün değişmez, kırılım sözleşmeye bağlıdır.</p>
+      <p>Resmî işlemlerde ay hesabı çoğunlukla "ayın aynı gününe" göre yapılır: 15 Mart'tan itibaren 3 ay, 15 Haziran'da dolar. Başlangıç ayın 31'iyse ve hedef ayda 31 yoksa, sürenin o ayın son gününde dolması yaygın uygulamadır. Bu rehber hukuki tavsiye değildir; sözleşme, ihale, dava ve ihbar sürelerinde ilgili mevzuat ve sözleşme metni esastır.</p>
+
+      <h2>Başlangıç günü dahil mi? İhale, dava, ihbar ve kira süreleri</h2>
+      <p>"Gün dahil mi" sorusunun en pahalıya patladığı yer resmî sürelerdir. İhale ilanından teklif verme gününe, tebligattan itiraz süresine, ihbar önelinden sözleşmenin bitiş gününe kadar her süre bir başlangıç ve bir bitiş kuralı taşır. Genel ilke, sürenin başladığı günün sayılmaması ve son günün mesai bitimine kadar işlemin yapılabilmesidir; son gün resmî tatile denk gelirse süre izleyen ilk iş günü dolar. Ancak bu ilkelerin hangi işlemde nasıl uygulandığı ilgili kanun ve yönetmeliklerde ayrı ayrı düzenlenmiştir ve istisnalar vardır.</p>
+      <div class="rh-note"><strong>Önemli:</strong> Araçlar takvim ve iş günü farkını doğru hesaplar; sürenin hangi gün başlayacağına, tatilin süreyi uzatıp uzatmayacağına ve "gün" ile "iş günü" ifadelerinin hangi anlamda kullanıldığına ilgili mevzuat karar verir. Resmî süre hesabında ilgili mevzuat esastır; bu rehber hukuki tavsiye değildir. Önemli bir süre söz konusuysa avukat ya da ilgili kurumla teyit edin.</div>
+      <p>Pratik öneri: süreyi iki kez hesaplayın, bir kez uç günler hariç, bir kez dahil. İki sonuç arasındaki fark bir gündür; işleminizi her iki sonuçtan da erken olan tarihe göre planlarsanız kuralı yanlış hatırlamanın riskini sıfırlarsınız. Kira sözleşmelerinde ise "sözleşme 1 Eylül'de başladı, 1 yıllık" ifadesi genellikle 31 Ağustos'ta biten bir dönemi anlatır; yenileme ve artış tarihleri için <a href="../kira-artisi-nasil-hesaplanir/">kira artışı rehberine</a> bakabilirsiniz.</p>
+
+      <h2>İş günü mü, takvim günü mü?</h2>
+      <p>Takvim günü her günü sayar. İş günü hesabında hafta sonları ve resmî tatiller düşülür. 30 takvim günlük bir aralık, hangi aya denk geldiğine göre 20 ile 22 iş günüdür; bayram haftasında 18'e kadar inebilir. Teslimat, kargo, banka ve kamu işlemleri "iş günü" diye konuştuğu için ikisini karıştırmak teslim tarihini bir haftaya yakın kaydırabilir.</p>
+      <div class="rh-table-wrap">
+      <table class="rh-table">
+        <thead><tr><th>Aralık</th><th>Takvim günü</th><th>İş günü (hafta sonu hariç)</th><th>Resmî tatil düşülünce</th></tr></thead>
+        <tbody>
+          <tr><td>1 – 31 Ocak 2026</td><td>30 (dahil ile 31)</td><td>22</td><td>21 (1 Ocak)</td></tr>
+          <tr><td>1 – 31 Mayıs 2026</td><td>30 (dahil ile 31)</td><td>21</td><td>16 (1 Mayıs, 19 Mayıs ve Kurban Bayramı)</td></tr>
+          <tr><td>1 – 30 Eylül 2026</td><td>29 (dahil ile 30)</td><td>22</td><td>22</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Tablodaki sayılar örnektir; kendi aralığınız için aracı kullanın ve bayram tarihlerinin her yıl kaydığını unutmayın. Hangi günlerin tatil olduğunu, köprü günlerini ve izin planlamayı <a href="../resmi-tatiller-ve-izin-planlama/">resmî tatiller ve izin planlama rehberinde</a> ayrıntılı anlattık. Yarım gün olan arife günleri ile idari izinler iş gününü etkiler, ancak her kurumda aynı uygulanmaz; kendi iş yerinizin duyurusuna göre düzeltin.</p>
+
+      <h2>Artık yıl, 29 Şubat ve saat dilimi</h2>
+      <p>Dörde bölünen yıllar artık yıldır; yüze bölünenler, dört yüze de bölünmüyorsa değildir. 2024 ve 2028 artık, 2026 ve 2027 değildir; 2100 de artık yıl olmayacaktır. Araya 29 Şubat giren her aralıkta elle sayım bir gün eksik çıkar. Doğum tarihi 29 Şubat olanlar için yaş hesabı ayrı bir konudur; onu <a href="../yas-hesaplama-nasil-yapilir/">yaş hesaplama rehberinde</a> ele aldık.</p>
+      <p>Saat dilimi günlük kullanımda sorun çıkarmaz, çünkü araç tarihi yerel takvime göre sayar. İki durumda dikkat gerekir. Birincisi, geri sayımı saatle yapıyorsanız: "1 Ocak 00:00" sizin saatinize göredir; yurt dışındaki biriyle aynı anı konuşuyorsanız farkı hesaba katın. İkincisi, yurt dışı sunucudan gelen tarih verisi "2026-03-15T23:30:00Z" gibi UTC ile yazılmışsa Türkiye saatinde ertesi güne düşer. Türkiye 2016'dan bu yana yıl boyunca UTC+3 kullanır, yaz saati uygulaması yoktur; bu da yurt içi hesaplarda gün kaymasını ortadan kaldırır.</p>
+
+      <div class="ba-ad" data-slot="rehber-tarih-farki-ve-gun-sayma-b" aria-label="Reklam"></div>
+
+      <h2>Geri sayım: sınav, düğün, doğum günü, emeklilik, tatil</h2>
+      <p>"Kaç gün kaldı" sorusunun cevabı motivasyon aracıdır. Sınava kalan günü bilmek çalışma programını, düğüne kalan günü bilmek bütçe ve davetiye takvimini, tatile kalan günü bilmek izin dilekçesinin tarihini belirler. <a href="../../kac-gun-kaldi/">Kaç Gün Kaldı</a> aracı hazır hedefler sunar: yılbaşı, Ramazan ve Kurban Bayramı, 23 Nisan, 19 Mayıs, 29 Ekim gibi günler ve yaygın sınav dönemleri. "Özel tarih" seçip saat ve hedefin adını yazarsanız sayaç gün, saat, dakika ve saniye olarak akar; "Bağlantıyı kopyala" ile aynı sayacı arkadaşlarınıza ya da sınıf grubuna gönderebilir, "Tam ekran" ile sınıf tahtasına ya da düğün salonundaki ekrana yansıtabilirsiniz.</p>
+      <ul>
+        <li><strong>Sınav:</strong> YKS, LGS, KPSS, ALES, DGS ve okul sınavları için gün sayısını haftaya bölüp konu listesini haftalara dağıtın. Haftalık plan kurmak için <a href="../ders-programi-nasil-hazirlanir/">ders programı rehberi</a> ve yazdırılabilir <a href="../../takvim-olustur/">takvim</a> işinizi görür.</li>
+        <li><strong>Düğün ve nişan:</strong> Salon, davetiye ve kıyafet için geriye doğru kilometre taşları koyun: 90 gün kala salon, 45 gün kala davetiye, 14 gün kala son prova gibi. Araçla her kilometre taşının takvim tarihini hesaplayın.</li>
+        <li><strong>Doğum günü:</strong> <a href="../../yas-hesapla/">Yaş Hesapla</a> aracı yaşınızla birlikte bir sonraki doğum gününe kalan günü verir; 29 Şubat doğumlular için artık olmayan yıllarda 1 Mart esas alınır.</li>
+        <li><strong>Emeklilik:</strong> Araç, SGK'dan öğrendiğiniz ya da hesapladığınız tahmini emeklilik tarihine kalan günü, haftayı ve ayı gösterir. Prim günü ve yaş şartı hesabı SGK ve e-Devlet üzerinden yapılır; araç bu şartları hesaplamaz, yalnızca tarihe kalan süreyi sayar.</li>
+        <li><strong>Tatil ve bayram:</strong> İzin dilekçesini kaç iş günü kala vermeniz gerektiğini iş günü seçeneğiyle hesaplayın; köprü günlerini birleştirip uzun tatil çıkarmak için tatil rehberi yardımcı olur.</li>
+      </ul>
+
+      <h2>Hamilelik ve bebek yaşı: yalnızca gün sayma</h2>
+      <p>Son adet tarihi ile bugün arasındaki hafta sayısı, gebelik haftası için kaba bir fikir verir; bebeğin doğum tarihi ile bugün arasındaki gün ve hafta sayısı da "bebek kaç haftalık" sorusunu cevaplar. Tarih Farkı aracı tam olarak bunu yapar: iki tarih arasındaki gün ve haftayı sayar, başka bir şey değil. Gebelik haftasının belirlenmesi, tahmini doğum tarihi, aşı ve kontrol takvimi ise hekiminizin ultrason ölçümleri ve muayenesiyle belirlenir. Bu rehber ve araçlar sağlık tavsiyesi değildir; sağlık kararlarınız için hekiminize danışın.</p>
+
+      <h2>Hafta numarası: yılın kaçıncı haftasındayız?</h2>
+      <p>Üretim planları, okul dönemleri, lojistik ve yazılım sürüm takvimleri haftayı numarayla konuşur: "sevkiyat 37. haftada". Sorun, iki farklı sayım olmasıdır. ISO 8601 standardında hafta pazartesi başlar, yılın ilk haftası 4 Ocak'ı içeren haftadır ve yıl 52 ya da 53 hafta sürer; bu nedenle 1 Ocak önceki yılın 53. haftasına düşebilir. Bazı takvim uygulamaları ise 1 Ocak'ı içeren haftayı 1. hafta sayar ve haftayı pazardan başlatır. Türkiye'de ve Avrupa'da iş dünyası ISO sayımını kullanır. <a href="../../hafta-numarasi/">Hafta Numarası</a> aracı bugünün ya da seçtiğiniz tarihin ISO hafta numarasını ve yılın kaçıncı günü olduğunu verir; "yılın 300. günü" gibi bir ifadeyi tarihe çevirmek için de kullanılır.</p>
+
+      <h2>Excel ve Google E-Tablolar'da aynı hesap</h2>
+      <p>Tek bir fark için araç yeterlidir, ama yüzlerce satırda, örneğin bir personel listesinde kıdem ya da bir sipariş listesinde teslim süresi hesaplıyorsanız tablo formülü gerekir. Tarihler gerçek tarih hücresi olmalı; "15.03.2026" metin olarak yapıştırıldıysa formül hata verir.</p>
+      <ul>
+        <li><strong>Gün farkı:</strong> <code>=B2-A2</code>. Sonuç hücresinin biçimi "Sayı" olmalı; "Tarih" kalırsa 1900 yılına yakın saçma bir tarih görürsünüz. Uç günler dahil için <code>=B2-A2+1</code>.</li>
+        <li><strong>Yıl, ay, gün kırılımı:</strong> <code>=DATEDIF(A2;B2;"Y")</code> tam yıl, <code>"M"</code> tam ay, <code>"D"</code> gün, <code>"YM"</code> yıldan artan ay, <code>"MD"</code> aydan artan gün verir. Türkçe Excel'de de ad DATEDIF'tir; işlev listesinde görünmez ama çalışır. Noktalı virgül ayracı Türkçe bölgesel ayar içindir, İngilizce ayarda virgül kullanılır.</li>
+        <li><strong>İş günü:</strong> <code>=NETWORKDAYS(A2;B2;Tatiller!A:A)</code> (Türkçe Excel'de TAMİŞGÜNÜ). Üçüncü bağımsız değişken olarak resmî tatil tarihlerini yazdığınız bir sütun verirseniz bayramlar da düşülür. Cumartesi çalışan iş yerleri için <code>NETWORKDAYS.INTL</code> hafta sonu düzenini seçtirir.</li>
+        <li><strong>Bugüne kalan:</strong> <code>=A2-TODAY()</code>, dosya her açıldığında güncellenir.</li>
+        <li><strong>Hafta numarası:</strong> <code>=ISOWEEKNUM(A2)</code>; <code>WEEKNUM</code> varsayılan ayarda ISO vermez, 21 numaralı sistemle çağrılmalıdır.</li>
+      </ul>
+      <p>Tablonuzu paylaşmadan önce formülün bir satırını aracın sonucuyla karşılaştırmak, bölgesel ayar ve hücre biçimi hatalarını hemen yakalar.</p>
+
+      <h2>Telefon takvimine hatırlatıcı koymak</h2>
+      <p>Hesabı yaptıktan sonra unutmamak ayrı iş. Kaç Gün Kaldı sayfasından kopyaladığınız bağlantıyı telefonunuzun takvim uygulamasında hedef tarihe not olarak ekleyin ve hatırlatıcıyı bir hafta ile bir gün önce olmak üzere iki kademe kurun. Son başvuru tarihleri için hatırlatıcıyı son güne değil, iş günü hesabıyla bulduğunuz "son rahat gün"e koyun; kargo, imza ya da onay gibi sizin dışınızdaki adımlar için pay bırakmış olursunuz. Duvara asılacak bir plan isteyenler <a href="../../takvim-olustur/">Takvim Oluştur</a> ile ayı PDF olarak yazdırıp hedef günü işaretleyebilir; sınav odası ya da mutfak buzdolabı için en çok işe yarayan yöntem hâlâ budur.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Uç günleri karıştırmak:</strong> "10 gün süre" ile "10 günlük süre" aynı değildir. Hesabı dahil ve hariç biçiminde iki kez yapıp erken olanı esas alın.</li>
+        <li><strong>29 Şubat'ı atlamak:</strong> Artık yıl içeren aralıklarda elle sayım bir gün eksik çıkar.</li>
+        <li><strong>Gün ve ay sırasını ters girmek:</strong> 03.05.2026 Türkiye'de 3 Mayıs, bazı uygulamalarda 5 Mart'tır. Tarih alanı tarayıcınızın takvim seçicisini kullanır; şüphede kalırsanız seçiciden tıklayarak girin.</li>
+        <li><strong>İş günü yerine takvim günüyle söz vermek:</strong> "5 gün içinde" demeden önce hangi günü kastettiğinizi karşı tarafla netleştirin.</li>
+        <li><strong>Eski yılın bayram listesini kullanmak:</strong> Dini bayramlar her yıl yaklaşık 11 gün öne gelir; iş günü hesabında güncel listeyi seçin.</li>
+        <li><strong>Saat dilimini unutmak:</strong> Yurt dışı son başvuru saatleri çoğunlukla UTC ya da yerel saatle yazılır; Türkiye saatine çevirin.</li>
+        <li><strong>Cihaz tarihinin yanlış olması:</strong> "Kaç gün kaldı" modu bilgisayarınızın tarihini esas alır; saati elle ayarlanmış bir cihazda sonuç kayar.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>İki tarih arasındaki gün sayısına başlangıç günü dahil mi?</summary><p>Matematiksel fark başlangıç gününü saymaz: 1 Ocak ile 10 Ocak arasında 9 gün vardır. Her iki günü de saymak isterseniz, örneğin kaç gün konaklandığını ya da kaç gün çalışıldığını bulurken, sonuca 1 eklenir. Tarih Farkı aracındaki "Başlangıç ve bitiş gününü ikisini de say" seçeneği bunu yapar.</p></details>
+      <details><summary>İş günü ile takvim günü arasındaki fark nedir?</summary><p>Takvim günü, hafta sonu ve tatil ayırt etmeden her günü sayar. İş günü hesabında cumartesi, pazar ve resmî tatiller düşülür. 30 takvim günü, tatile denk gelen günlere göre genellikle 20 ile 22 iş gününe karşılık gelir.</p></details>
+      <details><summary>Kaç gün kaldı hesabı bugünü sayar mı?</summary><p>Araçlarımızda "bugün" cihazınızın tarihidir ve hedef tarihe kalan gün sayısı bugün hariç, hedef gün dahil olacak biçimde hesaplanır. Yani yarın için sonuç 1 gün, bugün için 0 gündür. Saat seçilirse geri sayım saniyeye kadar iner.</p></details>
+      <details><summary>Artık yıl gün hesabını etkiler mi?</summary><p>Evet. 4'e bölünen yıllar, 100'e bölünüp 400'e bölünmeyenler hariç, 366 gündür ve 29 Şubat'ı içerir. 2024 ve 2028 artık yıl, 2026 ve 2027 değildir. Tarih aracı bunu otomatik hesaplar; elle sayarken 29 Şubat sıkça atlanır.</p></details>
+      <details><summary>Yılın kaçıncı haftasındayız sorusu neden farklı cevaplar veriyor?</summary><p>İki ayrı sayım vardır. ISO 8601 standardında hafta pazartesi başlar ve yılın ilk haftası, 4 Ocak'ı içeren haftadır; bu nedenle 1 Ocak önceki yılın 52. veya 53. haftasına düşebilir. Bazı takvimler ise 1 Ocak'ı doğrudan 1. hafta sayar. Türkiye'de ve Avrupa'da ISO standardı yaygındır.</p></details>
+      <details><summary>Excel'de iki tarih arasındaki gün farkı nasıl bulunur?</summary><p>İki tarih hücresini birbirinden çıkarmak yeterlidir: =B1-A1. Yıl, ay veya gün kırılımı için DATEDIF(A1;B1;"Y"), "M" veya "D"; iş günü için NETWORKDAYS(A1;B1;tatiller) kullanılır. Hücre biçimi "Sayı" olmalı, aksi hâlde sonuç tarih gibi görünür.</p></details>
+      <details><summary>Hamilelik haftası ya da bebeğin yaşı için bu araç kullanılabilir mi?</summary><p>Araç yalnızca iki tarih arasındaki gün ve hafta sayısını verir; tıbbi bir değerlendirme yapmaz. Son adet tarihi ile bugün arasındaki hafta sayısı yaklaşık bir fikir verir, ancak gebelik haftası ve bebeğin gelişimi için hekiminizin yaptığı hesaplama ve ultrason ölçümleri esastır. Bu sağlık tavsiyesi değildir.</p></details>
+      <details><summary>İhale, dava ya da kira süresi hesabında aracın sonucuna güvenebilir miyim?</summary><p>Araç takvim ve iş günü farkını doğru hesaplar, ancak resmî sürelerde sürenin hangi günden başlayacağı, son günün tatile denk gelmesi gibi kurallar ilgili mevzuatta ayrıca düzenlenir. Sonucu kontrol amaçlı kullanın; resmî süre hesabında ilgili mevzuat esastır ve bu rehber hukuki tavsiye değildir.</p></details>
+      <details><summary>Tarihlerim bilgisayarımdan dışarı gönderiliyor mu?</summary><p>Hayır. Tarih Farkı, Kaç Gün Kaldı ve diğer takvim araçları tamamen tarayıcınızda çalışır; girdiğiniz tarih, doğum günü ya da hedef bir sunucuya gitmez. Kayıt ve üyelik yoktur.</p></details>
+
+      <h2>Sonuç ve destek</h2>
+      <p>Doğru gün hesabı iki kararla başlar: uç günler dahil mi ve hangi günler sayılıyor. Bunu netleştirip Tarih Farkı aracına bırakın, geri sayımı Kaç Gün Kaldı ile takip edin, toplu hesapları Excel formülüyle kurun ve resmî sürelerde mevzuatı esas alın. Kurumsal web sitesi, yazılım ve bilişim ihtiyaçlarınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz; tüm ücretsiz araçların listesi <a href="../../">ana sayfada</a>.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="rehber-tarih-farki-ve-gun-sayma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

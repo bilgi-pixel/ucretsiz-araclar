@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>SGK Gün Hesaplama – Hizmet ve Prim Günü Hesaplayıcı (30/360)</title>
+  <meta name="description" content="Birden çok çalışma dönemini girin; SGK usulüyle (ay 30 gün, yıl 360 gün) toplam hizmet ve prim gününü, yıl-ay-gün dökümünü ve 7200 güne kalan günü hesaplayın. Ücretsiz, kayıt yok, tarihler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/sgk-gun-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select, .kdv-form input[type="date"] { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1.05rem; text-align: right; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .sgk-big { font-size: 1.3rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); overflow-wrap: anywhere; }
+    /* Dönem satırları: dar ekranda tek sütun, geniş ekranda tek satır. */
+    .period-row { margin: 0 0 12px; padding: 10px 14px 14px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); min-width: 0; }
+    .period-title { padding: 0 6px; font-weight: 700; font-size: .95rem; color: var(--ba-primary); }
+    .period-grid { display: grid; gap: 10px; }
+    @media (min-width: 640px) { .period-grid { grid-template-columns: 1fr 1fr 1fr auto; align-items: end; } }
+    .period-row .ba-field { margin: 0; min-width: 0; }
+    .period-remove-wrap .ba-btn { width: 100%; }
+    .sgk-warn { margin-top: 14px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: var(--ba-danger-soft); color: var(--ba-danger); border: 1px solid var(--ba-danger); border-left-width: 4px; font-weight: 500; }
+    .sgk-periods { margin: 12px 0 0; padding-left: 1.3em; font-size: .92rem; color: var(--ba-text-2); }
+    .sgk-info { margin-top: 16px; padding: 12px 14px; background: var(--ba-surface); border: 1px dashed var(--ba-border-hover); border-radius: var(--ba-radius-sm); }
+    .sgk-info h4 { margin: 0 0 6px; font-size: 1rem; }
+    .sgk-tag { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: var(--ba-primary-soft); color: var(--ba-primary-strong); font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; vertical-align: middle; }
+    .sgk-info p { margin: 6px 0 0; font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"SGK Gün Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/sgk-gun-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"SGK'da bir yıl kaç gün sayılır?","acceptedAnswer":{"@type":"Answer","text":"Sosyal güvenlikte bir yıl 360 gün, bir ay 30 gün sayılır. Artık yıl olması ya da bazı ayların 31 gün çekmesi sonucu değiştirmez. Bütün yıl çalışan biri 366 gün değil 360 gün prim günü biriktirir."}},{"@type":"Question","name":"Ayın 31'i prim gününe sayılır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Ayın son günü 30. gün kabul edilir; 31 çeken bir ayın tamamı çalışılsa da 30 gün yazılır. Yalnızca ayın 31'inde işe giren kişi o ay için 1 gün kazanır."}},{"@type":"Question","name":"Şubat ayı kaç gün sayılır?","acceptedAnswer":{"@type":"Answer","text":"Şubat ayının tamamı çalışılmışsa 28 ya da 29 değil 30 gün sayılır. Araç, ayın son gününü 30. gün kabul eder; Şubat içinde girişte ya da çıkışta kurumun kendi sisteminde bir iki günlük fark olabilir, bu nedenle hizmet dökümünüzle karşılaştırın."}},{"@type":"Question","name":"İki işyerinde aynı anda çalıştım, günler toplanır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. SGK aynı günü iki kez saymaz. Araç çakışan günleri birleştirip yalnızca bir kez sayar ve çakışan dönemleri uyarı kutusunda gösterir. Tarihlerin doğru girildiğinden emin olun."}},{"@type":"Question","name":"Eksik gün nedir, nasıl girilir?","acceptedAnswer":{"@type":"Answer","text":"Ücretsiz izin, devamsızlık gibi nedenlerle prim ödenmeyen günlere eksik gün denir. İlgili dönemin eksik gün alanına toplam gün sayısını yazarsanız bu gün sayısı toplamdan düşülür. Alan boşsa 0 kabul edilir ve sayı o dönemin gün sayısından büyük olamaz."}},{"@type":"Question","name":"7200 gün kaç yıl eder, emeklilik için yeterli midir?","acceptedAnswer":{"@type":"Answer","text":"7200 gün, 360 günlük yıl esasıyla tam 20 yıldır. 1 Ekim 2008'den sonra ilk kez 4/a kapsamında sigortalı olanlar için sık anılan prim günü koşuludur; ancak tek başına yeterli değildir. Yaş şartı ve giriş tarihine göre geçiş kuralları da aranır."}},{"@type":"Question","name":"Bu araç emeklilik tarihimi hesaplar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç yalnızca toplam hizmet günü, yıl-ay-gün dökümü ve hedeflere kalan günü bilgi olarak verir. Emeklilik tarihi için yaş, giriş tarihi, borçlanma ve geçiş kuralları birlikte değerlendirilmelidir; kesin bilgi için e-Devlet'teki SGK tescil ve hizmet dökümüne ya da SGK'ya başvurun."}},{"@type":"Question","name":"Sonucum e-Devlet hizmet dökümünden farklı çıktı, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Önce tarihlerin doğru girildiğini, çakışan dönem uyarısı olup olmadığını ve eksik günleri kontrol edin. Borçlanılan süreler ve ay ortasındaki giriş çıkışlar farka yol açabilir. Hukuki sonuç doğuracak durumlarda kurum kaydı esastır; sorunu işvereninize ya da SGK müdürlüğüne iletin."}},{"@type":"Question","name":"Girdiğim tarihler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; tarihler hiçbir sunucuya gönderilmez ve saklanmaz. Sayfayı kapattığınızda girdiğiniz bilgiler silinir."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">SGK Gün Hesaplama</span></h1>
+      <p class="lead">Çalışma dönemlerinizi girin; SGK usulüyle (ay 30 gün, yıl 360 gün) toplam hizmet ve prim gününüzü, yıl-ay-gün dökümünü ve 7200 güne kalan günü görün. Dönem çakışmaları uyarılır. Girdiğiniz tarihler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div id="periods"></div>
+        <div class="ba-actions"><button id="add-period" class="ba-btn" type="button">+ Dönem ekle</button></div>
+        <div class="kdv-grid" style="margin-top:14px">
+          <div class="ba-field"><label for="gender">Cinsiyet (yalnızca bilgilendirme için, isteğe bağlı)</label>
+            <select id="gender"><option value="none" selected>Seçmeyin</option><option value="kadin">Kadın</option><option value="erkek">Erkek</option></select>
+            <div class="hint">Seçerseniz sigortalılık süresi hedefi (kadın 20 yıl, erkek 25 yıl) bilgi olarak gösterilir.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="warning" class="sgk-warn" role="status" hidden></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="sgk-big" id="r-main"></p>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Dönemlerin toplamı (eksik gün düşülmeden)</dt><dd id="r-gross"></dd></div>
+          <div class="kdv-row"><dt>Düşülen eksik gün</dt><dd id="r-missing"></dd></div>
+          <div class="kdv-row is-strong"><dt>Toplam hizmet (prim) günü</dt><dd id="r-total"></dd></div>
+          <div class="kdv-row"><dt>Yıl, ay ve gün (360/30 esasıyla)</dt><dd id="r-ymd"></dd></div>
+        </dl>
+        <ol class="sgk-periods" id="r-periods" aria-label="Dönem dökümü"></ol>
+        <div class="sgk-info" id="info">
+          <h4><span class="sgk-tag">Bilgilendirme</span>Hedeflere kalan süre</h4>
+          <p id="r-prim"></p>
+          <p id="row-ins" hidden><span id="r-ins"></span></p>
+          <p>Bu bölüm emeklilik tarihi vermez; yaş şartı, giriş tarihine göre geçiş kuralları ve borçlanmalar ayrıca etkilidir. e-Devlet'ten SGK tescil ve hizmet dökümü esastır.</p>
+        </div>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="kdv-rates">Parametreler <strong id="rates-updated">…</strong> tarihinde güncellendi. Hesap, SGK'nın 30 günlük ay ve 360 günlük yıl esasına dayanır; sonuç bilgilendirme amaçlıdır, kesin değer için e-Devlet'teki hizmet dökümünüze bakın.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="sgk-gun-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Her çalışma dönemi için başlangıç ve bitiş tarihini seçin. İşe giriş ve işten çıkış tarihleri işe giriş bildirgenizde ve hizmet dökümünüzde yazar; iki gün de sayıma dahildir.</li>
+        <li>Birden fazla işyerinde çalıştıysanız ya da aynı işyerine yeniden girdiyseniz "Dönem ekle" düğmesiyle yeni bir satır açın. En fazla 30 satır eklenebilir; yanlış satırı "Sil" düğmesiyle kaldırabilirsiniz.</li>
+        <li>Ücretsiz izin, devamsızlık gibi nedenlerle prim ödenmeyen günler varsa ilgili dönemin "Eksik gün" alanına toplam gün sayısını yazın. Boş bırakırsanız 0 kabul edilir.</li>
+        <li>İsterseniz bilgilendirme bölümü için kadın ya da erkek seçin. Bu seçim yalnızca sigortalılık süresi hedefini gösterir, toplam günü değiştirmez.</li>
+        <li>"Hesapla" düğmesine basın. Toplam gün, yıl-ay-gün dökümü ve dönem dökümü görünür; dönemleriniz çakışıyorsa ayrıca uyarılırsınız.</li>
+      </ol>
+
+      <h2>SGK gün hesabı nasıl yapılır?</h2>
+      <p>Sosyal güvenlikte prim ödeme gün sayısı, takvimdeki gerçek gün sayısına göre değil, 30 günlük ay ve 360 günlük yıl esasına göre tutulur. Her tam ay 30 gün, her tam yıl 360 gün sayılır. Bu yüzden 1 Ocak 2020 ile 31 Aralık 2020 arasında bütün yıl çalışan biri, o yıl takvimde 366 gün çekse bile 360 gün biriktirir. 31 çeken bir ayın tamamı çalışılsa da, Şubat ayının tamamı çalışılsa da ay 30 gün olarak yazılır.</p>
+      <p>Eksik aylar, yani işe giriş ve işten çıkış ayları için ise günler 30 günlük takvim üzerinden sayılır. Araç şu kuralı uygular: bir ayın son günü, o ay 28, 29, 30 ya da 31 gün çekse de 30. gün kabul edilir; diğer günler olduğu gibi kalır. Başlangıç ve bitiş günü dahildir. Formül şöyledir: (bitiş yılı − başlangıç yılı) × 360 + (bitiş ayı − başlangıç ayı) × 30 + (bitiş günü − başlangıç günü) + 1.</p>
+      <p><strong>Örnek 1:</strong> 15.03.2021 – 20.05.2021. Mart'ta 15'inden ay sonuna kadar 16 gün (15'ten 30'a), Nisan'ın tamamı 30 gün, Mayıs'ta 1'inden 20'sine 20 gün: 16 + 30 + 20 = 66 gün. Takvimde aynı aralık 67 gün sürer; SGK hesabında Mart'ın 31'i ayrı bir gün olarak sayılmaz.</p>
+      <p><strong>Örnek 2:</strong> 10.06.2022 – 31.12.2022. Haziran'da 10'undan ay sonuna 21 gün, Temmuz'dan Aralık'a altı tam ay 180 gün; toplam 201 gün.</p>
+      <p><strong>Örnek 3:</strong> 01.02.2021 – 28.02.2021. Şubat 28 gün çeker, fakat ayın tamamı çalışıldığı için 30 gün yazılır. "Ayın son günü çıkış = 30 gün" yaklaşımı budur.</p>
+
+      <h2>Ayın 31'i ve Şubat ayı nasıl sayılır?</h2>
+      <p>Ayın 31'i prim günü olarak ayrıca sayılmaz. Ay boyunca çalışan biri 30'unda da 31'inde de çıksa o ay için 30 gün alır. Yalnızca ayın 31'inde işe giren biri o ay için 1 gün kazanır, çünkü 31'i ayın son günü olarak 30. gün sayılır.</p>
+      <p>Şubat ayını baştan sona çalışan kişi 28 ya da 29 değil, 30 gün kazanır. Şubat içinde işe girip ay sonuna kadar çalışırsa araç ayın son gününü 30 sayar: örneğin 15 Şubat'tan ay sonuna kadar 16 gün. Takvimde 14 gün olan bu kısmi dönemi araç 16 gün gösterir; kurumun kendi sisteminde ay ortasındaki giriş ve çıkışlarda, özellikle Şubat'ta, bir iki günlük fark görülebilir. Bu yüzden sonuç kesin değil, bilgilendirme amaçlıdır.</p>
+
+      <div class="ba-ad" data-slot="sgk-gun-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Birden çok dönem, çakışma ve eksik gün</h2>
+      <p>Her dönem ayrı hesaplanır ve sonuçlar toplanır. Ardışık iki dönem tam sonuç verir: 01.01.2020 – 30.06.2020 arası 180 gün, 01.07.2020 – 31.12.2020 arası 180 gün; toplam 360 gün. Dönemlerin sırası önemli değildir; satırları istediğiniz sırayla girebilirsiniz.</p>
+      <p>İki dönem takvimde aynı günü paylaşıyorsa araç bunu çakışma olarak işaretler. İki işyerinde aynı anda çalışmak mümkündür, ancak SGK aynı günü iki kez saymaz. Araç çakışan günleri birleştirir, her günü yalnızca bir kez sayar ve hangi dönemlerin çakıştığını uyarı kutusunda yazar. Çoğu zaman bu uyarı, tarihin yanlış yazıldığını fark etmenizi sağlar.</p>
+      <p>Ücretsiz izin, devamsızlık ve benzeri nedenlerle prim ödenmeyen günlere eksik gün denir. İlgili dönemin eksik gün alanına yazdığınız sayı toplamdan düşülür. Eksik gün sayısı o dönemin gün sayısından büyük olamaz; büyükse araç sizi uyarır ve rakamı kontrol etmenizi ister. Rapor, doğum izni ya da borçlanılan süreler gibi özel durumların nasıl işlendiği için kurumun hizmet dökümüne bakın.</p>
+
+      <h2>Yıl-ay-gün dökümü, 7200 gün ve sigortalılık süresi</h2>
+      <p>Toplam gün sayısı yıl, ay ve güne şöyle çevrilir: gün sayısı 360'a bölünür ve bölüm yıl olur; kalan 30'a bölünür ve bölüm ay olur; son kalan gün olarak yazılır. Örneğin 1.000 gün, 2 yıl 9 ay 10 gündür. Bu yöntem 30/360 esasıyla tutarlıdır; takvim yılı ya da ay uzunluklarıyla birebir örtüşmesi beklenmez.</p>
+      <p><span class="sgk-tag">Bilgilendirme</span> 7200 gün, 20 yıl çarpı 360 gündür ve 1 Ekim 2008'den sonra ilk kez 4/a kapsamında sigortalı olanlar için sık anılan prim günü koşuludur. Araç yalnızca hesapladığınız gün sayısının 7200 güne ne kadar uzak olduğunu gösterir. Daha önce sigortalı olanlar için gün şartı ve geçiş kuralları farklıdır.</p>
+      <p>Kadın için 20 yıl, erkek için 25 yıl, belirli giriş tarihlerinde yaşlılık aylığı için aranan sigortalılık süresi olarak geçer. Sigortalılık süresi çalışılan gün sayısı değil, ilk sigortalı girişten itibaren geçen takvim süresidir. Araç bunu, listenizdeki en erken başlangıç tarihinden bugüne geçen süre olarak gösterir; ilk girişiniz listede yoksa değer farklı çıkar. <strong>Bu araç emeklilik tarihi hesaplamaz.</strong> Emeklilikte yaş şartı, giriş tarihine göre kademeli geçiş kuralları ve borçlanmalar da belirleyicidir.</p>
+
+      <h2>Sonucu e-Devlet dökümüyle nasıl karşılaştırırsınız?</h2>
+      <p>Resmî kayıt, e-Devlet Kapısı'nda yer alan SGK tescil ve hizmet dökümüdür. Orada işyeri bazında dönem, gün ve prim bilgileri listelenir. Aracın sonucuyla döküm arasında fark çıkarsa şunlara bakın: tarihlerin doğru girilip girilmediğine, aynı dönemde birden çok işyeri olup olmadığına, eksik günlerin yazılıp yazılmadığına ve borçlanmaların dökümde ayrı görünüp görünmediğine. Fark sürerse işvereninize, en yakın SGK müdürlüğüne ya da ALO 170 hattına başvurabilirsiniz. Hukuki sonuç doğuracak kararlarda yalnızca kurum kaydı esastır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Tarihler tarayıcınızda işlenir; hiçbir sunucuya iletilmez ve saklanmaz.</li>
+        <li><strong>Kural açık.</strong> Ay sonu, 31'i ve Şubat için uygulanan yaklaşım örnekleriyle sayfada yazılıdır.</li>
+        <li><strong>Çakışma uyarısı.</strong> Aynı günü iki kez saymaz; hangi dönemlerin çakıştığını söyler.</li>
+        <li><strong>Abartısız bilgilendirme.</strong> Emeklilik tarihi vaat etmez, yalnızca gün sayısını ve hedeflere uzaklığı gösterir.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>SGK'da bir yıl kaç gün sayılır?</summary><p>Sosyal güvenlikte bir yıl 360 gün, bir ay 30 gün sayılır. Artık yıl olması ya da bazı ayların 31 gün çekmesi sonucu değiştirmez. Bütün yıl çalışan biri 366 gün değil 360 gün prim günü biriktirir.</p></details>
+        <details><summary>Ayın 31'i prim gününe sayılır mı?</summary><p>Hayır. Ayın son günü 30. gün kabul edilir; 31 çeken bir ayın tamamı çalışılsa da 30 gün yazılır. Yalnızca ayın 31'inde işe giren kişi o ay için 1 gün kazanır.</p></details>
+        <details><summary>Şubat ayı kaç gün sayılır?</summary><p>Şubat ayının tamamı çalışılmışsa 28 ya da 29 değil 30 gün sayılır. Araç, ayın son gününü 30. gün kabul eder; Şubat içinde girişte ya da çıkışta kurumun kendi sisteminde bir iki günlük fark olabilir, bu nedenle hizmet dökümünüzle karşılaştırın.</p></details>
+        <details><summary>İki işyerinde aynı anda çalıştım, günler toplanır mı?</summary><p>Hayır. SGK aynı günü iki kez saymaz. Araç çakışan günleri birleştirip yalnızca bir kez sayar ve çakışan dönemleri uyarı kutusunda gösterir. Tarihlerin doğru girildiğinden emin olun.</p></details>
+        <details><summary>Eksik gün nedir, nasıl girilir?</summary><p>Ücretsiz izin, devamsızlık gibi nedenlerle prim ödenmeyen günlere eksik gün denir. İlgili dönemin eksik gün alanına toplam gün sayısını yazarsanız bu gün sayısı toplamdan düşülür. Alan boşsa 0 kabul edilir ve sayı o dönemin gün sayısından büyük olamaz.</p></details>
+        <details><summary>7200 gün kaç yıl eder, emeklilik için yeterli midir?</summary><p>7200 gün, 360 günlük yıl esasıyla tam 20 yıldır. 1 Ekim 2008'den sonra ilk kez 4/a kapsamında sigortalı olanlar için sık anılan prim günü koşuludur; ancak tek başına yeterli değildir. Yaş şartı ve giriş tarihine göre geçiş kuralları da aranır.</p></details>
+        <details><summary>Bu araç emeklilik tarihimi hesaplar mı?</summary><p>Hayır. Araç yalnızca toplam hizmet günü, yıl-ay-gün dökümü ve hedeflere kalan günü bilgi olarak verir. Emeklilik tarihi için yaş, giriş tarihi, borçlanma ve geçiş kuralları birlikte değerlendirilmelidir; kesin bilgi için e-Devlet'teki SGK tescil ve hizmet dökümüne ya da SGK'ya başvurun.</p></details>
+        <details><summary>Sonucum e-Devlet hizmet dökümünden farklı çıktı, ne yapmalıyım?</summary><p>Önce tarihlerin doğru girildiğini, çakışan dönem uyarısı olup olmadığını ve eksik günleri kontrol edin. Borçlanılan süreler ve ay ortasındaki giriş çıkışlar farka yol açabilir. Hukuki sonuç doğuracak durumlarda kurum kaydı esastır; sorunu işvereninize ya da SGK müdürlüğüne iletin.</p></details>
+        <details><summary>Girdiğim tarihler kaydediliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; tarihler hiçbir sunucuya gönderilmez ve saklanmaz. Sayfayı kapattığınızda girdiğiniz bilgiler silinir.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç genel bir 30/360 hesabı yapar; hukuki, mali ya da idari tavsiye değildir. Emeklilik ve prim günü gibi konularda e-Devlet'teki SGK tescil ve hizmet dökümü ile kurumun açıklamaları esastır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../kidem-tazminati/">Kıdem Tazminatı Hesaplama</a></li>
+        <li><a href="../bagkur-primi-hesapla/">Bağ-Kur Primi Hesaplama</a></li>
+        <li><a href="../emekli-ikramiyesi-hesapla/">Emekli İkramiyesi Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="sgk-gun-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

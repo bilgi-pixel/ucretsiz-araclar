@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Yazı Tura At – Ücretsiz Online Yazı Tura (kurulumsuz)</title>
+  <meta name="description" content="Online yazı tura atın: 3 boyutlu dönen para, 1–6 para aynı anda, 10 ve 100 kez toplu atış, seri sayacı ve yazı/tura dağılım istatistiği. Güvenli rastgele sayı üreteci kullanır; kurulum ve kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/yazi-tura/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel yazı tura düzeni; tema token'ları ba.css'ten gelir. */
+    :root { --yt-t: #1b5e9e; --yt-gold-a: #fbe7a1; --yt-gold-b: #e0b040; --yt-gold-c: #a87618; --yt-ink: #4d3303; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --yt-t: #7db4ee; } }
+    :root[data-theme="dark"] { --yt-t: #7db4ee; }
+    .game-box { margin-bottom: 64px; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .yt-options { display: grid; gap: 12px; grid-template-columns: 1fr; align-items: end; }
+    @media (min-width: 560px) { .yt-options { grid-template-columns: minmax(180px, 260px) 1fr; } }
+    .yt-options .ba-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .yt-keys { margin: 0; font-size: .88rem; color: var(--ba-text-muted); }
+    .yt-stage { display: flex; justify-content: center; padding: 44px 0 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .yt-coins { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 16px; max-width: 100%; }
+    .yt-stage { --coin: min(210px, 62vw); }
+    .yt-stage[data-count="2"], .yt-stage[data-count="3"] { --coin: min(132px, 40vw); }
+    .yt-stage[data-count="4"], .yt-stage[data-count="5"], .yt-stage[data-count="6"] { --coin: min(100px, 28vw); }
+
+    /* Para: iki yüz, backface-visibility ile 3B çevirme. */
+    .yt-coin { display: block; width: var(--coin); height: var(--coin); perspective: 900px; }
+    .yt-coin-inner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1.1s cubic-bezier(.2, .75, .25, 1); }
+    .yt-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 50%; color: var(--yt-ink); background: radial-gradient(circle at 34% 28%, var(--yt-gold-a), var(--yt-gold-b) 56%, var(--yt-gold-c)); border: 4px solid #b98a22; box-shadow: inset 0 0 0 5px rgba(255, 244, 200, .45), 0 6px 14px rgba(30, 33, 38, .28); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+    .yt-face::before { content: ""; position: absolute; inset: 9%; border-radius: 50%; border: 2px dashed rgba(77, 51, 3, .5); }
+    .yt-back { transform: rotateY(180deg); }
+    .yt-label { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: calc(var(--coin) * .17); line-height: 1.1; }
+    .yt-orn { font-size: calc(var(--coin) * .11); letter-spacing: .1em; line-height: 1; }
+    .yt-coin.is-tossing { animation: yt-toss 1.1s ease-in-out; }
+    @keyframes yt-toss { 0% { transform: translateY(0) scale(1); } 45% { transform: translateY(-40px) scale(1.12); } 100% { transform: translateY(0) scale(1); } }
+    @media (prefers-reduced-motion: reduce) {
+      .yt-coin-inner { transition: none; }
+      .yt-coin.is-tossing { animation: none; }
+    }
+
+    .yt-result { text-align: center; min-height: 3.6em; margin: 4px 0 14px; }
+    .yt-result.is-busy { opacity: .45; }
+    .yt-result strong { display: block; font-size: 1.5rem; line-height: 1.25; color: var(--ba-text); overflow-wrap: anywhere; }
+    .yt-result span { display: block; margin-top: 2px; color: var(--ba-text-muted); font-size: .95rem; overflow-wrap: anywhere; }
+    .yt-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .yt-actions .ba-btn { min-width: 0; padding-left: 10px; padding-right: 10px; }
+    .yt-actions .ba-btn-primary { grid-column: 1 / -1; min-height: 52px; font-size: 1.05rem; }
+    @media (min-width: 640px) { .yt-actions { grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); } .yt-actions .ba-btn-primary { grid-column: auto; } }
+    .yt-note { min-height: 1.5em; margin: 8px 0 0; font-size: .92rem; color: var(--ba-text-2); }
+
+    .yt-stats-h { margin: 18px 0 10px; font-size: 1.1rem; }
+    .yt-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 12px; }
+    @media (min-width: 640px) { .yt-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+    .yt-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .yt-stats span { display: block; font-size: .78rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .04em; overflow-wrap: anywhere; }
+    .yt-stats strong { display: block; font-size: 1.3rem; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+    .yt-stats small { display: block; font-size: .85rem; color: var(--ba-text-2); font-variant-numeric: tabular-nums; }
+    .yt-bar { display: flex; height: 22px; border-radius: 11px; overflow: hidden; background: var(--ba-surface-2); border: 1px solid var(--ba-border); margin: 0 0 6px; }
+    .yt-bar-y { background: var(--ba-primary); transition: width .35s var(--ba-ease-out); }
+    .yt-bar-t { background: var(--yt-t); transition: width .35s var(--ba-ease-out); }
+    @media (prefers-reduced-motion: reduce) { .yt-bar-y, .yt-bar-t { transition: none; } }
+    .yt-legend { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 14px; font-size: .85rem; color: var(--ba-text-2); }
+    .yt-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: baseline; }
+    .yt-legend .y i { background: var(--ba-primary); }
+    .yt-legend .t i { background: var(--yt-t); }
+    .yt-recent-h { margin: 0 0 6px; font-size: .92rem; font-weight: 600; }
+    .yt-recent { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0 0 6px; padding: 0; }
+    .yt-chip { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: .78rem; font-weight: 700; color: #fff; margin: 0; }
+    .yt-chip.yt-y { background: var(--ba-primary); }
+    .yt-chip.yt-t { background: var(--yt-t); }
+    :root[data-theme="dark"] .yt-chip { color: #14161a; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .yt-chip { color: #14161a; } }
+    .yt-empty { margin: 0 0 6px; font-size: .9rem; color: var(--ba-text-muted); }
+    .yt-fine { margin: 14px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .yt-reset-row { margin-top: 10px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Yazı Tura At – Bilişim Ajans","description":"Tarayıcıda yazı tura atın: 3 boyutlu dönen para, 1–6 para, 10 ve 100 kez toplu atış, seri sayacı ve dağılım istatistiği.","applicationCategory":"GameApplication","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":"SinglePlayer","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/yazi-tura/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Bu yazı tura gerçekten adil mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Her atışta yazı ve tura gelme olasılığı tam olarak yüzde 50'dir. Sonuç, tarayıcınızın güvenli rastgele sayı üretecinden (crypto.getRandomValues) alınır; sunucu yoktur, sonuca kimse müdahale edemez. Çok eski bir tarayıcıda güvenli üreteç bulunmazsa yedek üreteç devreye girer."}},
+  {"@type":"Question","name":"Üst üste aynı sonuç gelirse sıradaki sonuç değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Para geçmişi hatırlamaz; her atış bağımsızdır. Beş kez tura geldikten sonra altıncı atışta yine yüzde 50 yazı, yüzde 50 tura ihtimali vardır. Sıranın yazıya geldiğini düşünmek yaygın bir yanılgıdır."}},
+  {"@type":"Question","name":"Aynı anda birden fazla para atabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Para sayısı listesinden 2 ile 6 arasında bir değer seçin. Her para ayrı ve bağımsız atılır; sonuç alanında kaç yazı, kaç tura geldiği ve her paranın tek tek sonucu görünür."}},
+  {"@type":"Question","name":"10 kez at ve 100 kez at düğmeleri ne yapar?","acceptedAnswer":{"@type":"Answer","text":"Bu düğmeler, para sayısı ayarından bağımsız olarak 10 ya da 100 ayrı atışı tek seferde yapar ve sonuçları anında istatistiğe ekler. Böylece büyük sayılar yasasını, yani atış sayısı arttıkça yazı ve tura oranının yüzde 50'ye yaklaşmasını kendiniz görebilirsiniz."}},
+  {"@type":"Question","name":"İstatistiklerim nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının localStorage alanında, sayaç olarak saklanır: toplam atış, yazı ve tura sayısı ile en uzun seri. Hiçbir sunucuya gönderilmez. İstatistikleri sıfırla düğmesiyle ya da tarayıcı verilerini silerek temizleyebilirsiniz."}},
+  {"@type":"Question","name":"Yazı tura ile üç ya da dört seçenek arasında nasıl karar verebilirim?","acceptedAnswer":{"@type":"Answer","text":"İki para atın. Dört olası sonuç eşit olasılıklıdır: yazı-yazı, yazı-tura, tura-yazı ve tura-tura. Dört seçeneğiniz varsa her birini bir sonuca bağlayın. Üç seçenek için ilk üç sonucu kullanın; tura-tura gelirse yeniden atın."}},
+  {"@type":"Question","name":"Klavyeyle yazı tura atabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun kutusu ekrandayken Boşluk ya da Enter tuşu parayı atar. Odak bir düğmenin üzerindeyse o düğme çalışır. Sekme tuşuyla düğmelere gelip Enter ya da Boşluk ile de kullanabilirsiniz."}},
+  {"@type":"Question","name":"Bu sayfa bahis ya da para karşılığı oyun için kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bu sayfa eğlence, eğitim ve günlük küçük kararlar için hazırlanmış ücretsiz bir araçtır; bir şans oyunu ya da bahis aracı değildir. Para, değerli eşya veya yasal olarak sonuç doğuracak bir karar için kullanılması önerilmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Yazı Tura</span> At – Ücretsiz Online Madeni Para Çevirme</h1>
+      <p class="lead">Parayı havaya atın, yazı mı tura mı gelsin sorusunu şansa bırakın. Üç boyutlu dönen para, aynı anda altı paraya kadar atış, 10 ve 100 kez toplu atış, seri sayacı ve yazı/tura dağılım çubuğu hazır; kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Yazı tura oyunu</h2>
+      <div class="yt-options">
+        <div class="ba-field"><label for="yt-count">Para sayısı</label>
+          <select id="yt-count">
+            <option value="1" selected>1 para</option>
+            <option value="2">2 para</option>
+            <option value="3">3 para</option>
+            <option value="4">4 para</option>
+            <option value="5">5 para</option>
+            <option value="6">6 para</option>
+          </select></div>
+        <p class="yt-keys">Parayı atmak için dokunun, Boşluk ya da Enter tuşuna basın.</p>
+      </div>
+      <div class="yt-stage" id="yt-stage" data-count="1"><div class="yt-coins" id="yt-coins" aria-hidden="true"></div></div>
+      <div class="yt-result" id="yt-result" role="status" aria-live="polite" aria-atomic="true">
+        <strong id="yt-main">Atmaya hazır</strong>
+        <span id="yt-detail"></span>
+      </div>
+      <div class="yt-actions">
+        <button id="yt-flip" class="ba-btn ba-btn-primary" type="button">Yazı tura at</button>
+        <button id="yt-flip10" class="ba-btn" type="button">10 kez at</button>
+        <button id="yt-flip100" class="ba-btn" type="button">100 kez at</button>
+        <button id="yt-copy" class="ba-btn" type="button" disabled>Sonucu kopyala</button>
+      </div>
+      <p class="yt-note" id="yt-note" role="status" aria-live="polite"></p>
+
+      <h3 class="yt-stats-h">İstatistik</h3>
+      <div class="yt-stats" role="group" aria-label="Atış istatistiği">
+        <div><span>Toplam atış</span><strong id="yt-total">0</strong></div>
+        <div><span>Yazı</span><strong id="yt-yazi">0</strong><small id="yt-yazi-p">%0</small></div>
+        <div><span>Tura</span><strong id="yt-tura">0</strong><small id="yt-tura-p">%0</small></div>
+        <div><span>Seri</span><strong id="yt-run">–</strong></div>
+        <div><span>En uzun seri</span><strong id="yt-best">0</strong></div>
+      </div>
+      <div class="yt-bar" id="yt-bar" role="img" aria-label="Dağılım: henüz atış yok"><span class="yt-bar-y" id="yt-bar-y" style="width:0"></span><span class="yt-bar-t" id="yt-bar-t" style="width:0"></span></div>
+      <div class="yt-legend" aria-hidden="true"><span class="y"><i></i>Yazı</span><span class="t"><i></i>Tura</span></div>
+      <p class="yt-recent-h" id="yt-recent-h">Son 20 atış</p>
+      <ol class="yt-recent" id="yt-recent" aria-labelledby="yt-recent-h"></ol>
+      <p class="yt-empty" id="yt-recent-empty">Henüz atış yok.</p>
+      <div class="yt-reset-row"><button id="yt-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button></div>
+      <p class="yt-fine">Bu sayfa eğlence, karar verme ve masa oyunları içindir; şans oyunu ya da bahis aracı değildir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-yazi-tura-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Yazı tura nedir?</h2>
+      <p>Yazı tura, iki sonuçlu en eski ve en basit şans düzeneklerinden biridir: bir madeni para havaya atılır, yere düştüğünde hangi yüzünün yukarıda kaldığına bakılır. Paranın iki yüzünden birine yazı, diğerine tura denir. Sonuç oyuncunun elinde olmadığı için yazı tura; tartışmayı bitirmek, sıra belirlemek ya da iki seçenek arasında kararsız kalındığında karar vermek amacıyla yüzyıllardır kullanılıyor. Birçok spor dalında maçın başında hangi tarafın hangi yarı sahada başlayacağını belirleyen kura da aslında bir yazı turadır.</p>
+      <p>Bu sayfada cebinizde madeni para olmasa bile yazı tura atabilirsiniz. Büyük paraya dokunun, Boşluk tuşuna basın ya da "Yazı tura at" düğmesini kullanın; para üç boyutlu olarak havada döner ve bir yüzü yukarı bakacak biçimde durur. İsterseniz aynı anda altı paraya kadar atabilir, tek seferde 10 ya da 100 atış yaparak sonuçların nasıl dağıldığını izleyebilirsiniz. Her şey tarayıcınızda çalışır; sayfa sizden hiçbir bilgi istemez ve hiçbir dosya sunucuya gitmez.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Para sayısını seçin.</strong> Varsayılan olarak tek para atılır. Birden fazla sonuca ihtiyacınız varsa listeden 2 ile 6 arasında bir değer seçin; her para ayrı ve bağımsız çevrilir.</li>
+        <li><strong>Parayı atın.</strong> Paranın üzerine tıklayın ya da dokunun, "Yazı tura at" düğmesine basın veya oyun kutusu ekrandayken Boşluk ya da Enter tuşunu kullanın. Para yaklaşık bir saniye döner ve durduğunda sonuç büyük harflerle yazılır.</li>
+        <li><strong>Sonucu okuyun veya paylaşın.</strong> Sonuç alanında "Yazı geldi" ya da "2 yazı, 1 tura" gibi bir özet görürsünüz. "Sonucu kopyala" düğmesi bu özeti panonuza alır; bir sohbete yapıştırarak karşı tarafa kanıt gösterebilirsiniz.</li>
+        <li><strong>İsterseniz istatistiği izleyin.</strong> "10 kez at" ve "100 kez at" düğmeleri bağımsız tek atışlar yapıp sayaçlara ekler. Toplam, yazı ve tura yüzdeleri, geçerli seri, en uzun seri ve dağılım çubuğu anında güncellenir.</li>
+      </ol>
+
+      <h2>Adil para ve olasılık</h2>
+      <p>Adil bir paranın her atışında yazı ve tura gelme olasılığı eşittir: ikisi de 1/2, yani yüzde 50. Üstelik atışlar birbirinden bağımsızdır. Para daha önce ne geldiğini hatırlamaz; beş kez üst üste tura gelmiş olması altıncı atışı etkilemez. İnsanlar bu noktada sık sık yanılır ve "artık sıra yazıda" diye düşünür. Olasılık kuramında buna kumarcının yanılgısı denir ve doğru olmayan bir sezgidir.</p>
+      <p>Yine de uzun seriler görmek şaşırtıcı değildir. Art arda beş turanın gelme olasılığı 1/32, yani yaklaşık yüzde 3,1; ardışık on turanın olasılığı ise 1/1024, yani yaklaşık yüzde 0,1'dir. Ancak 100 atışlık bir denemede altı ya da yedi uzunluğunda bir seriye rastlamak oldukça olağandır. Bu sayfadaki seri sayacı ve "en uzun seri" göstergesi bunu kendiniz denemeniz için var.</p>
+      <p>Büyük sayılar yasası da buradan çıkar: atış sayısı arttıkça yazı ve tura oranı yüzde 50'ye yaklaşır, ama sayıların birbirine eşit olması gerekmez. Örneğin 10 atışta yedi yazı üç tura gelmesi sıradandır. 100 atışta yazı sayısı çoğu zaman 45 ile 55 arasında kalır; 1000 atışta ise oran genellikle yüzde 48 ile yüzde 52 aralığında seyreder. "100 kez at" düğmesine birkaç kez basıp sonuçları karşılaştırdığınızda bu davranışı görürsünüz.</p>
+      <p>Gerçek madeni paralarda ise çok küçük bir yanlılık olabilir. Elle atılan paraların üzerine yapılan bilimsel çalışmalar, paranın havaya atılmadan önce yukarı baktığı yüzün üstte kalma ihtimalinin yüzde 50'nin hafifçe üzerinde, yaklaşık yüzde 51 olabileceğini göstermiştir. Bu sayfadaki sanal para böyle bir alışkanlıktan etkilenmez; her atışta iki yüz tam olarak eşit şansa sahiptir.</p>
+
+      <h2>Karar verirken yazı tura nasıl kullanılır?</h2>
+      <p>Yazı tura küçük ve geri dönüşü kolay kararlarda işe yarar: akşam yemeğinde hangi mekâna gidileceği, oyuna kimin başlayacağı, ilk kimin servis atacağı ya da evde kimin bulaşık yıkayacağı gibi. Adil bir sonuç için birkaç basit kural yeterlidir:</p>
+      <ul>
+        <li><strong>Önce anlaşın, sonra atın.</strong> Hangi yüzün hangi seçeneği temsil ettiğini parayı atmadan önce belirleyin. Sonuç geldikten sonra kuralı değiştirmek tartışmayı yeniden başlatır.</li>
+        <li><strong>Havadayken ne istediğinize dikkat edin.</strong> Para dönerken içinizden hangi sonucu umduğunuzu fark ederseniz, aslında tercihinizi öğrenmiş olursunuz. Sonuç beklediğiniz gibi çıkmazsa buna bakarak kararınızı gözden geçirebilirsiniz.</li>
+        <li><strong>Önemli kararları şansa bırakmayın.</strong> İş, sağlık, hukuk, para ya da başkalarının hayatını etkileyen konularda yazı tura tek başına ölçüt olmamalıdır. Bu araç yalnızca küçük seçimler ve eğlence içindir.</li>
+        <li><strong>İki paradan dört seçenek çıkarın.</strong> İki para atıldığında yazı-yazı, yazı-tura, tura-yazı ve tura-tura sonuçlarının her birinin olasılığı yüzde 25'tir. Dört seçeneğiniz varsa her birini bir sonuca bağlayın. Üç seçenek arasında kalmışsanız ilk üç sonucu kullanın; tura-tura gelirse yeniden atın.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-yazi-tura-b" aria-label="Reklam"></div>
+
+      <h2>Birden fazla para, toplu atış ve istatistik</h2>
+      <p>Para sayısı listesi 1 ile 6 arasında seçim sunar. Birden fazla para atıldığında sonuç alanı kaç yazı ve kaç tura geldiğini özetler, altında her paranın sonucunu sırayla gösterir. Masa oyunlarında ya da sınıfta birkaç öğrenci için aynı anda sonuç gerekiyorsa bu seçenek zaman kazandırır.</p>
+      <p>"10 kez at" ve "100 kez at" düğmeleri ise para sayısından bağımsız çalışır: her biri ayrı bir tek para atışıdır. Animasyon beklenmez; sonuçlar anında sayaçlara işlenir ve özet satırında bu toplu atıştaki en uzun seri gösterilir. İstatistik bölümünde toplam atış, yazı ve tura sayıları ve yüzdeleri, geçerli seri, rekor seri, iki renkli dağılım çubuğu ve son 20 atışın küçük bir şeridi bulunur. Çubuğun iki rengi, yazı ile turanın payını kabaca görmenizi sağlar.</p>
+      <p>Sayaçlar yalnızca bu cihazdaki tarayıcıda, localStorage alanında tutulur. Sayfayı kapatıp açtığınızda toplam, yazı, tura ve en uzun seri sayıları yerinde durur; "İstatistikleri sıfırla" düğmesi hepsini temizler. Veriler hiçbir sunucuya gönderilmez.</p>
+
+      <h2>Rastgelelik nasıl sağlanıyor?</h2>
+      <p>Her atışın sonucu, tarayıcının güvenli rastgele sayı üretecinden (crypto.getRandomValues) alınır. Bu üreteç, işletim sisteminin rastgelelik kaynağını kullanır ve tahmin edilmesi pratikte olanaksızdır. Sayıdan yüze dönüşümde, olasılıkları bozabilecek yuvarlama etkisi (modulo yanlılığı) yeniden çekim yöntemiyle önlenir; yani yazı ve tura gerçekten eşit olasılıkla gelir. Çok eski bir tarayıcıda güvenli üreteç bulunmuyorsa yedek bir üreteç devreye girer.</p>
+      <p>Önemli olan bir diğer nokta, sonucun sunucuda belirlenmemesidir. Hiçbir ağ isteği yapılmadığı için sonuca ne biz ne de bir başkası müdahale edebilir. Para dönerken görünen animasyon yalnızca görseldir; sonuç, parayı attığınız anda belirlenir ve animasyon o yüze doğru döner.</p>
+
+      <h2>Yazı turanın kısa tarihi</h2>
+      <p>Yazı turanın kökeni, ilk madeni paraların basıldığı döneme dayanır. Antik Roma'da çocukların ve yetişkinlerin oynadığı "navia aut caput" yani "gemi mi, baş mı" oyunu bunun bilinen örneklerinden biridir: paraların bir yüzünde bir geminin pruvası, diğer yüzünde iki yüzlü tanrı Janus'un başı bulunurdu. İngilizcede bugün de yazı tura için "heads or tails" yani "baş ya da kuyruk" denir. Türkçede ise paranın iki yüzü yazı ve tura olarak anılır.</p>
+      <p>Olasılık kuramında yazı tura, tek bir deneyin yalnızca iki sonucu olduğu "Bernoulli denemesi"nin en bilinen örneğidir. Matematikçiler büyük sayılar yasasını anlatırken sık sık bu örneğe başvurur. İkinci Dünya Savaşı sırasında Danimarka'da tutulan matematikçi John Kerrich'in 10.000 kez para atarak yaklaşık yüzde 50,7 oranında "baş" elde ettiği, okullarda sıkça anlatılan deneylerden biridir. Siz de "100 kez at" düğmesiyle bu deneyin küçük bir benzerini birkaç saniyede yapabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans'ta atmalısınız?</h2>
+      <ul>
+        <li><strong>Gizlilik:</strong> Atışlarınız ve sayaçlarınız yalnızca bu cihazın tarayıcısında kalır. Dosya yüklemez, hesap istemez, sizi izlemez.</li>
+        <li><strong>Gerçek adillik:</strong> Güvenli rastgele sayı üreteci kullanılır; sonucu önceden belirleyen bir hile ya da "şanslı yüz" yoktur.</li>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve atın. İsterseniz tarayıcıdan uygulama olarak yükleyip çevrimdışı da kullanabilirsiniz.</li>
+        <li><strong>Mobil uyumlu ve erişilebilir:</strong> 360 piksel genişliğe kadar çalışır, klavyeyle kullanılır, sonucu ekran okuyucuya duyurur ve hareket azaltma tercihine uyar; bu tercih açıksa para animasyonsuz, anında sonuç gösterir.</li>
+        <li><strong>Dürüst reklam yerleşimi:</strong> Reklamlar yalnızca oyun kutusunun altında ve sayfanın belirli bölümlerinde yer alır; atış düğmelerinin yanında hiç görünmez.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ⓘ</span><span>Bu sayfa eğlence, eğitim ve günlük küçük kararlar içindir. Bir şans oyunu ya da bahis aracı değildir; para veya değerli eşya karşılığı oyunlarda ya da yasal sonuç doğuracak kararlarda kullanılması önerilmez.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Bu yazı tura gerçekten adil mi?</summary><p>Evet. Her atışta yazı ve tura gelme olasılığı tam olarak yüzde 50'dir. Sonuç, tarayıcınızın güvenli rastgele sayı üretecinden (crypto.getRandomValues) alınır; sunucu yoktur, sonuca kimse müdahale edemez. Çok eski bir tarayıcıda güvenli üreteç bulunmazsa yedek üreteç devreye girer.</p></details>
+        <details><summary>Üst üste aynı sonuç gelirse sıradaki sonuç değişir mi?</summary><p>Hayır. Para geçmişi hatırlamaz; her atış bağımsızdır. Beş kez tura geldikten sonra altıncı atışta yine yüzde 50 yazı, yüzde 50 tura ihtimali vardır. Sıranın yazıya geldiğini düşünmek yaygın bir yanılgıdır.</p></details>
+        <details><summary>Aynı anda birden fazla para atabilir miyim?</summary><p>Evet. Para sayısı listesinden 2 ile 6 arasında bir değer seçin. Her para ayrı ve bağımsız atılır; sonuç alanında kaç yazı, kaç tura geldiği ve her paranın tek tek sonucu görünür.</p></details>
+        <details><summary>10 kez at ve 100 kez at düğmeleri ne yapar?</summary><p>Bu düğmeler, para sayısı ayarından bağımsız olarak 10 ya da 100 ayrı atışı tek seferde yapar ve sonuçları anında istatistiğe ekler. Böylece büyük sayılar yasasını, yani atış sayısı arttıkça yazı ve tura oranının yüzde 50'ye yaklaşmasını kendiniz görebilirsiniz.</p></details>
+        <details><summary>İstatistiklerim nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının localStorage alanında, sayaç olarak saklanır: toplam atış, yazı ve tura sayısı ile en uzun seri. Hiçbir sunucuya gönderilmez. İstatistikleri sıfırla düğmesiyle ya da tarayıcı verilerini silerek temizleyebilirsiniz.</p></details>
+        <details><summary>Yazı tura ile üç ya da dört seçenek arasında nasıl karar verebilirim?</summary><p>İki para atın. Dört olası sonuç eşit olasılıklıdır: yazı-yazı, yazı-tura, tura-yazı ve tura-tura. Dört seçeneğiniz varsa her birini bir sonuca bağlayın. Üç seçenek için ilk üç sonucu kullanın; tura-tura gelirse yeniden atın.</p></details>
+        <details><summary>Klavyeyle yazı tura atabilir miyim?</summary><p>Evet. Oyun kutusu ekrandayken Boşluk ya da Enter tuşu parayı atar. Odak bir düğmenin üzerindeyse o düğme çalışır. Sekme tuşuyla düğmelere gelip Enter ya da Boşluk ile de kullanabilirsiniz.</p></details>
+        <details><summary>Bu sayfa bahis ya da para karşılığı oyun için kullanılabilir mi?</summary><p>Hayır. Bu sayfa eğlence, eğitim ve günlük küçük kararlar için hazırlanmış ücretsiz bir araçtır; bir şans oyunu ya da bahis aracı değildir. Para, değerli eşya veya yasal olarak sonuç doğuracak bir karar için kullanılması önerilmez.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar ve araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../zar-at/">Zar At</a></li>
+        <li><a href="../tas-kagit-makas/">Taş Kâğıt Makas</a></li>
+        <li><a href="../sayi-tahmin/">Sayı Tahmin Oyunu</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../../rastgele-sayi/">Rastgele Sayı Üretici</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-yazi-tura-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

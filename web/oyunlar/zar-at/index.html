@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Zar At – Ücretsiz Online Zar Atma, 1–6 Zar ve d20 (kurulumsuz)</title>
+  <meta name="description" content="Online zar atın: 1 ile 6 zar aynı anda, klasik d6 ile masa oyunları için d4, d8, d10, d12 ve d20, toplam ve tek tek değerler, son 20 atış geçmişi ve her yüzün kaç kez geldiğini gösteren grafik. Güvenli rastgele sayı üreteci; kurulum ve kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/zar-at/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel zar düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .za-options { display: grid; gap: 14px; grid-template-columns: 1fr; align-items: end; }
+    @media (min-width: 640px) { .za-options { grid-template-columns: minmax(200px, 280px) 1fr; } }
+    .za-options .ba-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .za-field-l { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 5px; }
+    .za-counts { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+    .za-cnt { min-width: 0; min-height: 44px; padding: 0; font-size: 1rem; font-variant-numeric: tabular-nums; }
+    .za-cnt[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .za-cnt[aria-pressed="true"]:hover { background: var(--ba-primary-strong); border-color: var(--ba-primary-strong); color: #fff; }
+    :root[data-theme="dark"] .za-cnt[aria-pressed="true"], :root[data-theme="dark"] .za-cnt[aria-pressed="true"]:hover { color: #1a0d10; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .za-cnt[aria-pressed="true"], :root:not([data-theme="light"]) .za-cnt[aria-pressed="true"]:hover { color: #1a0d10; } }
+    .za-keys { margin: 8px 0 0; font-size: .88rem; color: var(--ba-text-muted); }
+
+    .za-stage { padding: 22px 0 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .za-dice { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 14px; --die: min(130px, 44vw); }
+    .za-dice[data-count="2"], .za-dice[data-count="3"] { --die: min(104px, 27vw); }
+    .za-dice[data-count="4"], .za-dice[data-count="5"], .za-dice[data-count="6"] { --die: min(84px, 26vw); }
+    .za-die { display: block; width: var(--die); height: var(--die); }
+    .za-die svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 4px 5px rgba(30, 33, 38, .22)); }
+    .za-shape { fill: var(--ba-surface); stroke: var(--ba-primary); stroke-width: 4; stroke-linejoin: round; }
+    .za-inner { fill: none; stroke: var(--ba-border-hover); stroke-width: 2; stroke-linejoin: round; }
+    .za-pip { fill: var(--ba-text); }
+    .za-num { fill: var(--ba-text); font-family: var(--ba-font); font-weight: 700; }
+    .za-die.is-rolling { animation: za-shake .6s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 45ms); }
+    @keyframes za-shake {
+      0%, 100% { transform: translate(0, 0) rotate(0); }
+      20% { transform: translate(-6px, 3px) rotate(-16deg); }
+      40% { transform: translate(6px, -5px) rotate(14deg); }
+      60% { transform: translate(-4px, 4px) rotate(-10deg); }
+      80% { transform: translate(5px, -2px) rotate(9deg); }
+    }
+    @media (prefers-reduced-motion: reduce) { .za-die.is-rolling { animation: none; } }
+
+    .za-result { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; min-height: 6.4em; margin: 6px 0 14px; }
+    .za-result.is-busy { opacity: .45; }
+    .za-total-l { font-family: var(--ba-mono); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .za-result strong { font-size: 2.6rem; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .za-values { color: var(--ba-text-2); font-size: 1rem; overflow-wrap: anywhere; }
+    .za-pair { min-height: 1.4em; font-weight: 700; color: var(--ba-primary); }
+    .za-actions .ba-btn { width: 100%; min-height: 52px; font-size: 1.05rem; }
+    @media (min-width: 640px) { .za-actions .ba-btn { width: auto; min-width: 280px; } }
+
+    .za-stats-h { margin: 22px 0 10px; font-size: 1.1rem; }
+    .za-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+    .za-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .za-stats span { display: block; font-size: .78rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .04em; overflow-wrap: anywhere; }
+    .za-stats strong { display: block; font-size: 1.3rem; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+    .za-stats small { display: block; font-size: .82rem; color: var(--ba-text-2); }
+    .za-chart-h { margin: 0 0 8px; font-size: .95rem; font-weight: 600; }
+    .za-chart { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px 28px; }
+    @media (min-width: 640px) { .za-chart[data-sides="10"], .za-chart[data-sides="12"], .za-chart[data-sides="20"] { grid-auto-flow: column; grid-template-rows: repeat(var(--rows, 1), auto); grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .za-row { display: grid; grid-template-columns: 2.2ch minmax(0, 1fr) minmax(0, 9.5em); align-items: center; gap: 8px; margin: 0; min-width: 0; }
+    .za-n { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+    .za-track { display: block; height: 14px; border-radius: 7px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); overflow: hidden; min-width: 0; }
+    .za-fill { display: block; height: 100%; background: var(--ba-primary); transition: width .35s var(--ba-ease-out); }
+    @media (prefers-reduced-motion: reduce) { .za-fill { transition: none; } }
+    .za-c { font-size: .82rem; color: var(--ba-text-2); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .za-history-h { margin: 0 0 6px; font-size: .95rem; font-weight: 600; }
+    .za-history { margin: 0 0 6px; padding: 0 0 0 1.4em; max-height: 14.5em; overflow-y: auto; font-variant-numeric: tabular-nums; font-size: .95rem; }
+    .za-history li { margin: 0 0 2px; overflow-wrap: anywhere; }
+    .za-empty { margin: 0 0 6px; font-size: .9rem; color: var(--ba-text-muted); }
+    .za-reset-row { margin-top: 10px; }
+    .za-fine { margin: 14px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Zar At – Bilişim Ajans","description":"Tarayıcıda zar atın: 1–6 zar, d4, d6, d8, d10, d12 ve d20, toplam, atış geçmişi ve yüz dağılım grafiği.","applicationCategory":"GameApplication","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":"SinglePlayer","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/zar-at/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Bu zar gerçekten adil mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Her yüzün gelme olasılığı eşittir; altı yüzlü zarda her sayı 1/6, yani yaklaşık yüzde 16,7 şansa sahiptir. Değerler tarayıcınızın güvenli rastgele sayı üretecinden (crypto.getRandomValues) alınır, sunucu yoktur ve sonuca kimse müdahale edemez. Sallama animasyonu yalnızca görseldir. Çok eski bir tarayıcıda güvenli üreteç bulunmazsa yedek üreteç devreye girer."}},
+  {"@type":"Question","name":"Aynı anda kaç zar atabilirim?","acceptedAnswer":{"@type":"Answer","text":"Bir ile altı arasında. Zar sayısını 1–6 düğmelerinden ya da klavyedeki 1, 2, 3, 4, 5 ve 6 tuşlarından seçebilirsiniz. Toplam ve her zarın değeri sonuç alanında görünür."}},
+  {"@type":"Question","name":"d4, d8, d10, d12 ve d20 ne demek?","acceptedAnswer":{"@type":"Answer","text":"Buradaki d harfi zarı, sayı ise yüz sayısını gösterir: d6 klasik altı yüzlü zardır, d20 yirmi yüzlüdür. Masa oyunları ve rol yapma oyunlarında farklı yüzlü zarlar kullanılır. Bu sayfada d10 zarı 1 ile 10 arasında değer verir; 0 ile 9 arası değildir."}},
+  {"@type":"Question","name":"İki zarda hangi toplam en sık gelir?","acceptedAnswer":{"@type":"Answer","text":"Yedi. İki altı yüzlü zarın 36 olası sonucundan 6'sı yedi eder, yani olasılığı yaklaşık yüzde 16,7'dir. İki ve on iki ise yalnızca birer kez oluşur ve yaklaşık yüzde 2,8 şansa sahiptir."}},
+  {"@type":"Question","name":"Her yüz neden eşit sayıda gelmiyor?","acceptedAnswer":{"@type":"Answer","text":"Rastgelelikte sayıların tam eşit çıkması beklenmez. Az sayıda atışta bazı yüzlerin çok, bazılarının az gelmesi normaldir. Atış sayısı arttıkça her yüzün payı beklenen orana yaklaşır. Grafik, bunu kendi atışlarınızla görmenizi sağlar."}},
+  {"@type":"Question","name":"İstatistiklerim nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının localStorage alanında, her yüzün kaç kez geldiğini gösteren sayaçlar ve toplam atış sayısı olarak saklanır. Hiçbir sunucuya gönderilmez. Atış geçmişi yalnızca sayfa açıkken bellekte tutulur. İstatistikleri sıfırla düğmesiyle ya da tarayıcı verilerini silerek temizleyebilirsiniz."}},
+  {"@type":"Question","name":"Klavyeyle zar atabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun kutusu ekrandayken Boşluk ya da Enter zarları atar, 1 ile 6 arasındaki rakam tuşları zar sayısını değiştirir. Odak bir düğmenin üzerindeyse o düğme kendi işini yapar."}},
+  {"@type":"Question","name":"Bu sayfa bahis ya da para karşılığı oyun için kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bu sayfa masa oyunları, eğitim ve eğlence için hazırlanmış ücretsiz bir araçtır; bir şans oyunu ya da bahis aracı değildir. Para veya değerli eşya karşılığı oyunlarda kullanılması önerilmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Zar</span> At – Ücretsiz Online Zar Atma (1–6 Zar, d20)</h1>
+      <p class="lead">Tavla, kutu oyunu ya da masa oyunu için zarınız yoksa buradan atın. Bir ile altı zar aynı anda, klasik d6 ve d4, d8, d10, d12, d20 seçenekleri, toplam, son 20 atış geçmişi ve her yüzün kaç kez geldiğini gösteren grafik hazır; kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Zar atma oyunu</h2>
+      <div class="za-options">
+        <div class="ba-field"><label for="za-type">Zar türü</label>
+          <select id="za-type">
+            <option value="4">d4 – dört yüzlü</option>
+            <option value="6" selected>d6 – altı yüzlü (klasik)</option>
+            <option value="8">d8 – sekiz yüzlü</option>
+            <option value="10">d10 – on yüzlü (1–10)</option>
+            <option value="12">d12 – on iki yüzlü</option>
+            <option value="20">d20 – yirmi yüzlü</option>
+          </select></div>
+        <div><span class="za-field-l" id="za-counts-l">Zar sayısı</span>
+          <div class="za-counts" id="za-counts" role="group" aria-labelledby="za-counts-l">
+            <button class="ba-btn za-cnt" type="button" data-n="1" aria-pressed="true">1</button>
+            <button class="ba-btn za-cnt" type="button" data-n="2" aria-pressed="false">2</button>
+            <button class="ba-btn za-cnt" type="button" data-n="3" aria-pressed="false">3</button>
+            <button class="ba-btn za-cnt" type="button" data-n="4" aria-pressed="false">4</button>
+            <button class="ba-btn za-cnt" type="button" data-n="5" aria-pressed="false">5</button>
+            <button class="ba-btn za-cnt" type="button" data-n="6" aria-pressed="false">6</button>
+          </div></div>
+      </div>
+      <p class="za-keys">Zarlara dokunun, Boşluk ya da Enter tuşuna basın. 1–6 tuşları zar sayısını değiştirir.</p>
+      <div class="za-stage" id="za-stage"><div class="za-dice" id="za-dice" data-count="1" aria-hidden="true"></div></div>
+      <div class="za-result" id="za-result" role="status" aria-live="polite" aria-atomic="true">
+        <span class="za-total-l">Toplam</span>
+        <strong id="za-total">–</strong>
+        <span class="za-values" id="za-values"></span>
+        <span class="za-pair" id="za-pair"></span>
+      </div>
+      <div class="za-actions"><button id="za-roll" class="ba-btn ba-btn-primary" type="button">Zar at</button></div>
+
+      <h3 class="za-stats-h">İstatistik</h3>
+      <div class="za-stats" role="group" aria-label="Atış istatistiği">
+        <div><span>Toplam atış</span><strong id="za-throws">0</strong></div>
+        <div><span id="za-dtotal-l">d6 zar sayısı</span><strong id="za-dtotal">0</strong></div>
+        <div><span id="za-mean-l">d6 ortalaması</span><strong id="za-mean">–</strong><small id="za-expected">beklenen 3,5</small></div>
+      </div>
+      <p class="za-chart-h" id="za-chart-h">d6: her yüzün kaç kez geldiği</p>
+      <ul class="za-chart" id="za-chart" aria-label="d6 yüz dağılımı"></ul>
+      <p class="za-history-h" id="za-history-h">Son 20 atış</p>
+      <ol class="za-history" id="za-history" aria-labelledby="za-history-h"></ol>
+      <p class="za-empty" id="za-history-empty">Henüz atış yok.</p>
+      <div class="za-reset-row"><button id="za-reset" class="ba-btn" type="button">İstatistikleri sıfırla</button></div>
+      <p class="za-fine">Bu sayfa masa oyunları, eğitim ve eğlence içindir; şans oyunu ya da bahis aracı değildir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-zar-at-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Online zar atma nedir?</h2>
+      <p>Zar atmak, bir sonucu tamamen şansa bırakmanın en eski ve en pratik yollarından biridir. Klasik zar altı yüzlü bir küptür; her yüzünde bir ile altı arasında bir sayı bulunur ve atıldığında üstte kalan yüz sonucu belirler. Bu sayfa aynı işi tarayıcınızda yapar: zarlara dokunur, Boşluk tuşuna basar ya da "Zar at" düğmesini kullanırsınız; zarlar sallanır ve değerler görünür. Aynı anda altı zara kadar atabilir, klasik altı yüzlü zarın yanında masa oyunlarında kullanılan d4, d8, d10, d12 ve d20 zarlarını da seçebilirsiniz.</p>
+      <p>Evdeki zarın kaybolması, masanın dar olması ya da zarın yere düşüp kanepenin altına yuvarlanması gibi sorunlarla uğraşmak istemiyorsanız online zar iş görür. Üstelik toplamı sizin yerinize hesaplar, atışlarınızı kaydeder ve her yüzün kaç kez geldiğini grafikte gösterir. Her şey tarayıcınızda çalışır; sayfa sizden hiçbir bilgi istemez ve hiçbir dosya sunucuya gitmez.</p>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Zar türünü seçin.</strong> Varsayılan zar, tavla ve çoğu kutu oyunundaki klasik d6'dır. Masa oyunu ya da rol yapma oyunu için d4, d8, d10, d12 ya da d20 seçebilirsiniz.</li>
+        <li><strong>Zar sayısını seçin.</strong> 1–6 düğmelerinden ya da klavyedeki 1–6 tuşlarından birini kullanın. Tavlada iki, çoğu kutu oyununda bir ya da iki zar yeterlidir.</li>
+        <li><strong>Zarları atın.</strong> Zarlara dokunun, "Zar at" düğmesine basın ya da oyun kutusu ekrandayken Boşluk veya Enter tuşunu kullanın. Zarlar yaklaşık yarım saniye sallanır, sonra değerleri görünür.</li>
+        <li><strong>Sonucu okuyun.</strong> Büyük sayı toplamı, altındaki satır her zarın değerini gösterir. İki zar aynı geldiğinde "Çift geldi!" uyarısı çıkar. Atış, geçmiş listesine ve istatistiğe eklenir.</li>
+      </ol>
+
+      <h2>Zar türleri: d4, d6, d8, d10, d12 ve d20</h2>
+      <p>Masa oyunu çevrelerinde zarlar "d" harfi ve yüz sayısıyla adlandırılır: d6 altı yüzlü, d20 yirmi yüzlü zar demektir. "2d6" yazısı iki adet altı yüzlü zarın atılıp toplanacağı anlamına gelir. Bu sayfada zar türünü seçtiğinizde zarın şekli de değişir.</p>
+      <ul>
+        <li><strong>d6:</strong> Klasik küp. Yüzlerde noktalar bulunur. Tavla, kutu oyunları ve çocuk oyunlarında kullanılır.</li>
+        <li><strong>d4:</strong> Dört yüzlü piramit. Her yüzün gelme olasılığı yüzde 25'tir; ufak hasar zarları ve basit seçimler için uygundur.</li>
+        <li><strong>d8:</strong> Sekiz yüzlü zar; her yüz yüzde 12,5 şansa sahiptir.</li>
+        <li><strong>d10:</strong> On yüzlü zar. Bu sayfada 1 ile 10 arasında değer verir (0–9 değil); her yüzün olasılığı yüzde 10'dur. Yüzdelik sonuç için iki d10 kullanılması bazı oyunlarda yaygındır.</li>
+        <li><strong>d12:</strong> On iki yüzlü zar; her yüz yaklaşık yüzde 8,3.</li>
+        <li><strong>d20:</strong> Yirmi yüzlü zar; her yüz yüzde 5. Rol yapma ve strateji masa oyunlarında başarı kontrolleri için sık kullanılır.</li>
+      </ul>
+      <p>Gerçek d4 zarında sonuç çoğu zaman masaya değen ya da tepedeki sayıya göre okunur; bu sayfada ise sonuç doğrudan zarın üzerinde görünür, yorum gerektirmez.</p>
+
+      <h2>Masa oyunlarında nasıl kullanılır?</h2>
+      <p><strong>Tavla:</strong> İki zar seçin ve atın. Tavlada iki zarın değerleri ayrı ayrı oynanır; zarlar aynı geldiğinde (çift) oyuncu o sayıyı dört kez oynar. Bu sayfa çift geldiğinde "Çift geldi!" diyerek bunu fark etmenizi kolaylaştırır. İki altı yüzlü zardan toplam 21 farklı sonuç çıkar: altısı çift, on beşi farklı değerli.</p>
+      <p><strong>Monopoly gibi kutu oyunları:</strong> Sıradaki oyuncu iki zar atar ve toplam kadar ilerler. Birçok kutu oyununda çift atan oyuncu yeniden zar atar; üst üste üç çift ise cezayla sonuçlanır. Toplamın otomatik hesaplanması, sürekli toplama yapma yükünü ortadan kaldırır. Kurallar oyunun sürümüne göre değişebilir; oyunun kutusundaki kılavuzu esas alın.</p>
+      <p><strong>Okey ve kâğıt oyunları:</strong> Okeyde zar kullanılmaz; ama masadaki ilk dağıtıcıyı ya da sırayı belirlemek gibi küçük işlerde bir zar atmak pratiktir. Bunun için tek zar yeterlidir; en yüksek değeri atan başlar, eşitlikte yeniden atılır. Masa kuralları yöreye ve arkadaş grubuna göre değiştiği için nasıl kullanılacağına birlikte karar verin.</p>
+      <p><strong>Rol yapma ve strateji oyunları:</strong> d20 ile başarı kontrolü, d4 ve d8 ile hasar, d12 ile özel eşya ya da olay seçimi yapılabilir. Altı zara kadar seçenek, "3d8" gibi toplamları tek tıkta almanızı sağlar. Atış geçmişi listesi, hangi zarın ne zaman atıldığını masadaki herkese göstermeyi kolaylaştırır.</p>
+
+      <div class="ba-ad" data-slot="oyun-zar-at-b" aria-label="Reklam"></div>
+
+      <h2>İki zarın toplamı için olasılık tablosu</h2>
+      <p>İki altı yüzlü zar atıldığında 6 × 6 = 36 eşit olasılıklı sonuç vardır. Toplamlar bu sonuçlara eşit dağılmaz; ortadaki sayılar birden fazla yoldan oluşabildiği için daha sık gelir. Aşağıdaki tabloda her toplamın kaç farklı yolla elde edildiği ve olasılığı görünür.</p>
+      <table>
+        <thead><tr><th scope="col">Toplam</th><th scope="col">Sonuç sayısı (36 içinden)</th><th scope="col">Olasılık</th></tr></thead>
+        <tbody>
+          <tr><td>2</td><td>1</td><td>%2,8</td></tr>
+          <tr><td>3</td><td>2</td><td>%5,6</td></tr>
+          <tr><td>4</td><td>3</td><td>%8,3</td></tr>
+          <tr><td>5</td><td>4</td><td>%11,1</td></tr>
+          <tr><td>6</td><td>5</td><td>%13,9</td></tr>
+          <tr><td>7</td><td>6</td><td>%16,7</td></tr>
+          <tr><td>8</td><td>5</td><td>%13,9</td></tr>
+          <tr><td>9</td><td>4</td><td>%11,1</td></tr>
+          <tr><td>10</td><td>3</td><td>%8,3</td></tr>
+          <tr><td>11</td><td>2</td><td>%5,6</td></tr>
+          <tr><td>12</td><td>1</td><td>%2,8</td></tr>
+        </tbody>
+      </table>
+      <p>Tablodan birkaç sonuç çıkarabilirsiniz. En olası toplam yedidir; iki ve on iki ise en az görülenlerdir. İki zarın çift gelme olasılığı 6/36, yani altıda birdir. İki zardan en az birinin altı gelme olasılığı 11/36, yani yaklaşık yüzde 30,6'dır. Üç zar atarsanız toplamlar 3 ile 18 arasında değişir ve en sık gelenler 10 ile 11'dir; her biri 216 sonuçtan 27'sinde oluşur (yaklaşık yüzde 12,5).</p>
+      <p>Bunları kendiniz denemek isterseniz zar sayısını 2 yapın ve onlarca kez atın. İstatistik bölümündeki grafik ve ortalama, atış sayısı arttıkça beklenen değerlere (iki d6 için ortalama toplam 7) nasıl yaklaştığınızı gösterir.</p>
+
+      <h2>Atış geçmişi ve istatistik</h2>
+      <p>Sonuç alanının altında üç kutu bulunur: toplam atış sayısı, seçili zar türünden atılan toplam zar sayısı ve o zar türünün ortalaması. Ortalamanın yanında beklenen değer de yazar; d6 için 3,5, d20 için 10,5 gibi. Az sayıda atışta ortalamanın beklenen değerden uzak olması olağandır.</p>
+      <p>Çubuk grafik, seçili zar türünün her yüzünün şimdiye kadar kaç kez geldiğini ve yüzdesini gösterir. Grafikteki çubuklar en çok gelen yüze göre ölçeklenir, böylece farklar kolay görülür. Çubukların birbirine eşit çıkmasını beklemeyin: rastgelelikte sayıların tam eşit dağılması aslında şüphe uyandırır. Yüzlerin payı atış sayısı arttıkça beklenen orana yaklaşır.</p>
+      <p>Son 20 atışın listesi, en yeni atış en üstte olacak şekilde sayfa açıkken bellekte tutulur. Her satırda kaç zar atıldığı, hangi türden olduğu, tek tek değerler ve toplam yazar. "İstatistikleri sıfırla" düğmesi sayaçları ve geçmişi temizler.</p>
+
+      <h2>Rastgelelik nasıl sağlanıyor?</h2>
+      <p>Her zarın değeri, tarayıcının güvenli rastgele sayı üretecinden (crypto.getRandomValues) alınır. Bu üreteç işletim sisteminin rastgelelik kaynağını kullanır ve sonucunu tahmin etmek pratikte olanaksızdır. Sayının zar değerine çevrilmesi sırasında olasılıkları bozabilecek yuvarlama etkisi (modulo yanlılığı) yeniden çekim yöntemiyle önlenir; böylece d6'daki her yüz, d20'deki her yüz gerçekten eşit şansa sahip olur. Çok eski bir tarayıcıda güvenli üreteç yoksa yedek bir üreteç devreye girer.</p>
+      <p>Hiçbir ağ isteği yapılmadığı için sonuca ne biz ne bir başkası müdahale edebilir. Zarlar sallanırken görünen sayılar yalnızca animasyondur; gerçek sonuç, zarı attığınız anda belirlenir ve sallama bittiğinde ekranda görünür. Tarayıcınızda hareket azaltma tercihi açıksa sallama animasyonu atlanır ve sonuç anında gösterilir.</p>
+
+      <h2>Zarın kısa tarihi</h2>
+      <p>Zar, insanlık tarihinin en eski oyun araçlarından biridir. Arkeolojik buluntular, zarın yaklaşık beş bin yıl öncesine uzandığını gösterir. İlk "zarlar" büyük olasılıkla koyun ya da keçi ayak kemikleriydi; Türkçede aşık oyunu olarak bilinen oyunun kemikleri dört farklı yüzü olan doğal zarlar gibi davranıyordu. Zamanla kemiğin yerini kil, kemik, fildişi, ahşap ve bugün plastik küpler aldı.</p>
+      <p>Standart altı yüzlü zarda karşılıklı yüzlerin toplamı hep yedidir: 1'in karşısında 6, 2'nin karşısında 5, 3'ün karşısında 4 bulunur. Bu düzen zarın dengeli olmasına yardımcı olur. Çok yüzlü zarlar ise yirminci yüzyılın ikinci yarısından itibaren rol yapma ve strateji masa oyunlarıyla yaygınlaştı; d20, bugün bu oyunların simgesi sayılır. Olasılık kuramının ilk adımlarından birinin de zar atışlarının incelenmesiyle başladığı sıkça anlatılır.</p>
+
+      <h2>Neden Bilişim Ajans'ta atmalısınız?</h2>
+      <ul>
+        <li><strong>Gizlilik:</strong> Atışlarınız ve sayaçlarınız yalnızca bu cihazın tarayıcısında kalır. Dosya yüklemez, hesap istemez, sizi izlemez.</li>
+        <li><strong>Gerçek adillik:</strong> Güvenli rastgele sayı üreteci kullanılır; sonucu önceden belirleyen bir hile ya da "şanslı sayı" yoktur.</li>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve atın. İsterseniz tarayıcıdan uygulama olarak yükleyip çevrimdışı da kullanabilirsiniz.</li>
+        <li><strong>Mobil uyumlu ve erişilebilir:</strong> 360 piksel genişliğe kadar çalışır, klavyeyle kullanılır, sonucu ekran okuyucuya duyurur ve hareket azaltma tercihine uyar.</li>
+        <li><strong>Dürüst reklam yerleşimi:</strong> Reklamlar yalnızca oyun kutusunun altında ve sayfanın belirli bölümlerinde yer alır; zar düğmelerinin yanında hiç görünmez.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ⓘ</span><span>Bu sayfa masa oyunları, eğitim ve eğlence içindir. Bir şans oyunu ya da bahis aracı değildir; para veya değerli eşya karşılığı oyunlarda kullanılması önerilmez.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Bu zar gerçekten adil mi?</summary><p>Evet. Her yüzün gelme olasılığı eşittir; altı yüzlü zarda her sayı 1/6, yani yaklaşık yüzde 16,7 şansa sahiptir. Değerler tarayıcınızın güvenli rastgele sayı üretecinden (crypto.getRandomValues) alınır, sunucu yoktur ve sonuca kimse müdahale edemez. Sallama animasyonu yalnızca görseldir. Çok eski bir tarayıcıda güvenli üreteç bulunmazsa yedek üreteç devreye girer.</p></details>
+        <details><summary>Aynı anda kaç zar atabilirim?</summary><p>Bir ile altı arasında. Zar sayısını 1–6 düğmelerinden ya da klavyedeki 1, 2, 3, 4, 5 ve 6 tuşlarından seçebilirsiniz. Toplam ve her zarın değeri sonuç alanında görünür.</p></details>
+        <details><summary>d4, d8, d10, d12 ve d20 ne demek?</summary><p>Buradaki d harfi zarı, sayı ise yüz sayısını gösterir: d6 klasik altı yüzlü zardır, d20 yirmi yüzlüdür. Masa oyunları ve rol yapma oyunlarında farklı yüzlü zarlar kullanılır. Bu sayfada d10 zarı 1 ile 10 arasında değer verir; 0 ile 9 arası değildir.</p></details>
+        <details><summary>İki zarda hangi toplam en sık gelir?</summary><p>Yedi. İki altı yüzlü zarın 36 olası sonucundan 6'sı yedi eder, yani olasılığı yaklaşık yüzde 16,7'dir. İki ve on iki ise yalnızca birer kez oluşur ve yaklaşık yüzde 2,8 şansa sahiptir.</p></details>
+        <details><summary>Her yüz neden eşit sayıda gelmiyor?</summary><p>Rastgelelikte sayıların tam eşit çıkması beklenmez. Az sayıda atışta bazı yüzlerin çok, bazılarının az gelmesi normaldir. Atış sayısı arttıkça her yüzün payı beklenen orana yaklaşır. Grafik, bunu kendi atışlarınızla görmenizi sağlar.</p></details>
+        <details><summary>İstatistiklerim nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının localStorage alanında, her yüzün kaç kez geldiğini gösteren sayaçlar ve toplam atış sayısı olarak saklanır. Hiçbir sunucuya gönderilmez. Atış geçmişi yalnızca sayfa açıkken bellekte tutulur. İstatistikleri sıfırla düğmesiyle ya da tarayıcı verilerini silerek temizleyebilirsiniz.</p></details>
+        <details><summary>Klavyeyle zar atabilir miyim?</summary><p>Evet. Oyun kutusu ekrandayken Boşluk ya da Enter zarları atar, 1 ile 6 arasındaki rakam tuşları zar sayısını değiştirir. Odak bir düğmenin üzerindeyse o düğme kendi işini yapar.</p></details>
+        <details><summary>Bu sayfa bahis ya da para karşılığı oyun için kullanılabilir mi?</summary><p>Hayır. Bu sayfa masa oyunları, eğitim ve eğlence için hazırlanmış ücretsiz bir araçtır; bir şans oyunu ya da bahis aracı değildir. Para veya değerli eşya karşılığı oyunlarda kullanılması önerilmez.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar ve araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yazi-tura/">Yazı Tura At</a></li>
+        <li><a href="../tas-kagit-makas/">Taş Kâğıt Makas</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../../rastgele-sayi/">Rastgele Sayı Üretici</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-zar-at-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

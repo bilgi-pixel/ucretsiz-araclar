@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İndirme Süresi Hesaplama – Dosya Boyutu ve İnternet Hızına Göre Kaç Dakika?</title>
+  <meta name="description" content="Dosya boyutunu ve internet hızınızı girin, indirme süresini saniye, dakika ve saat olarak görün. Mbps ile MB/s farkı, ters hesap ve hazır süre tablosu. Ücretsiz, kayıt yok, veriler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/indirme-suresi-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-width: 0; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; overflow-wrap: anywhere; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.2rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .id-modes { margin-bottom: 14px; border: 0; padding: 0; }
+    .id-pair { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; }
+    .id-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .id-chips .ba-btn, .id-chip { min-height: 40px; padding: 6px 12px; font-size: .92rem; }
+    .id-chip-title { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+    .id-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .id-table caption { text-align: left; font-weight: 600; padding: 0 0 8px; }
+    .id-table th, .id-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); }
+    .id-table td.n { font-family: var(--ba-mono); white-space: nowrap; }
+    .id-table thead th { white-space: nowrap; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"İndirme Süresi Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/indirme-suresi-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"1 GB'lık dosya 100 Mbps'de kaç saniyede iner?","acceptedAnswer":{"@type":"Answer","text":"Kuramsal olarak 80 saniyede. 1 GB 8.000 megabit eder; 100 Mbps'ye bölünce 80 saniye çıkar. Gerçek yaşamda %80-90 verimle yaklaşık 89-100 saniye beklenir. Windows'un 1024 tabanlı boyutuyla hesaplarsanız süre 85,9 saniyeye çıkar."}},{"@type":"Question","name":"Mbps ile MB/s arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Mbps saniyedeki megabit, MB/s saniyedeki megabayt sayısıdır. Bir bayt sekiz bit olduğundan Mbps değerini 8'e bölerek MB/s bulursunuz. Tarifeler Mbps, indirme ekranları çoğunlukla MB/s kullanır."}},{"@type":"Question","name":"100 Mbps kaç MB/s eder?","acceptedAnswer":{"@type":"Answer","text":"100 Mbps, 12,5 MB/s eder (100 ÷ 8). Yani 100 Mbps'lik bir hatta bir dosyanın saniyede en çok yaklaşık 12,5 megabaytı inebilir. Gerçekte bu değerin %80-90'ı görülür, yani 10-11 MB/s civarı normaldir."}},{"@type":"Question","name":"Gerçek indirme hızım neden tarife hızından düşük?","acceptedAnswer":{"@type":"Answer","text":"Tarife hızı üst sınırdır. Protokol başlıkları, Wi-Fi sinyal kalitesi, evdeki diğer cihazlar, sunucunun çıkış kapasitesi, VPN ve hat yoğunluğu gerçek hızı düşürür. Genel kural olarak bağlantı hızının %80-90'ı kadarını görmek normaldir."}},{"@type":"Question","name":"50 GB'lık bir oyun ne kadar sürede iner?","acceptedAnswer":{"@type":"Answer","text":"Kuramsal olarak 100 Mbps'de 1 saat 6 dakika 40 saniye, 50 Mbps'de 2 saat 13 dakika 20 saniye, 1 Gbps'de 6 dakika 40 saniye sürer. Gerçek yaşamda bu sürelere %10-25 ekleyin. Sunucu hızı sınırlıysa daha hızlı hat süreyi aynı oranda kısaltmayabilir."}},{"@type":"Question","name":"Verim yüzdesi ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Bağlantı hızının gerçekte ne kadarını kullanabildiğinizi gösterir. Verimi 85 yazarsanız hesap, hızın %85'iyle yapılır ve süre buna göre uzar. Boş ya da 100 bırakırsanız kuramsal süre görünür ve ek olarak %80-90 verimle gerçekçi bir aralık listelenir."}},{"@type":"Question","name":"Ters hesap nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"\"Gereken hız\" seçeneğinde dosya boyutunu ve hedef süreyi yazarsınız. Araç, boyutu 8 ile çarpıp süreye böler ve bağlantı hızını Mbps ile MB/s olarak verir. Verim girdiyseniz değer buna göre yükseltilir."}},{"@type":"Question","name":"1 GB = 1000 MB mi yoksa 1024 MB mi?","acceptedAnswer":{"@type":"Answer","text":"İkisi de kullanılır. Depolama üreticileri ve ağ birimleri 1000 tabanlıdır, Windows 1024 tabanlı gösterir. Aradaki fark yaklaşık %7,4'tür. Aracın \"Boyut tabanı\" seçeneğiyle ikisi arasında geçiş yapabilirsiniz; bit tabanlı hız birimleri her zaman 1000'in katıdır."}},{"@type":"Question","name":"Yükleme süresini de hesaplayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Hız alanına indirme yerine hattınızın yükleme (upload) hızını yazmanız yeterlidir. Birçok bağlantıda yükleme hızı indirmeden düşüktür; bu nedenle büyük dosyaların gönderimi daha uzun sürer."}},{"@type":"Question","name":"\"Boş\" ya da \"geçersiz\" hatası alıyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Alanlara yalnızca rakam ve virgül yazın (örn. 4,7 ya da 100). Harf, birim ya da eksi değer kabul edilmez; birimi yanındaki listeden seçin. Verim 1 ile 100 arasında olmalıdır. Alanı temizleyip değeri yeniden girin."}},{"@type":"Question","name":"Girdiğim bilgiler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; dosya boyutu ve hız bilgisi sunucuya gönderilmez, saklanmaz ve çerez ya da analiz kodu kullanılmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">İndirme Süresi Hesaplama: Dosya Boyutu ve İnternet Hızına Göre</span></h1>
+      <p class="lead">Dosya boyutunu ve bağlantı hızınızı girin; indirmenin kaç saniye, dakika ya da saat süreceğini görün. Aynı sayfada ters hesap (belirli sürede indirmek için gereken hız), Mbps ile MB/s dönüştürücü ve 100 MB'tan 50 GB'a hazır süre tablosu var. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="kdv-modes id-modes">
+          <legend class="visually-hidden">Hesaplama türü</legend>
+          <label><input type="radio" name="mode" value="time" checked> Süre hesapla</label>
+          <label><input type="radio" name="mode" value="speed"> Gereken hız</label>
+          <label><input type="radio" name="mode" value="convert"> Mbps ↔ MB/s</label>
+        </fieldset>
+
+        <div data-panel="time speed">
+          <div class="id-pair">
+            <div class="ba-field"><label for="f-size">Dosya boyutu</label><input id="f-size" type="text" inputmode="decimal" autocomplete="off" placeholder="1,5"><div class="hint">Virgüllü yazabilirsiniz: 4,7</div></div>
+            <div class="ba-field"><label for="f-size-unit">Birim</label><select id="f-size-unit"><option value="kb">KB</option><option value="mb">MB</option><option value="gb" selected>GB</option><option value="tb">TB</option></select></div>
+          </div>
+          <span class="id-chip-title" id="t-size">Hızlı seç: dosya boyutu</span>
+          <div class="id-chips" role="group" aria-labelledby="t-size">
+            <button type="button" class="ba-btn id-chip" data-size="100" data-unit="mb">100 MB</button>
+            <button type="button" class="ba-btn id-chip" data-size="1" data-unit="gb">1 GB</button>
+            <button type="button" class="ba-btn id-chip" data-size="4,7" data-unit="gb">4,7 GB</button>
+            <button type="button" class="ba-btn id-chip" data-size="50" data-unit="gb">50 GB</button>
+          </div>
+        </div>
+
+        <div data-panel="time">
+          <div class="id-pair">
+            <div class="ba-field"><label for="f-speed">Bağlantı hızı</label><input id="f-speed" type="text" inputmode="decimal" autocomplete="off" placeholder="100"><div class="hint">Tarifeler genelde Mbps (megabit) yazar.</div></div>
+            <div class="ba-field"><label for="f-speed-unit">Birim</label><select id="f-speed-unit"><option value="kbps">Kbps</option><option value="mbps" selected>Mbps</option><option value="gbps">Gbps</option><option value="kbs">KB/s</option><option value="mbs">MB/s</option></select></div>
+          </div>
+          <span class="id-chip-title" id="t-speed">Hızlı seç: bağlantı hızı</span>
+          <div class="id-chips" role="group" aria-labelledby="t-speed">
+            <button type="button" class="ba-btn id-chip" data-speed="10" data-unit="mbps">10 Mbps</button>
+            <button type="button" class="ba-btn id-chip" data-speed="25" data-unit="mbps">25 Mbps</button>
+            <button type="button" class="ba-btn id-chip" data-speed="50" data-unit="mbps">50 Mbps</button>
+            <button type="button" class="ba-btn id-chip" data-speed="100" data-unit="mbps">100 Mbps</button>
+            <button type="button" class="ba-btn id-chip" data-speed="1000" data-unit="mbps">1000 Mbps</button>
+          </div>
+        </div>
+
+        <div data-panel="speed">
+          <div class="id-pair">
+            <div class="ba-field"><label for="f-time">Hedef süre</label><input id="f-time" type="text" inputmode="decimal" autocomplete="off" placeholder="10"><div class="hint">Dosyanın en geç bu sürede inmesini istiyorsunuz.</div></div>
+            <div class="ba-field"><label for="f-time-unit">Birim</label><select id="f-time-unit"><option value="sn">saniye</option><option value="dk" selected>dakika</option><option value="sa">saat</option></select></div>
+          </div>
+        </div>
+
+        <div data-panel="convert" hidden>
+          <div class="id-pair">
+            <div class="ba-field"><label for="f-cv">Hız değeri</label><input id="f-cv" type="text" inputmode="decimal" autocomplete="off" placeholder="100"><div class="hint">Örnek: 100 Mbps kaç MB/s eder?</div></div>
+            <div class="ba-field"><label for="f-cv-unit">Birim</label><select id="f-cv-unit"><option value="kbps">Kbps</option><option value="mbps" selected>Mbps</option><option value="gbps">Gbps</option><option value="kbs">KB/s</option><option value="mbs">MB/s</option><option value="gbs">GB/s</option></select></div>
+          </div>
+        </div>
+
+        <div data-panel="time speed">
+          <div class="ba-field"><label for="f-eff">Verim (%)</label><input id="f-eff" type="text" inputmode="decimal" autocomplete="off" value="100"><div class="hint">Gerçek hız genelde bağlantı hızının %80-90'ıdır. Kuramsal sonuç için 100 bırakın.</div></div>
+          <div class="id-chips" role="group" aria-label="Hazır verim değerleri">
+            <button type="button" class="ba-btn id-chip" data-eff="100">%100</button>
+            <button type="button" class="ba-btn id-chip" data-eff="90">%90</button>
+            <button type="button" class="ba-btn id-chip" data-eff="85">%85</button>
+            <button type="button" class="ba-btn id-chip" data-eff="80">%80</button>
+          </div>
+        </div>
+
+        <fieldset class="kdv-modes id-modes">
+          <legend class="id-chip-title">Boyut tabanı</legend>
+          <label><input type="radio" name="base" value="1000" checked> 1 GB = 1000 MB (ondalık)</label>
+          <label><input type="radio" name="base" value="1024"> 1 GB = 1024 MB (Windows)</label>
+        </fieldset>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="rows"></dl>
+        <p class="kdv-note" id="r-notes"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="indirme-suresi-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstten hesaplama türünü seçin: süreyi öğrenmek için "Süre hesapla", belirli bir sürede indirmek için gereken hızı bulmak için "Gereken hız", birim çevirmek için "Mbps ↔ MB/s".</li>
+        <li>Dosya boyutunu yazıp birimini seçin. 4,7 gibi virgüllü değerler kabul edilir; hazır düğmelerle 100 MB, 1 GB, 4,7 GB ya da 50 GB'ı tek dokunuşla girebilirsiniz.</li>
+        <li>Bağlantı hızını girin. Operatör tarifeniz genellikle Mbps ile yazılıdır; indirme yöneticisi ya da tarayıcı MB/s gösteriyorsa birimi MB/s seçin.</li>
+        <li>Daha gerçekçi bir sonuç istiyorsanız Verim alanına 85 yazın. Alanı 100 bırakırsanız hem kuramsal süre hem de %80-90 verimle gerçekçi bir aralık gösterilir.</li>
+        <li>"Hesapla" düğmesine basın; süre saniye, dakika ve saat olarak listelenir. "Sonucu kopyala" ile özeti panoya alabilirsiniz.</li>
+      </ol>
+
+      <h2>İndirme süresi nasıl hesaplanır?</h2>
+      <p>İndirme süresi, dosyanın toplam bit sayısını bağlantının saniyedeki bit sayısına bölerek bulunur. Dosya boyutları bayt cinsinden, bağlantı hızları ise bit cinsinden anıldığı için araya bir çarpan girer: süre (saniye) = dosya boyutu (bayt) × 8 ÷ hız (bit/sn). Örneğin 1 GB'lık bir dosya 8.000 megabit eder; 100 Mbps'lik bir hatta kuramsal süre 8.000 ÷ 100 = 80 saniyedir. Aynı dosya 10 Mbps'de 800 saniyede, yani 13 dakika 20 saniyede; 1 Gbps'de ise 8 saniyede iner.</p>
+      <p>Hızı doğrudan MB/s olarak biliyorsanız hesap daha da kısadır: 700 MB'lık bir dosya 8 MB/s ile iniyorsa 700 ÷ 8 = 87,5 saniye sürer. Bu araç aynı mantığı sizin yerinize uygular, sonucu saniyenin yanında okunur biçimde dakika ve saat cinsinden de yazar.</p>
+
+      <h2>Mbps ile MB/s farkı: bit mi, bayt mı?</h2>
+      <p>Tarifelerde ve hız testlerinde görülen <strong>Mbps</strong>, saniyedeki megabit sayısıdır. Dosya boyutlarında ve çoğu indirme ekranında görülen <strong>MB/s</strong> ise saniyedeki megabayt sayısıdır. Bir bayt sekiz bit olduğundan Mbps değerini 8'e bölerek MB/s bulursunuz: 100 Mbps = 12,5 MB/s, 50 Mbps = 6,25 MB/s, 1 Gbps (1000 Mbps) = 125 MB/s eder.</p>
+      <p>Harflerin büyük küçük yazımı önemlidir: küçük "b" bit, büyük "B" bayt demektir; yani Mb ile MB aynı şey değildir. "Mbps ↔ MB/s" seçeneği bu çeviriyi yapar ve Kbps, Gbps, KB/s, GB/s karşılıklarını tek seferde gösterir. "100 Mbps hattım var ama indirme ekranı 12 MB/s gösteriyor" şikâyetinin cevabı budur: hat büyük olasılıkla düzgün çalışıyordur, yalnızca birim farklıdır.</p>
+
+      <h2>Hızlı tablo: sık dosyalar ve hızlar için indirme süresi</h2>
+      <p>Aşağıdaki tablo, küçük bir uygulamadan büyük bir oyuna kadar sık karşılaşılan dosya boyutlarının yaygın bağlantı hızlarında kuramsal indirme süresini gösterir. Değerler kayıpsız (%100 verim) hesaplanmıştır; gerçek süreler genelde %10-25 daha uzundur. Tablo, yukarıda seçtiğiniz boyut tabanına (1000 ya da 1024) göre yenilenir.</p>
+      <table class="id-table" id="quick">
+        <caption>Kuramsal indirme süreleri (%100 verim)</caption>
+        <thead><tr><th scope="col">Dosya</th><th scope="col">10 Mbps</th><th scope="col">25 Mbps</th><th scope="col">50 Mbps</th><th scope="col">100 Mbps</th><th scope="col">1000 Mbps</th></tr></thead>
+        <tbody>
+          <tr data-size="100" data-unit="mb"><th scope="row">100 MB</th><td class="n" data-mbps="10">1 dk 20 sn</td><td class="n" data-mbps="25">32 sn</td><td class="n" data-mbps="50">16 sn</td><td class="n" data-mbps="100">8 sn</td><td class="n" data-mbps="1000">0,8 sn</td></tr>
+          <tr data-size="1" data-unit="gb"><th scope="row">1 GB</th><td class="n" data-mbps="10">13 dk 20 sn</td><td class="n" data-mbps="25">5 dk 20 sn</td><td class="n" data-mbps="50">2 dk 40 sn</td><td class="n" data-mbps="100">1 dk 20 sn</td><td class="n" data-mbps="1000">8 sn</td></tr>
+          <tr data-size="4.7" data-unit="gb"><th scope="row">4,7 GB (tek katmanlı DVD)</th><td class="n" data-mbps="10">1 sa 2 dk 40 sn</td><td class="n" data-mbps="25">25 dk 4 sn</td><td class="n" data-mbps="50">12 dk 32 sn</td><td class="n" data-mbps="100">6 dk 16 sn</td><td class="n" data-mbps="1000">37,6 sn</td></tr>
+          <tr data-size="50" data-unit="gb"><th scope="row">50 GB (büyük oyun)</th><td class="n" data-mbps="10">11 sa 6 dk 40 sn</td><td class="n" data-mbps="25">4 sa 26 dk 40 sn</td><td class="n" data-mbps="50">2 sa 13 dk 20 sn</td><td class="n" data-mbps="100">1 sa 6 dk 40 sn</td><td class="n" data-mbps="1000">6 dk 40 sn</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ba-ad" data-slot="indirme-suresi-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Gerçek hız neden tarife hızından düşük çıkar?</h2>
+      <p>Tarifede yazan hız, hattın ulaşabileceği en yüksek değerdir; indirme sırasında bu değerin tamamını görmek nadirdir. Birkaç neden sayılabilir: ağ protokollerinin her pakete eklediği başlık bilgileri verinin küçük bir kısmını kaplar. Wi-Fi'de mesafe, duvarlar ve komşu ağlar hızı düşürür; üstelik modemle cihazınız arasındaki bağlantı hızı gerçek aktarım hızının çok üstünde görünür. Evdeki diğer cihazlar (video yayını, oyun, bulut yedekleme) hattı paylaşır. İndirdiğiniz sunucu kendi çıkış kapasitesini sizinle ve diğer kullanıcılarla bölüşür. Akşam saatlerinde operatör hattı yoğun olabilir; VPN kullanımı da hızı düşürebilir.</p>
+      <p>Genel bir kural olarak gerçek hızı bağlantı hızının %80-90'ı kabul etmek makuldür. Hattınızı bağımsız bir hız testiyle ölçüp "Bağlantı hızı" alanına bu ölçümü yazarsanız tahmin daha da iyileşir. Hız testi sonucu genellikle Mbps olarak verilir; tarayıcının indirme ekranı ise MB/s gösterir, bu yüzden birimi doğru seçtiğinizden emin olun.</p>
+
+      <h2>Ters hesap: belirli sürede indirmek için gereken hız</h2>
+      <p>Bazen soru tersidir: "Bu dosyayı 10 dakikada indirmek için ne kadar hız gerekir?" "Gereken hız" seçeneğinde dosya boyutunu ve hedef süreyi girin; araç gereken hızı Mbps ve MB/s olarak verir. Verim payı girdiyseniz bunu hesaba katar. Örnek: 5 GB'ı 10 dakikada indirmek için 5.000 MB × 8 ÷ 600 sn ≈ 66,7 Mbps gerekir; %85 verimle yaklaşık 78 Mbps'lik bir hatta ihtiyaç vardır. Bu hesap yeni bir internet tarifesi seçerken ya da bir yedeğin, güncellemenin belirli bir zaman penceresinde bitmesi gerektiğinde işe yarar.</p>
+
+      <h2>1 GB = 1000 MB mi, 1024 MB mi?</h2>
+      <p>Depolama üreticileri ve ağ dünyası 1 GB = 1000 MB kabul eder (ondalık). Windows ise dosya boyutlarını 1 GB = 1024 MB (ikili) üzerinden hesaplar ama yine de "GB" yazar. Fark yaklaşık %7,4'tür: Windows'un "1 GB" gösterdiği dosya aslında 1.073.741.824 bayttır ve 100 Mbps'de 80 yerine yaklaşık 85,9 saniyede iner. Boyutu bir indirme sayfasından alıyorsanız ondalık varsayım genellikle yeterlidir; bilgisayarınızdaki bir dosyanın Windows'ta gördüğünüz boyutunu giriyorsanız 1024'ü seçin. Bit tabanlı hız birimleri (Kbps, Mbps, Gbps) her koşulda 1000'in katlarıdır; taban seçimi yalnızca bayt tabanlı boyutları ve KB/s, MB/s gibi birimleri etkiler.</p>
+
+      <h2>İndirmeyi hızlandırmak için pratik ipuçları</h2>
+      <ul>
+        <li><strong>Kablolu bağlantı:</strong> Mümkünse Ethernet kullanın; Wi-Fi'de 5 GHz bandı ve modeme yakınlık hız kazandırır.</li>
+        <li><strong>Hatta yük bindirmeyin:</strong> İndirme sırasında video yayını, bulut yedekleme ve oyun güncellemelerini durdurun.</li>
+        <li><strong>Saat seçimi:</strong> Çok büyük indirmeleri ağın sakin olduğu gece saatlerine bırakın; duraklat-devam et özelliği olan bir indirme yöneticisi kullanın.</li>
+        <li><strong>VPN:</strong> Gerekmedikçe kapatın; ek şifreleme ve dolaylı yönlendirme hızı düşürebilir.</li>
+        <li><strong>Modem ve kablolar:</strong> Modemi ara sıra yeniden başlatın, eski ya da hasarlı kabloları değiştirin.</li>
+      </ul>
+      <p>Aynı hesap yükleme (upload) süresi için de geçerlidir; yalnızca hız olarak hattınızın yükleme hızını yazın. Birçok evde yükleme hızı indirmenin çok altındadır; bu yüzden video gibi büyük dosyaların gönderimi beklediğinizden uzun sürebilir. Dosyayı göndermeden önce küçültmek süreyi doğrudan kısaltır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Dosya boyutu ve hız bilgisi tarayıcınızda işlenir; hiçbir sunucuya gitmez, çerez ya da izleme kodu yoktur.</li>
+        <li><strong>Üç hesap bir arada.</strong> Süre, gereken hız ve Mbps ↔ MB/s dönüşümü aynı sayfada.</li>
+        <li><strong>Bit-bayt karışıklığı çözülür.</strong> Her sonuçta hem bit hem bayt karşılığı yazılır.</li>
+        <li><strong>Türkçe sayı biçimi.</strong> 4,7 ya da 1.024,5 gibi virgüllü girişler doğal çalışır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>1 GB'lık dosya 100 Mbps'de kaç saniyede iner?</summary><p>Kuramsal olarak 80 saniyede. 1 GB 8.000 megabit eder; 100 Mbps'ye bölünce 80 saniye çıkar. Gerçek yaşamda %80-90 verimle yaklaşık 89-100 saniye beklenir. Windows'un 1024 tabanlı boyutuyla hesaplarsanız süre 85,9 saniyeye çıkar.</p></details>
+        <details><summary>Mbps ile MB/s arasındaki fark nedir?</summary><p>Mbps saniyedeki megabit, MB/s saniyedeki megabayt sayısıdır. Bir bayt sekiz bit olduğundan Mbps değerini 8'e bölerek MB/s bulursunuz. Tarifeler Mbps, indirme ekranları çoğunlukla MB/s kullanır.</p></details>
+        <details><summary>100 Mbps kaç MB/s eder?</summary><p>100 Mbps, 12,5 MB/s eder (100 ÷ 8). Yani 100 Mbps'lik bir hatta bir dosyanın saniyede en çok yaklaşık 12,5 megabaytı inebilir. Gerçekte bu değerin %80-90'ı görülür, yani 10-11 MB/s civarı normaldir.</p></details>
+        <details><summary>Gerçek indirme hızım neden tarife hızından düşük?</summary><p>Tarife hızı üst sınırdır. Protokol başlıkları, Wi-Fi sinyal kalitesi, evdeki diğer cihazlar, sunucunun çıkış kapasitesi, VPN ve hat yoğunluğu gerçek hızı düşürür. Genel kural olarak bağlantı hızının %80-90'ı kadarını görmek normaldir.</p></details>
+        <details><summary>50 GB'lık bir oyun ne kadar sürede iner?</summary><p>Kuramsal olarak 100 Mbps'de 1 saat 6 dakika 40 saniye, 50 Mbps'de 2 saat 13 dakika 20 saniye, 1 Gbps'de 6 dakika 40 saniye sürer. Gerçek yaşamda bu sürelere %10-25 ekleyin. Sunucu hızı sınırlıysa daha hızlı hat süreyi aynı oranda kısaltmayabilir.</p></details>
+        <details><summary>Verim yüzdesi ne işe yarar?</summary><p>Bağlantı hızının gerçekte ne kadarını kullanabildiğinizi gösterir. Verimi 85 yazarsanız hesap, hızın %85'iyle yapılır ve süre buna göre uzar. Boş ya da 100 bırakırsanız kuramsal süre görünür ve ek olarak %80-90 verimle gerçekçi bir aralık listelenir.</p></details>
+        <details><summary>Ters hesap nasıl çalışır?</summary><p>"Gereken hız" seçeneğinde dosya boyutunu ve hedef süreyi yazarsınız. Araç, boyutu 8 ile çarpıp süreye böler ve bağlantı hızını Mbps ile MB/s olarak verir. Verim girdiyseniz değer buna göre yükseltilir.</p></details>
+        <details><summary>1 GB = 1000 MB mi yoksa 1024 MB mi?</summary><p>İkisi de kullanılır. Depolama üreticileri ve ağ birimleri 1000 tabanlıdır, Windows 1024 tabanlı gösterir. Aradaki fark yaklaşık %7,4'tür. Aracın "Boyut tabanı" seçeneğiyle ikisi arasında geçiş yapabilirsiniz; bit tabanlı hız birimleri her zaman 1000'in katıdır.</p></details>
+        <details><summary>Yükleme süresini de hesaplayabilir miyim?</summary><p>Evet. Hız alanına indirme yerine hattınızın yükleme (upload) hızını yazmanız yeterlidir. Birçok bağlantıda yükleme hızı indirmeden düşüktür; bu nedenle büyük dosyaların gönderimi daha uzun sürer.</p></details>
+        <details><summary>"Boş" ya da "geçersiz" hatası alıyorum, ne yapmalıyım?</summary><p>Alanlara yalnızca rakam ve virgül yazın (örn. 4,7 ya da 100). Harf, birim ya da eksi değer kabul edilmez; birimi yanındaki listeden seçin. Verim 1 ile 100 arasında olmalıdır. Alanı temizleyip değeri yeniden girin.</p></details>
+        <details><summary>Girdiğim bilgiler kaydediliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; dosya boyutu ve hız bilgisi sunucuya gönderilmez, saklanmaz ve çerez ya da analiz kodu kullanılmaz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar girdiğiniz değerlere dayanan tahminlerdir; gerçek indirme süresi ağ koşullarına, sunucu hızına ve hat yoğunluğuna göre değişir. Tablo ve örnekler kuramsal hesaptır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../video-boyutu-hesapla/">Video Boyutu Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../pdf-kucult/">PDF Küçült</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="indirme-suresi-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

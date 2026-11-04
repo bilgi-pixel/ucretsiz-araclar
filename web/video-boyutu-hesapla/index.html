@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Video Boyutu Hesaplama – Bit Hızı ve Süreye Göre Dosya Boyutu, Kart Kapasitesi</title>
+  <meta name="description" content="Video bit hızı ve süresini girerek dosya boyutunu hesaplayın; hedef boyuta göre gereken bit hızını bulun, karta kaç dakika video sığacağını görün. YouTube, telefon ve 4K profilleri hazır. Ücretsiz, kayıt yok, veriler tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/video-boyutu-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-width: 0; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1.02rem; text-align: right; overflow-wrap: anywhere; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.2rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .vb-modes { margin-bottom: 14px; border: 0; padding: 0; min-width: 0; }
+    .vb-pair { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; }
+    .vb-grid2 { display: grid; gap: 0 12px; }
+    @media (min-width: 600px) { .vb-grid2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); } }
+    .vb-hms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .vb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .vb-chip { min-height: 40px; padding: 6px 12px; font-size: .92rem; }
+    .vb-title { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+    .vb-raw { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 12px 14px 2px; margin: 0 0 12px; min-width: 0; }
+    .vb-dur { border: 0; padding: 0; margin: 0 0 12px; min-width: 0; }
+    .vb-raw legend { font-weight: 600; font-size: .9rem; padding: 0 6px; }
+    .vb-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .vb-table caption { text-align: left; font-weight: 600; padding: 0 0 8px; }
+    .vb-table th, .vb-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); }
+    .vb-table td.n { font-family: var(--ba-mono); white-space: nowrap; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Video Boyutu Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/video-boyutu-hesapla/","inLanguage":"tr"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Video dosya boyutu nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Toplam bit hızını (video + ses) saniye cinsinden süreyle çarpıp 8'e bölersiniz. Örneğin 8 Mbps video ve 128 kbps ses ile 10 dakikalık bir video yaklaşık 609,6 MB tutar. Araç bu işlemi sizin yerinize yapar."}},{"@type":"Question","name":"1 dakikalık 1080p video kaç MB tutar?","acceptedAnswer":{"@type":"Answer","text":"8 Mbps video ve 128 kbps ses ile yaklaşık 61 MB tutar. Telefon kaydında bit hızı genellikle daha yüksektir; 1080p 30 kare/sn için yaklaşık 12 Mbps ile dakikası 91 MB civarındadır."}},{"@type":"Question","name":"1 saatlik 4K video kaç GB tutar?","acceptedAnswer":{"@type":"Answer","text":"Bit hızına bağlıdır. 40 Mbps ile yaklaşık 18 GB, telefonlarda yaygın 50 Mbps ile yaklaşık 22,6 GB, 100 Mbps'lik 4K 60 kare/sn kayıtta ise yaklaşık 45 GB eder."}},{"@type":"Question","name":"64 GB karta kaç dakika video sığar?","acceptedAnswer":{"@type":"Answer","text":"50 Mbps ile kaydedilen 4K 30 kare/sn videoda yaklaşık 170 dakika, 1080p 30 kare/sn için yaklaşık 12 Mbps ile yaklaşık 700 dakika sığar. Biçimlendirme payı nedeniyle sonucun yüzde beş altını planlamak güvenlidir."}},{"@type":"Question","name":"Bit hızı ile çözünürlük arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Çözünürlük kare başına piksel sayısıdır; bit hızı ise bu görüntünün saniyede kaç bit ile saklandığıdır. Dosya boyutunu bit hızı belirler. Aynı çözünürlük düşük bit hızıyla daha küçük ama daha düşük kaliteli bir dosya verir."}},{"@type":"Question","name":"Hedef boyuta göre bit hızı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Hedef boyutu 8 ile çarpıp süreye bölersiniz; çıkan toplam bit hızından ses bit hızını düşersiniz. \"Gereken bit hızı\" seçeneği bunu yapar ve yüzde beş pay bırakılmış güvenli bir değer de verir."}},{"@type":"Question","name":"Sonuç gerçek dosya boyutundan neden farklı çıkabilir?","acceptedAnswer":{"@type":"Answer","text":"Değişken bit hızı, kodek, kapsayıcı (MP4, MKV) ek yükü ve kamera ayarları gerçek boyutu hesaplanan değerden yaklaşık yüzde 5-10 sapabilir. Sonuç bir tahmindir; kesin sınırlar için güvenli değeri kullanın."}},{"@type":"Question","name":"Ham (sıkıştırılmamış) boyut ne demektir?","acceptedAnswer":{"@type":"Answer","text":"Görüntünün hiç sıkıştırılmadan saklanması durumundaki boyuttur: genişlik × yükseklik × kare hızı × piksel başına bit sayısı. Gerçek videolar kodeklerle yüzlerce kat küçültülür; bu satır yalnızca karşılaştırma için verilir."}},{"@type":"Question","name":"1 GB = 1000 MB mi yoksa 1024 MB mi?","acceptedAnswer":{"@type":"Answer","text":"Depolama ve ağ dünyasında 1000 tabanı yaygındır, Windows ise 1024 tabanlı gösterir. Aracın \"Boyut tabanı\" seçeneğiyle ikisi arasında geçebilirsiniz. Bit hızı birimleri (kbps, Mbps) her zaman 1000'in katlarıdır."}},{"@type":"Question","name":"\"Boş\" ya da \"geçersiz\" hatası alıyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Alanlara yalnızca rakam ve virgül yazın (örn. 8 ya da 7,5). Harf ya da birim yazmayın; birimi yanındaki listeden seçin. Süre alanlarından en az birini doldurun. Alanı temizleyip değeri yeniden girin."}},{"@type":"Question","name":"Videomu bu sayfaya yüklemem gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfa video dosyası istemez; yalnızca bit hızı, süre ve boyut değerlerini yazarsınız. Hesap tamamen tarayıcınızda yapılır, girdiğiniz bilgiler sunucuya gönderilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Video Boyutu Hesaplama: Bit Hızı ve Süreye Göre Dosya Boyutu</span></h1>
+      <p class="lead">Video bit hızını ve süresini girin; dosyanın kaç MB ya da GB olacağını görün. Hedef boyuta göre gereken bit hızını bulabilir, 64 GB'lık bir karta kaç dakika video sığacağını hesaplayabilir ve sıkıştırılmamış (ham) boyutla karşılaştırabilirsiniz. YouTube, telefon ve 4K için hazır profiller var; hiçbir video dosyası seçmeniz ya da yüklemeniz gerekmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="kdv-modes vb-modes">
+          <legend class="visually-hidden">Hesaplama türü</legend>
+          <label><input type="radio" name="mode" value="size" checked> Dosya boyutu</label>
+          <label><input type="radio" name="mode" value="need"> Gereken bit hızı</label>
+          <label><input type="radio" name="mode" value="cap"> Kart kapasitesi</label>
+        </fieldset>
+
+        <div data-panel="size cap">
+          <div class="ba-field"><label for="profile">Hazır profil</label>
+            <select id="profile">
+              <option value="">Profil seçin (isteğe bağlı)</option>
+              <option value="mbps:5">YouTube 720p · 5 Mbps</option>
+              <option value="mbps:8">YouTube 1080p · 8 Mbps</option>
+              <option value="mbps:16">YouTube 1440p · 16 Mbps</option>
+              <option value="mbps:40">YouTube 4K · 35-45 Mbps (40 alınır)</option>
+              <option value="mbps:5">Instagram Reels / Hikâye 1080×1920 · yaklaşık 5 Mbps</option>
+              <option value="mbps:12">Telefon 1080p 30 fps · yaklaşık 12 Mbps</option>
+              <option value="mbps:24">Telefon 1080p 60 fps · yaklaşık 24 Mbps</option>
+              <option value="mbps:50">Telefon 4K 30 fps · yaklaşık 50 Mbps</option>
+              <option value="mbps:100">Telefon 4K 60 fps · yaklaşık 100 Mbps</option>
+            </select>
+            <div class="hint">Seçim yalnızca video bit hızı alanını doldurur; değeri dilediğiniz gibi değiştirebilirsiniz.</div>
+          </div>
+          <div class="vb-pair">
+            <div class="ba-field"><label for="f-vbr">Video bit hızı</label><input id="f-vbr" type="text" inputmode="decimal" autocomplete="off" placeholder="8"><div class="hint">Örnek: 8 Mbps ya da 8000 kbps</div></div>
+            <div class="ba-field"><label for="f-vbr-unit">Birim</label><select id="f-vbr-unit"><option value="mbps" selected>Mbps</option><option value="kbps">kbps</option></select></div>
+          </div>
+        </div>
+
+        <div data-panel="need" hidden>
+          <div class="vb-pair">
+            <div class="ba-field"><label for="f-target">Hedef dosya boyutu</label><input id="f-target" type="text" inputmode="decimal" autocomplete="off" placeholder="25"><div class="hint">Dosyanın en fazla bu boyutta olmasını istiyorsunuz.</div></div>
+            <div class="ba-field"><label for="f-target-unit">Birim</label><select id="f-target-unit"><option value="mb" selected>MB</option><option value="gb">GB</option><option value="tb">TB</option></select></div>
+          </div>
+          <span class="vb-title" id="t-target">Hızlı seç: hedef boyut</span>
+          <div class="vb-chips" role="group" aria-labelledby="t-target">
+            <button type="button" class="ba-btn vb-chip" data-target="10" data-unit="mb">10 MB</button>
+            <button type="button" class="ba-btn vb-chip" data-target="25" data-unit="mb">25 MB</button>
+            <button type="button" class="ba-btn vb-chip" data-target="100" data-unit="mb">100 MB</button>
+            <button type="button" class="ba-btn vb-chip" data-target="1" data-unit="gb">1 GB</button>
+          </div>
+        </div>
+
+        <div data-panel="cap" hidden>
+          <div class="vb-pair">
+            <div class="ba-field"><label for="f-cap">Depolama kapasitesi</label><input id="f-cap" type="text" inputmode="decimal" autocomplete="off" placeholder="64"><div class="hint">Hafıza kartı, telefon ya da disk kapasitesi.</div></div>
+            <div class="ba-field"><label for="f-cap-unit">Birim</label><select id="f-cap-unit"><option value="mb">MB</option><option value="gb" selected>GB</option><option value="tb">TB</option></select></div>
+          </div>
+          <span class="vb-title" id="t-cap">Hızlı seç: kapasite</span>
+          <div class="vb-chips" role="group" aria-labelledby="t-cap">
+            <button type="button" class="ba-btn vb-chip" data-cap="32" data-unit="gb">32 GB</button>
+            <button type="button" class="ba-btn vb-chip" data-cap="64" data-unit="gb">64 GB</button>
+            <button type="button" class="ba-btn vb-chip" data-cap="128" data-unit="gb">128 GB</button>
+            <button type="button" class="ba-btn vb-chip" data-cap="256" data-unit="gb">256 GB</button>
+            <button type="button" class="ba-btn vb-chip" data-cap="1" data-unit="tb">1 TB</button>
+          </div>
+        </div>
+
+        <div data-panel="size need">
+          <fieldset class="vb-dur">
+            <legend class="vb-title">Video süresi</legend>
+            <div class="vb-hms">
+              <div class="ba-field"><label for="f-h">Saat</label><input id="f-h" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+              <div class="ba-field"><label for="f-m">Dakika</label><input id="f-m" type="text" inputmode="decimal" autocomplete="off" placeholder="10"></div>
+              <div class="ba-field"><label for="f-s">Saniye</label><input id="f-s" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div data-panel="size need cap">
+          <div class="ba-field"><label for="f-abr">Ses bit hızı (kbps)</label><input id="f-abr" type="text" inputmode="decimal" autocomplete="off" value="128"><div class="hint">Stereo AAC için yaygın değer 128 kbps. Ses yoksa 0 yazın.</div></div>
+        </div>
+
+        <div data-panel="size">
+          <fieldset class="vb-raw">
+            <legend>Ham boyutla karşılaştırma (isteğe bağlı)</legend>
+            <div class="ba-field"><label for="f-res">Çözünürlük</label>
+              <select id="f-res">
+                <option value="">Gösterme</option>
+                <option value="1280x720">720p (1280×720)</option>
+                <option value="1920x1080" selected>1080p (1920×1080)</option>
+                <option value="2560x1440">1440p (2560×1440)</option>
+                <option value="3840x2160">4K (3840×2160)</option>
+                <option value="7680x4320">8K (7680×4320)</option>
+              </select>
+            </div>
+            <div class="vb-grid2">
+              <div class="ba-field"><label for="f-fps">Kare hızı (fps)</label><input id="f-fps" type="text" inputmode="decimal" autocomplete="off" value="30"></div>
+              <div class="ba-field"><label for="f-depth">Bit derinliği</label>
+                <select id="f-depth">
+                  <option value="12">12 bit/piksel (YUV 4:2:0, 8 bit)</option>
+                  <option value="24" selected>24 bit/piksel (RGB, 8 bit)</option>
+                  <option value="30">30 bit/piksel (RGB, 10 bit)</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <fieldset class="kdv-modes vb-modes">
+          <legend class="vb-title">Boyut tabanı</legend>
+          <label><input type="radio" name="base" value="1000" checked> 1 GB = 1000 MB (ondalık)</label>
+          <label><input type="radio" name="base" value="1024"> 1 GB = 1024 MB (Windows)</label>
+        </fieldset>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="rows"></dl>
+        <p class="kdv-note" id="r-notes"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="video-boyutu-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstten hesaplama türünü seçin: "Dosya boyutu" bit hızı ve süreden boyutu bulur, "Gereken bit hızı" hedef boyuta göre ayar önerir, "Kart kapasitesi" belirli bir alana kaç dakika video sığacağını gösterir.</li>
+        <li>Video bit hızını yazın ya da hazır profillerden birini seçin (YouTube 1080p, telefon 4K 30 fps gibi). Mbps ile kbps arasında birim seçebilirsiniz; 7,5 gibi virgüllü değerler kabul edilir.</li>
+        <li>Süreyi saat, dakika ve saniye alanlarına yazın; ses bit hızını kontrol edin (varsayılan 128 kbps). Ses yoksa 0 yazın.</li>
+        <li>İsterseniz çözünürlük, kare hızı ve bit derinliğini seçerek sıkıştırılmamış (ham) boyut karşılaştırmasını da görün.</li>
+        <li>"Hesapla" düğmesine basın; video, ses ve toplam boyut ile dakika ve saat başına boyut listelenir. "Sonucu kopyala" ile özeti panoya alın.</li>
+      </ol>
+
+      <h2>Video dosya boyutu nasıl hesaplanır?</h2>
+      <p>Bir videonun dosya boyutu, saniyede kaç bit veri harcandığına (bit hızı) ve videonun kaç saniye sürdüğüne bağlıdır. Formül kısadır: boyut (bayt) = (video bit hızı + ses bit hızı) × süre (saniye) ÷ 8. Sekize bölünür, çünkü bir bayt sekiz bittir. Örneğin 8 Mbps video ve 128 kbps ses ile kaydedilmiş 10 dakikalık bir videoda toplam bit hızı 8.128 kbps'dir; 600 saniye için 8.128 × 600 = 4.876.800 kilobit eder, bunu 8'e bölünce yaklaşık 609.600 kilobayt, yani <strong>609,6 MB</strong> bulunur. Aynı ayarlarla bir saatlik video yaklaşık 3,66 GB tutar.</p>
+      <p>Bu araç aynı hesabı sizin yerinize yapar; video ve ses akışını ayrı ayrı gösterir, toplamın yanında bir dakikanın ve bir saatin boyutunu da yazar. Böylece planlarken "bu videoyu çekmeye değer mi, diske sığar mı, internetten kaç dakikada gider?" sorularına hızlıca cevap bulursunuz.</p>
+
+      <h2>Bit hızı nedir, çözünürlükten farkı ne?</h2>
+      <p><strong>Çözünürlük</strong> kare başına kaç piksel olduğunu (1920×1080 gibi), <strong>bit hızı</strong> ise bu görüntünün saniyede kaç bit ile saklandığını söyler. Dosya boyutunu doğrudan belirleyen çözünürlük değil bit hızıdır. Aynı 1080p video 4 Mbps ile kaydedilirse 12 Mbps'e göre üç kat küçüktür; ancak kalite de düşer, özellikle hareketli sahnelerde bloklaşma görülür. Kodek de önemlidir: H.265 (HEVC) ve AV1, H.264'e göre aynı görsel kaliteyi genellikle daha düşük bit hızıyla verir; bu yüzden yeni telefonlar HEVC seçeneği sunar. Bit hızı sabit (CBR) ya da değişken (VBR) olabilir. Değişken bit hızında sakin sahnelerde az, hareketli sahnelerde çok veri harcanır; bu nedenle gerçek dosya hesaplanan değerden birkaç yüzde sapabilir.</p>
+
+      <h2>Hazır profiller: tipik bit hızları ve boyutlar</h2>
+      <p>Aşağıdaki tablo, sık kullanılan profillerin bir dakikalık ve bir saatlik video için boyutunu verir. YouTube değerleri, platformun yükleme için önerdiği bit hızlarına (SDR, 30 kare/sn) kabaca karşılık gelir; platform önerilerini zamanla güncelleyebilir ve yüklediğiniz videoyu kendi ayarlarıyla yeniden kodlar. Telefon ve Reels değerleri ortalamadır; cihaza, kodeke ve sahnedeki harekete göre değişir.</p>
+      <table class="vb-table" id="profiles">
+        <caption>Profile göre video boyutu (128 kbps ses dahil, 1 GB = 1000 MB)</caption>
+        <thead><tr><th scope="col">Profil</th><th scope="col">Video bit hızı</th><th scope="col">1 dakika ≈</th><th scope="col">1 saat ≈</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">YouTube 720p</th><td class="n">5 Mbps</td><td class="n">38,46 MB</td><td class="n">2,31 GB</td></tr>
+          <tr><th scope="row">YouTube 1080p</th><td class="n">8 Mbps</td><td class="n">60,96 MB</td><td class="n">3,66 GB</td></tr>
+          <tr><th scope="row">YouTube 1440p</th><td class="n">16 Mbps</td><td class="n">120,96 MB</td><td class="n">7,26 GB</td></tr>
+          <tr><th scope="row">YouTube 4K (35-45 Mbps, 40 alınır)</th><td class="n">40 Mbps</td><td class="n">300,96 MB</td><td class="n">18,06 GB</td></tr>
+          <tr><th scope="row">Instagram Reels / Hikâye (yaklaşık)</th><td class="n">5 Mbps</td><td class="n">38,46 MB</td><td class="n">2,31 GB</td></tr>
+          <tr><th scope="row">Telefon 1080p 30 fps (yaklaşık)</th><td class="n">12 Mbps</td><td class="n">90,96 MB</td><td class="n">5,46 GB</td></tr>
+          <tr><th scope="row">Telefon 1080p 60 fps (yaklaşık)</th><td class="n">24 Mbps</td><td class="n">180,96 MB</td><td class="n">10,86 GB</td></tr>
+          <tr><th scope="row">Telefon 4K 30 fps (yaklaşık)</th><td class="n">50 Mbps</td><td class="n">375,96 MB</td><td class="n">22,56 GB</td></tr>
+          <tr><th scope="row">Telefon 4K 60 fps (yaklaşık)</th><td class="n">100 Mbps</td><td class="n">750,96 MB</td><td class="n">45,06 GB</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ba-ad" data-slot="video-boyutu-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Hedef boyuta göre bit hızı nasıl bulunur?</h2>
+      <p>Bazen soru tersidir: videonun belirli bir boyutu aşmaması gerekir. Hesap şöyle yapılır: toplam bit hızı = hedef boyut × 8 ÷ süre; video bit hızı = toplam bit hızı − ses bit hızı. Örnek: 10 dakikalık bir videoyu 100 MB'a sığdırmak istiyorsanız toplam bit hızı 100 MB × 8 ÷ 600 sn ≈ 1,33 Mbps olur; 128 kbps ses çıkarılınca video için yaklaşık 1,2 Mbps kalır. Bir e-posta ekinin sınırına (servise göre yaklaşık 20-25 MB; değişebilir) sığması gereken videolarda da aynı hesap işe yarar: 25 MB'lık bir sınır için 2 dakikalık videonun bit hızı en çok yaklaşık 1,5 Mbps olabilir. "Gereken bit hızı" seçeneği ayrıca yüzde beşlik bir pay bırakılmış güvenli değeri de verir; çünkü kapsayıcı ek yükü ve değişken bit hızı dosyayı hedefin biraz üstüne taşıyabilir. Çıkan değeri HandBrake ya da FFmpeg gibi bir dönüştürücüde hedef bit hızı olarak girebilirsiniz.</p>
+      <p>Sonuç çok düşükse (örneğin 1080p için 1 Mbps'in altı) görüntü kalitesi belirgin biçimde bozulur. Bu durumda çözünürlüğü 720p'ye indirmek, kare hızını düşürmek ya da videoyu kısaltmak daha iyi sonuç verir.</p>
+
+      <h2>Karta kaç dakika video sığar?</h2>
+      <p>"Kart kapasitesi" seçeneği, depolama alanını toplam bit hızına bölerek kayıt süresini verir. Örneğin 64 GB'lık bir kart, 50 Mbps ile kaydedilen 4K 30 kare/sn videoda yaklaşık 170 dakika (2 saat 50 dakika) alır; 256 GB'lık bir kart 100 Mbps'lik 4K 60 kare/sn kayıtta yaklaşık 341 dakika (yaklaşık 5 saat 41 dakika) tutar. Kartın üzerinde yazan kapasitenin tamamı kullanılamaz: dosya sistemi ve biçimlendirme yer kaplar. Bu yüzden araç, yüzde beş az alanla da bir süre gösterir; uzun bir çekimde kartın yetmemesini istemiyorsanız bu değeri baz alın. Birçok kamera kaydı 4 GB'lık FAT32 sınırı nedeniyle parçalara böler; bu toplam süreyi değiştirmez.</p>
+
+      <h2>Ham (sıkıştırılmamış) video boyutu nedir?</h2>
+      <p>Kameranın sensöründen çıkan görüntü sıkıştırılmadan saklansaydı boyutu inanılmaz büyük olurdu. Ham veri hızı basitçe genişlik × yükseklik × kare hızı × piksel başına bit sayısıdır. 1920×1080 çözünürlük, 30 kare/sn ve 24 bit/piksel için bu 1,49 Gbps eder; bir dakikası yaklaşık 11,2 GB tutar. 4K'da (3840×2160) aynı hesap yaklaşık 5,97 Gbps ve dakikada 44,8 GB'a çıkar. Bu rakamları 8 Mbps'lik bir YouTube videosuyla kıyasladığınızda sıkıştırma oranının yaklaşık 187:1 olduğunu görürsünüz. Araç, "Ham boyutla karşılaştırma" bölümünü doldurduğunuzda bu bilgiyi sonuca satır olarak ekler. Bu yalnızca bilgi amaçlıdır; dosya boyutu hesabını etkilemez.</p>
+
+      <h2>Video boyutunu küçültmek için ipuçları</h2>
+      <ul>
+        <li><strong>Çözünürlüğü düşürün:</strong> Küçük ekranda izlenecek video için 1080p yerine 720p çoğu zaman yeterlidir.</li>
+        <li><strong>Kare hızını azaltın:</strong> 60 yerine 30 kare/sn, hareketsiz içeriklerde boyutu belirgin biçimde düşürür.</li>
+        <li><strong>Verimli kodek seçin:</strong> HEVC ya da AV1 destekleniyorsa aynı kalitede daha küçük dosya elde edilir.</li>
+        <li><strong>Sesi gözden geçirin:</strong> Konuşma için 96-128 kbps genellikle yeterlidir; müzik için daha yüksek tutun.</li>
+        <li><strong>Gereksiz kısımları kesin:</strong> Baştaki ve sondaki boş saniyeler de bit harcar.</li>
+      </ul>
+      <p>Bu sayfa videoyu işlemez, dönüştürmez ya da sıkıştırmaz; yalnızca planlama için hesap yapar. Bu yüzden hiçbir video dosyası seçmeniz gerekmez.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Girdiğiniz değerler tarayıcınızda işlenir; hiçbir sunucuya gitmez, çerez ya da izleme kodu yoktur.</li>
+        <li><strong>Üç hesap bir arada.</strong> Dosya boyutu, gereken bit hızı ve kart kapasitesi aynı sayfada.</li>
+        <li><strong>Hazır profiller.</strong> YouTube, Reels ve telefon çözünürlükleri için tipik bit hızları tek seçimle gelir.</li>
+        <li><strong>Türkçe sayı biçimi.</strong> 7,5 ya da 1.024,5 gibi virgüllü girişler doğal çalışır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Video dosya boyutu nasıl hesaplanır?</summary><p>Toplam bit hızını (video + ses) saniye cinsinden süreyle çarpıp 8'e bölersiniz. Örneğin 8 Mbps video ve 128 kbps ses ile 10 dakikalık bir video yaklaşık 609,6 MB tutar. Araç bu işlemi sizin yerinize yapar.</p></details>
+        <details><summary>1 dakikalık 1080p video kaç MB tutar?</summary><p>8 Mbps video ve 128 kbps ses ile yaklaşık 61 MB tutar. Telefon kaydında bit hızı genellikle daha yüksektir; 1080p 30 kare/sn için yaklaşık 12 Mbps ile dakikası 91 MB civarındadır.</p></details>
+        <details><summary>1 saatlik 4K video kaç GB tutar?</summary><p>Bit hızına bağlıdır. 40 Mbps ile yaklaşık 18 GB, telefonlarda yaygın 50 Mbps ile yaklaşık 22,6 GB, 100 Mbps'lik 4K 60 kare/sn kayıtta ise yaklaşık 45 GB eder.</p></details>
+        <details><summary>64 GB karta kaç dakika video sığar?</summary><p>50 Mbps ile kaydedilen 4K 30 kare/sn videoda yaklaşık 170 dakika, 1080p 30 kare/sn için yaklaşık 12 Mbps ile yaklaşık 700 dakika sığar. Biçimlendirme payı nedeniyle sonucun yüzde beş altını planlamak güvenlidir.</p></details>
+        <details><summary>Bit hızı ile çözünürlük arasındaki fark nedir?</summary><p>Çözünürlük kare başına piksel sayısıdır; bit hızı ise bu görüntünün saniyede kaç bit ile saklandığıdır. Dosya boyutunu bit hızı belirler. Aynı çözünürlük düşük bit hızıyla daha küçük ama daha düşük kaliteli bir dosya verir.</p></details>
+        <details><summary>Hedef boyuta göre bit hızı nasıl bulunur?</summary><p>Hedef boyutu 8 ile çarpıp süreye bölersiniz; çıkan toplam bit hızından ses bit hızını düşersiniz. "Gereken bit hızı" seçeneği bunu yapar ve yüzde beş pay bırakılmış güvenli bir değer de verir.</p></details>
+        <details><summary>Sonuç gerçek dosya boyutundan neden farklı çıkabilir?</summary><p>Değişken bit hızı, kodek, kapsayıcı (MP4, MKV) ek yükü ve kamera ayarları gerçek boyutu hesaplanan değerden yaklaşık yüzde 5-10 sapabilir. Sonuç bir tahmindir; kesin sınırlar için güvenli değeri kullanın.</p></details>
+        <details><summary>Ham (sıkıştırılmamış) boyut ne demektir?</summary><p>Görüntünün hiç sıkıştırılmadan saklanması durumundaki boyuttur: genişlik × yükseklik × kare hızı × piksel başına bit sayısı. Gerçek videolar kodeklerle yüzlerce kat küçültülür; bu satır yalnızca karşılaştırma için verilir.</p></details>
+        <details><summary>1 GB = 1000 MB mi yoksa 1024 MB mi?</summary><p>Depolama ve ağ dünyasında 1000 tabanı yaygındır, Windows ise 1024 tabanlı gösterir. Aracın "Boyut tabanı" seçeneğiyle ikisi arasında geçebilirsiniz. Bit hızı birimleri (kbps, Mbps) her zaman 1000'in katlarıdır.</p></details>
+        <details><summary>"Boş" ya da "geçersiz" hatası alıyorum, ne yapmalıyım?</summary><p>Alanlara yalnızca rakam ve virgül yazın (örn. 8 ya da 7,5). Harf ya da birim yazmayın; birimi yanındaki listeden seçin. Süre alanlarından en az birini doldurun. Alanı temizleyip değeri yeniden girin.</p></details>
+        <details><summary>Videomu bu sayfaya yüklemem gerekir mi?</summary><p>Hayır. Sayfa video dosyası istemez; yalnızca bit hızı, süre ve boyut değerlerini yazarsınız. Hesap tamamen tarayıcınızda yapılır, girdiğiniz bilgiler sunucuya gönderilmez ve saklanmaz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar girdiğiniz değerlere dayanan tahminlerdir; gerçek dosya boyutu kodek, bit hızı modu ve kapsayıcıya göre değişebilir. Platform bit hızı önerileri zamanla değişebilir; güncel değeri platformun yardım sayfasından kontrol edin.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../indirme-suresi-hesapla/">İndirme Süresi Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../ekran-kaydedici/">Ekran Kaydedici</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="video-boyutu-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
