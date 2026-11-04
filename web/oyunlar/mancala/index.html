@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Mancala Oyna – Ücretsiz Online Mancala (kurulumsuz)</title>
+  <meta name="description" content="Mancala (Kalah kuralları) oyna: bilgisayara karşı üç zorluk seviyesinde ya da aynı cihazda iki kişilik. Taş dağıtma animasyonu, tekrar oynama, ele geçirme ve geri al. Ücretsiz, kayıtsız, kurulumsuz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/mancala/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tahta renkleri temadan bağımsızdır. */
+    .mc-layout { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .mc-layout { grid-template-columns: minmax(0, 640px) minmax(0, 1fr); align-items: start; } }
+    .mc-boardcol, .mc-side { min-width: 0; }
+    .mc-status { margin: 0 0 12px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; font-size: .95rem; line-height: 1.35; }
+    .mc-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .mc-board { display: grid; grid-template-columns: .95fr repeat(6, minmax(0, 1fr)) .95fr; grid-template-rows: 1fr 1fr; gap: 5px; padding: 8px; background: #6b4423; border-radius: 12px; box-shadow: 0 4px 14px rgba(30, 33, 38, .25); max-width: 640px; margin: 0 auto; touch-action: manipulation; }
+    .mc-store { grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6px 2px; min-height: 150px; background: #4a2f16; border-radius: 40px; color: #fff; min-width: 0; }
+    .mc-store-1 { grid-column: 1; }
+    .mc-store-0 { grid-column: 8; }
+    .mc-lab { font-size: .62rem; font-weight: 600; text-align: center; line-height: 1.1; overflow-wrap: anywhere; }
+    .mc-cnt { font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 700; line-height: 1; }
+    .mc-pit { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-width: 0; min-height: 70px; padding: 6px 2px; margin: 0; border: 2px solid #3b240e; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #a4743f, #7e5429); color: #fff; font: inherit; cursor: default; -webkit-tap-highlight-color: transparent; aspect-ratio: 1 / 1.1; }
+    .mc-pit:disabled { opacity: 1; color: #fff; }
+    .mc-pit.is-movable { cursor: pointer; border-color: #f1dd91; box-shadow: 0 0 0 2px rgba(241, 221, 145, .55); }
+    .mc-pit.is-movable:hover { background: radial-gradient(circle at 40% 35%, #b98650, #8c6030); }
+    .mc-pit.is-last { outline: 3px solid #f1c94b; outline-offset: 1px; }
+    .mc-pit:focus-visible { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 5px #1d4ed8; z-index: 2; }
+    .mc-dots { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 2px; width: 90%; max-height: 50%; overflow: hidden; }
+    .mc-dots i { width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d6a73a); box-shadow: 0 1px 1px rgba(0, 0, 0, .5); }
+    .mc-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .mc-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .mc-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .mc-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .mc-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .mc-actions .ba-btn { flex: 1 1 120px; }
+    .mc-scorebox { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); }
+    .mc-scorebox span { font-size: .85rem; color: var(--ba-text-muted); }
+    .mc-scorebox strong { display: block; font-family: var(--ba-mono); font-size: 1.6rem; }
+    .mc-stats { margin: 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.mc-ad-a { margin-top: 56px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .mc-pit { min-height: 56px; padding: 4px 1px; } .mc-dots i { width: 5px; height: 5px; } .mc-cnt { font-size: 1rem; } .mc-board { gap: 3px; padding: 5px; } }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Mancala (Kalah) – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Mancala: bilgisayara karşı üç zorluk seviyesi veya aynı cihazda iki kişilik.","inLanguage":"tr","genre":["Masa oyunu","Strateji"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/mancala/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Mancala nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Kendi sıranızdaki bir çukuru seçersiniz; içindeki tüm taşlar saat yönünün tersine birer birer sonraki çukurlara ve kendi haznenize bırakılır. Rakibin haznesine taş bırakılmaz. Amaç oyun sonunda haznenizde rakipten fazla taş toplamaktır."}},
+  {"@type":"Question","name":"Tekrar oynama hakkı ne zaman kazanılır?","acceptedAnswer":{"@type":"Answer","text":"Dağıttığınız son taş kendi haznenize düşerse aynı oyuncu bir hamle daha oynar. Bu hakkın zincirleme kullanılması mümkündür."}},
+  {"@type":"Question","name":"Ele geçirme kuralı nedir?","acceptedAnswer":{"@type":"Answer","text":"Son taş kendi tarafınızdaki boş bir çukura düşerse ve karşısındaki çukurda taş varsa, karşıdaki taşlar ve son taşınız haznenize alınır."}},
+  {"@type":"Question","name":"Oyun nasıl biter?","acceptedAnswer":{"@type":"Answer","text":"Taraflardan birinin altı çukuru da boşaldığında oyun biter. Diğer tarafta kalan taşlar o tarafın sahibinin haznesine eklenir ve hazneler karşılaştırılır."}},
+  {"@type":"Question","name":"Zorluk seviyeleri arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviyede bilgisayar 2, Orta seviyede 4, Zor seviyede 7 hamle ilerisini hesaplar. Zor seviye tekrar oynama ve ele geçirme fırsatlarını çok daha güvenilir kullanır."}},
+  {"@type":"Question","name":"Hamleyi geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Geri al düğmesi, bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda bir hamle geri gider."}},
+  {"@type":"Question","name":"Klavye ile oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. 1 ile 6 arasındaki tuşlar sırası gelen oyuncunun sıradaki çukurlarını soldan sağa seçer. Tab ile çukurlara gidip Enter ile de oynayabilirsiniz."}},
+  {"@type":"Question","name":"Hamlelerim veya skorlarım sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oyun tamamen tarayıcınızda çalışır. Yalnızca galibiyet, yenilgi ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Mancala Oyna</span> – Ücretsiz Online Mancala</h1>
+      <p class="lead">Bilgisayara karşı ya da aynı cihazda arkadaşınızla Mancala oynayın. Kalah kuralları uygulanır: tekrar oynama, ele geçirme ve oyun sonu sayımı otomatiktir. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Mancala oyunu</h2>
+      <div class="mc-layout">
+        <div class="mc-boardcol">
+          <p id="mc-status" class="mc-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <div id="mc-board" class="mc-board" role="group" aria-label="Mancala tahtası: altı çukur ve bir hazne"></div>
+          <p class="mc-help">Alt sıra sizin. Parlayan çukurlardan birine dokunun; taşlar saat yönünün tersine dağıtılır. Klavyede 1–6 tuşları ya da Tab ve Enter kullanın.</p>
+        </div>
+        <div class="mc-side">
+          <div class="mc-controls">
+            <div class="mc-field"><label for="mc-mode">Oyun türü</label><select id="mc-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişilik (aynı cihaz)</option></select></div>
+            <div class="mc-field" id="mc-level-wrap"><label for="mc-level">Zorluk</label><select id="mc-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+          </div>
+          <div class="mc-actions"><button id="mc-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button><button id="mc-undo" class="ba-btn" type="button" disabled>Geri al</button><button id="mc-full" class="ba-btn" type="button" hidden>Tam ekran</button></div>
+          <div class="mc-scorebox"><span>Hazne skoru (alt – üst)</span><strong id="mc-score">0 – 0</strong></div>
+          <p id="mc-stats" class="mc-stats"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad mc-ad-a" data-slot="oyun-mancala-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Mancala nedir?</h2>
+      <p>Mancala, taşları çukurlara dağıtarak oynanan eski bir oyun ailesinin ortak adıdır. Afrika'dan Orta Doğu'ya, Asya'dan Karayipler'e kadar pek çok bölgede farklı adlar ve farklı kurallarla oynanır. Türkiye'de de "mangala" adıyla bilinir ve geleneksel oyunlar arasında sayılır. Bu sayfadaki sürüm, en yaygın modern varyant olan Kalah kurallarını kullanır: iki oyuncu, her birinin önünde altı çukur ve sağında bir hazne vardır. Oyun sonunda haznesinde en çok taş bulunan kazanır. Kurallar kısadır ama iyi oynamak planlama gerektirir. Ücretsiz, kurulumsuz ve kayıtsız olarak bilgisayara karşı ya da aynı cihazda bir arkadaşınızla oynayabilirsiniz.</p>
+
+      <h2>Mancala nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlangıç.</strong> Her çukura dört taş konur, iki hazne boştur. Alt sıra ve sağdaki hazne sizindir, üst sıra ve soldaki hazne rakibindir. Oyuna siz başlarsınız.</li>
+        <li><strong>Dağıtma.</strong> Kendi sıranızdan taş bulunan bir çukuru seçersiniz. İçindeki bütün taşlar alınır ve saat yönünün tersine, sonraki çukurlara birer birer bırakılır. Yol sizin haznenizden geçer ve oraya da bir taş bırakır, ancak rakibin haznesi atlanır.</li>
+        <li><strong>Tekrar oynama.</strong> Elinizdeki son taş kendi haznenize düşerse sıra yine sizdedir. Bu kural oyunun en önemli taktik aracıdır; doğru çukurlar planlanırsa art arda üç dört hamle oynanabilir.</li>
+        <li><strong>Ele geçirme.</strong> Son taş kendi tarafınızdaki boş bir çukura düşerse ve karşısındaki rakip çukurunda taş varsa, o taşlar ve son taşınız haznenize alınır. Karşı çukur boşsa ele geçirme olmaz.</li>
+        <li><strong>Oyunun sonu.</strong> Bir tarafın altı çukuru da boşaldığında oyun biter. Karşı tarafta kalan bütün taşlar o tarafın sahibinin haznesine eklenir. Haznesi daha dolu olan kazanır, eşitlik beraberliktir.</li>
+      </ol>
+      <p>Mancala'nın birçok yerel varyantı vardır ve bazılarında taş sayısı, yön ya da ele geçirme koşulları farklıdır. Bu oyunda yukarıdaki Kalah kuralları uygulanır; başka bir kuralla oynamaya alışkınsanız bunu aklınızda tutun.</p>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Sırası sizde olan çukurlar parlar. Birine tıklayın ya da dokunun; taşlar tek tek dağıtılır ve son düşen taşın çukuru sarı çerçeveyle işaretlenir.</li>
+        <li><strong>Klavye:</strong> 1 ile 6 arasındaki tuşlar, sırası gelen oyuncunun satırındaki çukurları soldan sağa seçer. Tab ile çukurlara da gidebilir, Enter veya Boşluk ile oynayabilirsiniz. Her çukurun ekran okuyucu etiketi taş sayısını söyler.</li>
+        <li><strong>Geri al:</strong> Bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda bir hamle geri gider.</li>
+        <li><strong>Tam ekran:</strong> Destekleyen tarayıcılarda oyunu ekranı kaplayacak biçimde büyütür; tam ekranda reklam görünmez.</li>
+        <li><strong>Hareket azaltma:</strong> Cihazınızda "hareketi azalt" ayarı açıksa taş dağıtma animasyonu kapanır, hamleler anında uygulanır.</li>
+        <li><strong>İki kişilik mod:</strong> Oyun türü listesinden seçin. Alt sıra Oyuncu 1, üst sıra Oyuncu 2'dir ve durum satırı sırayı bildirir.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünür?</h2>
+      <p>Bilgisayar rakibi, alfa-beta budamalı minimax algoritmasıyla çalışır. Olası hamlelerin ağacını belli bir derinliğe kadar gezer, her konumu hazne farkına ve kendi tarafındaki taş avantajına göre puanlar, sizin en iyi cevabınızı varsayarak en yüksek puanlı hamleyi seçer. Tekrar oynama hakkı veren hamleler aynı oyuncuya sırayı geri verdiği için ağaçta özel olarak değerlendirilir. Hesap, sayfayı dondurmaması için ayrı bir Web Worker içinde yapılır.</p>
+      <ul>
+        <li><strong>Kolay:</strong> Yalnızca 2 hamle ilerisini görür. Kuralları öğrenenler için uygundur, ucuz fırsatları kaçırabilir.</li>
+        <li><strong>Orta:</strong> 4 hamle ilerisini hesaplar; basit ele geçirmeleri ve tekrar oynama zincirlerini görür.</li>
+        <li><strong>Zor:</strong> 7 hamle ilerisini hesaplar. Tekrar oynama fırsatını neredeyse hiç kaçırmaz ve savunmasız çukurlarınızı hedef alır.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-mancala-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Haznenize en yakın çukuru hesaplayın.</strong> Altıncı çukurda bir, beşincide iki, dördüncüde üç taş varsa son taş haznenize düşer. Her tur hangi çukurun tam bu sayıda taş içerdiğine bakın.</li>
+        <li><strong>Sağdaki çukurları boş bırakmayı düşünün.</strong> Haznenize yakın çukurlar boşken oraya düşecek son taşlar ele geçirme fırsatı yaratır; ancak karşı çukurda taş birikmişse değerlidir.</li>
+        <li><strong>Rakibin ele geçirmelerini önleyin.</strong> Rakip tarafta boş bir çukur ve karşısında sizin dolu çukurunuz varsa tehlike vardır. Taşları önceden dağıtın ya da o çukuru boşaltın.</li>
+        <li><strong>Tekrar oynama zincirleri kurun.</strong> Önce haznenize tam ulaşan çukuru oynayın; çünkü başka bir çukurdan gelen taş, o çukurun sayısını değiştirip fırsatı bozabilir.</li>
+        <li><strong>Büyük yığınları dikkatli kullanın.</strong> Tek bir çukurda çok taş biriktirmek, bir turda tahtayı dolaşıp rakibe taş vermenize yol açabilir; ama doğru zamanda oynanırsa birden çok ele geçirme sağlar.</li>
+        <li><strong>Oyun sonunu sayın.</strong> Bir tarafın boşalması oyunu bitirir ve kalan taşlar sahibine gider. Rakibin tarafı boşalmak üzereyken kendi taraftaki taşların size kalacağını unutmayın.</li>
+      </ul>
+
+      <h2>Mancala'nın kısa tarihi</h2>
+      <p>Çukurlara taş dağıtma oyunlarının kökeni konusunda kesin bir tarih yoktur. Kazılarda bulunan oyulmuş taş ve ahşap tahtalar, benzer oyunların çok eski çağlardan beri oynandığını düşündürür, ancak ayrıntılar araştırmacılar arasında tartışmalıdır. Oyun yüzyıllar içinde Afrika, Arap dünyası ve Asya'da yayıldı; her yerde kendi adıyla ve kuralıyla yaşadı. "Mancala" adı, Arapça kökenli bir sözcükten türetilmiş sayılır ve bugün genel bir ad olarak kullanılır. Kalah varyantı 20. yüzyılda ABD'de kurallandırılıp yayıldı ve bilgisayar oyunlarına en çok uyarlanan Mancala türü oldu.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da hamle sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır; hamleleriniz bir sunucuya iletilmez. Yalnızca galibiyet ve yenilgi sayınız bu cihazda tutulur.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile tahta sığar, dokunma ve klavye ile oynanır.</li>
+        <li><strong>Kuralları sizin yerinize denetler.</strong> Dağıtma, ele geçirme ve oyun sonu sayımı otomatik olduğu için kural bilmeyenler de rahatça oynayabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Mancala nasıl oynanır?</summary><p>Kendi sıranızdaki bir çukuru seçersiniz; içindeki tüm taşlar saat yönünün tersine birer birer sonraki çukurlara ve kendi haznenize bırakılır. Rakibin haznesine taş bırakılmaz. Amaç oyun sonunda haznenizde rakipten fazla taş toplamaktır.</p></details>
+        <details><summary>Tekrar oynama hakkı ne zaman kazanılır?</summary><p>Dağıttığınız son taş kendi haznenize düşerse aynı oyuncu bir hamle daha oynar. Bu hakkın zincirleme kullanılması mümkündür.</p></details>
+        <details><summary>Ele geçirme kuralı nedir?</summary><p>Son taş kendi tarafınızdaki boş bir çukura düşerse ve karşısındaki çukurda taş varsa, karşıdaki taşlar ve son taşınız haznenize alınır.</p></details>
+        <details><summary>Oyun nasıl biter?</summary><p>Taraflardan birinin altı çukuru da boşaldığında oyun biter. Diğer tarafta kalan taşlar o tarafın sahibinin haznesine eklenir ve hazneler karşılaştırılır.</p></details>
+        <details><summary>Zorluk seviyeleri arasındaki fark nedir?</summary><p>Kolay seviyede bilgisayar 2, Orta seviyede 4, Zor seviyede 7 hamle ilerisini hesaplar. Zor seviye tekrar oynama ve ele geçirme fırsatlarını çok daha güvenilir kullanır.</p></details>
+        <details><summary>Hamleyi geri alabilir miyim?</summary><p>Evet. Geri al düğmesi, bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır; iki kişilik oyunda bir hamle geri gider.</p></details>
+        <details><summary>Klavye ile oynayabilir miyim?</summary><p>Evet. 1 ile 6 arasındaki tuşlar sırası gelen oyuncunun sıradaki çukurlarını soldan sağa seçer. Tab ile çukurlara gidip Enter ile de oynayabilirsiniz.</p></details>
+        <details><summary>Hamlelerim veya skorlarım sunucuya gönderiliyor mu?</summary><p>Hayır. Oyun tamamen tarayıcınızda çalışır. Yalnızca galibiyet, yenilgi ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-mancala-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
