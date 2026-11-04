@@ -136,3 +136,7 @@ Teknik notlar:
 - **Şema düğümleri tıklanabilir (4 Kasım, akşam):** beş düğüm `<a class="bd-link" href="#pdf|#donustur|#dosya|#hesapla|#rehber">`;
   hover/odakta bordo dolgu, pembe kenar, %10 büyüme, beyaz etiket. Tıklama hub.js'in hash filtresini tetikler, motion.js
   listeye kaydırır. Etiketler hub kategorileriyle birebir: PDF Araçları · Dönüştürücüler · Dosya & Metin · Hesaplayıcılar · Rehberler.
+- **Menü ikonları (4 Kasım, gece):** motion.js tüm menü bağlantılarına (üst menü, kategori sekmeleri, kırıntı, altbilgi, ilgili araçlar,
+  rehber araç listesi) JSON haritasından (`ICON_MAP`: adres/çapa veya metin anahtarı → ikon adı) inline SVG ikon ekler. Üst menüde yüklenince
+  sıralı giriş ve ikon "pop"u, hover'da ikon zıplar ve alt çizgi soldan dolar; altbilgide ikon soluktan parlar; ilgili araçlar ve rehber
+  listesinde 32–40 px ikon kutusu bordoya döner. Hareket azaltmada kapalı.
