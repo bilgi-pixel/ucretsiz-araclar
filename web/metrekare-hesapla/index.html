@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Metrekare Hesaplama – Oda, Arsa Alanı, Fayans, Parke ve Boya İhtiyacı Hesaplayıcı</title>
+  <meta name="description" content="Dikdörtgen, L şekli, üçgen, daire ve düzensiz çokgen koordinatlarıyla metrekare hesaplayın; fire payıyla fayans, parke, boya ihtiyacını ve maliyeti bulun; dönüm, hektar ve ft² dönüşümünü görün. Ücretsiz, ölçüleriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/metrekare-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/metrekare-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/metrekare-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form input[type="date"], .kdv-form select, .kdv-form textarea { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form textarea { min-height: 120px; font-family: var(--ba-mono); }
+    .kdv-form input:focus, .kdv-form select:focus, .kdv-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.2rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .age-big { font-size: 1.3rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); overflow-wrap: anywhere; }
+    .kdv-notes { margin: 10px 0 0; padding-left: 20px; font-size: .9rem; color: var(--ba-text-2); }
+    .kdv-notes li { margin: 4px 0; }
+    .params-info { font-size: .82rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .mk-part { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--ba-border); }
+    .mk-part span { overflow-wrap: anywhere; }
+    .mk-del { min-height: 36px; padding: 4px 10px; font-size: .85rem; }
+    #parts { list-style: none; margin: 0 0 12px; padding: 0; }
+    .mk-sub { font-size: 1rem; margin: 18px 0 8px; }
+    .mk-sec { border-top: 1px solid var(--ba-border); margin-top: 14px; padding-top: 14px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Metrekare Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/metrekare-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Metrekare nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Dikdörtgen bir alanda eni boyla çarparsınız: 5 m × 4 m = 20 m². Diğer şekillerde formül değişir (üçgen için taban × yükseklik / 2, daire için π × yarıçap²). Araç şekil seçince doğru formülü uygular."}},{"@type":"Question","name":"L şeklindeki odanın metrekaresi nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"L şeklini iki dikdörtgene bölün, her birinin eni ve boyunu girin; alanlar toplanır. Aynı bölgeyi iki kez saymamaya dikkat edin."}},{"@type":"Question","name":"Fayans için fire oranı kaç olmalı?","acceptedAnswer":{"@type":"Answer","text":"Sade ve düz döşemede genellikle %5-10, çapraz ya da desenli döşemede %10-15 fire payı bırakılır. Araç varsayılan olarak %10 kullanır; ustanızla konuşup oranı değiştirebilirsiniz."}},{"@type":"Question","name":"1 dönüm kaç metrekare?","acceptedAnswer":{"@type":"Answer","text":"Resmî ölçüde 1 dönüm 1.000 m²'dir. Bazı bölgelerde yerel dönüm ölçüleri farklı olabilir; tapuda yazan yüzölçümü esastır. 1 hektar da 10 dönüm yani 10.000 m²'dir."}},{"@type":"Question","name":"Arsa alanını koordinatlarla nasıl bulurum?","acceptedAnswer":{"@type":"Answer","text":"Bir köşeyi (0,0) kabul edip diğer köşelerin yatay ve dikey uzaklıklarını ölçün, her satıra \"x,y\" olarak yazın. Köşeleri sırayla girin. Araç alanı ve çevreyi hesaplar. Resmî alan için tapu ve kadastro kayıtları esastır."}},{"@type":"Question","name":"Boya kaç litre gerekir?","acceptedAnswer":{"@type":"Answer","text":"Boyanacak alan × kat sayısı × (1 + fire) / verim formülüyle bulunur. Verim ürüne göre değişir (kutusunda yazar); araç 10 m²/litre ve 2 kat varsayar. Koyu renkten açık renge geçişte kat sayısını artırın."}},{"@type":"Question","name":"Ölçüleri santimetre ya da fit olarak girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. \"Ölçü birimi\" listesinden metre, santimetre ya da fit seçin; alan her durumda metrekare olarak hesaplanır ve ayrıca dönüm, hektar, ar ve ft² karşılığı gösterilir."}},{"@type":"Question","name":"Ölçülerim bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır; ölçüler, koordinatlar ve fiyatlar hiçbir sunucuya iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Metrekare Hesaplama</span> – Alan, Fayans, Parke, Boya</h1>
+      <p class="lead">Odanın, evin ya da arsanın ölçülerini girin; metrekare (m²) alanını, çevresini, dönüm, hektar ve ft² karşılığını görün. Fire oranıyla fayans, parke ya da boya ihtiyacını ve birim fiyatla tahmini maliyeti hesaplayın. Birden fazla odayı listeye ekleyip toplayabilirsiniz. Ölçüleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="f-shape">Şekil</label><select id="f-shape">
+            <option value="dik">Dikdörtgen / kare (oda, salon)</option>
+            <option value="l">L şekli (iki dikdörtgenin toplamı)</option>
+            <option value="ucgen">Üçgen (taban ve yükseklik)</option>
+            <option value="ucgen3">Üçgen (üç kenar)</option>
+            <option value="daire">Daire (çap)</option>
+            <option value="cokgen">Düzensiz çokgen (köşe koordinatları, arsa)</option>
+            <option value="dogrudan">Alan zaten belli (dönüştür)</option>
+          </select></div>
+          <div class="ba-field" id="g-unit"><label for="f-unit">Ölçü birimi</label><select id="f-unit"><option value="m">Metre (m)</option><option value="cm">Santimetre (cm)</option><option value="ft">Fit (ft)</option></select></div>
+        </div>
+        <div class="kdv-grid" id="g-dik"><div class="ba-field"><label for="f-a">En</label><input id="f-a" type="text" inputmode="decimal" autocomplete="off" placeholder="örnek: 5"></div><div class="ba-field"><label for="f-b">Boy</label><input id="f-b" type="text" inputmode="decimal" autocomplete="off" placeholder="örnek: 4"></div></div>
+        <div class="kdv-grid" id="g-l" hidden><div class="ba-field"><label for="f-a1">1. dikdörtgenin eni</label><input id="f-a1" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-b1">1. dikdörtgenin boyu</label><input id="f-b1" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-a2">2. dikdörtgenin eni</label><input id="f-a2" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-b2">2. dikdörtgenin boyu</label><input id="f-b2" type="text" inputmode="decimal" autocomplete="off"></div></div>
+        <div class="kdv-grid" id="g-ucgen" hidden><div class="ba-field"><label for="f-t">Taban</label><input id="f-t" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-h">Yükseklik</label><input id="f-h" type="text" inputmode="decimal" autocomplete="off"></div></div>
+        <div class="kdv-grid c3" id="g-ucgen3" hidden><div class="ba-field"><label for="f-s1">1. kenar</label><input id="f-s1" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-s2">2. kenar</label><input id="f-s2" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-s3">3. kenar</label><input id="f-s3" type="text" inputmode="decimal" autocomplete="off"></div></div>
+        <div class="kdv-grid" id="g-daire" hidden><div class="ba-field"><label for="f-d">Çap</label><input id="f-d" type="text" inputmode="decimal" autocomplete="off"></div></div>
+        <div id="g-cokgen" hidden><div class="ba-field"><label for="f-pts">Köşe koordinatları (her satıra bir köşe: x,y)</label><textarea id="f-pts" spellcheck="false" placeholder="0,0&#10;12,0&#10;12,8&#10;0,8"></textarea><div class="hint">Köşeleri sırayla (saat yönünde ya da tersi) yazın. Koordinatlar seçtiğiniz ölçü biriminde olmalı.</div></div></div>
+        <div class="kdv-grid" id="g-dogrudan" hidden><div class="ba-field"><label for="f-val">Alan değeri</label><input id="f-val" type="text" inputmode="decimal" autocomplete="off"></div><div class="ba-field"><label for="f-aunit">Alan birimi</label><select id="f-aunit"><option value="m2">Metrekare (m²)</option><option value="donum">Dönüm</option><option value="hektar">Hektar</option><option value="ar">Ar</option><option value="ft2">Fit kare (ft²)</option></select></div></div>
+
+        <div id="parts-wrap" class="mk-sec" hidden>
+          <h3 class="mk-sub">Listedeki parçalar</h3>
+          <ul id="parts"></ul>
+          <p class="kdv-note">Toplam ve malzeme hesabı listedeki parçalara göre yapılır.</p>
+        </div>
+
+        <div class="mk-sec">
+          <div class="kdv-grid">
+            <div class="ba-field"><label for="f-kind">Malzeme ihtiyacı</label><select id="f-kind"><option value="yok">Yalnızca alan</option><option value="fayans">Fayans / seramik</option><option value="parke">Parke / laminat</option><option value="boya">Boya</option></select></div>
+            <div class="ba-field" id="g-mat" hidden><label for="f-fire">Fire oranı (%)</label><input id="f-fire" type="text" inputmode="decimal" autocomplete="off" placeholder="varsayılan: 10"></div>
+          </div>
+          <div class="kdv-grid" id="g-mat2" hidden>
+            <div class="ba-field"><label for="f-pack" id="l-pack">Kutu/paket başına m² (isteğe bağlı)</label><input id="f-pack" type="text" inputmode="decimal" autocomplete="off" placeholder="örnek: 1,44"></div>
+            <div class="ba-field"><label for="f-price" id="l-price">m² birim fiyatı (TL, isteğe bağlı)</label><input id="f-price" type="text" inputmode="decimal" autocomplete="off" placeholder="örnek: 350"></div>
+          </div>
+          <div class="kdv-grid" id="g-boya" hidden><div class="ba-field"><label for="f-coats">Kat sayısı</label><input id="f-coats" type="text" inputmode="decimal" autocomplete="off" placeholder="varsayılan: 2"></div><div class="ba-field"><label for="f-cov">1 litre kaç m² boyar?</label><input id="f-cov" type="text" inputmode="decimal" autocomplete="off" placeholder="varsayılan: 10"></div></div>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Alanı hesapla</button><button id="add" class="ba-btn" type="button">Listeye ekle</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="age-big" id="r-head"></p>
+        <dl class="kdv-results">
+          <div class="kdv-row"><dt>Kullanılan alan</dt><dd id="r-used"></dd></div>
+          <div class="kdv-row is-strong"><dt>Toplam alan</dt><dd id="r-area"></dd></div>
+          <div class="kdv-row"><dt>Son girilen şekil</dt><dd id="r-cur"></dd></div>
+          <div class="kdv-row"><dt>Çevre</dt><dd id="r-per"></dd></div>
+          <div class="kdv-row"><dt>Dönüm</dt><dd id="r-donum"></dd></div>
+          <div class="kdv-row"><dt>Hektar</dt><dd id="r-hektar"></dd></div>
+          <div class="kdv-row"><dt>Ar</dt><dd id="r-ar"></dd></div>
+          <div class="kdv-row"><dt>Fit kare (ft²)</dt><dd id="r-ft2"></dd></div>
+        </dl>
+        <div id="mat-box" hidden>
+          <h3 class="mk-sub">Malzeme ihtiyacı</h3>
+          <dl class="kdv-results">
+            <div class="kdv-row is-strong"><dt>Fire dahil ihtiyaç</dt><dd id="r-need"></dd></div>
+            <div class="kdv-row"><dt>Satın alınacak paket</dt><dd id="r-packs"></dd></div>
+            <div class="kdv-row"><dt>Tahmini maliyet</dt><dd id="r-cost"></dd></div>
+          </dl>
+        </div>
+        <p class="kdv-note">Ölçüleri duvar ölçüsüyle değil, malzemenin döşeneceği net yüzey ölçüsüyle girin. Sonuç tahminidir; usta ve mağaza hesabı esastır.</p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+      <p class="params-info" id="params-info"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="metrekare-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Şekil" listesinden mekânınıza uyan seçeneği belirleyin: dikdörtgen, L şeklinde oda, üçgen, daire ya da arsa gibi düzensiz bir alan.</li>
+        <li>Ölçü birimini seçip ölçüleri yazın. Ondalık için virgül ya da nokta kullanabilirsiniz (4,5 ya da 4.5). Düzensiz alanlarda köşe koordinatlarını her satıra bir köşe olacak biçimde girin.</li>
+        <li>Birden fazla oda varsa her birini girip "Listeye ekle"ye basın. Toplam alan listedeki parçaların toplamı olur.</li>
+        <li>Fayans, parke ya da boya ihtiyacını görmek için "Malzeme ihtiyacı" listesinden seçim yapın, fire oranını ve varsa kutu boyutunu ve birim fiyatı girin. "Alanı hesapla" ile sonucu görün.</li>
+      </ol>
+
+      <h2>Metrekare nasıl hesaplanır?</h2>
+      <p>Metrekare, bir yüzeyin kenarı bir metre olan kare cinsinden ölçüsüdür. En yaygın durumda, yani dikdörtgen bir odada, alan eni ile boyunun çarpımıdır: 5 m × 4 m = 20 m². Odanız L şeklindeyse en kolay yol onu iki dikdörtgene bölmek ve alanları toplamaktır. Üçgende alan, taban ile yüksekliğin çarpımının yarısıdır; yalnızca üç kenarı biliyorsanız Heron formülü kullanılır. Daire için alan π × yarıçap², çevre ise π × çaptır. Araç bu formüllerin hepsini sizin yerinize uygular ve ölçü biriminiz santimetre ya da fit olsa bile sonucu metrekare olarak verir.</p>
+
+      <h2>Düzensiz alanlar: köşe koordinatlarıyla arsa hesabı</h2>
+      <p>Arsalar ve bazı odalar düzgün bir dikdörtgen değildir. Böyle durumlarda alanı bulmanın güvenilir yolu, köşelerin bir koordinat sistemindeki yerlerini yazmaktır. Bir köşeyi başlangıç noktası (0,0) kabul edin, diğer köşelerin bu noktaya göre yatay (x) ve dikey (y) uzaklıklarını ölçün. Araç, köşeleri sırayla birleştirir ve "ayakkabı bağı" (Gauss alan) formülüyle alanı hesaplar. Köşeleri saat yönünde ya da tersi yönde sırayla yazmanız yeterlidir. Köşe sırasını karıştırıp kenarları birbirini kesecek şekilde yazarsanız araç bunu fark eder ve düzeltmeniz için uyarır. Resmî alan tespiti için tapu ve kadastro kayıtları ya da harita mühendisinin ölçümü esastır.</p>
+
+      <h2>Fayans, parke ve boya ihtiyacı nasıl bulunur?</h2>
+      <p>Malzeme alırken yüzey alanını doğrudan almak yetmez, çünkü kesim ve kırılma kaybı olur. Bu kayba fire denir. Düz ve sade döşemelerde %5 ile %10, çapraz döşeme, desenli ya da büyük format malzemelerde %10 ile %15 arası fire payı yaygın bir tavsiyedir. Araç varsayılan olarak %10 fire uygular; isterseniz değiştirebilirsiniz.</p>
+      <p>Örnek: 20 m²'lik bir odayı 1,44 m² içeren kutularda gelen seramikle döşeyeceksiniz. %10 fireyle ihtiyaç 22 m² eder. 22 / 1,44 = 15,3 olduğundan 16 kutu almanız gerekir; toplam 23,04 m² olur. m² fiyatı 350 TL ise tahmini maliyet 8.064 TL'dir. Kutu boyutunu girmezseniz araç yalnızca fire dahil ihtiyacı ve ona göre maliyeti hesaplar.</p>
+
+      <div class="ba-ad" data-slot="metrekare-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Boya miktarı hesabı</h2>
+      <p>Boyada ihtiyaç litre cinsinden hesaplanır: alan × kat sayısı × (1 + fire) / verim. Verim, 1 litre boyanın tek katta kaç metrekare yüzeyi kapladığıdır ve ürünün kutusunda yazar; çoğu iç cephe boyasında 8 ile 12 m² arasındadır. Araç varsayılan olarak 10 m²/litre ve 2 kat kullanır. Boyayacağınız yüzey duvar olacaksa tavan hariç duvarların toplam alanını girin: oda çevresi × tavan yüksekliği hesabından kapı ve pencere boşluklarını düşebilirsiniz. Koyu rengi açık renge çevirirken ya da pürüzlü yüzeylerde verim düşer, kat sayısı artar.</p>
+
+      <h2>Tavan ve duvar alanı nasıl hesaplanır?</h2>
+      <p>Boya ve duvar kaplaması için taban alanı yeterli değildir. Dikdörtgen bir odanın dört duvarının toplam alanı, çevre uzunluğu ile tavan yüksekliğinin çarpımıdır: 5 m × 4 m'lik odada çevre 18 m, tavan 2,6 m ise duvar alanı 46,8 m² olur. Bu değerden kapı ve pencere boşluklarını çıkarırsanız boyanacak gerçek yüzey bulunur; standart bir kapı yaklaşık 2 m², orta boy bir pencere 1,5 ila 2 m² eder. Tavan boyanacaksa taban alanı kadar ek yüzey eklenir. Araç, sonuçta çevre uzunluğunu da gösterdiği için bu hesabı hızlıca yapabilirsiniz: çevreyi yüksekliğe çarpıp "Alan zaten belli" seçeneğiyle bu değeri girin, ardından boya ihtiyacını hesaplayın.</p>
+      <h2>Gerçek hayattan örnekler</h2>
+      <p>Salon 6 × 4,5 m, mutfak 3,5 × 3 m ve banyo 2,5 × 2 m olan bir dairede toplam zemin alanı 27 + 10,5 + 5 = 42,5 m²'dir. Üç mekânı listeye ekleyip toplam alan üzerinden laminat parke ihtiyacını hesaplarsanız, %10 fireyle yaklaşık 46,8 m² malzeme gerektiğini görürsünüz. Her mekân için ayrı fire oranı da kullanabilirsiniz: banyoda küçük ölçülü kesimler çok olduğundan %15, salonda %8 gibi. Arsa için ise köşe koordinatlarını girip dönüm karşılığına bakmak, tapu yüzölçümüyle hızlı bir karşılaştırma imkânı verir.</p>
+
+      <h2>Dönüm, hektar, ar ve ft² dönüşümleri</h2>
+      <p>Arsa ve tarla alanları genellikle dönüm ile anılır. Resmî ölçüde 1 dönüm 1.000 m²'dir; bazı yörelerde geleneksel dönüm ölçüleri bundan farklı olabilir, bu yüzden tapuda yazan yüzölçümü esastır. 1 hektar 10.000 m², yani 10 dönümdür. 1 ar 100 m²'dir. Yurt dışı ilan ve planlarda sık görülen fit kare (ft²) ise yaklaşık 0,0929 m²'dir; bir metrekare yaklaşık 10,76 ft²'ye eşittir. "Alan zaten belli" seçeneğiyle elinizdeki değeri bu birimler arasında çevirebilirsiniz.</p>
+
+      <h2>Doğru ölçü almak için ipuçları</h2>
+      <ul>
+        <li>Ölçüleri bir kez değil iki kez alın; odalar nadiren tam dikdörtgendir, farklı noktalardan ölçüp ortalama kullanın.</li>
+        <li>Fayans ve parke için duvar boşluklarını (süpürgelik, kapı eşiği) ve sabit mobilyaları hesaba katın; ancak fireyi unutmayın.</li>
+        <li>Lazer metre kullanıyorsanız ölçü birimini santimetre seçip değerleri doğrudan yazabilirsiniz.</li>
+        <li>Aynı malzemeden fazladan bir kutu ayırmak, ileride tamir gerektiğinde renk farkı sorununu önler.</li>
+        <li>Brüt ve net metrekare farkını unutmayın: ev ilanlarındaki brüt alan duvar kalınlıkları ve ortak alan payını içerir, döşeme için net alan gerekir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Ölçüleriniz ve koordinatlarınız tarayıcınızda kalır, sunucuya iletilmez.</li>
+        <li><strong>Tek araçta hepsi.</strong> Alan, çevre, birim dönüşümü, fire dahil malzeme ve maliyet bir arada.</li>
+        <li><strong>Hataya karşı koruma.</strong> Geçersiz üçgen, eksik köşe ya da kesişen kenar gibi durumlar Türkçe açıklamayla bildirilir.</li>
+        <li><strong>Esnek birimler.</strong> Metre, santimetre ve fit girişi desteklenir.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Metrekare nasıl hesaplanır?</summary><p>Dikdörtgen bir alanda eni boyla çarparsınız: 5 m × 4 m = 20 m². Diğer şekillerde formül değişir (üçgen için taban × yükseklik / 2, daire için π × yarıçap²). Araç şekil seçince doğru formülü uygular.</p></details>
+        <details><summary>L şeklindeki odanın metrekaresi nasıl bulunur?</summary><p>L şeklini iki dikdörtgene bölün, her birinin eni ve boyunu girin; alanlar toplanır. Aynı bölgeyi iki kez saymamaya dikkat edin.</p></details>
+        <details><summary>Fayans için fire oranı kaç olmalı?</summary><p>Sade ve düz döşemede genellikle %5-10, çapraz ya da desenli döşemede %10-15 fire payı bırakılır. Araç varsayılan olarak %10 kullanır; ustanızla konuşup oranı değiştirebilirsiniz.</p></details>
+        <details><summary>1 dönüm kaç metrekare?</summary><p>Resmî ölçüde 1 dönüm 1.000 m²'dir. Bazı bölgelerde yerel dönüm ölçüleri farklı olabilir; tapuda yazan yüzölçümü esastır. 1 hektar da 10 dönüm yani 10.000 m²'dir.</p></details>
+        <details><summary>Arsa alanını koordinatlarla nasıl bulurum?</summary><p>Bir köşeyi (0,0) kabul edip diğer köşelerin yatay ve dikey uzaklıklarını ölçün, her satıra "x,y" olarak yazın. Köşeleri sırayla girin. Araç alanı ve çevreyi hesaplar. Resmî alan için tapu ve kadastro kayıtları esastır.</p></details>
+        <details><summary>Boya kaç litre gerekir?</summary><p>Boyanacak alan × kat sayısı × (1 + fire) / verim formülüyle bulunur. Verim ürüne göre değişir (kutusunda yazar); araç 10 m²/litre ve 2 kat varsayar. Koyu renkten açık renge geçişte kat sayısını artırın.</p></details>
+        <details><summary>Ölçüleri santimetre ya da fit olarak girebilir miyim?</summary><p>Evet. "Ölçü birimi" listesinden metre, santimetre ya da fit seçin; alan her durumda metrekare olarak hesaplanır ve ayrıca dönüm, hektar, ar ve ft² karşılığı gösterilir.</p></details>
+        <details><summary>Ölçülerim bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır; ölçüler, koordinatlar ve fiyatlar hiçbir sunucuya iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar girilen ölçülere dayanan tahminlerdir. Malzeme siparişinden önce yerinde ölçüm yapın ve usta ya da mağazanın hesabıyla karşılaştırın. Tapu ve resmî alan tespiti için kadastro kayıtları ve yetkili mühendis ölçümü esastır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../alan-cevre-hesapla/">Alan ve Çevre Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../tapu-harci-hesapla/">Tapu Harcı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="metrekare-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
