@@ -1,6 +1,6 @@
 // Ek Ders Ücreti Hesaplama — tamamı tarayıcıda çalışır; saat ve tutarlarınız sunucuya gitmez.
 // Birim ücret = ek ders göstergesi × memur aylık katsayısı. Gece dersi için artış oranı uygulanır.
-// Değerler yaklaşıktır (parametreler.json); kullanıcı kendi katsayısını/birim ücretini girebilir.
+// Gösterge: gündüz 140, gece/hafta sonu/18.00 sonrası 150 (657 s. K. md. 176); artış oranı = 150/140 - 1 (parametreler.json); kullanıcı kendi katsayısını/birim ücretini girebilir.
 import { showError } from '../assets/js/ba.js';
 
 const $ = (id) => document.getElementById(id);
@@ -9,7 +9,7 @@ const tl = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', 
 /** parametreler.json okunamazsa kullanılacak varsayılanlar (dosyayla aynı). */
 let params = {
   ek_ders_gostergesi: 140,
-  gece_artis_orani: 25,
+  gece_artis_orani: 150 / 140 * 100 - 100,
   damga_vergisi_orani: 0.759,
   donemler: {
     temmuz_aralik: { ad: '1 Temmuz – 31 Aralık 2026', aylik_katsayi: 1.575512 },

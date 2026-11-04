@@ -18,7 +18,7 @@ test.describe('Kredi Kartı Asgari Ödeme Hesaplama', () => {
     await expect(page.locator('#r-min')).toContainText('3.000,00');
     await expect(page.locator('#r-rate')).toContainText('20');
     await expect(page.locator('#r-rest')).toContainText('12.000,00');
-    await expect(page.locator('#r-int')).toContainText('420,00');
+    await expect(page.locator('#r-int')).toContainText('390,00');
     await expect(page.locator('#r-months')).toHaveText('51 ay');
     expect(external).toEqual([]);
     expect(errors).toEqual([]);
@@ -27,7 +27,7 @@ test.describe('Kredi Kartı Asgari Ödeme Hesaplama', () => {
   test('yüksek limitte oran %40 olur; elle oran seçimi çalışır', async ({ page }) => {
     await page.goto(URL);
     await page.locator('#debt').fill('10000');
-    await page.locator('#limit').fill('80000');
+    await page.locator('#limit').fill('150000');
     await page.locator('#calc').click();
     await expect(page.locator('#r-min')).toContainText('4.000,00');
     await page.locator('#rate').selectOption('30');
@@ -42,7 +42,7 @@ test.describe('Kredi Kartı Asgari Ödeme Hesaplama', () => {
     await page.locator('#limit').fill('40000');
     await page.locator('#days').fill('10');
     await page.locator('#calc').click();
-    await expect(page.locator('#r-late')).toContainText('39,50');
+    await expect(page.locator('#r-late')).toContainText('35,50');
   });
 
   test('geçersiz girişte Türkçe, çözüm öneren hata verir', async ({ page }) => {

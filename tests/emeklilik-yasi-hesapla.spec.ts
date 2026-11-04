@@ -23,7 +23,7 @@ test.describe('Emeklilik Yaşı Hesaplama', () => {
     const external = trackExternalRequests(page);
     const noErrors = await expectNoConsoleErrors(page);
     await open(page);
-    await fillForm(page, { gender: 'kadin', birth: '1978-04-12', entry: '1997-03-01', prim: '5.200' });
+    await fillForm(page, { gender: 'kadin', birth: '1978-04-12', entry: '1997-03-01', prim: '6.000' });
     await expect(page.locator('#result')).toBeVisible();
     await expect(page.locator('#result')).toHaveClass(/is-active/);
     await expect(page.locator('#r-head')).toContainText('tamamlamış');
@@ -55,11 +55,11 @@ test.describe('Emeklilik Yaşı Hesaplama', () => {
     await expect(page.locator('#r-prim')).toContainText('9.000 gün');
   });
 
-  test('prim günü girilmezse uyarı notu çıkar; 4/b EYT 20 yıl ve 9.000 gün', async ({ page }) => {
+  test('prim günü girilmezse uyarı notu çıkar; 4/b EYT kadın 20 yıl ve 7.200 gün', async ({ page }) => {
     await open(page);
     await fillForm(page, { status: 'b', gender: 'kadin', birth: '1975-02-10', entry: '1996-05-05' });
     await expect(page.locator('#r-sig')).toContainText('20 yıl');
-    await expect(page.locator('#r-prim')).toContainText('9.000 gün');
+    await expect(page.locator('#r-prim')).toContainText('7.200 gün');
     await expect(page.locator('#r-prim')).toContainText('prim günü girilmedi');
     await expect(page.locator('#r-notes')).toContainText('Prim gün sayınızı girmediğiniz');
   });

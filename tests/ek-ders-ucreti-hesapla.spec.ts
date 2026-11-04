@@ -30,8 +30,8 @@ test.describe('Ek Ders Ücreti Hesaplama', () => {
     await page.locator('#period').selectOption('temmuz_aralik');
     await page.locator('#night').fill('8');
     await page.locator('#calc').click();
-    await expect(page.locator('#r-nightu')).toContainText('275,71');
-    await expect(page.locator('#r-gross')).toContainText('8.822,87');
+    await expect(page.locator('#r-nightu')).toContainText('236,33');
+    await expect(page.locator('#r-gross')).toContainText('7.562,46');
   });
 
   test('kendi birim ücretini yazınca o tutar esas alınır; vergi dilimi seçilebilir', async ({ page }) => {

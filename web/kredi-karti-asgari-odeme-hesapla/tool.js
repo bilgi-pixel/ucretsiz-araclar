@@ -7,7 +7,7 @@ const tl = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', 
 const nf = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 });
 
 /** Varsayılan parametreler; parametreler.json okunursa üzerine yazılır. */
-let params = { limit_esigi: 50000, oran_dusuk: 20, oran_yuksek: 40 };
+let params = { limit_esigi: 100000, oran_dusuk: 20, oran_yuksek: 40 };
 
 export function num(s) {
   let t = String(s ?? '').trim().replace(/\s/g, '').replace(/₺|TL/gi, '');
@@ -48,8 +48,8 @@ export function compute(v, p = params) {
   if (!Number.isFinite(v.debt) || v.debt <= 0) throw new Error('Dönem borcunu sıfırdan büyük bir tutar olarak girin (örn. 15.000).');
   if (v.debt > 100_000_000) throw new Error('Dönem borcu çok büyük görünüyor. Tutarı TL cinsinden ve kuruşsuz yazıp tekrar deneyin.');
   if (!Number.isFinite(v.limit) || v.limit <= 0) throw new Error('Kart limitini girin (örn. 40.000). Limit, asgari ödeme oranını belirler; bilmiyorsanız oranı listeden elle seçin.');
-  if (!Number.isFinite(v.interest) || v.interest < 0 || v.interest > 20) throw new Error('Aylık akdi faiz oranını yüzde olarak girin (örn. 3,5). Oran hesap özetinizde yazar.');
-  if (!Number.isFinite(v.late) || v.late < 0 || v.late > 20) throw new Error('Aylık gecikme faizi oranını yüzde olarak girin (örn. 3,95).');
+  if (!Number.isFinite(v.interest) || v.interest < 0 || v.interest > 20) throw new Error('Aylık akdi faiz oranını yüzde olarak girin (örn. 3,25). Oran hesap özetinizde yazar.');
+  if (!Number.isFinite(v.late) || v.late < 0 || v.late > 20) throw new Error('Aylık gecikme faizi oranını yüzde olarak girin (örn. 3,55).');
   if (!Number.isInteger(v.lateDays) || v.lateDays < 0 || v.lateDays > 365) throw new Error('Gecikme gününü 0 ile 365 arasında tam sayı olarak yazın.');
   const rate = v.rateMode === 'auto' ? autoRate(v.limit, p) : Number(v.rateMode);
   const minPay = v.debt * rate / 100;

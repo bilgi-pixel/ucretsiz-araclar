@@ -3,7 +3,7 @@
 /** Varsayılan parametreler; parametreler.json yüklenemezse bunlar kullanılır. */
 export const DEFAULTS = {
   guncelleme: '2026-11-04',
-  kaynak: 'Gelir Vergisi Kanunu geçici md. 67 ve Cumhurbaşkanı kararları: TL vadeli mevduatta vadesiz ve 6 aya kadar %17,5, 1 yıla kadar %15, 1 yıl ve daha uzun %10 (2026 uygulaması; oranlar belirli bir bitiş tarihiyle duyurulur ve karar ile uzatılır, 2026 sonrası için güncel kararı kontrol edin). Oranlar sık değişir; bankanızın güncel kesintisini kontrol edin.',
+  kaynak: "TL vadeli mevduat stopajı (Gelir Vergisi Kanunu geçici md. 67 ve 2006/10731 sayılı Karar): vadesiz ve 6 aya kadar vadeli %17,5, 1 yıla kadar %15, 1 yıldan uzun %10; bu oranlar 10041 sayılı Cumhurbaşkanı Kararıyla 9.7.2025 tarihinden itibaren açılan veya vadesi yenilenen hesaplar için belirlenmiştir (GİB, G.V.K. Geçici 67 Rehberi, Şubat 2026). Uygulama süresi 31.12.2025 tarihinden 30.06.2026 tarihine (10706 sayılı Karar, RG 19.12.2025), oradan 31.12.2026 tarihine uzatılmıştır (11444 sayılı Karar, RG 20.06.2026, sayı 33286). 31.12.2026 sonrası için henüz yeni karar yoktur; yeni karar çıkarsa oranlar değişebilir, bankanızın güncel kesintisini kontrol edin.",
   yaklasik: false,
   yilGunu: 365,
   ayGunu: 30,
