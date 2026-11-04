@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>XOX Oyna – Ücretsiz Online XOX (kurulumsuz)</title>
+  <meta name="description" content="XOX oyununu tarayıcınızda ücretsiz oynayın: bilgisayara karşı kolay ve yenilmez zor seviye, iki oyunculu mod, skor tablosu ve 15×15 beşli dizi (gomoku) modu. Kurulum ve kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/xox/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    :root { --xo-o: #1b5e9e; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --xo-o: #7db4ee; } }
+    :root[data-theme="dark"] { --xo-o: #7db4ee; }
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .xo-options { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 560px) { .xo-options { grid-template-columns: repeat(3, 1fr); } }
+    .xo-options .ba-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .xo-top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 0; }
+    .xo-score { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0 10px; }
+    .xo-score > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .xo-score span { display: block; font-size: .78rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .04em; overflow-wrap: anywhere; }
+    .xo-score strong { font-size: 1.3rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .xo-turns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 8px; }
+    .xo-chip { display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 6px; background: var(--ba-surface); font-weight: 600; font-size: .92rem; min-width: 0; }
+    .xo-chip[aria-current="true"] { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .xo-chip[aria-current="true"] span::before { content: "▶ "; color: var(--ba-primary); }
+    .xo-hint { margin: 0 0 6px; font-size: .9rem; color: var(--ba-text-muted); }
+    .xo-status { min-height: 1.5em; margin: 6px 0 12px; font-weight: 600; color: var(--ba-text); }
+    .game-box .ba-result { margin: 0 0 14px; }
+
+    /* Tahta: hücreler arası çizgiler yalnızca iç kenarlarda; kazanan çizgi katmanı hücre birimleriyle hizalanır. */
+    .xo-board { position: relative; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); grid-template-rows: repeat(var(--n, 3), minmax(0, 1fr)); width: 100%; max-width: 360px; aspect-ratio: 1; margin: 0 auto; }
+    .xo-board[data-n="15"] { max-width: 600px; border: 1px solid var(--ba-border-hover); background: var(--ba-surface); }
+    .xo-cell { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0 solid var(--ba-border-hover); background: none; cursor: pointer; color: var(--ba-text); border-radius: 0; -webkit-tap-highlight-color: transparent; }
+    .xo-board[data-n="3"] .xo-cell.br { border-right-width: 4px; }
+    .xo-board[data-n="3"] .xo-cell.bb { border-bottom-width: 4px; }
+    .xo-board[data-n="15"] .xo-cell.br { border-right-width: 1px; }
+    .xo-board[data-n="15"] .xo-cell.bb { border-bottom-width: 1px; }
+    .xo-cell[aria-disabled="true"] { cursor: default; }
+    .xo-cell[aria-disabled="false"]:hover { background: var(--ba-primary-soft); }
+    .xo-cell:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: -3px; z-index: 2; }
+    .xo-cell[data-v="X"] { color: var(--ba-primary); }
+    .xo-cell[data-v="O"] { color: var(--xo-o); }
+    .xo-cell.is-win { background: var(--ba-primary-soft); }
+    .xo-cell.is-last { box-shadow: inset 0 0 0 2px var(--ba-accent); }
+    .xo-mark { width: 66%; height: 66%; display: block; }
+    .xo-board[data-n="15"] .xo-mark { width: 80%; height: 80%; }
+    .xo-mark path, .xo-mark circle { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 60; stroke-dashoffset: 0; animation: xo-pop .3s ease-out; }
+    .xo-board[data-n="15"] .xo-mark path, .xo-board[data-n="15"] .xo-mark circle { stroke-width: 3.6; }
+    @keyframes xo-pop { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
+    .xo-line { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 3; }
+    .xo-line line { stroke: var(--ba-success); stroke-linecap: round; opacity: .92; stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: xo-draw .55s ease-out .08s forwards; }
+    @keyframes xo-draw { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .xo-mark path, .xo-mark circle { animation: none; }
+      .xo-line line { animation: none; stroke-dashoffset: 0; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"XOX ve Beşli Dizi – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz XOX: bilgisayara karşı kolay ve yenilmez zor seviye, iki oyunculu mod, skor tablosu ve 15×15 beşli dizi modu.","applicationCategory":"GameApplication","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":["SinglePlayer","MultiPlayer"],"inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/xox/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"XOX nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"3×3 tahtada iki oyuncu sırayla X ve O koyar. Aynı işaretten üçünü yatay, dikey ya da çapraz sıraya dizen kazanır. Tahta dolar ve kimse dizi yapamazsa oyun berabere biter."}},
+  {"@type":"Question","name":"Zor seviyedeki bilgisayarı yenebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Zor seviye minimax algoritmasıyla tüm olası hamleleri hesaplar ve hiç hata yapmaz. En iyi sonucunuz beraberliktir; yenilmemek için ilk hamlenizde köşe ya da merkez seçmek yeterlidir."}},
+  {"@type":"Question","name":"Kolay seviye nasıl oynuyor?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviyedeki bilgisayar rastgele bir boş kareye oynar. Tehdit görmeyebilir, bu yüzden yeni başlayanlar ve çocuklar için uygundur."}},
+  {"@type":"Question","name":"Beşli dizi (gomoku) nedir?","acceptedAnswer":{"@type":"Answer","text":"15×15 tahtada iki oyuncunun sırayla taş koyduğu bir oyundur. Yatay, dikey ya da çapraz sıralı beş (ya da daha fazla) taşı birleştiren kazanır. Bu sayfada serbest kurallarla, yasak hamle olmadan oynanır."}},
+  {"@type":"Question","name":"İki kişi aynı cihazda oynayabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Rakip listesinden İki oyuncu seçeneğini seçin. Oyuncu 1 X, Oyuncu 2 O ile oynar; sıra göstergesi kimin sırasının geldiğini söyler. Skor tablosu her iki mod için ayrı tutulur."}},
+  {"@type":"Question","name":"Skorlarım nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca tarayıcınızın localStorage alanında. Sunucuya gönderilmez. Skoru sıfırla düğmesiyle ya da tarayıcı verilerini silerek temizleyebilirsiniz."}},
+  {"@type":"Question","name":"Klavyeyle ya da telefonda oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Ok tuşlarıyla kareler arasında gezinip Enter ya da Boşluk ile işaretleyebilirsiniz. Telefonda dokunarak oynanır; 15×15 tahta küçük ekranlarda sığar, hassas dokunuş için ekranı yakınlaştırabilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">XOX</span> Oyna – Ücretsiz Online XOX ve Beşli Dizi</h1>
+      <p class="lead">Bilgisayara karşı kolay ya da yenilmez zor seviyede oynayın, aynı cihazda arkadaşınıza meydan okuyun ya da 15×15 tahtada beşli dizi yapmaya çalışın. Skor tablosu, kazanan çizgi animasyonu ve klavye desteği hazır; kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">XOX ve Beşli Dizi oyunu</h2>
+      <div class="xo-options">
+        <div class="ba-field"><label for="xo-mode">Oyun</label>
+          <select id="xo-mode">
+            <option value="xox">XOX 3 × 3 (klasik)</option>
+            <option value="gomoku">Beşli dizi 15 × 15</option>
+          </select></div>
+        <div class="ba-field"><label for="xo-opp">Rakip</label>
+          <select id="xo-opp">
+            <option value="easy">Bilgisayar – kolay</option>
+            <option value="hard" selected>Bilgisayar – zor</option>
+            <option value="two">İki oyuncu</option>
+          </select></div>
+        <div class="ba-field" id="xo-side-field"><label for="xo-side">Senin işaretin</label>
+          <select id="xo-side">
+            <option value="X">X (ilk sen başlarsın)</option>
+            <option value="O">O (bilgisayar başlar)</option>
+          </select></div>
+      </div>
+      <div class="xo-top">
+        <button id="xo-restart" class="ba-btn ba-btn-primary" type="button">Yeniden başlat</button>
+        <button id="xo-reset-score" class="ba-btn" type="button">Skoru sıfırla</button>
+        <button id="xo-full" class="ba-btn" type="button">Tam ekran</button>
+      </div>
+      <div class="xo-score" role="group" aria-label="Skor tablosu">
+        <div><span id="xo-la">Sen (X)</span><strong id="xo-sa">0</strong></div>
+        <div><span>Berabere</span><strong id="xo-sd">0</strong></div>
+        <div><span id="xo-lb">Bilgisayar (O)</span><strong id="xo-sb">0</strong></div>
+      </div>
+      <div class="xo-turns" role="group" aria-label="Sıra göstergesi">
+        <div class="xo-chip" id="xo-chip-x" aria-current="true"><span>X</span></div>
+        <div class="xo-chip" id="xo-chip-o" aria-current="false"><span>O</span></div>
+      </div>
+      <p class="xo-hint" id="xo-hint"></p>
+      <p class="xo-status" id="xo-status" role="status" aria-live="polite"></p>
+      <div class="ba-result" id="xo-result">
+        <h3 id="xo-result-title">Oyun bitti</h3>
+        <p id="xo-result-text"></p>
+        <div class="ba-actions"><button id="xo-again" class="ba-btn ba-btn-success" type="button">Tekrar oyna</button></div>
+      </div>
+      <div class="xo-board" id="xo-board" role="group" aria-label="Oyun tahtası"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-xox-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>XOX nedir?</h2>
+      <p>XOX, dünyada "tic-tac-toe" adıyla da bilinen, iki kişilik en yaygın kâğıt kalem oyunlarından biridir. Üçe üç karelik bir tahtada oyuncular sırayla X ve O işareti koyar; yatay, dikey ya da çapraz olarak üç aynı işareti yan yana getiren oyunu kazanır. Kurallar bir dakikada öğrenilir, ama iyi oynamak planlama ve dikkat ister. Bu sayfada oyunu üç farklı şekilde oynayabilirsiniz: bilgisayara karşı, aynı cihazı paylaşan bir arkadaşınıza karşı ya da tahtayı 15×15'e büyüten "beşli dizi" modunda.</p>
+      <p>Oyun tamamen tarayıcınızda çalışır. Hiçbir dosya yüklenmez, hesap açmanız gerekmez, hamleleriniz bir sunucuya gönderilmez. Sayfa bir kez açıldıktan sonra internet bağlantınız kesilse bile oynamaya devam edebilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Oyunu ve rakibi seçin.</strong> "Oyun" listesinden XOX 3 × 3 ya da Beşli dizi 15 × 15'i, "Rakip" listesinden bilgisayarı (kolay veya zor) ya da iki oyuncuyu seçin. Her değişiklikte yeni bir oyun başlar.</li>
+        <li><strong>İlk hamleyi yapın.</strong> X her zaman ilk başlar. Bilgisayara karşı oynarken işaretinizi seçebilirsiniz; O'yu seçerseniz bilgisayar ilk hamleyi yapar. Bir kareye tıklayın, dokunun ya da klavyeyle gezip Enter'a basın.</li>
+        <li><strong>Sırayla ilerleyin.</strong> Sıra göstergesi kimin oynadığını gösterir. Dolu kareye oynanamaz. Bilgisayar her hamleden önce kısa bir süre düşünür.</li>
+        <li><strong>Diziyi tamamlayın.</strong> XOX'ta üç, beşli dizide beş işareti yan yana getiren kazanır. Kazanan sıranın üzerinden yeşil bir çizgi çekilir ve skor tablosu güncellenir. "Tekrar oyna" ile yeni bir oyuna geçebilirsiniz.</li>
+      </ol>
+
+      <h2>Oyun modları</h2>
+      <p><strong>Bilgisayar – kolay:</strong> Bilgisayar rastgele bir boş kareye oynar. XOX'ta çocuklar ve yeni başlayanlar için eğlencelidir; beşli dizide ise bazen engellemeyi kaçıran, saldırıyı rastgele hamlelerle karıştıran bir rakiptir.</p>
+      <p><strong>Bilgisayar – zor:</strong> XOX'ta bu seviye minimax algoritmasıyla çalışır. Algoritma, olası tüm oyun gidişatlarını sonuna kadar hesaplar ve her zaman en iyi hamleyi seçer; yani hata yapmaz. En iyi sonucunuz beraberliktir. Beşli dizide ise 15×15 tahtanın çok büyük olması nedeniyle tam hesaplama yerine sezgisel bir yaklaşım kullanılır: bilgisayar kazanma ve engelleme imkânlarına bakar, ardından açık üçlü ve dörtlü gibi kalıplara puan verir.</p>
+      <p><strong>İki oyuncu:</strong> Aynı ekranı paylaşan iki kişi içindir. Oyuncu 1 X, Oyuncu 2 O ile oynar. Skor tablosu her mod ve rakip türü için ayrı tutulur; böylece bilgisayara karşı serinizle arkadaşınızla serinizi karıştırmazsınız.</p>
+      <p><strong>Beşli dizi 15 × 15:</strong> Gomoku türü oyunun bu sürümü serbest kurallıdır: beş ya da daha uzun dizi kazandırır ve ilk oyuncu için yasak hamle yoktur. Tahta büyük olduğundan oyun uzun sürebilir; telefonda hassas dokunuş için ekranı iki parmakla yakınlaştırabilirsiniz.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik:</strong> Boş bir kareye tıklayın ya da dokunun.</li>
+        <li><strong>Klavye:</strong> Sekme tuşuyla tahtaya gelin. Ok tuşlarıyla kareler arasında dolaşın, Enter veya Boşluk ile işaretleyin. Home ve End aynı satırın başına ve sonuna götürür.</li>
+        <li><strong>Ekran okuyucu:</strong> Her kare "Satır 2, sütun 3, boş" gibi okunur; sıra ve sonuç durum satırında duyurulur.</li>
+        <li><strong>Skoru sıfırla:</strong> Seçili mod ve rakip türünün skor tablosunu temizler.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar. Tarayıcınız desteklemiyorsa düğme gizlenir.</li>
+      </ul>
+
+      <h2>XOX stratejisi: yenilmemek için neler bilmelisiniz?</h2>
+      <p>XOX "çözülmüş" bir oyundur: iki taraf da hatasız oynarsa sonuç her zaman beraberliktir. Olası oyun sayısı kabaca 255 bin kadardır ve bilgisayar bunları saniyenin çok küçük bir bölümünde tarayabilir. Yine de bir insan olarak bazı ilkeleri bilmek işinizi kolaylaştırır.</p>
+      <ul>
+        <li><strong>İlk hamlede köşe ya da merkez seçin.</strong> Köşeyle başlarsanız rakibin yenilmemesi için tek yolu merkezi almaktır; başka bir kareye oynarsa kazanma yolu açılır. Merkezle başlarsanız rakip köşeye oynamalıdır; kenar hamlesi ona kaybettirir.</li>
+        <li><strong>Çatal kurun.</strong> Aynı anda iki ayrı kazanma tehdidi oluşturan hamleye çatal denir. Rakip bir tehdidi engellerken diğerini yapamaz. Köşe açılışlarının amacı çoğu zaman çatal fırsatı yaratmaktır.</li>
+        <li><strong>Engellemeyi unutmayın.</strong> Rakibin iki işareti bir sırada ve üçüncü kare boşsa, kendi planınız ne olursa olsun önce orayı kapatın.</li>
+        <li><strong>İkinci oynuyorsanız merkezi alın.</strong> Rakip köşeye oynadıysa merkez, rakip merkeze oynadıysa herhangi bir köşe en güvenli cevaptır.</li>
+        <li><strong>Karşılıklı köşe tuzağına düşmeyin.</strong> Siz O'yken rakip karşılıklı iki köşeyi tutuyor ve siz merkezdeyseniz üçüncü bir köşe değil, bir kenar karesi oynayın. Köşe oynarsanız rakip çatal kurar.</li>
+      </ul>
+
+      <h2>Beşli dizi (gomoku) için ipuçları</h2>
+      <p>Büyük tahtada kazanmak, tek bir hamleden çok baskı kurmakla ilgilidir. Birkaç temel kavramı bilmek yeterlidir:</p>
+      <ul>
+        <li><strong>Açık üçlü:</strong> İki ucu da boş olan üç taşlık dizi. Rakip bunu açık dörde çevirirse iki ucu birden engelleyemezsiniz; bu yüzden açık üçlüyü hemen kapatmak gerekir.</li>
+        <li><strong>Dörtlü tehdit:</strong> Beşinci taşa tek hamle kala rakibin zorunlu olarak cevap vermesini sağlar. Bu tehditleri art arda kullanarak rakibe tempo kaybettirebilirsiniz.</li>
+        <li><strong>Dört-üç çatalı:</strong> Tek hamleyle hem bir dörtlü hem de açık üçlü yaratırsanız çoğunlukla oyun biter, çünkü rakip yalnızca birini kapatabilir.</li>
+        <li><strong>Merkeze yakın başlayın.</strong> Merkezde taşlarınızın çok yönlü uzanma şansı vardır; kenarlara yakın taşlar kolayca sıkışır.</li>
+        <li><strong>Savunmayı ihmal etmeyin.</strong> Rakibin her hamlesinde yeni oluşan üçlü ve dörtlü kalıplarını tarayın.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-xox-b" aria-label="Reklam"></div>
+
+      <h2>XOX'un kısa tarihi</h2>
+      <p>Üç işareti yan yana getirme fikri çok eskidir. Antik Roma'da "terni lapilli" adıyla benzer bir oyunun oynandığı bilinir; farklı kültürlerde bölgesel varyantlarına rastlanır. Kâğıt kalemle oynanan modern biçimi, İngilizce konuşulan dünyada "noughts and crosses" ve "tic-tac-toe" adlarıyla yayıldı. Türkçede ise "XOX" ismiyle bilinir ve okul sıralarında en çok oynanan oyunlardan biridir.</p>
+      <p>XOX aynı zamanda bilgisayar oyunları tarihinin ilk örneklerinden biridir. 1952'de A. S. Douglas'ın Cambridge Üniversitesi'ndeki EDSAC bilgisayarı için yazdığı "OXO" programı, ekranda oynanan ilk oyunlardan biri olarak kabul edilir. Gomoku ise Doğu Asya kökenlidir; adı Japoncada "beş taş dizmek" anlamına gelir ve geleneksel olarak go taşları ve tahtasıyla oynanır. Bilgisayar analizleri, serbest kurallarla 15×15 tahtada ilk oyuncunun doğru oynadığında kazanabileceğini göstermiştir; bu yüzden turnuva biçimlerinde ek kısıtlamalar uygulanır. Bu sayfadaki sürümde ise eğlence ön plandadır ve ek kısıtlama yoktur.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalısınız?</h2>
+      <ul>
+        <li><strong>Gizlilik:</strong> Hamleleriniz ve skorlarınız yalnızca bu cihazın tarayıcısında kalır. Dosya yüklemez, hesap istemez, sizi izlemez.</li>
+        <li><strong>Gerçek zorlukta rakip:</strong> Zor seviye yenilmezdir; sahte kazanma vaadi ya da "premium" tuzağı yoktur.</li>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve oynayın. İsterseniz tarayıcıdan uygulama olarak yükleyip çevrimdışı da kullanabilirsiniz.</li>
+        <li><strong>Mobil uyumlu ve erişilebilir:</strong> 360 piksel genişliğe kadar çalışır, klavyeyle oynanır, ekran okuyucuya duyuru yapar ve hareket azaltma tercihine uyar.</li>
+        <li><strong>Reklamlar dürüst yerleşimde:</strong> Reklamlar yalnızca oyun kutusunun altında ve sayfanın belirli bölümlerinde yer alır; oyun düğmelerinin yanında hiç görünmez.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>XOX nasıl oynanır?</summary><p>3 × 3 tahtada iki oyuncu sırayla X ve O koyar. Aynı işaretten üçünü yatay, dikey ya da çapraz sıraya dizen kazanır. Tahta dolar ve kimse dizi yapamazsa oyun berabere biter.</p></details>
+        <details><summary>Zor seviyedeki bilgisayarı yenebilir miyim?</summary><p>Hayır. Zor seviye minimax algoritmasıyla tüm olası hamleleri hesaplar ve hiç hata yapmaz. En iyi sonucunuz beraberliktir; yenilmemek için ilk hamlenizde köşe ya da merkez seçmek yeterlidir.</p></details>
+        <details><summary>Kolay seviye nasıl oynuyor?</summary><p>Kolay seviyedeki bilgisayar XOX'ta rastgele bir boş kareye oynar ve tehdit görmeyebilir. Bu yüzden yeni başlayanlar ve çocuklar için uygundur.</p></details>
+        <details><summary>Beşli dizi (gomoku) nedir?</summary><p>15 × 15 tahtada iki oyuncunun sırayla taş koyduğu bir oyundur. Yatay, dikey ya da çapraz sıralı beş (ya da daha fazla) taşı birleştiren kazanır. Bu sayfada serbest kurallarla, yasak hamle olmadan oynanır.</p></details>
+        <details><summary>İki kişi aynı cihazda oynayabilir mi?</summary><p>Evet. Rakip listesinden "İki oyuncu"yu seçin. Oyuncu 1 X, Oyuncu 2 O ile oynar; sıra göstergesi kimin sırasının geldiğini belirtir. Skor tablosu her mod için ayrı tutulur.</p></details>
+        <details><summary>Skorlarım nerede saklanıyor?</summary><p>Yalnızca tarayıcınızın localStorage alanında; hiçbir sunucuya gönderilmez. "Skoru sıfırla" düğmesiyle ya da tarayıcı verilerini silerek temizleyebilirsiniz.</p></details>
+        <details><summary>Klavyeyle ya da telefonda oynanır mı?</summary><p>Evet. Ok tuşlarıyla kareler arasında gezinip Enter veya Boşluk ile işaretleyebilirsiniz. Telefonda dokunarak oynanır; 15 × 15 tahta küçük ekranlara sığar, hassas dokunuş gerekirse ekranı yakınlaştırabilirsiniz.</p></details>
+        <details><summary>İnternet olmadan oynanabilir mi?</summary><p>Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; bilgisayar rakip de tarayıcınızın içinde çalışır. Siteyi uygulama olarak yüklerseniz çevrimdışı da açılır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-xox-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

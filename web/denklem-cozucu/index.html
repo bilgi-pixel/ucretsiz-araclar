@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Denklem Çözücü – 1. ve 2. Derece, İki Bilinmeyenli Denklem Çözümü (Adım Adım)</title>
+  <meta name="description" content="Birinci derece, ikinci derece (diskriminant, kökler, karmaşık kökler, tepe noktası, grafik) ve iki bilinmeyenli denklem sistemlerini adım adım çözün. Türkçe ondalık girişi, ücretsiz, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/denklem-cozucu/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .dc-modes { border: 0; padding: 0; margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .dc-modes legend { padding: 0; margin-bottom: 6px; font-weight: 600; font-size: .9rem; }
+    .dc-mode { position: relative; display: block; }
+    .dc-mode input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .dc-mode span { display: block; min-height: 44px; padding: 8px 14px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); font-weight: 600; }
+    .dc-mode small { display: block; font-family: var(--ba-mono); font-weight: 400; font-size: .8rem; }
+    .dc-mode input:checked + span { background: var(--ba-primary); border-color: var(--ba-primary); color: var(--ba-bg); }
+    .dc-mode input:focus-visible + span { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .dc-row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .dc-eq { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); margin: 0 0 12px; padding: 8px 12px 12px; }
+    .dc-eq legend { padding: 0 6px; font-weight: 600; font-size: .9rem; }
+    .dc-hint { display: block; font-weight: 400; font-size: .75rem; color: var(--ba-text-muted); }
+    .dc-preview { margin: 4px 0 12px; padding: 8px 12px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); font-family: var(--ba-mono); font-size: .95rem; overflow-wrap: anywhere; }
+    .dc-preview .lbl { display: block; font-family: var(--ba-font); font-size: .75rem; color: var(--ba-text-muted); }
+    .dc-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+    .dc-chips .lbl { font-size: .85rem; color: var(--ba-text-muted); }
+    .dc-chips .ba-btn { min-height: 38px; padding: 6px 12px; font-size: .9rem; }
+    .dc-graph { margin: 16px 0 0; }
+    .dc-graph canvas { display: block; width: 100%; height: 260px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .dc-graph figcaption { font-size: .85rem; color: var(--ba-text-muted); margin-top: 4px; }
+    .ac-results { margin: 0; display: grid; gap: 6px; }
+    .ac-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .ac-row:last-child { border-bottom: 0; }
+    .ac-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .ac-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; text-align: right; overflow-wrap: anywhere; }
+    .ac-row.is-strong dd { font-weight: 700; font-size: 1.3rem; color: var(--ba-text); }
+    .ac-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .ac-box:not(.is-active) { display: none; }
+    .ac-box h3 { margin: 0 0 8px; font-size: 1rem; }
+    .ac-box h4 { margin: 18px 0 6px; font-size: .98rem; }
+    .ac-steps { margin: 8px 0 0; padding-left: 22px; font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .ac-steps li { margin: 5px 0; }
+    .ac-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Denklem Çözücü – Bilişim Ajans","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/denklem-cozucu/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İkinci derece denklem nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Önce diskriminantı hesaplayın: Δ = b² − 4ac. Δ pozitifse iki farklı gerçek kök, sıfırsa tek (çift katlı) kök, negatifse gerçek kök yoktur. Kökler x = (−b ± √Δ) / (2a) formülüyle bulunur. x² − 5x + 6 = 0 için Δ = 1 ve kökler 2 ile 3'tür."}},{"@type":"Question","name":"Diskriminant negatif çıkarsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Gerçek sayılarda çözüm yoktur ama karmaşık sayılarda iki kök vardır; bunlar birbirinin eşleniğidir. x² + 2x + 5 = 0 için Δ = −16, √Δ = 4i ve kökler −1 + 2i ile −1 − 2i'dir. Araç bu durumda kökleri p ± qi biçiminde gösterir; grafikte parabolün x eksenini kesmediğini görürsünüz."}},{"@type":"Question","name":"Köklerin toplamı ve çarpımı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Kökleri bulmadan da hesaplanır: toplam −b/a, çarpım c/a'dır (Vieta bağıntıları). x² − 5x + 6 = 0 için toplam 5, çarpım 6'dır. Araç bu iki değeri her çözümde ayrıca gösterir; kökleri doğrulamak için de kullanabilirsiniz."}},{"@type":"Question","name":"Parabolün tepe noktası nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Tepe noktasının apsisi r = −b / (2a), ordinatı k = f(r) = −Δ / (4a)'dır. a pozitifse kollar yukarı bakar ve k en küçük değerdir; a negatifse kollar aşağı bakar ve k en büyük değerdir. x² − 5x + 6 için tepe noktası (2,5; −0,25)'tir."}},{"@type":"Question","name":"İki bilinmeyenli denklem sistemi nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Yok etme, yerine koyma ya da Cramer yöntemiyle çözülür. Cramer'de D = a₁b₂ − a₂b₁, Dx = c₁b₂ − c₂b₁, Dy = a₁c₂ − a₂c₁ hesaplanır; D sıfırdan farklıysa x = Dx/D, y = Dy/D olur. 2x + 3y = 12 ve x − y = 1 için D = −5, Dx = −15, Dy = −10; çözüm x = 3, y = 2'dir."}},{"@type":"Question","name":"Sistemin çözümü yok ya da sonsuz çıkması ne demek?","acceptedAnswer":{"@type":"Answer","text":"D = 0 ise iki doğru ya paraleldir ya da üst üste biner. Dx veya Dy sıfırdan farklıysa doğrular paraleldir ve çözüm yoktur; D, Dx ve Dy üçü de sıfırsa doğrular çakışıktır ve sonsuz çözüm vardır. Araç hangi durumda olduğunuzu açıkça yazar ve grafikte iki doğruyu çizer."}},{"@type":"Question","name":"Ondalık ve kesirli katsayı girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Ondalık için virgül (2,5), kesir için a/b biçimi (3/4) ve negatif için eksi işareti kullanın; nokta binlik ayırıcı sayılır (1.250). Hesap tam kesirlerle yapıldığı için 0,1 + 0,2 türü yuvarlama hataları oluşmaz; sonuç hem kesir hem ondalık olarak verilir."}},{"@type":"Question","name":"a katsayısına sıfır yazarsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"İkinci derece denklemde a sıfır olamaz; sıfır olursa denklem birinci dereceye düşer ve araç sizi 1. derece seçeneğine yönlendirir. Birinci derece denklemde a = 0 ise sonuç ya sonsuz çözüm ya da çözümsüzlüktür; araç hangisi olduğunu açıkça söyler."}},{"@type":"Question","name":"Girdiğim değerler sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; yazdığınız katsayılar sunucuya gönderilmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Denklem Çözücü</span>: 1. Derece, 2. Derece ve İki Bilinmeyenli Denklemler</h1>
+      <p class="lead">Denklem türünü seçin, katsayıları yazın; kökler, diskriminant, karmaşık kökler, köklerin toplamı ve çarpımı, parabolün tepe noktası ve küçük bir grafik adım adım çözümle birlikte anında gelsin. İki bilinmeyenli sistemler Cramer ya da yok etme yöntemiyle çözülür. Yazdığınız değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" novalidate>
+        <fieldset class="dc-modes">
+          <legend>Denklem türü</legend>
+          <label class="dc-mode"><input type="radio" name="mode" value="lin" checked><span>1. derece<small>ax + b = c</small></span></label>
+          <label class="dc-mode"><input type="radio" name="mode" value="quad"><span>2. derece<small>ax² + bx + c = 0</small></span></label>
+          <label class="dc-mode"><input type="radio" name="mode" value="sys"><span>İki bilinmeyenli sistem<small>a₁x + b₁y = c₁ ; a₂x + b₂y = c₂</small></span></label>
+        </fieldset>
+        <p class="dc-preview" aria-live="off"><span class="lbl">Denklem (genel biçim: <span id="template"></span>)</span><span id="eq-preview"></span></p>
+        <div id="fields"></div>
+        <div class="ba-field" id="method-wrap" hidden>
+          <label for="method">Çözüm yöntemi</label>
+          <select id="method"><option value="cramer" selected>Cramer (determinant)</option><option value="yoketme">Yok etme</option></select>
+        </div>
+        <div class="hint" style="font-size:.85rem;color:var(--ba-text-muted)">Ondalık için virgül (2,5), kesir için a/b (3/4), negatif için eksi işareti (-4). Nokta binlik ayırıcıdır (1.250). Bilmediğiniz katsayı yoksa 0 yazın.</div>
+        <button type="submit" class="visually-hidden">Çöz</button>
+        <div class="dc-chips" role="group" aria-label="Örnek denklemler"><span class="lbl">Örnekler:</span>
+          <button type="button" class="ba-btn" data-mode="lin" data-example="2; 3; 11">2x + 3 = 11</button>
+          <button type="button" class="ba-btn" data-mode="quad" data-example="1; -5; 6">x² − 5x + 6 = 0</button>
+          <button type="button" class="ba-btn" data-mode="quad" data-example="1; 2; 5">x² + 2x + 5 = 0</button>
+          <button type="button" class="ba-btn" data-mode="sys" data-example="2; 3; 12; 1; -1; 1">2x + 3y = 12 ; x − y = 1</button>
+        </div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="ac-box" aria-live="polite">
+        <h3 id="r-title">Sonuç</h3>
+        <dl class="ac-results" id="r-rows"></dl>
+        <figure class="dc-graph" id="graph-wrap" hidden>
+          <canvas id="graph" role="img" aria-label="Grafik"><span id="graph-text">Grafik için tarayıcınız canvas desteklemelidir.</span></canvas>
+          <figcaption id="graph-legend"></figcaption>
+        </figure>
+        <h4>Adım adım çözüm</h4>
+        <ol class="ac-steps" id="steps"></ol>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ac-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="denklem-cozucu-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Denklem türünü seçin: tek bilinmeyenli ax + b = c için "1. derece", ax² + bx + c = 0 için "2. derece", x ve y'li iki denklem için "İki bilinmeyenli sistem". Üstte genel biçim ve yazdıkça oluşan gerçek denkleminiz görünür.</li>
+        <li>Katsayıları kutulara yazın. Ondalık için virgül, kesir için a/b, negatif sayı için eksi işareti kullanın. Katsayı yoksa 0 yazın: x² − 4 = 0 denkleminde b = 0'dır.</li>
+        <li>Sonuç siz yazarken kendiliğinden belirir. Üstte kökler, diskriminant, toplam ve çarpım ya da x ve y değerleri; altında grafik ve satır satır "Adım adım çözüm" yer alır. Sistemlerde Cramer ya da yok etme yöntemini listeden seçebilirsiniz.</li>
+        <li>"Sonucu kopyala" düğmesi çözümü düz metin olarak panoya alır. Yukarıdaki örnek düğmeleri, araca ilk kez bakanlar için hazır birer başlangıçtır.</li>
+      </ol>
+
+      <h2>Denklem nedir, hangi türleri çözülür?</h2>
+      <p>Denklem, içinde bilinmeyen bulunan ve bilinmeyenin hangi değerleri için doğru olduğunu sorduğumuz eşitliktir. Bilinmeyenin en yüksek üssüne denklemin derecesi denir. Bu araç üç aileyi çözer: birinci derece (ax + b = c), ikinci derece (ax² + bx + c = 0) ve iki bilinmeyenli iki birinci derece denklemden oluşan sistemler. Okul programındaki çoğu sorunun temelinde bu üçü vardır; ayrıca günlük hayattaki ücret, alan, karışım ve hareket problemleri de bu kalıplara çevrilir.</p>
+
+      <h2>Birinci derece denklem nasıl çözülür?</h2>
+      <p>ax + b = c biçimindeki denklemde amaç x'i yalnız bırakmaktır. Önce b'yi karşı tarafa geçirirsiniz: ax = c − b. Sonra iki tarafı a'ya bölersiniz: x = (c − b) / a. 2x + 3 = 11 için 2x = 8 ve x = 4 bulunur; doğrulamak için 2 · 4 + 3 = 11 yazarsınız. Araç bu üç satırı her denklem için kendi sayılarınızla üretir ve sonuçta doğrulamayı da gösterir.</p>
+      <p>a = 0 olduğunda x ortadan kalkar ve geriye sayılar arasında bir eşitlik kalır. b ile c birbirine eşitse eşitlik her x için doğrudur ve sonsuz çözüm vardır; eşit değilse hiçbir x denklemi sağlamaz ve çözüm kümesi boştur. Araç bu iki durumu hata saymaz, sonucu açıkça yazar.</p>
+
+      <h2>İkinci derece denklem: diskriminant ve kökler</h2>
+      <p>ax² + bx + c = 0 denkleminin köklerini belirleyen sayı diskriminanttır: Δ = b² − 4ac. Kökler x = (−b ± √Δ) / (2a) formülüyle bulunur ve Δ'nın işareti kök sayısını söyler:</p>
+      <table>
+        <thead><tr><th scope="col">Diskriminant</th><th scope="col">Kökler</th><th scope="col">Grafikte</th></tr></thead>
+        <tbody>
+          <tr><td>Δ &gt; 0</td><td>İki farklı gerçek kök</td><td>Parabol x eksenini iki noktada keser</td></tr>
+          <tr><td>Δ = 0</td><td>Çakışık (çift katlı) tek kök</td><td>Parabol x eksenine tepe noktasında değer</td></tr>
+          <tr><td>Δ &lt; 0</td><td>Gerçek kök yok, iki karmaşık kök</td><td>Parabol x eksenini hiç kesmez</td></tr>
+        </tbody>
+      </table>
+      <p>x² − 5x + 6 = 0 için Δ = 25 − 24 = 1 çıkar ve kökler (5 − 1) / 2 = 2 ile (5 + 1) / 2 = 3 olur. Kökler her zaman küçükten büyüğe, x₁ ve x₂ olarak sıralanır. Δ tam kare değilse kökler irrasyoneldir: x² − 2 = 0 için kökler ±√2'dir ve araç hem √2 biçimini hem de 1,414214 yaklaşımını gösterir. Kök ifadesi sadeleştirilir; √8 yerine 2√2, (4 ± 2√3) / 2 yerine 2 ± √3 görürsünüz.</p>
+
+      <h2>Karmaşık kökler</h2>
+      <p>Δ negatifse karekök gerçek sayılarda tanımsızdır; karmaşık sayılarda ise i² = −1 kabulüyle √(−16) = 4i yazılır. x² + 2x + 5 = 0 için Δ = −16'dır ve kökler (−2 ± 4i) / 2 = −1 ± 2i olur. İki kök her zaman birbirinin eşleniğidir: gerçek kısımları aynı, sanal kısımları zıt işaretlidir. Araç bu durumda "Karmaşık (sanal) kökler" etiketini koyar, kökleri p ± qi biçiminde yazar ve grafikte parabolün x eksenine hiç değmediğini gösterir. Karmaşık sayılar ileri matematikte, elektrik mühendisliğinde ve sinyal işlemede günlük araçtır.</p>
+
+      <h2>Köklerin toplamı ve çarpımı</h2>
+      <p>İkinci derece denklemin kökleri bulunmadan da toplamları ve çarpımları bilinebilir: x₁ + x₂ = −b / a ve x₁ · x₂ = c / a. Bu bağıntılar Vieta formülleri olarak anılır. x² − 5x + 6 = 0 için toplam 5, çarpım 6'dır; toplamı 5, çarpımı 6 olan iki sayıyı arayınca 2 ve 3'ü bulursunuz. Sonucu doğrulamanın ve kök bulmadan soru çözmenin kısa yoludur; araç her çözümde bu iki değeri ayrıca verir.</p>
+
+      <h2>Parabolün tepe noktası ve grafiği</h2>
+      <p>y = ax² + bx + c fonksiyonunun grafiği paraboldür. Tepe noktasının apsisi r = −b / (2a), ordinatı k = f(r) = −Δ / (4a)'dır. a pozitifse kollar yukarı bakar ve k fonksiyonun en küçük değeridir; a negatifse kollar aşağı bakar ve k en büyük değerdir. x = r doğrusu simetri eksenidir; parabol bu eksene göre aynadaki gibi iki yarıya ayrılır. x² − 5x + 6 için tepe noktası (2,5; −0,25)'tir ve kökler bu eksenin iki yanında eşit uzaklıkta, 2 ile 3'tedir. Tepe noktası problem çözmede çok işe yarar: bir cismin ulaşabileceği en yüksek nokta ya da bir üretimde elde edilebilecek en büyük kâr tepe noktasından okunur. Araçtaki küçük grafikte parabol, kökler, tepe noktası ve eksenler çizilir; grafik ekran okuyucular için metinle de tarif edilir.</p>
+
+      <div class="ba-ad" data-slot="denklem-cozucu-b" aria-label="Reklam"></div>
+
+      <h2>İki bilinmeyenli denklem sistemi</h2>
+      <p>a₁x + b₁y = c₁ ve a₂x + b₂y = c₂ sistemini çözmenin klasik yolları yok etme, yerine koyma ve Cramer yöntemidir. Yok etmede bir bilinmeyenin katsayıları eşitlenip denklemler taraf tarafa çıkarılır; geriye tek bilinmeyenli bir denklem kalır, bulunan değer denklemlerden birinde yerine yazılarak diğeri elde edilir. Cramer yönteminde üç determinant hesaplanır: D = a₁b₂ − a₂b₁, Dx = c₁b₂ − c₂b₁, Dy = a₁c₂ − a₂c₁. D sıfırdan farklıysa x = Dx / D ve y = Dy / D olur.</p>
+      <p>2x + 3y = 12 ve x − y = 1 sistemi için D = 2 · (−1) − 1 · 3 = −5, Dx = 12 · (−1) − 1 · 3 = −15 ve Dy = 2 · 1 − 1 · 12 = −10'dur; buradan x = 3 ve y = 2 çıkar. Araç sonunda iki denklemi de bulunan değerlerle sınar. Geometrik olarak her denklem bir doğrudur ve çözüm iki doğrunun kesişim noktasıdır; grafikte birinci denklem düz, ikinci denklem kesikli çizgiyle çizilir.</p>
+      <p>D = 0 ise doğrular ya paraleldir ya da üst üste biner. Dx ya da Dy sıfırdan farklıysa doğrular paraleldir ve sistemin çözümü yoktur; D, Dx ve Dy üçü de sıfırsa doğrular çakışıktır ve sonsuz çözüm vardır. Araç bu üç durumu ayırır ve gerekçesini yazar. Katsayılardan bazıları sıfırsa (örneğin 2x = 4 ve 3y = 9) klasik yok etme uygulanamaz; araç bunu söyler ve doğrudan çözer.</p>
+
+      <h2>Sayı girişi ve doğruluk</h2>
+      <p>Girişler Türkçe yazım kurallarına göredir: ondalık ayırıcı virgüldür (2,5), nokta binlik ayırıcı sayılır (1.250) ve 3/4 gibi kesirler doğrudan yazılabilir. Hesaplar tarayıcıdaki büyük tam sayılarla ve tam kesirlerle yapılır; 0,1 + 0,2 gibi işlemlerde ikilik düzende oluşan yuvarlama hataları ortaya çıkmaz. Sonuçlar mümkün olduğunda kesir ve ondalık olarak birlikte gösterilir: 5/2 = 2,5. Ondalıklı katsayılı ikinci derece denklemlerde araç, kökleri bulmak için denklemi paydaların ortak katıyla çarpar ve bunu adımlarda belirtir. Her sayı en fazla 15 basamak olabilir.</p>
+
+      <h2>Günlük hayattan örnekler</h2>
+      <ul>
+        <li><strong>Birinci derece.</strong> Bir taksimetre 50 TL açılış ve kilometre başına 30 TL işliyorsa (varsayımsal fiyatlar) 230 TL ödeyen yolcu 30x + 50 = 230 denkleminden x = 6 km gitmiştir.</li>
+        <li><strong>İkinci derece, alan.</strong> Çevresi 20 m, alanı 24 m² olan dikdörtgenin kenarları x² − 10x + 24 = 0 denkleminin kökleridir: 4 m ve 6 m.</li>
+        <li><strong>İkinci derece, hareket.</strong> Yerden dikey olarak 20 m/s hızla atılan bir cismin yüksekliği, yer çekimini yaklaşık 10 m/s² alırsak h = −5t² + 20t'dir. Kökler t = 0 ve t = 4 sn'dir; tepe noktası (2; 20) olduğundan cisim 2. saniyede 20 metreye çıkar.</li>
+        <li><strong>Sistem.</strong> 2 kalem ve 3 defter 12 TL, kalem defterden 1 TL pahalıysa 2x + 3y = 12 ve x − y = 1 sistemi kalemin 3 TL, defterin 2 TL olduğunu verir.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>İşaret hataları.</strong> b negatifse b² pozitiftir: (−5)² = 25, −5² değil. Diskriminantta −4ac'nin içindeki işaretlere dikkat edin; c negatifse −4ac pozitif olur.</li>
+        <li><strong>2a'yı unutmak.</strong> Kök formülünde bölen sadece a değil 2a'dır; tepe noktasında da −b / (2a) kullanılır.</li>
+        <li><strong>Sabiti karşı tarafa işaretsiz geçirmek.</strong> ax + b = c denkleminde b karşıya −b olarak geçer.</li>
+        <li><strong>Sıfır katsayıyı yazmamak.</strong> x² − 4 = 0 denkleminde b kutusuna 0 yazmalısınız; kutulardan biri boş kalırsa araç sonuç üretmez.</li>
+        <li><strong>Sistemde denklemleri hizalamamak.</strong> Her denklemde x'in katsayısı birinci, y'ninki ikinci sütunda olmalıdır; terimlerin yerini değiştirdiyseniz işaretleriyle birlikte taşıyın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Katsayılarınız yalnızca tarayıcınızda işlenir; hiçbir sunucuya gönderilmez ve saklanmaz.</li>
+        <li><strong>Çözüm yolu açık.</strong> Yalnızca sonucu değil, formülde sayıların yerine konduğu her satırı ve doğrulamayı görürsünüz.</li>
+        <li><strong>Tam kesirli hesap.</strong> Yuvarlama hatası yoktur; irrasyonel ve karmaşık kökler sadeleştirilmiş biçimde de verilir.</li>
+        <li><strong>Grafik dahil.</strong> Parabol ve doğrular tarayıcıda çizilir; kayıt ve limit yoktur, sayfa çevrimdışı da çalışır.</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span>Araç eğitim ve bilgilendirme amaçlıdır. Sınavlarda ve ödevlerde işlemleri kendiniz yazmanız beklenebilir; önce kendi çözümünüzü yapıp sonucu burada denetlemek en iyi çalışma yoludur.</span></p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>İkinci derece denklem nasıl çözülür?</summary><p>Önce diskriminantı hesaplayın: Δ = b² − 4ac. Δ pozitifse iki farklı gerçek kök, sıfırsa tek (çift katlı) kök, negatifse gerçek kök yoktur. Kökler x = (−b ± √Δ) / (2a) formülüyle bulunur. x² − 5x + 6 = 0 için Δ = 1 ve kökler 2 ile 3'tür.</p></details>
+        <details><summary>Diskriminant negatif çıkarsa ne olur?</summary><p>Gerçek sayılarda çözüm yoktur ama karmaşık sayılarda iki kök vardır; bunlar birbirinin eşleniğidir. x² + 2x + 5 = 0 için Δ = −16, √Δ = 4i ve kökler −1 + 2i ile −1 − 2i'dir. Araç bu durumda kökleri p ± qi biçiminde gösterir; grafikte parabolün x eksenini kesmediğini görürsünüz.</p></details>
+        <details><summary>Köklerin toplamı ve çarpımı nasıl bulunur?</summary><p>Kökleri bulmadan da hesaplanır: toplam −b/a, çarpım c/a'dır (Vieta bağıntıları). x² − 5x + 6 = 0 için toplam 5, çarpım 6'dır. Araç bu iki değeri her çözümde ayrıca gösterir; kökleri doğrulamak için de kullanabilirsiniz.</p></details>
+        <details><summary>Parabolün tepe noktası nasıl bulunur?</summary><p>Tepe noktasının apsisi r = −b / (2a), ordinatı k = f(r) = −Δ / (4a)'dır. a pozitifse kollar yukarı bakar ve k en küçük değerdir; a negatifse kollar aşağı bakar ve k en büyük değerdir. x² − 5x + 6 için tepe noktası (2,5; −0,25)'tir.</p></details>
+        <details><summary>İki bilinmeyenli denklem sistemi nasıl çözülür?</summary><p>Yok etme, yerine koyma ya da Cramer yöntemiyle çözülür. Cramer'de D = a₁b₂ − a₂b₁, Dx = c₁b₂ − c₂b₁, Dy = a₁c₂ − a₂c₁ hesaplanır; D sıfırdan farklıysa x = Dx/D, y = Dy/D olur. 2x + 3y = 12 ve x − y = 1 için D = −5, Dx = −15, Dy = −10; çözüm x = 3, y = 2'dir.</p></details>
+        <details><summary>Sistemin çözümü yok ya da sonsuz çıkması ne demek?</summary><p>D = 0 ise iki doğru ya paraleldir ya da üst üste biner. Dx veya Dy sıfırdan farklıysa doğrular paraleldir ve çözüm yoktur; D, Dx ve Dy üçü de sıfırsa doğrular çakışıktır ve sonsuz çözüm vardır. Araç hangi durumda olduğunuzu açıkça yazar ve grafikte iki doğruyu çizer.</p></details>
+        <details><summary>Ondalık ve kesirli katsayı girebilir miyim?</summary><p>Evet. Ondalık için virgül (2,5), kesir için a/b biçimi (3/4) ve negatif için eksi işareti kullanın; nokta binlik ayırıcı sayılır (1.250). Hesap tam kesirlerle yapıldığı için 0,1 + 0,2 türü yuvarlama hataları oluşmaz; sonuç hem kesir hem ondalık olarak verilir.</p></details>
+        <details><summary>a katsayısına sıfır yazarsam ne olur?</summary><p>İkinci derece denklemde a sıfır olamaz; sıfır olursa denklem birinci dereceye düşer ve araç sizi 1. derece seçeneğine yönlendirir. Birinci derece denklemde a = 0 ise sonuç ya sonsuz çözüm ya da çözümsüzlüktür; araç hangisi olduğunu açıkça söyler.</p></details>
+        <details><summary>Girdiğim değerler sunucuya gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda JavaScript ile yapılır; yazdığınız katsayılar sunucuya gönderilmez, saklanmaz ve izlenmez. Sayfa bir kez yüklendikten sonra çevrimdışı da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul>
+        <li><a href="../ebob-ekok/">EBOB, EKOK ve Asal Çarpanlar</a> — çarpanlara ayırma, asal sayı testi, bölenler</li>
+        <li><a href="../oran-oranti-hesapla/">Oran Orantı Hesaplama</a> — doğru ve ters orantı problemleri</li>
+        <li><a href="../grafik-olustur/">Grafik Oluştur</a> — verilerinizden çubuk, çizgi ve pasta grafiği</li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Özel hesaplama aracı, eğitim yazılımı ya da kurumsal web projesi ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="denklem-cozucu-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

@@ -148,7 +148,7 @@ function contrastCheck(o) {
   else if (ratio < 4) { w.textContent = `Kontrast düşük (${ratio.toFixed(1)}:1). Güvenli okuma için en az 4:1 önerilir.`; w.hidden = false; }
   else w.hidden = true;
 }
-function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); }
+function scheduleRender() { const c = document.getElementById('qr-canvas'); if (c) c.dataset.ready = '0'; clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); }
 
 function setReady(ready, hint = '') {
   $('preview-hint').textContent = ready ? '' : hint;
