@@ -8,7 +8,7 @@ const els = {
   device: $('mic-device'), processing: $('mic-processing'),
   start: $('mic-start'), stop: $('mic-stop'),
   error: $('mic-error'), permHelp: $('perm-help'),
-  meter: $('mic-canvas'), level: $('mic-level'), hint: $('mic-hint'), wave: $('wave-canvas'),
+  meter: $('mic-canvas'), level: $('mic-level'), hint: $('mic-hint'), paused: $('mic-paused'), wave: $('wave-canvas'),
   recToggle: $('rec-toggle'), recDownload: $('rec-download'), recStatus: $('rec-status'), recAudio: $('rec-audio'),
 };
 
@@ -27,6 +27,8 @@ let recStartedAt = 0;
 let recBlob = null;
 let recUrl = null;
 let recMime = '';
+let starting = false;            // mikrofon açılıyor (izin/getUserMedia/ses bağlamı bekleniyor)
+let restartQueued = false;       // açılış sürerken gelen cihaz/işleme değişikliği; açılış bitince uygulanır
 
 // ---- Destek kontrolü ------------------------------------------------------------
 const hasMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -66,8 +68,10 @@ async function fillDevices() {
   const first = document.createElement('option');
   first.value = ''; first.textContent = 'Varsayılan mikrofon';
   els.device.appendChild(first);
+  // İzin verilmeden önce tarayıcılar kimliği boş girişler döndürür; bunlar "Varsayılan mikrofon"un
+  // aynısıdır (değeri boş), ayrı satır olarak listelenmez.
   // Chrome "default" ve "communications" adlı yinelenen girişler ekler; gerçek cihaz varsa onları gizle.
-  let inputs = list.filter((d) => d.kind === 'audioinput');
+  let inputs = list.filter((d) => d.kind === 'audioinput' && d.deviceId);
   const real = inputs.filter((d) => d.deviceId !== 'default' && d.deviceId !== 'communications');
   if (real.length) inputs = real;
   inputs.forEach((d, i) => {
@@ -144,8 +148,14 @@ function stopStream(s) { if (s) s.getTracks().forEach((t) => t.stop()); }
 function fmtDb(db) { return db <= -90 ? '< -90 dB' : `${Math.round(db)} dB`; }
 
 async function startMic() {
+  // Çift tıklamada iki akış açılmasın; açılış sürerken gelen cihaz/işleme değişikliği kaybolmasın,
+  // açılış bitince yeni ayarlarla yeniden başlatılsın.
+  if (starting) { restartQueued = true; return; }
+  starting = true;
+  restartQueued = false;
   showError(els.error, '');
   els.permHelp.hidden = true;
+  els.paused.hidden = true;
   stopMic();
   els.start.disabled = true;
   try {
@@ -153,12 +163,21 @@ async function startMic() {
     const proc = els.processing.checked;
     const audio = { echoCancellation: proc, noiseSuppression: proc, autoGainControl: proc };
     if (id) audio.deviceId = { exact: id };
-    micStream = await navigator.mediaDevices.getUserMedia({ audio, video: false });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio, video: false });
+    micStream = stream;
+    // İzin/açılış beklenirken sekme gizlendiyse mikrofon arka planda açık kalmasın.
+    if (document.hidden) { stopMic(); els.paused.hidden = false; return; }
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    micCtx = new Ctx();
-    if (micCtx.state === 'suspended') await micCtx.resume();
-    const src = micCtx.createMediaStreamSource(micStream);
-    const analyser = micCtx.createAnalyser();
+    const ctx = new Ctx();
+    micCtx = ctx;
+    // resume beklenirken mikrofon durdurulabilir (ör. sekme gizlendi): stopMic bağlamı kapatıp micCtx'i boşaltır.
+    // Kapanmış bağlamın resume'u reddedilebilir; bu bir hata değil, sessizce çıkılır.
+    if (ctx.state === 'suspended') {
+      try { await ctx.resume(); } catch (e) { if (micCtx === ctx) throw e; }
+    }
+    if (micCtx !== ctx) return; // beklerken durduruldu
+    const src = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0;
     src.connect(analyser); // hoparlöre bağlanmaz: geri besleme (ıslık) olmaz
@@ -211,7 +230,10 @@ async function startMic() {
     els.stop.disabled = false;
     if (hasRecorder) { els.recToggle.disabled = false; if (!recBlob) setRecStatus('idle', 'Hazır. Kaydı başlatıp birkaç saniye konuşun.'); }
     await fillDevices();
-    const cur = micStream && micStream.getAudioTracks()[0] && micStream.getAudioTracks()[0].getSettings().deviceId;
+    // Listeyi açılan cihaza eşitle; ama bu açılış sürerken kullanıcı başka cihaz seçtiyse (kuyrukta
+    // yeniden başlatma var) seçimini ezme, yoksa sıradaki açılış eski cihazla yapılır.
+    const track = stream.getAudioTracks()[0];
+    const cur = !restartQueued && track && typeof track.getSettings === 'function' && track.getSettings().deviceId;
     if (cur && [...els.device.options].some((o) => o.value === cur)) els.device.value = cur;
   } catch (err) {
     stopMic();
@@ -221,6 +243,9 @@ async function startMic() {
     if (n === 'OverconstrainedError' || n === 'ConstraintNotSatisfiedError') { els.device.value = ''; fillDevices().catch(() => {}); }
   } finally {
     els.start.disabled = !hasMedia;
+    starting = false;
+    // Açılış sırasında cihaz/işleme değiştiyse yeni ayarlarla yeniden aç (mikrofon bu arada kapatılmadıysa).
+    if (restartQueued && micStream) startMic();
   }
 }
 
@@ -241,10 +266,20 @@ function stopMic() {
 
 els.start.addEventListener('click', startMic);
 els.stop.addEventListener('click', stopMic);
-els.device.addEventListener('change', () => { if (micStream) startMic(); });
-els.processing.addEventListener('change', () => { if (micStream) startMic(); });
+// Yeniden başlatma sürerken micStream boştur; o anki değişiklik de (starting) kuyruğa alınır.
+els.device.addEventListener('change', () => { if (micStream || starting) startMic(); });
+els.processing.addEventListener('change', () => { if (micStream || starting) startMic(); });
 drawMeter(0, 0);
 drawWave(null);
+
+// Sekme gizlenince mikrofonu serbest bırak (tarayıcının mikrofon simgesi boşuna yanmasın).
+// Açılış sürerken (micStream henüz yok) gizlenirse startMic getUserMedia dönünce aynısını yapar.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && micStream) {
+    stopMic();
+    els.paused.hidden = false;
+  }
+});
 
 // ---- Kayıt ve dinleme -----------------------------------------------------------
 function setRecStatus(state, text) {
@@ -260,19 +295,22 @@ function pickMime() {
 }
 
 function startRecording() {
-  if (!micStream || !hasRecorder) return;
+  // Önceki kayıt hâlâ kapanıyorsa (stop olayı gelmeden, ör. çift tıklama) yenisi başlamasın:
+  // aksi hâlde eski kaydın son parçası yeni kayda karışır ve ikinci kaydedici sahipsiz kalır.
+  if (!micStream || !hasRecorder || recorder) return;
   try {
     const mime = pickMime();
     recorder = mime ? new MediaRecorder(micStream, { mimeType: mime }) : new MediaRecorder(micStream);
+    recChunks = [];
+    recMime = recorder.mimeType || '';
+    recorder.addEventListener('dataavailable', (e) => { if (e.data && e.data.size) recChunks.push(e.data); });
+    recorder.addEventListener('stop', finishRecording);
+    recorder.start(250);
   } catch (err) {
+    recorder = null; // başlayamayan kaydedici sonraki denemeleri engellemesin
     setRecStatus('idle', 'Bu tarayıcı kaydı başlatamadı. Seviye testi yine de çalışır; tarayıcıyı güncelleyip tekrar deneyin.');
     return;
   }
-  recChunks = [];
-  recMime = recorder.mimeType || '';
-  recorder.addEventListener('dataavailable', (e) => { if (e.data && e.data.size) recChunks.push(e.data); });
-  recorder.addEventListener('stop', finishRecording);
-  recorder.start(250);
   recStartedAt = performance.now();
   els.recToggle.textContent = 'Kaydı durdur';
   els.recDownload.hidden = true;
