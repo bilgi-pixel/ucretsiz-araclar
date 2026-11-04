@@ -60,7 +60,10 @@ let reqId = 0;
 let rovingDom = 52; // klavye odağındaki kare (DOM sırası)
 let statsRecorded = false;
 let drag = null;
-let suppressClickUntil = 0;
+// Sürükleme bitince tarayıcının aynı hareketten ürettiği click olayı yutulur (yoksa aynı kareye geri bırakılan
+// taşın seçimi kalkar). Sabit zaman penceresi kullanılmaz: kullanıcının hemen ardından yaptığı gerçek tıklama
+// yeni bir pointerdown/keydown ile başlar ve bu işareti temizler. Değer: sürüklemenin bittiği an (ms); 0 = yok.
+let dragClickAt = 0;
 let thinkInfo = '';
 
 const cells = []; // DOM sırasına göre 64 düğme
@@ -530,13 +533,18 @@ function onSquare(d) {
 }
 
 boardEl.addEventListener('click', (e) => {
-  if (performance.now() < suppressClickUntil) return; // sürükleme sonrası gelen tıklamayı yoksay
+  // Fare için bu click, pointerup ile aynı görevde gelir. 1 sn sınırı yalnızca pointerdown/keydown olmadan gelen
+  // bir tıklamanın (ör. ekran okuyucu) tahta dışına bırakılmış eski bir sürükleme yüzünden yutulmasını önler.
+  const fromDrag = dragClickAt > 0 && performance.now() - dragClickAt < 1000;
+  dragClickAt = 0;
+  if (fromDrag) return;
   const btn = e.target.closest('button.sq');
   if (btn) onSquare(Number(btn.dataset.dom));
 });
 
 /* ---------- Sürükle-bırak (fare + dokunmatik, pointer events) ---------- */
 boardEl.addEventListener('pointerdown', (e) => {
+  dragClickAt = 0; // yeni hareket başladı: önceki sürüklemenin click'i artık beklenmez
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   const btn = e.target.closest('button.sq');
   if (!btn || !canInteract()) return;
@@ -576,7 +584,7 @@ function endDrag(e, drop) {
   if (!d) return;
   if (!d.active) return; // basit tıklama: click olayı işler
   if (d.ghost) d.ghost.remove();
-  suppressClickUntil = performance.now() + 120;
+  dragClickAt = performance.now();
   let toSq = null;
   if (drop && e) {
     const under = document.elementFromPoint(e.clientX, e.clientY);
@@ -603,6 +611,7 @@ window.addEventListener('pointercancel', (e) => { if (drag && e.pointerId === dr
 
 /* ---------- Klavye: ok tuşlarıyla kare gez, Enter/Boşluk (düğme tıklaması) seç/oyna, Esc iptal ---------- */
 boardEl.addEventListener('keydown', (e) => {
+  dragClickAt = 0; // Enter/Boşluk tıklaması yutulmasın (Esc ile sürükleme iptali aşağıda endDrag'de yeniden işaretler)
   const btn = e.target.closest('button.sq');
   if (!btn) return;
   const d = Number(btn.dataset.dom);

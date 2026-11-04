@@ -35,7 +35,7 @@ const el = {
 
 // ---- Oyun durumu ----
 let cfg;            // { key, w, h, m }
-let cells = [];     // { mine, open, mark (0 yok, 1 bayrak, 2 soru), n, openedAt }
+let cells = [];     // { mine, open, mark (0 yok, 1 bayrak, 2 soru), n, openedAt (doğrudan açıldığı an; hiç açılmadıysa -Infinity) }
 let nodes = [];     // hücre DOM düğümleri
 let nbr = [];       // her hücrenin komşu indeksleri
 let phase = 'ready'; // ready | play | won | lost
@@ -209,7 +209,7 @@ function newGame(next) {
   el.pauseCover.hidden = true;
   el.pause.textContent = 'Duraklat';
   el.pause.disabled = true;
-  cells = Array.from({ length: cfg.w * cfg.h }, () => ({ mine: false, open: false, mark: 0, n: 0, openedAt: 0 }));
+  cells = Array.from({ length: cfg.w * cfg.h }, () => ({ mine: false, open: false, mark: 0, n: 0, openedAt: -Infinity }));
   buildNeighbors();
   buildGrid();
   lastFocus = 0;
@@ -433,6 +433,8 @@ el.grid.addEventListener('contextmenu', (e) => {
 });
 
 // Çift tık (akor): yeni açılmış karede yanlışlıkla tetiklenmesin diye 450 ms koruma var.
+// performance.now() sayfa açılışında 0'dan başlar; doğrudan açılmamış karenin openedAt'i -Infinity olduğundan
+// sayfanın ilk 450 ms'sinde de koruma yalnızca gerçekten yeni tıklanan kareye uygulanır.
 el.grid.addEventListener('dblclick', (e) => {
   const i = cellIndex(e.target);
   if (i < 0) return;

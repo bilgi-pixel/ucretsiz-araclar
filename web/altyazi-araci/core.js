@@ -301,10 +301,29 @@ export function encodeText(text, enc = 'utf-8', { bom = false } = {}) {
 /* ---------- Bozuk Türkçe karakter onarımı ---------- */
 
 const TR_LETTERS = 'çöüÇÖÜıİğĞşŞâîûÂÎÛ';
-// UTF-8 baytlarının Windows-1252/1254 sanılarak okunmasıyla oluşan bozuk dizileri üretir (Ã§, Ä±, ÅŸ …).
+// Windows-1252'nin 0x80–0x9F aralığı (tanımsız konumlar C1 kontrol karakteri olarak kalır).
+const CP1252_HIGH = '€\u0081‚ƒ„…†‡ˆ‰Š‹Œ\u008DŽ\u008F\u0090‘’“”•–—˜™š›œ\u009DžŸ';
+// Bir baytın tek baytlık kodlamalarda okunabileceği karakterler. 0x80–0x9F kodlamaya göre değişir:
+// Windows-1252 'ž, Ÿ, œ, ‡ …' verir; gerçek ISO-8859-1 (Latin-1) ve Windows-1254'ün tanımsız
+// 0x8E/0x9E baytları ise C1 kontrol karakteri (U+0080–U+009F) verir. İkisi de onarılmalı.
+function byteReadings(b) {
+  const iso = String.fromCharCode(b);
+  return b >= 0x80 && b <= 0x9f && CP1252_HIGH[b - 0x80] !== iso ? [CP1252_HIGH[b - 0x80], iso] : [iso];
+}
+// UTF-8 baytlarının Windows-1252/1254 ya da ISO-8859-1 sanılarak okunmasıyla oluşan bozuk dizileri üretir
+// (Ã§, Ä±, ÅŸ, Å\u009E …). Tablo TextDecoder'a bırakılmaz: bazı ortamlar 'windows-1252' etiketini
+// ISO-8859-1 gibi çözer ve 'latin1' etiketi tarayıcıda zaten Windows-1252 demektir.
+let pairsCache = null;
 function mojibakePairs() {
-  const dec = new TextDecoder('windows-1252');
-  return [...TR_LETTERS].map((ch) => [dec.decode(new TextEncoder().encode(ch)), ch]);
+  if (!pairsCache) {
+    const enc = new TextEncoder();
+    pairsCache = [];
+    for (const ch of TR_LETTERS) {
+      const variants = [...enc.encode(ch)].reduce((acc, b) => acc.flatMap((s) => byteReadings(b).map((r) => s + r)), ['']);
+      for (const bad of variants) pairsCache.push([bad, ch]);
+    }
+  }
+  return pairsCache;
 }
 // Windows-1254 baytlarının Latin-1 sanılarak okunmasıyla oluşan harfler.
 const LATIN1_MISREAD = { 'ð': 'ğ', 'Ð': 'Ğ', 'ý': 'ı', 'Ý': 'İ', 'þ': 'ş', 'Þ': 'Ş' };

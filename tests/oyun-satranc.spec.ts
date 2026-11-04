@@ -313,6 +313,21 @@ test.describe('Oyun: satranç', () => {
     await sq(page, 'd7').click();
     await sq(page, 'd5').click();
     expect(await history(page)).toEqual(['e4', 'd5']);
+    // Aynı kareye geri bırakma: sürüklemenin kendi ürettiği click seçimi kaldırmaz; hemen ardından
+    // gelen gerçek tıklama ise (zaman penceresine takılmadan) hamleyi oynar.
+    a = await center('g1');
+    b = await center('f3');
+    await page.mouse.move(a.x, a.y);
+    await page.mouse.down();
+    await page.mouse.move(b.x, b.y, { steps: 6 });
+    await page.mouse.move(a.x, a.y, { steps: 6 });
+    await page.mouse.up();
+    await expect(page.locator('.sa-ghost')).toHaveCount(0);
+    await expect(sq(page, 'g1')).toHaveClass(/is-selected/);
+    await expect(sq(page, 'f3')).toHaveClass(/is-dest/);
+    await sq(page, 'f3').click();
+    await expect(sq(page, 'f3')).toHaveAttribute('data-piece', 'wN');
+    expect(await history(page)).toEqual(['e4', 'd5', 'Nf3']);
   });
 
   test('klavye: ok tuşlarıyla gezilir, Enter ile taş seçilir ve hamle oynanır; Esc seçimi bırakır', async ({ page }) => {

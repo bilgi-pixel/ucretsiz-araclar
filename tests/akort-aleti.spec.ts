@@ -18,16 +18,45 @@ function watch(page: Page) {
 const display = (page: Page) => page.locator('#ak-display');
 const attr = (page: Page, name: string) => display(page).getAttribute(name);
 
+type Reading = { state?: string; note?: string; octave?: string; cents: number; freq: number };
 /**
- * Sentetik sinyali besler; ekranın verilen nota adına VE frekansa (±%0,1) oturmasını bekler.
+ * Ekran okumasını tek çağrıda (aynı çözümleme karesinden) alır. Nota, cent ve frekansı ayrı ayrı okumak
+ * yarış doğurur: aralarında yeni kare gelirse farklı karelerin değerleri karışır.
+ */
+const reading = (page: Page) => display(page).evaluate((el: HTMLElement): Reading => {
+  const d = el.dataset;
+  return { state: d.state, note: d.note, octave: d.octave, cents: Number(d.cents), freq: Number(d.freq) };
+});
+
+/**
+ * Sentetik sinyali besler; ekranın BU sinyalden ölçülmüş CANLI okumaya (state=detected, frekans ±%0,1) ve
+ * verilen nota adına oturmasını bekler; o okumayı döndürür. (Bekleme durumunda data-* son değerleri korur;
+ * state kontrolü bayat değerin eşleşmesini önler.) Yalnızca nota/cent beklemek yetmez: önceki sinyalden ya da
+ * önceki hedef telden kalan okuma koşulu tesadüfen sağlayabilir (CI'da "Re" yerine eski "Sol♯" okunmuştu).
  * (Ses kaynağı değişirken tamponda eski + yeni ses karışır; birkaç karelik geçiş okuması normaldir.)
  */
-async function feed(page: Page, freq: number, noteTr: string) {
+async function feed(page: Page, freq: number, noteTr: string): Promise<Reading> {
   await page.evaluate((f) => (window as any).__akortTest(f), freq);
-  await expect.poll(() => attr(page, 'data-note'), { timeout: 8000 }).toBe(noteTr);
-  await expect.poll(async () => Math.abs(Number(await attr(page, 'data-freq')) - freq) / freq, { timeout: 8000 }).toBeLessThan(0.001);
+  let r!: Reading;
+  await expect.poll(async () => {
+    r = await reading(page);
+    return { state: r.state, note: r.note, freqOk: Math.abs(r.freq - freq) / freq < 0.001, freq: r.freq };
+  }, { timeout: 8000 }).toMatchObject({ state: 'detected', note: noteTr, freqOk: true });
+  return r;
 }
 const centsOf = async (page: Page) => Number(await attr(page, 'data-cents'));
+
+/**
+ * Tel düğmesine tıklar ve ekran okumasını AYNI JS görevinde alır: arada çözümleme karesi (rAF) çalışamaz.
+ * Böylece okunan değer, yeni bir karenin değil, hedef değişiminin kendisinin ekrana yazdığı değerdir;
+ * hedef değişince eski okuma ekranda kalıyorsa bu deterministik olarak yakalanır.
+ */
+const pickTargetAndRead = (page: Page, label: string) =>
+  page.locator('#ak-strings .ak-str', { hasText: label }).evaluate((b: HTMLElement): Reading => {
+    b.click();
+    const d = document.getElementById('ak-display')!.dataset;
+    return { state: d.state, note: d.note, octave: d.octave, cents: Number(d.cents), freq: Number(d.freq) };
+  });
 
 test.describe('Akort Aleti', () => {
   test('sayfa yapısı: rozet, 3 reklam (araç kutusunda yok), SSS ≥ 7, ≥ 900 kelime, JSON-LD, dış istek yok', async ({ page }) => {
@@ -106,13 +135,13 @@ test.describe('Akort Aleti', () => {
     await expect(page.locator('#ak-status')).toContainText('Akort tamam');
     await expect(display(page)).toHaveClass(/is-ok/);
     // Tiz: 452 Hz ≈ +46,6 cent
-    await page.evaluate(() => (window as any).__akortTest(452));
-    await expect.poll(async () => await centsOf(page), { timeout: 8000 }).toBeGreaterThan(40);
-    expect(await centsOf(page)).toBeLessThan(52);
+    const sharp = await feed(page, 452, 'La');
+    expect(sharp.cents).toBeGreaterThan(40);
+    expect(sharp.cents).toBeLessThan(52);
     await expect(page.locator('#ak-status')).toContainText('tiz');
     // Pes: 430 Hz ≈ −39,9 cent
-    await page.evaluate(() => (window as any).__akortTest(430));
-    await expect.poll(async () => await centsOf(page), { timeout: 8000 }).toBeLessThan(-34);
+    const flat = await feed(page, 430, 'La');
+    expect(flat.cents).toBeLessThan(-34);
     await expect(page.locator('#ak-status')).toContainText('pes');
     // Gitar Mi (E2) kalın tel: otomatik modda ilgili tel vurgulanır
     await feed(page, 82.41, 'Mi');
@@ -151,24 +180,35 @@ test.describe('Akort Aleti', () => {
     await expect(page.locator('#ak-strings .ak-str')).toHaveText(['Otomatik', 'Sol (G4)', 'Do (C4)', 'Mi (E4)', 'La (A4)']);
     await page.locator('#ak-start').click();
     // Otomatik: 415,3 Hz = Sol♯4, 0 cent
-    await feed(page, 415.3, 'Sol♯');
-    expect(Math.abs(await centsOf(page))).toBeLessThanOrEqual(5);
-    // Hedef Sol (G4): aynı ses hedeften +100 cent tiz
-    await page.locator('#ak-strings .ak-str', { hasText: 'Sol (G4)' }).click();
+    const auto = await feed(page, 415.3, 'Sol♯');
+    expect(Math.abs(auto.cents)).toBeLessThanOrEqual(5);
+    // Hedef Sol (G4): aynı ses hedeften +100 cent tiz. Hedef seçilir seçilmez ekran yeni hedefe göre
+    // hesaplanır (eski "Sol♯ · Akort tamam" okuması bir kare bile kalmaz).
+    await expect(page.locator('#ak-strings .ak-str', { hasText: 'Sol (G4)' })).toBeEnabled();
+    const afterG = await pickTargetAndRead(page, 'Sol (G4)');
+    expect(afterG).toMatchObject({ state: 'detected', note: 'Sol' });
+    expect(Math.abs(afterG.freq - 415.3) / 415.3).toBeLessThan(0.001); // aynı canlı ölçüm, yeni hedefe göre
+    expect(afterG.cents).toBeGreaterThan(95);
     await expect(page.locator('#ak-strings .ak-str[aria-pressed="true"]')).toHaveText('Sol (G4)');
-    await page.evaluate(() => (window as any).__akortTest(415.3));
-    await expect.poll(async () => await attr(page, 'data-note'), { timeout: 8000 }).toBe('Sol');
-    await expect.poll(async () => await centsOf(page), { timeout: 8000 }).toBeGreaterThan(95);
+    const toG = await feed(page, 415.3, 'Sol');
+    expect(toG.cents).toBeGreaterThan(95);
+    expect(toG.cents).toBeLessThan(105);
     await expect(page.locator('#ak-status')).toContainText('tiz');
-    // Bağlama bozuk düzen: Re hedefi hem D3 hem D4'te 0 cent
+    // Bağlama bozuk düzen: Re hedefi hem D3 hem D4'te 0 cent (duyulan sese en yakın oktav hedeflenir)
     await page.locator('#ak-instrument').selectOption('bagl-bozuk');
     await expect(page.locator('#ak-strings .ak-str')).toHaveText(['Otomatik', 'La (A)', 'Re (D)', 'Sol (G)']);
-    await page.locator('#ak-strings .ak-str', { hasText: 'Re (D)' }).click();
-    for (const f of [146.83, 293.66]) {
-      await page.evaluate((x) => (window as any).__akortTest(x), f);
-      await expect.poll(async () => Math.abs(await centsOf(page)), { timeout: 8000 }).toBeLessThanOrEqual(5);
-      expect(await attr(page, 'data-note')).toBe('Re');
-      await page.waitForTimeout(300);
+    // Ses hâlâ 415,3 Hz (Sol♯): Re hedefine göre bir tritone (±600 cent) uzak; eski "0 cent · Akort tamam" kalmamalı
+    await expect(page.locator('#ak-strings .ak-str', { hasText: 'Re (D)' })).toBeEnabled();
+    const afterRe = await pickTargetAndRead(page, 'Re (D)');
+    expect(afterRe).toMatchObject({ state: 'detected', note: 'Re' });
+    expect(Math.abs(afterRe.cents)).toBeGreaterThan(500);
+    await expect(page.locator('#ak-strings .ak-str[aria-pressed="true"]')).toHaveText('Re (D)');
+    await expect(display(page)).not.toHaveClass(/is-ok/);
+    await expect(page.locator('#ak-status')).not.toContainText('Akort tamam');
+    for (const [f, octave] of [[146.83, '3'], [293.66, '4']] as const) {
+      const r = await feed(page, f, 'Re');
+      expect(Math.abs(r.cents)).toBeLessThanOrEqual(5);
+      expect(r.octave).toBe(octave);
     }
     expect(errors).toEqual([]);
   });

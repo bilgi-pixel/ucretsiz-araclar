@@ -50,15 +50,31 @@ test.describe('Oyun: Kule Yığma', () => {
   test('tuval çizilir: zemin bloğu zeminin üstünde açık renkle görünür', async ({ page }) => {
     await page.goto(URL_PATH);
     await page.locator('#kl-start').click();
-    const lum = await page.evaluate(() => {
+    const k = await info(page);
+    expect(k.state).toBe('playing');
+    expect(k.floors).toBe(0); // en üstteki blok = zemin bloğu
+    // Başla durumu hemen değiştirir ama tuval bir sonraki animasyon karesinde çizilir. O kareden önce
+    // okunursa boşta katmanı (%55 koyu örtü) hâlâ tuvaldedir (CI'da parlaklık ~69). Oyun döngüsünün
+    // bekleyen rAF geri çağrısı bizimkinden önce kayıtlı olduğundan, kare bekleyince "oyun" karesi çizilmiş olur.
+    const { block, ground } = await page.evaluate(async (cx) => {
+      await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
       const c = document.getElementById('kl-canvas') as HTMLCanvasElement;
       const g = c.getContext('2d')!;
-      const k = c.width / 300;
-      // Zemin bloğunun ortası: mantıksal (150, 400-24-11)
-      const d = g.getImageData(Math.round(150 * k), Math.round((400 - 24 - 11) * k), 1, 1).data;
-      return (d[0] + d[1] + d[2]) / 3;
-    });
-    expect(lum).toBeGreaterThan(90);
+      // Mantıksal (300×400) → tuval pikseli; DPR ve yuvarlanmış CSS boyutu (x/y ölçeği farkı) buna dahil.
+      const m = g.getTransform();
+      const avg = (lx: number, ly: number) => {
+        const p = m.transformPoint(new DOMPoint(lx, ly));
+        const d = g.getImageData(Math.round(p.x) - 2, Math.round(p.y) - 2, 5, 5).data;
+        let s = 0;
+        for (let i = 0; i < d.length; i += 4) s += d[i] + d[i + 1] + d[i + 2];
+        return s / (d.length / 4) / 3;
+      };
+      // Başlangıçta kamera 0, ölçek 1: zemin bloğu mantıksal y 354–376 (H - GROUND - BH … H - GROUND),
+      // altındaki zemin şeridi 376'dan başlar (ilk 3 piksel renkli çizgi).
+      return { block: avg(cx, 400 - 24 - 11), ground: avg(cx, 400 - 24 + 12) };
+    }, k.top.x + k.top.w / 2);
+    expect(block).toBeGreaterThan(90);
+    expect(ground).toBeLessThan(60); // zemin koyu kalır; blok onun üstünde açık renkle ayrışır
   });
 
   test('mükemmel bırakma (Boşluk) skoru artırır ve blok genişliği korunur', async ({ page }) => {

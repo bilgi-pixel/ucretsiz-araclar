@@ -23,6 +23,19 @@ function encode1254(text: string): Buffer {
   return Buffer.from(Array.from(text).map((ch) => CP1254[ch] ?? ch.charCodeAt(0)));
 }
 
+/** Windows-1252'nin 0x80–0x9F aralığı (tanımsız konumlar C1 olarak kalır). Elle tutulur: Node'un
+ *  TextDecoder('windows-1252') çıktısı sürüme göre değişir (CI'daki Node 20 bu aralığı ISO-8859-1 gibi
+ *  C1 kontrol karakterine çözer), test verisi çalışma ortamına bağlı olmasın. */
+const CP1252_HIGH = '€\u0081‚ƒ„…†‡ˆ‰Š‹Œ\u008DŽ\u008F\u0090‘’“”•–—˜™š›œ\u009DžŸ';
+/** UTF-8 baytlarını Windows-1252 sanarak okur (Ã§, Ä±, ÅŸ …). */
+function misread1252(text: string): string {
+  return Array.from(Buffer.from(text, 'utf8'), (b) => (b >= 0x80 && b <= 0x9f ? CP1252_HIGH[b - 0x80] : String.fromCharCode(b))).join('');
+}
+/** UTF-8 baytlarını gerçek ISO-8859-1 sanarak okur: 0x80–0x9F baytları C1 kontrol karakteri olur (Å\u009E …). */
+function misreadIso(text: string): string {
+  return Buffer.from(text, 'utf8').toString('latin1');
+}
+
 const TR1 = 'Çocuklar şimdi güneşte oynuyor.';
 const TR2 = "İstanbul'dan ÖĞRENCİ ŞÜKRÜ geldi; Iğdır'a gitti.";
 const SRT_TR = `1\n00:00:01,000 --> 00:00:03,000\n${TR1}\n\n2\n00:00:04,000 --> 00:00:06,000\n${TR2}\n`;
@@ -254,13 +267,21 @@ Dialogue: 0,0:00:01.50,0:00:03.00,Default,,0,0,0,,{\i1}Selam{\i0}\Nşöyle düny
     await open(page);
     // UTF-8 baytları Windows-1252 sanılarak okunmuş (Ã§, Ä±, ÅŸ …)
     const good = "Şimdi İstanbul'a gidiyoruz, çocuklar ığ öğüt";
-    const moj = new TextDecoder('windows-1252').decode(Buffer.from(good, 'utf8'));
-    expect(moj).not.toBe(good);
+    const moj = misread1252(good);
+    expect(moj).toContain('Åž'); // Ş → C5 9E → "Åž" (Windows-1252 biçimi)
     await pasteLoad(page, `1\n00:00:01,000 --> 00:00:03,000\n${moj}\n`);
     await expect(textOf(page, 1)).toHaveValue(moj);
     await page.locator('#fix-tr').click();
-    await expect(page.locator('#fix-status')).toContainText('bozuk karakter onarıldı');
+    await expect(page.locator('#fix-status')).toContainText('8 bozuk karakter onarıldı');
     await expect(textOf(page, 1)).toHaveValue(good);
+    // Aynı baytlar gerçek ISO-8859-1 sanılarak okunmuş: 0x9E/0x9F/0x87… C1 kontrol karakteri olur (Å\u009E, Ä\u009F)
+    const iso = misreadIso(`${good} ÇÖÜ Î`);
+    expect(iso).toContain('Å\u009e');
+    await pasteLoad(page, `1\n00:00:01,000 --> 00:00:03,000\n${iso}\n`);
+    await expect(textOf(page, 1)).toHaveValue(iso);
+    await page.locator('#fix-tr').click();
+    await expect(page.locator('#fix-status')).toContainText('12 bozuk karakter onarıldı');
+    await expect(textOf(page, 1)).toHaveValue(`${good} ÇÖÜ Î`);
     // Windows-1254 baytları Latin-1 sanılarak okunmuş (Ý, þ, ð, ý)
     const lat = encode1254('İyi misin? Şimdi geliyorum, çocuklar ığ ğ').toString('latin1');
     await pasteLoad(page, `1\n00:00:01,000 --> 00:00:03,000\n${lat}\n`);
@@ -269,6 +290,20 @@ Dialogue: 0,0:00:01.50,0:00:03.00,Default,,0,0,0,,{\i1}Selam{\i0}\Nşöyle düny
     // Doğru metinde değişiklik yapılmaz
     await page.locator('#fix-tr').click();
     await expect(page.locator('#fix-status')).toContainText('Türkçe karakter izi bulunamadı');
+  });
+
+  test('UTF-8 dosya Windows-1254 ile okununca bozulan Ş, Ğ, Î harfleri de onarılır', async ({ page }) => {
+    await open(page);
+    // Windows-1254'te 0x8E ve 0x9E tanımsızdır; tarayıcı bunları C1 kontrol karakterine çözer (Ş → "Å\u009E").
+    const good = 'ŞEKER ĞÜLÜŞ Îmar şağ ÇÖÜ âîû';
+    await page.locator('#drop input[type=file]').setInputFiles({ name: 'utf8.srt', mimeType: '', buffer: Buffer.from(`1\n00:00:01,000 --> 00:00:03,000\n${good}\n`, 'utf8') });
+    await expect(textOf(page, 1)).toHaveValue(good);
+    await page.locator('#opt-enc').selectOption('windows-1254');
+    await expect(page.locator('#fix-status')).toContainText('Windows-1254 kodlamasıyla yeniden okundu');
+    await expect(textOf(page, 1)).toHaveValue(/Å\u009e/);
+    await page.locator('#fix-tr').click();
+    await expect(page.locator('#fix-status')).toContainText('14 bozuk karakter onarıldı');
+    await expect(textOf(page, 1)).toHaveValue(good);
   });
 
   test('hatalı girişler Türkçe ve çözüm öneren hata verir', async ({ page }) => {

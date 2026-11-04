@@ -22,6 +22,42 @@ async function startCustom(page: Page, w: number, h: number, m: number) {
   await page.locator('#ozel-baslat').click();
 }
 
+/**
+ * Orta seviyede (8,8)'i açar, kapalı komşu sayısı kendi sayısından fazla olan bir sayı hücresi bulur, ilk n kapalı
+ * komşusuna bayrak koyar ve sayıya çift tıklar. Bayrak konmayan komşuların hiçbiri kapalı kalmamalı (açıldı ya da
+ * patladı). Kapalı komşu sayısı tam n olan hücre seçilirse tüm komşular bayraklanır ve doğrulanacak kare kalmaz;
+ * bu yüzden en az bir bayraksız komşu şart. Böyle hücre yoksa (nadir) yeni oyunla tekrar denenir.
+ */
+async function chordAroundNumber(page: Page) {
+  await page.locator('#seviye').selectOption('orta');
+  let target: { r: number; c: number; n: number; around: Array<[number, number]> } | null = null;
+  for (let attempt = 0; attempt < 10 && !target; attempt++) {
+    if (attempt) await page.locator('#yeni-oyun').click();
+    await cell(page, 8, 8).click();
+    const snap = await snapshot(page);
+    const at = (r: number, c: number) => snap.find((x) => x.r === r && x.c === c);
+    for (const s of snap) {
+      if (s.state !== 'acik' || s.n === 0) continue;
+      const around: Array<[number, number]> = [];
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        if (!dr && !dc) continue;
+        const x = at(s.r + dr, s.c + dc);
+        if (x && x.state === 'kapali') around.push([x.r, x.c]);
+      }
+      if (around.length > s.n) { target = { r: s.r, c: s.c, n: s.n, around }; break; }
+    }
+  }
+  expect(target).not.toBeNull();
+  const t = target!;
+  for (let k = 0; k < t.n; k++) await cell(page, t.around[k][0], t.around[k][1]).click({ button: 'right' });
+  for (let k = 0; k < t.n; k++) expect(await stateOf(page, t.around[k][0], t.around[k][1])).toBe('bayrak');
+  await cell(page, t.r, t.c).dblclick();
+  expect(t.around.length - t.n).toBeGreaterThanOrEqual(1);
+  for (let k = t.n; k < t.around.length; k++) {
+    expect(await stateOf(page, t.around[k][0], t.around[k][1])).not.toBe('kapali');
+  }
+}
+
 test.describe('Mayın Tarlası oyunu', () => {
   test('sayfa açılır; tahta, sayaç, içerik ve 3 reklam alanı var; dış istek yok', async ({ page }) => {
     const external = trackExternalRequests(page);
@@ -170,30 +206,18 @@ test.describe('Mayın Tarlası oyunu', () => {
 
   test('açık sayıya çift tık: bayrak sayısı tamamsa çevresindeki kapalı kareler açılır', async ({ page }) => {
     await page.goto(URL);
-    await page.locator('#seviye').selectOption('orta');
-    await cell(page, 8, 8).click();
-    const snap = await snapshot(page);
-    const at = (r: number, c: number) => snap.find((x) => x.r === r && x.c === c);
-    // kapalı komşusu olan bir sayı hücresi bul
-    let target: { r: number; c: number; n: number; around: Array<[number, number]> } | null = null;
-    for (const s of snap) {
-      if (s.state !== 'acik' || s.n === 0) continue;
-      const around: Array<[number, number]> = [];
-      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
-        if (!dr && !dc) continue;
-        const x = at(s.r + dr, s.c + dc);
-        if (x && x.state === 'kapali') around.push([x.r, x.c]);
-      }
-      if (around.length >= s.n) { target = { r: s.r, c: s.c, n: s.n, around }; break; }
-    }
-    expect(target).not.toBeNull();
-    const t = target!;
-    for (let k = 0; k < t.n; k++) await cell(page, t.around[k][0], t.around[k][1]).click({ button: 'right' });
-    await cell(page, t.r, t.c).dblclick();
-    // bayrak konmayan komşuların hiçbiri kapalı kalmamalı (açıldı ya da patladı)
-    for (let k = t.n; k < t.around.length; k++) {
-      expect(await stateOf(page, t.around[k][0], t.around[k][1])).not.toBe('kapali');
-    }
+    await chordAroundNumber(page);
+  });
+
+  test('çift tık koruması yalnızca doğrudan açılan kareyi kapsar: sayfa açılır açılmaz da akor çalışır', async ({ page }) => {
+    // Sahte saati durdur: sayfadaki performance.now() tüm test boyunca 450 ms'nin altında kalır. Hızlı CI
+    // makinesinde gerçekte olan buydu; hiç doğrudan açılmamış kare "yeni açıldı" sayılıp akor yutuluyordu.
+    const t0 = new Date('2026-01-01T00:00:00Z');
+    await page.clock.install({ time: t0 });
+    await page.clock.pauseAt(new Date(t0.getTime() + 100));
+    await page.goto(URL);
+    await chordAroundNumber(page);
+    expect(await page.evaluate(() => performance.now())).toBeLessThan(450);
   });
 
   test('kayıp: mayın gösterilir, yeni oyun tahtayı sıfırlar', async ({ page }) => {

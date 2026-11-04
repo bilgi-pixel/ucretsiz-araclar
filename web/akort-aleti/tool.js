@@ -79,7 +79,7 @@ function markTarget() {
     b.setAttribute('aria-pressed', String(on));
     b.classList.toggle('is-target', on);
   });
-  recent.length = 0; // hedef değişince eski ölçümler karışmasın
+  refreshReading(); // hedef değişti: ekrandaki okuma eski hedefe göre hesaplanmıştı
 }
 function markNear(noteMidi) {
   const inst = INSTRUMENTS[state.instrument];
@@ -136,6 +136,7 @@ let frames = 0;
 const recent = [];
 let lastMidi = null; // son duyulan en yakın nota (referans ton için)
 let lastMidiAt = 0;
+let lastFreq = 0; // ekrandaki canlı ölçüm (Hz); 0: ekranda canlı ölçüm yok
 let needle = 0; // ekranda gösterilen ibre (cent)
 let needleTarget = null; // null: ses yok
 let statusKey = '';
@@ -182,6 +183,16 @@ function analyse() {
   }
 }
 
+/**
+ * Hedef tel, enstrüman ya da A4 değişince çağrılır. Ekrandaki nota/cent/"Akort tamam" eski referansa göre
+ * hesaplanmıştı; bir sonraki geçerli çözümlemeyi beklemeden AYNI ölçüm yeni referansa göre hemen yeniden
+ * gösterilir. (Aksi hâlde ses sönerken 600 ms'ye kadar, ör. "Re" hedefi seçiliyken "Akort tamam: Sol♯" kalır.)
+ */
+function refreshReading() {
+  recent.length = 0; // eski ölçümler yeni hedefin medyanına karışmasın
+  if (running && lastFreq) showPitch(lastFreq);
+}
+
 /** Hedef telin frekansını hesaplar; yalnızca nota adı bilinen tellerde duyulan sese en yakın oktavı seçer. */
 function targetMidiFor(st, heardMidi) {
   if (st.midi != null) return st.midi;
@@ -201,6 +212,7 @@ function showPitch(freq) {
     cents = (heardMidi - noteMidi) * 100;
   }
   const n = noteName(noteMidi);
+  lastFreq = freq;
   lastMidi = noteMidi; lastMidiAt = performance.now();
   needleTarget = cents;
   els.note.textContent = n.tr;
@@ -223,6 +235,7 @@ function showPitch(freq) {
 
 function showWaiting(silent) {
   needleTarget = null;
+  lastFreq = 0;
   els.display.dataset.state = 'listening';
   els.display.classList.remove('is-ok');
   els.cents.textContent = '— cent';
@@ -332,7 +345,7 @@ function stopMic() {
   if (micSource) { try { micSource.disconnect(); } catch { /* zaten kopuk */ } micSource = null; }
   detachTest();
   stopRef();
-  needleTarget = null; needle = 0; recent.length = 0;
+  needleTarget = null; needle = 0; recent.length = 0; lastFreq = 0;
   els.start.textContent = 'Mikrofonu başlat';
   els.start.dataset.running = 'false';
   els.start.setAttribute('aria-pressed', 'false');
@@ -422,7 +435,7 @@ els.instrument.addEventListener('change', () => {
 });
 els.ref.addEventListener('change', () => {
   state.a4 = Number(els.ref.value) === 442 ? 442 : 440;
-  recent.length = 0; saveState();
+  refreshReading(); saveState();
   if (refNodes) playRef();
 });
 
