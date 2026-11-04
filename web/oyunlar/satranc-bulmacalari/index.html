@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Satranç Bulmacaları Oyna – Ücretsiz Online Satranç Bulmacası (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz satranç bulmacaları: Lichess veritabanından seçilmiş 1.500 bulmaca, mat, çatal, bağlama ve oyun sonu temaları, zorluk filtresi, günün bulmacası ve kendi derecen. Kayıt yok, kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/satranc-bulmacalari/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .sa-layout { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .sa-layout { grid-template-columns: minmax(0, 580px) minmax(0, 1fr); align-items: start; } }
+    .sa-boardcol, .sa-side { min-width: 0; }
+    .sa-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .sa-status.is-check { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .sa-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .sa-msg { margin: 0 0 10px; min-height: 1.3em; font-size: .88rem; color: var(--ba-text-muted); line-height: 1.35; }
+    .sa-boardwrap { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 18px; max-width: 580px; margin: 0 auto; }
+    .sa-ranks { grid-column: 1; grid-row: 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px 0; }
+    .sa-files { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat(8, 1fr); padding: 0 6px; }
+    .sa-ranks span, .sa-files span { display: flex; align-items: center; justify-content: center; font-size: .72rem; color: var(--ba-text-muted); font-family: var(--ba-mono); }
+    .sa-board { grid-column: 2; grid-row: 1; width: 100%; aspect-ratio: 1 / 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px; box-sizing: border-box; background: #5b3d26; border-radius: 8px; box-shadow: 0 4px 14px rgba(30, 33, 38, .25); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    .sa-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); min-height: 0; }
+    .sq { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; background-color: #f0e2c4; font: inherit; cursor: pointer; border-radius: 0; -webkit-tap-highlight-color: transparent; }
+    .sa-row:nth-child(odd) .sq:nth-child(even), .sa-row:nth-child(even) .sq:nth-child(odd) { background-color: #b08560; }
+    .sq:focus-visible { outline: 3px solid #1d4ed8; outline-offset: -3px; z-index: 3; }
+    .sq.is-last { background-image: linear-gradient(rgba(240, 200, 40, .55), rgba(240, 200, 40, .55)); }
+    .sq.is-selected { background-image: linear-gradient(rgba(60, 170, 90, .5), rgba(60, 170, 90, .5)); box-shadow: inset 0 0 0 3px #0b5d33; }
+    .sq.is-check { background-image: radial-gradient(circle at 50% 50%, rgba(220, 30, 30, .95) 0%, rgba(220, 30, 30, .55) 48%, rgba(220, 30, 30, 0) 78%); }
+    .sq.is-check.is-last { background-image: radial-gradient(circle at 50% 50%, rgba(220, 30, 30, .95) 0%, rgba(220, 30, 30, .55) 48%, rgba(220, 30, 30, 0) 78%), linear-gradient(rgba(240, 200, 40, .55), rgba(240, 200, 40, .55)); }
+    .sq.is-dest::after, .sq.is-dest-cap::after { content: ""; position: absolute; z-index: 2; border-radius: 50%; pointer-events: none; }
+    .sq.is-dest::after { width: 28%; height: 28%; background: rgba(11, 93, 51, .78); }
+    .sq.is-dest-cap::after { width: 86%; height: 86%; border: 4px solid rgba(163, 39, 31, .85); background: transparent; }
+    .sa-pc { position: relative; z-index: 1; display: block; width: 88%; height: 88%; pointer-events: none; }
+    .sa-pc svg, .sa-ghost svg { display: block; width: 100%; height: 100%; overflow: visible; fill: var(--pf); stroke: var(--ps); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+    .sa-pc.is-w, .sa-ghost.is-w, .sa-promo-btn.is-w { --pf: #fbf8ef; --ps: #231b12; --pd: #231b12; }
+    .sa-pc.is-b, .sa-ghost.is-b, .sa-promo-btn.is-b { --pf: #3a332c; --ps: #0b0907; --pd: #ece3d0; }
+    .sa-pc svg .d, .sa-ghost svg .d, .sa-promo-btn svg .d { fill: none; stroke: var(--pd); stroke-width: 2.4; }
+    .sa-pc svg .dot, .sa-ghost svg .dot, .sa-promo-btn svg .dot { fill: var(--pd); stroke: none; }
+    .sq.is-dragsrc .sa-pc { opacity: .3; }
+    .sa-ghost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .45)); will-change: transform; }
+    .sa-promo { position: absolute; z-index: 20; inset: 0 0 18px 16px; display: flex; align-items: center; justify-content: center; padding: 8px; background: rgba(20, 16, 12, .62); border-radius: 8px; }
+    .sa-promo[hidden] { display: none; }
+    .sa-promo-box { width: 100%; max-width: 360px; padding: 12px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .35); text-align: center; }
+    .sa-promo-box h3 { margin: 0 0 10px; font-size: 1rem; color: var(--ba-text); }
+    .sa-promo-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .sa-promo-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; min-height: 44px; padding: 6px 2px; font: inherit; font-size: .85rem; font-weight: 600; color: var(--ba-text); background: var(--ba-surface-2); border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .sa-promo-btn:hover { border-color: var(--ba-primary); }
+    .sa-promo-btn:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 1px; }
+    .sa-promo-btn .pic { display: block; width: 100%; max-width: 56px; aspect-ratio: 1; background: #f0e2c4; border-radius: 6px; }
+    .sa-promo-btn svg { display: block; width: 100%; height: 100%; fill: var(--pf); stroke: var(--ps); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+    .sa-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .bu-status { margin: 0 0 8px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .bu-status.is-ok { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .bu-status.is-bad { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .sq.is-hint { box-shadow: inset 0 0 0 4px #1d4ed8; }
+    .bu-board.is-shake { animation: bu-shake .35s; }
+    @keyframes bu-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @media (prefers-reduced-motion: reduce) { .bu-board.is-shake { animation: none; } }
+    .bu-info { margin: 0 0 6px; font-family: var(--ba-mono); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .bu-credit { margin: 12px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .bu-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .bu-top .ba-icon-btn { min-height: 36px; font-size: .85rem; padding: 0 12px; }
+    .bu-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 12px; }
+    .bu-stats div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; }
+    .bu-stats dt { font-size: .75rem; color: var(--ba-text-muted); }
+    .bu-stats dd { margin: 2px 0 0; font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+    #bu-reset { min-height: 40px; padding: 6px 14px; font-size: .88rem; }
+    .ba-content kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Satranç Bulmacaları – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz satranç bulmacaları: Lichess veritabanından (CC0) seçilmiş 1.500 bulmaca, zorluk ve tema filtresi, günün bulmacası ve yerel derece.","inLanguage":"tr","genre":["Bulmaca","Strateji","Masa oyunu"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","url":"https://araclar.bilisimajans.com/oyunlar/satranc-bulmacalari/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Satranç bulmacası nedir, nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Satranç bulmacası, belirli bir konumda sırası gelen tarafın bulması gereken en iyi hamle dizisidir. Önce rakip bir hamle yapar, sonra sıra size gelir. Matı, malzeme kazancını ya da kurtuluş hamlesini bulana kadar doğru hamleleri sırayla oynarsınız. Doğru hamleden sonra rakip cevap verir ve bulmaca bitene kadar devam edilir."}},
+  {"@type":"Question","name":"Bulmacalar nereden geliyor, telifli mi?","acceptedAnswer":{"@type":"Answer","text":"Bulmacalar Lichess açık veritabanından alındı. Veritabanı CC0 (kamu malı) lisansıyla yayımlanmıştır; yani ticari kullanım dahil serbesttir ve atıf zorunlu değildir. Biz yine de Lichess'i anıyoruz. Milyonlarca bulmacadan, oynanma sayısı ve beğeni oranı yüksek olan 1.500 tanesini seçtik."}},
+  {"@type":"Question","name":"Yanlış hamle yaparsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Yanlış hamle tahtada kalmaz; oyun hamleyi geri alır, çözümde oynanması gereken taşın karesini işaretler ve bulmacayı başarısız sayar. Yine de çözmeye devam edebilirsiniz. Başarısız sayılan bulmaca derecenizi bir kez düşürür; sonradan çözmek derece kazandırmaz."}},
+  {"@type":"Question","name":"Derecem nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Derece 1200'den başlar ve Elo mantığıyla değişir: bulmaca sizden zorsa hatasız çözmek çok puan, kolaysa az puan getirir. Başarısız bulmacada kayıp da aynı mantıkla hesaplanır. Bu derece yalnızca bu cihazda tutulur ve resmî bir Lichess ya da federasyon derecesi değildir."}},
+  {"@type":"Question","name":"Günün bulmacası her gün değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Günün bulmacası tarihe göre belirlenir; aynı gün herkes aynı konumu görür ve ertesi gün yenisi gelir. Günün bulmacasından derece yalnızca ilk denemede etkilenir, tekrar denemek derecenizi değiştirmez."}},
+  {"@type":"Question","name":"Mat bulmacasında birden fazla çözüm olursa?","acceptedAnswer":{"@type":"Answer","text":"Oyun, sırası gelen hamlede şah mat veren her hamleyi doğru kabul eder. Mat dışındaki bulmacalarda çözümde yazılı hamle aranır; çünkü başka hamleler çoğu zaman materyal ya da konum kaybettirir."}},
+  {"@type":"Question","name":"Telefonda oynamak mümkün mü, klavye ile oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tahta 360 piksel genişliğe kadar küçülür ve taşa dokunup ışıklı kareye dokunarak oynarsınız. Klavyede ok tuşlarıyla kareler arasında gezinir, Enter ile taşı seçer ve gideceği kareyi onaylarsınız; Esc seçimi iptal eder."}},
+  {"@type":"Question","name":"İlerlemem kaydediliyor mu, verilerim sunucuya gidiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Derece, çözülen bulmaca sayısı ve seri yalnızca tarayıcınızın localStorage alanında saklanır; hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli sekmede oynarsanız kayıtlar kaybolur. İsterseniz sayfadaki düğmeyle kendiniz sıfırlayabilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Satranç Bulmacaları Oyna</span> – Ücretsiz Online Satranç Bulmacası</h1>
+      <p class="lead">Mat, çatal, bağlama, şiş ve oyun sonu temalarında 1.500 bulmaca. Zorluğu ve temayı seçin, günün bulmacasını çözün, kendi derecenizi yükseltin. Kayıt ve kurulum yok; ilerlemeniz yalnızca bu cihazda kalır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section id="bu-box" class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Satranç bulmacası oyun alanı</h2>
+      <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+      <p id="bu-loading">Bulmacalar yükleniyor…</p>
+      <p id="bu-error" class="ba-error is-active" role="alert" hidden>Bulmaca dosyası yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin; sorun sürerse tarayıcı önbelleğini temizleyin.</p>
+      <div id="bu-play" hidden>
+        <div class="bu-top"><p id="bu-info" class="bu-info" role="status">Bulmaca</p><button type="button" class="ba-icon-btn" id="bu-full" aria-pressed="false" hidden>Tam ekran</button></div>
+        <div class="sa-layout">
+          <div class="sa-boardcol">
+            <p id="bu-status" class="bu-status" role="status" aria-live="polite">Bulmaca hazırlanıyor…</p>
+            <p id="bu-msg" class="sa-msg" role="status" aria-live="polite"></p>
+            <div class="sa-boardwrap">
+              <div id="bu-ranks" class="sa-ranks" aria-hidden="true"></div>
+              <div id="bu-board" class="sa-board bu-board" role="grid" aria-label="Satranç tahtası, 8 x 8"></div>
+              <div id="bu-files" class="sa-files" aria-hidden="true"></div>
+              <div id="bu-promo" class="sa-promo" role="dialog" aria-modal="true" aria-labelledby="bu-promo-h" hidden>
+                <div class="sa-promo-box">
+                  <h3 id="bu-promo-h">Piyon terfisi: hangi taş olsun?</h3>
+                  <div class="sa-promo-list" id="bu-promo-list"></div>
+                </div>
+              </div>
+            </div>
+            <p class="sa-help">Taşa dokunup ışıklı kareye dokunun. Klavyede ok tuşlarıyla gezin, Enter ile seçin ve oynayın; Esc seçimi iptal eder.</p>
+          </div>
+          <div class="sa-side">
+            <div class="sa-controls">
+              <div class="sa-field"><label for="bu-level">Zorluk</label><select id="bu-level"></select></div>
+              <div class="sa-field"><label for="bu-theme">Tema</label><select id="bu-theme"></select></div>
+            </div>
+            <div class="sa-actions">
+              <button type="button" class="ba-btn ba-btn-primary" id="bu-next">Yeni bulmaca</button>
+              <button type="button" class="ba-btn" id="bu-daily">Günün bulmacası</button>
+            </div>
+            <div class="sa-actions">
+              <button type="button" class="ba-btn" id="bu-hint" disabled>İpucu</button>
+              <button type="button" class="ba-btn" id="bu-solution" disabled>Çözümü göster</button>
+              <button type="button" class="ba-btn" id="bu-retry" hidden>Yeniden dene</button>
+            </div>
+            <h3>Derecen ve istatistikler</h3>
+            <dl class="bu-stats">
+              <div><dt>Derece</dt><dd id="bu-s-rating">1200</dd></div>
+              <div><dt>En yüksek derece</dt><dd id="bu-s-peak">1200</dd></div>
+              <div><dt>Hatasız çözülen</dt><dd id="bu-s-solved">0</dd></div>
+              <div><dt>Başarı oranı</dt><dd id="bu-s-rate">—</dd></div>
+              <div><dt>Seri</dt><dd id="bu-s-streak">0</dd></div>
+              <div><dt>En uzun seri</dt><dd id="bu-s-best">0</dd></div>
+            </dl>
+            <button type="button" class="ba-btn" id="bu-reset">Kayıtları sıfırla</button>
+            <p class="bu-credit">Bulmacalar <a href="https://database.lichess.org/#puzzles" rel="noopener">Lichess veritabanından (CC0)</a> alınmıştır.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-satranc-bulmacalari-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Satranç bulmacaları nedir?</h2>
+      <p>Satranç bulmacası, gerçek bir oyundan alınmış bir konumda sırası gelen tarafın bulması gereken en iyi hamle dizisidir. Konumda genellikle bir fırsat gizlidir: şah mat, bir taşı çatalla kazanmak, rakibin taşını bağlayıp kazanmak ya da zor görünen bir oyun sonunu berabereye çevirmek. Bu sayfada Lichess açık veritabanından süzülmüş 1.500 bulmaca bulacaksınız. Kayıt olmanız, uygulama yüklemeniz ya da bir şey indirmeniz gerekmez; sayfayı açtığınız anda ilk bulmaca tahtadadır.</p>
+      <p>Bulmaca çözmek, satranç gelişiminin en verimli yollarından biri kabul edilir. Çünkü oyun sırasında iki üç hamlelik taktikleri görmek, uzun stratejik planlardan çok daha sık sonucu belirler. Düzenli bulmaca çözen oyuncu aynı motifleri tekrar tekrar görür; çatal, bağlama, açma saldırısı ya da son sıra matı gibi kalıplar zamanla göz tarafından otomatik tanınmaya başlar. Gerçek bir maçta aynı kalıp ortaya çıktığında çözümü hesaplamak yerine hatırlarsınız.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Zorluk ve tema seçin. Kararsızsanız "Seviyeme göre" ayarını bırakın; oyun derecenize yakın bulmacalar getirir.</li>
+        <li>Önce rakip bir hamle yapar. Bu, bulmacanın başlangıç konumunu oluşturan son hamledir; tahtada vurgulanan iki kareden hangi taşın oynadığını görebilirsiniz. Tahta daima sizin rengiyle alttan görünür.</li>
+        <li>Oynamak istediğiniz taşa dokunun; gidebileceği kareler yeşil noktalarla, alabileceği taşlar kırmızı halkayla işaretlenir. Sonra hedef kareye dokunun.</li>
+        <li>Hamle doğruysa rakip cevap verir ve sıra yeniden sizdedir. Mat ya da bulmacanın son hamlesi bulunduğunda "Doğru!" mesajı görünür ve bulmacanın teması ile derecesi açıklanır.</li>
+        <li>Hamle yanlışsa tahtada kalmaz; oynanması gereken taşın karesi mavi çerçeveyle işaretlenir. Çözüme ulaşmak için denemeye devam edebilir, "İpucu" ya da "Çözümü göster" düğmelerini kullanabilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> önce taşa, sonra hedef kareye tıklayın ya da dokunun. Taşı seçtikten sonra başka bir kendi taşınıza dokunursanız seçim değişir.</li>
+        <li><strong>Klavye:</strong> Tab ile tahtaya gelin, ok tuşlarıyla kareler arasında gezinin, <kbd>Enter</kbd> ya da <kbd>Boşluk</kbd> ile taşı seçin ve gideceği kareyi aynı şekilde onaylayın. <kbd>Esc</kbd> seçimi iptal eder.</li>
+        <li><strong>Piyon terfisi:</strong> bulmacada piyonunuz son sıraya ulaşırsa vezir, kale, fil ve at seçeneklerini gösteren küçük bir pencere açılır. Çoğu bulmacada vezir doğrudur; ama at ya da kale ile terfi gerektiren özel konumlar da vardır.</li>
+        <li><strong>Tam ekran:</strong> oyun kutusunun üstündeki düğme yalnızca tahtayı gösterir; sayfadaki diğer her şey gizlenir.</li>
+      </ul>
+
+      <h2>Derece nasıl çalışır?</h2>
+      <p>Her yeni oyuncu 1200 dereceyle başlar. Bir bulmacayı hatasız ve ipucu kullanmadan çözerseniz derecenize puan eklenir; ilk hatada, ipucunda ya da çözümü göstermede bulmaca başarısız sayılır ve derecenizden puan düşer. Değişim Elo hesabıyla yapılır: bulmaca derecesi sizinkinden yüksekse çözdüğünüzde daha çok kazanırsınız, kolay bir bulmacada hata yaparsanız daha çok kaybedersiniz. Katsayı sabittir ve derece 100'ün altına inmez.</p>
+      <p>Bu derece yalnızca bu cihazdaki tarayıcınızda tutulur. Lichess ya da bir federasyon derecesiyle doğrudan karşılaştırılamaz; çünkü bulmaca derecesi ile oyun derecesi farklı ölçeklerde işler. Kendi gelişiminizi izlemek için kullanışlıdır: bir hafta önceki derecenizle bugünkünü kıyaslayın.</p>
+
+      <div class="ba-ad" data-slot="oyun-satranc-bulmacalari-b" aria-label="Reklam"></div>
+
+      <h2>Günün bulmacası</h2>
+      <p>"Günün bulmacası" düğmesi tarihe göre sabit bir bulmaca getirir: aynı gün sayfayı açan herkes aynı konumu görür, ertesi gün yeni bir konum gelir. Düzenli bir alışkanlık kurmak için idealdir; her gün bir bulmaca çözmek, haftalar içinde seriler oluşturur. Günün bulmacasında derecenize yalnızca ilk denemede puan yazılır; tekrar denemek derecenizi oynatmaz, böylece aynı bulmacayla derece biriktirmek mümkün olmaz.</p>
+
+      <h2>Bulmaca temaları</h2>
+      <p>Tema listesinden çalışmak istediğiniz konuyu seçebilirsiniz. Bulmacanın teması, çözülene kadar gösterilmez; çözdükten sonra altında listelenir. Başlıca temalar şunlardır:</p>
+      <ul>
+        <li><strong>Mat (tek, iki, üç hamlede):</strong> şahı kurtuluşsuz bırakan hamle dizileri. Tek hamlede mat en kolayları, üç hamlede mat genellikle daha zordur.</li>
+        <li><strong>Çatal:</strong> tek bir taşla (çoğunlukla at ya da vezirle) aynı anda iki taşa saldırmak; rakip yalnızca birini kurtarabilir.</li>
+        <li><strong>Bağlama ve şiş:</strong> değerli bir taşın arkasındaki taşı ya da şahı hedef alan çizgisel saldırılar.</li>
+        <li><strong>Açma saldırısı ve çifte şah:</strong> bir taşı çekerek arkasındaki taşın saldırısını açmak; bazen çifte şahla sonuçlanır.</li>
+        <li><strong>Son sıra matı:</strong> kendi piyonları arasında sıkışmış şahın arka sıradan mat edilmesi.</li>
+        <li><strong>Oyun sonu:</strong> kale, piyon, fil ve at oyun sonları; hassas hesap ve zugzwang gibi kavramlar öne çıkar.</li>
+        <li><strong>Fedakârlık, saptırma ve çekme:</strong> bir taşı feda ederek savunmayı bozmak ya da rakip taşı kötü bir kareye çekmek.</li>
+      </ul>
+
+      <h2>Daha hızlı gelişmek için ipuçları</h2>
+      <ul>
+        <li><strong>Önce şah, alma, tehdit.</strong> Konuma bakınca sırayla şah çekebileceğiniz hamlelere, alabileceğiniz taşlara ve rakibin tehdit ettiği taşlara bakın. Bulmacaların büyük çoğunluğu bu üç grupta çözülür.</li>
+        <li><strong>Hamle yapmadan hesaplayın.</strong> Taşa dokunmadan önce çözümü zihninizde iki üç hamle ileri götürün. Deneme yanılma alışkanlığı gerçek maçta işe yaramaz.</li>
+        <li><strong>Yanlış hamleden öğrenin.</strong> Mavi çerçeveli taşı gördüğünüzde hemen yeniden denemeyin; neden o taşın oynandığını anlamaya çalışın.</li>
+        <li><strong>Zorluğu kademeli artırın.</strong> Kolay bulmacaların yüzde 80'ini hatasız çözdüğünüzde orta düzeye geçin.</li>
+        <li><strong>Zayıf temayı seçin.</strong> Tema listesinden en çok hata yaptığınız konuyu seçip peş peşe çözmek, aynı motifi kalıcı hâle getirir.</li>
+        <li><strong>Kısa ve düzenli çalışın.</strong> Günde on beş dakika, haftada bir üç saatlik seanstan daha etkilidir.</li>
+      </ul>
+
+      <h2>Bulmacalar nereden geliyor?</h2>
+      <p>Bulmacalar, Lichess'in herkese açık bulmaca veritabanından alındı. Veritabanında altı milyondan fazla bulmaca bulunur ve CC0 (kamu malı) lisansıyla yayımlanır; yani ticari kullanım dahil serbesttir. Bulmacalar gerçek oyunlardan otomatik olarak çıkarılmış, ardından milyonlarca kez oynanarak dereceleri ölçülmüştür. Biz bu veritabanından, çok oynanmış ve beğenilmiş bulmacaları, 600 ile 2400 arasındaki derecelere dengeli dağılacak biçimde süzerek 1.500 tanesini seçtik. Bulmacaların derecesi Lichess'teki ölçümlerden gelir.</p>
+      <p>Çözüm hamlelerini ve kuralları yerel olarak çalışan chess.js kütüphanesi (BSD-2 lisanslı) denetler. Bulmacalar sayfayla birlikte aynı siteden küçük bir dosya olarak gelir; sayfa başka bir sunucuya bağlanmaz ve çevrimdışı da çalışabilir.</p>
+
+      <h2>Gizlilik: hesap yok, takip yok</h2>
+      <p>Bu oyunda hesap, analiz ya da izleme kodu yoktur. Derecenizi, çözülen bulmaca sayınızı ve serilerinizi yalnızca tarayıcınızın localStorage alanı saklar; bu bilgiler hiçbir sunucuya gönderilmez. Başka bir cihazda ya da tarayıcıda oynarsanız kayıtlarınız taşınmaz. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Satranç bulmacası nedir, nasıl çözülür?</summary><p>Satranç bulmacası, belirli bir konumda sırası gelen tarafın bulması gereken en iyi hamle dizisidir. Önce rakip bir hamle yapar, sonra sıra size gelir. Matı, malzeme kazancını ya da kurtuluş hamlesini bulana kadar doğru hamleleri sırayla oynarsınız. Doğru hamleden sonra rakip cevap verir ve bulmaca bitene kadar devam edilir.</p></details>
+      <details><summary>Bulmacalar nereden geliyor, telifli mi?</summary><p>Bulmacalar Lichess açık veritabanından alındı. Veritabanı CC0 (kamu malı) lisansıyla yayımlanmıştır; yani ticari kullanım dahil serbesttir ve atıf zorunlu değildir. Biz yine de Lichess'i anıyoruz. Milyonlarca bulmacadan, oynanma sayısı ve beğeni oranı yüksek olan 1.500 tanesini seçtik.</p></details>
+      <details><summary>Yanlış hamle yaparsam ne olur?</summary><p>Yanlış hamle tahtada kalmaz; oyun hamleyi geri alır, çözümde oynanması gereken taşın karesini işaretler ve bulmacayı başarısız sayar. Yine de çözmeye devam edebilirsiniz. Başarısız sayılan bulmaca derecenizi bir kez düşürür; sonradan çözmek derece kazandırmaz.</p></details>
+      <details><summary>Derecem nasıl hesaplanıyor?</summary><p>Derece 1200'den başlar ve Elo mantığıyla değişir: bulmaca sizden zorsa hatasız çözmek çok puan, kolaysa az puan getirir. Başarısız bulmacada kayıp da aynı mantıkla hesaplanır. Bu derece yalnızca bu cihazda tutulur ve resmî bir Lichess ya da federasyon derecesi değildir.</p></details>
+      <details><summary>Günün bulmacası her gün değişir mi?</summary><p>Evet. Günün bulmacası tarihe göre belirlenir; aynı gün herkes aynı konumu görür ve ertesi gün yenisi gelir. Günün bulmacasından derece yalnızca ilk denemede etkilenir, tekrar denemek derecenizi değiştirmez.</p></details>
+      <details><summary>Mat bulmacasında birden fazla çözüm olursa?</summary><p>Oyun, sırası gelen hamlede şah mat veren her hamleyi doğru kabul eder. Mat dışındaki bulmacalarda çözümde yazılı hamle aranır; çünkü başka hamleler çoğu zaman materyal ya da konum kaybettirir.</p></details>
+      <details><summary>Telefonda oynamak mümkün mü, klavye ile oynanır mı?</summary><p>Evet. Tahta 360 piksel genişliğe kadar küçülür ve taşa dokunup ışıklı kareye dokunarak oynarsınız. Klavyede ok tuşlarıyla kareler arasında gezinir, Enter ile taşı seçer ve gideceği kareyi onaylarsınız; Esc seçimi iptal eder.</p></details>
+      <details><summary>İlerlemem kaydediliyor mu, verilerim sunucuya gidiyor mu?</summary><p>Derece, çözülen bulmaca sayısı ve seri yalnızca tarayıcınızın localStorage alanında saklanır; hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli sekmede oynarsanız kayıtlar kaybolur. İsterseniz sayfadaki düğmeyle kendiniz sıfırlayabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../satranc/">Satranç (bilgisayara karşı)</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../reversi/">Reversi</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../dort-bagla/">Dört Bağla</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-satranc-bulmacalari-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

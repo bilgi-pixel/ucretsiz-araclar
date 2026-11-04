@@ -33,3 +33,5 @@ Kopya `web/vendor/<paket>@<sürüm>/` altında; lisans dosyası yanında durur.
 | xlsx (SheetJS CE) | 0.20.3 | Apache-2.0 | Excel'i PDF'e Çevir |
 | lucide-static | 0.468.0 | ISC | Ücretsiz Logo Oluşturucu |
 | chess.js | 1.4.0 | BSD-2-Clause | Satranç |
+| flag-icons | 7.6.0 | MIT | Bayrak Bil |
+| lichess-puzzles | 2026 | CC0-1.0 | Satranç Bulmacaları |
