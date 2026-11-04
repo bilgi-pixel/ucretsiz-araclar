@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Random Number Generator – Numbers, Dice, Coin Flip & List Picker</title>
+  <meta name="description" content="Free random number generator: draw numbers in any range with or without repeats, roll dice (d4 to d20), flip coins or pick random items from a list. Secure, private, runs in your browser.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/random-number-generator/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/rastgele-sayi/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/random-number-generator/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/rastgele-sayi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Page-specific layout; theme tokens come from ba.css. */
+    .rs-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+    .rs-tabs button { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ba-border-hover); background: var(--ba-surface); color: var(--ba-text); font: inherit; font-weight: 600; cursor: pointer; }
+    .rs-tabs button[aria-selected="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .rs-check { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+    .rs-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .rs-out { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-size: clamp(1.4rem, 6vw, 2.4rem); font-weight: 600; word-break: break-word; margin: 8px 0; color: var(--ba-text); }
+    .rs-faces { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+    .rs-face { min-width: 48px; padding: 8px 10px; text-align: center; border-radius: var(--ba-radius); border: 2px solid var(--ba-primary); background: var(--ba-surface); font-family: var(--ba-mono); font-weight: 700; font-size: 1.3rem; color: var(--ba-text); }
+    .rs-note { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    .rs-history { margin: 8px 0 0; padding-left: 20px; max-height: 240px; overflow: auto; font-size: .92rem; color: var(--ba-text-2); }
+    .rs-history li { margin: 4px 0; word-break: break-word; }
+    .rs-history:empty + .rs-empty { display: block; }
+    .rs-empty { display: none; font-size: .9rem; color: var(--ba-text-muted); }
+    .rs-field-wide textarea { width: 100%; min-height: 130px; padding: 10px; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); font: inherit; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Random Number Generator – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/random-number-generator/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"Is this random number generator truly random?","acceptedAnswer":{"@type":"Answer","text":"It uses the Web Cryptography API (crypto.getRandomValues) in your browser, which draws on the operating system's secure randomness source. That makes results statistically fair and unpredictable for everyday use. Strictly speaking it is a high-quality pseudo-random generator, not a physical device such as a hardware noise source."}},{"@type":"Question","name":"Why not just use Math.random()?","acceptedAnswer":{"@type":"Answer","text":"Math.random() is fast but not designed to be unpredictable, and its quality differs between browsers. The cryptographic generator is slightly slower but has no known bias or pattern, and the code here also removes modulo bias so every number in your range is equally likely."}},{"@type":"Question","name":"Are both the lowest and highest numbers included?","acceptedAnswer":{"@type":"Answer","text":"Yes. The range is inclusive on both ends. With a range of 1 to 6, both 1 and 6 can come up, and each has the same probability as every number in between."}},{"@type":"Question","name":"How do I draw numbers without repeats, like a lottery?","acceptedAnswer":{"@type":"Answer","text":"Tick \"No repeats\" in the Number tab, enter the range, for example 1 to 49, and set how many numbers you want, for example 6. Each number can then appear only once. The tool tells you if you ask for more unique numbers than the range holds."}},{"@type":"Question","name":"Can I use this to pick a giveaway winner?","acceptedAnswer":{"@type":"Answer","text":"Yes, for casual giveaways. Number the entries, draw with no repeats and keep the result and time as a record. Rules for promotions and sweepstakes vary by country and state, so check the legal requirements before you offer prizes. For regulated lotteries, use an approved system."}},{"@type":"Question","name":"Can I use the generated numbers as passwords or security keys?","acceptedAnswer":{"@type":"Answer","text":"No. Passwords need a different format, with letters, digits and symbols, and a much larger search space. Use the Password Generator on this site for that. Never use short random numbers as security codes."}},{"@type":"Question","name":"How many numbers or dice can I generate at once?","acceptedAnswer":{"@type":"Answer","text":"Up to 1,000 numbers or list picks, 10,000 coin flips and 6 dice per roll. These limits keep the page responsive on phones. If you need more, run the tool several times and combine the results."}},{"@type":"Question","name":"Does the tool keep my lists or results?","acceptedAnswer":{"@type":"Answer","text":"The history is held in memory on this page only and disappears when you close or reload it. Nothing is uploaded, and the tool sets no cookies and stores nothing in your browser's long-term storage."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-dosya">Files &amp; Text</a></li></ol>
+      <h1><span class="ba-grad">Random Number Generator</span> – Numbers, Dice, Coin Flip and List Picker</h1>
+      <p class="lead">Draw random numbers in any range, with or without repeats, roll up to six dice from d4 to d20, flip a coin up to 10,000 times or pick winners from your own list. Results come from your browser's secure random generator and are never uploaded.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Files never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <div class="rs-tabs" role="tablist" aria-label="Type of random pick">
+        <button type="button" role="tab" id="tab-n" aria-controls="panel-n" aria-selected="true">Number</button>
+        <button type="button" role="tab" id="tab-d" aria-controls="panel-d" aria-selected="false" tabindex="-1">Dice</button>
+        <button type="button" role="tab" id="tab-c" aria-controls="panel-c" aria-selected="false" tabindex="-1">Coin flip</button>
+        <button type="button" role="tab" id="tab-l" aria-controls="panel-l" aria-selected="false" tabindex="-1">Pick from list</button>
+      </div>
+
+      <div id="panel-n" role="tabpanel" aria-labelledby="tab-n">
+        <div class="ba-options">
+          <div class="ba-field"><label for="n-min">Lowest number</label><input id="n-min" type="number" inputmode="numeric" value="1"></div>
+          <div class="ba-field"><label for="n-max">Highest number</label><input id="n-max" type="number" inputmode="numeric" value="100"></div>
+          <div class="ba-field"><label for="n-count">How many numbers?</label><input id="n-count" type="number" inputmode="numeric" min="1" max="1000" value="1"><div class="hint">Up to 1,000.</div></div>
+          <div class="ba-field"><label for="n-order">Order</label><select id="n-order"><option value="shuffled" selected>As drawn (random order)</option><option value="asc">Lowest to highest</option><option value="desc">Highest to lowest</option></select></div>
+          <div class="ba-field"><div class="rs-check"><input type="checkbox" id="n-unique"><label for="n-unique">No repeats (each number at most once)</label></div></div>
+        </div>
+        <div class="ba-actions"><button id="n-go" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Generate numbers</button></div>
+      </div>
+
+      <div id="panel-d" role="tabpanel" aria-labelledby="tab-d" hidden>
+        <div class="ba-options">
+          <div class="ba-field"><label for="d-type">Die type</label><select id="d-type"><option value="4">d4 (4 sides)</option><option value="6" selected>d6 (classic, 6 sides)</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option><option value="20">d20</option></select></div>
+          <div class="ba-field"><label for="d-count">Number of dice (1–6)</label><input id="d-count" type="number" inputmode="numeric" min="1" max="6" value="1"></div>
+        </div>
+        <div class="ba-actions"><button id="d-go" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Roll dice</button></div>
+      </div>
+
+      <div id="panel-c" role="tabpanel" aria-labelledby="tab-c" hidden>
+        <div class="ba-options">
+          <div class="ba-field"><label for="c-count">How many flips?</label><input id="c-count" type="number" inputmode="numeric" min="1" max="10000" value="1"><div class="hint">Up to 10,000; the split between heads and tails is shown.</div></div>
+        </div>
+        <div class="ba-actions"><button id="c-go" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Flip coin</button></div>
+      </div>
+
+      <div id="panel-l" role="tabpanel" aria-labelledby="tab-l" hidden>
+        <div class="ba-options">
+          <div class="ba-field rs-field-wide" style="grid-column:1/-1"><label for="l-text">List (one option per line)</label><textarea id="l-text" rows="6" placeholder="Pizza&#10;Tacos&#10;Sushi&#10;Burgers"></textarea></div>
+          <div class="ba-field"><label for="l-count">How many to pick?</label><input id="l-count" type="number" inputmode="numeric" min="1" max="1000" value="1"></div>
+          <div class="ba-field"><div class="rs-check"><input type="checkbox" id="l-unique" checked><label for="l-unique">No repeats (each line at most once)</label></div></div>
+        </div>
+        <div class="ba-actions"><button id="l-go" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Pick at random</button></div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite">
+        <h3 id="result-title">Result</h3>
+        <div id="faces" class="rs-faces"></div>
+        <div id="out" class="rs-out"></div>
+        <p id="meta"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Copy result</button><span id="copy-status" role="status"></span></div>
+      </div>
+      <p class="rs-note">Results come from your browser's cryptographically secure random generator (crypto.getRandomValues). They are unpredictable, not influenced by earlier draws and never sent anywhere.</p>
+
+      <h3 style="margin-top:22px">Result history</h3>
+      <ol id="history" class="rs-history" aria-label="Result history"></ol>
+      <p class="rs-empty">No results yet. History is kept on this page only and disappears when you close it.</p>
+      <div class="ba-actions" style="margin-top:10px"><button id="hist-clear" class="ba-btn" type="button">Clear history</button></div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-random-number-generator-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to use the random number generator</h2>
+      <ol class="ba-steps">
+        <li>Pick a tab. <strong>Number</strong> draws integers from a range you choose, <strong>Dice</strong> rolls one to six dice from d4 to d20, <strong>Coin flip</strong> tosses up to 10,000 coins and <strong>Pick from list</strong> chooses one or more lines from your own list.</li>
+        <li>Fill in the options. For numbers that means the lowest value, the highest value, how many you want and whether repeats are allowed. Both ends of the range are included, so 1 to 6 can return 1 and 6.</li>
+        <li>Press the big button. The result appears straight away, together with a time stamp, and is added to the history underneath so you can look back at earlier draws.</li>
+        <li>Use <strong>Copy result</strong> to paste the numbers into a message or spreadsheet. Nothing is stored after you close the page.</li>
+      </ol>
+
+      <h2>A fair, private random generator for everyday decisions</h2>
+      <p>People need random numbers more often than they think. A teacher wants to call on a student without favoritism, a game night needs a fair d20, a small business owner picks a giveaway winner from a numbered list of entries, and a developer needs sample data. Others simply want to settle an argument over who pays for lunch. This page covers all of those cases in one tool, with no sign-up and no ads in the way of the controls.</p>
+      <p>The generator uses the Web Cryptography API built into your browser, the same source of randomness used for encryption keys. Unlike the simple <code>Math.random()</code> function behind many quick online generators, it is designed to be unpredictable. The code also avoids a subtle mistake called modulo bias: when a random 32-bit value is simply divided into a smaller range, some results can come up slightly more often than others. Here, values that would cause the imbalance are discarded and drawn again, so each number in your range has exactly the same chance.</p>
+
+      <h2>The four modes in detail</h2>
+      <h3>Random numbers</h3>
+      <p>Choose any whole-number range, including negative numbers, such as -50 to 50. The "No repeats" option draws without replacement, like pulling numbered balls from a bag, so you can build a lottery-style list of distinct values or shuffle the numbers 1 to 30 into a random order. Without it, each draw is independent and the same value can appear several times, just like rolling a die repeatedly. You can also sort the output from lowest to highest or the other way around, which is convenient when you need six unique picks for a raffle sheet in order.</p>
+      <h3>Dice</h3>
+      <p>The classic six-sided die is preselected, but tabletop role-playing players can also roll d4, d8, d10, d12 and d20 dice. With more than one die, the tool shows each face and the total, so a "3d6" roll for a character stat appears as 4 + 2 + 6 = 12. A fair die gives every face a probability of one in the number of sides, so on a d20 a natural 20 turns up five percent of the time.</p>
+      <h3>Coin flip</h3>
+      <p>A single flip gives heads or tails. For larger numbers, the tool reports how many of each came up and the percentages, which is a good way to see the law of large numbers in action: with 10 flips you might get 7 heads, while with 10,000 flips the split gets very close to 50/50. It also makes a handy classroom demonstration of probability.</p>
+      <h3>Pick from a list</h3>
+      <p>Type the names of students, restaurants, movies or giveaway entries, one per line, and let the tool choose. Blank lines are ignored. Leave "No repeats" ticked to get several different winners, or untick it to allow the same line to be picked more than once.</p>
+
+      <div class="ba-note"><strong>Good to know:</strong> The tool is meant for casual, educational and creative use. It is not a certified random number generator, so do not use it for regulated lotteries or gambling, and it should not be used to create passwords. For passwords, use the <a href="../password-generator/">Password Generator</a>, which is built for that job.</div>
+
+<div class="ba-ad" data-slot="en-random-number-generator-b" aria-label="Advertisement"></div>
+
+      <h2>Common uses for a random number generator</h2>
+      <ul>
+        <li><strong>Classrooms:</strong> choose who answers next, form random groups by shuffling a roster, or let students compare how real coin-flip results differ from the theoretical 50/50 split.</li>
+        <li><strong>Games and role-play:</strong> roll the dice you forgot to bring, resolve a tie, decide who goes first or generate random encounters from a numbered table.</li>
+        <li><strong>Giveaways and raffles:</strong> number your entries, then draw a winner and a few runners-up without repeats. Screenshot or copy the result, together with its time stamp, so you can show how it was done. Check local rules before running a promotion that involves prizes.</li>
+        <li><strong>Testing and development:</strong> generate sample IDs, quantities or ages, or pick random rows from a data set to review by hand.</li>
+        <li><strong>Everyday choices:</strong> decide what to cook, which movie to watch or who does the dishes. Putting the options in the list tab removes the argument and the bias.</li>
+        <li><strong>Statistics and sampling:</strong> pick a simple random sample of records from a numbered list. For formal research use proper sampling software and document the method.</li>
+      </ul>
+
+      <h2>Understanding randomness: a few myths</h2>
+      <p>Random does not mean evenly spread. If you ask for ten numbers between 1 and 10, it is perfectly normal to see the same number two or three times and to miss a few values altogether. Humans tend to judge sequences as "not random enough" when they contain streaks, yet streaks are exactly what true randomness produces. Five heads in a row happen in about three of every hundred sets of five flips.</p>
+      <p>The gambler's fallacy is the belief that a result is "due" because it has not occurred for a while. Each draw here is independent, so after nine tails the next flip is still a fifty-fifty chance. The history list is there for reference, not to predict anything.</p>
+      <p>Finally, the word "random" says nothing about how a result is used. If you promise a fair draw, show your method, keep the entry list fixed before drawing and let participants watch. Those steps matter more than the generator itself.</p>
+
+      <h2>Tips for better results</h2>
+      <p>To simulate a die roll with the number tab, use a range of 1 to 6. To draw a random percentage, use 1 to 100. To choose a random day of the month, use 1 to 31 and ignore results that are too large for your month. To shuffle a list of names, put them in the list tab, set the number of picks to the length of the list and keep "No repeats" ticked; the order of the output is the shuffled order. For very large ranges up to about 4.29 billion, the number tab still works instantly, but the unique mode keeps a set of values already drawn, so draw fewer than a thousand at a time.</p>
+
+      <h2>Private by design</h2>
+      <p>Every number is created on your device by your browser. The ranges, lists and results you enter are not uploaded, logged or tied to an account, and the page works offline after it has loaded. Closing the tab clears the history.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Is this random number generator truly random?</summary><p>It uses the Web Cryptography API (crypto.getRandomValues) in your browser, which draws on the operating system's secure randomness source. That makes results statistically fair and unpredictable for everyday use. Strictly speaking it is a high-quality pseudo-random generator, not a physical device such as a hardware noise source.</p></details>
+        <details><summary>Why not just use Math.random()?</summary><p>Math.random() is fast but not designed to be unpredictable, and its quality differs between browsers. The cryptographic generator is slightly slower but has no known bias or pattern, and the code here also removes modulo bias so every number in your range is equally likely.</p></details>
+        <details><summary>Are both the lowest and highest numbers included?</summary><p>Yes. The range is inclusive on both ends. With a range of 1 to 6, both 1 and 6 can come up, and each has the same probability as every number in between.</p></details>
+        <details><summary>How do I draw numbers without repeats, like a lottery?</summary><p>Tick "No repeats" in the Number tab, enter the range, for example 1 to 49, and set how many numbers you want, for example 6. Each number can then appear only once. The tool tells you if you ask for more unique numbers than the range holds.</p></details>
+        <details><summary>Can I use this to pick a giveaway winner?</summary><p>Yes, for casual giveaways. Number the entries, draw with no repeats and keep the result and time as a record. Rules for promotions and sweepstakes vary by country and state, so check the legal requirements before you offer prizes. For regulated lotteries, use an approved system.</p></details>
+        <details><summary>Can I use the generated numbers as passwords or security keys?</summary><p>No. Passwords need a different format, with letters, digits and symbols, and a much larger search space. Use the Password Generator on this site for that. Never use short random numbers as security codes.</p></details>
+        <details><summary>How many numbers or dice can I generate at once?</summary><p>Up to 1,000 numbers or list picks, 10,000 coin flips and 6 dice per roll. These limits keep the page responsive on phones. If you need more, run the tool several times and combine the results.</p></details>
+        <details><summary>Does the tool keep my lists or results?</summary><p>The history is held in memory on this page only and disappears when you close or reload it. Nothing is uploaded, and the tool sets no cookies and stores nothing in your browser's long-term storage.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../password-generator/">Password Generator</a></li>
+        <li><a href="../percentage-calculator/">Percentage Calculator</a></li>
+        <li><a href="../word-counter/">Word Counter</a></li>
+        <li><a href="../date-difference-calculator/">Date Difference Calculator</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need custom software, a faster website or help with digital projects? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-random-number-generator-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
