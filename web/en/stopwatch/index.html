@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Online Stopwatch – Free Stopwatch with Laps, Full Screen & CSV Export</title>
+  <meta name="description" content="Free online stopwatch with lap times, fastest and slowest lap highlighting, full screen mode and CSV export. Accurate to 1/100 second and fully private.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/stopwatch/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/kronometre/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/stopwatch/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/kronometre/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .kr-screen { text-align: center; padding: 22px 10px; margin-bottom: 14px; border-radius: var(--ba-radius); background: var(--ba-surface-2); border: 1px solid var(--ba-border); }
+    .kr-digits { font-family: var(--ba-mono); font-variant-numeric: tabular-nums; font-weight: 500; font-size: clamp(2rem, 11.5vw, 5.5rem); line-height: 1.1; letter-spacing: -.02em; color: var(--ba-text); white-space: nowrap; }
+    .kr-cs { font-size: .62em; color: var(--ba-text-2); }
+    .kr-sub { margin: 6px 0 0; color: var(--ba-text-2); font-weight: 600; min-height: 1.5em; font-variant-numeric: tabular-nums; }
+    .kr-sub + .kr-sub { margin-top: 2px; font-family: var(--ba-mono); font-weight: 400; }
+    .kr-summary { margin: 16px 0 8px; color: var(--ba-text-2); font-weight: 600; min-height: 1.5em; }
+    .kr-summary:empty { display: none; }
+    .kr-laps { margin: 0; padding: 0; list-style: none; max-height: 300px; overflow: auto; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .kr-head, .kr-laps li { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px 12px; margin: 0; font-variant-numeric: tabular-nums; }
+    .kr-head { font-size: .8rem; font-weight: 700; color: var(--ba-text-muted); text-transform: uppercase; letter-spacing: .04em; padding-left: 13px; }
+    .kr-laps li { border-bottom: 1px solid var(--ba-border); border-left: 4px solid transparent; font-family: var(--ba-mono); }
+    .kr-laps li:last-child { border-bottom: 0; }
+    .kr-laps li.is-fast { background: var(--ba-success-soft); border-left-color: var(--ba-success); }
+    .kr-laps li.is-slow { background: var(--ba-danger-soft); border-left-color: var(--ba-danger); }
+    .kr-n { font-family: var(--ba-font); font-weight: 600; overflow-wrap: anywhere; }
+    .kr-tag { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; vertical-align: 1px; }
+    .is-fast .kr-tag { color: var(--ba-success); border: 1px solid var(--ba-success); }
+    .is-slow .kr-tag { color: var(--ba-danger); border: 1px solid var(--ba-danger); }
+    .kr-split, .kr-total { overflow-wrap: anywhere; }
+    .kr-export { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+    .kr-note { min-height: 1.4em; margin: 8px 0 0; font-size: .9rem; color: var(--ba-text-2); }
+    .kr-kbd { font-size: .85rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+    #kr-box:fullscreen { overflow: auto; padding: 24px; background: var(--ba-bg); display: flex; flex-direction: column; justify-content: center; }
+    #kr-box:fullscreen .kr-digits { font-size: clamp(3rem, 17vw, 11rem); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Online Stopwatch – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/stopwatch/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"How accurate is this online stopwatch?","acceptedAnswer":{"@type":"Answer","text":"The elapsed time is calculated from the browser's high-resolution clock, so it is accurate to well under a hundredth of a second. The display redraws about 20 times per second, which is a limit of how screens refresh, not of the measurement. Your reaction time pressing the button is usually the biggest source of error, typically 0.1 to 0.2 seconds."}},{"@type":"Question","name":"Does the stopwatch keep running if I switch tabs or lock my screen?","acceptedAnswer":{"@type":"Answer","text":"Yes on most devices. The stopwatch stores the moment you pressed Start and compares it with the clock, so the displayed time is correct as soon as you return to the tab. If a phone puts the browser to sleep, the time still continues in the background because it is based on timestamps, not on counting ticks."}},{"@type":"Question","name":"What is the difference between split time and total time?","acceptedAnswer":{"@type":"Answer","text":"The split is the duration of one lap, measured from the previous lap button press. The total is the time since you pressed Start. For example, with laps at 1:00 and 2:10 the second lap's split is 1:10 and its total is 2:10."}},{"@type":"Question","name":"How are the fastest and slowest laps chosen?","acceptedAnswer":{"@type":"Answer","text":"Once you have at least two laps, the lap with the shortest split gets the green \"fastest\" label and the one with the longest split gets the red \"slowest\" label. If all laps are exactly equal no label is shown. The summary line also shows the average lap."}},{"@type":"Question","name":"Can I use keyboard shortcuts?","acceptedAnswer":{"@type":"Answer","text":"Yes. Press Space to start or stop, L to record a lap, R to reset and F for full screen. The shortcuts are disabled while you type in a text field, and Space acts on a focused button as usual instead of triggering twice."}},{"@type":"Question","name":"How do I save my lap times?","acceptedAnswer":{"@type":"Answer","text":"Press Copy laps to put a tab-separated list on the clipboard, which pastes cleanly into Excel or Google Sheets, or download a CSV or plain text file. The file is created in your browser and never uploaded. Lap times are not saved between visits, so export them before closing the page."}},{"@type":"Question","name":"Is it safe to use for timing exams, workouts or lab experiments?","acceptedAnswer":{"@type":"Answer","text":"It is fine for everyday timing, training and classroom use. For official sports timing or regulated lab procedures, use certified equipment, since a browser can be delayed by a busy computer or a power-saving mode."}},{"@type":"Question","name":"Does the page upload or track anything?","acceptedAnswer":{"@type":"Answer","text":"No. The stopwatch runs entirely in your browser with no network requests, no cookies for tracking and no account. Closing the tab clears everything, and the page even warns you if you try to close it while the clock is running."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-hesapla">Calculators</a></li></ol>
+      <h1><span class="ba-grad">Online Stopwatch</span> – Free Stopwatch with Lap Times and Full Screen Mode</h1>
+      <p class="lead">Start, stop and record laps with one key. Accurate to a hundredth of a second, with fastest and slowest lap highlighting, full screen for classrooms and gyms, and CSV export. Nothing you time is stored or sent anywhere.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Files never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <div id="kr-box" data-state="idle">
+      <div class="kr-screen">
+        <div class="kr-digits" id="kr-display" role="timer" aria-label="Elapsed time"><span id="kr-main">00:00:00</span><span id="kr-cs" class="kr-cs">.00</span></div>
+        <p class="kr-sub" id="kr-status" aria-live="polite">Ready</p>
+        <p class="kr-sub" id="kr-current">Lap 1: 00:00.00</p>
+      </div>
+      <div class="ba-actions">
+        <button id="kr-start" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Start</button>
+        <button id="kr-lap" class="ba-btn" type="button" disabled>Lap</button>
+        <button id="kr-reset" class="ba-btn" type="button">Reset</button>
+        <button id="kr-fs" class="ba-btn" type="button">Full screen</button>
+      </div>
+      <p class="kr-kbd">Shortcuts: <kbd>Space</kbd> start/stop, <kbd>L</kbd> lap, <kbd>R</kbd> reset, <kbd>F</kbd> full screen. The time stays correct even while the tab is in the background.</p>
+
+      <div id="kr-laps-wrap" hidden>
+        <p class="kr-summary" id="kr-summary"></p>
+        <div class="kr-head" aria-hidden="true"><span>Lap</span><span>Split</span><span>Total</span></div>
+        <ol id="kr-laps" class="kr-laps" aria-label="Lap list (newest first)"></ol>
+        <div class="kr-export" role="group" aria-label="Export laps">
+          <button id="kr-copy" class="ba-btn" type="button" disabled>Copy laps</button>
+          <button id="kr-csv" class="ba-btn" type="button" disabled>Download CSV</button>
+          <button id="kr-txt" class="ba-btn" type="button" disabled>Download text</button>
+        </div>
+        <p class="kr-note" id="kr-note" aria-live="polite"></p>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-stopwatch-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to use the online stopwatch</h2>
+      <ol class="ba-steps">
+        <li>Press <strong>Start</strong> (or the Space bar) to begin timing. The large display shows hours, minutes, seconds and hundredths.</li>
+        <li>Press <strong>Lap</strong> (or L) each time you want to record a split, for example at the end of every lap around a track, every slide in a presentation or every set in a workout.</li>
+        <li>Press <strong>Stop</strong> to pause and <strong>Resume</strong> to continue. <strong>Reset</strong> clears the clock and the lap list.</li>
+        <li>Open <strong>Full screen</strong> to show the time on a projector or a big monitor, and use <strong>Copy laps</strong> or <strong>Download CSV</strong> to keep your results.</li>
+      </ol>
+
+      <h2>A free stopwatch with laps that does not get in your way</h2>
+      <p>A phone stopwatch is fine until you need to share the numbers, show the time to a room full of people or time something from your desk without picking up your phone. This online stopwatch runs in any modern browser on a laptop, tablet or phone, and it is built for the practical jobs people actually have: timing runners, setting time limits for speeches, measuring how long a task takes, running a chess clock-style exercise or checking the pace of a presentation.</p>
+      <p>It needs no download and no account, and it contains no pop-ups that cover the clock. The digits are large, high-contrast and aligned so they do not jitter as numbers change, which makes them easy to read from across a room. You can also install the page as an app from your browser menu and use it offline.</p>
+
+      <h2>Features at a glance</h2>
+      <table>
+        <thead><tr><th>Feature</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Hundredths of a second</td><td>Shows HH:MM:SS plus two decimal digits for precise results</td></tr>
+          <tr><td>Lap and split times</td><td>Records every lap with its split and the running total</td></tr>
+          <tr><td>Fastest / slowest</td><td>Highlights the best and worst laps and shows the average lap</td></tr>
+          <tr><td>Full screen</td><td>Fills the screen with a huge clock for classrooms, gyms and events</td></tr>
+          <tr><td>Keyboard shortcuts</td><td>Space, L, R and F control everything without the mouse</td></tr>
+          <tr><td>Export</td><td>Copy to the clipboard or download CSV and text files</td></tr>
+          <tr><td>Tab title</td><td>Shows the running time in the browser tab so you can keep working elsewhere</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Ideas for using a lap stopwatch</h2>
+      <h3>Sports and fitness</h3>
+      <p>Running coaches often time 400-meter repeats or interval sessions. Pressing Lap at the end of each repeat gives you every split, and the fastest and slowest highlights make it obvious whether the athlete faded at the end. For swimming or cycling drills, the average lap in the summary line tells you the pace you actually held. Strength coaches use the stopwatch to time rest periods between sets, which is more consistent than guessing.</p>
+
+<div class="ba-ad" data-slot="en-stopwatch-b" aria-label="Advertisement"></div>
+
+      <h3>School and study</h3>
+      <p>Teachers use a full-screen stopwatch to show how much time is left in a quiet-reading block, to time students giving a one-minute talk or to run a science experiment. Students can use it to practice for timed exams: if a paper gives you 90 minutes for 45 questions, a lap per ten questions shows whether you are on pace. Because the page is private and stores nothing, it is fine to use on a school device.</p>
+
+      <h3>Work and productivity</h3>
+      <p>Consultants and freelancers can time tasks to understand how long recurring work really takes. Developers measure how long a build or a manual test takes. Meeting facilitators time each speaker so discussions stay on schedule. Use the tab title feature: the running time appears in the browser tab, so you can switch to another window and still see the clock.</p>
+
+      <h3>Cooking, games and everyday life</h3>
+      <p>Timing a steak, steeping tea, playing a speed-cube solve, racing friends in a board game or checking how long a toddler can stand on one foot all work well with a stopwatch. For a countdown instead, see our <a href="../timer/">online timer</a>.</p>
+
+      <h2>Understanding accuracy</h2>
+      <p>The stopwatch is based on the browser's high-resolution monotonic clock. It does not count interval ticks, which would drift if the computer was busy. Instead, it stores the exact start moment and subtracts it from the current time every time the display refreshes. That is why the time is correct even if the tab was throttled while you were away. The screen redraws about twenty times per second; the digits for hundredths are therefore a visual indication, while the underlying time is exact at the moment you press a button.</p>
+      <p>For human timing, the biggest error is not the clock but your reaction. A person usually presses a button 0.1 to 0.25 seconds after seeing the event. If you start and stop on events of the same type, that delay roughly cancels out. If you need official precision, use certified timing equipment.</p>
+
+      <h2>Exporting your laps</h2>
+      <p>After you have recorded at least one lap, three buttons appear. <strong>Copy laps</strong> places a tab-separated table on the clipboard, which you can paste straight into a spreadsheet. <strong>Download CSV</strong> creates a comma-separated file that opens in Excel, Numbers and Google Sheets with the columns Lap, Split and Total time. <strong>Download text</strong> produces a simple report that includes the fastest lap, the slowest lap and the average. Everything is generated locally in your browser.</p>
+
+      <h2>Private by design</h2>
+      <p>The stopwatch makes no network requests while you use it. Your lap times are not saved, there are no analytics cookies and no sign-up is needed. If you reload or close the page, the timer resets, so export anything you need before you leave.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>How accurate is this online stopwatch?</summary><p>The elapsed time is calculated from the browser's high-resolution clock, so it is accurate to well under a hundredth of a second. The display redraws about 20 times per second, which is a limit of how screens refresh, not of the measurement. Your reaction time pressing the button is usually the biggest source of error, typically 0.1 to 0.2 seconds.</p></details>
+        <details><summary>Does the stopwatch keep running if I switch tabs or lock my screen?</summary><p>Yes on most devices. The stopwatch stores the moment you pressed Start and compares it with the clock, so the displayed time is correct as soon as you return to the tab. If a phone puts the browser to sleep, the time still continues in the background because it is based on timestamps, not on counting ticks.</p></details>
+        <details><summary>What is the difference between split time and total time?</summary><p>The split is the duration of one lap, measured from the previous lap button press. The total is the time since you pressed Start. For example, with laps at 1:00 and 2:10 the second lap's split is 1:10 and its total is 2:10.</p></details>
+        <details><summary>How are the fastest and slowest laps chosen?</summary><p>Once you have at least two laps, the lap with the shortest split gets the green "fastest" label and the one with the longest split gets the red "slowest" label. If all laps are exactly equal no label is shown. The summary line also shows the average lap.</p></details>
+        <details><summary>Can I use keyboard shortcuts?</summary><p>Yes. Press Space to start or stop, L to record a lap, R to reset and F for full screen. The shortcuts are disabled while you type in a text field, and Space acts on a focused button as usual instead of triggering twice.</p></details>
+        <details><summary>How do I save my lap times?</summary><p>Press Copy laps to put a tab-separated list on the clipboard, which pastes cleanly into Excel or Google Sheets, or download a CSV or plain text file. The file is created in your browser and never uploaded. Lap times are not saved between visits, so export them before closing the page.</p></details>
+        <details><summary>Is it safe to use for timing exams, workouts or lab experiments?</summary><p>It is fine for everyday timing, training and classroom use. For official sports timing or regulated lab procedures, use certified equipment, since a browser can be delayed by a busy computer or a power-saving mode.</p></details>
+        <details><summary>Does the page upload or track anything?</summary><p>No. The stopwatch runs entirely in your browser with no network requests, no cookies for tracking and no account. Closing the tab clears everything, and the page even warns you if you try to close it while the clock is running.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../timer/">Online Timer &amp; Countdown</a></li>
+        <li><a href="../age-calculator/">Age Calculator</a></li>
+        <li><a href="../date-difference-calculator/">Date Difference Calculator</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need custom software, a faster website or help with digital projects? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-stopwatch-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

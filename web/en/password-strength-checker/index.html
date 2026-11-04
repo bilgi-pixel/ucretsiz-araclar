@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Password Strength Checker – Test How Strong Your Password Is (Private)</title>
+  <meta name="description" content="Free password strength checker: see entropy, common patterns, estimated crack time and tips to improve. The password is analysed in your browser and never sent anywhere.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/password-strength-checker/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/sifre-guc-test/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/password-strength-checker/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/sifre-guc-test/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .sg-input { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sg-input input { flex: 1 1 220px; min-width: 0; font: inherit; font-family: var(--ba-mono); font-size: 1.1rem; padding: 12px 14px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); color: var(--ba-text); }
+    .sg-input input:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .sg-privacy { margin: 14px 0 0; padding: 12px 14px; border-radius: var(--ba-radius); border: 1px solid var(--ba-success); border-left-width: 4px; background: var(--ba-success-soft); color: var(--ba-text-2); font-size: .92rem; }
+    .sg-meter { height: 14px; border-radius: 7px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); overflow: hidden; margin: 8px 0 4px; }
+    .sg-fill { height: 100%; width: 0; transition: width .2s; }
+    .sg-fill.l0 { background: #b3261e; } .sg-fill.l1 { background: #c2410c; } .sg-fill.l2 { background: #a16207; } .sg-fill.l3 { background: #4d7c0f; } .sg-fill.l4 { background: #15803d; }
+    .sg-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .sg-head strong { font-size: 2rem; line-height: 1; }
+    .sg-head span { font-size: 1.15rem; font-weight: 700; }
+    .sg-grid { display: grid; gap: 10px; margin: 16px 0; }
+    @media (min-width: 600px) { .sg-grid { grid-template-columns: 1fr 1fr; } }
+    .sg-grid div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 10px 14px; }
+    .sg-grid dt { font-size: .8rem; color: var(--ba-text-muted); font-weight: 600; }
+    .sg-grid dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+    .sg-list { padding-left: 20px; margin: 6px 0 14px; }
+    .sg-list li { margin-bottom: 6px; }
+    .sg-report h3 { margin: 18px 0 4px; font-size: 1.05rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Password Strength Checker – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/password-strength-checker/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"Is it safe to type my real password here?","acceptedAnswer":{"@type":"Answer","text":"The page analyses the password entirely in your browser; it makes no network request with it and does not store or log it. You can check this by turning off your internet connection after the page has loaded. Still, as a general habit, avoid typing live passwords into any website, and test a similar example with the same length and structure if you want to be extra careful."}},{"@type":"Question","name":"What does entropy in bits mean?","acceptedAnswer":{"@type":"Answer","text":"Entropy measures how unpredictable a password is. Each additional bit doubles the number of guesses an attacker needs. A truly random password of 12 characters drawn from letters, digits and symbols has about 78 bits, while a password built from a dictionary word and a year may have only 20 to 30 bits even though it looks long."}},{"@type":"Question","name":"Why does a long password with a common word score badly?","acceptedAnswer":{"@type":"Answer","text":"Attackers do not try every combination in order. They start with lists of common passwords, names, words and patterns, then apply typical tweaks such as capitalizing the first letter or adding 123. This checker models that behaviour, so \"Summer2024!\" scores low even though it has four character types."}},{"@type":"Question","name":"How are the crack times calculated?","acceptedAnswer":{"@type":"Answer","text":"The time is half of the search space (2 to the power of the entropy, divided by two) divided by a guessing speed. We use 10 billion guesses per second for an offline attack on a stolen, fast-hashed database and 100 per second for an online login form with rate limits. Slow hashes such as bcrypt or Argon2 make real attacks far slower; weak hashes can make them faster."}},{"@type":"Question","name":"What is a good password length in 2026?","acceptedAnswer":{"@type":"Answer","text":"For important accounts use at least 14 to 16 random characters, or a passphrase of five or six unrelated words. Length matters more than complexity rules, and a password manager lets you use a unique one for every site without memorizing them."}},{"@type":"Question","name":"Is a passphrase better than a complex password?","acceptedAnswer":{"@type":"Answer","text":"A passphrase made of four or more random words, such as \"orbit-velvet-ladder-pepper\", is easy to remember and has plenty of entropy if the words are chosen randomly rather than from a favourite quote or song. Complex short passwords with substitutions like \"P@ssw0rd\" are both harder to remember and easy for crackers to predict."}},{"@type":"Question","name":"Does a high score mean my account is safe?","acceptedAnswer":{"@type":"Answer","text":"Not by itself. A strong password does not protect you if the site leaks it, if you reuse it elsewhere or if you are tricked into typing it on a phishing page. Use a unique password for every account, turn on two-factor authentication and check whether your email appears in known breaches."}},{"@type":"Question","name":"Does this checker compare my password with real leaked passwords?","acceptedAnswer":{"@type":"Answer","text":"It uses a built-in list of about 1,600 very common passwords, names, teams, cities and words to spot predictable choices. It is not connected to any breach database, because that would require sending your password or a part of it to a server."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-hesapla">Calculators</a></li></ol>
+      <h1><span class="ba-grad">Password Strength Checker</span> – How Strong Is Your Password?</h1>
+      <p class="lead">Type a password to see its strength score, entropy, the patterns attackers look for and a realistic estimate of how long it would take to crack. The analysis happens inside your browser and the password is never sent anywhere.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Files never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <div class="ba-field">
+        <label for="pw">The password you want to test</label>
+        <div class="sg-input">
+          <input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="256" aria-describedby="privacy">
+          <button id="toggle" class="ba-btn" type="button" aria-pressed="false">Show</button>
+          <button id="clear" class="ba-btn" type="button">Clear</button>
+        </div>
+        <p id="trunc" class="hint" hidden>For very long passwords only the first 128 characters are analysed.</p>
+      </div>
+      <p id="privacy" class="sg-privacy"><strong>Your password never leaves your device.</strong> The analysis is done entirely by JavaScript on this page; the password is not sent to any server and is not stored or logged. If you would still rather not type a real password you use, enter a similar example with the same structure.</p>
+
+      <p id="empty" class="hint">Type a password; the result updates as you type.</p>
+      <div id="report" class="sg-report" hidden>
+        <div class="sg-head" aria-live="polite"><strong id="score">0</strong><span>/ 100 points · <span id="label"></span></span></div>
+        <div id="meter" class="sg-meter" role="meter" aria-label="Password strength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="meter-fill" class="sg-fill"></div></div>
+        <dl class="sg-grid">
+          <div><dt>Effective entropy (after patterns are discounted)</dt><dd id="bits"></dd></div>
+          <div><dt>Naive entropy (if every character were random)</dt><dd id="naive"></dd></div>
+          <div><dt>Length</dt><dd id="len"></dd></div>
+          <div><dt>Character set</dt><dd id="charset"></dd></div>
+          <div><dt>Offline attack (10 billion guesses per second)</dt><dd id="offline"></dd></div>
+          <div><dt>Online attack (100 attempts per second)</dt><dd id="online"></dd></div>
+        </dl>
+        <h3>Findings</h3>
+        <ul id="findings" class="sg-list"></ul>
+        <h3>Suggestions</h3>
+        <ul id="suggestions" class="sg-list"></ul>
+        <p class="ba-note">Times are average estimates for information only; real attack speed varies greatly with hardware and with how a site stores passwords. <a href="../password-generator/">Use the Password Generator to create a strong one.</a></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-password-strength-checker-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to use the password strength checker</h2>
+      <ol class="ba-steps">
+        <li>Type or paste a password into the box. Use <strong>Show</strong> if you want to see what you typed.</li>
+        <li>Read the score from 0 to 100, the label from very weak to very strong, and the estimated time an attacker would need.</li>
+        <li>Open the <strong>Findings</strong> list to see exactly which patterns were detected: common words, sequences, repeats, keyboard walks, years and dates.</li>
+        <li>Follow the <strong>Suggestions</strong>, then try an improved version. For an unguessable password, create one with our <a href="../password-generator/">Password Generator</a> and keep it in a password manager.</li>
+      </ol>
+
+      <h2>A password strength test that explains its result</h2>
+      <p>Many password meters simply count character types and give a green bar once you have an uppercase letter, a digit and a symbol. Attackers know this and build their guesses accordingly, which is why "Password1!" passes many checkers and falls to a cracker in under a second. This tool tries to behave more like an attacker. It looks for dictionary words, l33t substitutions such as @ for a, keyboard runs such as qwerty, sequences like 1234, repeated blocks and dates, and it estimates the cheapest way to guess your password.</p>
+      <p>The result is shown as effective entropy in bits and as an estimated crack time for two scenarios. Because the explanation is part of the answer, you learn why a password is weak rather than just being told it is.</p>
+
+      <h2>What attackers actually do</h2>
+      <table>
+        <thead><tr><th>Technique</th><th>How it works</th><th>What it defeats</th></tr></thead>
+        <tbody>
+          <tr><td>Dictionary attack</td><td>Tries millions of words, names and previously leaked passwords first</td><td>Any real word, name or common password</td></tr>
+          <tr><td>Rule-based mutation</td><td>Applies habits such as capitalizing, adding digits or replacing a with @</td><td>"Dragon2024!", "P@ssw0rd"</td></tr>
+          <tr><td>Pattern attack</td><td>Tests keyboard walks, sequences, repeats and dates</td><td>"qwerty123", "abcd1234", "01011990"</td></tr>
+          <tr><td>Brute force</td><td>Tries every combination of a character set up to a given length</td><td>Short passwords of any kind</td></tr>
+          <tr><td>Credential stuffing</td><td>Reuses passwords leaked from one site on other sites</td><td>Any reused password, however strong</td></tr>
+        </tbody>
+      </table>
+      <p>The first four attack the password itself, and the checker covers them. The last attacks your habits, which no meter can measure. That is why a unique password per account matters just as much as strength.</p>
+
+      <h2>Understanding the numbers</h2>
+      <h3>Entropy in bits</h3>
+      <p>Entropy is the base-2 logarithm of the number of guesses needed. Roughly, under 28 bits is very weak, 28 to 40 weak, 40 to 60 fair, 60 to 80 strong and above 80 very strong for most purposes. Every extra bit doubles the work, so 10 extra bits is about a thousand times harder. The tool shows two numbers: the effective entropy after detected patterns are discounted, and the naive entropy you would get if every character were chosen at random from the pool. A big gap between them is a warning sign.</p>
+
+<div class="ba-ad" data-slot="en-password-strength-checker-b" aria-label="Advertisement"></div>
+
+      <h3>Offline and online crack times</h3>
+      <p>An <strong>online</strong> attack goes through a login form. Well-designed sites lock accounts or slow down after a few failures, so a rate of 100 guesses per second is generous to the attacker. An <strong>offline</strong> attack happens after a data breach, when the attacker has the stored hashes and can test guesses on their own hardware. We assume 10 billion guesses per second, which is realistic for fast, unsalted hashes on a graphics-card rig and pessimistic for modern slow hashes like bcrypt, scrypt and Argon2. Treat the times as a comparison between passwords, not a promise.</p>
+
+      <h2>How to build a stronger password</h2>
+      <ul>
+        <li><strong>Go long.</strong> Each extra character multiplies the work. Aim for 14 characters or more on important accounts.</li>
+        <li><strong>Use randomness, not cleverness.</strong> Random characters or random words beat a clever phrase based on your life. Dice, a generator or a password manager can supply the randomness.</li>
+        <li><strong>Avoid personal information.</strong> Names of pets, children, teams, cities and birth years are the first things a targeted attacker tries.</li>
+        <li><strong>Do not reuse.</strong> A breach on a small forum should not open your email. Use a different password everywhere.</li>
+        <li><strong>Turn on two-factor authentication.</strong> An authenticator app or a hardware key protects you even if the password leaks.</li>
+        <li><strong>Prefer a password manager.</strong> It generates and stores unique passwords so you only need to remember one strong master passphrase.</li>
+      </ul>
+
+      <h2>Common password myths</h2>
+      <p><strong>"Replace letters with symbols and I'm safe."</strong> Crackers have known the substitution list for decades. "P@ssw0rd" is as weak as "password". <strong>"Change it every month."</strong> Current guidance from standards bodies such as NIST recommends changing a password when you suspect compromise rather than on a fixed schedule, because forced changes lead to predictable tweaks like adding a number. <strong>"Longer is always better, even with a common phrase."</strong> A famous quotation or song lyric is in attackers' dictionaries, so length without randomness gives less protection than it appears to.</p>
+
+      <h2>Limits of this checker</h2>
+      <p>No strength meter can know whether your password appears in a private leak, how a particular site hashes passwords, or whether you reuse it. The bundled list covers about 1,600 very common choices; real attack dictionaries contain billions. Use the score as a guide to avoid obvious mistakes, not as proof of security.</p>
+
+      <h2>Private by design</h2>
+      <p>The password is analysed in your browser only. The page has no network calls that include it, stores nothing, and sets no tracking cookies. After the first load you can disconnect from the internet and the checker keeps working, which is an easy way to verify this for yourself.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>Is it safe to type my real password here?</summary><p>The page analyses the password entirely in your browser; it makes no network request with it and does not store or log it. You can check this by turning off your internet connection after the page has loaded. Still, as a general habit, avoid typing live passwords into any website, and test a similar example with the same length and structure if you want to be extra careful.</p></details>
+        <details><summary>What does entropy in bits mean?</summary><p>Entropy measures how unpredictable a password is. Each additional bit doubles the number of guesses an attacker needs. A truly random password of 12 characters drawn from letters, digits and symbols has about 78 bits, while a password built from a dictionary word and a year may have only 20 to 30 bits even though it looks long.</p></details>
+        <details><summary>Why does a long password with a common word score badly?</summary><p>Attackers do not try every combination in order. They start with lists of common passwords, names, words and patterns, then apply typical tweaks such as capitalizing the first letter or adding 123. This checker models that behaviour, so "Summer2024!" scores low even though it has four character types.</p></details>
+        <details><summary>How are the crack times calculated?</summary><p>The time is half of the search space (2 to the power of the entropy, divided by two) divided by a guessing speed. We use 10 billion guesses per second for an offline attack on a stolen, fast-hashed database and 100 per second for an online login form with rate limits. Slow hashes such as bcrypt or Argon2 make real attacks far slower; weak hashes can make them faster.</p></details>
+        <details><summary>What is a good password length in 2026?</summary><p>For important accounts use at least 14 to 16 random characters, or a passphrase of five or six unrelated words. Length matters more than complexity rules, and a password manager lets you use a unique one for every site without memorizing them.</p></details>
+        <details><summary>Is a passphrase better than a complex password?</summary><p>A passphrase made of four or more random words, such as "orbit-velvet-ladder-pepper", is easy to remember and has plenty of entropy if the words are chosen randomly rather than from a favourite quote or song. Complex short passwords with substitutions like "P@ssw0rd" are both harder to remember and easy for crackers to predict.</p></details>
+        <details><summary>Does a high score mean my account is safe?</summary><p>Not by itself. A strong password does not protect you if the site leaks it, if you reuse it elsewhere or if you are tricked into typing it on a phishing page. Use a unique password for every account, turn on two-factor authentication and check whether your email appears in known breaches.</p></details>
+        <details><summary>Does this checker compare my password with real leaked passwords?</summary><p>It uses a built-in list of about 1,600 very common passwords, names, teams, cities and words to spot predictable choices. It is not connected to any breach database, because that would require sending your password or a part of it to a server.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../password-generator/">Password Generator</a></li>
+        <li><a href="../protect-pdf/">Protect PDF with a Password</a></li>
+        <li><a href="../random-number-generator/">Random Number Generator</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need custom software, a faster website or help with digital projects? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-password-strength-checker-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
