@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Saat Hesaplama – İki Saat Arası Süre, Saat Toplama/Çıkarma ve Çalışma Saati</title>
+  <meta name="description" content="İki saat arası süreyi molayı düşerek hesaplayın, gece vardiyasını otomatik algılayın, saate süre ekleyin, süreleri toplayın, haftalık çalışma saatini ve 45 saati aşan fazla çalışmayı görün. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/saat-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/saat-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/saat-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .sh-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+    .sh-tabs button { font: inherit; font-weight: 600; font-size: .92rem; min-height: 44px; padding: 8px 14px; border: 1px solid var(--ba-border); border-radius: 999px; background: var(--ba-surface-2); color: var(--ba-text-2); cursor: pointer; }
+    .sh-tabs button:hover { color: var(--ba-primary); border-color: var(--ba-primary); }
+    .sh-tabs button[aria-selected="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sh-tabs button[aria-selected="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .sh-tabs button[aria-selected="true"] { color: #1a0d10; }
+    .sh-form .ba-field { margin-bottom: 12px; }
+    .sh-form input[type="text"], .sh-form select, .sh-form textarea { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .sh-form textarea { font-family: var(--ba-mono); min-height: 170px; line-height: 1.5; resize: vertical; }
+    .sh-form input:focus, .sh-form select:focus, .sh-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .sh-grid { display: grid; gap: 0 12px; }
+    @media (min-width: 600px) { .sh-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .sh-grid.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .sh-form fieldset { border: 0; margin: 0 0 8px; padding: 0; min-width: 0; }
+    .sh-form legend { font-weight: 600; font-size: .9rem; margin-bottom: 2px; padding: 0; }
+    .sh-checks { display: flex; flex-wrap: wrap; gap: 0 18px; }
+    .sh-checks label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .sh-checks input { width: 20px; height: 20px; accent-color: var(--ba-primary); flex: none; margin: 0; }
+    .sh-hint { font-size: .88rem; color: var(--ba-text-muted); margin: 0 0 12px; }
+    .sh-results { margin: 0; display: grid; gap: 2px; }
+    .sh-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .sh-row:last-child { border-bottom: 0; }
+    .sh-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .sh-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1.05rem; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+    .sh-row.is-strong dd { font-weight: 700; font-size: 1.3rem; color: var(--ba-text); }
+    .sh-pay { margin-top: 10px; padding-top: 6px; border-top: 1px solid var(--ba-border); }
+    .sh-big { font-size: 1.35rem; font-weight: 700; margin: 0 0 8px !important; color: var(--ba-primary) !important; overflow-wrap: anywhere; }
+    .sh-note { font-size: .88rem; color: var(--ba-text-muted); margin: 10px 0 0; overflow-wrap: anywhere; }
+    .sh-note:empty { display: none; }
+    .ba-result .sh-note { margin-top: 10px; }
+    .sh-warn { font-size: .92rem; margin: 10px 0 0 !important; padding: 10px 12px; border-left: 4px solid var(--ba-primary); background: var(--ba-surface); border-radius: var(--ba-radius-sm); color: var(--ba-text) !important; overflow-wrap: anywhere; }
+    .sh-params { font-size: .88rem; color: var(--ba-text-muted); margin: 14px 0 0; overflow-wrap: anywhere; }
+    .sh-week { display: grid; gap: 8px; margin-bottom: 14px; }
+    .sh-wrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 8px; padding: 10px 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .sh-wrow .sh-dayh { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+    .sh-dtot { font-family: var(--ba-mono); font-weight: 700; color: var(--ba-primary); }
+    .sh-wrow.is-off .sh-dtot { color: var(--ba-text-muted); font-weight: 400; }
+    .sh-wrow label { min-width: 0; }
+    .sh-wrow label span { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 3px; color: var(--ba-text-2); }
+    .sh-wrow input[type="text"] { padding: 8px 10px; }
+    @media (min-width: 720px) { .sh-wrow { grid-template-columns: 8.5rem repeat(3, minmax(0, 1fr)); align-items: end; } .sh-wrow .sh-dayh { grid-column: auto; flex-direction: column; align-self: center; gap: 0; } }
+    .sh-tz { font-size: .88rem; color: var(--ba-text-muted); margin: 14px 0 0; }
+    .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .95rem; }
+    .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Saat Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","description":"İki saat arası süre, saate süre ekleme/çıkarma, süre toplama, haftalık çalışma çizelgesi ve ondalık saat dönüştürücü. Tamamı tarayıcıda çalışır.","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/saat-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"İki saat arası kaç saat, nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"İki saati de dakikaya çevirip büyükten küçüğü çıkarın. 08:30 ile 17:15 arası 1035 − 510 = 525 dakikadır; bu 8 saat 45 dakika, ondalık olarak 8,75 saat eder. Araç bu işlemi saniye hassasiyetinde otomatik yapar."}},
+  {"@type":"Question","name":"Gece yarısını geçen vardiya nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Bitiş saati başlangıçtan küçükse bitiş ertesi gün sayılır ve 24 saat eklenir. 22:00 ile 06:30 arası 8 saat 30 dakikadır. Araç bunu kendiliğinden algılar; aynı saatte başlayıp biten 24 saatlik nöbet için \"Bitiş ertesi gün\" kutusunu işaretleyin."}},
+  {"@type":"Question","name":"7,5 saat kaç saat kaç dakikadır?","acceptedAnswer":{"@type":"Answer","text":"7 saat 30 dakikadır. Ondalık kısım 60 ile çarpılır: 0,5 × 60 = 30 dakika. Tersi için dakikayı 60'a bölün: 135 dakika 2:15'tir ve 2,25 saat eder."}},
+  {"@type":"Question","name":"Saat toplama nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Dakikaları toplayın ve 60'ı aşan her 60 dakikayı bir saat olarak saatlere ekleyin. 1:45 + 2:30 + 0:50 işleminde dakikalar 125 eder, yani 2 saat 5 dakika; sonuç 5:05, ondalık olarak 5,0833 saattir."}},
+  {"@type":"Question","name":"Saate süre eklediğimde gün değişirse ne olur?","acceptedAnswer":{"@type":"Answer","text":"Araç yeni saatin yanında gün değişimini de yazar. 14:20 + 3:55 = 18:15 aynı gündür; 23:30 + 1:45 = 01:15 ise ertesi gündür (+1 gün). Geriye doğru hesapta önceki güne geçilirse −1 gün gösterilir."}},
+  {"@type":"Question","name":"Haftalık çalışma süresi kaç saattir, fazlası ne sayılır?","acceptedAnswer":{"@type":"Answer","text":"4857 sayılı İş Kanunu'na göre haftalık çalışma süresi en çok 45 saattir. Bunu aşan kısım fazla çalışmadır ve her saati %50 zamlı ödenir. Fazla mesai ücretinin ayrıntılı hesabı için Fazla Mesai Hesaplama aracını kullanabilirsiniz."}},
+  {"@type":"Question","name":"Mola çalışma süresinden düşülür mü?","acceptedAnswer":{"@type":"Answer","text":"Evet. İş Kanunu'na göre ara dinlenmeleri çalışma süresinden sayılmaz. 09:00 ile 18:00 arası 9 saattir; 60 dakika mola düşüldüğünde net çalışma 8 saattir. Beş gün böyle çalışan biri haftada 40 saat çalışmış olur."}},
+  {"@type":"Question","name":"Türkiye'de yaz saati var mı, hesabı etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Türkiye 2016'dan bu yana yıl boyu UTC+3 saatini kullanır ve saatler ileri ya da geri alınmaz. Bu yüzden gece vardiyası hesaplarında bir saatlik kayma oluşmaz. Başka ülkelerin saatleri için Saat Dilimi Çevirici aracını kullanın."}},
+  {"@type":"Question","name":"Girdiğim saatler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesaplar tarayıcınızda yapılır. Saatleriniz, süre listeleriniz ve açtığınız CSV dosyası hiçbir sunucuya gönderilmez, kaydedilmez ve çerezle izlenmez."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Saat Hesaplama</span> – İki Saat Arası Süre ve Çalışma Saati</h1>
+      <p class="lead">Başlangıç ve bitiş saatini girin; aradaki süreyi saat:dakika, ondalık saat, dakika ve saniye olarak görün. Gece yarısını geçen vardiyalar otomatik algılanır, mola düşülür. Saate süre ekleyin, süre listelerini toplayın, haftalık çalışma çizelgenizi çıkarın. Girdiğiniz saatler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Saat hesaplama aracı</h2>
+      <div class="sh-tabs" role="tablist" aria-label="Hesaplama türü">
+        <button type="button" role="tab" id="tab-fark" data-tab="fark" aria-selected="true" aria-controls="panel-fark">İki saat arası</button>
+        <button type="button" role="tab" id="tab-ekle" data-tab="ekle" aria-selected="false" aria-controls="panel-ekle" tabindex="-1">Saate ekle / çıkar</button>
+        <button type="button" role="tab" id="tab-topla" data-tab="topla" aria-selected="false" aria-controls="panel-topla" tabindex="-1">Süre toplama</button>
+        <button type="button" role="tab" id="tab-hafta" data-tab="hafta" aria-selected="false" aria-controls="panel-hafta" tabindex="-1">Haftalık çizelge</button>
+        <button type="button" role="tab" id="tab-cevir" data-tab="cevir" aria-selected="false" aria-controls="panel-cevir" tabindex="-1">Dönüştürücü</button>
+      </div>
+
+      <!-- Mod 1: iki saat arası -->
+      <div id="panel-fark" role="tabpanel" aria-labelledby="tab-fark">
+        <form id="f-fark" class="sh-form" novalidate>
+          <div class="sh-grid">
+            <div class="ba-field"><label for="fa-start">Başlangıç saati</label><input id="fa-start" type="text" autocomplete="off" spellcheck="false" placeholder="08:30"></div>
+            <div class="ba-field"><label for="fa-end">Bitiş saati</label><input id="fa-end" type="text" autocomplete="off" spellcheck="false" placeholder="17:15"></div>
+            <div class="ba-field"><label for="fa-break">Mola (dakika, isteğe bağlı)</label><input id="fa-break" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+          </div>
+          <p class="sh-hint">Saniye isteğe bağlıdır (08:30:15). 8.30, 0830 ve 12 saatlik 8:30 PM yazımları da okunur; günün sonu için 24:00 yazabilirsiniz. Bitiş başlangıçtan küçükse ertesi gün sayılır.</p>
+          <div class="sh-checks"><label><input type="checkbox" id="fa-next"> Bitiş ertesi gün (aynı saatte biten 24 saatlik nöbet gibi)</label></div>
+          <div class="ba-actions"><button id="fa-calc" class="ba-btn ba-btn-primary" type="submit">Süreyi hesapla</button><button id="fa-clear" class="ba-btn" type="button">Temizle</button></div>
+        </form>
+        <div id="fa-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Aradaki süre</h3>
+          <p class="sh-big" id="fa-big"></p>
+          <dl class="sh-results">
+            <div class="sh-row is-strong"><dt>Süre (SS:DD)</dt><dd id="fa-hm"></dd></div>
+            <div class="sh-row"><dt>Saat ve dakika</dt><dd id="fa-text"></dd></div>
+            <div class="sh-row"><dt>Ondalık saat</dt><dd id="fa-dec"></dd></div>
+            <div class="sh-row"><dt>Toplam dakika</dt><dd id="fa-min"></dd></div>
+            <div class="sh-row"><dt>Toplam saniye</dt><dd id="fa-sec"></dd></div>
+            <div class="sh-row" id="fa-gross-row" hidden><dt>Mola düşülmeden</dt><dd id="fa-gross"></dd></div>
+          </dl>
+          <p class="sh-note" id="fa-note"></p>
+        </div>
+        <p class="sh-tz">Türkiye yıl boyu UTC+3 saatini kullanır; yaz saati uygulaması olmadığı için hesapta saat kayması yoktur. Farklı ülkelerin saatleri için <a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a>.</p>
+      </div>
+
+      <!-- Mod 2: saate süre ekle/çıkar -->
+      <div id="panel-ekle" role="tabpanel" aria-labelledby="tab-ekle" hidden>
+        <form id="f-ekle" class="sh-form" novalidate>
+          <div class="sh-grid c2">
+            <div class="ba-field"><label for="ek-base">Saat</label><input id="ek-base" type="text" autocomplete="off" spellcheck="false" placeholder="14:20"></div>
+            <div class="ba-field"><label for="ek-dur">Süre</label><input id="ek-dur" type="text" autocomplete="off" spellcheck="false" placeholder="3:55"></div>
+          </div>
+          <fieldset><legend>İşlem</legend>
+            <div class="sh-checks"><label><input type="radio" name="ek-op" id="ek-add" value="add" checked> Ekle (+)</label><label><input type="radio" name="ek-op" id="ek-sub" value="sub"> Çıkar (−)</label></div>
+          </fieldset>
+          <p class="sh-hint">Süreyi 3:55, 90 dk, 2 sa 15 dk ya da ondalık saat olarak 1,5 yazabilirsiniz. 24 saati aşan süreler de girilebilir; gün değişimi ayrıca gösterilir.</p>
+          <div class="ba-actions"><button id="ek-calc" class="ba-btn ba-btn-primary" type="submit">Yeni saati hesapla</button><button id="ek-clear" class="ba-btn" type="button">Temizle</button></div>
+        </form>
+        <div id="ek-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Yeni saat</h3>
+          <dl class="sh-results">
+            <div class="sh-row is-strong"><dt>Saat</dt><dd id="ek-time"></dd></div>
+            <div class="sh-row"><dt>Gün</dt><dd id="ek-day"></dd></div>
+          </dl>
+          <p class="sh-note" id="ek-expr"></p>
+        </div>
+      </div>
+
+      <!-- Mod 3: süre toplama/çıkarma -->
+      <div id="panel-topla" role="tabpanel" aria-labelledby="tab-topla" hidden>
+        <form id="f-topla" class="sh-form" novalidate>
+          <div class="ba-field"><label for="to-list">Süre listesi (her satıra bir süre)</label>
+            <textarea id="to-list" rows="7" spellcheck="false" placeholder="1:45&#10;2:30&#10;0:50&#10;90 dk&#10;-0:15"></textarea>
+            <div class="hint">1:45, 01:45:00, 90 dk, 2 sa 15 dk ve 1,5 (saat) yazımları okunur. Başına eksi (−) koyduğunuz satır çıkarılır; aynı satıra 1:45 + 2:30 − 0:50 da yazılabilir. Excel'den sütun yapıştırabilirsiniz; boş satırlar, başlıklar ve tarihler atlanır. Ctrl+Enter ile hesaplar.</div>
+          </div>
+          <div class="ba-field"><label for="to-bare">Birimsiz sayılar (2 ya da 1,5 gibi)</label><select id="to-bare"><option value="h">saat sayılsın</option><option value="min">dakika sayılsın</option></select></div>
+          <div class="ba-actions"><button id="to-calc" class="ba-btn ba-btn-primary" type="submit">Süreleri topla</button><button id="to-open" class="ba-btn" type="button">CSV/TXT dosyası aç</button><button id="to-clear" class="ba-btn" type="button">Temizle</button></div>
+          <input id="to-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain" hidden>
+          <p class="sh-note" id="to-file-name" aria-live="polite"></p>
+        </form>
+        <div id="to-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Toplam süre</h3>
+          <dl class="sh-results">
+            <div class="sh-row is-strong"><dt>Toplam (SS:DD)</dt><dd id="to-hm"></dd></div>
+            <div class="sh-row"><dt>Saat ve dakika</dt><dd id="to-text"></dd></div>
+            <div class="sh-row"><dt>Ondalık saat</dt><dd id="to-dec"></dd></div>
+            <div class="sh-row"><dt>Toplam dakika</dt><dd id="to-min"></dd></div>
+            <div class="sh-row" id="to-days-row" hidden><dt>Gün cinsinden</dt><dd id="to-days"></dd></div>
+            <div class="sh-row"><dt>Okunan</dt><dd id="to-count"></dd></div>
+          </dl>
+          <p class="sh-note" id="to-expr"></p>
+          <p class="sh-warn" id="to-neg" hidden>Sonuç eksi: çıkarılan süreler eklenenlerden fazla.</p>
+        </div>
+      </div>
+
+      <!-- Mod 4: haftalık çalışma çizelgesi -->
+      <div id="panel-hafta" role="tabpanel" aria-labelledby="tab-hafta" hidden>
+        <form id="f-hafta" class="sh-form" novalidate>
+          <p class="sh-hint">Her gün için giriş ve çıkış saatini, varsa molayı dakika olarak yazın. Çalışılmayan günleri boş bırakın. Gece yarısını geçen vardiyalar otomatik ertesi güne taşınır.</p>
+          <div id="w-rows" class="sh-week"></div>
+          <div class="ba-field"><label for="w-rate">Saat ücreti (TL, isteğe bağlı)</label><input id="w-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 152,50"><div class="hint">Girerseniz normal saatlerin ve %50 zamlı fazla çalışmanın brüt tutarı hesaplanır.</div></div>
+          <div class="ba-actions"><button id="w-calc" class="ba-btn ba-btn-primary" type="submit">Haftayı hesapla</button><button id="w-copy" class="ba-btn" type="button">Pazartesiyi Salı–Cuma'ya kopyala</button><button id="w-clear" class="ba-btn" type="button">Temizle</button></div>
+        </form>
+        <div id="w-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Haftalık sonuç</h3>
+          <p class="sh-big" id="w-text"></p>
+          <dl class="sh-results">
+            <div class="sh-row is-strong"><dt>Haftalık toplam (SS:DD)</dt><dd id="w-total"></dd></div>
+            <div class="sh-row"><dt>Ondalık saat</dt><dd id="w-dec"></dd></div>
+            <div class="sh-row"><dt>Çalışılan gün</dt><dd id="w-days"></dd></div>
+            <div class="sh-row"><dt>Günlük ortalama</dt><dd id="w-avg"></dd></div>
+            <div class="sh-row"><dt>Yasal haftalık sınır</dt><dd id="w-limit"></dd></div>
+            <div class="sh-row"><dt>Normal çalışma</dt><dd id="w-normal"></dd></div>
+            <div class="sh-row"><dt>Fazla çalışma (sınırı aşan)</dt><dd id="w-over"></dd></div>
+          </dl>
+          <dl class="sh-results sh-pay" id="w-pay" hidden>
+            <div class="sh-row"><dt>Normal saatlerin tutarı</dt><dd id="w-pay-normal"></dd></div>
+            <div class="sh-row"><dt>Fazla çalışma tutarı (saat ücreti × <span id="w-pay-rate">1,5</span>)</dt><dd id="w-pay-over"></dd></div>
+            <div class="sh-row is-strong"><dt>Toplam brüt tutar</dt><dd id="w-pay-total"></dd></div>
+          </dl>
+          <p class="sh-warn" id="w-over-note" hidden><span id="w-over-text"></span> Ücretini ayrıntılı hesaplamak için <a href="../mesai-hesapla/">Fazla Mesai Hesaplama</a> aracını kullanın.</p>
+          <p class="sh-note" id="w-ok-note"></p>
+          <p class="sh-warn" id="w-long" hidden></p>
+          <p class="sh-note">Hesap yalnızca girdiğiniz haftaya göredir. Denkleştirme, fazla sürelerle çalışma (%25), hafta tatili ve bayram çalışması için <a href="../mesai-hesapla/">Fazla Mesai Hesaplama</a> aracına bakın. Bilgilendirme amaçlıdır, hukuki tavsiye değildir.</p>
+        </div>
+      </div>
+
+      <!-- Mod 5: dönüştürücü -->
+      <div id="panel-cevir" role="tabpanel" aria-labelledby="tab-cevir" hidden>
+        <form id="f-cevir" class="sh-form" novalidate>
+          <div class="sh-grid c2">
+            <div class="ba-field"><label for="cv-in">Değer</label><input id="cv-in" type="text" autocomplete="off" spellcheck="false" placeholder="örn. 7,5"></div>
+            <div class="ba-field"><label for="cv-unit">Girdiğiniz değerin birimi</label><select id="cv-unit"><option value="dec">Ondalık saat (7,5)</option><option value="hm">Saat:dakika (7:30)</option><option value="min">Dakika (450)</option><option value="sec">Saniye (27000)</option></select></div>
+          </div>
+          <p class="sh-hint">İki nokta üst üste içeren değerler (2:15) her zaman saat:dakika olarak okunur. Ondalık saat, dakika ve saniye birimlerinde nokta da ondalık ayırıcı sayılır (8.25 = 8,25 saat); "Saat:dakika" biriminde ise 7.30, 7 saat 30 dakika demektir. Sonuç siz yazarken güncellenir.</p>
+          <div class="ba-actions"><button id="cv-calc" class="ba-btn ba-btn-primary" type="submit">Dönüştür</button><button id="cv-clear" class="ba-btn" type="button">Temizle</button></div>
+        </form>
+        <div id="cv-result" class="ba-result" aria-live="polite" hidden>
+          <h3>Karşılıklar</h3>
+          <dl class="sh-results">
+            <div class="sh-row is-strong"><dt>Saat:dakika</dt><dd id="cv-hm"></dd></div>
+            <div class="sh-row"><dt>Saat ve dakika</dt><dd id="cv-text"></dd></div>
+            <div class="sh-row"><dt>Ondalık saat</dt><dd id="cv-dec"></dd></div>
+            <div class="sh-row"><dt>Dakika</dt><dd id="cv-min"></dd></div>
+            <div class="sh-row"><dt>Saniye</dt><dd id="cv-sec"></dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <p class="sh-params" id="params-line"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="saat-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>İki saat arası:</strong> Başlangıç ve bitiş saatini 08:30 biçiminde yazın, varsa molanızı dakika olarak girin ve "Süreyi hesapla" düğmesine basın. Bitiş saati başlangıçtan küçükse araç bunu gece yarısını geçen bir vardiya sayar ve bitişi ertesi güne taşır.</li>
+        <li><strong>Saate ekle / çıkar:</strong> Bir saat ve bir süre girin, ekleme ya da çıkarma seçin. Sonuçta yeni saati ve gün değişimini (+1 gün, −1 gün) birlikte görürsünüz.</li>
+        <li><strong>Süre toplama:</strong> Her satıra bir süre yazın ya da Excel ve Google E-Tablolar'dan bir sütunu kopyalayıp yapıştırın. Başına eksi işareti koyduğunuz satırlar toplamdan çıkarılır.</li>
+        <li><strong>Haftalık çizelge:</strong> Pazartesiden pazara giriş, çıkış ve mola sürelerini yazın. Günlük ve haftalık toplamı, 45 saati aşan kısmı ve isterseniz saat ücretinize göre brüt tutarı görün.</li>
+        <li><strong>Dönüştürücü:</strong> Ondalık saati saat:dakikaya, dakikayı ya da saniyeyi saate çevirin; 7,5 saatin 7:30 ettiğini tek bakışta görün.</li>
+      </ol>
+
+      <h2>İki saat arası süre nasıl hesaplanır?</h2>
+      <p>Saat hesabını zorlaştıran şey, saatlerin onluk değil altmışlık düzende ilerlemesidir. 17:15'ten 08:30'u çıkarırken rakamları düz sayı gibi kullanıp 1715 − 830 = 885 işlemini yapmak yanlış sonuç verir. Doğru yol, iki saati de gece yarısından itibaren geçen dakikaya çevirmektir: 08:30, 8 × 60 + 30 = 510 dakikadır; 17:15 ise 17 × 60 + 15 = 1035 dakikadır. Aradaki fark 525 dakikadır. Bu da 8 saat 45 dakika, ondalık olarak 8,75 saat eder. Araç aynı işlemi saniye hassasiyetinde yapar ve sonucu saat:dakika, saat ve dakika, ondalık saat, toplam dakika ve toplam saniye olarak gösterir.</p>
+      <p>Gece vardiyalarında bitiş saati başlangıçtan sayıca küçük görünür. Örneğin 22:00'de başlayıp 06:30'da biten bir nöbette 06:30 sayısı 22:00'den küçüktür. Araç bu durumda bitişi ertesi güne taşır, hesaba 24 saat ekler ve süreyi 8 saat 30 dakika olarak bulur. Başlangıçla bitişin aynı saat olduğu 24 saatlik nöbetlerde "Bitiş ertesi gün" kutusunu işaretlemeniz yeterlidir; 08:00'den ertesi gün 08:00'e kadar 24 saat hesaplanır.</p>
+      <p>Mola düşmek için mola süresini dakika olarak yazın. 09:00 ile 18:00 arası 9 saattir; 60 dakikalık öğle arası düşüldüğünde net çalışma 8:00 saat olur. Mola alanına 45 ya da 1:00 gibi değerler yazabilirsiniz; birimsiz sayılar dakika kabul edilir. Sonuç kutusunda molanın düşülmediği brüt süre de ayrı satırda gösterilir.</p>
+
+      <h2>Ondalık saat ile saat:dakika arasındaki fark</h2>
+      <p>Puantaj tablolarında, serbest çalışan faturalarında ve proje raporlarında süreler çoğu zaman ondalık saatle yazılır. En sık yapılan hata 7,30 ile 7:30'u aynı sanmaktır. 7:30, yedi saat otuz dakikadır ve ondalık karşılığı 7,5 saattir. 7,30 saat ise yedi saat on sekiz dakikaya karşılık gelir; çünkü 0,30 × 60 = 18 dakikadır. Saatlik ücret hesabında bu fark ilk bakışta küçük görünse de bir ay boyunca biriktiğinde ciddi tutarlara ulaşır. Dakikayı ondalık saate çevirmek için 60'a bölün, ondalık saati dakikaya çevirmek için ondalık kısmı 60 ile çarpın.</p>
+      <table>
+        <thead><tr><th scope="col">Dakika</th><th scope="col">Ondalık saat</th><th scope="col">Dakika</th><th scope="col">Ondalık saat</th></tr></thead>
+        <tbody>
+          <tr><td>5 dk</td><td>0,0833</td><td>30 dk</td><td>0,5</td></tr>
+          <tr><td>10 dk</td><td>0,1667</td><td>40 dk</td><td>0,6667</td></tr>
+          <tr><td>15 dk</td><td>0,25</td><td>45 dk</td><td>0,75</td></tr>
+          <tr><td>20 dk</td><td>0,3333</td><td>50 dk</td><td>0,8333</td></tr>
+        </tbody>
+      </table>
+      <p>Bu tabloya göre 8 saat 45 dakika 8,75 saat, 2 saat 15 dakika (135 dakika) ise 2,25 saattir. Dönüştürücü sekmesi bu çevirileri dört yönlü yapar: ondalık saat, saat:dakika, toplam dakika ve toplam saniye. Siz yazarken sonuç güncellenir; dönüştürülecek değerin birimini seçmeniz yeterlidir.</p>
+
+      <h2>Süre toplama ve çıkarma</h2>
+      <p>Birden çok süreyi toplarken dakikalar 60'ı geçtiğinde bir saate devredilir. 1:45 + 2:30 + 0:50 işleminde dakikalar 45 + 30 + 50 = 125 eder; bu 2 saat 5 dakikadır. Saatler 1 + 2 + 0 = 3'tür; devreden 2 saatle birlikte toplam 5:05 olur. Ondalık karşılığı 5,0833 saattir. Süre toplama sekmesi listedeki her satırı ayrı okur, boş satırları atlar ve toplam 99 saati, hatta binlerce saati aşsa bile sonucu saat:dakika olarak gösterir; sonuç 24 saatte bir sıfırlanmaz. Toplam 24 saati geçtiğinde gün cinsinden karşılığı da yazılır.</p>
+      <p>Liste girerken farklı yazımları bir arada kullanabilirsiniz: 1:45, 01:45:00, 90 dk, 2 sa 15 dk, 1,5 saat ve 45 sn aynı listede bulunabilir. Bir satırın başına eksi işareti koyarsanız o süre toplamdan çıkarılır; aynı satıra 1:45 + 2:30 − 0:50 gibi bir ifade de yazabilirsiniz. Çıkarılan süreler eklenenlerden fazlaysa sonuç eksi işaretiyle gösterilir. Excel ya da Google E-Tablolar'dan bir sütunu kopyalayıp yapıştırabilir veya bir CSV dosyası açabilirsiniz; sekme, noktalı virgül ve virgülle ayrılmış hücreler ayrı ayrı okunur. Sayı içermeyen başlık hücreleri ve tarih hücreleri atlanır, atlanan hücre sayısı sonuçta yazılır. Dosya bilgisayarınızda okunur, hiçbir yere gönderilmez.</p>
+      <p>Saate süre eklerken gün değişimine dikkat etmek gerekir. 14:20'ye 3 saat 55 dakika eklendiğinde saat 18:15 olur ve gün değişmez. 23:30'a 1 saat 45 dakika eklendiğinde ise saat 01:15'i gösterir ama artık ertesi gündür; araç bunu "+1 gün" olarak belirtir. Geriye doğru hesapta, örneğin 00:30'dan 1 saat çıkarıldığında, sonuç önceki günün 23:30'udur ve "−1 gün" yazılır. Uçuş, otobüs ya da kargo varış saatini tahmin ederken bu bilgi işinize yarar.</p>
+
+      <div class="ba-ad" data-slot="saat-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Haftalık çalışma saati ve fazla çalışma</h2>
+      <p>4857 sayılı İş Kanunu'nun 63. maddesine göre genel bakımdan çalışma süresi haftada en çok 45 saattir. Aksi kararlaştırılmamışsa bu süre haftanın çalışılan günlerine eşit bölünür; beş gün çalışılan bir işyerinde günlük süre 9 saat, altı gün çalışılan işyerinde 7,5 saattir. Haftalık çizelge sekmesinde her gün için giriş, çıkış ve mola sürelerini yazdığınızda araç günlük net süreyi ve haftalık toplamı hesaplar. Örneğin pazartesiden cumaya 09:00–18:00 arasında çalışıp her gün bir saat mola veren biri haftada 5 × 8 = 40 saat çalışmış olur. Pazartesi satırını doldurup "Pazartesiyi Salı–Cuma'ya kopyala" düğmesine basarak beş günü tek seferde girebilirsiniz.</p>
+      <p>Kanunun 41. maddesi haftalık 45 saati aşan çalışmayı fazla çalışma sayar ve her saatinin normal saat ücretinin %50 fazlasıyla ödenmesini öngörür. Araç haftalık toplamı 45 saatle karşılaştırır ve aşan kısmı ayrı satırda gösterir. Saat ücretinizi girerseniz normal saatlerin ve fazla çalışmanın brüt tutarını ayrı ayrı hesaplar. Sözleşmenizde haftalık süre 45 saatten azsa, sözleşme süresiyle 45 saat arasındaki çalışma "fazla sürelerle çalışma" sayılır ve %25 zamla ödenir. Bu durumu, hafta tatili ve bayram çalışmalarını <a href="../mesai-hesapla/">Fazla Mesai Hesaplama</a> aracında ayrıntılı hesaplayabilirsiniz; net ücret için <a href="../brut-net-maas/">Brüt Net Maaş Hesaplama</a> aracına bakın.</p>
+      <p>Denkleştirme uygulanan işyerlerinde haftalık süre, günde 11 saati aşmamak koşuluyla haftanın günlerine farklı dağıtılabilir; bu durumda belirli bir dönemin haftalık ortalaması esas alınır. Araç yalnızca girdiğiniz haftayı değerlendirir ve günlük net süresi 11 saati aşan günleri ayrıca uyarı olarak gösterir. Gece çalışmalarında ise kural olarak işçilerin günlük çalışması 7,5 saati geçemez. Bu bilgiler genel çerçevedir; iş sözleşmeniz, toplu iş sözleşmesi ve güncel mevzuat esastır.</p>
+
+      <h2>Mola süresi kaç dakika olmalı?</h2>
+      <p>İş Kanunu'nun 68. maddesine göre ara dinlenmesi, günlük çalışma süresinin ortasına yakın bir zamanda verilir ve süresi işin uzunluğuna bağlıdır: dört saat veya daha kısa süreli işlerde 15 dakika, dört saatten fazla ve yedi buçuk saate kadar süreli işlerde yarım saat, yedi buçuk saatten fazla süreli işlerde bir saat. Ara dinlenmeleri çalışma süresinden sayılmaz; bu yüzden çizelgede molayı düşmek doğru net süreyi verir. Molayı gün içinde parça parça kullanıyorsanız toplamını tek alana yazmanız yeterlidir: 30 + 15 + 15 dakikalık molalar için 60 yazın.</p>
+
+      <h2>Özel durumlar: 24:00, gece yarısı, AM/PM ve yaz saati</h2>
+      <ul>
+        <li><strong>24:00:</strong> Günün sonunu belirtmek için 24:00 yazabilirsiniz. 16:00–24:00 vardiyası 8 saattir. 24:00 ile 00:00 aynı anı gösterir; fark, birinin günün sonu, diğerinin sonraki günün başı olmasıdır.</li>
+        <li><strong>23:59'dan 00:00'a:</strong> Gece yarısını geçen her aralık ertesi güne taşınır; 23:59 ile 00:00 arası 1 dakikadır.</li>
+        <li><strong>12 saatlik yazım:</strong> 8:30 PM, 8:30 pm ya da Türkçe kısaltmayla 8:30 ÖS yazımları 20:30 olarak, 12:00 AM ise 00:00 olarak okunur. AM/PM ile 13 gibi bir saat yazılırsa araç hatayı açıklar.</li>
+        <li><strong>Ondalık virgül:</strong> Süre ve ücret alanlarında Türkçe yazımla virgül kullanın: 7,5 saat, 152,50 TL. Saat alanında 8.30 yazmak 08:30 anlamına gelir.</li>
+        <li><strong>Yaz saati yok:</strong> Türkiye 2016'dan bu yana yıl boyu UTC+3 saatini kullanır; ilkbahar ve sonbaharda saat ileri ya da geri alınmaz. Bu nedenle araç gece vardiyalarında bir saatlik kayma uygulamaz. Yurt dışındaki bir saatle karşılaştırma yapacaksanız <a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a> aracını kullanın.</li>
+      </ul>
+
+      <h2>Kimler kullanır?</h2>
+      <p>Puantaj tutan insan kaynakları çalışanları, vardiyalı çalışan sağlık ve güvenlik personeli, saatlik ücret alan serbest çalışanlar, ders saatlerini toplayan öğretmenler, projeye harcanan süreyi raporlayan yazılımcılar ve otopark ya da kiralama süresi hesaplayan esnaf bu aracın tipik kullanıcılarıdır. Spor antrenmanı, uyku süresi ya da yolculuk süresi gibi günlük hesaplarda da aynı mantık geçerlidir. Tarihler arasında gün saymanız gerekiyorsa <a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a> aracı, vardiya listesi hazırlıyorsanız <a href="../vardiya-cizelgesi/">Vardiya Çizelgesi Oluştur</a> aracı daha uygundur.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Beş hesap tek sayfada.</strong> İki saat arası süre, saate süre ekleme, süre toplama, haftalık çizelge ve dönüştürücü ayrı sekmelerde.</li>
+        <li><strong>Veri gönderilmez.</strong> Saatleriniz, ücretiniz ve açtığınız CSV dosyası hiçbir sunucuya iletilmez.</li>
+        <li><strong>Gece vardiyası otomatik.</strong> Gece yarısını geçen aralıkları kendiliğinden algılar, gün değişimini açıkça yazar.</li>
+        <li><strong>Esnek yazım.</strong> 08:30, 8.30, 0830, 8:30 PM, 90 dk, 2 sa 15 dk ve ondalık virgül kabul edilir; hatalı girişte ne yapmanız gerektiği Türkçe anlatılır.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişlikte rahat kullanılır; sekmeler ok tuşlarıyla, formlar Enter ile çalışır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Gizlilik notu</h2>
+      <p>Çalışma saatleriniz ve ücretiniz kişisel bilgilerdir. Bu sayfadaki tüm hesaplar tarayıcınızın belleğinde yapılır; girdiğiniz saatler, süre listeleri ve açtığınız CSV dosyası hiçbir sunucuya gönderilmez, kaydedilmez ve çerezle izlenmez. Sayfayı kapattığınızda veriler silinir. Ortak bir bilgisayar kullanıyorsanız işiniz bitince "Temizle" düğmeleriyle alanları boşaltabilirsiniz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>İki saat arası kaç saat, nasıl hesaplanır?</summary><p>İki saati de dakikaya çevirip büyükten küçüğü çıkarın. 08:30 ile 17:15 arası 1035 − 510 = 525 dakikadır; bu 8 saat 45 dakika, ondalık olarak 8,75 saat eder. Araç bu işlemi saniye hassasiyetinde otomatik yapar.</p></details>
+        <details><summary>Gece yarısını geçen vardiya nasıl hesaplanır?</summary><p>Bitiş saati başlangıçtan küçükse bitiş ertesi gün sayılır ve 24 saat eklenir. 22:00 ile 06:30 arası 8 saat 30 dakikadır. Araç bunu kendiliğinden algılar; aynı saatte başlayıp biten 24 saatlik nöbet için "Bitiş ertesi gün" kutusunu işaretleyin.</p></details>
+        <details><summary>7,5 saat kaç saat kaç dakikadır?</summary><p>7 saat 30 dakikadır. Ondalık kısım 60 ile çarpılır: 0,5 × 60 = 30 dakika. Tersi için dakikayı 60'a bölün: 135 dakika 2:15'tir ve 2,25 saat eder.</p></details>
+        <details><summary>Saat toplama nasıl yapılır?</summary><p>Dakikaları toplayın ve 60'ı aşan her 60 dakikayı bir saat olarak saatlere ekleyin. 1:45 + 2:30 + 0:50 işleminde dakikalar 125 eder, yani 2 saat 5 dakika; sonuç 5:05, ondalık olarak 5,0833 saattir.</p></details>
+        <details><summary>Saate süre eklediğimde gün değişirse ne olur?</summary><p>Araç yeni saatin yanında gün değişimini de yazar. 14:20 + 3:55 = 18:15 aynı gündür; 23:30 + 1:45 = 01:15 ise ertesi gündür (+1 gün). Geriye doğru hesapta önceki güne geçilirse −1 gün gösterilir.</p></details>
+        <details><summary>Haftalık çalışma süresi kaç saattir, fazlası ne sayılır?</summary><p>4857 sayılı İş Kanunu'na göre haftalık çalışma süresi en çok 45 saattir. Bunu aşan kısım fazla çalışmadır ve her saati %50 zamlı ödenir. Fazla mesai ücretinin ayrıntılı hesabı için <a href="../mesai-hesapla/">Fazla Mesai Hesaplama</a> aracını kullanabilirsiniz.</p></details>
+        <details><summary>Mola çalışma süresinden düşülür mü?</summary><p>Evet. İş Kanunu'na göre ara dinlenmeleri çalışma süresinden sayılmaz. 09:00 ile 18:00 arası 9 saattir; 60 dakika mola düşüldüğünde net çalışma 8 saattir. Beş gün böyle çalışan biri haftada 40 saat çalışmış olur.</p></details>
+        <details><summary>Türkiye'de yaz saati var mı, hesabı etkiler mi?</summary><p>Hayır. Türkiye 2016'dan bu yana yıl boyu UTC+3 saatini kullanır ve saatler ileri ya da geri alınmaz. Bu yüzden gece vardiyası hesaplarında bir saatlik kayma oluşmaz. Başka ülkelerin saatleri için <a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a> aracını kullanın.</p></details>
+        <details><summary>Girdiğim saatler bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesaplar tarayıcınızda yapılır. Saatleriniz, süre listeleriniz ve açtığınız CSV dosyası hiçbir sunucuya gönderilmez, kaydedilmez ve çerezle izlenmez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Haftalık çalışma süresi ve fazla çalışma bilgileri 4857 sayılı İş Kanunu'nun genel kurallarına dayanır. Bu araç bilgilendirme amaçlıdır, hukuki veya mali tavsiye değildir; iş sözleşmeniz, toplu iş sözleşmesi ve güncel mevzuat esastır.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../mesai-hesapla/">Fazla Mesai Hesaplama</a></li>
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a></li>
+        <li><a href="../vardiya-cizelgesi/">Vardiya Çizelgesi Oluştur</a></li>
+        <li><a href="../kronometre/">Online Kronometre</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel puantaj, vardiya ya da hesaplama aracı gerekiyorsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="saat-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

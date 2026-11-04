@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kan Grubu Hesaplama – Anne ve Babaya Göre Bebeğin Kan Grubu ve Rh Olasılığı</title>
+  <meta name="description" content="Anne ve babanın kan grubunu seçin; bebeğin A, B, AB, 0 ve Rh+/Rh− olasılıklarını Punnett karesiyle yüzde olarak görün. Kan uyumu tablosu da var. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kan-grubu-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/kan-grubu-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/kan-grubu-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-note { font-size: .88rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; overflow-wrap: anywhere; }
+    .age-big { font-size: 1.25rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); }
+    .kg-set { border: 0; margin: 0 0 12px; padding: 0; min-width: 0; }
+    .kg-set > legend { font-weight: 600; margin-bottom: 6px; padding: 0; }
+    .kg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+    .kg-opts label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); cursor: pointer; font-weight: 500; }
+    .kg-opts label:has(input:checked) { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .kg-opts input { width: 20px; height: 20px; margin: 0; accent-color: var(--ba-primary); }
+    .kg-opts input:focus-visible, .kg-check input:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    .kg-opts.kg-col { flex-direction: column; align-items: stretch; }
+    .kg-opts.kg-col label { padding: 8px 12px; }
+    .kg-parents { display: grid; gap: 14px; margin-bottom: 14px; }
+    @media (min-width: 720px) { .kg-parents { grid-template-columns: 1fr 1fr; } }
+    .kg-parent { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 10px 14px 12px; margin: 0; min-width: 0; }
+    .kg-parent > legend { font-weight: 700; font-size: 1.05rem; padding: 0 6px; }
+    .kg-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; font-weight: 500; }
+    .kg-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kg-res p { margin: 8px 0 0; }
+    .kg-h { font-size: 1rem; margin: 14px 0 6px; }
+    .kg-combos { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 6px; }
+    .kg-combos li { display: grid; grid-template-columns: 4.8em minmax(0, 1fr) 4em; gap: 8px; align-items: center; margin: 0; }
+    .kg-combos li.is-zero { color: var(--ba-text-muted); }
+    .kg-name { font-weight: 600; }
+    .kg-bar { height: 12px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: 6px; overflow: hidden; }
+    .kg-bar i { display: block; height: 100%; background: var(--ba-primary); }
+    .kg-pct { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .kg-pn-wrap { display: grid; gap: 14px; margin: 14px 0 4px; }
+    @media (min-width: 720px) { .kg-pn-wrap { grid-template-columns: 1fr 1fr; } }
+    table.kg-pn { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .9rem; background: var(--ba-surface); color: var(--ba-text); }
+    .kg-pn caption { text-align: left; font-weight: 600; margin-bottom: 6px; color: var(--ba-text); }
+    .kg-pn th, .kg-pn td { border: 1px solid var(--ba-border); padding: 6px 4px; text-align: center; vertical-align: middle; overflow-wrap: anywhere; }
+    .kg-pn th { background: var(--ba-surface-2); font-size: 1rem; }
+    .kg-pn small { display: block; font-family: var(--ba-font); font-weight: 400; color: var(--ba-text-muted); font-size: .78rem; }
+    .kg-pn td strong { display: block; font-size: 1.05rem; letter-spacing: .04em; }
+    .kg-pn td span { display: block; font-size: .82rem; }
+    .kg-pn th.kg-pn-corner { font-family: var(--ba-font); font-size: .72rem; font-weight: 500; }
+    .kg-explain p { color: var(--ba-text-2); }
+    .kg-warn { border: 1px solid var(--ba-danger); border-left-width: 4px; background: var(--ba-danger-soft); color: var(--ba-text); padding: 12px 14px; border-radius: var(--ba-radius-sm); margin: 12px 0 0; }
+    .kg-warn p { color: var(--ba-text); }
+    .kg-dl { margin: 0; display: grid; gap: 2px; }
+    .kg-dl > div { padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kg-dl > div:last-child { border-bottom: 0; }
+    .kg-dl dt { color: var(--ba-text-2); font-size: .9rem; font-weight: 600; }
+    .kg-dl dd { margin: 2px 0 0; color: var(--ba-text); overflow-wrap: anywhere; }
+    .ba-hero .kg-alert { font-weight: 600; color: #fff; max-width: 680px; margin: 0 0 1.2em; }
+    table.kg-table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: .95rem; }
+    .kg-table caption { text-align: left; font-weight: 600; margin-bottom: 6px; }
+    .kg-table th, .kg-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .kg-table thead th { background: var(--ba-surface-2); }
+    .ba-content a { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kan Grubu Hesaplama – Bilişim Ajans","applicationCategory":"HealthApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kan-grubu-hesapla/","description":"Anne ve babanın ABO ve Rh kan grubuna göre bebeğin olası kan grubunu Punnett karesiyle yüzde olarak hesaplayan ve kan uyumu tablosu sunan ücretsiz araç. Bilgilendirme amaçlıdır, tıbbi tavsiye değildir."}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Anne ve babanın kan grubundan bebeğin kan grubu kesin olarak bilinir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Anne ve babanın kan grubu yalnızca olasılıkları verir. Ebeveynlerin genotipi çoğu zaman bilinmediği için birden fazla grup mümkün olur. Bebeğin kesin kan grubu ancak laboratuvar testiyle belirlenir."}},
+  {"@type":"Question","name":"İki A grubu ebeveynin çocuğu 0 grubu olabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Anne ve babanın ikisi de A0 genotipindeyse her biri çocuğa yüzde 50 olasılıkla 0 alelini aktarır; çocuğun 00, yani 0 grubu olma olasılığı yüzde 25'tir. Ebeveynlerden biri AA ise çocuk 0 grubu olamaz."}},
+  {"@type":"Question","name":"Anne 0, baba AB grubuysa bebek hangi grupta olur?","acceptedAnswer":{"@type":"Answer","text":"Klasik Mendel kalıtımına göre bebek yüzde 50 A, yüzde 50 B grubu olur; AB ve 0 beklenmez. Çok nadir görülen cis-AB durumunda bu kural bozulabilir; şüpheli bir sonuçta testin tekrarı ve hekim değerlendirmesi gerekir."}},
+  {"@type":"Question","name":"Rh uyuşmazlığı nedir, ne zaman önemlidir?","acceptedAnswer":{"@type":"Answer","text":"Anne Rh negatif, bebek Rh pozitif olduğunda annenin bağışıklık sistemi bebeğin kan hücrelerine karşı antikor geliştirebilir. Bu durum özellikle sonraki gebelikler için önemlidir. Anne Rh negatif, baba Rh pozitif ise anti-D uygulaması gerekip gerekmediğini gebelik takibinizi yapan hekime danışın."}},
+  {"@type":"Question","name":"Genotip nedir, kendi genotipimi nasıl öğrenebilirim?","acceptedAnswer":{"@type":"Answer","text":"Rutin kan grubu testi yalnızca fenotipi, yani A, B, AB, 0 ve Rh+ ya da Rh− sonucunu gösterir. Genotip ise iki aleli birlikte ifade eder; örneğin A grubu biri AA veya A0 olabilir. Aile bilgisi ipucu verebilir: anne veya babası 0 grubu olan A grubu bir kişi kesinlikle A0'dır. Kesin genotip için genetik test gerekir."}},
+  {"@type":"Question","name":"Türkiye dağılımı ve eşit ağırlık seçenekleri ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Genotip bilinmediğinde araç, örneğin A grubu bir kişinin A0 olma olasılığını tahmin etmek zorundadır. Türkiye dağılımı seçeneği Türk Kızılay'ın 2025 bağışçı verisinden Hardy-Weinberg yöntemiyle alel sıklıklarını türetir; bu durumda A grubunda A0 olasılığı yaklaşık yüzde 80'dir. Eşit ağırlık seçeneği ise homozigot ve heterozigot olasılığını yüzde 50 kabul eder."}},
+  {"@type":"Question","name":"Bu araç babalık tespiti için kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kan grubu kalıtımında nadir istisnalar, laboratuvar hataları ve alt gruplar bulunduğundan bu hesap kimsenin ebeveynliğini kanıtlamaz ya da çürütmez. Babalık ya da annelik ancak akredite bir laboratuvarda yapılan DNA testiyle ve gerektiğinde mahkeme süreciyle belirlenir."}},
+  {"@type":"Question","name":"0 Rh negatif neden genel verici, AB Rh pozitif neden genel alıcı sayılır?","acceptedAnswer":{"@type":"Answer","text":"0 Rh negatif eritrositlerin yüzeyinde A, B ve D antijeni bulunmadığı için acil durumlarda tüm gruplara verilebilir. AB Rh pozitif kişinin plazmasında anti-A ve anti-B bulunmadığından tüm grupların eritrositini alabilir. Plazmada durum tersine döner: AB plazma tüm gruplara verilebilir. Gerçek nakilde yine de aynı grup tercih edilir ve uygunluk testleri yapılır."}},
+  {"@type":"Question","name":"Seçtiğim kan grupları bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır. Seçimleriniz hiçbir sunucuya iletilmez, kaydedilmez ve çerez ya da analiz koduyla izlenmez."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Kan Grubu Hesaplama</span> – Anne ve Babaya Göre Bebeğin Kan Grubu</h1>
+      <p class="lead">Anne ve babanın kan grubunu (0, A, B, AB) ve Rh faktörünü seçin; bebeğin 8 olası kan grubunun yüzdelerini, Punnett karesini ve Rh uyuşmazlığı bilgisini görün. Kim kime kan verebilir sorusu için kan uyumu tablosu da burada. Seçimleriniz cihazınızdan çıkmaz.</p>
+      <p class="kg-alert" role="note">Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın. Babalık tespiti için kullanılamaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Kan grubu hesaplama aracı</h2>
+      <fieldset class="kg-set">
+        <legend>Ne hesaplamak istiyorsunuz?</legend>
+        <div class="kg-opts">
+          <label><input type="radio" name="mode" value="baby" checked> Bebeğin kan grubu</label>
+          <label><input type="radio" name="mode" value="compat"> Kan uyumu tablosu</label>
+        </div>
+      </fieldset>
+
+      <div id="panel-baby">
+        <form id="form-baby" class="kdv-form" novalidate>
+          <div class="kg-parents">
+            <fieldset class="kg-parent">
+              <legend>Anne</legend>
+              <fieldset class="kg-set">
+                <legend>ABO kan grubu</legend>
+                <div class="kg-opts">
+                  <label><input type="radio" name="m-abo" value="0"> 0</label>
+                  <label><input type="radio" name="m-abo" value="A"> A</label>
+                  <label><input type="radio" name="m-abo" value="B"> B</label>
+                  <label><input type="radio" name="m-abo" value="AB"> AB</label>
+                </div>
+              </fieldset>
+              <fieldset class="kg-set">
+                <legend>Rh faktörü</legend>
+                <div class="kg-opts">
+                  <label><input type="radio" name="m-rh" value="+"> Rh+ (pozitif)</label>
+                  <label><input type="radio" name="m-rh" value="-"> Rh− (negatif)</label>
+                </div>
+              </fieldset>
+              <label class="kg-check"><input type="checkbox" id="m-know"> Genotipi biliyorum</label>
+              <div id="m-gt" class="kdv-grid" hidden>
+                <div class="ba-field"><label for="m-gt-abo">ABO genotipi</label><select id="m-gt-abo"></select></div>
+                <div class="ba-field"><label for="m-gt-rh">Rh genotipi</label><select id="m-gt-rh"></select></div>
+              </div>
+            </fieldset>
+
+            <fieldset class="kg-parent">
+              <legend>Baba</legend>
+              <fieldset class="kg-set">
+                <legend>ABO kan grubu</legend>
+                <div class="kg-opts">
+                  <label><input type="radio" name="f-abo" value="0"> 0</label>
+                  <label><input type="radio" name="f-abo" value="A"> A</label>
+                  <label><input type="radio" name="f-abo" value="B"> B</label>
+                  <label><input type="radio" name="f-abo" value="AB"> AB</label>
+                </div>
+              </fieldset>
+              <fieldset class="kg-set">
+                <legend>Rh faktörü</legend>
+                <div class="kg-opts">
+                  <label><input type="radio" name="f-rh" value="+"> Rh+ (pozitif)</label>
+                  <label><input type="radio" name="f-rh" value="-"> Rh− (negatif)</label>
+                </div>
+              </fieldset>
+              <label class="kg-check"><input type="checkbox" id="f-know"> Genotipi biliyorum</label>
+              <div id="f-gt" class="kdv-grid" hidden>
+                <div class="ba-field"><label for="f-gt-abo">ABO genotipi</label><select id="f-gt-abo"></select></div>
+                <div class="ba-field"><label for="f-gt-rh">Rh genotipi</label><select id="f-gt-rh"></select></div>
+              </div>
+            </fieldset>
+          </div>
+
+          <fieldset class="kg-set">
+            <legend>Genotip bilinmediğinde ağırlık</legend>
+            <div class="kg-opts kg-col">
+              <label><input type="radio" name="weight" value="turkiye" checked> Türkiye dağılımı (Türk Kızılay 2025 bağışçı verisi, Hardy-Weinberg)</label>
+              <label><input type="radio" name="weight" value="esit"> Eşit ağırlık (%50 homozigot, %50 heterozigot)</label>
+            </div>
+            <p id="w-info" class="kdv-note"></p>
+            <p id="approx-warn" class="kg-warn" hidden>Türkiye dağılımı resmî kaynakla doğrulanamadı; bu seçenekteki değerler yaklaşıktır. Emin olmak için "Eşit ağırlık" seçeneğini kullanın.</p>
+          </fieldset>
+
+          <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Bebeğin kan grubunu hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+        </form>
+      </div>
+
+      <div id="panel-compat" hidden>
+        <form id="form-compat" class="kdv-form" novalidate>
+          <fieldset class="kg-set">
+            <legend>Kan grubunuz</legend>
+            <div class="kg-opts">
+              <label><input type="radio" name="cg" value="A+"> A Rh+</label>
+              <label><input type="radio" name="cg" value="A-"> A Rh−</label>
+              <label><input type="radio" name="cg" value="B+"> B Rh+</label>
+              <label><input type="radio" name="cg" value="B-"> B Rh−</label>
+              <label><input type="radio" name="cg" value="AB+"> AB Rh+</label>
+              <label><input type="radio" name="cg" value="AB-"> AB Rh−</label>
+              <label><input type="radio" name="cg" value="0+"> 0 Rh+</label>
+              <label><input type="radio" name="cg" value="0-"> 0 Rh−</label>
+            </div>
+          </fieldset>
+          <div class="ba-actions"><button id="compat-btn" class="ba-btn ba-btn-primary" type="submit">Uyumu göster</button></div>
+        </form>
+      </div>
+
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="ba-result kg-res" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p id="r-best" class="age-big"></p>
+        <h4 class="kg-h">8 kombinasyonun olasılığı</h4>
+        <ul id="combo-list" class="kg-combos"></ul>
+        <p id="sum-line" class="kdv-note"></p>
+        <div class="kdv-grid">
+          <div>
+            <h4 class="kg-h">ABO grubu</h4>
+            <dl class="kdv-results">
+              <div class="kdv-row"><dt>A</dt><dd id="abo-A"></dd></div>
+              <div class="kdv-row"><dt>B</dt><dd id="abo-B"></dd></div>
+              <div class="kdv-row"><dt>AB</dt><dd id="abo-AB"></dd></div>
+              <div class="kdv-row"><dt>0</dt><dd id="abo-0"></dd></div>
+            </dl>
+          </div>
+          <div>
+            <h4 class="kg-h">Rh faktörü</h4>
+            <dl class="kdv-results">
+              <div class="kdv-row"><dt>Rh+</dt><dd id="rh-pos"></dd></div>
+              <div class="kdv-row"><dt>Rh−</dt><dd id="rh-neg"></dd></div>
+            </dl>
+          </div>
+        </div>
+        <p><strong>Mümkün gruplar:</strong> <span id="possible"></span></p>
+        <p><strong>İmkânsız gruplar:</strong> <span id="impossible"></span></p>
+        <h4 class="kg-h">Punnett karesi</h4>
+        <div class="kg-pn-wrap"><div id="pn-abo"></div><div id="pn-rh"></div></div>
+        <h4 class="kg-h">Açıklama</h4>
+        <div id="explain" class="kg-explain"></div>
+        <div id="rh-warn" class="kg-warn" role="note" hidden>
+          <p><strong>Rh uyuşmazlığı bilgisi:</strong> Anne Rh−, baba Rh+ olduğu için bebeğin Rh+ olma olasılığı <span id="rh-baby"></span>. Rh− bir annenin Rh+ bebek taşıması durumunda annede bebeğin kan hücrelerine karşı antikor gelişebilir; bu özellikle sonraki gebelikler için önemlidir. Anti-D immünglobulin uygulaması gerekip gerekmediğini ve zamanlamasını gebelik takibinizi yapan hekiminize danışın.</p>
+        </div>
+        <p id="impossible-note" class="kdv-note" hidden>Bebekte "imkânsız" görünen bir grup ölçüldüyse bu tek başına bir şey kanıtlamaz: testin tekrarı, laboratuvar değerlendirmesi ve aşağıdaki nadir istisnalar göz önüne alınmalıdır.</p>
+        <p class="kdv-note"><strong>Nadir istisnalar:</strong> Bombay fenotipi (hh) olan kişiler testte 0 grubu görünür ama çocuğa A veya B geni aktarabilir; cis-AB taşıyan bir AB ebeveynden AB veya 0 grubu çocuk olabilir. Zayıf alt gruplar (A2, Ax gibi), zayıf veya kısmi D, kimerizm ve kemik iliği nakli de sonucu değiştirebilir.</p>
+        <p class="kdv-note"><strong>Babalık tespiti için kullanılamaz.</strong> Bu hesap olasılık gösterir; ebeveynliği kanıtlamaz ya da çürütmez. Kesin sonuç yalnızca laboratuvar testidir.</p>
+        <p class="kdv-note"><strong>Bilgilendirme amaçlıdır, tıbbi tavsiye değildir; hekiminize danışın.</strong></p>
+      </div>
+
+      <div id="compat-result" class="ba-result kg-res" aria-live="polite" hidden>
+        <h3 id="c-title">Kan uyumu</h3>
+        <dl class="kg-dl">
+          <div><dt>Eritrosit (kırmızı kan hücresi) verebileceği gruplar</dt><dd id="c-rbc-give"></dd></div>
+          <div><dt>Eritrosit alabileceği gruplar</dt><dd id="c-rbc-get"></dd></div>
+          <div><dt>Tam kan verebileceği gruplar</dt><dd id="c-wb-give"></dd></div>
+          <div><dt>Tam kan alabileceği gruplar</dt><dd id="c-wb-get"></dd></div>
+          <div><dt>Plazma verebileceği gruplar (Rh aranmaz)</dt><dd id="c-pl-give"></dd></div>
+          <div><dt>Plazma alabileceği gruplar (Rh aranmaz)</dt><dd id="c-pl-get"></dd></div>
+        </dl>
+        <p class="kdv-note">Genel kuraldır. Hastanede öncelikle hastayla aynı ABO ve Rh grubu seçilir; nakil öncesi çapraz karşılaştırma ve antikor taraması yapılır. Karar hekime ve transfüzyon merkezine aittir. Kaynak: Sağlık Bakanlığı Ulusal Kan ve Kan Bileşenleri Hazırlama, Kullanım ve Kalite Güvencesi Rehberi (2016), bölüm 2.6.</p>
+      </div>
+
+      <p class="kdv-rates" id="params-line"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="kan-grubu-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Bebeğin kan grubu" modunda anne için ABO kan grubunu (0, A, B veya AB) ve Rh faktörünü (Rh+ veya Rh−) işaretleyin; aynısını baba için yapın. Seçenekler arasında ok tuşlarıyla, gruplar arasında Tab tuşuyla geçebilirsiniz.</li>
+        <li>Daha önce yapılmış bir genetik test ya da aile bilgisi sayesinde genotipi biliyorsanız "Genotipi biliyorum" kutusunu işaretleyin ve AA/A0, BB/B0 ya da DD/Dd seçeneğini belirtin. Emin değilseniz kutuyu boş bırakın.</li>
+        <li>Genotipi bilinmeyen ebeveynler için ağırlık yöntemini seçin. Varsayılan Türkiye dağılımıdır; dilerseniz eşit ağırlığa geçebilirsiniz.</li>
+        <li>"Bebeğin kan grubunu hesapla" düğmesine basın. 8 kombinasyonun yüzdeleri, mümkün ve imkânsız gruplar, Punnett kareleri ve açıklama metni görünür. Anne Rh−, baba Rh+ ise Rh uyuşmazlığı bilgisi de çıkar.</li>
+        <li>Kan bağışı ya da nakil uyumunu merak ediyorsanız üstten "Kan uyumu tablosu" moduna geçin ve kendi grubunuzu seçin.</li>
+      </ol>
+
+      <h2>Bebeğin kan grubu nasıl belirlenir?</h2>
+      <p>Kan grubu, kırmızı kan hücrelerinin yüzeyindeki antijenlere göre adlandırılır. Günlük hayatta kullanılan iki sistem vardır: ABO sistemi (A, B, AB ve 0 grupları) ve Rh sistemi (Rh pozitif ya da Rh negatif). Her insan her sistem için biri anneden, biri babadan gelen iki gen kopyası, yani iki alel taşır. Bebeğin kan grubunu bu iki alelin birleşimi belirler.</p>
+      <p>ABO geninin üç yaygın aleli vardır: A, B ve 0. A ve B baskındır, 0 çekiniktir. Bu yüzden AA ve A0 genotipindeki kişilerin ikisi de A grubu, BB ve B0 olanlar B grubu görünür. A ve B aynı kişide birlikte bulunursa ikisi de kendini gösterir ve kişi AB grubu olur. Yalnızca iki 0 aleli taşıyan kişi 0 grubudur. Rh sisteminde ise belirleyici olan D antijenidir: DD ve Dd genotipleri Rh pozitif, dd genotipi Rh negatif sonuç verir. ABO geni 9. kromozomda, RhD geni 1. kromozomda bulunduğu için iki özellik birbirinden bağımsız kalıtılır. Aracımız bu nedenle ABO ve Rh olasılıklarını ayrı ayrı hesaplar, sonra çarparak 8 kombinasyonun (A Rh+, A Rh−, B Rh+, B Rh−, AB Rh+, AB Rh−, 0 Rh+, 0 Rh−) yüzdesini bulur.</p>
+
+      <h2>Punnett karesi nasıl okunur?</h2>
+      <p>Punnett karesi, ebeveynlerin aktarabileceği alelleri bir tablonun satır ve sütunlarına yerleştiren basit bir genetik çizelgedir. Satırlarda annenin, sütunlarda babanın alelleri bulunur; her hücre, o iki alelin bir araya gelmesiyle oluşan genotipi gösterir. Örneğin A0 genotipindeki bir anne ile B0 genotipindeki bir babanın karesinde dört hücre vardır: AB, A0, B0 ve 00. Her hücrenin olasılığı yüzde 25 olduğundan bu çiftin çocuğu eşit olasılıkla AB, A, B veya 0 grubu olabilir.</p>
+      <p>Aracımızın gösterdiği kare ağırlıklıdır: genotip bilinmediğinde başlıklarda her alelin aktarılma olasılığı yazar ve hücre olasılıkları bu sayıların çarpımıdır. Genotip biliniyorsa her alel yüzde 50 olasılıkla aktarılır ve klasik ders kitabı karesini görürsünüz. Böylece sonucun nereden geldiğini adım adım izleyebilirsiniz.</p>
+
+      <h2>Genotip bilinmediğinde: Hardy-Weinberg ve Türkiye verisi</h2>
+      <p>Rutin kan grubu testi genotipi değil fenotipi gösterir. "A Rh+" yazan bir kartta kişinin AA mı A0 mı, DD mi Dd mi olduğu yazmaz. Oysa bu bilgi sonucu değiştirir: AA bir ebeveyn çocuğuna her zaman A aktarırken A0 bir ebeveyn yarı yarıya 0 aktarır. Araç bu belirsizliği iki yolla çözer.</p>
+      <p><strong>Türkiye dağılımı (varsayılan):</strong> Türk Kızılay Kan Hizmetleri Genel Müdürlüğü'nün 2025 faaliyet kitabında yayımlanan bağışçı kan grubu dağılımı kullanılır. Hardy-Weinberg dengesi varsayılarak alel sıklıkları şöyle türetilir: 0 alelinin sıklığı 0 grubunun oranının kareköküdür; A alelinin sıklığı, A ve 0 gruplarının toplam oranının karekökünden 0 aleli sıklığı çıkarılarak bulunur. Bu verilerle A grubu bir kişinin A0 olma olasılığı yaklaşık yüzde 80,2, B grubu bir kişinin B0 olma olasılığı yaklaşık yüzde 90,4, Rh pozitif bir kişinin Dd olma olasılığı yaklaşık yüzde 51,5 çıkar.</p>
+      <table class="kg-table">
+        <caption>Türk Kızılay 2025 yılı kan bağışçılarının kan grubu dağılımı (yuvarlanmış)</caption>
+        <thead><tr><th scope="col">Grup</th><th scope="col">Rh+</th><th scope="col">Rh−</th><th scope="col">Toplam</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">A</th><td>%37</td><td>%5</td><td>%42</td></tr>
+          <tr><th scope="row">0</th><td>%30</td><td>%4</td><td>%34</td></tr>
+          <tr><th scope="row">B</th><td>%14</td><td>%2</td><td>%16</td></tr>
+          <tr><th scope="row">AB</th><td>%7</td><td>%1</td><td>%8</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Eşit ağırlık:</strong> Nüfus verisi kullanmak istemiyorsanız bu seçenek homozigot ve heterozigot olasılığını yüzde 50 kabul eder. Hangi yöntemin seçildiği sonuç açıklamasında yazılır. Bu verinin genel nüfusu değil kan bağışçılarını yansıttığını ve tam sayıya yuvarlandığını unutmayın; aile bilginiz varsa genotipi doğrudan girmek her zaman daha doğrudur. Örneğin annesi ya da babası 0 grubu olan A grubu bir kişi kesinlikle A0'dır.</p>
+
+      <div class="ba-ad" data-slot="kan-grubu-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Anne ve baba kan grubuna göre bebeğin kan grubu tablosu</h2>
+      <p>Aşağıdaki tablo, genotip bilinmediğinde hangi ABO gruplarının mümkün olduğunu özetler. Yüzdeler genotipe göre değiştiği için tabloda yalnızca mümkün ve beklenmeyen gruplar yer alır; yüzdeleri görmek için hesaplayıcıyı kullanın.</p>
+      <table class="kg-table">
+        <thead><tr><th scope="col">Anne × Baba</th><th scope="col">Bebekte mümkün</th><th scope="col">Bebekte beklenmez</th></tr></thead>
+        <tbody>
+          <tr><td>0 × 0</td><td>0</td><td>A, B, AB</td></tr>
+          <tr><td>0 × A</td><td>A, 0</td><td>B, AB</td></tr>
+          <tr><td>0 × B</td><td>B, 0</td><td>A, AB</td></tr>
+          <tr><td>0 × AB</td><td>A, B</td><td>AB, 0</td></tr>
+          <tr><td>A × A</td><td>A, 0</td><td>B, AB</td></tr>
+          <tr><td>A × B</td><td>A, B, AB, 0</td><td>Yok</td></tr>
+          <tr><td>A × AB</td><td>A, B, AB</td><td>0</td></tr>
+          <tr><td>B × B</td><td>B, 0</td><td>A, AB</td></tr>
+          <tr><td>B × AB</td><td>A, B, AB</td><td>0</td></tr>
+          <tr><td>AB × AB</td><td>A, B, AB</td><td>0</td></tr>
+        </tbody>
+      </table>
+      <p>Rh için kural daha kısadır: iki Rh negatif ebeveynin çocuğu Rh negatif olur. Ebeveynlerden en az biri Rh pozitifse çocuk, pozitif ebeveynin genotipine göre Rh pozitif ya da negatif olabilir. İki Dd ebeveynin çocuğu yüzde 75 Rh pozitif, yüzde 25 Rh negatif olur.</p>
+
+      <h2>Rh faktörü ve Rh uyuşmazlığı</h2>
+      <p>Rh uyuşmazlığı, Rh negatif bir annenin Rh pozitif bir bebek taşıması durumudur. Gebelik ya da doğum sırasında bebeğin kan hücreleri annenin dolaşımına geçerse annenin bağışıklık sistemi D antijenine karşı antikor üretebilir. İlk gebelikte genellikle sorun yaşanmazken, sonraki Rh pozitif gebeliklerde bu antikorlar bebeğin kan hücrelerine zarar verebilir. Günümüzde bu risk, gebelik takibi ve gerektiğinde uygulanan anti-D immünglobulin ile büyük ölçüde önlenebilmektedir. Aracımız anne Rh−, baba Rh+ seçildiğinde bebeğin Rh+ olma olasılığını gösterir ve bir bilgi kutusu açar. Anti-D uygulaması gerekip gerekmediğine ve zamanlamasına yalnızca gebeliğinizi takip eden hekim karar verir.</p>
+      <p>Benzer bir durum ABO sisteminde de görülebilir: 0 grubu bir annenin A veya B grubu bebeğinde doğumdan sonra sarılık daha sık izlenebilir. Bu genellikle hafif seyreder, ancak değerlendirme ve takip yine hekiminize aittir.</p>
+
+      <h2>Kim kime kan verebilir? Kan uyumu</h2>
+      <p>Kan uyumu, verilen bileşene göre değişir. Sağlık Bakanlığı'nın Ulusal Kan ve Kan Bileşenleri Hazırlama, Kullanım ve Kalite Güvencesi Rehberi'ne göre hastaya öncelikle kendisiyle aynı ABO ve RhD grubundan eritrosit seçilir. Aynı grup bulunamazsa 0 grubu eritrosit tercih edilir; AB grubu hastalara AB bulunamazsa A veya B grubu eritrosit verilebilir. Rh pozitif hastaların Rh negatif bileşen almasında sakınca yoktur, Rh negatif hastalara ise Rh negatif bileşen verilmelidir. Taze donmuş plazmada ABO uyumu yeterlidir, Rh uyumu aranmaz. Tam kan hem eritrosit hem plazma içerdiği için ABO ve RhD uygunluğu birlikte aranır; uygulamada aynı ABO grubu kullanılır.</p>
+      <table class="kg-table">
+        <thead><tr><th scope="col">Alıcı</th><th scope="col">Eritrosit alabileceği</th><th scope="col">Plazma alabileceği</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0, A, B, AB</td></tr>
+          <tr><td>A</td><td>A, 0</td><td>A, AB</td></tr>
+          <tr><td>B</td><td>B, 0</td><td>B, AB</td></tr>
+          <tr><td>AB</td><td>AB, A, B, 0</td><td>AB</td></tr>
+        </tbody>
+      </table>
+      <p>Bu yüzden 0 Rh negatif eritrosit "genel verici", AB grubu plazma ise "genel plazma vericisi" olarak bilinir. Gerçek nakilde her zaman çapraz karşılaştırma ve antikor taraması yapılır; tablo yalnızca genel kuralları gösterir.</p>
+
+      <h2>Nadir istisnalar: Bombay fenotipi, cis-AB ve diğerleri</h2>
+      <p>Mendel kuralları kan gruplarının neredeyse tamamını açıklar, ancak bazı nadir durumlar beklenmedik sonuçlar doğurabilir. Bombay fenotipinde (hh) kişi A veya B antijeninin üzerine kurulduğu H maddesini üretemez; testte 0 grubu görünür ama çocuğuna A veya B geni aktarabilir. Cis-AB durumunda A ve B aynı kromozom üzerinde birlikte taşınır; bu nedenle AB × 0 çiftinden AB ya da 0 grubu çocuk doğabilir. A2, A3, Ax gibi zayıf alt gruplar, zayıf veya kısmi D, ikizlerde görülebilen kimerizm ve kemik iliği ya da kök hücre nakli de ölçülen kan grubunu değiştirebilir. Ayrıca yenidoğanlarda ABO antijenleri zayıf olabildiğinden ilk testin tekrarlanması gerekebilir.</p>
+
+      <h2>Babalık tespiti için neden kullanılamaz?</h2>
+      <p>Bu araç, ebeveynlerin kan grubundan çocuğun olası gruplarını hesaplamak için tasarlanmıştır; tersi yönde bir "kimin çocuğu" hesabı içermez ve içermeyecektir. Yukarıda anlatılan istisnalar, test hataları ve alt gruplar nedeniyle kan grubu tek başına ebeveynliği kanıtlamaya ya da çürütmeye yetmez. Babalık veya annelik konusunda kesin sonuç, akredite bir laboratuvarda yapılan DNA testiyle ve gerektiğinde yasal süreçle elde edilir. Sonucunuz beklentinizle uyuşmuyorsa önce testi tekrarlatmanızı ve hekiminize danışmanızı öneririz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri cihazınızdan çıkmaz.</strong> Seçimleriniz tarayıcınızda işlenir, hiçbir sunucuya gönderilmez.</li>
+        <li><strong>Şeffaf hesap.</strong> Punnett karesi, alel olasılıkları ve açıklama metniyle sonucun nasıl bulunduğu görünür.</li>
+        <li><strong>Toplamı tam %100.</strong> Yüzdeler en büyük kalan yöntemiyle yuvarlanır; toplam her zaman %100 çıkar.</li>
+        <li><strong>Resmî kaynaklı veri.</strong> Nüfus ağırlığı Türk Kızılay verisinden, uyum kuralları Sağlık Bakanlığı rehberinden alınır; güncelleme tarihi sayfada yazar.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişlikte çalışır; tüm seçimler klavyeyle yapılabilir.</li>
+      </ul>
+
+      <h2>Gizlilik notu</h2>
+      <p>Kan grubu bir sağlık verisidir. Bu aracın kodu seçimlerinizi yalnızca tarayıcınızın belleğinde işler; hiçbir sunucuya göndermez, bir yere kaydetmez, çerez ya da analiz kodu kullanmaz. Sayfadaki reklam alanlarını dolduran reklam hizmetinin çerez kullanımı <a href="../gizlilik/">Gizlilik Politikası</a> sayfasında açıklanır. Sayfayı kapattığınızda seçimler silinir. Ortak bir cihaz kullanıyorsanız "Temizle" düğmesiyle formu sıfırlayabilirsiniz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Anne ve babanın kan grubundan bebeğin kan grubu kesin olarak bilinir mi?</summary><p>Hayır. Anne ve babanın kan grubu yalnızca olasılıkları verir. Ebeveynlerin genotipi çoğu zaman bilinmediği için birden fazla grup mümkün olur. Bebeğin kesin kan grubu ancak laboratuvar testiyle belirlenir.</p></details>
+        <details><summary>İki A grubu ebeveynin çocuğu 0 grubu olabilir mi?</summary><p>Evet. Anne ve babanın ikisi de A0 genotipindeyse her biri çocuğa yüzde 50 olasılıkla 0 alelini aktarır; çocuğun 00, yani 0 grubu olma olasılığı yüzde 25'tir. Ebeveynlerden biri AA ise çocuk 0 grubu olamaz.</p></details>
+        <details><summary>Anne 0, baba AB grubuysa bebek hangi grupta olur?</summary><p>Klasik Mendel kalıtımına göre bebek yüzde 50 A, yüzde 50 B grubu olur; AB ve 0 beklenmez. Çok nadir görülen cis-AB durumunda bu kural bozulabilir; şüpheli bir sonuçta testin tekrarı ve hekim değerlendirmesi gerekir.</p></details>
+        <details><summary>Rh uyuşmazlığı nedir, ne zaman önemlidir?</summary><p>Anne Rh negatif, bebek Rh pozitif olduğunda annenin bağışıklık sistemi bebeğin kan hücrelerine karşı antikor geliştirebilir. Bu durum özellikle sonraki gebelikler için önemlidir. Anne Rh negatif, baba Rh pozitif ise anti-D uygulaması gerekip gerekmediğini gebelik takibinizi yapan hekime danışın.</p></details>
+        <details><summary>Genotip nedir, kendi genotipimi nasıl öğrenebilirim?</summary><p>Rutin kan grubu testi yalnızca fenotipi, yani A, B, AB, 0 ve Rh+ ya da Rh− sonucunu gösterir. Genotip ise iki aleli birlikte ifade eder; örneğin A grubu biri AA veya A0 olabilir. Aile bilgisi ipucu verebilir: anne veya babası 0 grubu olan A grubu bir kişi kesinlikle A0'dır. Kesin genotip için genetik test gerekir.</p></details>
+        <details><summary>Türkiye dağılımı ve eşit ağırlık seçenekleri ne işe yarar?</summary><p>Genotip bilinmediğinde araç, örneğin A grubu bir kişinin A0 olma olasılığını tahmin etmek zorundadır. Türkiye dağılımı seçeneği Türk Kızılay'ın 2025 bağışçı verisinden Hardy-Weinberg yöntemiyle alel sıklıklarını türetir; bu durumda A grubunda A0 olasılığı yaklaşık yüzde 80'dir. Eşit ağırlık seçeneği ise homozigot ve heterozigot olasılığını yüzde 50 kabul eder.</p></details>
+        <details><summary>Bu araç babalık tespiti için kullanılabilir mi?</summary><p>Hayır. Kan grubu kalıtımında nadir istisnalar, laboratuvar hataları ve alt gruplar bulunduğundan bu hesap kimsenin ebeveynliğini kanıtlamaz ya da çürütmez. Babalık ya da annelik ancak akredite bir laboratuvarda yapılan DNA testiyle ve gerektiğinde mahkeme süreciyle belirlenir.</p></details>
+        <details><summary>0 Rh negatif neden genel verici, AB Rh pozitif neden genel alıcı sayılır?</summary><p>0 Rh negatif eritrositlerin yüzeyinde A, B ve D antijeni bulunmadığı için acil durumlarda tüm gruplara verilebilir. AB Rh pozitif kişinin plazmasında anti-A ve anti-B bulunmadığından tüm grupların eritrositini alabilir. Plazmada durum tersine döner: AB plazma tüm gruplara verilebilir. Gerçek nakilde yine de aynı grup tercih edilir ve uygunluk testleri yapılır.</p></details>
+        <details><summary>Seçtiğim kan grupları bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Seçimleriniz hiçbir sunucuya iletilmez, kaydedilmez ve çerez ya da analiz koduyla izlenmez.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç bilgilendirme amaçlıdır, tıbbi tavsiye değildir; tanı ve tedavi için hekiminize danışın. Kaynaklar: <a href="https://www.kanver.org/EKutuphane/FaaliyetKitaplari" rel="noopener">Türk Kızılay KHGM Faaliyet Kitapları</a> ve <a href="https://shgmkanhizmetleridb.saglik.gov.tr/TR-71523/ulusal-kan-ve-kan-bilesenleri-hazirlama--kullanim-ve-kalite-guvencesi-rehberi-2016.html" rel="noopener">Sağlık Bakanlığı Ulusal Kan ve Kan Bileşenleri Rehberi (2016)</a>.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../gebelik-hesapla/">Gebelik Haftası Hesaplama</a></li>
+        <li><a href="../cocuk-isim-bulucu/">Çocuk İsim Bulucu</a></li>
+        <li><a href="../vki-hesapla/">Vücut Kitle İndeksi Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kan-grubu-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

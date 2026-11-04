@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Blok Bulmaca Oyna – Ücretsiz Online 8x8 Blok Yerleştirme Oyunu</title>
+  <meta name="description" content="Ücretsiz online blok bulmaca: 8x8 tahtaya üçer üçer gelen parçaları sürükleyip yerleştirin, dolan satır ve sütunları temizleyin. Kombo puanı, kolay mod, klavye ve dokunmatik desteği. Kayıt yok, kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/blok-bulmaca/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyun kutusu düzeni; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsız (koyu zemin). */
+    /* overflow-x: clip → sürüklenen parça kutunun dışına taşsa da sayfada yatay kaydırma oluşmaz (kaydırma kabı da açmaz) */
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .bb-help { display: none; }
+
+    /* Skor satırı */
+    .bb-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .bb-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .bb-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .bb-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+
+    /* Tahta: 360px'te hücre ≥ 36px kalır */
+    .bb-stage { position: relative; width: min(100%, 440px); margin: 0 auto; }
+    .bb-board { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 2px; padding: 3px; background: #15171b; border: 1px solid #3d4046; border-radius: 8px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+    .bb-cell { position: relative; aspect-ratio: 1 / 1; border-radius: 4px; background: #2a2d33; box-shadow: inset 0 0 0 1px #363a41; }
+    .bb-cell.is-filled, .bb-cell.is-clearing { background: var(--bc); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .28), inset 0 2px 0 rgba(255, 255, 255, .3); }
+    .bb-cell.is-ghost { background: var(--bc); opacity: .55; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .75); }
+    .bb-cell.is-bad::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: repeating-linear-gradient(45deg, rgba(232, 85, 77, .9) 0 4px, rgba(232, 85, 77, .35) 4px 8px); box-shadow: inset 0 0 0 2px #ff6b61; }
+    .bb-cell.is-line::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: rgba(255, 255, 255, .28); box-shadow: inset 0 0 0 2px #fff; }
+    .game-box .c0 { --bc: #f2b134; } .game-box .c1 { --bc: #4a9be8; } .game-box .c2 { --bc: #e8554d; } .game-box .c3 { --bc: #a07ce8; } .game-box .c4 { --bc: #2fbfa8; }
+    .game-box .c5 { --bc: #f08a3c; } .game-box .c6 { --bc: #58c46a; } .game-box .c7 { --bc: #e05fb0; } .game-box .c8 { --bc: #39c3e6; } .game-box .c9 { --bc: #7f8cf0; }
+    .bb-over { position: absolute; inset: 0; display: grid; place-items: center; padding: 12px; text-align: center; border-radius: 8px; background: rgba(12, 14, 18, .62); color: #fff; font-weight: 700; font-size: 1.5rem; pointer-events: none; }
+    .bb-pop { position: absolute; left: 50%; top: 40%; transform: translate(-50%, 0); padding: 4px 12px; border-radius: 999px; background: rgba(12, 14, 18, .78); color: #fff; font-weight: 800; font-size: 1.3rem; white-space: nowrap; pointer-events: none; }
+    .bb-pop.is-anim { animation: bbPop .95s ease-out forwards; }
+
+    /* Parça tepsisi */
+    .bb-tray { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: min(100%, 440px); margin: 12px auto 0; }
+    .bb-slot { --t: 14px; display: grid; place-items: center; min-width: 0; min-height: 100px; padding: 6px; font: inherit; color: #fff; background: #1f2226; border: 2px solid #3d4046; border-radius: var(--ba-radius); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    @media (min-width: 480px) { .bb-slot { --t: 18px; min-height: 124px; } }
+    .bb-slot:hover:not(:disabled) { border-color: #6b6f77; }
+    .bb-slot[aria-pressed="true"] { border-color: #ffd75e; box-shadow: inset 0 0 0 2px #ffd75e; }
+    .bb-slot:disabled { cursor: default; border-style: dashed; }
+    .bb-slot.is-dragging .bb-mini { opacity: .25; }
+    .bb-slot.is-stuck .bb-mini { opacity: .4; filter: grayscale(1); }
+    .bb-slot.is-shake { animation: bbShake .3s; }
+    .bb-mini { display: grid; grid-template-columns: repeat(var(--w), var(--t)); grid-auto-rows: var(--t); gap: var(--gap, 2px); }
+    .bb-mini i { border-radius: 3px; }
+    .bb-mini i.on { background: var(--bc); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .3); }
+    .bb-float { position: absolute; left: 0; top: 0; z-index: 30; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .35)); }
+    .bb-float .bb-mini i { border-radius: 4px; }
+
+    .bb-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .bb-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .bb-controls .ba-btn { flex: 1 1 140px; min-height: 44px; padding: 8px 16px; }
+    .bb-settings { display: grid; gap: 8px; width: min(100%, 440px); margin: 14px auto 0; font-size: .92rem; }
+    .bb-settings label { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 10px 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .bb-settings input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--ba-primary); }
+    .bb-seed { width: min(100%, 440px); margin: 10px auto 0; font-family: var(--ba-mono); font-size: .8rem; color: var(--ba-text-muted); overflow-wrap: anywhere; }
+
+    /* Oyun sonu kutusu */
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc h3:focus { outline: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .bb-big { font-size: 2.3rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; font-variant-numeric: tabular-nums; }
+    .bb-big small { margin-left: 6px; font-size: 1rem; font-weight: 600; color: var(--ba-text-2); }
+    .bb-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+
+    .bb-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .bb-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .bb-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+
+    /* Hareket: prefers-reduced-motion açıkken hiçbiri oynamaz */
+    .bb-cell.is-new { animation: bbIn .2s ease-out; }
+    .bb-cell.is-clearing { animation: bbOut .34s ease-in forwards; }
+    @keyframes bbIn { from { transform: scale(.6); } to { transform: scale(1); } }
+    @keyframes bbOut { 0% { transform: scale(1); opacity: 1; filter: brightness(1.6); } 100% { transform: scale(.2); opacity: 0; } }
+    @keyframes bbShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @keyframes bbPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.9); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -36px); } }
+    @media (prefers-reduced-motion: reduce) { .bb-cell, .bb-slot, .bb-pop, .bb-float { animation: none !important; transition: none !important; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Blok Bulmaca – 8x8 Blok Yerleştirme Oyunu","description":"Tarayıcıda oynanan ücretsiz blok yerleştirme bulmacası: 8x8 tahta, her turda üç parça, satır ve sütun temizleme, kombo puanı, klasik ve kolay mod, klavye ve dokunmatik desteği.","inLanguage":"tr","genre":["Bulmaca","Mantık"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/blok-bulmaca/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Blok Bulmaca ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ilerleme yoktur."}},{"@type":"Question","name":"Oyun ne zaman biter?","acceptedAnswer":{"@type":"Answer","text":"Tepside kalan parçaların hiçbiri tahtadaki boş alanlara sığmadığında oyun biter. Kolay modda parçanın dört yönü de denenir; biri sığıyorsa oyun sürer. Süre sınırı yoktur."}},{"@type":"Question","name":"Puan nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her yerleşen hücre 1 puandır. Temizlenen her hat 10 × (aynı hamledeki hat sayısı) puan getirir; art arda temizleme yapan hamlelerde bu puan kombo çarpanıyla çarpılır. Örneğin bir satırı tek karelerle tamamlamak toplam 18 puan, aynı hamlede bir satır ve bir sütun temizlemek 1 + 40 = 41 puan eder."}},{"@type":"Question","name":"Parçaları döndürebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Klasik modda hayır; parçalar tepside göründüğü yönde yerleşir. Kolay modu açarsanız seçili parçayı R tuşuyla ya da Döndür düğmesiyle 90 derece çevirebilirsiniz. İki modun rekorları ayrı tutulur."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Parçayı parmağınızla tahtaya sürükleyin; parça parmağınızın biraz üstünde görünür, gölge ineceği yeri gösterir. İsterseniz parçaya dokunup hedef hücreye iki kez dokunarak da yerleştirebilirsiniz. Oyun 360 piksel genişliğindeki ekranlarda bile rahat dokunulacak hücre boyutunu korur."}},{"@type":"Question","name":"Sadece klavyeyle oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. 1, 2, 3 tuşları ya da Tab parçayı seçer, ok tuşları önizlemeyi taşır, Enter yerleştirir, Esc iptal eder. Kolay modda R döndürür. Konum ve sonuç bilgisi ekran okuyucuların okuyabileceği bir durum satırında da yazılır."}},{"@type":"Question","name":"Adil parça üretimi ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Açıkken, yeni gelen üç parçanın hiçbiri tahtaya sığmayacaksa biri sığabilecek bir parçayla değiştirilir. Böylece oyun yeni üçlü gelir gelmez bitmez. Kalan parçalar için garanti vermez; tamamen rastgele oynamak isterseniz kapatabilirsiniz."}},{"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır."}},{"@type":"Question","name":"Aynı parçalarla tekrar oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun bitince “Aynı parçalarla tekrar oyna” düğmesine basın ya da sayfa adresinin sonuna ?seed= ve bir sayı ekleyin. Aynı numarayla açılan oyunlarda parçalar aynı sırayla gelir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Blok Bulmaca Oyna</span>: Ücretsiz Online 8x8 Blok Yerleştirme</h1><p class="lead">Üç parça gelir, siz yerleştirirsiniz: 8x8 tahtada dolan her satır ve sütun anında temizlenir. Aynı hamlede birden çok hat ve art arda temizlemeler puanınızı katlar. Süre baskısı yok; fareyle sürükleyin, parmağınızla bırakın ya da yalnızca klavyeyle oynayın. Kurulum ve kayıt gerekmez, skorunuz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="oyun" aria-label="Blok Bulmaca oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Blok Bulmaca · 8×8</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="bb-sound" aria-pressed="false">Ses: kapalı</button><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="bb-stats" aria-label="Skor bilgileri">
+          <div><dt>Puan</dt><dd id="bb-score">0</dd></div>
+          <div><dt>En yüksek</dt><dd id="bb-best">0</dd></div>
+          <div><dt>Kombo</dt><dd id="bb-combo">–</dd></div>
+        </dl>
+
+        <div class="bb-stage" id="bb-stage">
+          <div class="bb-board" id="bb-board" role="img" aria-label="Oyun tahtası, 8 satır 8 sütun"></div>
+          <p class="bb-pop" id="bb-pop" aria-hidden="true" hidden></p>
+          <div class="bb-over" id="bb-over" aria-hidden="true" hidden>Oyun bitti</div>
+        </div>
+
+        <div class="bb-tray" id="bb-tray" role="group" aria-label="Yerleştirilecek parçalar">
+          <button type="button" class="bb-slot" data-slot="0" aria-keyshortcuts="1" aria-pressed="false"></button>
+          <button type="button" class="bb-slot" data-slot="1" aria-keyshortcuts="2" aria-pressed="false"></button>
+          <button type="button" class="bb-slot" data-slot="2" aria-keyshortcuts="3" aria-pressed="false"></button>
+        </div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3 id="sonuc-baslik">Oyun bitti</h3>
+          <p class="bb-big"><span id="sonuc-puan">0</span><small>puan</small></p>
+          <p class="bb-record" id="sonuc-rekor" hidden>Yeni en yüksek skor!</p>
+          <p><span id="sonuc-mod">Klasik mod</span> en yüksek skorunuz: <b id="sonuc-en-yuksek">0</b></p>
+          <p id="sonuc-ozet"></p>
+          <p>Oyun numarası <b id="sonuc-tohum">0</b>: aynı parça dizisini yeniden denemek için aşağıdaki ikinci düğmeyi kullanın.</p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="bb-again">Tekrar oyna</button>
+            <button type="button" class="ba-btn" id="bb-same">Aynı parçalarla tekrar oyna</button>
+          </div>
+        </div>
+
+        <p class="bb-msg" id="bb-msg" role="status" aria-live="polite"></p>
+
+        <div class="bb-controls">
+          <button type="button" class="ba-btn" id="bb-new">Yeni oyun</button>
+          <button type="button" class="ba-btn" id="bb-rotate" aria-keyshortcuts="R" hidden>Döndür (R)</button>
+        </div>
+
+        <div class="bb-settings">
+          <label><input type="checkbox" id="bb-easy"><span><b>Kolay mod:</b> seçili parçayı döndürmek serbest (R tuşu ya da Döndür düğmesi).</span></label>
+          <label><input type="checkbox" id="bb-fair" checked><span><b>Adil parça üretimi:</b> yeni gelen üç parçadan en az biri tahtaya sığar.</span></label>
+        </div>
+        <p class="bb-seed">Oyun numarası: <span id="bb-seed">–</span></p>
+
+        <div class="bb-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Fare ya da dokunmatik: parçayı tahtaya sürükleyip bırakın. Dokunmatikte parça parmağınızın biraz üstünde görünür.</li>
+            <li>Dokun-yerleştir: parçaya dokunun, tahtada hedefe dokunun, onaylamak için aynı yere tekrar dokunun.</li>
+            <li><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> ya da <kbd>Tab</kbd> parça seçer · oklar önizlemeyi taşır · <kbd>Enter</kbd> yerleştirir · <kbd>Esc</kbd> iptal · <kbd>R</kbd> döndürür (Kolay mod)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="bb-float" id="bb-float" aria-hidden="true" hidden></div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-blok-bulmaca-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Blok Bulmaca nedir?</h2>
+      <p>Blok Bulmaca, 8 satır ve 8 sütundan oluşan bir tahtaya farklı biçimlerdeki kare parçaları yerleştirdiğiniz sakin ama düşündüren bir mantık oyunudur. Her turda tahtanın altındaki tepside üç parça belirir. Bunları istediğiniz sırayla tahtaya bırakırsınız; üçü de yerleşince yeni üç parça gelir. Bir satırın ya da sütunun sekiz hücresinin tamamı dolduğunda o hat silinir ve tahtada yer açılır. Oyun, elinizde kalan parçalardan hiçbiri tahtadaki boşluklara sığmadığında biter. Parçalar yukarıdan düşmez, süre işlemez; her hamleyi istediğiniz kadar düşünebilirsiniz. Bu yüzden oyun hem kısa molalarda birkaç dakikalık bir zihin egzersizi hem de rekor kovalayanlar için uzun bir planlama sınavıdır.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da reklam izleyerek "can" kazanmanız gerekmez; para, bahis, jeton ya da ödül sistemi de yoktur. Sayfa bir kez yüklendikten sonra oyun internet bağlantısı kopsa bile çalışmaya devam eder. Siteyi uygulama olarak yüklerseniz çevrimdışı da oynayabilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Tahtanın altındaki tepside duran üç parçadan birini seçin. Fareyle ya da parmağınızla parçayı tutup tahtanın üzerine sürükleyin.</li>
+        <li>Sürüklerken tahtada parçanın gölgesi (önizlemesi) görünür. Gölge parçanın renginde ise parça oraya sığar; kırmızı çizgili ise dolu hücrelerle çakışıyordur. Bırakınca temizlenecek satır ve sütunlar beyaz çerçeveyle önceden vurgulanır.</li>
+        <li>Parçayı bırakın. Dolan satırlar ve sütunlar aynı anda silinir, puanınız hemen güncellenir.</li>
+        <li>Üç parçanın üçü de yerleşince tepsiye yeni üç parça gelir. Parçaları hangi sırayla koyacağınıza siz karar verirsiniz.</li>
+        <li>Kalan parçalardan hiçbiri tahtaya sığmazsa oyun biter. Puanınızı ve en yüksek skorunuzu görür, "Tekrar oyna" ile hemen yeni bir oyuna başlarsınız.</li>
+      </ol>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <ul>
+        <li><strong>Fare:</strong> Parçayı basılı tutup sürükleyin ve bırakın. İsterseniz önce parçaya tıklayın; imleç tahtanın üzerindeyken gölge onu izler, tıkladığınız yere parça yerleşir.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parçayı parmağınızla sürükleyin. Parça, parmağınızın altında kaybolmasın diye biraz yukarıda gösterilir; gölge, parçanın gerçekten ineceği yeri gösterir. Sürüklemek istemezseniz parçaya dokunup tahtada hedef hücreye dokunun, önizlemeyi kontrol edip aynı yere bir kez daha dokunun.</li>
+        <li><strong>Klavye:</strong> <kbd>1</kbd>, <kbd>2</kbd> ve <kbd>3</kbd> tuşları ya da <kbd>Tab</kbd> parçayı seçer; ok tuşları gölgeyi taşır, <kbd>Enter</kbd> parçayı yerleştirir, <kbd>Esc</kbd> seçimi iptal eder. Kolay modda <kbd>R</kbd> tuşu parçayı saat yönünde döndürür. Oyunun tamamı fare kullanmadan oynanabilir; her hareketten sonra konum ve sonuç, ekran okuyucuların da okuyabileceği bir durum satırında yazılır.</li>
+        <li><strong>Ses ve tam ekran:</strong> Ses varsayılan olarak kapalıdır; "Ses" düğmesiyle kısa efektleri açabilirsiniz. "Tam ekran" yalnızca oyun kutusunu ekrana yayar ve dikkat dağıtan her şeyi gizler.</li>
+      </ul>
+
+      <h2>Puanlama nasıl hesaplanır?</h2>
+      <p>Puan üç bileşenden oluşur ve hepsi açık kurallara dayanır; gizli bonus ya da şans çarkı yoktur:</p>
+      <ul>
+        <li><strong>Yerleştirme puanı:</strong> Tahtaya koyduğunuz her hücre 1 puandır. 3×3 kare 9 puan, tek kare 1 puan getirir.</li>
+        <li><strong>Hat puanı:</strong> Temizlenen her hat (satır ya da sütun) için 10 × (aynı hamlede temizlenen hat sayısı) puan alırsınız. Tek hat 10, aynı anda iki hat 2 × 20 = 40, üç hat 3 × 30 = 90 puan eder. Yani hatları biriktirip tek hamlede temizlemek, tek tek temizlemekten çok daha kazançlıdır.</li>
+        <li><strong>Kombo çarpanı:</strong> Art arda temizleme yapan her hamle kombo sayacını bir artırır ve hat puanı bu sayıyla çarpılır (en çok ×10). Hiç hat temizlemeyen bir yerleştirme komboyu sıfırlar.</li>
+      </ul>
+      <p>Bir örnekle bakalım: boş bir satıra sekiz tek kareyi yan yana koyduğunuzu düşünün. İlk yedi kare 7 puan getirir; sekizinci kare satırı tamamlar ve 1 yerleştirme puanıyla 10 hat puanı ekler. Toplam 18 puan. Bir satırla bir sütunu aynı hücrede birleştiren tek bir kare koyarsanız iki hat birden temizlenir ve 1 + 40 = 41 puan alırsınız. Satırla sütunun kesiştiği hücre yalnızca bir kez silinir; yani 16 değil 15 hücre boşalır. Hemen ardından gelen hamle de bir hat temizlerse kombo ×2 olur ve o hattın 10 puanı 20'ye çıkar.</p>
+
+      <h2>Klasik mod ve Kolay mod</h2>
+      <p>Klasik modda parçalar döndürülemez; tepside nasıl göründüyse öyle yerleşir. Bu, türün klasik kuralıdır ve planlamayı zorlaştıran asıl unsurdur: dikey bir 4'lü çubuk yalnızca bir sütun boşluğuna, yatay olan yalnızca bir satır boşluğuna sığar. Kolay modda ise seçili parçayı <kbd>R</kbd> tuşuyla ya da "Döndür" düğmesiyle 90 derece çevirebilirsiniz. Kolay modda oyun sonu da buna göre değerlendirilir: parçanın dört yönünden biri bir yere sığıyorsa oyun devam eder. İki modun en yüksek skorları ayrı tutulur, böylece rekorlar birbirine karışmaz. Ayarı oyunun ortasında değiştirirseniz yeni ayar bir sonraki oyunda geçerli olur; henüz hamle yapmadıysanız hemen uygulanır.</p>
+
+      <h2>Adil parça üretimi ve oyun numarası</h2>
+      <p>Parçalar ağırlıklı olarak rastgele seçilir: tek kare, 2'li ve 3'lü çubuklar ile 2×2 kare en sık gelen biçimlerdir; 3×3 kare ve 5'li çubuklar seyrek gelir, büyük köşe ile 4'lü L'nin her bir yönü ise daha da seyrektir. "Adil parça üretimi" açıkken yeni üçlünün hiçbiri tahtaya sığmayacaksa parçalardan biri sığabilecek bir parçayla değiştirilir. Bu, oyunun yeni üçlü gelir gelmez bitmesini önler; ancak elinizdeki son parçalar için bir garanti değildir, dikkatli plan yine sizin işinizdir. Bu ayarı kapatırsanız üretici tamamen rastgele çalışır ve oyun daha sert bir hâl alır.</p>
+      <p>Her oyunun bir oyun numarası (tohum) vardır ve ayarların altında yazar. Aynı numarayla başlayan iki oyunda parçalar aynı sırayla gelir. Oyun bitince "Aynı parçalarla tekrar oyna" düğmesiyle aynı diziyi yeniden deneyebilir ya da sayfa adresinin sonuna <code>?seed=2026</code> gibi bir ek yazarak arkadaşınızla aynı parçalarla yarışabilirsiniz. Adil üretim yalnızca tahta sıkıştığında devreye girdiği için, farklı hamleler yaptığınızda diziler bu noktalarda ayrışabilir.</p>
+
+      <div class="ba-ad" data-slot="oyun-blok-bulmaca-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Kenarları ve köşeleri önce doldurun.</strong> Tahtanın ortası en değerli alandır; büyük parçalar için orayı olabildiğince açık tutun.</li>
+        <li><strong>3×3 kareye her zaman yer bırakın.</strong> En zor parça odur. Tahtada en az bir boş 3×3 alan bulunmasını hedefleyin; büyük köşe ve 2×3 dikdörtgen de bu alana rahatça sığar.</li>
+        <li><strong>Tek hücrelik delik bırakmayın.</strong> Etrafı dolu tek bir boş hücreyi yalnızca tek kare doldurabilir ve o parçanın ne zaman geleceği belli olmaz. Bu tür delikler hatların tamamlanmasını uzun süre engeller.</li>
+        <li><strong>Hatları biriktirin.</strong> Aynı hamlede iki ya da üç hat temizlemek puanı katlayarak artırır. Bir satırı bitirmeden önce yanındakini de hazırlayıp tek parçayla ikisini birden kapatmayı deneyin.</li>
+        <li><strong>Parça sırasını düşünün.</strong> Üç parçayı yerleştirmeden önce hangisinin nereye gideceğini kafanızda kurun. Önce en büyük ve en zor parçayı yerleştirmek çoğu zaman en güvenli yoldur; küçük parçalar sona kalırsa boşlukları kapatmak kolaylaşır.</li>
+        <li><strong>Komboyu sürdürün.</strong> Art arda temizleme yapan hamleler çarpanı büyütür. Bir temizlemenin hemen ardından ikinci bir hattı tamamlayabilecek parçanız varsa onu bekletmeyin.</li>
+        <li><strong>Soluk parçaya dikkat edin.</strong> Tepside gri ve soluk görünen parça şu anki tahtada hiçbir yere sığmıyor demektir. Önce diğer parçalarla hat temizleyip ona yer açmanız gerekir.</li>
+      </ul>
+
+      <h2>Parça seti</h2>
+      <p>Oyunda 37 farklı parça biçimi vardır: tek kare; 2'li, 3'lü, 4'lü ve 5'li yatay ve dikey çubuklar; 2×2 ve 3×3 kareler; 2×3 ve 3×2 dikdörtgenler; dört yönlü 3'lü L (küçük köşe); dört yönlü 4'lü L ile ayna görüntüsü olan ters L; dört yönlü T; yatay ve dikey S ile Z; beş hücreli büyük köşe parçasının dört yönü. Her ailenin kendi rengi vardır, böylece tahtaya bakınca hangi parçayı nereye koyduğunuzu kolayca hatırlarsınız. Renkler yalnızca görsel yardımdır; oyun kuralları renge bağlı değildir, bu yüzden renk ayrımı yapmakta zorlanan oyuncular da hiçbir dezavantaj yaşamaz.</p>
+
+      <h2>Kısa tarihçe: kare parçalı bulmacalar</h2>
+      <p>Birbirine kenardan bağlı karelerden oluşan şekillere matematikte polyomino denir. Terimi ABD'li matematikçi Solomon W. Golomb 1953'te kullanmaya başladı; beş kareli şekiller (pentomino) Martin Gardner'ın 1957'den itibaren Scientific American dergisindeki bulmaca köşesiyle geniş kitlelere ulaştı. Bu parçalarla bir alanı boşluksuz döşeme soruları, yirminci yüzyılın başındaki bulmaca kitaplarında bile yer alıyordu. Bilgisayar ve telefon çağında aynı fikir farklı kurallarla yeniden yorumlandı: kimi oyunlarda parçalar yukarıdan düşer, kimilerinde ise bu sayfadaki gibi sabit bir ızgarada istediğiniz yere bırakılır. Kare ızgaraya parça yerleştirip satır ve sütun temizleme fikri özellikle 2010'larda dokunmatik ekranlarla yaygınlaştı; çünkü sürükle-bırak hareketi parmakla doğal biçimde yapılır ve süre baskısı olmadığı için her yaştan oyuncuya hitap eder.</p>
+
+      <h2>Blok Düşürme ile farkı ne?</h2>
+      <p>Sitemizdeki Blok Düşürme oyununda parçalar yukarıdan düşer ve hız giderek artar; orada refleks belirleyicidir. Blok Bulmaca'da ise zaman sınırı yoktur, parçalar tahtanın herhangi bir yerine konabilir ve hem satırlar hem sütunlar temizlenir. Kısacası biri hız, diğeri planlama oyunudur. Sudoku ve 2048 gibi sakin mantık oyunlarını seviyorsanız Blok Bulmaca'yı da seveceksiniz.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Hamleleriniz, puanınız ve ayarlarınız hiçbir sunucuya gönderilmez; en yüksek skor, ses ve mod tercihleri yalnızca tarayıcınızın yerel depolamasında (localStorage) saklanır. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekorunuz sıfırlanır; depolama kapalıysa oyun yine çalışır, yalnızca rekor kaydedilmez. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Blok Bulmaca ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ilerleme yoktur.</p></details>
+      <details><summary>Oyun ne zaman biter?</summary><p>Tepside kalan parçaların hiçbiri tahtadaki boş alanlara sığmadığında oyun biter. Kolay modda parçanın dört yönü de denenir; biri sığıyorsa oyun sürer. Süre sınırı yoktur.</p></details>
+      <details><summary>Puan nasıl hesaplanıyor?</summary><p>Her yerleşen hücre 1 puandır. Temizlenen her hat 10 × (aynı hamledeki hat sayısı) puan getirir; art arda temizleme yapan hamlelerde bu puan kombo çarpanıyla çarpılır. Örneğin bir satırı tek karelerle tamamlamak toplam 18 puan, aynı hamlede bir satır ve bir sütun temizlemek 1 + 40 = 41 puan eder.</p></details>
+      <details><summary>Parçaları döndürebilir miyim?</summary><p>Klasik modda hayır; parçalar tepside göründüğü yönde yerleşir. Kolay modu açarsanız seçili parçayı R tuşuyla ya da Döndür düğmesiyle 90 derece çevirebilirsiniz. İki modun rekorları ayrı tutulur.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Parçayı parmağınızla tahtaya sürükleyin; parça parmağınızın biraz üstünde görünür, gölge ineceği yeri gösterir. İsterseniz parçaya dokunup hedef hücreye iki kez dokunarak da yerleştirebilirsiniz. Oyun 360 piksel genişliğindeki ekranlarda bile rahat dokunulacak hücre boyutunu korur.</p></details>
+      <details><summary>Sadece klavyeyle oynanabilir mi?</summary><p>Evet. 1, 2, 3 tuşları ya da Tab parçayı seçer, ok tuşları önizlemeyi taşır, Enter yerleştirir, Esc iptal eder. Kolay modda R döndürür. Konum ve sonuç bilgisi ekran okuyucuların okuyabileceği bir durum satırında da yazılır.</p></details>
+      <details><summary>Adil parça üretimi ne işe yarar?</summary><p>Açıkken, yeni gelen üç parçanın hiçbiri tahtaya sığmayacaksa biri sığabilecek bir parçayla değiştirilir. Böylece oyun yeni üçlü gelir gelmez bitmez. Kalan parçalar için garanti vermez; tamamen rastgele oynamak isterseniz kapatabilirsiniz.</p></details>
+      <details><summary>En yüksek skorum nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır.</p></details>
+      <details><summary>Aynı parçalarla tekrar oynayabilir miyim?</summary><p>Evet. Oyun bitince “Aynı parçalarla tekrar oyna” düğmesine basın ya da sayfa adresinin sonuna ?seed= ve bir sayı ekleyin. Aynı numarayla açılan oyunlarda parçalar aynı sırayla gelir.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../blok-dusurme/">Blok Düşürme</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../nonogram/">Nonogram</a></li>
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-blok-bulmaca-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Örümcek Solitaire Oyna – Ücretsiz Online Spider Solitaire (1, 2 ve 4 Renk)</title>
+  <meta name="description" content="Örümcek solitaire (Spider Solitaire) oyununu tarayıcınızda ücretsiz oynayın: 1, 2 ve 4 renk zorluk, sürükle-bırak, sınırsız geri al, ipucu, otomatik tamamla ve aynı dağıtımı tekrar oynama. Kurulum ve kayıt yok, veriniz cihazınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/orumcek-solitaire/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. Kart genişliği/yüksekliği cqw ile
+       (sütun genişliğinin yüzdesi) verilir; dikey bindirme payını game.js ekran genişliğine göre hesaplar. */
+    .game-box { margin-bottom: 64px; padding: 14px; }
+    @media (max-width: 480px) { .game-box { padding: 10px 6px; } }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .sp-options { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sp-options .ba-field select, .sp-seed input { width: 100%; min-height: 44px; padding: 8px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .sp-seed { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 10px 0 0; }
+    .sp-seed .ba-field { flex: 1 1 140px; min-width: 0; margin: 0; }
+    .sp-seed .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .sp-seed input[aria-invalid="true"] { border-color: var(--ba-danger); }
+    .game-box .ba-error { margin: 8px 0 0; overflow-wrap: anywhere; }
+    .sp-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+    .sp-toolbar .ba-btn { min-height: 44px; padding: 8px 14px; }
+    @media (max-width: 480px) { .sp-toolbar { gap: 6px; } .sp-toolbar .ba-btn { min-height: 40px; padding: 6px 10px; font-size: .88rem; } }
+    .sp-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; margin: 12px 0 8px; }
+    .sp-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 2px; text-align: center; min-width: 0; }
+    .sp-stats span { display: block; font-size: .6rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .02em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sp-stats strong { display: block; font-size: .98rem; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+    @media (min-width: 560px) { .sp-stats { gap: 6px; } .sp-stats > div { padding: 8px 10px; } .sp-stats span { font-size: .76rem; letter-spacing: .08em; } .sp-stats strong { font-size: 1.2rem; } }
+    .sp-record { margin: 0 0 8px; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .sp-record b { color: var(--ba-text); font-variant-numeric: tabular-nums; }
+    .sp-status { min-height: 2.9em; margin: 6px 0 12px; font-size: .95rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .game-box .ba-result { margin: 0 0 14px; }
+    .sp-keys { margin: 14px 0 0; font-size: .86rem; color: var(--ba-text-muted); overflow-wrap: anywhere; }
+    .sp-keys kbd, .ba-content kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+
+    /* Masa: üst sırada deste (1. sütun) ve 8 tamamlanan dizi yuvası (3-10. sütun), altta 10 sütun. */
+    .sp-board { position: relative; width: 100%; max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 14px 6px; padding-bottom: 8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    @media (max-width: 600px) { .sp-board { gap: 10px 3px; } }
+    @media (max-width: 420px) { .sp-board { gap: 8px 2px; } }
+    .game-box:fullscreen .sp-board { max-width: min(1200px, 100%); }
+    .sp-pile { position: relative; container-type: inline-size; min-width: 0; border-radius: 6px; }
+    .sp-stack { position: relative; width: 100%; height: 140cqw; }
+    .sp-slot { position: absolute; left: 0; top: 0; width: 100cqw; height: 140cqw; margin: 0; padding: 0; border: 2px dashed var(--ba-border-hover); border-radius: 8cqw; background: var(--ba-surface-2); color: var(--ba-text-muted); font: inherit; font-size: 40cqw; line-height: 1; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; }
+    button.sp-slot { cursor: pointer; }
+    .sp-doneslot { border-style: dotted; opacity: .7; }
+    .sp-card { position: absolute; left: 0; top: 0; width: 100cqw; height: 140cqw; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; display: block; text-align: left; font: inherit; font-family: var(--ba-font); border-radius: 8cqw; border: 1px solid #9d9792; background: #fff; color: #16181d; box-shadow: 0 1px 2px rgba(0, 0, 0, .28); -webkit-tap-highlight-color: transparent; overflow: hidden; }
+    .sp-card.red { color: #b3121f; }
+    button.sp-card { cursor: pointer; }
+    .sp-card[data-act="1"] { touch-action: none; }
+    .sp-card .c { position: absolute; left: 6cqw; top: 2px; font-size: clamp(10px, 34cqw, 17px); line-height: 1; font-weight: 700; letter-spacing: -.05em; white-space: nowrap; }
+    .sp-card .m { position: absolute; left: 0; right: 0; top: 34cqw; bottom: 0; display: grid; place-items: center; font-size: 54cqw; line-height: 1; }
+    .sp-card .m.f { font-size: 48cqw; font-weight: 700; bottom: 26cqw; }
+    .sp-card .m2 { position: absolute; left: 0; right: 0; bottom: 8cqw; text-align: center; font-size: 28cqw; line-height: 1; }
+    .sp-card.down { background: repeating-linear-gradient(45deg, #7b2331 0 5px, #8c2c3c 5px 10px); border-color: #5e1a25; box-shadow: inset 0 0 0 2px #fff, 0 1px 2px rgba(0, 0, 0, .3); }
+    .sp-card .cnt { position: absolute; left: 50%; bottom: 10cqw; transform: translateX(-50%); background: #fff; color: #5e1a25; font-size: clamp(9px, 28cqw, 15px); font-weight: 700; line-height: 1.2; padding: 1px 6px; border-radius: 99px; font-variant-numeric: tabular-nums; }
+    .sp-card.sel { outline: 3px solid var(--ba-primary); outline-offset: 0; box-shadow: 0 0 0 5px rgba(123, 35, 49, .22), 0 4px 10px rgba(0, 0, 0, .3); z-index: 3; }
+    .sp-card:focus-visible, .sp-slot:focus-visible { outline: 3px solid #1a73e8; outline-offset: 1px; z-index: 4; }
+    .is-hint { outline: 3px dashed var(--ba-success); outline-offset: 1px; z-index: 4; animation: spPulse 1s ease-in-out infinite; }
+    @keyframes spPulse { 50% { box-shadow: 0 0 0 6px rgba(31, 122, 77, .3); } }
+    .is-dragging { opacity: .25; }
+    .sp-pile.drop-ok { outline: 3px dashed var(--ba-success); outline-offset: 2px; }
+    .sp-ghost { position: absolute; z-index: 60; container-type: inline-size; pointer-events: none; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .35)); }
+    .sp-ghost .sp-card { box-shadow: none; }
+    .sp-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 70; }
+    .sp-fx i { position: absolute; top: -2.5rem; left: var(--x); font-style: normal; font-size: 2rem; line-height: 1; color: var(--ba-text); animation: spFall var(--d) linear var(--dl) infinite; }
+    .sp-fx i.r { color: #d6293e; }
+    @keyframes spFall { from { top: -2.5rem; transform: rotate(0deg); } to { top: 100%; transform: rotate(300deg); } }
+    @media (prefers-reduced-motion: reduce) { .sp-fx { display: none; } .is-hint { animation: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Örümcek Solitaire (Spider Solitaire) – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz örümcek solitaire: iki deste, 10 sütun, 1, 2 ve 4 renk zorluk, sürükle-bırak, sınırsız geri al, ipucu, otomatik tamamla ve tohumlu dağıtım.","applicationCategory":"Game","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":"SinglePlayer","genre":["Kart oyunu","Pasyans","Bulmaca"],"inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/orumcek-solitaire/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Örümcek solitaire nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Amaç, aynı takımdan Papaz'dan As'a sıralanmış sekiz diziyi masadan kaldırmaktır. Bir kartı kendinden bir büyük herhangi bir kartın üzerine koyarsınız; aynı takımdan ardışık kartlar birlikte taşınır. Hamle kalmayınca desteden her sütuna birer kart dağıtırsınız. Papaz'dan As'a dizi tamamlanınca 13 kart kendiliğinden kalkar."}},
+  {"@type":"Question","name":"1 renk, 2 renk ve 4 renk arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Renk sayısı destedeki takım sayısıdır. 1 renkte 104 kartın hepsi maçadır ve her sıralı dizi birlikte taşınır; en kolay seviyedir. 2 renkte maça ve kupa, 4 renkte dört takımın hepsi vardır. Takım arttıkça birlikte taşınabilen diziler azalır ve oyun zorlaşır."}},
+  {"@type":"Question","name":"Neden birkaç kartı birlikte taşıyamıyorum?","acceptedAnswer":{"@type":"Answer","text":"Birlikte taşınan kartlar aynı takımdan ve ardışık azalan olmalıdır. Örneğin maça 9, maça 8 ve maça 7 birlikte gider; maça 9 ile kupa 8 ise birlikte gitmez. Karışık bir dizinin yalnızca üstteki düzgün parçasını taşıyabilir, gerisini boş sütun yardımıyla parça parça düzenleyebilirsiniz."}},
+  {"@type":"Question","name":"Boş sütun varken neden dağıtım yapamıyorum?","acceptedAnswer":{"@type":"Answer","text":"Klasik kurala göre her sütunda en az bir kart olmadan desteden dağıtılamaz. Boş sütunlara birer kart taşıdıktan sonra dağıtabilirsiniz. Daha rahat oynamak isterseniz \"Boş sütunda dağıtım\" ayarını \"İzin ver\" yapabilirsiniz."}},
+  {"@type":"Question","name":"Puan nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun 500 puanla başlar. Her taşıma ve her dağıtım puandan 1 düşer, tamamlanan her dizi 100 puan ekler. Puan sıfırın altına inmez; geri aldığınızda puan ve hamle sayısı önceki değerine döner."}},
+  {"@type":"Question","name":"Aynı dağıtımı tekrar oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Her dağıtımın 1 ile 999999 arasında bir numarası vardır. \"Tekrar oyna\" düğmesi aynı dağıtımı kartları aynı sırayla yeniden kurar. \"Dağıtım no\" kutusuna bir numara yazarsanız o dağıtım her cihazda aynı sırayla açılır."}},
+  {"@type":"Question","name":"Klavyeyle ve telefonda oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tab ile sütunlar arasında gezinir, Enter ile diziyi seçip hedef sütunda yeniden Enter ile bırakırsınız. D desteden dağıtır, Ctrl+Z geri alır, H ipucu verir. Telefonda kartları parmağınızla sürükleyebilir ya da dokunarak seçip bırakabilirsiniz; on sütun 360 piksel genişlikteki ekrana sığar."}},
+  {"@type":"Question","name":"İstatistiklerim nerede saklanıyor, internetsiz oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Oynanan ve kazanılan oyunlar, en yüksek puan ve en iyi süre yalnızca tarayıcınızın localStorage alanında, her zorluk için ayrı tutulur ve hiçbir sunucuya gönderilmez. Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; siteyi uygulama olarak yüklerseniz çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Örümcek Solitaire</span> Oyna – Ücretsiz Online Spider Solitaire (1, 2 ve 4 Renk)</h1>
+      <p class="lead">İki desteyle oynanan klasik örümcek pasyansını tarayıcınızda oynayın: aynı renkten Papaz'dan As'a dizileri kurun ve sekiz diziyi masadan kaldırın. 1, 2 ve 4 renk zorluk, sınırsız geri al, ipucu, otomatik tamamla ve aynı dağıtımı tekrar oynama seçeneği var; kurulum, üyelik ve indirme gerekmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veriniz cihazınızdan çıkmaz</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Örümcek Solitaire oyunu</h2>
+      <div class="sp-options">
+        <div class="ba-field"><label for="sp-suits">Zorluk</label>
+          <select id="sp-suits">
+            <option value="1">1 renk (kolay)</option>
+            <option value="2">2 renk (orta)</option>
+            <option value="4">4 renk (zor)</option>
+          </select></div>
+        <div class="ba-field"><label for="sp-rule">Boş sütunda dağıtım</label>
+          <select id="sp-rule">
+            <option value="strict">Engelle (klasik)</option>
+            <option value="free">İzin ver (kolay)</option>
+          </select></div>
+      </div>
+      <form class="sp-seed" id="sp-seed-form" novalidate>
+        <div class="ba-field"><label for="sp-seed-in">Dağıtım no (isteğe bağlı)</label>
+          <input type="text" id="sp-seed-in" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="örn. 4242" aria-describedby="sp-error"></div>
+        <button id="sp-seed-go" class="ba-btn" type="submit">Bu dağıtımı oyna</button>
+      </form>
+      <p class="ba-error" id="sp-error" role="alert" hidden></p>
+      <div class="sp-toolbar" role="group" aria-label="Oyun komutları">
+        <button id="sp-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button>
+        <button id="sp-replay" class="ba-btn" type="button" title="Aynı dağıtımı baştan oyna">Tekrar oyna</button>
+        <button id="sp-deal" class="ba-btn" type="button" aria-keyshortcuts="D">Dağıt (5)</button>
+        <button id="sp-undo" class="ba-btn" type="button" aria-keyshortcuts="Control+Z" disabled>Geri al</button>
+        <button id="sp-hint" class="ba-btn" type="button" aria-keyshortcuts="H">İpucu</button>
+        <button id="sp-auto" class="ba-btn" type="button" disabled>Otomatik tamamla</button>
+        <button id="sp-full" class="ba-btn" type="button" aria-pressed="false">Tam ekran</button>
+      </div>
+      <div class="sp-stats" role="group" aria-label="Oyun durumu">
+        <div><span>Hamle</span><strong id="sp-moves">0</strong></div>
+        <div><span>Puan</span><strong id="sp-score">500</strong></div>
+        <div><span>Süre</span><strong id="sp-time">0:00</strong></div>
+        <div><span>Dizi</span><strong id="sp-sets">0/8</strong></div>
+        <div><span>Dağıtım</span><strong id="sp-seed">–</strong></div>
+      </div>
+      <p class="sp-record" id="sp-record">İstatistik (<b id="sp-st-mode">1 renk</b>): oynanan <b id="sp-st-played">0</b> · kazanılan <b id="sp-st-won">0</b> · oran <b id="sp-st-rate">—</b> · en yüksek puan <b id="sp-st-score">—</b> · en iyi süre <b id="sp-st-time">—</b></p>
+      <p class="sp-status" id="sp-status" role="status" aria-live="polite"></p>
+      <div class="ba-result" id="sp-result" hidden>
+        <h3 id="sp-result-title">Tebrikler, oyunu kazandınız!</h3>
+        <p id="sp-result-text"></p>
+        <div class="ba-actions"><button id="sp-again" class="ba-btn ba-btn-success" type="button">Yeni oyun</button></div>
+      </div>
+      <div class="sp-board" id="sp-board" role="group" aria-label="Örümcek solitaire masası. Tab ile sütunlar arasında gezinin, oklarla sütun içinde ve sütunlar arasında dolaşın, Enter ile diziyi seçin ya da bırakın. D dağıtır, Ctrl+Z geri alır.">
+        <div class="sp-pile" id="sp-stock" data-pile="s" data-n="0" role="group" aria-label="Deste" style="grid-column:1;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d0" data-pile="d" data-n="0" aria-hidden="true" style="grid-column:3;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d1" data-pile="d" data-n="1" aria-hidden="true" style="grid-column:4;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d2" data-pile="d" data-n="2" aria-hidden="true" style="grid-column:5;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d3" data-pile="d" data-n="3" aria-hidden="true" style="grid-column:6;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d4" data-pile="d" data-n="4" aria-hidden="true" style="grid-column:7;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d5" data-pile="d" data-n="5" aria-hidden="true" style="grid-column:8;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d6" data-pile="d" data-n="6" aria-hidden="true" style="grid-column:9;grid-row:1"></div>
+        <div class="sp-pile" id="sp-d7" data-pile="d" data-n="7" aria-hidden="true" style="grid-column:10;grid-row:1"></div>
+        <div class="sp-pile" id="sp-t0" data-pile="t" data-n="0" role="group" style="grid-column:1;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t1" data-pile="t" data-n="1" role="group" style="grid-column:2;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t2" data-pile="t" data-n="2" role="group" style="grid-column:3;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t3" data-pile="t" data-n="3" role="group" style="grid-column:4;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t4" data-pile="t" data-n="4" role="group" style="grid-column:5;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t5" data-pile="t" data-n="5" role="group" style="grid-column:6;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t6" data-pile="t" data-n="6" role="group" style="grid-column:7;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t7" data-pile="t" data-n="7" role="group" style="grid-column:8;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t8" data-pile="t" data-n="8" role="group" style="grid-column:9;grid-row:2"></div>
+        <div class="sp-pile" id="sp-t9" data-pile="t" data-n="9" role="group" style="grid-column:10;grid-row:2"></div>
+      </div>
+      <p class="visually-hidden" id="sp-done-label">Tamamlanan diziler: 0/8</p>
+      <p class="sp-keys">Klavye: <kbd>Tab</kbd> sütun seçer, <kbd>Enter</kbd> diziyi seçer ya da bırakır, oklar sütun içinde gezer, <kbd>D</kbd> dağıtır, <kbd>Ctrl</kbd>+<kbd>Z</kbd> geri alır, <kbd>H</kbd> ipucu verir, <kbd>Esc</kbd> seçimi kaldırır. Kartın üstüne çift tıklamak diziyi en uygun yere gönderir.</p>
+      <noscript><p class="ba-note">Örümcek solitaire JavaScript gerektirir; lütfen tarayıcınızda JavaScript'i etkinleştirin.</p></noscript>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-orumcek-solitaire-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Örümcek Solitaire nedir?</h2>
+      <p>Örümcek solitaire, İngilizce adıyla Spider Solitaire, iki deste iskambil kağıdıyla, yani 104 kartla oynanan tek kişilik bir pasyans türüdür. Adını, örümceğin sekiz bacağına gönderme yapan sekiz tamamlanmış diziden alır: oyunu kazanmak için aynı takımdan Papaz'dan As'a kadar sıralanmış sekiz diziyi masadan kaldırmanız gerekir. Klasik solitaire'den (Klondike) en önemli farkı, kartların temele tek tek değil, ancak on üç kartlık dizi eksiksiz kurulduğunda topluca gitmesidir. Bu yüzden oyun daha uzun soluklu, daha planlı ve her hamlenin birkaç adım sonrasını düşünmeyi gerektiren bir yapıdadır.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Kartlar resim dosyası değil, HTML ve CSS ile çizilir; oyun için dışarıdan hiçbir dosya indirilmez ve sayfa açıldıktan sonra bağlantınız kesilse bile oyun sürer. Üyelik, kurulum ya da dosya yükleme yoktur. Saklanan tek veri zorluk ve dağıtım kuralı ayarlarınız ile bu cihazdaki istatistiklerinizdir; bunlar da yalnızca tarayıcınızın yerel belleğinde durur ve hiçbir sunucuya gönderilmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Masayı tanıyın.</strong> Altta on sütun vardır. İlk dört sütunda altışar, diğer altı sütunda beşer kart bulunur; toplam 54 kart. Her sütunun yalnızca en üstteki kartı açıktır. Sol üstteki deste kalan 50 kartı tutar, sağ üstteki sekiz yuva ise tamamladığınız dizileri gösterir.</li>
+        <li><strong>Kartları azalan sırayla dizin.</strong> Bir kartı kendinden tam bir büyük kartın üzerine koyabilirsiniz: 7'yi 8'in, Vale'yi Kız'ın üzerine. Bu hamlede takım fark etmez; kupa 7, maça 8'in üzerine rahatlıkla konur.</li>
+        <li><strong>Aynı renkten diziler kurun.</strong> Birden fazla kartı tek hamlede taşımak için kartların aynı takımdan ve ardışık azalan olması gerekir; örneğin maça 9, maça 8 ve maça 7. Takımı karışık dizilerin yalnızca üstteki düzgün parçası birlikte taşınır.</li>
+        <li><strong>Kapalı kartları açın, boş sütunları kullanın.</strong> Bir sütundaki açık kartları başka yere taşıdığınızda altındaki kapalı kart kendiliğinden açılır. Boşalan bir sütuna herhangi bir kart ya da geçerli bir dizi koyabilirsiniz.</li>
+        <li><strong>Hamle kalmayınca dağıtın.</strong> Desteye dokunduğunuzda ya da <kbd>D</kbd> tuşuna bastığınızda her sütuna birer açık kart gelir; toplam beş dağıtım hakkınız vardır. Aynı takımdan Papaz'dan As'a dizi oluştuğunda on üç kart kendiliğinden masadan kalkar. Sekiz dizi kalktığında oyunu kazanırsınız.</li>
+      </ol>
+
+      <h2>Kuralların ayrıntıları</h2>
+      <ul>
+        <li><strong>Dağıtım:</strong> 104 kart karıştırılır. 54 kart on sütuna dağıtılır (ilk dört sütuna altı, diğerlerine beş) ve yalnızca her sütunun en üstteki kartı açık bırakılır. Kalan 50 kart, onar kartlık beş dağıtım olarak destede bekler.</li>
+        <li><strong>Tek kart taşıma:</strong> Açık bir kart, kendinden tam bir büyük değerdeki herhangi bir kartın üzerine konur. As en küçük, Papaz en büyük karttır. As'ın üzerine hiçbir kart konamaz; Papaz ise ondan büyük kart olmadığı için yalnızca boş sütuna taşınabilir.</li>
+        <li><strong>Dizi taşıma:</strong> Aynı takımdan ve ardışık azalan kartlar tek hamlede birlikte taşınır. Dizinin en alttaki kartı hedefe uymalıdır. Seçtiğiniz dizinin tamamı hedefe uymuyorsa oyun, hedefe uyan üst parçayı taşır: maça 9-8-7 seçiliyken kupa 8'in üzerine yalnızca maça 7 gider.</li>
+        <li><strong>Boş sütun:</strong> Boş sütuna her kart ya da geçerli her dizi konabilir; Papaz şartı yoktur.</li>
+        <li><strong>Desteden dağıtım:</strong> Her sütuna birer açık kart gelir. Klasik kurala göre boş sütun varken dağıtım yapılamaz; ayarlardan "İzin ver" seçeneğini işaretlerseniz bu kural gevşer.</li>
+        <li><strong>Dizi tamamlama:</strong> Bir sütunun üstünde aynı takımdan Papaz'dan As'a on üç kart oluştuğunda dizi kendiliğinden kaldırılır ve sağ üstteki yuvalardan birine yerleşir. Altında kapalı kart varsa açılır. Bu, dağıtımla gelen kartın diziyi tamamladığı durumlarda da geçerlidir.</li>
+        <li><strong>Kazanma:</strong> Sekiz dizinin tamamı kaldırıldığında oyun kazanılır ve kazanma ekranı açılır.</li>
+      </ul>
+
+      <h2>1, 2 ve 4 renk: hangi zorluk size uygun?</h2>
+      <p>Örümcek solitaire'de "renk" sözcüğü aslında kartın takımını anlatır. Seçtiğiniz zorluk, 104 kartın kaç farklı takımdan oluşacağını belirler ve oyunun karakterini kökten değiştirir.</p>
+      <ul>
+        <li><strong>1 renk (kolay):</strong> Kartların hepsi maçadır, yani sekiz maça seti vardır. Her kart kendinden bir büyük her kartla aynı takımdan olduğu için kurduğunuz her sıralı dizi birlikte taşınabilir. Kuralları öğrenmek ve rahatlamak için idealdir; dağıtımların büyük çoğunluğu dikkatli oyunla kazanılır.</li>
+        <li><strong>2 renk (orta):</strong> Dört maça ve dört kupa seti vardır. Kupa 7'yi maça 8'in üzerine koyabilirsiniz, ama bu iki kart artık birlikte taşınamaz. Hangi kartı nereye koyduğunuz önem kazanır; dizileri takımlara göre ayırmayı öğrenmek gerekir.</li>
+        <li><strong>4 renk (zor):</strong> Maça, kupa, karo ve sinekten ikişer set vardır. Maça ile sinek ikisi de siyah görünse de farklı takımdır; maça 9 ile sinek 8 birlikte taşınamaz. En zor seviyedir; deneyimli oyuncular bile her dağıtımı kazanamaz.</li>
+      </ul>
+      <p>Zorluğu oyun sırasında değiştirirseniz ayar kaydedilir ve bir sonraki dağıtımda geçerli olur; henüz hamle yapmadıysanız aynı dağıtım seçtiğiniz zorlukla hemen yeniden kurulur. İstatistikler her zorluk için ayrı tutulur, böylece 1 renkteki başarı oranınız 4 renkteki sonuçlarınızla karışmaz.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Sürükle-bırak:</strong> Açık bir kartı fareyle ya da parmağınızla tutup hedef sütuna sürükleyin; üstündeki aynı renkten kartlar da onunla birlikte gelir. Geçersiz bir yere bırakırsanız kartlar yerine döner ve durum satırı nedenini ya da ne yapmanız gerektiğini yazar.</li>
+        <li><strong>Tıkla-tıkla:</strong> Bir karta dokunarak diziyi seçin, ardından hedef sütuna dokunun. Seçili kartlar çerçeveyle işaretlenir; aynı karta yeniden dokunmak seçimi kaldırır.</li>
+        <li><strong>Çift tıklama:</strong> Bir kartın üzerine iki kez hızlıca dokunursanız dizi en uygun yere gider: önce aynı renkten bir büyük kart, yoksa herhangi bir büyük kart, o da yoksa boş sütun aranır.</li>
+        <li><strong>Klavye:</strong> <kbd>Tab</kbd> sütunlar arasında dolaşır ve odağı her sütunda taşınabilir dizinin ilk kartına getirir. <kbd>Enter</kbd> ya da Boşluk diziyi seçer; hedef sütuna gidip yeniden <kbd>Enter</kbd>'a basmak bırakır. Yukarı ve aşağı oklar sütun içinde, sağ ve sol oklar sütunlar arasında gezinir. <kbd>D</kbd> desteden dağıtır, <kbd>Ctrl</kbd>+<kbd>Z</kbd> son hamleyi geri alır, <kbd>H</kbd> ipucu verir, <kbd>Esc</kbd> seçimi kaldırır.</li>
+        <li><strong>Geri al:</strong> Sınırsızdır. Oyunun başına kadar her taşımayı ve her dağıtımı sırayla geri alabilirsiniz.</li>
+        <li><strong>İpucu:</strong> Geçerli hamleleri sırayla gösterir; düğmeye her basışınızda bir sonraki öneriye geçer. Önce diziyi tamamlayan hamleler, sonra aynı renkten diziyi uzatanlar, ardından kapalı kart açanlar ve sütun boşaltanlar gelir; işe yarar hamle kalmadıysa desteden dağıtmanızı önerir.</li>
+        <li><strong>Otomatik tamamla:</strong> Deste bittiğinde ve masadaki bütün kartlar açık olduğunda etkinleşir. Kalan kartlar için bir çözüm arar, bulursa hamleleri sizin yerinize oynar; bulamazsa bunu söyler ve oyunu size bırakır.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar; tarayıcınız desteklemiyorsa düğme görünmez.</li>
+      </ul>
+
+      <h2>Puanlama</h2>
+      <p>Oyun 500 puanla başlar. Her taşıma ve her dağıtım bir hamle sayılır ve puandan 1 düşer. Tamamlanan her dizi 100 puan kazandırır. Böylece sekiz diziyi az hamleyle tamamlayan oyuncu en yüksek puana ulaşır: örneğin 300 hamlede bitirilen bir oyun 500 − 300 + 800 = 1000 puan getirir. Puan sıfırın altına inmez. Geri aldığınızda hamle sayısı ve puan, geri alınan hamleden önceki değerine döner. Süre ilk hamlenizle başlar, sekme arka plandayken durur ve oyun kazanıldığında donar. En yüksek puan ve en iyi süre yalnızca kazanılan oyunlarda güncellenir.</p>
+
+      <div class="ba-ad" data-slot="oyun-orumcek-solitaire-b" aria-label="Reklam"></div>
+
+      <h2>Kazanma şansınızı artıran strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce kapalı kartları açın.</strong> Oyunun asıl düşmanı kapalı kartlardır. İki hamle arasında kalırsanız, kapalı kart açanı ya da en çok kapalı kart barındıran sütunu küçülteni seçin.</li>
+        <li><strong>Mümkünse aynı renkten diziyi tercih edin.</strong> Bir 7'yi iki farklı 8'in üzerine koyabiliyorsanız, aynı takımdan olanı seçin. Aynı renkten diziler birlikte taşınır; karışık diziler ise ileride sizi bağlar.</li>
+        <li><strong>Boş sütunu değerli bir araç olarak saklayın.</strong> Boş sütun, karışık dizileri parça parça yeniden düzenlemenizi ve kapalı kartlara ulaşmanızı sağlar. Onu tek bir kartla aceleyle doldurmak çoğu zaman fırsat kaybıdır.</li>
+        <li><strong>Dağıtmadan önce masayı düzenleyin.</strong> Dağıtım her sütuna rastgele bir kart koyar ve kurduğunuz dizilerin üstünü kapatabilir. Önce yapabileceğiniz tüm yararlı hamleleri yapın, aynı renkten dizileri mümkün olduğunca birleştirin, sonra dağıtın.</li>
+        <li><strong>Papazları dikkatli yerleştirin.</strong> Papaz yalnızca boş sütuna gidebilir. Boş sütunu bir Papaz'a vermek, ancak onun altından kapalı kart açılacaksa ya da üzerine aynı renkten dizi kurabilecekseniz mantıklıdır.</li>
+        <li><strong>Kısa sütunları boşaltmayı hedefleyin.</strong> Az kartlı bir sütunu tamamen boşaltmak, size yeni bir boş sütun kazandırır. Boş sütun sayısı arttıkça oyunun neredeyse bütün düğümleri çözülebilir hâle gelir.</li>
+        <li><strong>Karışık dizileri bölerek taşıyın.</strong> Uzun ama karışık bir diziyi taşımanız gerekiyorsa üstteki aynı renkten parçayı boş sütuna, alttaki parçayı hedefe, sonra ilk parçayı geri taşıyın. Bu yöntem 2 ve 4 renkte vazgeçilmezdir.</li>
+        <li><strong>Geri al ve ipucunu öğrenmek için kullanın.</strong> Sınırsız geri alma farklı yolları denemenize izin verir. Puan peşindeyseniz her hamlenin 1 puan götürdüğünü unutmayın.</li>
+      </ul>
+
+      <h2>Her dağıtım kazanılabilir mi? Dağıtım numarası ne işe yarar?</h2>
+      <p>Hayır, her dağıtım çözülemeyebilir. Kartlar rastgele karıştırılır ve bu sayfa kazanılabilirlik garantisi vermez. 1 renkli oyunda dağıtımların büyük çoğunluğu iyi oyunla çözülür; 4 renkli oyunda ise kapalı kartlar ve takım karışıklığı yüzünden kazanma oranı belirgin biçimde düşer. Bazı dağıtımlar en dikkatli oyunla bile kilitlenir; kaybetmek bu oyunun doğal parçasıdır.</p>
+      <p>Her dağıtımın 1 ile 999999 arasında bir numarası vardır ve oyun kutusundaki "Dağıtım" alanında görünür. "Tekrar oyna" aynı numaralı dağıtımı kartlar aynı sırada olacak biçimde yeniden kurar; kaybettiğiniz bir oyunu farklı bir planla deneyebilirsiniz. "Dağıtım no" kutusuna bir numara yazıp oynarsanız, o numara her cihazda ve her seferinde aynı kart sırasını üretir. Bir arkadaşınızla aynı numarayı oynayıp puanlarınızı karşılaştırabilirsiniz. Numara yalnızca rakamlardan oluşmalıdır; hatalı bir değer yazarsanız neyi düzeltmeniz gerektiğini söyleyen bir uyarı görürsünüz.</p>
+
+      <h2>Örümcek solitaire'in kısa tarihi</h2>
+      <p>Tek kişilik iskambil oyunları, yani pasyanslar, on sekizinci yüzyıl Avrupa'sından bu yana oynanır ve yüzlerce çeşidi vardır. Örümcek, iki desteyle oynanan pasyansların en bilinenlerindendir ve yirminci yüzyılda yayımlanan pasyans kitaplarında, ustalık isteyen bir oyun olarak yer alır. Asıl yaygınlığını ise kişisel bilgisayarlar sağladı: 1990'ların sonu ile 2000'lerin başında masaüstü işletim sistemlerinde hazır oyun olarak sunulmasıyla milyonlarca kişi oyunu 1, 2 ve 4 renkli zorluk seviyeleriyle tanıdı. Bugün hem kısa molalarda zihni dinlendiren hem de 4 renkli sürümüyle ciddi planlama isteyen bir klasik olarak oynanmaya devam ediyor.</p>
+      <p>Bu sürümdeki kart çizimleri ve oyun mantığı sıfırdan yazılmıştır; hiçbir şirketin görseli, adı ya da puan tablosu kullanılmaz. Oyunda para, bahis, jeton ya da ödül yoktur; yalnızca eğlence ve zihin egzersizi amaçlıdır.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızdan çıkmaz</h2>
+      <p>Oyunun kendisinde hesap, analiz ya da izleme kodu yoktur. Hamleleriniz, puanlarınız ve istatistikleriniz hiçbir yere gönderilmez; yalnızca tarayıcınızın localStorage alanında tutulur. Bu kayıt başka bir cihaza taşınmaz ve tarayıcı verilerini sildiğinizde kaybolur. Kayıt herhangi bir nedenle bozulursa oyun çökmez, varsayılan ayarlarla yeniden başlar. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalısınız?</h2>
+      <ul>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve oynayın. İsterseniz tarayıcıdan "uygulama olarak yükle" diyerek ana ekranınıza ekleyebilirsiniz.</li>
+        <li><strong>Mobil uyumlu:</strong> 360 piksel genişlikteki telefonda on sütunun hepsi ekrana sığar. Kartların üst üste binme payı ekran genişliğine ve sütun uzunluğuna göre kendiliğinden ayarlanır; yatay kaydırma gerekmez.</li>
+        <li><strong>Dürüst tasarım:</strong> Sahte geri sayım, yanıltıcı düğme ya da "premium" tuzağı yoktur. Bütün özellikler herkese açıktır.</li>
+        <li><strong>Erişilebilirlik:</strong> Oyun klavyeyle baştan sona oynanır, ekran okuyucuya durum bildirimleri yapılır ve "hareketi azalt" tercihinde kazanma animasyonu kapanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Örümcek solitaire nasıl oynanır?</summary><p>Amaç, aynı takımdan Papaz'dan As'a sıralanmış sekiz diziyi masadan kaldırmaktır. Bir kartı kendinden bir büyük herhangi bir kartın üzerine koyarsınız; aynı takımdan ardışık kartlar birlikte taşınır. Hamle kalmayınca desteden her sütuna birer kart dağıtırsınız. Papaz'dan As'a dizi tamamlanınca 13 kart kendiliğinden kalkar.</p></details>
+        <details><summary>1 renk, 2 renk ve 4 renk arasındaki fark nedir?</summary><p>Renk sayısı destedeki takım sayısıdır. 1 renkte 104 kartın hepsi maçadır ve her sıralı dizi birlikte taşınır; en kolay seviyedir. 2 renkte maça ve kupa, 4 renkte dört takımın hepsi vardır. Takım arttıkça birlikte taşınabilen diziler azalır ve oyun zorlaşır.</p></details>
+        <details><summary>Neden birkaç kartı birlikte taşıyamıyorum?</summary><p>Birlikte taşınan kartlar aynı takımdan ve ardışık azalan olmalıdır. Örneğin maça 9, maça 8 ve maça 7 birlikte gider; maça 9 ile kupa 8 ise birlikte gitmez. Karışık bir dizinin yalnızca üstteki düzgün parçasını taşıyabilir, gerisini boş sütun yardımıyla parça parça düzenleyebilirsiniz.</p></details>
+        <details><summary>Boş sütun varken neden dağıtım yapamıyorum?</summary><p>Klasik kurala göre her sütunda en az bir kart olmadan desteden dağıtılamaz. Boş sütunlara birer kart taşıdıktan sonra dağıtabilirsiniz. Daha rahat oynamak isterseniz "Boş sütunda dağıtım" ayarını "İzin ver" yapabilirsiniz.</p></details>
+        <details><summary>Puan nasıl hesaplanır?</summary><p>Oyun 500 puanla başlar. Her taşıma ve her dağıtım puandan 1 düşer, tamamlanan her dizi 100 puan ekler. Puan sıfırın altına inmez; geri aldığınızda puan ve hamle sayısı önceki değerine döner.</p></details>
+        <details><summary>Aynı dağıtımı tekrar oynayabilir miyim?</summary><p>Evet. Her dağıtımın 1 ile 999999 arasında bir numarası vardır. "Tekrar oyna" düğmesi aynı dağıtımı kartları aynı sırayla yeniden kurar. "Dağıtım no" kutusuna bir numara yazarsanız o dağıtım her cihazda aynı sırayla açılır.</p></details>
+        <details><summary>Klavyeyle ve telefonda oynanır mı?</summary><p>Evet. Tab ile sütunlar arasında gezinir, Enter ile diziyi seçip hedef sütunda yeniden Enter ile bırakırsınız. D desteden dağıtır, Ctrl+Z geri alır, H ipucu verir. Telefonda kartları parmağınızla sürükleyebilir ya da dokunarak seçip bırakabilirsiniz; on sütun 360 piksel genişlikteki ekrana sığar.</p></details>
+        <details><summary>İstatistiklerim nerede saklanıyor, internetsiz oynanır mı?</summary><p>Oynanan ve kazanılan oyunlar, en yüksek puan ve en iyi süre yalnızca tarayıcınızın localStorage alanında, her zorluk için ayrı tutulur ve hiçbir sunucuya gönderilmez. Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; siteyi uygulama olarak yüklerseniz çevrimdışı da açılır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../solitaire/">Solitaire (Klondike)</a></li>
+        <li><a href="../mahjong-eslestirme/">Mahjong Eşleştirme</a></li>
+        <li><a href="../pisti/">Pişti</a></li>
+        <li><a href="../batak/">Batak</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-orumcek-solitaire-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

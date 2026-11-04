@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kızma Birader Oyna – Bilgisayara Karşı veya Aynı Cihazda 2-4 Kişi (Ücretsiz)</title>
+  <meta name="description" content="Ücretsiz Kızma Birader oyna: bilgisayara karşı 3 zorluk seviyesi ya da aynı cihazda 2-4 kişi. Klasik kurallar, zorunlu vuruş ve güvenli başlangıç seçenekleri, otomatik kayıt. Kayıt yok, kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kizma-birader/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyun kutusu ortak düzen */
+    .game-box { padding: 16px; }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    @media (max-width: 400px) { .game-box { padding: 12px 10px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .gb-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 36px; font-size: .85rem; padding: 0 12px; }
+    .gb-warn { margin: 10px 0 0; min-height: 1.2em; font-size: .92rem; color: var(--ba-danger); font-weight: 600; }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-content kbd, .kb-help kbd { font-family: var(--ba-mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--ba-border); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface-2); }
+
+    /* Ayar ekranı */
+    .kb-setup { max-width: 760px; margin: 0 auto; }
+    .kb-rules { margin: 0; padding: 10px 16px 8px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); display: grid; gap: 2px; min-width: 0; }
+    .kb-rules legend { font-weight: 600; font-size: .9rem; padding: 0 6px; }
+    .kb-check { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 8px 0; cursor: pointer; font-size: .95rem; color: var(--ba-text); }
+    .kb-check input { flex: none; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--ba-primary); }
+    .kb-check small { display: block; color: var(--ba-text-muted); font-size: .85rem; }
+    .kb-note { margin: 10px 0 0; font-size: .9rem; color: var(--ba-text-muted); overflow-wrap: anywhere; }
+    #ist-sifirla { margin-top: 10px; min-height: 40px; padding: 6px 14px; font-size: .88rem; }
+
+    /* Oyun düzeni */
+    .kb-layout { display: grid; gap: 16px; }
+    @media (min-width: 860px) { .kb-layout { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; } }
+    .kb-boardcol, .kb-side { min-width: 0; }
+    .kb-status { margin: 0 0 10px; padding: 10px 14px; min-height: 3em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; overflow-wrap: anywhere; }
+    .kb-boardwrap { max-width: 600px; margin: 0 auto; }
+    .kb-svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; border-radius: 10px; box-shadow: 0 4px 14px rgba(30, 33, 38, .22); }
+
+    /* Renkler (tahta temadan bağımsızdır; renk körlüğü için şekiller ayrıca ayırt eder) */
+    .kb-c0 { --kb: #c62828; --kb-soft: #f9d9d6; --kb-on: #ffffff; }
+    .kb-c1 { --kb: #1d5bbf; --kb-soft: #d8e5f8; --kb-on: #ffffff; }
+    .kb-c2 { --kb: #1d7a3b; --kb-soft: #d6eedd; --kb-on: #ffffff; }
+    .kb-c3 { --kb: #e9b60c; --kb-soft: #fbefc4; --kb-on: #2a2000; }
+    .kb-bg { fill: #f5ead0; stroke: #8a6a44; stroke-width: 1; }
+    .kb-line { fill: none; stroke: #9a8566; stroke-width: .8; }
+    .kb-yardbg { fill: var(--kb-soft); stroke: var(--kb); stroke-width: .7; }
+    .kb-yardbg.is-turn { stroke-width: 1.6; stroke-dasharray: 3 1.6; }
+    .kb-sq { fill: #fffdf7; stroke: #5a4a36; stroke-width: .55; }
+    .kb-sq.kb-start { fill: var(--kb); stroke: #3b2e1c; }
+    .kb-sq.kb-goal, .kb-sq.kb-yard { fill: var(--kb-soft); stroke: var(--kb); stroke-width: .8; }
+    .kb-sq.is-last { stroke: #1e2126; stroke-width: 1.3; }
+    .kb-startmark { pointer-events: none; }
+    .kb-mark { fill: none; stroke: var(--kb-on); stroke-width: .6; }
+    .kb-center { fill: var(--kb); stroke: #3b2e1c; stroke-width: .4; }
+    .kb-pc { transition: transform .28s cubic-bezier(.2, .7, .2, 1); }
+    .kb-pc .kb-body { fill: var(--kb); stroke: #1e1a14; stroke-width: .55; }
+    .kb-pc .kb-num { fill: var(--kb-on); font: 700 4.1px var(--ba-mono); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+    .kb-pc .kb-ring { fill: none; stroke: none; transform-box: fill-box; transform-origin: center; }
+    .kb-pc.is-movable, .kb-pc.is-target { cursor: pointer; }
+    .kb-pc.is-movable .kb-ring { stroke: #1e2126; stroke-width: .7; stroke-dasharray: 1.6 1.1; animation: kb-spin 3s linear infinite; }
+    .kb-pc.is-sel .kb-ring { stroke-width: 1.2; stroke-dasharray: none; animation: none; }
+    .kb-pc.is-target .kb-ring { stroke: #a3271f; stroke-width: 1; stroke-dasharray: none; animation: none; }
+    .kb-tgt { fill: rgba(30, 33, 38, .1); stroke: #1e2126; stroke-width: .6; stroke-dasharray: 1.3 1; cursor: pointer; }
+    .kb-tgt.is-sel { fill: rgba(255, 196, 0, .5); stroke-width: 1; stroke-dasharray: none; }
+    @keyframes kb-spin { to { transform: rotate(360deg); } }
+
+    /* Zar ve düğmeler */
+    .kb-diceRow { display: flex; align-items: center; gap: 14px; margin: 0 0 6px; }
+    .kb-die { width: 56px; height: 56px; flex: none; }
+    .kb-die svg { display: block; width: 100%; height: 100%; }
+    .kb-die-face { fill: #fffdf6; stroke: var(--kb); stroke-width: 4; }
+    .kb-pip { fill: #1e1a14; }
+    .kb-die-q { fill: #63666c; font: 700 26px var(--ba-font); text-anchor: middle; dominant-baseline: central; }
+    .kb-die.is-rolling svg { animation: kb-roll .32s linear infinite; }
+    @keyframes kb-roll { 0% { transform: rotate(0); } 50% { transform: rotate(16deg) scale(.9); } 100% { transform: rotate(0); } }
+    .kb-diceRow .ba-btn { flex: 1 1 auto; min-height: 48px; }
+    .kb-tries { min-height: 1.3em; margin: 0 0 8px; font-size: .88rem; color: var(--ba-text-2); }
+    .kb-msg { margin: 0 0 10px; min-height: 2.6em; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .kb-pieces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0 0 12px; }
+    .kb-pbtn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 64px; min-width: 0; padding: 6px 2px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: pointer; }
+    .kb-pbtn:disabled { cursor: default; opacity: .55; }
+    .kb-pbtn.is-movable { border-color: var(--kb); }
+    .kb-pbtn.is-movable:hover { background: var(--ba-surface-2); }
+    .kb-pbtn.is-sel { background: var(--ba-primary-soft); box-shadow: 0 0 0 2px var(--kb) inset; }
+    .kb-pbtn:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .kb-pbtn .kb-n { display: flex; align-items: center; gap: 4px; font-weight: 700; font-family: var(--ba-mono); }
+    .kb-pbtn .kb-loc { font-size: .75rem; color: var(--ba-text-muted); white-space: nowrap; }
+    .kb-ico-wrap { display: inline-flex; }
+    .kb-ico { display: inline-block; width: 18px; height: 18px; vertical-align: middle; }
+    .kb-ico .kb-body { fill: var(--kb); stroke: #1e1a14; stroke-width: .6; }
+    .kb-legend { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; }
+    .kb-pl { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0 10px; padding: 6px 10px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); font-size: .9rem; }
+    .kb-pl .kb-ico { grid-row: span 2; width: 22px; height: 22px; }
+    .kb-pl b { color: var(--ba-text); overflow-wrap: anywhere; }
+    .kb-pl small { color: var(--ba-text-muted); }
+    .kb-pl.is-turn { border-color: var(--ba-primary); box-shadow: inset 4px 0 0 var(--ba-primary); }
+    .kb-pl.is-win { border-color: var(--ba-success); box-shadow: inset 4px 0 0 var(--ba-success); }
+    .kb-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+    .kb-tools .ba-btn { flex: 1 1 140px; min-height: 44px; }
+    .kb-help { margin: 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .kb-side .ba-result { margin: 0 0 12px; }
+    #sonuc-baslik:focus { outline: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .kb-pc { transition: none; }
+      .kb-pc.is-movable .kb-ring, .kb-die.is-rolling svg { animation: none; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Kızma Birader – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Kızma Birader: bilgisayara karşı üç zorluk seviyesi ya da aynı cihazda 2-4 kişi. Para, bahis ve ödül içermez.","inLanguage":"tr","genre":["Masa oyunu","Zar oyunu","Aile oyunu"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"numberOfPlayers":{"@type":"QuantitativeValue","minValue":2,"maxValue":4},"gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/kizma-birader/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kızma Birader'de taşı oyuna sokmak için kaç atmak gerekir?","acceptedAnswer":{"@type":"Answer","text":"Ev alanındaki bir taşı yola çıkarmak için 6 atmanız gerekir. Çıkan taş kendi renginizin başlangıç karesine konur. Başlangıç karenizde kendi taşınız duruyorsa önce o taşı ilerletmeniz gerekir."}},
+  {"@type":"Question","name":"Bütün taşlarım evdeyken kaç kez zar atabilirim?","acceptedAnswer":{"@type":"Answer","text":"Bütün taşlarınız evdeyse ya da yolda taşınız yokken hedefteki taşlarınız da ilerleyemiyorsa, 6 yakalamak için üç deneme hakkınız vardır. Üç atışta da 6 gelmezse sıra bir sonraki oyuncuya geçer. Oyun kalan deneme sayısını zarın altında gösterir."}},
+  {"@type":"Question","name":"6 atınca ne olur, art arda üç 6 cezası nedir?","acceptedAnswer":{"@type":"Answer","text":"6 atan oyuncu hamlesini yaptıktan sonra bir kez daha zar atar. Ayarlardaki art arda üç 6 cezası açıksa aynı sırada üçüncü kez 6 atan oyuncu o zarı oynayamaz ve sıra geçer. Bu seçenek varsayılan olarak kapalıdır."}},
+  {"@type":"Question","name":"Rakibin taşının üstüne gelirsem ne olur?","acceptedAnswer":{"@type":"Answer","text":"Zarınız sizi tam olarak rakip taşın bulunduğu kareye getirirse o taş vurulur ve sahibinin evine geri döner. Üzerinden geçmek vurmaz. Kendi taşınızın bulunduğu kareye ise hiç gelemezsiniz."}},
+  {"@type":"Question","name":"Hedefe girmek için zarın tam tutması gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Hedef karelerine tam sayıyla girilir; zar hedefteki boş kareleri aşıyorsa o taş için hamle sayılmaz. Hedef içinde taş atlanamaz, yani önünüzdeki kendi taşınızın üzerinden geçemezsiniz."}},
+  {"@type":"Question","name":"Bilgisayar hile yapıyor mu, zorluk seviyeleri nasıl farklı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilgisayar sizinle aynı zar üretecini kullanır ve hiçbir seviyede fazladan 6 almaz. Kolay seviye geçerli hamlelerden rastgele birini oynar; orta seviye vuruş, taş çıkarma, tehlikeden kaçma ve hedefe en yakın taşı ilerletme sırasını izler; zor seviye bu öncelikleri risk hesabıyla tartar."}},
+  {"@type":"Question","name":"Aynı cihazda kaç kişi oynayabilir, geri alma neden yok?","acceptedAnswer":{"@type":"Answer","text":"Aynı telefon, tablet ya da bilgisayarda 2, 3 veya 4 kişi sırayla oynayabilir. Son hamleyi geri alma yalnızca bilgisayara karşı oyunda açıktır; birden çok kişinin oynadığı oyunda adil kalsın diye kapalıdır."}},
+  {"@type":"Question","name":"Oyunum kaydediliyor mu, verilerim nereye gidiyor?","acceptedAnswer":{"@type":"Answer","text":"Oyun her hamleden sonra yalnızca bu cihazdaki tarayıcı belleğine (localStorage) kaydedilir ve sayfayı yeniden açtığınızda devam edebilirsiniz. Zarlar, hamleler ve istatistikler hiçbir sunucuya gönderilmez."}},
+  {"@type":"Question","name":"Bu oyunda para, bahis ya da ödül var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sayfada para yatırma, bahis, jeton satın alma ya da ödül yoktur. Kızma Birader burada yalnızca eğlence ve aile oyunu olarak ücretsiz sunulur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Kızma Birader Oyna</span> – Bilgisayara Karşı veya Aynı Cihazda 2-4 Kişi</h1><p class="lead">Klasik Kızma Birader'i tarayıcınızda ücretsiz oynayın: bilgisayara karşı üç zorluk seviyesinde ya da aynı telefon, tablet veya bilgisayarda 2-4 kişi sırayla. Zarı atın, 6 ile taşınızı çıkarın, rakibin taşını vurup evine gönderin ve dört taşınızı ilk siz hedefe sokun. Kurallar otomatik denetlenir, oyun her hamlede bu cihaza kaydedilir. Kurulum ve kayıt yok; oyunda para ya da bahis yoktur.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veriler cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="ayar" aria-labelledby="oyun-baslik">
+      <div class="gb-top"><p class="gb-title" id="oyun-baslik">Kızma Birader</p><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div>
+      <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+      <div id="ekran-ayar" class="kb-setup">
+        <div class="ba-options">
+          <div class="ba-field"><label for="ayar-mod">Oyun türü</label><select id="ayar-mod"><option value="bot">Bilgisayara karşı</option><option value="yerel">Aynı cihazda (2-4 kişi)</option></select></div>
+          <div class="ba-field"><label for="ayar-sayi">Oyuncu sayısı</label><select id="ayar-sayi"><option value="2">2 oyuncu</option><option value="3">3 oyuncu</option><option value="4" selected>4 oyuncu</option></select></div>
+          <div class="ba-field" id="alan-zorluk"><label for="ayar-zorluk">Bilgisayarın zorluğu</label><select id="ayar-zorluk"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+        </div>
+        <fieldset class="kb-rules">
+          <legend>Kural seçenekleri</legend>
+          <label class="kb-check"><input type="checkbox" id="ayar-vurus"><span>Zorunlu vuruş<small>Vurabileceğiniz bir rakip taş varsa vurmak zorundasınız.</small></span></label>
+          <label class="kb-check"><input type="checkbox" id="ayar-guvenli"><span>Başlangıç karesi güvenli<small>Kendi başlangıç karesinde duran taş vurulamaz.</small></span></label>
+          <label class="kb-check"><input type="checkbox" id="ayar-ceza"><span>Art arda üç 6 cezası<small>Aynı sırada üçüncü 6 oynanmaz, sıra geçer.</small></span></label>
+        </fieldset>
+        <div class="ba-actions"><button type="button" class="ba-btn ba-btn-primary ba-btn-lg" id="baslat">Oyunu başlat</button><button type="button" class="ba-btn ba-btn-lg" id="devam" hidden>Kayıtlı oyuna devam et</button></div>
+        <p id="devam-bilgi" class="kb-note" hidden></p>
+        <p id="ayar-uyari" class="gb-warn" role="status"></p>
+        <p id="istatistik" class="kb-note"></p>
+        <button type="button" class="ba-btn" id="ist-sifirla">İstatistikleri sıfırla</button>
+      </div>
+
+      <div id="ekran-oyun" hidden>
+        <div class="kb-layout">
+          <div class="kb-boardcol">
+            <p id="durum" class="kb-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+            <div class="kb-boardwrap"><svg id="tahta" class="kb-svg" viewBox="0 0 110 110" role="img" aria-labelledby="tahta-baslik"></svg></div>
+          </div>
+          <div class="kb-side">
+            <div class="kb-diceRow"><div id="zar" class="kb-die" role="img" aria-label="Zar henüz atılmadı"></div><button type="button" class="ba-btn ba-btn-primary" id="zar-at" aria-keyshortcuts="Space Enter">Zar at</button></div>
+            <p id="deneme" class="kb-tries"></p>
+            <p id="mesaj" class="kb-msg" aria-live="polite"></p>
+            <div id="taslar" class="kb-pieces" role="group" aria-label="Taş seçimi (1-4 tuşları)">
+              <button type="button" class="kb-pbtn" data-piece="0" aria-keyshortcuts="1" disabled><span class="kb-n"><span class="kb-ico-wrap"></span>1</span><span class="kb-loc">Ev</span></button>
+              <button type="button" class="kb-pbtn" data-piece="1" aria-keyshortcuts="2" disabled><span class="kb-n"><span class="kb-ico-wrap"></span>2</span><span class="kb-loc">Ev</span></button>
+              <button type="button" class="kb-pbtn" data-piece="2" aria-keyshortcuts="3" disabled><span class="kb-n"><span class="kb-ico-wrap"></span>3</span><span class="kb-loc">Ev</span></button>
+              <button type="button" class="kb-pbtn" data-piece="3" aria-keyshortcuts="4" disabled><span class="kb-n"><span class="kb-ico-wrap"></span>4</span><span class="kb-loc">Ev</span></button>
+            </div>
+            <div id="sonuc" class="ba-result" hidden>
+              <h3 id="sonuc-baslik" tabindex="-1">Oyun bitti</h3>
+              <p id="sonuc-metin"></p>
+              <div class="ba-actions"><button type="button" class="ba-btn ba-btn-primary" id="tekrar">Aynı ayarlarla yeni oyun</button><button type="button" class="ba-btn" id="ayara-don">Ayarları değiştir</button></div>
+            </div>
+            <ul id="oyuncular" class="kb-legend" aria-label="Oyuncular"></ul>
+            <div class="kb-tools"><button type="button" class="ba-btn" id="geri-al" disabled>Son hamleyi geri al</button><button type="button" class="ba-btn" id="ayarlar">Ayarlar / yeni oyun</button></div>
+            <p class="kb-help">Klavye: <kbd>Boşluk</kbd> veya <kbd>Enter</kbd> zar atar, <kbd>1</kbd>-<kbd>4</kbd> taş seçer, ok tuşları oynayabilen taşlar arasında gezinir, <kbd>Enter</kbd> seçili taşı oynatır. Oyun her hamlede bu cihaza kaydedilir.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kizma-birader-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Kızma Birader nedir?</h2>
+      <p>Kızma Birader, iki ile dört kişinin tek zarla oynadığı, her oyuncunun dört taşını tahtanın çevresinde dolaştırıp kendi hedef karelerine soktuğu klasik bir masa oyunudur. Bu sayfada oyunu kurulum yapmadan, üye olmadan ve hiçbir veri göndermeden tarayıcınızda oynayabilirsiniz: bilgisayara karşı tek başınıza ya da aynı telefon, tablet veya bilgisayar başında sırayla zar atarak arkadaşlarınız ve ailenizle. Kurallar otomatik denetlenir; hangi taşın oynayabileceği tahtada halkayla, gideceği kare ise ayrı bir işaretle gösterilir. Böylece ilk kez oynayan biri bile birkaç elde kuralları kavrar.</p>
+      <p>Oyunun adı her şeyi anlatır. Bir rakibin taşını tam hedefe yaklaşmışken vurup evine geri gönderdiğinizde masada kopan gürültü, bu oyunun asıl tuzudur. Sonuç büyük ölçüde zara bağlı görünse de hangi taşı ne zaman ilerleteceğiniz, ne zaman risk alıp ne zaman bekleyeceğiniz gibi küçük kararlar sonucu belirgin biçimde etkiler. Aşağıda kuralları, isteğe bağlı kural seçeneklerini, bilgisayar rakiplerin nasıl düşündüğünü ve kazanma şansınızı artıracak ipuçlarını bulabilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Oyun türünü seçin. "Bilgisayara karşı" seçeneğinde siz kırmızı taşlarla oynarsınız ve bir, iki ya da üç bilgisayar rakip eklenir. "Aynı cihazda" seçeneğinde iki, üç ya da dört kişi aynı ekranda sırayla oynar. İki kişilik oyunda karşılıklı renkler, yani kırmızı ve yeşil kullanılır.</li>
+        <li>İsterseniz kural seçeneklerini açın (zorunlu vuruş, güvenli başlangıç karesi, art arda üç 6 cezası) ve bilgisayarın zorluğunu belirleyin. Ardından "Oyunu başlat" düğmesine basın.</li>
+        <li>Sıra size geldiğinde "Zar at" düğmesine basın ya da klavyede Boşluk veya Enter tuşunu kullanın. Zar kısa bir animasyondan sonra durur ve sonuç zarın yanındaki mesajda yazılır.</li>
+        <li>Oynayabilecek taşlarınız kesik çizgili bir halkayla, gidecekleri kareler ise tahtada işaretlenir. Taşa, hedef halkasına ya da tahtanın yanındaki numaralı taş düğmesine dokunun. Klavyede 1-4 tuşlarıyla taşı seçip Enter'a basabilirsiniz.</li>
+        <li>Dört taşını da kendi hedef karelerine ilk sokan oyunu kazanır. Sonuç kutusundan aynı ayarlarla yeni oyun başlatabilir ya da ayarları değiştirebilirsiniz.</li>
+      </ol>
+
+      <h2>Tahtayı tanıyın</h2>
+      <p>Tahta artı işaretine benzeyen bir çarpı biçimindedir. Dış kenarda bütün oyuncuların ortak kullandığı 40 karelik bir yol vardır. Her rengin köşesinde dört karelik ev alanı (taşların oyuna girmeyi beklediği yer), yol üzerinde kendi rengine boyanmış bir başlangıç karesi ve tahtanın ortasına doğru uzanan dört hedef karesi bulunur. Taşlar saat yönünde ilerler; her taş tahtayı neredeyse tam bir tur dolaştıktan sonra kendi renginin hedef koluna sapar. Başka bir rengin hedef koluna hiçbir taş giremez.</p>
+      <p>Renkleri ayırt etmeyi kolaylaştırmak için her rengin taşı farklı bir şekildedir: kırmızı yuvarlak, mavi kare, yeşil baklava ve sarı üçgendir. Taşların üzerinde ayrıca 1'den 4'e kadar numara yazar; başlangıç karelerinde de o rengin şekli küçük bir işaret olarak görünür. Böylece renk körlüğü olan oyuncular da hangi taşın kime ait olduğunu rahatça izleyebilir.</p>
+
+      <h2>Kurallar</h2>
+      <ul>
+        <li><strong>Taşı oyuna sokmak:</strong> Ev alanındaki bir taşı yola çıkarmak için 6 atmanız gerekir. Çıkan taş, kendi renginizin başlangıç karesine konur. Başlangıç karenizde kendi taşınız duruyorsa yeni taş çıkamaz; önce o taşı ilerletmeniz gerekir. Başlangıç karenizde rakip bir taş varsa, çıkan taşınız onu vurur.</li>
+        <li><strong>Üç deneme hakkı:</strong> Yolda hiç taşınız yoksa, yani bütün taşlarınız evdeyse ya da kalanlar hedefte ilerleyemiyorsa, 6 yakalamak için üç kez zar atabilirsiniz. Üçünde de 6 gelmezse sıra geçer.</li>
+        <li><strong>6 atan yeniden atar:</strong> 6 attığınızda hamlenizi yaptıktan sonra bir kez daha zar atarsınız. 6 gelip oynanacak taşınız olmasa bile yeniden atış hakkınız korunur.</li>
+        <li><strong>Vurma:</strong> Taşınız zar sayısı kadar ilerledikten sonra rakip bir taşın bulunduğu kareye denk gelirse o taş vurulur ve sahibinin evine geri döner. Rakip taşın üzerinden geçmek onu vurmaz; yalnızca tam üstüne gelmek vurur.</li>
+        <li><strong>Kendi taşınız:</strong> Kendi taşınızın bulunduğu kareye gelemezsiniz. Bu yüzden aynı renkten iki taş hiçbir zaman aynı karede durmaz.</li>
+        <li><strong>Hedefe giriş:</strong> Hedef karelerine tam sayıyla girilir. Örneğin hedef koluna girmeden önceki son karede duran taşınız için 5 gelirse, hedefte yalnızca dört kare olduğu için bu zar o taş için hamle sayılmaz. Hedef içinde taş atlanamaz; önünüzde kendi taşınız varsa onun üzerinden geçemezsiniz.</li>
+        <li><strong>Pas:</strong> Attığınız zarla oynanabilecek hiçbir hamle yoksa sıra otomatik olarak bir sonraki oyuncuya geçer. Oyun bunu bir mesajla gösterir ve kısa bir beklemeden sonra devam eder.</li>
+      </ul>
+
+      <h2>Kural seçenekleri</h2>
+      <p>Kızma Birader evden eve, şehirden şehre değişen kurallarla oynanır. En sık görülen üç farklılığı ayar ekranından seçebilirsiniz. Üçü de varsayılan olarak kapalıdır; açtığınız seçenekler kayıtlı oyunla birlikte saklanır.</p>
+      <ul>
+        <li><strong>Zorunlu vuruş:</strong> Açıkken, vurabileceğiniz bir rakip taş varsa vurmak zorundasınız; oyun o zarla yalnızca vuruş hamlelerini oynatır. Kapalıyken vurup vurmamak size kalmıştır.</li>
+        <li><strong>Başlangıç karesi güvenli:</strong> Açıkken, kendi başlangıç karesinde duran taş vurulamaz; rakipler o kareye gelemez ama üzerinden geçebilir. Kapalıyken başlangıç kareleri sıradan kareler gibidir.</li>
+        <li><strong>Art arda üç 6 cezası:</strong> Açıkken, aynı sırada üçüncü kez 6 atan oyuncu o zarı oynayamaz ve sıra geçer. Bu kural, uzun 6 serilerinin oyunu tek taraflı hâle getirmesini önler.</li>
+      </ul>
+
+      <h2>Bilgisayar rakipler ve zorluk seviyeleri</h2>
+      <p>Bilgisayar sizinle aynı zar üretecini kullanır; zarlar hile içermez ve hiçbir seviyede bilgisayara fazladan 6 verilmez. Seviyeler yalnızca hamle seçimini değiştirir:</p>
+      <ul>
+        <li><strong>Kolay:</strong> O an geçerli olan hamlelerden rastgele birini seçer. Yeni başlayanlar ve küçük çocuklar için uygundur.</li>
+        <li><strong>Orta:</strong> Sabit bir öncelik sırası izler. Önce vurabileceği taşı vurur, sonra evdeki taşını oyuna sokar, ardından tehlikedeki taşını güvenli bir kareye kaçırır; bunların hiçbiri yoksa hedefe en yakın taşını ilerletir.</li>
+        <li><strong>Zor:</strong> Aynı öncelikleri puanla tartar. Bir hamlenin taşı, rakiplerin bir sonraki zarla ulaşabileceği bir kareye bırakıp bırakmadığını hesaplar, en çok yol almış rakip taşı vurmayı yeğler ve başlangıç karesini yeni taşa açık tutmaya çalışır.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-kizma-birader-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Erken çıkın:</strong> 6 geldiğinde çoğu zaman yeni taş çıkarmak, yoldaki tek taşı ilerletmekten daha değerlidir. Yolda birden fazla taşınız olması size her zarda seçenek sağlar ve pas geçme ihtimalini azaltır.</li>
+        <li><strong>Başlangıç karesini boşaltın:</strong> Başlangıç karenizde taşınız duruyorsa 6 atsanız bile yeni taş çıkaramazsınız. Bir sonraki 6'yı boşa harcamamak için o taşı erkenden ilerletin.</li>
+        <li><strong>Tehlike mesafesini sayın:</strong> Bir rakip taş sizin 1 ile 6 kare gerisindeyse bir sonraki atışta sizi vurabilir. Taşınızı bu aralığın dışına çıkarmak ya da rakibin önüne değil arkasına konumlandırmak riski azaltır.</li>
+        <li><strong>Rakibin başlangıç karesinde beklemeyin:</strong> Evinde taşı olan bir rakip 6 attığında tam o kareye iner ve orada duran taşı vurur. Bu kareyi mümkün olduğunca hızlı geçin.</li>
+        <li><strong>Uzun yol almış taşı koruyun:</strong> Hedefe yaklaşmış bir taşın vurulması, yeni çıkmış bir taşın vurulmasından çok daha pahalıdır. Hedef koluna sapmasına az kalan taşınızı riskli karelerde bekletmeyin.</li>
+        <li><strong>Hedefi dipten doldurun:</strong> Hedef içinde taş atlanamadığı için ilk giren taşı en arka hedef karesine kadar ilerletmek, sonraki taşlarınıza yer açar ve son taşları sokarken işe yarayan zar değerlerinin sayısını artırır.</li>
+        <li><strong>Vuruşu zamanlayın:</strong> Zorunlu vuruş kapalıyken her vuruş fırsatını kullanmak zorunda değilsiniz. Vuracağınız taş henüz yeni çıkmışsa ve vurduktan sonra taşınız başka bir rakibin menziline giriyorsa, beklemek daha akıllıca olabilir.</li>
+      </ul>
+
+      <h2>Kontroller ve erişilebilirlik</h2>
+      <p>Oyunu fareyle, dokunmatik ekranla ya da yalnızca klavyeyle oynayabilirsiniz. <kbd>Boşluk</kbd> veya <kbd>Enter</kbd> zar atar; <kbd>1</kbd>-<kbd>4</kbd> tuşları taş seçer; ok tuşları oynayabilen taşlar arasında gezinir ve seçili taşı <kbd>Enter</kbd> ile oynatırsınız. Tahtanın yanındaki numaralı taş düğmeleri ekran okuyuculara her taşın nerede durduğunu ve nereye gideceğini söyler. Tahta 360 piksel genişliğindeki telefon ekranlarında da kare kalır. İşletim sisteminizde hareketleri azaltma tercihi açıksa zar animasyonu kısalır ve taşlar kaymadan yerine geçer. Tam ekran düğmesi yalnızca oyun kutusunu büyütür; bu modda reklam görünmez.</p>
+
+      <h2>Kayıt, devam ve geri alma</h2>
+      <p>Oyun her hamleden sonra bu cihazdaki tarayıcı belleğine (localStorage) otomatik olarak kaydedilir. Sayfayı kapatıp daha sonra açtığınızda ayar ekranında "Kayıtlı oyuna devam et" düğmesi çıkar ve kaldığınız yerden sürdürürsünüz. Bilgisayara karşı oynarken "Son hamleyi geri al" düğmesi son hamlenizi ve sonrasında bilgisayarın yaptığı hamleleri geri alır; aynı zar değeriyle başka bir taş seçebilirsiniz. Zar yeniden atılmaz; her rengin sıradaki zarları da hamleyle birlikte geri sarılır ve kayıtla saklanır. Bu yüzden ne geri alma ne de sayfayı yenileme sonraki zarları değiştirir; ikisi de istediğiniz sayıyı yakalamak için kullanılamaz. Aynı cihazda birden çok kişi oynarken adil olsun diye geri alma kapalıdır.</p>
+
+      <h2>Kısa tarihçe</h2>
+      <p>Kızma Birader'in kökeni, Hindistan'da yüzyıllardır çarpı biçimli bir kumaş tahta üzerinde oynanan yarış oyunlarına dayanır. Bu oyun ailesi 19. yüzyılda İngiltere'ye ulaştı ve sadeleştirilmiş biçimleriyle Avrupa'ya yayıldı; İngilizce konuşulan ülkelerde benzer bir oyun bugün "ludo" adıyla bilinir. Tek zar kullanan, dört renkli ve 40 karelik yol düzeni ise 20. yüzyılın başında Almanya'da yaygınlaştı. Türkçedeki "Kızma Birader" adı da bu oyunun Almanca adının serbest bir çevirisidir ve oyunun ruhunu iyi özetler: taşınız hedefin kapısında vurulduğunda kızmamak gerçekten zordur. Türkiye'de özellikle çocukluk yıllarının, bayram ziyaretlerinin ve kalabalık aile akşamlarının vazgeçilmez oyunlarından biri olmuştur.</p>
+
+      <h2>Gizlilik ve adil oyun</h2>
+      <p>Oyunun tamamı tarayıcınızda çalışır. Hesap, analiz ya da izleme kodu yoktur; zarlar, hamleler ve kayıtlı oyun hiçbir sunucuya gönderilmez. Kayıt ve istatistikler yalnızca bu cihazdaki localStorage alanında tutulur ve tarayıcı verilerini sildiğinizde kaybolur. Oyunda para, bahis, jeton satın alma ya da ödül yoktur; Kızma Birader burada yalnızca eğlence ve aile oyunu olarak sunulur. Sayfadaki reklam alanları sitenin ücretsiz kalmasını sağlar, oyun kutusunun dışında durur ve tam ekran modunda görünmez.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Kızma Birader'de taşı oyuna sokmak için kaç atmak gerekir?</summary><p>Ev alanındaki bir taşı yola çıkarmak için 6 atmanız gerekir. Çıkan taş kendi renginizin başlangıç karesine konur. Başlangıç karenizde kendi taşınız duruyorsa önce o taşı ilerletmeniz gerekir.</p></details>
+      <details><summary>Bütün taşlarım evdeyken kaç kez zar atabilirim?</summary><p>Bütün taşlarınız evdeyse ya da yolda taşınız yokken hedefteki taşlarınız da ilerleyemiyorsa, 6 yakalamak için üç deneme hakkınız vardır. Üç atışta da 6 gelmezse sıra bir sonraki oyuncuya geçer. Oyun kalan deneme sayısını zarın altında gösterir.</p></details>
+      <details><summary>6 atınca ne olur, art arda üç 6 cezası nedir?</summary><p>6 atan oyuncu hamlesini yaptıktan sonra bir kez daha zar atar. Ayarlardaki art arda üç 6 cezası açıksa aynı sırada üçüncü kez 6 atan oyuncu o zarı oynayamaz ve sıra geçer. Bu seçenek varsayılan olarak kapalıdır.</p></details>
+      <details><summary>Rakibin taşının üstüne gelirsem ne olur?</summary><p>Zarınız sizi tam olarak rakip taşın bulunduğu kareye getirirse o taş vurulur ve sahibinin evine geri döner. Üzerinden geçmek vurmaz. Kendi taşınızın bulunduğu kareye ise hiç gelemezsiniz.</p></details>
+      <details><summary>Hedefe girmek için zarın tam tutması gerekir mi?</summary><p>Evet. Hedef karelerine tam sayıyla girilir; zar hedefteki boş kareleri aşıyorsa o taş için hamle sayılmaz. Hedef içinde taş atlanamaz, yani önünüzdeki kendi taşınızın üzerinden geçemezsiniz.</p></details>
+      <details><summary>Bilgisayar hile yapıyor mu, zorluk seviyeleri nasıl farklı?</summary><p>Hayır. Bilgisayar sizinle aynı zar üretecini kullanır ve hiçbir seviyede fazladan 6 almaz. Kolay seviye geçerli hamlelerden rastgele birini oynar; orta seviye vuruş, taş çıkarma, tehlikeden kaçma ve hedefe en yakın taşı ilerletme sırasını izler; zor seviye bu öncelikleri risk hesabıyla tartar.</p></details>
+      <details><summary>Aynı cihazda kaç kişi oynayabilir, geri alma neden yok?</summary><p>Aynı telefon, tablet ya da bilgisayarda 2, 3 veya 4 kişi sırayla oynayabilir. Son hamleyi geri alma yalnızca bilgisayara karşı oyunda açıktır; birden çok kişinin oynadığı oyunda adil kalsın diye kapalıdır.</p></details>
+      <details><summary>Oyunum kaydediliyor mu, verilerim nereye gidiyor?</summary><p>Oyun her hamleden sonra yalnızca bu cihazdaki tarayıcı belleğine (localStorage) kaydedilir ve sayfayı yeniden açtığınızda devam edebilirsiniz. Zarlar, hamleler ve istatistikler hiçbir sunucuya gönderilmez.</p></details>
+      <details><summary>Bu oyunda para, bahis ya da ödül var mı?</summary><p>Hayır. Sayfada para yatırma, bahis, jeton satın alma ya da ödül yoktur. Kızma Birader burada yalnızca eğlence ve aile oyunu olarak ücretsiz sunulur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tavla/">Tavla</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../mancala/">Mangala (Mancala)</a></li>
+        <li><a href="../zar-at/">Zar At</a></li>
+        <li><a href="../dort-bagla/">Dört Bağla</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kizma-birader-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

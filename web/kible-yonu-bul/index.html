@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kıble Yönü Bulma – Pusulayla Online Kıble Açısı ve Kâbe'ye Mesafe</title>
+  <meta name="description" content="Kıble yönünü il/ilçe, konum ya da koordinatla bulun: gerçek kuzeye göre kıble açısı, manyetik sapması düzeltilmiş pusula açısı, Kâbe'ye mesafe, kıble saati ve telefonla canlı pusula. Konumunuz cihazdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kible-yonu-bul/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/kible-yonu-bul/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/kible-yonu-bul/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kb-form .ba-field { margin-bottom: 12px; }
+    .kb-form input[type="text"], .kb-form input[type="date"], .kb-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kb-form input:focus, .kb-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kb-form select:disabled { opacity: .7; }
+    .kb-grid { display: grid; gap: 0 12px; }
+    @media (min-width: 600px) { .kb-grid { grid-template-columns: 1fr 1fr; } }
+    .kb-src { border: 0; margin: 0 0 12px; padding: 0; min-width: 0; }
+    .kb-src legend { font-weight: 600; margin-bottom: 4px; padding: 0; }
+    .kb-src .kb-opts { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+    .kb-src label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kb-src input { width: 20px; height: 20px; accent-color: var(--ba-primary); margin: 0; }
+    .kb-p { margin: 0 0 10px; color: var(--ba-text-2); font-size: .95rem; }
+    .kb-status { font-size: .9rem; color: var(--ba-text-2); margin: 8px 0 0; min-height: 1.2em; overflow-wrap: anywhere; }
+    .kb-date { max-width: 320px; }
+    .kb-warn { margin-top: 14px; padding: 12px 14px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); color: var(--ba-text); border: 1px solid var(--ba-border); border-left: 4px solid #b7791f; }
+    .kb-warn strong { display: block; margin-bottom: 4px; }
+    .kb-warn ul { margin: 0; padding-left: 20px; }
+    .kb-warn li + li { margin-top: 6px; }
+    .kb-res { display: grid; gap: 16px; margin-top: 8px; }
+    @media (min-width: 640px) { .kb-res { grid-template-columns: minmax(200px, 260px) 1fr; gap: 24px; align-items: start; } }
+    .kb-fig { margin: 0; }
+    .kb-fig figcaption { font-size: .82rem; color: var(--ba-text-2); margin-top: 6px; text-align: center; }
+    .kb-rose { width: 100%; max-width: 260px; height: auto; display: block; margin: 0 auto; }
+    .kb-rose text { font-family: inherit; }
+    .kb-ring { fill: none; stroke: var(--ba-border); stroke-width: 2; }
+    .kb-face { fill: var(--ba-surface); stroke: var(--ba-text-muted); stroke-width: 1; }
+    .kb-tick { stroke: var(--ba-text-muted); stroke-width: 1; }
+    .kb-tick-l { stroke: var(--ba-text); stroke-width: 1.8; }
+    .kb-deg { font-size: 9px; font-weight: 600; fill: var(--ba-text-2); text-anchor: middle; }
+    .kb-card { font-size: 15px; font-weight: 700; fill: var(--ba-text); text-anchor: middle; }
+    .kb-card.kb-n { fill: var(--ba-danger); }
+    .kb-mag { fill: #1e6fb8; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kb-mag { fill: #6cb4f0; } }
+    :root[data-theme="dark"] .kb-mag { fill: #6cb4f0; }
+    .kb-arrow { stroke: var(--ba-primary); stroke-width: 4; stroke-linecap: round; }
+    .kb-arrow-head { fill: var(--ba-primary); }
+    .kb-kaaba { fill: #1e2126; stroke: #c9a227; stroke-width: 1.2; }
+    .kb-kaaba-band { fill: #c9a227; }
+    .kb-hub { fill: var(--ba-text); }
+    .kb-phone { fill: var(--ba-text); display: none; }
+    .is-live .kb-phone { display: inline; }
+    .is-aligned .kb-arrow { stroke: var(--ba-success); }
+    .is-aligned .kb-arrow-head { fill: var(--ba-success); }
+    .kb-results { margin: 0; display: grid; gap: 4px; }
+    .kb-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kb-row:last-child { border-bottom: 0; }
+    .kb-row dt { margin: 0; color: var(--ba-text-2); font-size: .93rem; }
+    .kb-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; }
+    .kb-row.is-strong dd { font-weight: 700; font-size: 1.5rem; color: var(--ba-text); }
+    .kb-row.is-wide dd { font-family: inherit; font-size: .95rem; text-align: left; flex-basis: 100%; }
+    .kb-note { font-size: .85rem; color: var(--ba-text-2); margin: 10px 0 0; }
+    .kb-live, .kb-sun { margin-top: 20px; padding: 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface); }
+    .kb-live h3, .kb-sun h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .kb-live h4 { margin: 16px 0 6px; font-size: .98rem; }
+    .kb-live.is-aligned { border-color: var(--ba-success); background: var(--ba-success-soft); }
+    .kb-readout { font-weight: 700; font-size: 1.05rem; margin: 10px 0 0; color: var(--ba-text); }
+    .kb-readout:empty, .kb-status:empty { margin: 0; min-height: 0; }
+    @media (max-width: 480px) { .kb-row dd { text-align: left; } }
+    .kb-tips, .kb-live ol, .kb-sun ul { margin: 8px 0 0; padding-left: 20px; font-size: .93rem; color: var(--ba-text-2); }
+    .kb-tips li + li, .kb-live ol li + li { margin-top: 4px; }
+    .kb-sun p { margin: 8px 0 0; font-size: .93rem; color: var(--ba-text-2); }
+    .kb-sun ul { font-weight: 600; color: var(--ba-text); }
+    .kb-approx { border-left: 4px solid #b7791f; padding-left: 10px; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; overflow-wrap: anywhere; }
+    .ba-content table { border-collapse: collapse; width: 100%; font-size: .9rem; margin: 12px 0; }
+    .ba-content caption { text-align: left; font-size: .85rem; color: var(--ba-text-muted); padding-bottom: 6px; }
+    .ba-content th, .ba-content td { border: 1px solid var(--ba-border); padding: 6px 8px; text-align: left; vertical-align: top; }
+    .ba-content th { background: var(--ba-surface-2); color: var(--ba-text); }
+    .ba-content a { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kıble Yönü Bulma – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","description":"Konum, il/ilçe ya da koordinatla kıble açısı, manyetik sapması düzeltilmiş pusula açısı, Kâbe'ye mesafe, kıble saati ve telefonla canlı pusula. Konum cihazdan çıkmaz.","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kible-yonu-bul/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kıble açısı neye göre ölçülür?","acceptedAnswer":{"@type":"Answer","text":"Kıble açısı, bulunduğunuz yerde gerçek (coğrafi) kuzeyden başlayıp saat yönünde Kâbe'ye doğru ölçülen açıdır. İstanbul için 151,6°, Ankara için 160,2° çıkar. Pusula ise manyetik kuzeyi gösterir; Türkiye'de manyetik kuzey gerçek kuzeyin 5,5 ile 7 derece kadar doğusundadır. Pusulayla çalışırken araçtaki pusula açısı değerini kullanın."}},{"@type":"Question","name":"Diyanet'in sitesindeki kıble açısıyla sonuç neden birkaç derece farklı?","acceptedAnswer":{"@type":"Answer","text":"Diyanet'in namaz vakti sayfalarındaki Kıble Açısı tam sayıdır ve gerçek kuzeye göre açıdan yaklaşık 3,5–5,5 derece küçüktür; bu da manyetik sapması düşülmüş bir pusula açısı olduğunu düşündürür. Aracımız WMM2025 modeliyle bugünkü sapmayı düşer; bulduğumuz pusula açısı Diyanet'in tam sayısından 1–2 derece küçük çıkabilir. Fark, kullanılan sapma değerinden ve yuvarlamadan kaynaklanır. Diyanet'in Kıble Zamanı ise karşılaştırdığımız altı ilde bizim kıble saatimizle dakikası dakikasına aynıdır."}},{"@type":"Question","name":"Telefon pusulası ne kadar güvenilir?","acceptedAnswer":{"@type":"Answer","text":"Telefonlardaki manyetik sensör iyi koşulda birkaç derece doğrudur; ancak yakındaki metal eşyalar, mıknatıslı kılıflar, hoparlörler ve betonarmedeki demir 10 dereceyi aşan sapmalara yol açabilir. Telefonu havada 8 çizerek kalibre edin, metal ve mıknatıstan uzak durun ve sonucu kıble saati ya da kâğıt pusula gibi ikinci bir yöntemle doğrulayın."}},{"@type":"Question","name":"Konumum bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Konumumu kullan düğmesine bastığınızda tarayıcı konumu yalnız bu sayfaya verir ve hesap cihazınızda yapılır. Koordinat sunucuya, harita servisine ya da başka bir üçüncü tarafa gönderilmez, kaydedilmez ve sayfayı kapattığınızda silinir. Harita karosu kullanmamamızın nedeni de budur."}},{"@type":"Question","name":"İnternet bağlantısı olmadan çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sayfa bir kez açıldıktan sonra çevrimdışı da çalışır. İl ve ilçe koordinatları, manyetik model katsayıları ve güneş hesabı sayfanın içinde gömülüdür. Cihaz konumu ise GPS sayesinde internet olmadan da alınabilir; bu, cihazınıza ve tarayıcınıza göre değişir."}},{"@type":"Question","name":"Kıble saati nedir, nasıl kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Kıble saati, güneşin gökyüzünde tam kıble yönünde bulunduğu andır. O dakikada güneşe dönen kişi kıbleye dönmüş olur; dik bir çubuğun gölgesi de kıblenin tam tersini gösterir. Saat her gün biraz kayar; araç seçtiğiniz tarih için hesaplar. Yöntem pusula gerektirmez ve manyetik sapmadan etkilenmez."}},{"@type":"Question","name":"Güneş Kâbe'nin tam üstündeyken kıble nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Yılda iki kez, mayıs sonu ve temmuz ortasında güneş öğle vakti Kâbe'nin tam üzerinden geçer. Hesabımıza göre 2027'de bu anlar 28 Mayıs saat 12:18 ve 16 Temmuz saat 12:27'dir (TSİ). O dakikada güneşin göründüğü her yerde dik duran bir cismin gölgesi kıblenin tersini gösterir. Diyanet'in yıllık duyurusu çıktığında saatleri karşılaştırın."}},{"@type":"Question","name":"Haritada şehrimden Mekke'ye çizdiğim düz çizgi neden farklı bir yön gösteriyor?","acceptedAnswer":{"@type":"Answer","text":"Düz harita (Merkatör) üzerinde çizilen doğru en kısa yol değildir. Kıble, Dünya yüzeyindeki en kısa yol olan büyük daire üzerinden hesaplanır. Fark uzak yerlerde büyür: New York'ta kıble 58,5° (kuzeydoğu) iken düz haritadaki çizgi yaklaşık 101° gösterir. Türkiye'de fark birkaç derecedir; İstanbul'da 151,6°'ye karşılık yaklaşık 154,8°."}},{"@type":"Question","name":"Masaüstü bilgisayarda canlı pusula neden çalışmıyor?","acceptedAnswer":{"@type":"Answer","text":"Masaüstü ve çoğu dizüstü bilgisayarda manyetik yön sensörü yoktur. Bu durumda araç açıyı, mesafeyi ve kıble saatini gösterir; kâğıt pusula adımlarını ya da kıble saati yöntemini kullanabilirsiniz. Telefonda da sensörler yalnız https bağlantısında ve izin verildiğinde çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Kıble Yönü Bulma</span> – Pusulayla Online Kıble Açısı ve Kâbe'ye Mesafe</h1>
+      <p class="lead">İlinizi ve ilçenizi seçin, cihazınızın konumunu kullanın ya da koordinat yazın: gerçek kuzeye göre kıble açısını, manyetik sapması düzeltilmiş pusula açısını, Kâbe'ye uzaklığı ve günün kıble saatini görün. Telefonda canlı pusula okla yönü gösterir. Konumunuz cihazınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Konumunuz cihazdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Kıble yönü hesaplama aracı</h2>
+      <form id="form" class="kb-form" novalidate>
+        <fieldset class="kb-src">
+          <legend>Konumu nasıl belirleyelim?</legend>
+          <div class="kb-opts">
+            <label><input type="radio" name="src" value="list" id="src-list" checked> İl / ilçe listesinden</label>
+            <label><input type="radio" name="src" value="geo" id="src-geo"> Konumumu kullan</label>
+            <label><input type="radio" name="src" value="manual" id="src-manual"> Enlem / boylam gir</label>
+          </div>
+        </fieldset>
+
+        <div id="pane-list" class="kb-grid">
+          <div class="ba-field"><label for="il">İl</label><select id="il"><option value="">İl seçin</option></select></div>
+          <div class="ba-field"><label for="ilce">İlçe</label><select id="ilce"></select><div class="hint">İlçeniz listede yoksa size en yakın ilçeyi seçin ya da "Konumumu kullan" veya koordinat yolunu kullanın: il merkezinden her 10 km uzaklık açıyı en fazla yaklaşık 0,3° değiştirir.</div></div>
+        </div>
+
+        <div id="pane-geo" hidden>
+          <p class="kb-p">Tarayıcı sizden konum izni ister. Koordinat yalnız bu sayfanın belleğinde kullanılır; sunucuya, harita servisine ya da başka bir yere gönderilmez ve kaydedilmez.</p>
+          <button id="geo" class="ba-btn ba-btn-primary" type="button">Konumumu kullan</button>
+          <p id="geo-status" class="kb-status" aria-live="polite"></p>
+        </div>
+
+        <div id="pane-manual" class="kb-grid" hidden>
+          <div class="ba-field"><label for="lat">Enlem (kuzey +, güney −)</label><input id="lat" type="text" autocomplete="off" spellcheck="false" placeholder="örn. 41,0082"></div>
+          <div class="ba-field"><label for="lon">Boylam (doğu +, batı −)</label><input id="lon" type="text" autocomplete="off" spellcheck="false" placeholder="örn. 28,9784"><div class="hint">Ondalık derece yazın. "41.0082, 28.9784" biçimini enlem alanına yapıştırabilir ya da 41° 0' 29,5" K gibi derece-dakika-saniye girebilirsiniz.</div></div>
+        </div>
+
+        <div class="ba-field kb-date"><label for="date">Kıble saati için tarih</label><input id="date" type="date"></div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Kıble yönünü hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="warn" class="kb-warn" role="status" hidden><strong>Dikkat</strong><ul id="warn-list"></ul></div>
+
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Kıble yönü</h3>
+        <div class="kb-res">
+          <figure class="kb-fig">
+            <svg id="rose-svg" class="kb-rose" viewBox="0 0 220 220" role="img" aria-labelledby="rose-title">
+              <title id="rose-title">Kıble yönü</title>
+              <circle cx="110" cy="110" r="105" class="kb-ring"/>
+              <g id="rose" transform="rotate(0 110 110)">
+                <circle cx="110" cy="110" r="100" class="kb-face"/>
+                <g id="rose-ticks"></g>
+                <text x="110" y="40" class="kb-card kb-n">K</text>
+                <text x="184" y="115" class="kb-card">D</text>
+                <text x="110" y="190" class="kb-card">G</text>
+                <text x="36" y="115" class="kb-card">B</text>
+                <g id="mag-north" transform="rotate(0 110 110)"><path d="M110 11 l-4.5 -8 h9 z" class="kb-mag"/></g>
+                <g id="qibla-arrow" transform="rotate(0 110 110)">
+                  <line x1="110" y1="110" x2="110" y2="44" class="kb-arrow"/>
+                  <path d="M110 30 l-9 16 h18 z" class="kb-arrow-head"/>
+                  <rect x="103" y="13" width="14" height="14" rx="1.5" class="kb-kaaba"/>
+                  <rect x="103" y="16.5" width="14" height="2.5" class="kb-kaaba-band"/>
+                </g>
+              </g>
+              <path id="phone-top" d="M110 0 l-7 9 h14 z" class="kb-phone"/>
+              <circle cx="110" cy="110" r="5" class="kb-hub"/>
+            </svg>
+            <figcaption>Ok ve Kâbe simgesi kıbleyi, mavi üçgen manyetik kuzeyi gösterir. Canlı modda en üstteki sabit üçgen telefonun üst kenarıdır.</figcaption>
+          </figure>
+          <dl class="kb-results">
+            <div class="kb-row is-wide"><dt>Konum</dt><dd id="r-place"></dd></div>
+            <div class="kb-row is-strong"><dt>Kıble açısı (gerçek kuzeyden, saat yönünde)</dt><dd id="r-bearing"></dd></div>
+            <div class="kb-row is-wide"><dt>Yön</dt><dd id="r-dir"></dd></div>
+            <div class="kb-row"><dt>Pusula açısı (manyetik kuzeyden)</dt><dd id="r-compass"></dd></div>
+            <div class="kb-row"><dt>Manyetik sapma</dt><dd id="r-dec"></dd></div>
+            <div class="kb-row"><dt>Kâbe'ye mesafe (kuş uçuşu)</dt><dd id="r-km"></dd></div>
+            <div class="kb-row is-wide"><dt>Kıble saati (güneş kıble yönünde)</dt><dd id="r-time"></dd></div>
+          </dl>
+        </div>
+        <p class="kb-note">Pusula kadranında "pusula açısı"nı, harita ve güneş yöntemlerinde "kıble açısı"nı kullanın. Kâbe koordinatı: 21,4225° K, 39,8262° D.</p>
+      </div>
+
+      <section id="live-box" class="kb-live" aria-labelledby="h-live" hidden>
+        <h3 id="h-live">Canlı pusula (telefon ve tablet)</h3>
+        <p class="kb-p">Telefonun yön sensörüyle ok gerçek yöne döner. Telefonun üst kenarı kıbleye ±3° yaklaştığında ok yeşile döner ve cihaz titrer.</p>
+        <div class="ba-actions"><button id="live-start" class="ba-btn ba-btn-primary" type="button">Canlı pusulayı başlat</button><button id="live-stop" class="ba-btn" type="button" hidden>Durdur</button></div>
+        <p id="live-readout" class="kb-readout" aria-live="polite"></p>
+        <p id="live-status" class="kb-status" aria-live="polite"></p>
+        <ul class="kb-tips">
+          <li><strong>Kalibrasyon:</strong> ok kararsızsa telefonu havada birkaç kez yatay "8" çizer gibi çevirin.</li>
+          <li><strong>Metal ve mıknatıs:</strong> mıknatıslı kılıf, hoparlör, buzdolabı, kolon ve demir korkuluktan en az yarım metre uzak durun.</li>
+          <li><strong>Tutuş:</strong> telefonu yere paralel ve dik (portre) tutun; ekran döndürmeyi kilitlemek en kararlı sonucu verir.</li>
+          <li><strong>Güvenli bağlantı:</strong> sensörler yalnız https adreste ve izin verildiğinde çalışır.</li>
+        </ul>
+        <h4>Sensör yoksa: kâğıt ya da el pusulasıyla</h4>
+        <ol>
+          <li>Pusulayı düz bir yüzeye koyun; telefon, anahtar ve diğer metal eşyaları uzaklaştırın.</li>
+          <li>Kadranı, iğnenin kuzey ucu 0° (K) işaretine gelene kadar çevirin.</li>
+          <li>Kadranda <strong id="p-compass">—</strong> derecesini bulun; merkezden bu dereceye giden çizgi kıble yönüdür (<span id="p-dir">—</span>).</li>
+          <li>Bu yöndeki bir pencere ya da duvar köşesini işaret alın. Kadranda gerçek kuzey açısını değil, <strong id="p-compass2">—</strong> pusula açısını kullandığınızdan emin olun.</li>
+        </ol>
+      </section>
+
+      <div id="sun-card" class="kb-sun">
+        <h3>Güneş Kâbe'nin tam üstünde: gölgeyle kıble</h3>
+        <ul id="sun-list"><li>28 Mayıs 2027 Cuma, saat 12:18 (TSİ)</li><li>16 Temmuz 2027 Cuma, saat 12:27 (TSİ)</li></ul>
+        <p>Bu dakikalarda güneşin göründüğü her yerde yere dik duran bir çubuğun gölgesi kıblenin tam tersini gösterir: gölgenin ucundan çubuğa doğru bakan kişi kıbleye dönmüş olur. Türkiye'nin tamamı bu ana denk gelir.</p>
+        <p id="sun-approx" class="kb-approx"><strong>Yaklaşık:</strong> <span id="sun-approx-text">Diyanet'in 2027 yılı duyurusu henüz yayımlanmadığı için tarih ve saatler hesapla bulunmuştur; Diyanet'in yıllık duyurusu çıktığında kontrol edin.</span></p>
+      </div>
+      <p class="kdv-rates" id="params-line"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="kible-yonu-bul-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Konumu belirleyin: listeden ilinizi ve varsa ilçenizi seçin, "Konumumu kullan" ile cihazınızın konumunu verin ya da enlem ve boylamı elle yazın.</li>
+        <li>Listeden seçtiğinizde sonuç kendiliğinden gelir; diğer yollarda "Kıble yönünü hesapla" düğmesine basın. Gerçek kuzeye göre kıble açısı, pusula açısı, Kâbe'ye mesafe ve seçtiğiniz günün kıble saati görünür.</li>
+        <li>Telefondaysanız "Canlı pusulayı başlat"a dokunun, istenen izni verin ve telefonu yere paralel tutarak ok yeşile dönene kadar kendi çevrenizde yavaşça dönün. Telefonun üst kenarı kıbleye ±3 derece yaklaştığında titreşimle onay alırsınız.</li>
+        <li>Yön sensörünüz yoksa sonuç kutusunun altındaki kâğıt pusula adımlarını izleyin ya da kıble saatinde güneşe dönün.</li>
+        <li>Bulduğunuz yönü ikinci bir yöntemle doğrulayın; betonarme binalarda telefon pusulası birkaç derece şaşabilir.</li>
+      </ol>
+
+      <h2>Kıble açısı nasıl hesaplanır?</h2>
+      <p>Kıble, namazda yönelinen Mekke'deki Kâbe'nin yönüdür. Dünya küre biçiminde olduğu için bu yön, iki nokta arasındaki en kısa yol olan büyük daire üzerinden bulunur. Aracımız bulunduğunuz noktanın enlem ve boylamını Kâbe'nin koordinatıyla (21,4225° kuzey, 39,8262° doğu) birlikte küresel trigonometri formülüne koyar ve büyük dairenin sizin bulunduğunuz yerdeki başlangıç açısını hesaplar. Sonuç, gerçek kuzeyden saat yönünde ölçülen derecedir: 90° doğu, 180° güney, 270° batı demektir. Diyanet İşleri Başkanlığı'nın kıble sayfası da aynı koordinatı ve aynı yöntemi kullanır.</p>
+      <p>Mesafe için Haversine formülü ve 6371 km ortalama Dünya yarıçapı kullanılır. Bu değer kuş uçuşu büyük daire uzunluğudur; karayolu mesafesi değildir. Türkiye'deki il merkezleri Kâbe'ye 1.681 km (Hatay) ile 2.572 km (Edirne) arasında uzaklıktadır. Kıble açısı ise batıda İzmir'deki 143,7°'den doğuda Hakkâri'deki 192,9°'ye kadar değişir. Yani Türkiye'nin batısında kıble güneydoğuya, Diyarbakır çevresinde neredeyse tam güneye, Van ve Hakkâri'de ise güneyin biraz batısına düşer.</p>
+      <p>Konum hassasiyeti kıble açısını sanıldığı kadar etkilemez. Kâbe'den iki bin kilometre uzakta birkaç kilometrelik konum hatası açıyı 0,1 dereceden az değiştirir. Bu yüzden ilçe merkezinin koordinatı, evinizde kıbleyi bulmak için fazlasıyla yeterlidir. İl merkezi ise her zaman yeterli değildir: geniş illerde merkez ile uzak bir ilçe arasında 100 kilometreyi aşan fark olabilir ve açı birkaç derece değişir. Örneğin Mersin merkezi ile Anamur arasında kıble açısı yaklaşık 6,7 derece farklıdır. İlçeniz listede yoksa il merkezini değil, cihaz konumunuzu ya da koordinatınızı kullanın. Asıl hata kaynağı konum değil, yönün sahada nasıl ölçüldüğüdür: eğik tutulan bir telefon, yanındaki metal bir dolap ya da yanlış kuzeyin kullanılması birkaç kilometrelik konum farkından çok daha büyük sapma yaratır.</p>
+
+      <h2>Gerçek kuzey ile pusula kuzeyi neden farklı?</h2>
+      <p>Pusula iğnesi coğrafi Kuzey Kutbu'nu değil, Dünya'nın manyetik alanının yatay yönünü gösterir. İkisi arasındaki açıya manyetik sapma ya da deklinasyon denir. Türkiye'de manyetik kuzey, gerçek kuzeyin yaklaşık 5,5 ile 7 derece doğusundadır ve bu değer yıldan yıla yavaşça değişir. Pusulayla kıble ararken sapma hesaba katılmazsa yön birkaç derece kayar; bu da birkaç metre ötedeki bir duvarda belirgin bir fark demektir.</p>
+      <p>Aracımız sapmayı ABD Ulusal Okyanus ve Atmosfer İdaresi (NOAA) ile İngiliz Jeoloji Araştırmaları Kurumu'nun birlikte yayımladığı Dünya Manyetik Modeli 2025 (WMM2025) ile hesaplar. Modelin katsayıları kamu malıdır ve sayfanın içine gömülüdür; hesabımız modelin resmî test noktalarındaki değerleri birebir verir. Örneğin İstanbul'da gerçek kuzeye göre kıble açısı 151,6° iken 2026 sonu için sapma yaklaşık 6,1° doğudur; pusula kadranında okunacak açı 145,5° olur. Model 2025 ile 2029 yılları arasında geçerlidir; cihazınızın tarihi bu aralığın dışındaysa araç sizi uyarır.</p>
+
+      <h2>Diyanet değerleriyle karşılaştırma</h2>
+      <p>Sonuçlarımızı Diyanet İşleri Başkanlığı'nın namaz vakti sayfalarındaki değerlerle karşılaştırdık. Bu sayfalar iki bilgi verir: tam sayı olarak "Kıble Açısı" ve her gün değişen "Kıble Zamanı". Kıble zamanı aşağıdaki altı ilde bizim hesapladığımız kıble saatiyle dakikası dakikasına aynıdır; bu da Kâbe koordinatının ve hesap yönteminin örtüştüğünü gösterir.</p>
+      <table>
+        <caption>Diyanet karşılaştırması, 5 Kasım 2026 (açılar derece, saatler TSİ)</caption>
+        <thead><tr><th>İl</th><th>Kıble açısı (gerçek kuzey)</th><th>Pusula açısı (WMM2025)</th><th>Diyanet "Kıble Açısı"</th><th>Kıble saati (araç)</th><th>Diyanet "Kıble Zamanı"</th></tr></thead>
+        <tbody>
+          <tr><td>İstanbul</td><td>151,6</td><td>145,5</td><td>147</td><td>11:05</td><td>11:05</td></tr>
+          <tr><td>Ankara</td><td>160,2</td><td>154,0</td><td>155</td><td>11:23</td><td>11:23</td></tr>
+          <tr><td>İzmir</td><td>143,7</td><td>138,2</td><td>140</td><td>10:43</td><td>10:43</td></tr>
+          <tr><td>Edirne</td><td>147,0</td><td>141,1</td><td>143</td><td>10:55</td><td>10:55</td></tr>
+          <tr><td>Diyarbakır</td><td>181,3</td><td>175,3</td><td>176</td><td>12:07</td><td>12:07</td></tr>
+          <tr><td>Adana</td><td>164,7</td><td>158,9</td><td>160</td><td>11:31</td><td>11:31</td></tr>
+        </tbody>
+      </table>
+      <p>Diyanet'in tam sayı açısı, gerçek kuzeye göre açıdan yaklaşık 3,5–5,5 derece küçüktür; bu da manyetik sapması düşülmüş bir pusula açısı olduğunu düşündürür. WMM2025 ile bulduğumuz güncel pusula açısı bundan 1–2 derece küçük çıkar. Fark, sapma için kullanılan model ile yıl ve tam sayıya yuvarlamadan kaynaklanabilir. Pratikte iki değer de aynı yönü gösterir; kararsız kalırsanız pusula gerektirmeyen kıble saati yöntemiyle kontrol edin.</p>
+
+      <div class="ba-ad" data-slot="kible-yonu-bul-b" aria-label="Reklam"></div>
+
+      <h2>Telefonla canlı pusula: doğru kullanım</h2>
+      <p>Akıllı telefonlardaki pusula, manyetik alan sensörü ile ivme ve dönüş sensörlerinin birlikte çalışmasından elde edilir. Canlı modda araç, sensörün bildirdiği manyetik yöne o konumdaki sapmayı ekleyerek telefonun üst kenarının gerçek yönünü bulur ve pusula gülünü buna göre döndürür. Böylece ekrandaki ok, bulunduğunuz odada kıbleyi doğrudan gösterir. Android tarayıcılarında mutlak yön olayı, iPhone ve iPad'de ise Safari'nin pusula başlığı kullanılır; iOS 13 ve sonrasında ilk kullanımda "Hareket ve Yön" izni istenir.</p>
+      <ul>
+        <li><strong>Önce kalibre edin.</strong> Sensör uzun süre kullanılmadıysa ya da ok titriyorsa telefonu havada birkaç kez yatay "8" çizer gibi çevirin.</li>
+        <li><strong>Metal ve mıknatıstan uzaklaşın.</strong> Mıknatıslı kılıflar, araç tutucuları, hoparlörler, beyaz eşyalar, kolonlar ve demir korkuluklar iğneyi saptırır. Gerekirse kılıfı çıkarın ve odanın ortasında deneyin.</li>
+        <li><strong>Telefonu düz tutun.</strong> Telefon yere paralel ve dik (portre) tutulduğunda en kararlı sonucu verir. Ekran yan çevrilirse araç ekran yönünü hesaba katar, ancak döndürme kilidi açık değilse ekran beklenmedik anda dönebilir.</li>
+        <li><strong>Onayı bekleyin.</strong> Ok yeşile dönüp telefon titrediğinde üst kenar ±3 derece içinde kıbleyi gösterir. Birkaç saniye sabit tutup okun oynamadığını görün.</li>
+      </ul>
+
+      <h2>Pusulasız kıble bulma: kıble saati ve gölge yöntemi</h2>
+      <p>Güneş gün boyunca gökyüzünde doğudan batıya ilerlerken bir an kıble yönünden geçer. Bu ana kıble saati denir. O dakikada güneşe dönen kişi kıbleye dönmüş olur; yere dik bir çubuk ya da kalem diktiğinizde gölgesi kıblenin tam tersini gösterir. Gölgenin ucundan çubuğa doğru uzanan çizgi kıbleyi işaret eder. Araç seçtiğiniz tarih için bu saati hesaplar. Yöntem pusula gerektirmez, manyetik sapmadan ve metal eşyalardan etkilenmez; tek koşul güneşin görünmesidir.</p>
+      <p>Yılda iki gün ise iş daha da kolaylaşır. Mayıs sonu ve temmuz ortasında güneş öğle vakti Kâbe'nin tam üzerinden geçer. Hesabımıza göre 2027'de bu anlar 28 Mayıs saat 12:18 ve 16 Temmuz saat 12:27'dir (Türkiye saati; Mekke ile aynı saat dilimi). O dakikada güneşin göründüğü her yerde gölgeler kıblenin tersini gösterir ve Türkiye'nin tamamı buna dahildir. Diyanet bu tarihleri her yıl duyurur; duyuru yayımlandığında saatleri karşılaştırmanızı öneririz.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <p>En yaygın hata, gerçek kuzeye göre kıble açısını doğrudan pusula kadranında aramaktır. Pusula manyetik kuzeyi gösterdiği için kadranda pusula açısını kullanmak gerekir; aksi hâlde Türkiye'de yön altı derece kadar batıya kayar. İkinci hata, telefonu eğik tutmak ya da masadaki dizüstü bilgisayarın, hoparlörün yanında ölçmektir. Üçüncü hata, haritada şehrinizden Mekke'ye cetvelle çizilen çizgiyi kıble sanmaktır; düz haritalar küreyi çarpıttığı için bu çizgi en kısa yolu göstermez. Son olarak, aynı evde kıbleyi her seferinde yeniden ölçmeye gerek yoktur: bir kez güvenilir biçimde bulduğunuz yönü bir pencere, kapı ya da duvar köşesiyle eşleştirin. Yakındaki caminin mihrabı da iyi bir karşılaştırma noktasıdır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Konum cihazdan çıkmaz.</strong> Hesap tarayıcınızda yapılır; koordinat hiçbir sunucuya ya da harita servisine gönderilmez.</li>
+        <li><strong>Doğrulanmış yöntem.</strong> Kıble saati Diyanet değerleriyle dakikası dakikasına, manyetik model resmî test değerleriyle birebir tutar.</li>
+        <li><strong>Üç yol bir arada.</strong> 81 il merkezi ve başlıca ilçeler, cihaz konumu ya da elle koordinat.</li>
+        <li><strong>Pusulasız seçenekler.</strong> Kıble saati, gölge yöntemi ve kâğıt pusula adımları aynı sayfada.</li>
+        <li><strong>Çevrimdışı, mobil ve klavye uyumlu.</strong> Sayfa bir kez açıldıktan sonra internetsiz çalışır; 360 piksel genişlikte rahat kullanılır.</li>
+      </ul>
+
+      <h2>Gizlilik notu</h2>
+      <p>Konum hassas bir kişisel veridir. Bu sayfa konumunuzu yalnız siz "Konumumu kullan" düğmesine bastığınızda ve tarayıcı izni verdiğinizde alır; koordinat yalnız sayfanın belleğinde tutulur. Sunucuya, harita servisine, analiz aracına ya da başka bir üçüncü tarafa gönderilmez, tarayıcı depolamasına da yazılmaz. Sayfada harita karosu kullanmamamızın nedeni de budur: harita karoları, ekranda gösterilen bölgeyi harita sağlayıcısına bildirir. Yön sensörü verisi yalnız ekrandaki oku döndürmek için kullanılır ve sayfayı kapattığınızda hiçbir iz kalmaz.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kıble açısı neye göre ölçülür?</summary><p>Kıble açısı, bulunduğunuz yerde gerçek (coğrafi) kuzeyden başlayıp saat yönünde Kâbe'ye doğru ölçülen açıdır. İstanbul için 151,6°, Ankara için 160,2° çıkar. Pusula ise manyetik kuzeyi gösterir; Türkiye'de manyetik kuzey gerçek kuzeyin 5,5 ile 7 derece kadar doğusundadır. Pusulayla çalışırken araçtaki pusula açısı değerini kullanın.</p></details>
+        <details><summary>Diyanet'in sitesindeki kıble açısıyla sonuç neden birkaç derece farklı?</summary><p>Diyanet'in namaz vakti sayfalarındaki Kıble Açısı tam sayıdır ve gerçek kuzeye göre açıdan yaklaşık 3,5–5,5 derece küçüktür; bu da manyetik sapması düşülmüş bir pusula açısı olduğunu düşündürür. Aracımız WMM2025 modeliyle bugünkü sapmayı düşer; bulduğumuz pusula açısı Diyanet'in tam sayısından 1–2 derece küçük çıkabilir. Fark, kullanılan sapma değerinden ve yuvarlamadan kaynaklanır. Diyanet'in Kıble Zamanı ise karşılaştırdığımız altı ilde bizim kıble saatimizle dakikası dakikasına aynıdır.</p></details>
+        <details><summary>Telefon pusulası ne kadar güvenilir?</summary><p>Telefonlardaki manyetik sensör iyi koşulda birkaç derece doğrudur; ancak yakındaki metal eşyalar, mıknatıslı kılıflar, hoparlörler ve betonarmedeki demir 10 dereceyi aşan sapmalara yol açabilir. Telefonu havada 8 çizerek kalibre edin, metal ve mıknatıstan uzak durun ve sonucu kıble saati ya da kâğıt pusula gibi ikinci bir yöntemle doğrulayın.</p></details>
+        <details><summary>Konumum bir yere gönderiliyor mu?</summary><p>Hayır. Konumumu kullan düğmesine bastığınızda tarayıcı konumu yalnız bu sayfaya verir ve hesap cihazınızda yapılır. Koordinat sunucuya, harita servisine ya da başka bir üçüncü tarafa gönderilmez, kaydedilmez ve sayfayı kapattığınızda silinir. Harita karosu kullanmamamızın nedeni de budur.</p></details>
+        <details><summary>İnternet bağlantısı olmadan çalışır mı?</summary><p>Evet. Sayfa bir kez açıldıktan sonra çevrimdışı da çalışır. İl ve ilçe koordinatları, manyetik model katsayıları ve güneş hesabı sayfanın içinde gömülüdür. Cihaz konumu ise GPS sayesinde internet olmadan da alınabilir; bu, cihazınıza ve tarayıcınıza göre değişir.</p></details>
+        <details><summary>Kıble saati nedir, nasıl kullanılır?</summary><p>Kıble saati, güneşin gökyüzünde tam kıble yönünde bulunduğu andır. O dakikada güneşe dönen kişi kıbleye dönmüş olur; dik bir çubuğun gölgesi de kıblenin tam tersini gösterir. Saat her gün biraz kayar; araç seçtiğiniz tarih için hesaplar. Yöntem pusula gerektirmez ve manyetik sapmadan etkilenmez.</p></details>
+        <details><summary>Güneş Kâbe'nin tam üstündeyken kıble nasıl bulunur?</summary><p>Yılda iki kez, mayıs sonu ve temmuz ortasında güneş öğle vakti Kâbe'nin tam üzerinden geçer. Hesabımıza göre 2027'de bu anlar 28 Mayıs saat 12:18 ve 16 Temmuz saat 12:27'dir (TSİ). O dakikada güneşin göründüğü her yerde dik duran bir cismin gölgesi kıblenin tersini gösterir. Diyanet'in yıllık duyurusu çıktığında saatleri karşılaştırın.</p></details>
+        <details><summary>Haritada şehrimden Mekke'ye çizdiğim düz çizgi neden farklı bir yön gösteriyor?</summary><p>Düz harita (Merkatör) üzerinde çizilen doğru en kısa yol değildir. Kıble, Dünya yüzeyindeki en kısa yol olan büyük daire üzerinden hesaplanır. Fark uzak yerlerde büyür: New York'ta kıble 58,5° (kuzeydoğu) iken düz haritadaki çizgi yaklaşık 101° gösterir. Türkiye'de fark birkaç derecedir; İstanbul'da 151,6°'ye karşılık yaklaşık 154,8°.</p></details>
+        <details><summary>Masaüstü bilgisayarda canlı pusula neden çalışmıyor?</summary><p>Masaüstü ve çoğu dizüstü bilgisayarda manyetik yön sensörü yoktur. Bu durumda araç açıyı, mesafeyi ve kıble saatini gösterir; kâğıt pusula adımlarını ya da kıble saati yöntemini kullanabilirsiniz. Telefonda da sensörler yalnız https bağlantısında ve izin verildiğinde çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç coğrafi ve astronomik bir yön hesabı yapar; dinî hüküm bildirmez. Kıbleyle ilgili fıkhi sorularınız için Diyanet İşleri Başkanlığı ve Din İşleri Yüksek Kurulu kaynaklarına başvurun. Kaynaklar: <a href="https://namazvakitleri.diyanet.gov.tr/tr-TR/kible" rel="noopener">Diyanet kıble sayfası</a>, <a href="https://www.ncei.noaa.gov/products/world-magnetic-model" rel="noopener">NOAA World Magnetic Model</a>.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hicri-miladi/">Hicri-Miladi Tarih Çevirme</a></li>
+        <li><a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a></li>
+        <li><a href="../zekat-hesapla/">Zekat Hesaplama</a></li>
+        <li><a href="../birim-donustur/">Birim Dönüştürücü</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kible-yonu-bul-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

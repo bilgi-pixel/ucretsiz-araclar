@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Şafak Hesaplama – Askerlik Terhis Tarihi ve Kalan Gün Sayacı</title>
+  <meta name="description" content="Sevk tarihinizden askerlik terhis tarihinizi ve şafağınızı (kalan gün) hesaplayın: 6 ay, 12 ay, bedelli; izin, yol izni ve ceza günleri, yüzde ilerleme, şafak kartı ve takvim. Ücretsiz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/safak-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/safak-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/safak-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .sf-form .ba-field { margin-bottom: 12px; min-width: 0; }
+    .sf-form input[type="text"], .sf-form input[type="date"], .sf-form select { width: 100%; max-width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .sf-form input:focus, .sf-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .sf-form [aria-invalid="true"] { border-color: var(--ba-danger); }
+    .sf-grid { display: grid; gap: 0 12px; }
+    .sf-grid > * { min-width: 0; }
+    @media (min-width: 600px) { .sf-grid { grid-template-columns: 1fr 1fr; } .sf-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .sf-form fieldset { border: 0; margin: 4px 0 0; padding: 0; min-width: 0; }
+    .sf-form legend { font-weight: 600; margin-bottom: 6px; padding: 0; }
+    .sf-typenote { font-size: .88rem; color: var(--ba-text-2); margin: 0 0 12px; overflow-wrap: anywhere; }
+    .sf-typenote.is-warn, .sf-warn { background: var(--ba-surface-2); border-left: 4px solid #b7791f; padding: 8px 12px; border-radius: var(--ba-radius-sm); color: var(--ba-text); }
+    .sf-counter { text-align: center; margin: 10px 0 6px; }
+    .sf-label { margin: 0; font-size: .9rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ba-text-muted); font-weight: 600; }
+    .sf-num { margin: 0; font-family: var(--ba-mono); font-size: clamp(3rem, 16vw, 5.5rem); line-height: 1.05; font-weight: 500; color: var(--ba-primary); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .sf-unit { margin: 0; color: var(--ba-text-2); font-weight: 500; }
+    .ba-result .sf-status { margin: 12px 0; color: var(--ba-text); overflow-wrap: anywhere; }
+    .sf-bar { height: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: 999px; overflow: hidden; }
+    .sf-bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ba-primary-strong), var(--ba-primary), var(--ba-accent)); }
+    .ba-result .sf-pct { font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text-2); margin: 6px 0 12px; }
+    .sf-list { margin: 0; display: grid; gap: 2px; }
+    .sf-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .sf-row:last-child { border-bottom: 0; }
+    .sf-row dt { margin: 0; color: var(--ba-text-2); font-size: .93rem; min-width: 0; }
+    .sf-row dd { margin: 0 0 0 auto; font-family: var(--ba-mono); font-size: 1rem; text-align: right; }
+    .sf-row.is-strong dd { font-weight: 500; font-size: 1.15rem; color: var(--ba-text); }
+    .sf-h4 { margin: 16px 0 6px; font-size: 1rem; }
+    .sf-miles { margin: 0; padding-left: 20px; display: grid; gap: 4px; overflow-wrap: anywhere; }
+    .sf-miles li.is-past { color: var(--ba-text-muted); }
+    .sf-miles li.is-today { font-weight: 600; }
+    .sf-notes { margin: 12px 0 0; padding-left: 20px; font-size: .88rem; color: var(--ba-text-2); display: grid; gap: 4px; overflow-wrap: anywhere; }
+    .sf-notes .is-warn { color: var(--ba-text); font-weight: 500; }
+    .ba-result .sf-share { font-size: .88rem; margin: 10px 0 0; overflow-wrap: anywhere; word-break: break-word; }
+    .sf-share a { overflow-wrap: anywhere; }
+    .sf-statusline { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; overflow-wrap: anywhere; }
+    .sf-info { margin-top: 20px; padding: 14px 16px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .sf-info h3 { margin: 0 0 4px; font-size: 1rem; }
+    .sf-info p { margin: 4px 0 0; font-size: .88rem; overflow-wrap: anywhere; }
+    .sf-info .sf-fee { margin: 0; font-family: var(--ba-mono); font-size: 1.35rem; font-weight: 500; color: var(--ba-primary); }
+    .sf-rates { font-size: .85rem; color: var(--ba-text-muted); margin: 12px 0 0; overflow-wrap: anywhere; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Şafak Hesaplama – Bilişim Ajans","description":"Sevk tarihinden askerlik terhis tarihini ve kalan gün sayısını (şafak) hesaplayan ücretsiz araç.","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/safak-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Şafak nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Şafak, terhis tarihi ile bugün arasındaki gün sayısıdır. Önce sevk tarihine hizmet süresi eklenerek terhis tarihi bulunur, ceza veya firar günleri eklenir; sonra terhis tarihinden bugünün tarihi çıkarılır. Kalan izninizi ve yol izninizi terhisten önce kullanacaksanız bu günler de şafaktan düşülür."}},{"@type":"Question","name":"6 aylık askerlikte terhis tarihi nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Sevk tarihine takvim olarak 6 ay eklenir. Örneğin 30 Kasım 2026'da sevk edilen bir erin terhis tarihi 30 Mayıs 2027'dir. 7179 sayılı Askeralma Kanunu'na göre hizmet, sevk belgesindeki sevk tarihinde başlar."}},{"@type":"Question","name":"Ay sonunda sevk edilenlerin terhisi neden ayın son gününe kayar?","acceptedAnswer":{"@type":"Answer","text":"Hedef ayda aynı gün yoksa ayın son günü alınır. 31 Ağustos 2026 + 6 ay, Şubat ayının 31'i olmadığı için 28 Şubat 2027 olur. Artık yıllarda aynı hesap 29 Şubat'ı verir; 31 Ağustos 2027 sevkli biri için sonuç 29 Şubat 2028'dir."}},{"@type":"Question","name":"Kullandığım izin terhis tarihimi değiştirir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kullanılan izin askerlik hizmetinden sayılır ve terhis tarihini değiştirmez. Henüz kullanmadığınız izni ve yol iznini terhisten hemen önce kullanırsanız birlikten o kadar gün erken ayrılırsınız; araç bu durumda şafağı buna göre azaltır."}},{"@type":"Question","name":"Ceza veya firar günleri terhisi nasıl etkiler?","acceptedAnswer":{"@type":"Answer","text":"7179 sayılı Kanunun 32. maddesine göre firar, izin tecavüzü, hapis cezasının infazı ve hizmetten sayılmayacağı belirtilen disiplin cezalarında geçen süreler askerlik hizmetinden sayılmaz. Bu süreler kadar terhis ileri gider; 3 gün ceza alan birinin terhisi 3 gün sonraya kayar."}},{"@type":"Question","name":"Bedelli askerlik kaç gün sürer?","acceptedAnswer":{"@type":"Answer","text":"7179 sayılı Kanunun 9. maddesi bedelli askerlikte bir aylık temel askerlik eğitimi öngörür. Uygulamada bu sürenin 28 gün olarak duyurulduğu bilinmektedir; araç bu değeri kullanır ancak MSB duyurusundan doğrulanamadığı için yaklaşık kabul eder. Celp belgenizdeki tarihler esastır."}},{"@type":"Question","name":"Bedelli askerlik ücreti 2026'da ne kadar?","acceptedAnswer":{"@type":"Answer","text":"Bedel, 300.000 gösterge rakamının ödeme günü geçerli memur aylık katsayısıyla çarpımıdır. 1 Temmuz - 31 Aralık 2026 döneminde katsayı 1,575512 olduğundan bedel 472.653,60 TL'dir. Ocak 2027'de katsayı değişince tutar da değişir; ödeme öncesi MSB ve e-Devlet'ten güncel tutarı kontrol edin."}},{"@type":"Question","name":"Girdiğim tarihler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tamamen tarayıcınızda yapılır. Ad, TC kimlik numarası gibi kişisel bilgi istenmez; yalnızca tarih ve gün sayıları adres çubuğuna ve bu cihazın tarayıcı belleğine yazılır, hiçbir sunucuya gönderilmez."}},{"@type":"Question","name":"Sayaç neden gece yarısı değişiyor, saat dilimi önemli mi?","acceptedAnswer":{"@type":"Answer","text":"Şafak gün olarak sayılır ve bugünün tarihi Türkiye saatine (Europe/Istanbul) göre alınır. Bu yüzden telefonunuz başka bir saat diliminde olsa bile sayaç İstanbul'da saat 00.00 olduğunda bir azalır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Şafak Hesaplama</span> – Askerlik Terhis Tarihi ve Kalan Gün Sayacı</h1>
+      <p class="lead">Sevk tarihinizi ve askerlik türünüzü girin; terhis tarihinizi, şafağınızı (terhise kalan gün), yüzde ilerlemenizi ve şafak 100, şafak 30 gibi dönüm noktalarını görün. İzin, yol izni ve ceza günleri hesaba katılır. Girdiğiniz tarihler cihazınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Veriniz cihazınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Şafak hesaplama aracı</h2>
+      <form id="form" class="sf-form" novalidate>
+        <div class="sf-grid">
+          <div class="ba-field"><label for="tur">Askerlik türü</label>
+            <select id="tur">
+              <option value="er6">Er / erbaş (kısa dönem) – 6 ay</option>
+              <option value="ys12">Yedek subay / yedek astsubay – 12 ay</option>
+              <option value="er12">Er / erbaş + isteğe bağlı 6 ay devam (uzun dönem) – 12 ay</option>
+              <option value="bedelli">Bedelli askerlik temel eğitimi – 1 ay (28 gün, yaklaşık)</option>
+              <option value="dovizle">Dövizle askerlik (eğitim gün sayısını siz girin)</option>
+              <option value="ozel">Özel gün sayısı</option>
+            </select>
+          </div>
+          <div class="ba-field"><label for="sevk">Sevk (celp) tarihi</label><input id="sevk" type="date" min="2000-01-01" max="2100-12-31"><div class="hint">Sevk belgenizdeki tarih; hizmet bu gün başlar.</div></div>
+        </div>
+        <p id="tur-note" class="sf-typenote" aria-live="polite"></p>
+        <div class="ba-field" id="gun-wrap" hidden><label for="gun">Hizmet süresi (gün)</label><input id="gun" type="text" inputmode="numeric" autocomplete="off" placeholder="örn. 21"><div class="hint">Size bildirilen eğitim ya da hizmet süresi, gün olarak (1–730).</div></div>
+        <fieldset>
+          <legend>İzin, ceza ve ödül günleri (isteğe bağlı)</legend>
+          <div class="sf-grid c3">
+            <div class="ba-field"><label for="yol">Yol izni (gün)</label><input id="yol" type="text" inputmode="numeric" autocomplete="off" placeholder="0" aria-describedby="yol-hint"><div class="hint" id="yol-hint">Birliğinizin bildirdiği gidiş-dönüş süresi.</div></div>
+            <div class="ba-field"><label for="kullanilan">Kullanılan izin (gün)</label><input id="kullanilan" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+            <div class="ba-field"><label for="kalan">Kalan izin (gün)</label><input id="kalan" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+          </div>
+          <div class="sf-grid">
+            <div class="ba-field"><label for="ceza">Ceza / firar günü</label><input id="ceza" type="text" inputmode="numeric" autocomplete="off" placeholder="0"><div class="hint">Hizmetten sayılmayan günler; terhisi ileri alır.</div></div>
+            <div class="ba-field"><label for="odul">Erken terhis / ödül günü</label><input id="odul" type="text" inputmode="numeric" autocomplete="off" placeholder="0"><div class="hint">Yalnızca birliğinizin bildirdiği süre.</div></div>
+          </div>
+        </fieldset>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Şafağı hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Şafak sayacınız</h3>
+        <div class="sf-counter">
+          <p class="sf-label" id="r-label">Şafak</p>
+          <p class="sf-num" id="r-safak">0</p>
+          <p class="sf-unit" id="r-unit">gün kaldı</p>
+        </div>
+        <p class="sf-status" id="r-status"></p>
+        <div class="sf-bar" id="r-bar" role="progressbar" aria-label="Askerlik ilerlemesi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="r-bar-fill"></span></div>
+        <p class="sf-pct" id="r-pct"></p>
+        <dl class="sf-list" id="r-list"></dl>
+        <h4 class="sf-h4">Önemli dönüm noktaları</h4>
+        <ul class="sf-miles" id="r-miles"></ul>
+        <ul class="sf-notes" id="r-notes"></ul>
+        <div class="ba-actions">
+          <button id="png" class="ba-btn ba-btn-primary" type="button">Şafak kartını indir (PNG)</button>
+          <button id="ics" class="ba-btn" type="button">Takvime ekle (.ics)</button>
+          <button id="copy" class="ba-btn" type="button">Bağlantıyı kopyala</button>
+        </div>
+        <p class="sf-statusline" id="status" role="status"></p>
+        <p class="sf-share">Her gün aynı sayaca dönmek için bu bağlantıyı yer imlerine ekleyin (yalnızca tarih ve gün sayıları içerir): <a id="r-link" href="./">./</a></p>
+      </div>
+      <p class="sf-rates" id="params-line"></p>
+      <aside class="sf-info" aria-labelledby="h-bedelli">
+        <h3 id="h-bedelli">Bedelli askerlik ücreti</h3>
+        <p class="sf-fee" id="bedelli-fee">472.653,60 TL</p>
+        <p id="bedelli-period">01.07.2026 – 31.12.2026 dönemi, aylık katsayı 1,575512, gösterge 300.000</p>
+        <p class="sf-warn" id="bedelli-warn" hidden></p>
+        <p id="bedelli-src">Kaynak: 7179 sayılı Askeralma Kanunu md. 9/1 ve memur aylık katsayısı.</p>
+      </aside>
+    </section>
+
+    <div class="ba-ad" data-slot="safak-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Askerlik türünüzü seçin: 6 aylık er ve erbaş, 12 aylık yedek subay ve yedek astsubay, 6 ay ek hizmetle 12 ay, bedelli temel eğitim, dövizle askerlik ya da kendi gün sayınız.</li>
+        <li>Sevk belgenizde yazan sevk (celp) tarihini takvimden seçin. Askerlik hizmeti bu gün başlar.</li>
+        <li>İsterseniz yol izninizi, kullandığınız ve kalan izin günlerinizi, varsa ceza ya da firar günlerinizi ve birliğinizin bildirdiği erken terhis gününü yazın. Boş bıraktığınız alanlar sıfır sayılır.</li>
+        <li>"Şafağı hesapla" düğmesine basın. Terhis tarihiniz, büyük şafak sayacı, yüzde ilerleme çubuğu, kalan hafta, ay ve hafta sonu sayısı ile dönüm noktaları görünür.</li>
+        <li>Şafak kartını PNG olarak indirin, terhis gününü takviminize ekleyin ya da sayacın bağlantısını yer imlerine kaydedip her gün aynı sayfaya dönün.</li>
+      </ol>
+
+      <h2>Şafak ne demek?</h2>
+      <p>Askerlikte "şafak", terhise kalan gün sayısının adıdır. Kışlada her sabah güneşin doğuşuyla bir gün daha geride kalır; "şafak 90" demek terhise doksan gün kaldığı anlamına gelir. Asker mektuplarında, nöbet kulübelerinin duvarlarında ve dolap kapaklarına çizilen çentiklerde yıllardır yaşayan bu gelenek bugün telefon ekranlarına taşındı. Birçok birlikte "şafak 100" günü küçük bir kutlamayla anılır, "şafak 30" ise son ayın başladığını haber verir. Askerin ailesi ve sevdikleri de aynı sayıyı takip eder; dönüş gününe ne kadar kaldığını bilmek beklemeyi kolaylaştırır.</p>
+      <p>Elle sayarken en sık yapılan hata, ay uzunluklarını karıştırmak ya da şubatın kaç gün çektiğini unutmaktır. Bu araç sayımı sizin yerinize yapar: sevk tarihinden terhis tarihini bulur, bugünün tarihini Türkiye saatine göre alır ve aradaki gün farkını gösterir. Sayfayı her gün açtığınızda şafak kendiliğinden bir azalmış olur.</p>
+
+      <h2>Terhis tarihi nasıl hesaplanır?</h2>
+      <p>7179 sayılı Askeralma Kanunu'na göre askerlik hizmeti, askere ilk sevk sırasında verilen sevk belgesinde yazılı sevk tarihinde başlar (md. 5/9). Hizmet süresi erbaş ve erler için altı ay, yedek subay ve yedek astsubaylar için on iki aydır (md. 5/2). Araç terhis tarihini, sevk tarihine bu süreyi takvim ayı olarak ekleyerek bulur. Örneğin 30 Kasım 2026'da sevk edilen bir erin terhis tarihi 30 Mayıs 2027'dir.</p>
+      <p>Hedef ayda aynı gün yoksa ayın son günü alınır. 31 Ağustos 2026 + 6 ay işleminde şubat ayının 31'i olmadığı için sonuç 28 Şubat 2027 olur. Artık yıllarda aynı kural 29 Şubat'ı verir: 31 Ağustos 2027'de sevk edilen biri için hesaplanan terhis 29 Şubat 2028'dir. On iki aylık hizmette tarih tam bir yıl sonraya kayar; 15 Ocak 2027 sevkli bir yedek subay için sonuç 15 Ocak 2028'dir.</p>
+      <p>Şafak ise terhis tarihi ile bugün arasındaki gün farkıdır. Terhisi 30 Mayıs 2027 olan biri için 1 Mart 2027'de şafak 90'dır. Sevk tarihiniz henüz gelmediyse araç "teslim olmaya kaç gün var" bilgisini gösterir; terhis tarihi geçtiyse "terhis oldunuz" mesajı verir. Gün değişimi İstanbul saatine göre yapılır, yani yurt dışında olsanız bile sayaç Türkiye'de gece yarısı geçtiğinde bir azalır.</p>
+
+      <h2>Askerlik türleri ve hizmet süreleri</h2>
+      <ul>
+        <li><strong>Er ve erbaş – 6 ay.</strong> 2019'da yürürlüğe giren 7179 sayılı Kanunla öğrenim durumuna göre ayrı süre uygulaması kalktı; erbaş ve erler için hizmet süresi altı aydır. Halk arasında hâlâ "kısa dönem" denir.</li>
+        <li><strong>Yedek subay ve yedek astsubay – 12 ay.</strong> Dört yıllık yükseköğretim mezunları arasından yedek subay, iki veya üç yıllık mezunlar ile istekli dört yıllık mezunlar arasından yedek astsubay adayları ihtiyaç kadar seçilir (md. 7 ve 8).</li>
+        <li><strong>Er ve erbaş, 6 ay ek hizmetle – 12 ay.</strong> İstekli erbaş ve erler, amirlerinin olumlu değerlendirmesiyle altı aylık sürenin sonunda altı ay daha hizmete devam edebilir (md. 5/3). Kanuna göre ek altı ay, terhise hak kazanılan tarihten itibaren sayılır; araç bu yüzden önce ilk altı ayın sonunu (varsa ceza günleriyle) bulur, sonra altı ay ekler. Ay sonu sevklerinde sonuç sevk + 12 aydan birkaç gün farklı olabilir: 31 Ağustos 2026 sevkli biri için ilk dönem 28 Şubat 2027'de, ek dönem 28 Ağustos 2027'de biter. Bu süre için net asgari ücretten az olmamak üzere harçlık ödenir (md. 5/7). Halk arasında "uzun dönem" denir.</li>
+        <li><strong>Bedelli askerlik – 1 ay temel eğitim.</strong> Kanun, bedeli ödeyenlerin bir aylık temel askerlik eğitimini tamamlamasını şart koşar (md. 9/1). Uygulamada bu sürenin 28 gün olarak duyurulduğu bilinmektedir; araç 28 günü kullanır ancak bu değeri MSB duyurusundan doğrulayamadığımız için sonucu "yaklaşık" olarak işaretler. İnternette sık görülen 21 günlük eğitim bilgisi, 2018'de 7146 sayılı Kanunla mülga 1111 sayılı Askerlik Kanunu'na getirilen eski bedelli düzenlemesine aittir; bugünkü kanun bir aylık eğitim öngörür.</li>
+        <li><strong>Dövizle askerlik.</strong> Yurt dışında en az üç yıl fiilen çalışan yükümlüler (çok vatandaşlığı olanlar ile yurt dışında doğup süresiz oturum iznine sahip olanlarda çalışma şartı aranmadan üç yıl yurt dışında bulunma yeterlidir), belirlenen tutarı avro veya karşılığı dövizle ödeyip Bakanlığın verdiği uzaktan eğitimi alarak askerliğini yapmış sayılır (md. 39). Kanunda birlikte geçirilecek bir temel eğitim süresi yoktur; size bir süre bildirildiyse gün sayısını kendiniz girin.</li>
+        <li><strong>Özel gün sayısı.</strong> Hizmet sürenizi gün olarak biliyorsanız ya da yukarıdaki türlere uymayan bir durumdaysanız, terhis tarihi sevk tarihine bu gün sayısı eklenerek bulunur.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="safak-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>İzin, yol izni ve ceza günleri şafağı nasıl etkiler?</h2>
+      <p>Kullandığınız izinler askerlik hizmetinden sayılır; bu yüzden terhis tarihinizi değiştirmez. Araç kullandığınız izni yalnızca "birlikte geçen gün" satırında gösterir. Henüz kullanmadığınız izni ve yol iznini terhisten hemen önce kullanacaksanız, birlikteki son gününüz o kadar öne gelir ve şafak buna göre azalır. Örneğin 1 Mart 2027'de şafağı 90 olan biri 6 gün kalan izin ve 2 gün yol izni girerse şafak 82'ye iner. Bu varsayım herkes için geçerli olmayabilir; iznin ne zaman kullandırılacağına birlik komutanlığı karar verir.</p>
+      <p>Ceza ve firar günleri ters yönde çalışır. Kanunun 32. maddesine göre firar, izin tecavüzü, kısa süreli kaçma ve izin süresini geçirme disiplinsizliklerinde geçen süreler, mahkemelerin hükmettiği hapis cezalarının infazında geçen süreler ve 6413 sayılı Kanunda hizmetten sayılmayacağı açıkça belirtilen disiplin cezaları askerlik hizmetinden sayılmaz. Bu süreler kadar terhis ileri gider: 30 Mayıs 2027'de terhis olacak bir erin 3 günlük hizmetten sayılmayan süresi varsa terhis tarihi 2 Haziran 2027 olur.</p>
+      <p>"Erken terhis / ödül günü" alanı, birliğinizin size resmî olarak bildirdiği erken ayrılış günleri içindir. Kanunda herkese uygulanan genel bir erken terhis süresi yoktur; bu alanı yalnızca size bildirilmiş bir süre varsa doldurun. Negatif sayı, ondalık ya da harf girerseniz araç hesap yapmaz ve neyi düzeltmeniz gerektiğini açıklar.</p>
+
+      <h2>Bedelli askerlik ücreti 2026</h2>
+      <p>Bedelli askerlikte ödenecek tutar, 300.000 gösterge rakamının ödemenin yapıldığı gün geçerli memur aylık katsayısıyla çarpılmasıyla bulunur (7179 md. 9/1). Gösterge rakamı, 2 Nisan 2026 tarihli 7577 sayılı Kanunla 240.000'den 300.000'e çıkarıldı. 1 Temmuz – 31 Aralık 2026 döneminde memur aylık katsayısı 1,575512 olduğundan bedel 472.653,60 TL'dir. Katsayı her yıl ocak ve temmuz aylarında yenilendiği için 2027 ocak ayında tutar değişecektir; ödeme yapmadan önce Milli Savunma Bakanlığı ve e-Devlet üzerindeki güncel tutarı mutlaka kontrol edin.</p>
+      <p>Müracaat tarihine kadar yoklama kaçağı, saklı veya bakaya kalanlardan, kaçak kalınan her ay için 3.500 gösterge rakamı üzerinden ek bedel alınır (md. 9/7). Dövizle askerlikte de aynı gösterge kullanılır; ancak tutar, ödeme günündeki döviz alış kuruna göre avro veya karşılığı konvertibl döviz olarak yatırılır (md. 39).</p>
+
+      <h2>Şafak kartı, takvim ve paylaşım bağlantısı</h2>
+      <p>"Şafak kartını indir" düğmesi, sayacınızı 1080 × 1080 piksellik kare bir görsele dönüştürür. Kartta yalnızca şafak sayısı, terhis tarihi ve ilerleme yüzdesi yer alır; adınız ya da kimlik bilginiz bulunmaz. Görsel tarayıcınızda çizilir ve doğrudan cihazınıza kaydedilir. "Takvime ekle" düğmesi, terhis gününü ve henüz gelmemiş dönüm noktalarını içeren bir .ics dosyası oluşturur; bu dosyayı Google Takvim, Apple Takvim veya Outlook ile açarak tarihleri takviminize ekleyebilirsiniz.</p>
+      <p>Hesap yaptığınızda adres çubuğundaki bağlantı ayarlarınızı (askerlik türü, sevk tarihi ve gün sayıları) içerecek şekilde güncellenir. Bu bağlantıyı yer imlerine eklerseniz her gün tek dokunuşla güncel şafağınızı görürsünüz. Son ayarınız ayrıca yalnızca bu cihazın tarayıcı belleğinde tutulur; "Temizle" düğmesi bu kaydı da siler.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Tarihleriniz hiçbir sunucuya iletilmez; hesap, kart ve takvim dosyası cihazınızda üretilir.</li>
+        <li><strong>Kanuna dayalı süreler.</strong> Hizmet süreleri 7179 sayılı Askeralma Kanunu'ndan alınır; doğrulanamayan değerler sayfada açıkça "yaklaşık" diye işaretlenir.</li>
+        <li><strong>Doğru takvim hesabı.</strong> Ay sonu, artık yıl ve saat dilimi gibi elle sayarken kolayca gözden kaçan durumlar hesaba katılır.</li>
+        <li><strong>Mobil ve klavye uyumlu.</strong> 360 piksel genişliğindeki telefonlarda rahat kullanılır; tüm alanlara klavyeyle ulaşılır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da şafağınızı görebilirsiniz.</li>
+      </ul>
+
+      <h2>Gizlilik notu</h2>
+      <p>Bu sayfa ad, TC kimlik numarası, birlik adı ya da telefon gibi hiçbir kişisel bilgi istemez. Girdiğiniz tarih ve gün sayıları yalnızca tarayıcınızda işlenir; sunucuya gönderilmez, analiz ya da izleme amaçlı çerez kullanılmaz. Paylaşım bağlantısı yalnızca tarih ve sayıları taşır. Ortak bir bilgisayar kullanıyorsanız işiniz bitince "Temizle" düğmesine basmanız yeterlidir.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Şafak nasıl hesaplanır?</summary><p>Şafak, terhis tarihi ile bugün arasındaki gün sayısıdır. Önce sevk tarihine hizmet süresi eklenerek terhis tarihi bulunur, ceza veya firar günleri eklenir; sonra terhis tarihinden bugünün tarihi çıkarılır. Kalan izninizi ve yol izninizi terhisten önce kullanacaksanız bu günler de şafaktan düşülür.</p></details>
+        <details><summary>6 aylık askerlikte terhis tarihi nasıl bulunur?</summary><p>Sevk tarihine takvim olarak 6 ay eklenir. Örneğin 30 Kasım 2026'da sevk edilen bir erin terhis tarihi 30 Mayıs 2027'dir. 7179 sayılı Askeralma Kanunu'na göre hizmet, sevk belgesindeki sevk tarihinde başlar.</p></details>
+        <details><summary>Ay sonunda sevk edilenlerin terhisi neden ayın son gününe kayar?</summary><p>Hedef ayda aynı gün yoksa ayın son günü alınır. 31 Ağustos 2026 + 6 ay, şubat ayının 31'i olmadığı için 28 Şubat 2027 olur. Artık yıllarda aynı hesap 29 Şubat'ı verir; 31 Ağustos 2027 sevkli biri için sonuç 29 Şubat 2028'dir.</p></details>
+        <details><summary>Kullandığım izin terhis tarihimi değiştirir mi?</summary><p>Hayır. Kullanılan izin askerlik hizmetinden sayılır ve terhis tarihini değiştirmez. Henüz kullanmadığınız izni ve yol iznini terhisten hemen önce kullanırsanız birlikten o kadar gün erken ayrılırsınız; araç bu durumda şafağı buna göre azaltır.</p></details>
+        <details><summary>Ceza veya firar günleri terhisi nasıl etkiler?</summary><p>7179 sayılı Kanunun 32. maddesine göre firar, izin tecavüzü, hapis cezasının infazı ve hizmetten sayılmayacağı belirtilen disiplin cezalarında geçen süreler askerlik hizmetinden sayılmaz. Bu süreler kadar terhis ileri gider; 3 gün ceza alan birinin terhisi 3 gün sonraya kayar.</p></details>
+        <details><summary>Bedelli askerlik kaç gün sürer?</summary><p>7179 sayılı Kanunun 9. maddesi bedelli askerlikte bir aylık temel askerlik eğitimi öngörür. Uygulamada bu sürenin 28 gün olarak duyurulduğu bilinmektedir; araç bu değeri kullanır ancak MSB duyurusundan doğrulanamadığı için yaklaşık kabul eder. Celp belgenizdeki tarihler esastır.</p></details>
+        <details><summary>Bedelli askerlik ücreti 2026'da ne kadar?</summary><p>Bedel, 300.000 gösterge rakamının ödeme günü geçerli memur aylık katsayısıyla çarpımıdır. 1 Temmuz – 31 Aralık 2026 döneminde katsayı 1,575512 olduğundan bedel 472.653,60 TL'dir. Ocak 2027'de katsayı değişince tutar da değişir; ödeme öncesi MSB ve e-Devlet'ten güncel tutarı kontrol edin.</p></details>
+        <details><summary>Girdiğim tarihler bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tamamen tarayıcınızda yapılır. Ad, TC kimlik numarası gibi kişisel bilgi istenmez; yalnızca tarih ve gün sayıları adres çubuğuna ve bu cihazın tarayıcı belleğine yazılır, hiçbir sunucuya gönderilmez.</p></details>
+        <details><summary>Sayaç neden gece yarısı değişiyor, saat dilimi önemli mi?</summary><p>Şafak gün olarak sayılır ve bugünün tarihi Türkiye saatine (Europe/Istanbul) göre alınır. Bu yüzden telefonunuz başka bir saat diliminde olsa bile sayaç İstanbul'da saat 00.00 olduğunda bir azalır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Kesin terhis tarihi birlik ve askerlik şubesi kayıtlarıdır. Bu araç bilgilendirme amaçlıdır, hukuki tavsiye değildir. Hizmet süreleri için <a href="https://www.mevzuat.gov.tr/MevzuatMetin/1.5.7179.pdf" rel="noopener">7179 sayılı Askeralma Kanunu</a> metnine, kişisel durumunuz için askerlik şubenize başvurun.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kac-gun-kaldi/">Kaç Gün Kaldı Sayacı</a></li>
+        <li><a href="../tarih-farki/">Tarih Farkı Hesaplama</a></li>
+        <li><a href="../yas-hesapla/">Yaş Hesaplama</a></li>
+        <li><a href="../resmi-tatiller/">Resmî Tatiller</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="safak-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
