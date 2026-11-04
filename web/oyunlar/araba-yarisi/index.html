@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Araba Yarışı Oyna – Ücretsiz Online Araba Yarışı (kurulumsuz)</title>
+  <meta name="description" content="Araba yarışı oyununu tarayıcıda ücretsiz oynayın: 3 şeritli yolda karşıdan gelen araçlardan ve engellerden kaçın, yıldız toplayın, hızlandıkça mesafe ve skoru artırın. Gece teması, kolay-normal-zor seviye. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/araba-yarisi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; margin-bottom: 64px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .ar-stage { max-width: min(100%, max(220px, calc((100vh - 330px) * .6667))); }
+    .ar-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 400px; margin: 0 auto 12px; }
+    .ar-hud > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .ar-hud dt { font-size: .68rem; font-family: var(--ba-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .ar-hud dd { margin: 0; font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ba-text); overflow-wrap: anywhere; }
+    .ar-stage { position: relative; width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 2 / 3; border-radius: var(--ba-radius); overflow: hidden; background: #4a4d55; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .ar-stage:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .ar-stage canvas { display: block; width: 100%; height: 100%; }
+    .ar-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(20, 22, 26, .86); color: #fff; }
+    .ar-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .ar-overlay p { margin: 0; color: #e1e2e5; max-width: 34ch; font-size: .95rem; line-height: 1.5; }
+    .ar-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ar-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .ar-overlay .ba-btn-primary { color: #1a0d10; }
+    .ar-pad { display: none; grid-template-columns: repeat(2, 120px); gap: 12px; justify-content: center; margin: 14px auto 0; }
+    .ar-pad button { font: inherit; font-size: 1.6rem; line-height: 1; min-height: 56px; border-radius: var(--ba-radius); border: 1px solid var(--ba-border-hover); background: var(--ba-surface-2); color: var(--ba-text); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .ar-pad button:active { background: var(--ba-primary-soft); border-color: var(--ba-primary); }
+    @media (max-width: 720px), (pointer: coarse) { .ar-pad { display: grid; } }
+    .game-box .ba-actions { justify-content: center; }
+    .game-box .ba-options { max-width: 520px; margin-left: auto; margin-right: auto; }
+    @media (max-width: 520px) {
+      .game-box .ba-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .game-box .ba-actions .ba-btn { min-height: 44px; padding: 8px 6px; font-size: .9rem; justify-content: center; }
+    }
+    .ar-help { max-width: 400px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-2); text-align: center; }
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Araba Yarışı – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz araba yarışı oyunu: 3 şeritli yol, karşıdan gelen araçlar, engeller, yıldız toplama, gece teması ve en yüksek skor.","applicationCategory":"Game","genre":"Yarış oyunu","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/araba-yarisi/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Araba yarışı oyunu ücretsiz mi, üyelik gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir. Üyelik, kayıt ya da uygulama indirmek gerekmez; sayfayı açıp Başlat düğmesine basmanız yeterlidir."}},
+  {"@type":"Question","name":"Arabayı nasıl yönlendiririm?","acceptedAnswer":{"@type":"Answer","text":"Sol ve sağ ok tuşları ya da A ve D tuşlarıyla bir şerit sola veya sağa geçersiniz. Telefonda oyun alanında parmağınızı yatay kaydırın ya da alttaki ok düğmelerine dokunun."}},
+  {"@type":"Question","name":"Skor nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her metre bir puandır. Sarı yıldız toplamak 25 puan ekler. Mesafe ve yıldızlar toplanıp skoru oluşturur; çarpışınca oyun biter."}},
+  {"@type":"Question","name":"Hız neden sürekli artıyor?","acceptedAnswer":{"@type":"Answer","text":"Yol zaman geçtikçe hızlanır ve seçtiğiniz seviyenin tavanına kadar çıkar. Hızlanırken yeni engel sıraları da daha sık gelir, ancak her sırada en az bir şerit açık bırakılır."}},
+  {"@type":"Question","name":"Kolay, normal ve zor seviye arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviyede başlangıç hızı ve tavan hız düşüktür, engel sıraları seyrektir ve aynı anda tek şerit kapanır. Zor seviyede yol daha hızlı başlar, daha yüksek hıza çıkar, sıralar sıklaşır ve iki şerit birden kapanabilir. Rekorlar seviyeye göre ayrı tutulur."}},
+  {"@type":"Question","name":"Gece teması ne işe yarıyor?","acceptedAnswer":{"@type":"Answer","text":"Gece teması yolu koyu renklerle çizer ve arabanın farlarını gösterir; gözünüz karanlık ortamda daha az yorulur. Oyun kurallarını değiştirmez, seçiminiz tarayıcınızda saklanır."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Skor yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir, başka cihazda görünmez."}},
+  {"@type":"Question","name":"Oyun neden kendiliğinden duruyor?","acceptedAnswer":{"@type":"Answer","text":"Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun haksız yere çarpmamanız için otomatik duraklar. P tuşuyla ya da Devam et düğmesiyle sürdürebilirsiniz."}},
+  {"@type":"Question","name":"İnternet olmadan oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz ve ses kullanılmaz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Araba Yarışı Oyna</span> – Ücretsiz Online Araba Yarışı</h1>
+      <p class="lead">Üç şeritli yolda karşıdan gelen araçlardan ve engellerden kaçın, yıldızları toplayın, hızlandıkça mesafeyi ve skoru artırın. Ok tuşları, A ve D ya da parmak kaydırmasıyla oynanır; gece teması ve üç seviye vardır. Kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Araba Yarışı oyun alanı</h2>
+      <dl class="ar-hud" aria-label="Skor tablosu">
+        <div><dt>Skor</dt><dd id="hud-score">0</dd></div>
+        <div><dt>Mesafe</dt><dd id="hud-dist">0 m</dd></div>
+        <div><dt>Hız</dt><dd id="hud-speed">56 km/s</dd></div>
+        <div><dt>Rekor</dt><dd id="hud-best">0</dd></div>
+      </dl>
+      <div class="ar-stage" id="stage" tabindex="0" role="group" aria-label="Araba yarışı yolu. Şerit değiştirmek için sol ve sağ ok tuşları ya da A ve D, duraklatmak için P tuşunu kullanın." data-state="hazir">
+        <canvas id="road" width="400" height="600" role="img" aria-label="Üç şeritli yol; altta sizin kırmızı arabanız, yukarıdan gelen araçlar ve engeller"></canvas>
+        <div class="ar-overlay" id="overlay">
+          <h3 id="overlay-title">Araba Yarışı</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+      <div class="ar-pad" aria-label="Ekran okları">
+        <button type="button" data-pad="left" aria-label="Sola şerit değiştir">◀</button>
+        <button type="button" data-pad="right" aria-label="Sağa şerit değiştir">▶</button>
+      </div>
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Baştan başlat</button>
+        <button type="button" class="ba-btn" id="btn-night" aria-pressed="false">Gece teması</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+      <div class="ba-options">
+        <div class="ba-field"><label for="opt-diff">Seviye</label>
+          <select id="opt-diff"><option value="easy">Kolay</option><option value="normal" selected>Normal</option><option value="hard">Zor</option></select>
+          <div class="hint">Rekorlar seviye başına ayrı tutulur. Oyun sürerken seviye değiştirilemez.</div></div>
+      </div>
+      <p class="ar-help">Sol/sağ ok ya da A/D ile şerit değiştirin, P duraklatır. Telefonda yolda parmağınızı yatay kaydırın ya da alttaki okları kullanın.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-araba-yarisi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Araba yarışı oyunu nedir?</h2>
+      <p>Bu araba yarışı, yukarıdan aşağı kayan üç şeritli bir yolda arabanızı engellerden uzak tutmaya çalıştığınız hızlı bir kaçış oyunudur. Frene basmazsınız, gaza da basmazsınız; yol kendiliğinden hızlanır ve sizin tek göreviniz doğru şeritte olmaktır. Karşıdan gelen araçlar, bariyerler ve trafik konileri çarpışma demektir; sarı yıldızlar ise ekstra puan getirir. Kurallar saniyeler içinde öğrenilir, ama hız arttıkça karar vermek için çok az süreniz kalır.</p>
+      <p>Oyun, Bilişim Ajans'ın ücretsiz araçlar koleksiyonunun bir parçasıdır ve tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da e-posta adresi vermeniz gerekmez. Telefonda, tablette ve bilgisayarda aynı sayfa açılır. Oyunda ses yoktur; derste, ofiste ya da toplu taşımada sessizce oynanabilir. Arabalar, yol ve engellerin tüm çizimi tarayıcıda yapılır, dışarıdan görsel veya ses dosyası yüklenmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Seviyeyi seçin.</strong> Oyun alanının altındaki seçimden kolay, normal ya da zor seviyeyi belirleyin. İlk deneme için normal iyi bir başlangıçtır.</li>
+        <li><strong>Başlat'a basın.</strong> Kırmızı arabanız ortadaki şeritte yola çıkar; yol kayar ve mesafe sayacı işler.</li>
+        <li><strong>Şerit değiştirin.</strong> Sol ve sağ ok tuşları, A ve D tuşları ya da parmak kaydırması arabayı yan şeride alır. Art arda iki kez basarsanız iki şerit geçersiniz.</li>
+        <li><strong>Engellerden kaçının, yıldızları toplayın.</strong> Karşıdan gelen araçlara, bariyerlere ve konilere çarpmayın. Yıldızın üzerinden geçmek 25 puan ekler.</li>
+        <li><strong>Çarpışınca sonuç görünür.</strong> Skorunuz, mesafeniz ve rekorunuz gösterilir. “Tekrar oyna” ile hemen yeniden deneyin.</li>
+      </ol>
+
+      <h2>Yoldakiler: araçlar, engeller ve yıldızlar</h2>
+      <ul>
+        <li><strong>Karşı yönden gelen araçlar:</strong> Rengârenk, ön kısmı aşağıya dönük arabalardır. Yola göre biraz daha hızlı yaklaşırlar; bu yüzden onlara tepki vermek için daha az zamanınız olur.</li>
+        <li><strong>Bariyer:</strong> Kırmızı beyaz çizgili, geniş bir engeldir. Bulunduğu şeridin büyük kısmını kaplar, yanından geçemezsiniz.</li>
+        <li><strong>Trafik konisi:</strong> Küçük turuncu bir engeldir. Daha dardır ama dokunursanız yine çarpışma sayılır.</li>
+        <li><strong>Sarı yıldız:</strong> Çarpışma değil, ödüldür. Her yıldız 25 puan ekler ve her zaman açık bir şeritte görünür; yani bir yıldızı almak için bir engelin yanından geçmeniz gerekmez.</li>
+      </ul>
+      <p>Her engel sırasında en az bir şerit boş bırakılır ve boş şerit bir önceki sıradaki boş şeride en fazla bir şerit uzaklıktadır. Oyun bu sayede her zaman geçilebilir olur; kaybettiğiniz an, doğru şeride geç geçtiğiniz andır.</p>
+
+      <h2>Seviyeler ve hız artışı</h2>
+      <h3>Kolay</h3>
+      <p>Yol yavaş başlar, daha düşük bir tavan hıza kadar çıkar ve engel sıraları seyrektir. Aynı anda yalnızca tek şerit kapanır. İlk kez oynayanlar, çocuklar ve rahat oynamak isteyenler için uygundur.</p>
+      <h3>Normal</h3>
+      <p>Başlangıç hızı yaklaşık 56 km/s gösterir ve tavan hıza dakikalar içinde ulaşır. Mesafe arttıkça iki şeridin birden kapandığı sıralar görülmeye başlar. Dengeli bir meydan okumadır.</p>
+      <h3>Zor</h3>
+      <p>Yol daha hızlı başlar, daha yüksek hıza çıkar ve sıralar sıklaşır. İki şerit birden kapanabilir; bu durumda tek doğru hamle, açık kalan şeride en baştan hazırlanmaktır. Rekorlar her seviye için ayrı saklanır, bu yüzden seviyeler birbirinin skorunu bozmaz.</p>
+
+      <div class="ba-ad" data-slot="oyun-araba-yarisi-b" aria-label="Reklam"></div>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Sol ok veya A tuşu sola, sağ ok veya D tuşu sağa geçirir. P tuşu oyunu duraklatır ve devam ettirir. Yön tuşlarına bastığınızda sayfa kaymaz.</li>
+        <li><strong>Dokunmatik ekran:</strong> Yolun üzerinde parmağınızı sola ya da sağa kaydırın. Kaydırma sırasında parmağınızı kaldırmadan art arda şerit değiştirebilirsiniz.</li>
+        <li><strong>Ekran okları:</strong> Küçük ekranlarda yolun altında iki büyük ok düğmesi görünür. Tek elle oynarken kaydırmadan daha rahat olabilir.</li>
+        <li><strong>Gece teması:</strong> Tek düğmeyle gündüz ve gece görünümü arasında geçiş yaparsınız. Seçiminiz bu tarayıcıda hatırlanır.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu büyütür; tablette ve masaüstünde daha geniş bir alanda oynarsınız.</li>
+      </ul>
+
+      <h2>Daha yüksek skor için ipuçları</h2>
+      <ul>
+        <li><strong>Yakına değil, uzağa bakın.</strong> Gözünüzü kendi arabanıza değil, yolun üst yarısına sabitleyin. Bir sonraki engel sırasını erken gören oyuncu, kararını sakin verir.</li>
+        <li><strong>Gereksiz şerit değiştirmeyin.</strong> Her hareket yeni bir risk demektir. Yolunuz açıksa ortada kalmak, her iki yana da hızlı geçmenizi sağlar.</li>
+        <li><strong>Ortadaki şeridi tercih edin.</strong> Orta şeritten iki yana da tek hamleyle ulaşılır; kenar şeritte ise yalnızca bir yön vardır.</li>
+        <li><strong>Karşı yönden gelen araçları hesaba katın.</strong> Onlar diğer engellerden daha hızlı yaklaşır. Yola çıktıkları anda şeritlerini planlayın.</li>
+        <li><strong>Yıldız için risk almayın.</strong> Yıldız her zaman açık şeritte olduğundan, güvenli yoldan toplayabilirsiniz. Kaçırmak, çarpışmaktan çok daha ucuzdur.</li>
+        <li><strong>Hızlanınca erken hareket edin.</strong> Yüksek hızda engel ekranda çok kısa kalır; şerit değiştirmeyi engel size yaklaşmadan başlatın.</li>
+        <li><strong>Mola verin.</strong> Dikkatiniz dağıldığında P ile duraklatın. Dinlenmiş gözler ve sakin eller rekoru getirir.</li>
+      </ul>
+
+      <h2>Yol ve trafik oyunlarının kısa tarihi</h2>
+      <p>Araba kullanma temalı oyunlar, bilgisayar oyunlarının en eski türlerinden biridir. İlk örneklerde oyuncu kuşbakışı bir pistte ya da kaydırmalı bir yolda arabasını engellerden uzak tutmaya çalışırdı. Bu basit fikir hızla yaygınlaştı; çünkü kuralı anlaşılır, tepki ölçen ve her denemede biraz daha iyi olma hissi veren bir yapıya sahipti.</p>
+      <p>Günümüzde bu tür oyunlar, tarayıcıda ve mobilde “sonsuz kaçış” biçiminde sürüyor. Pist bitmez, hedef yalnızca daha uzağa gitmektir; bu da kısa molalarda oynamak için idealdir. Bu sayfadaki oyun aynı fikrin sade bir yorumudur: sabit adımlı bir fizik döngüsü, üç şerit ve artan hız. Hiçbir markaya ait araç, logo ya da ses kullanılmaz.</p>
+
+      <h2>Neden Bilişim Ajans'ın Araba Yarışı oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve kayıt yok.</strong> Sayfayı açın ve oynayın. Hesap, e-posta ya da indirme gerekmez.</li>
+        <li><strong>Verileriniz cihazınızda kalır.</strong> Oyun sunucuya hiçbir bilgi göndermez. Yalnızca rekorlarınız ve tema tercihiniz tarayıcınızın yerel belleğinde saklanır.</li>
+        <li><strong>Akıcı ve adil.</strong> Oyun, ekran yenileme hızından bağımsız sabit adımlarla çalışır; 60 Hz'lik ekranda da yüksek yenileme hızlı ekranda da aynı hızda ilerler. Her engel sırası geçilebilir olacak şekilde üretilir.</li>
+        <li><strong>Erişilebilir.</strong> Klavyeyle tam oynanır, hareketi azalt ayarına saygı gösterir ve 360 piksellik ekranlara sığar.</li>
+        <li><strong>Dürüst tasarım.</strong> Sahte geri sayım, yanıltıcı düğme ya da oyunu bölen pencere yoktur. Reklam alanları oyunun ve düğmelerin dışında, sayfanın aşağısındadır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Araba yarışı oyunu ücretsiz mi, üyelik gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir. Üyelik, kayıt ya da uygulama indirmek gerekmez; sayfayı açıp Başlat düğmesine basmanız yeterlidir. Giderler yalnızca sayfalardaki reklamlarla karşılanır.</p></details>
+        <details><summary>Arabayı nasıl yönlendiririm?</summary><p>Sol ve sağ ok tuşları ya da A ve D tuşlarıyla bir şerit sola veya sağa geçersiniz. Telefonda oyun alanında parmağınızı yatay kaydırın ya da alttaki ok düğmelerine dokunun.</p></details>
+        <details><summary>Skor nasıl hesaplanıyor?</summary><p>Her metre bir puandır. Sarı yıldız toplamak 25 puan ekler. Mesafe ve yıldızlar toplanıp skoru oluşturur; çarpışınca oyun biter.</p></details>
+        <details><summary>Hız neden sürekli artıyor?</summary><p>Yol zaman geçtikçe hızlanır ve seçtiğiniz seviyenin tavanına kadar çıkar. Hızlanırken yeni engel sıraları da daha sık gelir, ancak her sırada en az bir şerit açık bırakılır.</p></details>
+        <details><summary>Kolay, normal ve zor seviye arasındaki fark nedir?</summary><p>Kolay seviyede başlangıç hızı ve tavan hız düşüktür, engel sıraları seyrektir ve aynı anda tek şerit kapanır. Zor seviyede yol daha hızlı başlar, daha yüksek hıza çıkar, sıralar sıklaşır ve iki şerit birden kapanabilir. Rekorlar seviyeye göre ayrı tutulur.</p></details>
+        <details><summary>Gece teması ne işe yarıyor?</summary><p>Gece teması yolu koyu renklerle çizer ve arabanın farlarını gösterir; gözünüz karanlık ortamda daha az yorulur. Oyun kurallarını değiştirmez, seçiminiz tarayıcınızda saklanır.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor?</summary><p>Skor yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir, başka cihazda görünmez.</p></details>
+        <details><summary>Oyun neden kendiliğinden duruyor?</summary><p>Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun haksız yere çarpmamanız için otomatik duraklar. P tuşuyla ya da Devam et düğmesiyle sürdürebilirsiniz.</p></details>
+        <details><summary>İnternet olmadan oynanabilir mi?</summary><p>Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz ve ses kullanılmaz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hiz-kosusu/">Hız Koşusu</a></li>
+        <li><a href="../kostebek-vurma/">Köstebek Vurma</a></li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a></li>
+        <li><a href="../balon-patlatma/">Balon Patlatma</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../../">Tüm oyunlar ve araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span><strong>Not:</strong> Araba Yarışı eğlence amaçlı bir oyundur. Uzun süre ekrana bakıyorsanız gözlerinizi dinlendirmek için ara verin; çocukların ekran süresini yaşlarına uygun biçimde sınırlamanızı öneririz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-araba-yarisi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

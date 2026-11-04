@@ -51,7 +51,7 @@ function calculate(ev) {
   const qty = parseQty($('qty').value);
   const max = params.sinirlar?.kisi_max ?? 100;
   if (!Number.isInteger(qty) || qty < 1 || qty > max) {
-    el.result.hidden = true;
+    el.result.hidden = true; el.result.classList.remove("is-active");
     showError(el.error, `Geçerli bir sayı girin: kişi sayısı 1 ile ${max} arasında bir tam sayı olmalı. Alanı temizleyip örneğin 1 yazın.`);
     return;
   }
@@ -67,7 +67,7 @@ function calculate(ev) {
   if (o.yaklasik) notes.push('Bu tutar yaklaşıktır; e-Devlet ya da vergi dairesinden teyit edin.');
   if (rate) notes.push(`Harç tutarları her yıl yeniden değerleme oranında (2026 için yaklaşık %${String(rate).replace('.', ',')}) artar.`);
   $('r-note').textContent = notes.join(' ');
-  el.result.hidden = false;
+  el.result.hidden = false; el.result.classList.add("is-active");
   lastText = `${c.ad} – ${o.ad} x ${qty}: harç ${fmt(o.harc)} + değerli kağıt ${fmt(o.degerli_kagit)} = kişi başı ${fmt(r.person)}; genel toplam ${fmt(r.total)} (yaklaşık, teyit edin)`;
 }
 
@@ -84,8 +84,8 @@ async function init() {
   for (const k of params.kategoriler) el.cat.append(new Option(k.ad, k.id));
   fillOptions();
   $('params-info').textContent = `Parametreler ${params.guncelleme} tarihinde güncellendi. Kaynak: ${params.kaynak || 'Harçlar Kanunu tarifesi'}`;
-  el.cat.addEventListener('change', () => { fillOptions(); el.result.hidden = true; });
-  el.opt.addEventListener('change', () => { showApprox(); el.result.hidden = true; });
+  el.cat.addEventListener('change', () => { fillOptions(); el.result.hidden = true; el.result.classList.remove("is-active"); });
+  el.opt.addEventListener('change', () => { showApprox(); el.result.hidden = true; el.result.classList.remove("is-active"); });
   $('form').addEventListener('submit', calculate);
   $('copy').addEventListener('click', copyResult);
 }

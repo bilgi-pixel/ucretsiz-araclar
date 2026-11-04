@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Reversi Oyna – Ücretsiz Online Reversi (kurulumsuz)</title>
+  <meta name="description" content="Reversi oyna: bilgisayara karşı üç zorluk seviyesinde ya da aynı cihazda iki kişilik. Geçerli hamleler vurgulanır, taş çevirme animasyonu, pas kuralı, geri al. Ücretsiz, kayıtsız, kurulumsuz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/reversi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .rv-layout { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .rv-layout { grid-template-columns: minmax(0, 580px) minmax(0, 1fr); align-items: start; } }
+    .rv-boardcol, .rv-side { min-width: 0; }
+    .rv-status { margin: 0 0 12px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .rv-status.is-pass { border-left-color: var(--ba-danger); background: var(--ba-danger-soft); }
+    .rv-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .rv-boardwrap { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 18px; max-width: 580px; margin: 0 auto; }
+    .rv-ranks { grid-column: 1; grid-row: 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px 0; }
+    .rv-files { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat(8, 1fr); padding: 0 6px; }
+    .rv-ranks span, .rv-files span { display: flex; align-items: center; justify-content: center; font-size: .72rem; color: var(--ba-text-muted); font-family: var(--ba-mono); }
+    .rv-board { grid-column: 2; grid-row: 1; width: 100%; aspect-ratio: 1 / 1; display: grid; grid-template-rows: repeat(8, 1fr); padding: 6px; box-sizing: border-box; background: #0f4a2a; border-radius: 8px; box-shadow: 0 4px 14px rgba(30, 33, 38, .25); touch-action: manipulation; --rv-black: radial-gradient(circle at 35% 30%, #62626b 0%, #25252a 60%, #0c0c0f 100%); --rv-white: radial-gradient(circle at 35% 30%, #ffffff 0%, #ece8dc 60%, #c9c2ad 100%); }
+    .rv-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); min-height: 0; }
+    .sq { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 1px solid rgba(0, 0, 0, .45); background: #1c7a44; font: inherit; cursor: pointer; border-radius: 0; -webkit-tap-highlight-color: transparent; }
+    .sq:focus-visible { outline: 3px solid #ffd43b; outline-offset: -3px; z-index: 2; }
+    .sq.is-last { box-shadow: inset 0 0 0 3px #ffd43b; }
+    .disc { display: none; width: 80%; height: 80%; border-radius: 50%; box-shadow: 0 2px 3px rgba(0, 0, 0, .5); }
+    .disc.d-b { display: block; background: var(--rv-black); border: 1px solid #000; }
+    .disc.d-w { display: block; background: var(--rv-white); border: 1px solid #8d866f; }
+    .disc.is-flip { animation: rvFlip .5s ease-in-out both; }
+    .disc.is-flip.from-b { --rv-from: var(--rv-black); }
+    .disc.is-flip.from-w { --rv-from: var(--rv-white); }
+    .disc.is-placed { animation: rvPop .25s ease-out both; }
+    @keyframes rvFlip {
+      0% { transform: scaleX(1); background: var(--rv-from); }
+      49% { transform: scaleX(.04); background: var(--rv-from); }
+      51% { transform: scaleX(.04); }
+      100% { transform: scaleX(1); }
+    }
+    @keyframes rvPop { 0% { transform: scale(.4); } 100% { transform: scale(1); } }
+    .hint { position: absolute; display: none; align-items: center; justify-content: center; pointer-events: none; font-family: var(--ba-mono); font-weight: 700; }
+    .rv-hints .sq.is-legal .hint { display: flex; width: 26%; height: 26%; border-radius: 50%; background: rgba(255, 255, 255, .6); }
+    .rv-counts .sq.is-legal .hint { display: flex; width: 54%; height: 54%; border-radius: 50%; background: #fff; color: #0f4a2a; font-size: .85rem; border: 2px solid #0f4a2a; }
+    .rv-counts:not(.rv-hints) .sq.is-legal .hint:empty { display: none; }
+    .rv-over { position: absolute; z-index: 5; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 300px); padding: 16px; text-align: center; background: var(--ba-surface); color: var(--ba-text); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+    .rv-over h3 { margin: 0 0 4px; font-size: 1.25rem; }
+    .rv-over p { margin: 0 0 12px; font-size: .95rem; }
+    .rv-over .row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .rv-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .rv-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .rv-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .rv-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .rv-check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .rv-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .rv-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .rv-actions .ba-btn { flex: 1 1 130px; }
+    .rv-counter { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 12px; }
+    .rv-count { border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 8px 10px; }
+    .rv-count strong { display: flex; align-items: center; gap: 8px; font-size: .95rem; }
+    .rv-count .chip { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #555; flex: none; }
+    .rv-count .chip-w { background: #f4f0e4; }
+    .rv-count .chip-b { background: #1c1c20; border-color: #000; }
+    .rv-count .num { display: block; font-family: var(--ba-mono); font-size: 1.5rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .rv-stats { margin: 0 0 14px; font-size: .85rem; color: var(--ba-text-muted); }
+    .rv-side h3 { margin: 0 0 8px; font-size: 1rem; }
+    .rv-history { margin: 0; padding: 8px 8px 8px 34px; max-height: 170px; overflow-y: auto; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); font-family: var(--ba-mono); font-size: .88rem; color: var(--ba-text); }
+    .rv-history li.is-empty { list-style: none; margin-left: -26px; font-family: var(--ba-font); color: var(--ba-text-muted); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.rv-ad-a { margin-top: 56px; }
+    .game-box:fullscreen { max-width: none; border-radius: 0; overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-surface); }
+    @media (prefers-reduced-motion: reduce) { .disc.is-flip, .disc.is-placed { animation: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Reversi – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Reversi: bilgisayara karşı üç zorluk seviyesi veya aynı cihazda iki kişilik.","inLanguage":"tr","genre":["Masa oyunu","Strateji"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/reversi/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Reversi nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Sırası gelen oyuncu, en az bir rakip taşını iki rengin arasına alacak bir boş kareye taş koyar. Arada kalan rakip taşları çevrilir ve oyuncunun rengine döner. Oyun sonunda tahtada en çok taşı olan kazanır."}},
+  {"@type":"Question","name":"Hamle yapamazsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Geçerli hamleniz yoksa otomatik olarak pas geçersiniz ve sıra rakibe geçer. Oyun, iki taraf da hamle yapamadığında ya da tahta dolduğunda biter. Pas durumunda ekranda bir bilgi satırı görünür."}},
+  {"@type":"Question","name":"Hangi renk önce başlar?","acceptedAnswer":{"@type":"Answer","text":"Siyah önce başlar. Başlangıçta ortadaki dört karede iki siyah ve iki beyaz taş çapraz durur; siyahın dört geçerli ilk hamlesi vardır. Bilgisayara karşı oynarken taş rengini listeden seçebilirsiniz."}},
+  {"@type":"Question","name":"Zorluk seviyeleri arasında ne fark var?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviyede bilgisayar bir hamle ilerisini görür ve ara sıra rastgele oynar. Orta seviye üç, Zor seviye beş hamle ilerisini hesaplar; köşeleri, kenarları ve hareketliliği değerlendirir. Oyun sonunda az kare kaldığında Zor seviye sonucu tam hesaplar."}},
+  {"@type":"Question","name":"Geçerli hamleleri ve çevrilecek taş sayısını görebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Geçerli kareler tahtada noktayla işaretlenir. İsterseniz Çevrilecek taş sayısını göster kutusunu işaretleyerek her karenin kaç taş çevireceğini rakamla görebilirsiniz."}},
+  {"@type":"Question","name":"Hamlemi geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Bilgisayara karşı oynarken Geri al düğmesi sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek hamle geri alınır."}},
+  {"@type":"Question","name":"Aynı cihazda iki kişi oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun türü listesinden İki kişilik seçeneğini seçin. Siyah ve beyaz sırayla aynı tahtada oynar; telefon ya da tableti iki oyuncu arasında paylaşabilirsiniz."}},
+  {"@type":"Question","name":"Oyun internet gerektirir mi, hamlelerim kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Sayfa yüklendikten sonra oyun tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı galibiyet, yenilgi ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Reversi Oyna</span> – Ücretsiz Online Reversi</h1>
+      <p class="lead">Bilgisayara karşı ya da aynı cihazda arkadaşınızla Reversi oynayın. Geçerli hamleler tahtada işaretlenir, çevrilen taşlar canlanır, pas otomatik uygulanır. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Reversi oyunu</h2>
+      <div class="rv-layout">
+        <div class="rv-boardcol">
+          <p id="rv-status" class="rv-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <div class="rv-boardwrap">
+            <div id="rv-ranks" class="rv-ranks" aria-hidden="true"></div>
+            <div id="rv-board" class="rv-board" role="grid" aria-label="Reversi tahtası, 8 x 8"></div>
+            <div id="rv-files" class="rv-files" aria-hidden="true"></div>
+            <div id="rv-over" class="rv-over" role="status" hidden>
+              <h3 id="rv-over-title">Oyun bitti</h3>
+              <p id="rv-over-text"></p>
+              <div class="row"><button id="rv-over-new" class="ba-btn ba-btn-primary" type="button">Tekrar oyna</button><button id="rv-over-close" class="ba-btn" type="button">Tahtayı incele</button></div>
+            </div>
+          </div>
+          <p class="rv-help">Işıklı noktalardan birine dokunarak taş koyun. Klavyede ok tuşlarıyla gezin, Enter ile taşı bırakın. Hamleniz yoksa oyun sizi otomatik pas geçirir.</p>
+        </div>
+        <div class="rv-side">
+          <div class="rv-controls">
+            <div class="rv-field"><label for="rv-mode">Oyun türü</label><select id="rv-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişilik (aynı cihaz)</option></select></div>
+            <div class="rv-field"><label for="rv-level">Zorluk</label><select id="rv-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+            <div class="rv-field"><label for="rv-color">Taş rengi (siyah önce başlar)</label><select id="rv-color"><option value="b">Siyah</option><option value="w">Beyaz</option></select></div>
+            <label class="rv-check"><input type="checkbox" id="rv-hints" checked> Geçerli hamleleri işaretle</label>
+            <label class="rv-check"><input type="checkbox" id="rv-counts"> Çevrilecek taş sayısını göster</label>
+          </div>
+          <div class="rv-actions"><button id="rv-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button><button id="rv-undo" class="ba-btn" type="button" disabled>Geri al</button><button id="rv-full" class="ba-btn" type="button" hidden>Tam ekran</button></div>
+          <div class="rv-counter" aria-label="Taş sayacı">
+            <div class="rv-count"><strong><span class="chip chip-b" aria-hidden="true"></span>Siyah</strong><span class="num" id="rv-count-b">2</span></div>
+            <div class="rv-count"><strong><span class="chip chip-w" aria-hidden="true"></span>Beyaz</strong><span class="num" id="rv-count-w">2</span></div>
+          </div>
+          <p id="rv-stats" class="rv-stats"></p>
+          <h3 id="rv-hist-h">Hamle geçmişi</h3>
+          <ol id="rv-history" class="rv-history" aria-labelledby="rv-hist-h"></ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad rv-ad-a" data-slot="oyun-reversi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Reversi nedir?</h2>
+      <p>Reversi, 8 x 8 kareli bir tahtada iki oyuncunun siyah ve beyaz taşlarla oynadığı bir strateji oyunudur. Kuralları birkaç cümleyle anlatılabilir, ama iyi oynamak ciddi bir planlama ister. Taşlar satranç ya da dama gibi hareket etmez; tahtaya bırakılır ve bırakıldığı anda rakip taşları çevirerek rengini değiştirir. Bu yüzden oyunun gidişatı çok hızlı değişebilir: yirmi hamle boyunca önde olan biri, son birkaç hamlede kaybedebilir. Bu sayfada Reversi'yi ücretsiz, kurulum yapmadan ve kayıt olmadan bilgisayara karşı ya da aynı cihazda bir arkadaşınızla oynayabilirsiniz.</p>
+
+      <h2>Reversi nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlangıç dizilimi.</strong> Tahtanın ortasındaki dört karede iki siyah, iki beyaz taş çapraz yerleşir: d4 ve e5 beyaz, d5 ve e4 siyahtır. Siyah ilk hamleyi yapar, sonra sıra sırayla değişir.</li>
+        <li><strong>Taş koymak.</strong> Sırası gelen oyuncu boş bir kareye taş bırakır. Bırakılan taşın, aynı renkten başka bir taşla arasında en az bir rakip taşı kalacak biçimde bir doğru (yatay, dikey ya da çapraz) oluşturması gerekir.</li>
+        <li><strong>Çevirme.</strong> Araya sıkışan bütün rakip taşları çevrilir ve hamleyi yapanın rengine döner. Aynı hamlede birden fazla yönde çevirme olabilir; hepsi birlikte uygulanır.</li>
+        <li><strong>Geçerli hamle zorunluluğu.</strong> Bir karenin geçerli olması için en az bir taş çevirmesi gerekir. Hiçbir kare bu şartı sağlamıyorsa o oyuncu pas geçer ve sıra rakibe geçer. Bu oyunda pas otomatik uygulanır ve ekranda bildirilir.</li>
+        <li><strong>Oyunun sonu.</strong> Tahta dolduğunda ya da iki oyuncu da hamle yapamadığında oyun biter. Tahtada daha çok taşı olan kazanır; sayılar eşitse oyun berabere kalır. Bu sayfada yalnızca tahtadaki taşlar sayılır, boş kalan kareler kimseye yazılmaz.</li>
+      </ol>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Geçerli kareler noktayla işaretlenir. Bir noktaya tıklayın ya da dokunun; taş bırakılır ve çevrilen taşlar kısa bir animasyonla döner. Hareket azaltma ayarınız açıksa animasyon gösterilmez.</li>
+        <li><strong>Klavye:</strong> Tab ile tahtaya gelin, ok tuşlarıyla kareler arasında gezin, Enter veya Boşluk ile taşı bırakın. Her karenin ekran okuyucu etiketi “d3, boş, geçerli hamle, 1 taş çevirir” biçimindedir.</li>
+        <li><strong>Çevrilecek taş sayısı:</strong> Kutuyu işaretlerseniz her geçerli karede o hamlenin kaç taş çevireceği yazar. Başlangıç için kullanışlıdır; ancak en çok taş çeviren hamle çoğu zaman en iyisi değildir.</li>
+        <li><strong>Geri al:</strong> Bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek hamle geri gider.</li>
+        <li><strong>Taş rengi:</strong> Beyazı seçerseniz bilgisayar siyahla başlar ve ilk hamleyi o oynar.</li>
+        <li><strong>Tam ekran:</strong> Desteklenen tarayıcılarda oyun kutusunu ekranı kaplayacak şekilde büyütür.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünür?</h2>
+      <p>Bilgisayar rakibi, alfa-beta budamalı minimax algoritmasıyla çalışır: olası hamlelerin ağacını belli bir derinliğe kadar gezer, her konumu bir puan tablosuna göre değerlendirir ve rakibin en iyi cevabını varsayarak en yüksek puanlı hamleyi seçer. Puanlama üç şeye bakar: karelerin konum değeri (köşeler çok değerlidir, köşeye bitişik kareler tehlikelidir, kenarlar iyidir), iki tarafın hamle sayısı farkı (hareketlilik) ve oyun sonuna yaklaşırken taş farkı. Hesaplama bir Web Worker içinde yapılır; bu sayede tahta, düşünme sırasında takılmaz.</p>
+      <ul>
+        <li><strong>Kolay:</strong> Bir hamle ileriyi görür ve zaman zaman rastgele oynar. Kuralları yeni öğrenenler için uygundur.</li>
+        <li><strong>Orta:</strong> Üç hamle ileriyi hesaplar, birbirine yakın değerdeki hamleler arasından seçer. Köşeyi görür ama uzun vadeli planlarda yanılabilir.</li>
+        <li><strong>Zor:</strong> Beş hamle ileriyi hesaplar ve rastgele oynamaz. Tahtada çok az boş kare kaldığında oyunu sonuna kadar hesaplar. Düzenli oyuncuları bile zorlar.</li>
+      </ul>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Köşeleri hedefleyin.</strong> Köşedeki taş hiçbir zaman çevrilemez. Köşeden kenar boyunca ilerleyen taşlar da çoğunlukla kalıcıdır. Bir köşeyi almak, kenarları da kontrol etmenin ilk adımıdır.</li>
+        <li><strong>Köşeye bitişik karelerden kaçının.</strong> Köşenin yanındaki ve çaprazındaki karelere taş koymak, rakibe köşeyi hediye etme riski taşır. Köşe doluysa bu kareler artık güvenlidir.</li>
+        <li><strong>Çok taş çevirmek iyi değildir.</strong> Erken oyunda tahtada az taşınız olması, rakibi daha az hamleyle sınırlar. Taş sayısı yerine hamle sayısını artırmaya çalışın.</li>
+        <li><strong>Hareketliliği koruyun.</strong> Rakibi mümkün olduğunca az geçerli hamleyle bırakın. Hamle bulamayan rakip, istemediği bir kareye mecbur kalır.</li>
+        <li><strong>Tahtanın içinde kalın.</strong> Çevrilen taşlarınızın çevresinde boş kare bırakmayan, yani rakibe yeni kapılar açmayan hamleler genellikle sağlıklıdır.</li>
+        <li><strong>Oyun sonunda sayın.</strong> Son on kareye gelindiğinde acele etmeyin. Hangi bölgeyi kimin dolduracağı, pas olasılığı ve son hamleyi kimin yapacağı sonucu belirler.</li>
+      </ul>
+
+      <h2>Reversi'nin kısa tarihi</h2>
+      <p>Genel kabule göre Reversi, 19. yüzyılın sonunda İngiltere'de ortaya çıktı ve kısa sürede yaygınlaştı; icat kimin eseri olduğu konusunda kaynaklar farklı isimler verir. Başlangıçta oyuncular ilk taşlarını tahtada serbestçe koyabiliyordu. Sonraki yıllarda ortadaki dört kareyi sabit bir dizilimle başlatan sürüm dünya çapında daha çok tutuldu ve turnuvalarda tercih edilir oldu. Bu sayfadaki oyun da bu sabit başlangıç dizilimini kullanır. Bilgisayar programları bu oyunda insanlardan çok önce güçlü seviyeye ulaştı; oyun, yapay zekâ derslerinde sık kullanılan örneklerden biridir.</p>
+
+      <div class="ba-ad" data-slot="oyun-reversi-b" aria-label="Reklam"></div>
+
+      <h2>Hangi hatalar kaybettirir?</h2>
+      <p>Yeni başlayanların en sık yaptığı hata, her hamlede mümkün olan en çok taşı çevirmektir. Tahtada hızla taş toplamak iyi görünür, ama rakibe geniş bir hamle seçeneği bırakır ve köşelere giden yolu açar. İkinci yaygın hata, köşenin yanındaki karelere taş koymaktır: rakip bu hamleyi karşılık olarak köşe alma fırsatına çevirir. Üçüncüsü, kenarda tek başına duran taşlara dikkat etmemektir; uçlarında boşluk bulunan bir kenar çizgisi, rakibin tek hamleyle bütün hattı çevirmesine izin verebilir. Bilgisayara karşı oynarken geri al düğmesini bu hataları deneyip görmek için kullanabilirsiniz: bir hamleyi oynayın, bilgisayarın cevabına bakın, geri alıp başka bir kareyi deneyin.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da hamle sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır; hamleleriniz bir sunucuya iletilmez. Yalnızca bilgisayara karşı sonuç sayınız bu cihazda tutulur.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da oyun çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile tahta sığar, dokunma ve klavye ile oynanır.</li>
+        <li><strong>Adil bilgisayar.</strong> Bilgisayar hile yapmaz; aynı kuralları, sizinle aynı bilgiyle oynar.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Reversi nasıl oynanır?</summary><p>Sırası gelen oyuncu, en az bir rakip taşını iki rengin arasına alacak bir boş kareye taş koyar. Arada kalan rakip taşları çevrilir ve oyuncunun rengine döner. Oyun sonunda tahtada en çok taşı olan kazanır.</p></details>
+        <details><summary>Hamle yapamazsam ne olur?</summary><p>Geçerli hamleniz yoksa otomatik olarak pas geçersiniz ve sıra rakibe geçer. Oyun, iki taraf da hamle yapamadığında ya da tahta dolduğunda biter. Pas durumunda ekranda bir bilgi satırı görünür.</p></details>
+        <details><summary>Hangi renk önce başlar?</summary><p>Siyah önce başlar. Başlangıçta ortadaki dört karede iki siyah ve iki beyaz taş çapraz durur; siyahın dört geçerli ilk hamlesi vardır. Bilgisayara karşı oynarken taş rengini listeden seçebilirsiniz.</p></details>
+        <details><summary>Zorluk seviyeleri arasında ne fark var?</summary><p>Kolay seviyede bilgisayar bir hamle ilerisini görür ve ara sıra rastgele oynar. Orta seviye üç, Zor seviye beş hamle ilerisini hesaplar; köşeleri, kenarları ve hareketliliği değerlendirir. Oyun sonunda az kare kaldığında Zor seviye sonucu tam hesaplar.</p></details>
+        <details><summary>Geçerli hamleleri ve çevrilecek taş sayısını görebilir miyim?</summary><p>Evet. Geçerli kareler tahtada noktayla işaretlenir. İsterseniz “Çevrilecek taş sayısını göster” kutusunu işaretleyerek her karenin kaç taş çevireceğini rakamla görebilirsiniz.</p></details>
+        <details><summary>Hamlemi geri alabilir miyim?</summary><p>Evet. Bilgisayara karşı oynarken Geri al düğmesi sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek hamle geri alınır.</p></details>
+        <details><summary>Aynı cihazda iki kişi oynayabilir miyim?</summary><p>Evet. Oyun türü listesinden “İki kişilik” seçeneğini seçin. Siyah ve beyaz sırayla aynı tahtada oynar; telefon ya da tableti iki oyuncu arasında paylaşabilirsiniz.</p></details>
+        <details><summary>Oyun internet gerektirir mi, hamlelerim kaydediliyor mu?</summary><p>Sayfa yüklendikten sonra oyun tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı galibiyet, yenilgi ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kutu-kapmaca/">Kutu Kapmaca</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-reversi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

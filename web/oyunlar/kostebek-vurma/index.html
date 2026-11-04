@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Köstebek Vurma Oyna – Ücretsiz Online Köstebek Vurma (kurulumsuz)</title>
+  <meta name="description" content="Köstebek vurma oyununu tarayıcıda ücretsiz oynayın: 3×3 ve 4×4 ızgara, 60 ve 30 saniyelik süreli mod, altın köstebek, bomba, kombo ve çocuklar için sakin mod. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kostebek-vurma/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; margin-bottom: 64px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .kv-stage { max-width: min(100%, max(240px, calc(100vh - 330px))); }
+    .kv-top { display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: space-between; margin-bottom: 12px; }
+    .kv-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .kv-opt[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; box-shadow: var(--ba-shadow-btn); }
+    .kv-opt[aria-pressed="true"]:hover { background: var(--ba-primary-strong); border-color: var(--ba-primary-strong); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kv-opt[aria-pressed="true"], :root:not([data-theme="light"]) .kv-opt[aria-pressed="true"]:hover { color: #1a0d10; } }
+    :root[data-theme="dark"] .kv-opt[aria-pressed="true"], :root[data-theme="dark"] .kv-opt[aria-pressed="true"]:hover { color: #1a0d10; }
+    .kv-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 480px; margin: 0 auto 12px; }
+    .kv-hud > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .kv-hud dt { font-size: .7rem; font-family: var(--ba-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .kv-hud dd { margin: 0; font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .kv-stage { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: var(--ba-radius); overflow: hidden; background: #3f6b3a; padding: 10px; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .kv-grid { display: grid; gap: 8px; touch-action: manipulation; }
+    .kv-grid[data-size="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .kv-grid[data-size="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .kv-hole { position: relative; display: block; aspect-ratio: 1 / 1; padding: 0; border: 0; background: transparent; cursor: pointer; min-width: 44px; min-height: 44px; border-radius: 12px; font: inherit; }
+    .kv-hole::before { content: ""; position: absolute; left: 4%; right: 4%; bottom: 8%; height: 26%; border-radius: 50%; background: #1b1410; box-shadow: 0 3px 0 #6b4a2f; }
+    .kv-hole::after { content: ""; position: absolute; left: 4%; right: 4%; bottom: 3%; height: 16%; border-radius: 0 0 50% 50% / 0 0 100% 100%; background: #8a5a35; z-index: 2; }
+    .kv-hole:focus-visible { outline: 3px solid #fff; outline-offset: 1px; box-shadow: 0 0 0 6px var(--ba-primary); }
+    .kv-clip { position: absolute; left: 0; right: 0; top: 0; bottom: 20%; overflow: hidden; z-index: 1; }
+    .kv-mole { position: absolute; left: 14%; right: 14%; top: 10%; aspect-ratio: 1 / 1; transform: translateY(110%); transition: transform .14s ease-out; }
+    .kv-hole[data-mole] .kv-mole { transform: translateY(0); }
+    .kv-svg { display: none; width: 100%; height: 100%; }
+    .kv-hole[data-mole="normal"] .kv-svg-normal, .kv-hole[data-mole="gold"] .kv-svg-gold, .kv-hole[data-mole="bomb"] .kv-svg-bomb { display: block; }
+    .kv-key { position: absolute; left: 4px; top: 2px; z-index: 3; min-width: 18px; padding: 0 4px; border-radius: 4px; background: rgba(20, 22, 26, .75); color: #fff; font-family: var(--ba-mono); font-size: .68rem; line-height: 18px; text-align: center; pointer-events: none; }
+    @media (pointer: coarse) { .kv-key { display: none; } }
+    .kv-hole.is-good .kv-clip { filter: brightness(1.3); }
+    .kv-hole.is-bad .kv-clip { filter: sepia(1) saturate(6) hue-rotate(-30deg); }
+    .kv-float { position: absolute; left: 50%; top: 10%; z-index: 4; transform: translateX(-50%); font-weight: 800; font-size: 1.1rem; pointer-events: none; text-shadow: 0 1px 2px #000; animation: kv-rise .65s ease-out forwards; }
+    .kv-float.good { color: #fff3b0; }
+    .kv-float.bad { color: #ffb4b4; }
+    @keyframes kv-rise { from { opacity: 1; margin-top: 0; } to { opacity: 0; margin-top: -24px; } }
+    @media (prefers-reduced-motion: reduce) { .kv-mole { transition: none; } .kv-float { animation: none; } }
+    .kv-overlay { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(20, 22, 26, .88); color: #fff; }
+    .kv-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .kv-overlay p { margin: 0; color: #e1e2e5; max-width: 34ch; font-size: .95rem; line-height: 1.5; }
+    .kv-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kv-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .kv-overlay .ba-btn-primary { color: #1a0d10; }
+    .game-box .ba-actions { justify-content: center; }
+    @media (max-width: 520px) {
+      .kv-group { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+      .kv-group.sizes { grid-template-columns: repeat(2, 1fr); }
+      .kv-top .ba-btn, .game-box .ba-actions .ba-btn { min-height: 44px; padding: 8px 6px; font-size: .9rem; justify-content: center; }
+      .game-box .ba-actions { display: grid; grid-template-columns: 1fr 1fr; }
+    }
+    .kv-help { max-width: 480px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-2); text-align: center; }
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Köstebek Vurma – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz köstebek vurma oyunu: 3x3 ve 4x4 ızgara, süreli ve sakin mod, altın köstebek, bomba, kombo ve en yüksek skor.","applicationCategory":"Game","genre":"Refleks oyunu","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/kostebek-vurma/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Köstebek vurma oyunu ücretsiz mi, üyelik gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Oyun tamamen ücretsizdir. Üyelik, kayıt ya da uygulama indirmek gerekmez; sayfayı açıp Başlat düğmesine basmanız yeterlidir."}},
+  {"@type":"Question","name":"Puanlar nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Sıradan köstebek 1, altın köstebek 3 puandır. Kombo serisi 5, 10 ve 15 vuruşa ulaşınca her vuruşa 1, 2 ve 3 ek puan gelir. Bombaya vurmak 5 puan götürür; skor sıfırın altına inmez."}},
+  {"@type":"Question","name":"Süreli mod ile sakin mod arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Süreli modda 60 ya da 30 saniyeniz vardır, köstebekler giderek hızlanır ve bombalar çıkar. Sakin modda süre ve bomba yoktur, köstebekler yavaş çıkar ve boşa vurmak seriyi bozmaz; Bitir düğmesine basana kadar oynarsınız."}},
+  {"@type":"Question","name":"Klavyeyle nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"3x3 ızgarada sayı tuş takımı delik düzenini izler: 7-8-9 üst sıra, 1-2-3 alt sıradır. Q W E, A S D, Z X C tuşları da aynı işi görür. 4x4 ızgarada 1-2-3-4, Q-W-E-R, A-S-D-F ve Z-X-C-V blokları kullanılır. Tab ile bir deliğe gelip Enter ya da Boşlukla da vurabilirsiniz; P tuşu duraklatır."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Skor yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Her mod ve ızgara boyutu için ayrı bir rekor vardır. Tarayıcı verilerini temizlerseniz silinir."}},
+  {"@type":"Question","name":"Telefonda ve tablette oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Delikler parmak boyutuna uygun büyüklüktedir ve dokunduğunuz anda vuruş sayılır. 360 piksel genişliğindeki küçük ekranlarda da sığar."}},
+  {"@type":"Question","name":"Çocuklar için uygun mu?","acceptedAnswer":{"@type":"Answer","text":"Sakin mod çocuklar için tasarlanmıştır: süre, bomba ve ceza yoktur, köstebekler yavaş çıkar. Oyunda ses, reklam ya da yönlendirme bulunmaz; reklamlar oyun kutusunun dışındadır."}},
+  {"@type":"Question","name":"Hareket animasyonları rahatsız ediyor, kapatabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Cihazınızda hareketi azalt ayarı açıksa köstebeklerin yukarı çıkma animasyonu ve puan yazıları otomatik olarak kapanır; köstebekler yerinde belirir ve kaybolur."}},
+  {"@type":"Question","name":"İnternet olmadan oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Köstebek Vurma Oyna</span> – Ücretsiz Online Köstebek Vurma</h1>
+      <p class="lead">Deliklerden çıkan köstebeklere tıklayın ya da dokunun; altın köstebekten fazla puan alın, bombalardan uzak durun. 60 ya da 30 saniyelik süreli mod ve çocuklar için süresiz bir sakin mod var. Kurulum, üyelik ve indirme yok, her şey tarayıcınızda çalışır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Köstebek Vurma oyun alanı</h2>
+      <div class="kv-top">
+        <div class="kv-group" role="group" aria-label="Oyun modu">
+          <button type="button" class="ba-btn kv-opt" data-mode="60" aria-pressed="true">60 sn</button>
+          <button type="button" class="ba-btn kv-opt" data-mode="30" aria-pressed="false">30 sn</button>
+          <button type="button" class="ba-btn kv-opt" data-mode="calm" aria-pressed="false">Sakin mod</button>
+        </div>
+        <div class="kv-group sizes" role="group" aria-label="Izgara boyutu">
+          <button type="button" class="ba-btn kv-opt" data-size="3" aria-pressed="true">3×3</button>
+          <button type="button" class="ba-btn kv-opt" data-size="4" aria-pressed="false">4×4</button>
+        </div>
+      </div>
+      <dl class="kv-hud" aria-label="Skor tablosu">
+        <div><dt>Skor</dt><dd id="hud-score">0</dd></div>
+        <div><dt>Süre</dt><dd id="hud-time">60</dd></div>
+        <div><dt>Rekor</dt><dd id="hud-best">0</dd></div>
+        <div><dt>Kombo</dt><dd id="hud-combo">0</dd></div>
+      </dl>
+      <div class="kv-stage" id="stage" data-state="hazir">
+        <div class="kv-grid" id="kv-grid" data-size="3" role="group" aria-label="Köstebek delikleri"></div>
+        <div class="kv-overlay" id="overlay">
+          <h3 id="overlay-title">Köstebek Vurma</h3>
+          <p id="overlay-text"></p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Baştan başlat</button>
+        <button type="button" class="ba-btn" id="btn-finish" disabled>Bitir</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+      <p class="kv-help">Fare ya da parmakla köstebeğe vurun. Klavye: 3×3'te sayı tuş takımı (7-8-9 üst sıra) veya Q W E / A S D / Z X C; 4×4'te 1-2-3-4 / Q-W-E-R / A-S-D-F / Z-X-C-V. Tab ve ok tuşlarıyla deliğe gelip Enter ile de vurabilirsiniz. P duraklatır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kostebek-vurma-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Köstebek vurma oyunu nedir?</h2>
+      <p>Köstebek vurma, ekrandaki deliklerden rastgele çıkıp kısa süre sonra yeniden saklanan köstebeklere vurmaya çalıştığınız hızlı ve eğlenceli bir refleks oyunudur. Kuralı tek cümleyle anlatmak mümkün: köstebek çıkınca vur, kaçırmadan bir sonrakine geç. Ama süre ilerledikçe köstebekler daha kısa kalır, daha sık çıkar ve aralarına dokunmamanız gereken bombalar karışır; bu yüzden “bir tur daha” demek çok kolaydır.</p>
+      <p>Oyun, Bilişim Ajans'ın ücretsiz araçlar koleksiyonunun bir parçasıdır ve tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da e-posta adresi vermeniz gerekmez. Telefonda, tablette ve bilgisayarda aynı sayfa açılır; fare, parmak ya da klavyeyle oynayabilirsiniz. Oyunda ses yoktur, bu nedenle derste, ofiste ya da toplu taşımada sessizce oynanabilir. Tüm çizimler tarayıcıda oluşturulur; dışarıdan görsel veya ses dosyası yüklenmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Modu seçin.</strong> Oyun alanının üstünden 60 saniye, 30 saniye ya da sakin modu; ardından 3×3 veya 4×4 ızgarayı belirleyin.</li>
+        <li><strong>Başlat'a basın.</strong> Süre işlemeye başlar ve köstebekler deliklerden çıkar.</li>
+        <li><strong>Köstebeğe vurun.</strong> Çıkan köstebeğin deliğine tıklayın ya da dokunun. Köstebek kaybolur ve puanınız artar.</li>
+        <li><strong>Altın köstebeği kaçırmayın, bombadan kaçının.</strong> Altın köstebek 3 puan verir; siyah bombaya vurursanız 5 puan kaybedersiniz.</li>
+        <li><strong>Sonucu görün.</strong> Süre dolunca skorunuz, vurduğunuz köstebek sayısı ve en yüksek skorunuz gösterilir. “Tekrar oyna” ile yeni tura geçin.</li>
+      </ol>
+
+      <h2>Köstebek türleri ve puanlar</h2>
+      <ul>
+        <li><strong>Sıradan köstebek (kahverengi):</strong> 1 puan verir. Oyunun büyük kısmı bu köstebeklerden oluşur.</li>
+        <li><strong>Altın köstebek (sarı, taçlı):</strong> 3 puan verir ve biraz daha kısa süre kalır. Oyunun ilk iki saniyesinden sonra ara sıra görünür.</li>
+        <li><strong>Bomba (siyah, ünlem işaretli):</strong> Vurursanız 5 puan kaybedersiniz ve kombo serisi sıfırlanır. Skor sıfırın altına inmez. Bombayı kendi haline bırakmak ceza getirmez; en iyi cevap çoğunlukla “dokunma”dır. Bombalar ilk dört saniyede çıkmaz ve sakin modda hiç görünmez.</li>
+      </ul>
+      <p>Türleri yalnızca renkten ayırmanız gerekmez: altın köstebeğin başında taç, bombanın üzerinde ünlem ve yanık fitil bulunur. Ekran okuyucu kullanıyorsanız her deliğin etiketi de içindeki öğeyi bildirir.</p>
+
+      <h2>Modlar ve ızgara boyutları</h2>
+      <h3>60 saniye ve 30 saniye</h3>
+      <p>60 saniyelik mod dengeli bir turdur: ilk yarıda ısınır, ikinci yarıda hızlanan köstebeklere yetişmeye çalışırsınız. 30 saniyelik mod aynı hız artışını yarı sürede yaşatır; kısa mola vermek isteyenler için idealdir. Hız artışı geçen süreye bağlıdır, yani 30 saniyelik turun sonu çok daha temposuzdur.</p>
+      <h3>Sakin mod</h3>
+      <p>Sakin modda süre sayacı ve bomba yoktur, köstebekler yavaş çıkar ve uzun süre kalır, boşa vurmak kombo serisini bozmaz. Küçük çocuklar, fare ya da dokunmatik ekran kullanımını yeni öğrenenler ve acele etmeden oynamak isteyenler için tasarlanmıştır. İstediğiniz kadar oynayıp Bitir düğmesine bastığınızda skorunuz görünür.</p>
+      <h3>3×3 ve 4×4</h3>
+      <p>3×3 ızgara dokuz delikten oluşur ve gözle takip etmesi kolaydır. 4×4 on altı delik sunar; aynı anda daha fazla köstebek çıkabilir ve odağınızı daha geniş bir alana yaymanız gerekir. Rekorlar her mod ve boyut için ayrı tutulur, böylece farklı ayarlar birbirinin skorunu bozmaz.</p>
+
+      <h2>Kombo ve hız artışı</h2>
+      <p>Süreli modlarda art arda köstebek vurdukça kombo sayacı artar. Kombo 5'e ulaşınca her vuruşa 1, 10'a ulaşınca 2, 15 ve üzerinde 3 ek puan gelir. Seriyi şunlar sıfırlar: boş bir deliğe vurmak, bir köstebeğin siz vuramadan saklanması ve bombaya vurmak. Bu kural, rastgele tıklamanın yerine hedefi seçerek vurmayı daha kazançlı kılar.</p>
+      <p>Köstebeklerin deliklerde kalma süresi turun başında yaklaşık 1,3 saniyedir ve sonuna doğru yarıya yakın düşer. Yeni köstebeklerin çıkma aralığı da kısalır. Bu nedenle turun ilk yarısında seriyi büyütmek, ikinci yarısında ise doğru deliği hızlıca seçmek skoru belirler.</p>
+
+      <div class="ba-ad" data-slot="oyun-kostebek-vurma-b" aria-label="Reklam"></div>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> Deliğe tıklayın ya da dokunun. Vuruş, dokunduğunuz anda sayılır; parmağınızı kaldırmanız beklenmez.</li>
+        <li><strong>Sayı tuş takımı (3×3):</strong> Tuşlar delik düzenini izler. 7-8-9 üst sıra, 4-5-6 orta sıra, 1-2-3 alt sıradır. Num Lock'un açık olması gerekmez.</li>
+        <li><strong>Harf tuşları:</strong> 3×3'te Q W E, A S D, Z X C blokları; 4×4'te 1-2-3-4, Q-W-E-R, A-S-D-F ve Z-X-C-V blokları. Her deliğin köşesinde karşılık gelen tuş küçük bir etiketle gösterilir (dokunmatik cihazlarda gizlenir).</li>
+        <li><strong>Odak ve Enter:</strong> Tab ile bir deliğe gelin, ok tuşlarıyla komşu deliğe geçin, Enter ya da Boşluk ile vurun.</li>
+        <li><strong>Duraklat:</strong> P tuşu ya da Duraklat düğmesi. Başka bir sekmeye geçerseniz oyun kendiliğinden duraklar.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu büyütür; tablette ve masaüstünde daha geniş alanda oynarsınız.</li>
+      </ul>
+
+      <h2>Daha yüksek skor için ipuçları</h2>
+      <ul>
+        <li><strong>Gözünüzü ızgaranın ortasında tutun.</strong> Tek bir deliğe kilitlenmek yerine tüm alanı görmek, yeni çıkan köstebeği daha erken fark etmenizi sağlar.</li>
+        <li><strong>Emin olmadan vurmayın.</strong> Boş deliğe vurmak seriyi sıfırlar. Köstebek belirmeden önce tıklamak yerine görmeyi bekleyin.</li>
+        <li><strong>Altın köstebeğe öncelik verin.</strong> Üç puanlık köstebek kısa süre kalır; yanındaki sıradan köstebek bekleyebilir.</li>
+        <li><strong>Bombayı fark edin, sonra vurun.</strong> Hızlanınca hepsi aynı görünmeye başlar; her vuruştan önce kısa bir bakış bombaya vurma riskini düşürür.</li>
+        <li><strong>Klavyede elinizi sabit tutun.</strong> Sayı tuş takımında parmaklarınızı 4-5-6 sırasına koymak, her deliğe bir hareketle ulaşmanızı sağlar.</li>
+        <li><strong>Turun sonunda risk alın.</strong> Süre bitince seri önemini yitirir; son saniyelerde hızlı vurmak puanı en çok artırır.</li>
+        <li><strong>Mola verin.</strong> Gözleriniz yorulduğunda P ile duraklatın; dinlenmiş gözler daha hızlı tepki verir.</li>
+      </ul>
+
+      <h2>Vurmalı refleks oyunlarının kısa tarihi</h2>
+      <p>Delikten çıkan hedeflere vurma fikri, yirminci yüzyılın ortalarından itibaren lunaparklarda ve oyun salonlarında görülen mekanik makinelerle yaygınlaştı. Oyuncular yumuşak bir çekiçle, rastgele açılan deliklerden çıkan figürlere vurur, hızlandıkça puan toplardı. Bilgisayar ve mobil çağında aynı fikir, hem çocukların el-göz koordinasyonunu geliştiren hem de yetişkinler için kısa bir mola oluşturan bir oyun biçimine dönüştü.</p>
+      <p>Bu tür oyunların çekiciliği, kuralının anında anlaşılması ve her vuruşta anlık geri bildirim vermesidir: bir hedef kaybolur, bir sayı artar. Bu sayfadaki sürüm, aynı fikrin sade bir yorumudur. Köstebekler, bomba ve delikler tarayıcıda çizilir; hiçbir telifli görsel, ses ya da karakter kullanılmaz.</p>
+
+      <h2>Neden Bilişim Ajans'ın Köstebek Vurma oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve kayıt yok.</strong> Sayfayı açın ve oynayın. Hesap, e-posta ya da indirme gerekmez.</li>
+        <li><strong>Verileriniz cihazınızda kalır.</strong> Oyun sunucuya hiçbir bilgi göndermez. Yalnızca rekorlarınız tarayıcınızın yerel belleğinde saklanır.</li>
+        <li><strong>Çocuklar için güvenli.</strong> Sakin modda baskı, bomba ve sayaç yoktur; oyunda ses ve yönlendirme bulunmaz.</li>
+        <li><strong>Erişilebilir.</strong> Klavyeyle tam oynanır, hareketi azalt ayarına saygı gösterir ve 360 piksellik ekranlara sığar.</li>
+        <li><strong>Dürüst tasarım.</strong> Sahte geri sayım, yanıltıcı düğme ya da oyunu bölen pencere yoktur. Reklam alanları oyunun ve düğmelerin dışında, sayfanın aşağısındadır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Köstebek vurma oyunu ücretsiz mi, üyelik gerekiyor mu?</summary><p>Oyun tamamen ücretsizdir. Üyelik, kayıt ya da uygulama indirmek gerekmez; sayfayı açıp Başlat düğmesine basmanız yeterlidir. Giderler yalnızca sayfalardaki reklamlarla karşılanır.</p></details>
+        <details><summary>Puanlar nasıl hesaplanıyor?</summary><p>Sıradan köstebek 1, altın köstebek 3 puandır. Kombo serisi 5, 10 ve 15 vuruşa ulaşınca her vuruşa 1, 2 ve 3 ek puan gelir. Bombaya vurmak 5 puan götürür; skor sıfırın altına inmez.</p></details>
+        <details><summary>Süreli mod ile sakin mod arasındaki fark nedir?</summary><p>Süreli modda 60 ya da 30 saniyeniz vardır, köstebekler giderek hızlanır ve bombalar çıkar. Sakin modda süre ve bomba yoktur, köstebekler yavaş çıkar ve boşa vurmak seriyi bozmaz; Bitir düğmesine basana kadar oynarsınız.</p></details>
+        <details><summary>Klavyeyle nasıl oynanır?</summary><p>3×3 ızgarada sayı tuş takımı delik düzenini izler: 7-8-9 üst sıra, 1-2-3 alt sıradır. Q W E, A S D, Z X C tuşları da aynı işi görür. 4×4 ızgarada 1-2-3-4, Q-W-E-R, A-S-D-F ve Z-X-C-V blokları kullanılır. Tab ile bir deliğe gelip Enter ya da Boşlukla da vurabilirsiniz; P tuşu duraklatır.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor?</summary><p>Skor yalnızca cihazınızın tarayıcı belleğinde (localStorage) tutulur, hiçbir sunucuya gönderilmez. Her mod ve ızgara boyutu için ayrı bir rekor vardır. Tarayıcı verilerini temizlerseniz silinir, başka cihazda görünmez.</p></details>
+        <details><summary>Telefonda ve tablette oynanır mı?</summary><p>Evet. Delikler parmak boyutuna uygun büyüklüktedir ve dokunduğunuz anda vuruş sayılır. 360 piksel genişliğindeki küçük ekranlarda da sığar.</p></details>
+        <details><summary>Çocuklar için uygun mu?</summary><p>Sakin mod çocuklar için tasarlanmıştır: süre, bomba ve ceza yoktur, köstebekler yavaş çıkar. Oyunda ses ya da yönlendirme bulunmaz; reklamlar oyun kutusunun dışındadır.</p></details>
+        <details><summary>Hareket animasyonları rahatsız ediyor, kapatabilir miyim?</summary><p>Cihazınızda “hareketi azalt” ayarı açıksa köstebeklerin yukarı çıkma animasyonu ve puan yazıları otomatik olarak kapanır; köstebekler yerinde belirir ve kaybolur.</p></details>
+        <details><summary>İnternet olmadan oynanabilir mi?</summary><p>Sayfa bir kez açıldıktan sonra tarayıcı önbelleğinden çalışır; siteyi uygulama olarak kurarsanız çevrimdışı da oynayabilirsiniz. Oyun sırasında ağ isteği yapılmaz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../balon-patlatma/">Balon Patlatma</a></li>
+        <li><a href="../tepki-suresi-testi/">Tepki Süresi Testi</a></li>
+        <li><a href="../araba-yarisi/">Araba Yarışı</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../../">Tüm oyunlar ve araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span><strong>Not:</strong> Köstebek Vurma eğlence amaçlı bir oyundur. Uzun süre ekrana bakıyorsanız gözlerinizi dinlendirmek için ara verin; çocukların ekran süresini yaşlarına uygun biçimde sınırlamanızı öneririz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-kostebek-vurma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

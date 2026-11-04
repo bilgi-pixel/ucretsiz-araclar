@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Türkçe Yazım Denetimi – Online Yazım Kontrolü (Ücretsiz, Metin Gönderilmez)</title>
+  <meta name="description" content="Türkçe metninizi çevrimiçi yazım denetiminden geçirin: bilinmeyen sözcükleri işaretler, öneri sunar; çift boşluk, noktalama, de/da, ki ve mı/mi ipuçları verir. Ücretsiz, kayıt yok, metniniz cihazınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/yazim-kontrol/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. */
+    .yk-textarea { width: 100%; min-height: 180px; padding: 12px 14px; font: inherit; font-size: 1rem; line-height: 1.5; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; }
+    .yk-textarea:focus { border-color: var(--ba-primary); }
+    .yk-top { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .yk-top .ba-btn { min-height: 40px; padding: 6px 12px; font-size: .9rem; }
+    .yk-opt { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin-top: 10px; }
+    .yk-opt input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .yk-status { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; margin: 16px 0 8px; }
+    .yk-status strong { font-size: 1.1rem; }
+    .yk-status span { color: var(--ba-text-muted); font-size: .9rem; }
+    .yk-marked { white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px 14px; line-height: 1.8; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); min-height: 90px; }
+    .yk-empty { margin: 0; color: var(--ba-text-muted); }
+    .yk-marked mark { color: inherit; border-radius: 3px; padding: 0 1px; cursor: pointer; }
+    .yk-marked mark:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .yk-spell { background: rgba(192, 57, 43, .12); text-decoration: underline wavy #c0392b; text-underline-offset: 4px; }
+    .yk-rule { background: rgba(180, 83, 9, .14); text-decoration: underline dashed #b45309; text-underline-offset: 4px; min-width: .6em; display: inline-block; white-space: pre; }
+    .yk-hint { background: rgba(29, 78, 216, .10); text-decoration: underline dotted #1d4ed8; text-underline-offset: 4px; }
+    .yk-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; list-style: none; margin: 8px 0 0; padding: 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .yk-detail { margin-top: 14px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius-sm); overflow-wrap: anywhere; }
+    .yk-detail p { margin: 0 0 8px; }
+    .yk-detail .ba-actions { margin-top: 8px; }
+    .yk-detail .ba-btn { min-height: 44px; }
+    .yk-note { color: var(--ba-text-muted); font-size: .9rem; margin: 10px 0 0; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Türkçe Yazım Denetimi – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/yazim-kontrol/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Yazım denetimi metnimi bir sunucuya gönderiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sözlük sayfayla birlikte tarayıcınıza iner ve denetim cihazınızda yapılır. Metin hiçbir yere gönderilmez."}},
+  {"@type":"Question","name":"Bu araç TDK yazım kılavuzunun yerini tutar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç, açık lisanslı bir kelime listesiyle çalışan basit bir sözlük denetimidir. Kesin yazım kararı için TDK Güncel Türkçe Sözlük ve Yazım Kılavuzu esastır."}},
+  {"@type":"Question","name":"Doğru yazılmış bir sözcük neden işaretlenebilir?","acceptedAnswer":{"@type":"Answer","text":"Liste her sözcüğü ve her çekimi içermez. Terimler, yeni sözcükler ya da nadir biçimler yanlış işaretlenebilir; bu durumda Yoksay düğmesini kullanın."}},
+  {"@type":"Question","name":"Özel adlar neden denetlenmiyor?","acceptedAnswer":{"@type":"Answer","text":"Büyük harfle başlayan sözcükler özel ad sayılır ve sözlükte bulunmadığı için atlanır. İsterseniz cümle başı sözcüklerinin de denetlenmesini açabilirsiniz."}},
+  {"@type":"Question","name":"de/da ve ki için araç neden kesin karar vermiyor?","acceptedAnswer":{"@type":"Answer","text":"Bağlaç mı ek mi olduğu cümlenin anlamına bağlıdır. Araç yalnızca olası hatalarda kontrol edin uyarısı verir."}},
+  {"@type":"Question","name":"Mı mi soru eki nasıl denetleniyor?","acceptedAnswer":{"@type":"Answer","text":"Sözcüğe bitişik yazılmış ve sözlükte bulunmayan biçimlerde, mı mi mu mü ekini ayırmanız önerilir (geldi mi gibi)."}},
+  {"@type":"Question","name":"Düzeltilmiş metni nasıl alırım?","acceptedAnswer":{"@type":"Answer","text":"Öneriler doğrudan metin kutusuna uygulanır. İşiniz bitince Düzeltilmiş metni kopyala düğmesine basın."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#dosya" class="ba-nav-optional">Dosya</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Yardımcı Araçlar</a></li></ol>
+      <h1><span class="ba-grad">Türkçe Yazım Denetimi</span>: Online Yazım Kontrolü</h1>
+      <p class="lead">Metninizi yapıştırın; sözlükte bulunmayan sözcükler altı çizili işaretlensin, tıklayınca en yakın öneriler gelsin. Çift boşluk, noktalama boşluğu, cümle başı, de/da, ki ve mı/mi ipuçları da kontrol edilir. Metniniz cihazınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosyanız bilgisayarınızdan çıkmaz</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="yk-top">
+        <label for="input"><strong>Denetlenecek metin</strong></label>
+        <div class="ba-actions" style="margin:0">
+          <button id="sample" class="ba-btn" type="button">Örnek metin</button>
+          <button id="clear" class="ba-btn" type="button">Temizle</button>
+        </div>
+      </div>
+      <textarea id="input" class="yk-textarea" spellcheck="false" autocomplete="off" placeholder="Metninizi buraya yazın ya da yapıştırın…" aria-describedby="dict-note"></textarea>
+      <label class="yk-opt"><input id="check-start" type="checkbox"> Cümle başındaki sözcükleri de denetle (özel adlar yanlış işaretlenebilir)</label>
+      <p id="dict-note" class="yk-note">Sözlük tabanlıdır, TDK'nin yerini tutmaz. Liste: <span id="dict-info">yükleniyor…</span>. Büyük harfle başlayan sözcükler (özel adlar) ve rakamlı sözcükler atlanır.</p>
+
+      <div id="progress" class="ba-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar"><span></span></div><div class="label"></div></div>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="live" class="visually-hidden" aria-live="polite"></div>
+
+      <div class="yk-status" aria-live="polite"><strong id="count">Sözlük yükleniyor…</strong><span id="breakdown"></span></div>
+      <div id="marked" class="yk-marked" aria-label="İşaretli metin"></div>
+      <ul class="yk-legend" aria-label="İşaret türleri"><li>Dalgalı kırmızı: sözlükte yok</li><li>Kesikli turuncu: kural sorunu</li><li>Noktalı mavi: kontrol edin</li></ul>
+
+      <div id="detail" class="yk-detail" role="region" aria-label="Seçilen sorunun ayrıntısı" hidden><div id="detail-body"></div></div>
+
+      <div class="ba-actions">
+        <button id="copy" class="ba-btn ba-btn-primary" type="button">Düzeltilmiş metni kopyala</button>
+        <button id="fix-format" class="ba-btn" type="button" hidden>Boşluk ve noktalama sorunlarını otomatik düzelt</button>
+        <button id="reset-ignored" class="ba-btn" type="button" hidden>Yoksayılanları sıfırla</button>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="yazim-kontrol-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Türkçe yazım denetimi nedir, nasıl çalışır?</h2>
+      <p>Yazım denetimi, bir metindeki sözcüklerin bilinen bir sözlükte bulunup bulunmadığına bakarak olası yazım hatalarını göstermeye yarar. Bu sayfadaki araç da aynı mantıkla çalışır: yapıştırdığınız metni sözcüklere ayırır, her sözcüğü açık lisanslı (MIT) bir Türkçe kelime listesiyle karşılaştırır ve bulamadıklarının altını kırmızı dalgalı çizgiyle çizer. Bir sözcüğe tıkladığınızda ya da klavyeyle üzerine gelip Enter'a bastığınızda, düzenleme uzaklığı en fazla iki olan en yakın beş öneri çıkar. Önerilerden birini seçtiğinizde sözcük doğrudan metin kutusunda değişir.</p>
+      <p>Türkçe ekli bir dildir ve bir kök yüzlerce biçimde karşımıza çıkar. Kelime listeleri ise çoğunlukla sözlük maddelerinden oluşur; "evlerimizden" ya da "gidiyorlardı" gibi çekimli biçimleri içermez. Bu yüzden araç, listede bulamadığı sözcükte yaygın ekleri sırayla soyup kökü yeniden arar: çoğul ve iyelik ekleri, hâl ekleri (-de, -den, -e, -i, -in), ek-fiil, olumsuzluk, zaman ve kişi ekleri, birkaç yapım eki. Ünlü uyumu ve sert ünsüz kuralı da gözetilir; örneğin "kitapta" kabul edilir, "kitapda" ise işaretlenir. Kitap-kitabı gibi ünsüz yumuşaması ve metin-metni gibi ünlü düşmesi de tanınır.</p>
+
+      <h2>Hangi kontroller yapılıyor?</h2>
+      <p>Araç iki katmanda çalışır. Birinci katman sözlük denetimidir ve kırmızı işaretle gösterilir. İkinci katman, sözlükten bağımsız kurallardır ve turuncu ya da mavi işaretle gösterilir:</p>
+      <ul>
+        <li><strong>Çift boşluk:</strong> sözcükler arasında arka arkaya iki ya da daha fazla boşluk.</li>
+        <li><strong>Noktalama boşluğu:</strong> virgül, nokta, soru ve ünlem işaretinden sonra boşluk bırakılması; işaretten önce boşluk bırakılmaması.</li>
+        <li><strong>Cümle başı:</strong> noktadan, soru ya da ünlem işaretinden sonra küçük harfle başlayan cümle. "vb.", "örn." gibi kısaltmalar ve "3. madde" gibi sıra sayıları sayılmaz.</li>
+        <li><strong>Mı/mi soru eki:</strong> "geldimi" yerine "geldi mi". Soru eki her zaman kendinden önceki sözcükten ayrı yazılır.</li>
+        <li><strong>De/da bağlacı:</strong> bağlaç olan "de/da" ayrı yazılır ve hep "d" ile başlar; yer bildiren ek ise bitişiktir ve sert ünsüzden sonra "t" olur. Araç anlamı bilemeyeceği için yalnızca "kontrol edin" uyarısı verir.</li>
+        <li><strong>Ki:</strong> bağlaç olan "ki" ayrı (dedi ki), ilgi eki olan "-ki" bitişik (evdeki) yazılır. Bu da yalnızca ipucu olarak sunulur.</li>
+        <li><strong>Sık yanlışlar:</strong> "herşey", "birşey", "yada", "yinede", "malesef", "orjinal" gibi çok yapılan hatalar doğru karşılıklarıyla gösterilir.</li>
+      </ul>
+
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Metni yapıştırın.</strong> Kutuya yazabilir ya da başka bir yerden kopyalayıp yapıştırabilirsiniz. Denetim siz yazdıkça birkaç yüz milisaniye içinde yenilenir. Deneme için "Örnek metin" düğmesi var.</li>
+        <li><strong>İşaretli sözcüklere bakın.</strong> Kutunun altında metnin işaretli hâli görünür. Kırmızı dalgalı çizgi sözlükte olmayan sözcüğü, turuncu kesikli çizgi kural sorununu, mavi noktalı çizgi "kontrol edin" ipucunu gösterir.</li>
+        <li><strong>Sözcüğe tıklayın.</strong> Fareyle tıklayın ya da Tab tuşuyla sözcüğe gelip Enter'a basın. Altta öneriler ve açıklama çıkar.</li>
+        <li><strong>Öneriyi uygulayın ya da yoksayın.</strong> Doğru öneriyi seçin. Özel bir terim ya da doğru yazılmış bir sözcükse "Yoksay"a basın; o sözcük bu oturumda bir daha işaretlenmez.</li>
+        <li><strong>Metni kopyalayın.</strong> Bitince "Düzeltilmiş metni kopyala" ile sonucu panonuza alın. Çift boşluk ve noktalama boşluğu sorunlarını tek tıkla düzelten bir düğme de vardır.</li>
+      </ol>
+
+      <h2>Önerileri nasıl buluyoruz?</h2>
+      <p>Bir sözcük bulunamadığında, listedeki sözcüklerle aranızdaki düzenleme uzaklığı hesaplanır: bir harf eklemek, silmek, değiştirmek ya da yan yana iki harfin yerini değiştirmek birer adım sayılır. İki adıma kadar uzaklıktaki sözcükler aday olur. Türkçe karakter farkı tek adım sayıldığı için "sey" yazdığınızda "şey", "kirik" yazdığınızda "kırık" en üste çıkar. Sadece ç, ğ, ı, ö, ş, ü harflerinin sade karşılıklarıyla yazıldığı durumlarda önerilen sözcük öne alınır. Ayrıca ekli sözcüklerde kök düzeltilip ek korunur: "kitablar" için "kitaplar" önerilir.</p>
+
+      <div class="ba-ad" data-slot="yazim-kontrol-b" aria-label="Reklam"></div>
+
+      <h2>Sınırlar: bu araç neyi yapamaz?</h2>
+      <p>Önce dürüst olalım: bu araç tam bir yazım denetleyicisi değil, sözlük tabanlı bir yardımcıdır ve TDK'nin Yazım Kılavuzu'nun yerini tutmaz. Üç temel sınırı vardır.</p>
+      <p><strong>Birincisi, bağlamı anlamaz.</strong> "Yaz" ile "yazı", "kara" ile "karar" ayrı sözcüklerdir ve her ikisi de sözlükte bulunur; yanlış yerde kullanılsalar bile işaretlenmezler. Anlam hataları, eş sesli sözcük karışıklıkları ve noktalamanın anlama etkisi araçla yakalanamaz.</p>
+      <p><strong>İkincisi, liste eksiktir.</strong> Kullanılan liste yaklaşık kırk dört bin sözcüktür; Vikisözlük madde başlıklarından derlenmiş, tek sözcüklü ve küçük harfli olanlar seçilmiştir. Yeni sözcükler, teknik terimler, yabancı kökenli kullanımlar ve nadir ek yığılmaları listede olmayabilir ve doğru yazılmış olsalar bile işaretlenebilir. Böyle bir durumda sözcük yanlış değil, listemiz eksiktir; "Yoksay" düğmesi tam bunun içindir.</p>
+      <p><strong>Üçüncüsü, özel adları ve cümle başını atlar.</strong> Büyük harfle başlayan sözcükler özel ad kabul edilip denetlenmez; bu nedenle cümle başındaki bir yazım hatası da varsayılan olarak yakalanmaz. Üstteki kutuyu işaretlerseniz cümle başı sözcükleri de denetlenir, ama o zaman özel adlar da yanlış alarm verebilir. Kısaltmalar (TDK, ABD) ve rakam içeren sözcükler de atlanır.</p>
+      <p>Resmî yazışma, tez, kitap ya da sınav gibi önemli metinlerde son kararı mutlaka güncel TDK sözlüğüne bakarak verin. Araç, ilk elemeyi hızlıca yapmanız ve gözünüzden kaçan bariz hataları yakalamanız için tasarlanmıştır.</p>
+
+      <h2>De/da, ki ve mı/mi: sık hatalar için kısa hatırlatma</h2>
+      <p>Türkçede en çok karıştırılan üç yapı bunlardır. <strong>Bağlaç olan de/da</strong> ayrı yazılır, ünlü uyumuna uyar ama sert ünsüz uyumuna uymaz: "Ben de geldim", "Kitap da aldım" doğrudur, "Kitap ta aldım" yanlıştır. <strong>Bulunma (yer-durum) eki</strong> ise bitişik yazılır ve sert ünsüzden sonra -ta/-te olur: "evde", "kitapta". Bir cümlede ikisini ayırmanın pratik yolu, ekin çıkarıldığında cümlenin anlamının bozulup bozulmadığına bakmaktır: bağlaç çıkarıldığında cümle yine anlamlıdır.</p>
+      <p><strong>Ki</strong> bağlaç olarak ayrı yazılır: "Biliyorum ki gelecek." İlgi eki olarak ise bitişiktir: "evdeki", "bugünkü". Ayrıca "belki, çünkü, sanki, halbuki, oysaki" gibi bitişik yazılması gereken kalıplaşmış sözcükler de vardır. <strong>Soru eki mı/mi/mu/mü</strong> her zaman ayrı yazılır: "Geldi mi?", "Güzel mi?". Ek-fiil ve kişi ekleri ise soru ekine bitişir: "geldin mi", "gelir misin".</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Gizlilik.</strong> Metniniz sunucuya gönderilmez; sözlük ve denetim tarayıcınızda çalışır. Sayfa yüklendikten sonra internetinizi kapatsanız bile çalışır.</li>
+        <li><strong>Kayıt, sınır, filigran yok.</strong> Sahte "premium" ya da günlük hak sınırı yoktur.</li>
+        <li><strong>Dürüst kapsam.</strong> Sınırları açıkça yazarız; "kusursuz denetim" iddiası taşımayız.</li>
+        <li><strong>Klavyeyle kullanılır, mobilde sığar.</strong> İşaretli sözcüklere Tab ile gidilir, Enter ile açılır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yazım denetimi metnimi bir sunucuya gönderiyor mu?</summary><p>Hayır. Sözlük sayfayla birlikte tarayıcınıza iner ve denetim cihazınızda yapılır. Yazdığınız ya da yapıştırdığınız metin hiçbir yere gönderilmez, kaydedilmez.</p></details>
+        <details><summary>Bu araç TDK yazım kılavuzunun yerini tutar mı?</summary><p>Hayır. Araç, açık lisanslı bir kelime listesiyle çalışan basit bir sözlük denetimidir. Resmî ya da önemli metinlerde son söz TDK Güncel Türkçe Sözlük ve Yazım Kılavuzu'nundur.</p></details>
+        <details><summary>Doğru yazılmış bir sözcük neden işaretlenebilir?</summary><p>Liste her sözcüğü ve her çekimi içermez. Teknik terimler, yeni türetilmiş sözcükler ya da nadir ek yığılmaları yanlış işaretlenebilir. Böyle durumlarda "Yoksay" düğmesini kullanın.</p></details>
+        <details><summary>Özel adlar neden denetlenmiyor?</summary><p>Büyük harfle başlayan sözcükler özel ad sayılır ve sözlükte bulunmadığı için atlanır. Cümle başındaki sözcüklerin de denetlenmesini istiyorsanız, araç kutusundaki seçeneği işaretleyin.</p></details>
+        <details><summary>De/da ve ki için araç neden kesin karar vermiyor?</summary><p>Bağlaç mı ek mi olduğu cümlenin anlamına bağlıdır ve bunu yalnızca anlam bilen biri ayırabilir. Araç, yanlış olma ihtimali olan durumlarda "kontrol edin" uyarısı verir ve seçenekleri sunar.</p></details>
+        <details><summary>Mı/mi soru eki nasıl denetleniyor?</summary><p>Soru eki sözcüğe bitişik yazıldığında ortaya çıkan biçim sözlükte bulunmaz. Araç, sözcüğün başındaki kök biliniyorsa eki ayırmanızı önerir ("geldimi" yerine "geldi mi").</p></details>
+        <details><summary>Düzeltilmiş metni nasıl alırım?</summary><p>Öneriler doğrudan metin kutusuna uygulanır; yani kutudaki metin her zaman güncel hâlidir. İşiniz bitince "Düzeltilmiş metni kopyala" düğmesine basın.</p></details>
+        <details><summary>Çok uzun metinlerde ne olur?</summary><p>Uzun metinler parça parça denetlenir ve bir ilerleme çubuğu gösterilir. Yine de çok büyük metinlerde (yüz binlerce karakter) tarayıcı yavaşlayabilir; böyle durumlarda bölümlere ayırarak denetleyin.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+        <li><a href="../hece-ayirma/">Hece Ayırma</a></li>
+        <li><a href="../kelime-bulucu/">Kelime Bulucu</a></li>
+      </ul>
+      <p class="ba-note">Kurumunuz için özel bir metin ya da web aracı geliştirmek isterseniz <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="yazim-kontrol-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../qr-kod/">QR Kod Oluşturucu</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

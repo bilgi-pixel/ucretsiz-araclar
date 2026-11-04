@@ -195,7 +195,7 @@ function render() {
   if (currentMode() === 'toplu') { renderBulk(); return; }
   el.status.textContent = '';
   try {
-    if (!el.cost.value.trim()) { showError(el.error, ''); el.result.hidden = true; return; }
+    if (!el.cost.value.trim()) { showError(el.error, ''); el.result.hidden = true; el.result.classList.remove("is-active"); return; }
     const { rows, note } = compute();
     showError(el.error, '');
     el.rows.innerHTML = '';
@@ -208,10 +208,10 @@ function render() {
       el.rows.append(div);
     }
     el.note.textContent = note;
-    el.result.hidden = false;
+    el.result.hidden = false; el.result.classList.add("is-active");
   } catch (err) {
     showError(el.error, err.message);
-    el.result.hidden = true;
+    el.result.hidden = true; el.result.classList.remove("is-active");
   }
 }
 
@@ -220,7 +220,7 @@ function syncMode() {
   el.sections.forEach((s) => { s.hidden = s.dataset.mode !== mode; });
   el.single.hidden = mode === 'toplu';
   el.bulk.hidden = mode !== 'toplu';
-  el.result.hidden = true;
+  el.result.hidden = true; el.result.classList.remove("is-active");
   showError(el.error, '');
   render();
 }

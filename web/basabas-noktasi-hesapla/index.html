@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Başabaş Noktası Hesaplama – Kaç Adet Satmalıyım? (Break-even Analizi)</title>
+  <meta name="description" content="Sabit giderler, birim fiyat ve değişken maliyetten başabaş adedini ve cirosunu hesaplayın; hedef kâr için gereken adedi, güvenlik marjını ve aylık/yıllık görünümü grafikle görün. Ücretsiz, kayıt yok, verileriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/basabas-noktasi-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .be-fieldset { border: 0; padding: 0; margin: 0 0 12px; min-width: 0; }
+    .be-fieldset legend { font-weight: 600; padding: 0; margin-bottom: 6px; }
+    .fix-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 120px) 44px; gap: 8px; margin-bottom: 8px; }
+    .fix-row input { width: 100%; min-width: 0; min-height: 44px; padding: 8px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .fix-row .fix-del { min-width: 44px; min-height: 44px; padding: 0; font-size: 1.3rem; line-height: 1; }
+    .fix-total { display: flex; justify-content: space-between; gap: 12px; padding: 8px 2px; font-weight: 600; }
+    .fix-total output { font-family: var(--ba-mono); }
+    .be-row { flex-wrap: wrap; }
+    .be-row dt { flex: 1 1 100%; }
+    .be-row dd { flex: 1 1 0; min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: 1rem; }
+    .be-row.is-strong dd { font-size: 1.1rem; }
+    .be-row dd[data-cap]::before { content: attr(data-cap); display: block; font-family: var(--ba-font); font-size: .78rem; font-weight: 500; color: var(--ba-text-muted); }
+    #chart-wrap { margin-top: 18px; }
+    #chart { display: block; width: 100%; max-width: 100%; }
+    .be-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; padding: 0; list-style: none; font-size: .88rem; color: var(--ba-text-2); }
+    .be-legend i { display: inline-block; width: 22px; height: 4px; margin-right: 6px; vertical-align: middle; border-radius: 2px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Başabaş Noktası Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/basabas-noktasi-hesapla/"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Başabaş noktası nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Başabaş adedi = sabit giderler ÷ (birim satış fiyatı − birim değişken maliyet) formülüyle bulunur. Sabit gider 50.000 TL, fiyat 100 TL, değişken maliyet 60 TL ise katkı payı 40 TL ve başabaş 1.250 adettir. Başabaş cirosu bu adedin fiyatla çarpımıdır: 125.000 TL."}},{"@type":"Question","name":"Katkı payı nedir?","acceptedAnswer":{"@type":"Answer","text":"Katkı payı, bir adet satışta fiyattan değişken maliyet çıkarıldıktan sonra kalan tutardır. Bu tutar önce sabit giderleri karşılar, giderler kapandıktan sonra kâr olur. Katkı payı oranı, katkı payının fiyata bölünmesidir."}},{"@type":"Question","name":"Satış fiyatı değişken maliyetten düşükse ne olur?","acceptedAnswer":{"@type":"Answer","text":"Başabaş yoktur. Her satış katkı payı yerine zarar üretir, ne kadar çok satarsanız zarar o kadar büyür. Araç bu durumda \"Başabaş yok\" uyarısı verir; fiyatı artırmanız ya da değişken maliyeti düşürmeniz gerekir."}},{"@type":"Question","name":"Hedef kâr için kaç adet satmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Gereken adet = (sabit giderler + hedef kâr) ÷ birim katkı payıdır. 50.000 TL sabit gider, 40 TL katkı payı ve 20.000 TL hedef kârda sonuç 1.750 adettir. Hedef kâr alanını doldurmanız yeterlidir."}},{"@type":"Question","name":"Güvenlik marjı ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Güvenlik marjı, mevcut satışınızın başabaşın ne kadar üzerinde olduğunu gösterir. Ayda 1.500 adet satıp başabaşı 1.250 adetse marj 250 adet, yani yüzde 16,67'dir. Satışlarınız bu orandan fazla düşerse zarar etmeye başlarsınız."}},{"@type":"Question","name":"Birden fazla ürünüm varsa başabaşı nasıl bulurum?","acceptedAnswer":{"@type":"Answer","text":"Ürünlerin satış payına göre ağırlıklı ortalama fiyat ve ortalama değişken maliyet hesaplayıp girebilirsiniz. Alternatif olarak sonuçtaki katkı payı oranını kullanın: başabaş cirosu = toplam sabit gider ÷ ortalama katkı payı oranıdır."}},{"@type":"Question","name":"Fiyat ve maliyetleri KDV dahil mi hariç mi girmeliyim?","acceptedAnswer":{"@type":"Answer","text":"KDV hariç girin. KDV işletmenin geliri ya da gideri değil, devlet adına tahsil edilen ve indirilebilen bir kalemdir. KDV dahil rakamlar katkı payını olduğundan farklı gösterir."}},{"@type":"Question","name":"Sabit giderler satış arttıkça değişmez mi?","acceptedAnswer":{"@type":"Answer","text":"Belirli bir kapasite içinde değişmez. Satış çok büyürse yeni personel, mekân ya da makine gerekebilir ve sabit giderler basamaklı artar. Böyle bir büyüme planlıyorsanız hesabı yeni sabit giderle yeniden yapın."}},{"@type":"Question","name":"Girdiğim rakamlar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesap ve grafik tarayıcınızda yapılır; giderleriniz, fiyatlarınız ve satış adetleriniz sunucuya yüklenmez, çerezle izlenmez. Sayfa bir kez açıldıktan sonra internet olmadan da çalışır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Başabaş Noktası Hesaplama</span></h1>
+      <p class="lead">Sabit giderlerinizi, birim satış fiyatınızı ve birim değişken maliyetinizi yazın; zarar etmemek için kaç adet satmanız ve ne kadar ciro yapmanız gerektiğini görün. Hedef kâr için gereken adedi, güvenlik marjınızı ve aylık ile yıllık tabloyu grafikle birlikte inceleyin. Rakamlar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="ba-field"><label for="b-period">Girdiğim tutarlar hangi dönem için?</label>
+          <select id="b-period"><option value="aylik" selected>Aylık (kira, maaş ve diğer giderler ayda)</option><option value="yillik">Yıllık (giderler yılda)</option></select>
+          <div class="hint">Sonuçlar her iki dönem için de gösterilir.</div></div>
+
+        <fieldset class="be-fieldset">
+          <legend>Sabit giderler (<span data-pw>aylık</span>, ₺)</legend>
+          <p class="hint">Satış adedinden bağımsız giderler: kira, maaşlar, elektrik, muhasebe, sigorta, kredi taksiti… Satır ekleyip silebilirsiniz.</p>
+          <div id="fix-rows"></div>
+          <div class="ba-actions"><button id="fix-add" class="ba-btn" type="button">Gider satırı ekle</button></div>
+          <div class="fix-total"><span>Toplam sabit gider</span><output id="fix-total" for="fix-rows">0,00 ₺</output></div>
+        </fieldset>
+
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="b-price">Birim satış fiyatı (₺, KDV hariç)</label><input id="b-price" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 100"></div>
+          <div class="ba-field"><label for="b-var">Birim değişken maliyet (₺, KDV hariç)</label><input id="b-var" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 60"><div class="hint">Bir adet satınca artan maliyet: hammadde, ambalaj, kargo, komisyon. Yoksa 0 yazın.</div></div>
+          <div class="ba-field"><label for="b-target">Hedef kâr (<span data-pw>aylık</span>, ₺, isteğe bağlı)</label><input id="b-target" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 20.000"></div>
+          <div class="ba-field"><label for="b-current">Mevcut satış adedi (<span data-pw>aylık</span>, isteğe bağlı)</label><input id="b-current" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 1.500"><div class="hint">Girerseniz güvenlik marjı hesaplanır.</div></div>
+        </div>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+
+      <div id="error" class="ba-error" role="alert"></div>
+      <p id="be-hint" class="hint">Sonuç için en az bir sabit gider tutarı, birim satış fiyatı ve birim değişken maliyet girin.</p>
+
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="result-rows"></dl>
+        <p class="kdv-note" id="result-note"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <div id="chart-wrap" hidden>
+        <h3>Başabaş grafiği</h3>
+        <canvas id="chart" role="img" aria-label="Başabaş grafiği" width="320" height="240"></canvas>
+        <ul class="be-legend" aria-hidden="true"><li><i style="background:var(--ba-success)"></i>Toplam gelir</li><li><i style="background:var(--ba-danger)"></i>Toplam maliyet</li><li><i style="background:var(--ba-primary)"></i>Başabaş noktası</li></ul>
+        <p class="kdv-note" id="chart-caption"></p>
+      </div>
+      <p class="kdv-note">Bilgilendirme amaçlıdır; mali müşavir tavsiyesi değildir.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="basabas-noktasi-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Tutarlarınızı aylık mı yıllık mı gireceğinizi seçin. Çoğu işletme için aylık daha kolaydır.</li>
+        <li>Sabit giderleri satır satır yazın: kira, personel maaşları, elektrik ve su, internet, muhasebe ücreti gibi. Toplam otomatik hesaplanır.</li>
+        <li>Birim satış fiyatını ve birim değişken maliyeti KDV hariç girin. İsterseniz hedef kâr ve mevcut satış adedini de ekleyin.</li>
+        <li>Başabaş adedi, ciro, katkı payı ve grafik siz yazdıkça güncellenir. "Sonucu kopyala" ile rakamları panoya alabilirsiniz.</li>
+      </ol>
+
+      <h2>Başabaş noktası nedir?</h2>
+      <p>Başabaş noktası, toplam gelirin toplam maliyete eşitlendiği satış düzeyidir. Bu noktanın altında zarar edersiniz, üstündeki her satış kâra dönüşür. İşletmeler yeni bir ürüne, mağazaya ya da kampanyaya başlamadan önce "kaç adet satarsam kendimi kurtarırım?" sorusunu bununla yanıtlar. Cevap tahmine değil, üç sayıya dayanır: sabit giderler, birim satış fiyatı ve birim değişken maliyet.</p>
+      <p>Hesabın merkezinde <strong>katkı payı</strong> vardır: bir adet sattığınızda fiyattan değişken maliyeti çıkarınca kalan tutar. Bu tutar önce sabit giderleri kapatmaya gider; sabit giderler tamamen kapandığında kâr başlar. Başabaş adedi = sabit giderler ÷ birim katkı payı, başabaş cirosu ise bu adedin satış fiyatıyla çarpımıdır.</p>
+
+      <h2>Örnek hesap: 1.250 adet</h2>
+      <p>Aylık sabit giderleriniz 50.000 TL olsun (kira, maaşlar ve diğer genel giderler). Ürünü KDV hariç 100 TL'ye satıyor ve her adedin değişken maliyeti 60 TL tutuyor. Birim katkı payı 100 − 60 = 40 TL, katkı payı oranı yüzde 40'tır. Başabaş adedi 50.000 ÷ 40 = 1.250 adettir; başabaş cirosu 1.250 × 100 = 125.000 TL. Aynı işletmenin yıllık sabit gideri 600.000 TL'dir ve yıllık başabaş 15.000 adet, 1.500.000 TL ciro eder. Araç iki dönemi yan yana gösterir.</p>
+      <p>Adet hesabı tam sayıya yukarı yuvarlanır, çünkü bir ürünün yarısı satılmaz. Örneğin sabit gider 50.000 TL ve katkı payı 30 TL ise sonuç 1.666,67 yerine 1.667 adet olur.</p>
+
+      <div class="ba-ad" data-slot="basabas-noktasi-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Hangi giderler sabit, hangileri değişken?</h2>
+      <p>Doğru sınıflandırma sonucu doğrudan etkiler. Genel kural şudur: bir adet daha satmakla tutarı değişiyorsa değişken, değişmiyorsa sabittir.</p>
+      <ul>
+        <li><strong>Sabit giderler:</strong> kira, sabit maaşlar, sigorta, abonelikler, muhasebe ve danışmanlık ücreti, kredi taksiti, amortisman.</li>
+        <li><strong>Değişken giderler:</strong> hammadde ve mal alış bedeli, ambalaj, kargo, satış primi, pazar yeri komisyonu, ödeme altyapısı kesintisi.</li>
+        <li><strong>Yarı değişken giderler:</strong> elektrik ve su gibi hem sabit hem kullanıma bağlı kalemler. Sabit kısmı sabit giderlere, kullanıma bağlı kısmı birim maliyete yazın.</li>
+      </ul>
+      <p>Pazar yerinde satıyorsanız komisyonu birim değişken maliyete ekleyin. Komisyonun marjınıza etkisini ayrıca görmek için <a href="../kar-marji-hesapla/">kâr marjı hesaplama</a> aracını kullanabilirsiniz.</p>
+
+      <h2>Hedef kâr için kaç adet gerekir?</h2>
+      <p>Başabaş yalnızca sıfır noktasıdır; kimse sıfır kârla çalışmak istemez. Hedef kâr alanına aylık kazanmak istediğiniz tutarı yazarsanız araç bunu sabit giderlere ekler. Yukarıdaki örnekte aylık 20.000 TL kâr hedeflerseniz gereken adet (50.000 + 20.000) ÷ 40 = 1.750, ciro ise 175.000 TL olur. Hedefin vergi öncesi tutar olduğunu unutmayın; kâr üzerindeki vergileri ayrıca düşünmeniz gerekir.</p>
+
+      <h2>Güvenlik marjı: başabaştan ne kadar uzaktasınız?</h2>
+      <p>Mevcut satış adedinizi girerseniz araç güvenlik marjını hesaplar: (mevcut − başabaş) ÷ mevcut. Ayda 1.500 adet satan örnek işletmede güvenlik marjı 250 adet, yani yüzde 16,67'dir; satışlar bu orandan fazla düşerse zarar başlar. Aylık kâr 1.500 × 40 − 50.000 = 10.000 TL'dir. Satış 1.100 adetse işletme başabaşın 150 adet altındadır ve 6.000 TL zarar eder; araç bu durumda "eksik" adedi ve negatif marjı gösterir. Güvenlik marjı ne kadar genişse talep dalgalanmalarına karşı o kadar korunaklısınız demektir.</p>
+
+      <h2>Başabaşı nasıl aşağı çekersiniz?</h2>
+      <p>Başabaş adedini üç şey belirler ve üçüne de müdahale edebilirsiniz. Fiyatı 110 TL'ye çıkarırsanız katkı payı 50 TL olur ve başabaş 1.000 adede iner. Değişken maliyeti 55 TL'ye düşürürseniz katkı payı 45 TL olur ve başabaş 1.112 adede (1.111,11 yukarı yuvarlanır) iner. Sabit gideri 40.000 TL'ye çekerseniz yine 1.000 adet yeter. Hangisinin kolay olduğuna karar vermeden önce rakamları araca girip farklı senaryoları yan yana deneyin; fiyat artışının talebi düşürebileceğini de hesaba katın.</p>
+
+      <h2>Grafik nasıl okunur?</h2>
+      <p>Grafikte yeşil çizgi toplam geliri, kırmızı çizgi toplam maliyeti gösterir. Maliyet çizgisi sıfırdan değil sabit giderlerden başlar, çünkü hiç satmasanız bile kira ve maaş ödersiniz. Gelir çizgisi daha dik yükseldiği için bir noktada maliyet çizgisini keser; bordo nokta başabaş noktasıdır. Noktanın solunda maliyet gelirin üstündedir (zarar), sağında gelir maliyetin üstündedir (kâr). Mevcut satış adedini girdiyseniz dikey kesikli çizgi bulunduğunuz yeri işaretler.</p>
+
+      <h2>Sınırlar ve dikkat edilecekler</h2>
+      <ul>
+        <li><strong>Tek ürün varsayımı.</strong> Hesap tek bir fiyat ve tek bir değişken maliyetle çalışır. Birden çok ürününüz varsa ortalama fiyat ve ortalama değişken maliyet kullanın; ya da toplam sabit gideri ortalama katkı payı oranına bölerek başabaş cirosunu bulun.</li>
+        <li><strong>KDV hariç değerler.</strong> Fiyat ve maliyetleri KDV hariç girin; KDV gelir ya da gider değildir.</li>
+        <li><strong>Sabit giderler her zaman sabit değildir.</strong> Satış çok büyürse yeni eleman ya da yeni mekân gerekebilir; bu durumda hesabı yeniden yapın.</li>
+        <li><strong>Vergi ve nakit akışı hariçtir.</strong> Başabaş, kâr-zarar mantığıdır; tahsilat gecikmeleri ve vergi ödemeleri nakit durumunuzu ayrıca etkiler.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Giderleriniz ve fiyatlarınız ticari sırdır; hesap tarayıcınızda yapılır.</li>
+        <li><strong>Aylık ve yıllık yan yana.</strong> Tek girişle iki dönemi birlikte görürsünüz.</li>
+        <li><strong>Grafik ve güvenlik marjı.</strong> Yalnızca bir rakam değil, kesişimi ve riski de görürsünüz.</li>
+        <li><strong>Gider satırları.</strong> Kalemleri tek tek yazarak toplamı kendiniz izlersiniz.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internetsiz de kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Başabaş noktası nasıl hesaplanır?</summary><p>Başabaş adedi = sabit giderler ÷ (birim satış fiyatı − birim değişken maliyet) formülüyle bulunur. Sabit gider 50.000 TL, fiyat 100 TL, değişken maliyet 60 TL ise katkı payı 40 TL ve başabaş 1.250 adettir. Başabaş cirosu bu adedin fiyatla çarpımıdır: 125.000 TL.</p></details>
+        <details><summary>Katkı payı nedir?</summary><p>Katkı payı, bir adet satışta fiyattan değişken maliyet çıkarıldıktan sonra kalan tutardır. Bu tutar önce sabit giderleri karşılar, giderler kapandıktan sonra kâr olur. Katkı payı oranı, katkı payının fiyata bölünmesidir.</p></details>
+        <details><summary>Satış fiyatı değişken maliyetten düşükse ne olur?</summary><p>Başabaş yoktur. Her satış katkı payı yerine zarar üretir, ne kadar çok satarsanız zarar o kadar büyür. Araç bu durumda "Başabaş yok" uyarısı verir; fiyatı artırmanız ya da değişken maliyeti düşürmeniz gerekir.</p></details>
+        <details><summary>Hedef kâr için kaç adet satmalıyım?</summary><p>Gereken adet = (sabit giderler + hedef kâr) ÷ birim katkı payıdır. 50.000 TL sabit gider, 40 TL katkı payı ve 20.000 TL hedef kârda sonuç 1.750 adettir. Hedef kâr alanını doldurmanız yeterlidir.</p></details>
+        <details><summary>Güvenlik marjı ne anlama gelir?</summary><p>Güvenlik marjı, mevcut satışınızın başabaşın ne kadar üzerinde olduğunu gösterir. Ayda 1.500 adet satıp başabaşı 1.250 adetse marj 250 adet, yani yüzde 16,67'dir. Satışlarınız bu orandan fazla düşerse zarar etmeye başlarsınız.</p></details>
+        <details><summary>Birden fazla ürünüm varsa başabaşı nasıl bulurum?</summary><p>Ürünlerin satış payına göre ağırlıklı ortalama fiyat ve ortalama değişken maliyet hesaplayıp girebilirsiniz. Alternatif olarak sonuçtaki katkı payı oranını kullanın: başabaş cirosu = toplam sabit gider ÷ ortalama katkı payı oranıdır.</p></details>
+        <details><summary>Fiyat ve maliyetleri KDV dahil mi hariç mi girmeliyim?</summary><p>KDV hariç girin. KDV işletmenin geliri ya da gideri değil, devlet adına tahsil edilen ve indirilebilen bir kalemdir. KDV dahil rakamlar katkı payını olduğundan farklı gösterir.</p></details>
+        <details><summary>Sabit giderler satış arttıkça değişmez mi?</summary><p>Belirli bir kapasite içinde değişmez. Satış çok büyürse yeni personel, mekân ya da makine gerekebilir ve sabit giderler basamaklı artar. Böyle bir büyüme planlıyorsanız hesabı yeni sabit giderle yeniden yapın.</p></details>
+        <details><summary>Girdiğim rakamlar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap ve grafik tarayıcınızda yapılır; giderleriniz, fiyatlarınız ve satış adetleriniz sunucuya yüklenmez, çerezle izlenmez. Sayfa bir kez açıldıktan sonra internet olmadan da çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç matematiksel hesap yapar; mali müşavir tavsiyesi değildir. İşletme kararlarınız, vergi ve muhasebe yükümlülükleriniz için mali müşavirinize danışın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kar-marji-hesapla/">Kâr Marjı Hesaplama</a></li>
+        <li><a href="../fiyat-hesapla/">Satış Fiyatı Hesaplama</a></li>
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../isveren-maliyeti-hesapla/">İşveren Maliyeti Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="basabas-noktasi-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

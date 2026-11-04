@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kutu Kapmaca Oyna – Ücretsiz Online Kutu Kapmaca (kurulumsuz)</title>
+  <meta name="description" content="Kutu kapmaca oyna: noktaları çizgilerle birleştirip kutuları kapın. Bilgisayara karşı üç zorluk seviyesinde ya da aynı cihazda iki kişilik; 3×3, 5×5 ve 7×7 tahta. Ücretsiz, kayıtsız, kurulumsuz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kutu-kapmaca/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel düzen; tema token'ları ba.css'ten gelir. Tahta renkleri temadan bağımsızdır. */
+    .kk-layout { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .kk-layout { grid-template-columns: minmax(0, 580px) minmax(0, 1fr); align-items: start; } }
+    .kk-boardcol, .kk-side { min-width: 0; }
+    .kk-status { margin: 0 0 12px; padding: 10px 14px; min-height: 3.4em; display: flex; align-items: center; border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; font-weight: 600; color: var(--ba-text); font-size: .95rem; line-height: 1.35; }
+    .kk-status.is-bonus { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .kk-status.is-over { border-left-color: var(--ba-success); background: var(--ba-success-soft); }
+    .kk-boardwrap { position: relative; max-width: 560px; margin: 0 auto; }
+    .kk-board { --dot: 14px; --c1: #1d4ed8; --c1-soft: #cddcff; --c1-text: #0a2570; --c2: #c2410c; --c2-soft: #ffd8bd; --c2-text: #6d2504;
+      display: grid; width: 100%; aspect-ratio: 1 / 1; padding: 8px; background: #faf8f3; border: 1px solid #d9d3c8; border-radius: 8px; box-shadow: 0 4px 14px rgba(30, 33, 38, .18); touch-action: manipulation;
+      grid-template-columns: repeat(var(--n), var(--dot) minmax(0, 1fr)) var(--dot);
+      grid-template-rows: repeat(var(--n), var(--dot) minmax(0, 1fr)) var(--dot); }
+    .kk-board[data-n="7"] { --dot: 11px; }
+    @media (max-width: 480px) { .kk-board { padding: 4px; --dot: 12px; } .kk-board[data-n="7"] { --dot: 9px; } }
+    .dot { place-self: center; width: 9px; height: 9px; border-radius: 50%; background: #3a3a40; }
+    .kk-board[data-n="7"] .dot { width: 7px; height: 7px; }
+    .box { margin: 2px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: clamp(.8rem, 3.2vw, 1.4rem); min-width: 0; min-height: 0; }
+    .box.o1 { background: var(--c1-soft); color: var(--c1-text); }
+    .box.o2 { background: var(--c2-soft); color: var(--c2-text); }
+    .ed { position: relative; z-index: 2; padding: 0; margin: 0; border: 0; background: transparent; cursor: pointer; border-radius: 4px; -webkit-tap-highlight-color: transparent; min-width: 0; min-height: 0; }
+    /* Görünen çizgi ince; dokunma alanı ::before ile genişletilir (en az ~30 px). */
+    .ed::after { content: ""; position: absolute; border-radius: 3px; background: #c9c1b3; transition: background .12s; }
+    .ed.h::after { left: 1px; right: 1px; top: 50%; height: 5px; transform: translateY(-50%); }
+    .ed.v::after { top: 1px; bottom: 1px; left: 50%; width: 5px; transform: translateX(-50%); }
+    .ed::before { content: ""; position: absolute; }
+    .ed.h::before { left: 0; right: 0; top: -9px; bottom: -9px; }
+    .ed.v::before { top: 0; bottom: 0; left: -9px; right: -9px; }
+    .kk-board[data-n="7"] .ed.h::after { height: 4px; }
+    .kk-board[data-n="7"] .ed.v::after { width: 4px; }
+    .ed.t1:hover::after, .ed.t1:focus-visible::after { background: #8fb0ff; }
+    .ed.t2:hover::after, .ed.t2:focus-visible::after { background: #f5a77a; }
+    .ed.p1::after { background: var(--c1); }
+    .ed.p2::after { background: var(--c2); }
+    .ed.p1, .ed.p2 { cursor: default; }
+    .ed.is-last::after { box-shadow: 0 0 0 2px #ffd43b, 0 0 0 3px #3a3a40; }
+    .ed:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 0; z-index: 3; }
+    .kk-over { position: absolute; z-index: 5; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 300px); padding: 16px; text-align: center; background: var(--ba-surface); color: var(--ba-text); border: 2px solid var(--ba-primary); border-radius: var(--ba-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+    .kk-over h3 { margin: 0 0 4px; font-size: 1.25rem; }
+    .kk-over p { margin: 0 0 12px; font-size: .95rem; }
+    .kk-over .row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .kk-help { margin: 10px 0 0; font-size: .85rem; color: var(--ba-text-muted); }
+    .kk-controls { display: grid; gap: 12px; margin-bottom: 14px; }
+    .kk-field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .kk-field select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kk-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+    .kk-actions .ba-btn { flex: 1 1 130px; }
+    .kk-counter { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 12px; }
+    .kk-card { border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); padding: 8px 10px; }
+    .kk-card.is-turn { border-color: var(--ba-primary); }
+    .kk-card strong { display: flex; align-items: center; gap: 8px; font-size: .95rem; }
+    .kk-card .chip { width: 16px; height: 16px; border-radius: 4px; flex: none; }
+    .kk-card .c1 { background: #1d4ed8; }
+    .kk-card .c2 { background: #c2410c; }
+    .kk-card .num { display: block; font-family: var(--ba-mono); font-size: 1.6rem; font-weight: 700; line-height: 1.2; color: var(--ba-text); }
+    .kk-card small { color: var(--ba-text-muted); font-size: .8rem; }
+    .kk-card.is-turn small::after { content: " · sıra"; font-weight: 600; color: var(--ba-primary); }
+    .kk-stats { margin: 0 0 14px; font-size: .85rem; color: var(--ba-text-muted); }
+    .ba-content { overflow-wrap: anywhere; }
+    .ba-ad.kk-ad-a { margin-top: 56px; }
+    .game-box:fullscreen { max-width: none; border-radius: 0; overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-surface); }
+    @media (prefers-reduced-motion: reduce) { .ed::after { transition: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+  {"@type":"VideoGame","name":"Kutu Kapmaca – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz kutu kapmaca (dots and boxes): bilgisayara karşı üç zorluk seviyesi veya aynı cihazda iki kişilik.","inLanguage":"tr","genre":["Masa oyunu","Strateji"],"applicationCategory":"Game","operatingSystem":"Web","playMode":["SinglePlayer","MultiPlayer"],"gamePlatform":"Web tarayıcısı","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/kutu-kapmaca/","author":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kutu kapmaca nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyuncular sırayla iki komşu nokta arasına bir çizgi çeker. Bir kutunun dördüncü kenarını çizen oyuncu o kutuyu alır ve bir çizgi daha çekme hakkı kazanır. Bütün çizgiler çizildiğinde en çok kutuyu alan kazanır."}},
+  {"@type":"Question","name":"Kutuyu tamamlayınca neden yeniden oynuyorum?","acceptedAnswer":{"@type":"Answer","text":"Kuralın bir parçasıdır: kutu tamamlayan oyuncu sırayı devretmez. Art arda birçok kutu alabilirsiniz. Bu yüzden rakibe üçüncü kenarı hazır bir kutu vermek tehlikelidir."}},
+  {"@type":"Question","name":"Üçüncü kenarı vermek ne demek?","acceptedAnswer":{"@type":"Answer","text":"Bir kutunun üç kenarı çizildiğinde dördüncüyü çizen kutuyu alır. Üçüncü kenarı çizerseniz rakibe bedava kutu hediye edersiniz. İyi oyuncular mümkün olduğunca bunu yapmaz."}},
+  {"@type":"Question","name":"Zorluk seviyeleri arasında ne fark var?","acceptedAnswer":{"@type":"Answer","text":"Kolay seviye rastgele çizgi çeker. Orta seviye kutu alabiliyorsa alır, güvenli çizgi varken üçüncü kenarı vermez. Zor seviye ayrıca zincir stratejisi kullanır, zinciri yerken son iki kutuyu bırakarak kontrolü korur ve oyun sonunu tam hesaplar."}},
+  {"@type":"Question","name":"Hangi tahta boyutunu seçmeliyim?","acceptedAnswer":{"@type":"Answer","text":"3x3 kutu hızlı bir oyundur ve kuralları öğrenmek için uygundur. 5x5 dengeli ve en popüler boyuttur. 7x7 daha uzun sürer, zincirler ve stratejiler daha belirgindir."}},
+  {"@type":"Question","name":"Hamlemi geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Bilgisayara karşı oynarken Geri al düğmesi sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek çizgi geri alınır."}},
+  {"@type":"Question","name":"Aynı cihazda iki kişi oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Oyun türü listesinden İki kişilik seçeneğini seçin. Oyuncular sırayla aynı tahtada oynar; mavi ve turuncu renk kutuların kime ait olduğunu gösterir."}},
+  {"@type":"Question","name":"Oyun internet gerektirir mi, hamlelerim kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Sayfa yüklendikten sonra oyun tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı galibiyet, yenilgi ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Kutu Kapmaca Oyna</span> – Ücretsiz Online Kutu Kapmaca</h1>
+      <p class="lead">Noktaları çizgilerle birleştirin, kutuları kapın. Bilgisayara karşı ya da aynı cihazda arkadaşınızla oynayın; 3×3, 5×5 ve 7×7 tahta seçenekleri var. Kurulum ve kayıt yok, hamleleriniz bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Kutu kapmaca oyunu</h2>
+      <div class="kk-layout">
+        <div class="kk-boardcol">
+          <p id="kk-status" class="kk-status" role="status" aria-live="polite">Oyun yükleniyor…</p>
+          <div class="kk-boardwrap">
+            <div id="kk-board" class="kk-board" role="group" aria-label="Kutu kapmaca tahtası. Çizgiler düğmedir; ok tuşlarıyla aynı yöndeki komşu çizgiye geçilir."></div>
+            <div id="kk-over" class="kk-over" role="status" hidden>
+              <h3 id="kk-over-title">Oyun bitti</h3>
+              <p id="kk-over-text"></p>
+              <div class="row"><button id="kk-over-new" class="ba-btn ba-btn-primary" type="button">Tekrar oyna</button><button id="kk-over-close" class="ba-btn" type="button">Tahtayı incele</button></div>
+            </div>
+          </div>
+          <p class="kk-help">İki nokta arasındaki boşluğa dokunarak çizgi çekin. Dördüncü kenarı çizerseniz kutu sizin olur ve yeniden oynarsınız. Klavyede Tab ile çizgilere gelin, Enter ile çizin.</p>
+        </div>
+        <div class="kk-side">
+          <div class="kk-controls">
+            <div class="kk-field"><label for="kk-mode">Oyun türü</label><select id="kk-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişilik (aynı cihaz)</option></select></div>
+            <div class="kk-field"><label for="kk-level">Zorluk</label><select id="kk-level"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+            <div class="kk-field"><label for="kk-size">Tahta boyutu</label><select id="kk-size"><option value="3" selected>3 × 3 kutu</option><option value="5">5 × 5 kutu</option><option value="7">7 × 7 kutu</option></select></div>
+            <div class="kk-field"><label for="kk-first">İlk hamle</label><select id="kk-first"><option value="me">Ben başlarım</option><option value="cpu">Bilgisayar başlar</option></select></div>
+          </div>
+          <div class="kk-actions"><button id="kk-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button><button id="kk-undo" class="ba-btn" type="button" disabled>Geri al</button><button id="kk-full" class="ba-btn" type="button" hidden>Tam ekran</button></div>
+          <div class="kk-counter" aria-label="Skor">
+            <div class="kk-card" id="kk-card-1"><strong><span class="chip c1" aria-hidden="true"></span><span id="kk-name-1">Siz</span></strong><span class="num" id="kk-score-1">0</span><small>kutu</small></div>
+            <div class="kk-card" id="kk-card-2"><strong><span class="chip c2" aria-hidden="true"></span><span id="kk-name-2">Bilgisayar</span></strong><span class="num" id="kk-score-2">0</span><small>kutu</small></div>
+          </div>
+          <p id="kk-stats" class="kk-stats"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad kk-ad-a" data-slot="oyun-kutu-kapmaca-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Kutu kapmaca nedir?</h2>
+      <p>Kutu kapmaca, kâğıt ve kalemle oynanan en eski masa oyunlarından biridir; yabancı kaynaklarda “dots and boxes” adıyla geçer. Bir ızgara halinde dizilmiş noktalar vardır. Oyuncular sırayla iki komşu noktayı bir çizgiyle birleştirir. Bir kutunun dört kenarı da çizildiğinde, dördüncü çizgiyi çeken oyuncu o kutuyu alır ve bir çizgi daha çekme hakkı kazanır. Tahtadaki bütün çizgiler çizildiğinde en çok kutuyu toplayan kazanır. Kuralları bir dakikada öğrenilir; ama iyi oynamak, tahtayı birkaç hamle ilerisinden okumayı gerektirir. Bu sayfada kutu kapmacayı ücretsiz, kurulum yapmadan ve kayıt olmadan bilgisayara karşı ya da aynı cihazda bir arkadaşınızla oynayabilirsiniz.</p>
+
+      <h2>Kutu kapmaca nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Tahtayı seçin.</strong> 3 × 3, 5 × 5 veya 7 × 7 kutu arasından seçim yapın. Küçük tahta hızlı biter, büyük tahtada zincirler ve strateji öne çıkar.</li>
+        <li><strong>Çizgi çekin.</strong> İki komşu nokta arasındaki boşluğa tıklayın ya da dokunun. Yatay ve dikey çizgiler çekilebilir; çapraz çizgi yoktur. Çizilen çizgi sizin renginizde görünür.</li>
+        <li><strong>Kutuyu kapın.</strong> Bir kutunun son kenarını çizerseniz kutu sizin renginizle dolar ve sayacınız artar. Kutu aldığınız için sıra size geri döner; yeniden çizgi çekersiniz.</li>
+        <li><strong>Kutu almadıysanız sıra geçer.</strong> Hamlenizle hiçbir kutu tamamlanmadıysa sıra rakibe gider.</li>
+        <li><strong>Oyunun sonu.</strong> Bütün çizgiler çizildiğinde oyun biter; daha çok kutu alan kazanır. Kutu sayıları eşitse oyun berabere kalır.</li>
+      </ol>
+
+      <h2>Oyunun kontrolleri</h2>
+      <ul>
+        <li><strong>Fare ve dokunma:</strong> Çizgi yerlerinin görünen kalınlığı ince olsa da dokunma alanı geniştir; parmağınızı iki nokta arasına yaklaştırmanız yeter. Boş çizginin üzerine gelince sıradaki oyuncunun rengi açık tonla belirir.</li>
+        <li><strong>Klavye:</strong> Çizgiler birer düğmedir. Tab ile çizgiler arasında ilerleyin, ok tuşlarıyla aynı yöndeki komşu çizgiye geçin, Enter veya Boşluk ile çizin. Her çizginin ekran okuyucu etiketi konumunu ve durumunu söyler.</li>
+        <li><strong>Skor ve sıra:</strong> Sağdaki kartlar kutu sayısını gösterir; sırası gelen oyuncunun kartı vurgulanır. Kutuların içindeki harf ya da rakam, rengi ayırt etmekte zorlananlar için sahibini belirtir.</li>
+        <li><strong>Geri al:</strong> Bilgisayara karşı oynarken son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek çizgi geri gider.</li>
+        <li><strong>İlk hamle:</strong> Bilgisayara karşı oynarken ilk çizgiyi kimin çekeceğini seçebilirsiniz. Oyunda sıranın kimde olduğu strateji açısından önemlidir.</li>
+        <li><strong>Tam ekran:</strong> Desteklenen tarayıcılarda oyun kutusunu ekranı kaplayacak şekilde büyütür.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünür?</h2>
+      <p>Bilgisayar rakibinin üç seviyesi vardır ve her seviye farklı bir fikre dayanır. Seviyeler arasındaki fark, kutu kapmacanın temel stratejisini de özetler.</p>
+      <ul>
+        <li><strong>Kolay:</strong> Rastgele boş bir çizgi seçer. Kutu alabilecek durumda bile bunu görmeyebilir. İlk kez oynayanlar için rahat bir başlangıçtır.</li>
+        <li><strong>Orta:</strong> Önce alabileceği kutuları alır. Kutu yoksa “güvenli çizgi” arar: çizildiğinde hiçbir kutunun üçüncü kenarına ulaşmayan çizgiler. Güvenli çizgi kalmadıysa size en az kutu hediye edecek çizgiyi seçer.</li>
+        <li><strong>Zor:</strong> Orta seviyenin yaptığı her şeye ek olarak zincir stratejisi uygular. Zorunlu olarak bir zinciri açması gerektiğinde en kısasını açar; iki kutuluk zincirde ortadan keserek size çift-çapraz fırsatı bırakmaz. Bir zincirin kutularını alırken son iki kutuyu almak yerine uç çizgiyi çekip size iki kutuyu tek hamlede verir ve sırayı size devreder; böylece sonraki zincirleri alma hakkını korur. Tahtada az çizgi kaldığında oyunu sonuna kadar hesaplar.</li>
+      </ul>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Üçüncü kenarı vermeyin.</strong> Bir kutunun iki kenarı çizildiyse üçüncüsünü çizmek rakibe kutuyu hediye etmektir. Oyunun başında yalnızca güvenli çizgiler çekin.</li>
+        <li><strong>Güvenli çizgileri sayın.</strong> Güvenli çizgiler bitince birinin kutu vermek zorunda kalacağı an gelir. O anda kimin sırada olduğu oyunun sonucunu çoğu zaman belirler.</li>
+        <li><strong>Zincirleri tanıyın.</strong> Yan yana dizilmiş, ikişer kenarı çizili kutular zincir oluşturur. Biri zincire ilk çizgiyi çekerse rakip bütün zinciri toplayabilir. Kısa zincirler (bir ya da iki kutu) ucuzdur; uzun zincirler (üç ve üzeri) değerlidir.</li>
+        <li><strong>Hepsini almak her zaman doğru değildir.</strong> Uzun bir zinciri toplarken son iki kutuyu rakibe bırakmak (çift-çapraz) kontrolü elinizde tutmanızı sağlar; rakip bir sonraki zinciri açmak zorunda kalır. Bu fedakârlık, kalan zincirler yeterince uzunsa kendini amorti eder.</li>
+        <li><strong>Kısa zinciri ortadan kesin.</strong> İki kutuluk bir zinciri açmak zorundaysanız ortadaki çizgiyi çekin; rakip çift-çapraz yapamaz, iki kutuyu ayrı ayrı almak zorunda kalır.</li>
+        <li><strong>Çevreyi izleyin.</strong> Köşe ve kenar kutuları daha az komşuya sahip olduğu için daha kolay zincire dönüşür. Orta kısımda döngü (kapalı halka) oluşabilir; döngüler zincirlerden pahalıdır.</li>
+        <li><strong>Büyük tahtada sabırlı olun.</strong> 7 × 7 tahtada ilk yarının amacı kutu almak değil, sıranın doğru oyuncuda kalacağı biçimde güvenli çizgi sayısını yönetmektir.</li>
+      </ul>
+
+      <h2>Oyunun kısa tarihi</h2>
+      <p>Kutu kapmaca benzeri noktalı ızgara oyunları kâğıt ve kalemle oynanabildiği için okul sıralarında, tren yolculuklarında ve evlerde yüzyıllardır bilinir. Kaynaklarda, oyunun 19. yüzyılın sonunda Fransız matematikçi Édouard Lucas tarafından kayda geçirildiği ve “la pipopipette” adıyla anıldığı belirtilir; tarih ayrıntıları kaynaklara göre değişebilir. Matematikçi Elwyn Berlekamp'ın bu oyuna ayırdığı kitap, zincirler, döngüler ve kontrol kavramını geniş kitlelere tanıttı. Bugün oyun, kombinatoryal oyun kuramı ve yapay zekâ derslerinde sık kullanılan bir örnektir. Küçük tahtalarda bilgisayarlar oyunu baştan sona çözebilir; büyük tahtalarda ise hâlâ insan sezgisinin rol oynadığı geniş bir alan vardır.</p>
+
+      <div class="ba-ad" data-slot="oyun-kutu-kapmaca-b" aria-label="Reklam"></div>
+
+      <h2>Kontrol kavramı: kim daha avantajlı?</h2>
+      <p>Kutu kapmaca ilk bakışta şansa bağlı görünür; oysa oyunun ortasından sonrası büyük ölçüde bir sıra sayma yarışıdır. Güvenli çizgiler tükendiğinde, oyunculardan biri ilk zinciri açmak zorunda kalır. Zinciri açan taraf bir sonraki zinciri açmaya da mecbur kalırsa kutuların çoğunu rakibe vermiş olur. “Kontrol” dediğimiz şey, zincir açma yükünü rakibe devretmek demektir. Uzun zincir sayısı ile nokta sayısının tek mi çift mi olması, hangi oyuncunun bu yükten kaçabileceğini belirleyen bir kuralın temelidir. Bu kuralın ayrıntıları ileri düzey bir konudur; özetle, hangi oyuncunun kaç uzun zincir istediğini erken hesaplamak, tahtayı ona göre şekillendirmek anlamına gelir. Kısa zincirlerin sayısı da oyunun sonucunda küçük ama belirleyici farklar yaratır.</p>
+      <p>Yeni başlayanlar için pratik bir kural şudur: oyunun başında kutu almaya çalışmayın, güvenli çizgilerle ilerleyin ve rakibin hata yapmasını bekleyin. Bir zinciri teslim almak zorunda kaldığınızda önce kaç kutu kaldığını, sonra son iki kutuyu bırakmanın size bir sonraki hamlede ne kazandıracağını düşünün.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalı?</h2>
+      <ul>
+        <li><strong>Tamamen ücretsiz.</strong> Üyelik, uygulama indirme ya da hamle sınırı yok.</li>
+        <li><strong>Veri gönderilmez.</strong> Oyun tarayıcınızda çalışır; hamleleriniz bir sunucuya iletilmez. Yalnızca bilgisayara karşı sonuç sayınız bu cihazda tutulur.</li>
+        <li><strong>Çevrimdışı oynanır.</strong> Sayfa bir kez açıldıktan sonra internet olmasa da oyun çalışır; siteyi uygulama olarak da kurabilirsiniz.</li>
+        <li><strong>Mobil uyumlu.</strong> 360 piksellik ekranlarda bile tahta sığar; çizgilerin dokunma alanı geniştir.</li>
+        <li><strong>Adil bilgisayar.</strong> Bilgisayar hile yapmaz; sizinle aynı kuralları ve aynı bilgiyi kullanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kutu kapmaca nasıl oynanır?</summary><p>Oyuncular sırayla iki komşu nokta arasına bir çizgi çeker. Bir kutunun dördüncü kenarını çizen oyuncu o kutuyu alır ve bir çizgi daha çekme hakkı kazanır. Bütün çizgiler çizildiğinde en çok kutuyu alan kazanır.</p></details>
+        <details><summary>Kutuyu tamamlayınca neden yeniden oynuyorum?</summary><p>Kuralın bir parçasıdır: kutu tamamlayan oyuncu sırayı devretmez. Art arda birçok kutu alabilirsiniz. Bu yüzden rakibe üçüncü kenarı hazır bir kutu vermek tehlikelidir.</p></details>
+        <details><summary>Üçüncü kenarı vermek ne demek?</summary><p>Bir kutunun üç kenarı çizildiğinde dördüncüyü çizen kutuyu alır. Üçüncü kenarı çizerseniz rakibe bedava kutu hediye edersiniz. İyi oyuncular mümkün olduğunca bunu yapmaz.</p></details>
+        <details><summary>Zorluk seviyeleri arasında ne fark var?</summary><p>Kolay seviye rastgele çizgi çeker. Orta seviye kutu alabiliyorsa alır, güvenli çizgi varken üçüncü kenarı vermez. Zor seviye ayrıca zincir stratejisi kullanır, zinciri yerken son iki kutuyu bırakarak kontrolü korur ve oyun sonunu tam hesaplar.</p></details>
+        <details><summary>Hangi tahta boyutunu seçmeliyim?</summary><p>3 × 3 kutu hızlı bir oyundur ve kuralları öğrenmek için uygundur. 5 × 5 dengeli ve en popüler boyuttur. 7 × 7 daha uzun sürer, zincirler ve stratejiler daha belirgindir.</p></details>
+        <details><summary>Hamlemi geri alabilir miyim?</summary><p>Evet. Bilgisayara karşı oynarken Geri al düğmesi sizin son hamlenizi ve bilgisayarın cevabını birlikte geri alır. İki kişilik oyunda tek çizgi geri alınır.</p></details>
+        <details><summary>Aynı cihazda iki kişi oynayabilir miyim?</summary><p>Evet. Oyun türü listesinden “İki kişilik” seçeneğini seçin. Oyuncular sırayla aynı tahtada oynar; mavi ve turuncu renk kutuların kime ait olduğunu gösterir.</p></details>
+        <details><summary>Oyun internet gerektirir mi, hamlelerim kaydediliyor mu?</summary><p>Sayfa yüklendikten sonra oyun tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez. Yalnızca bilgisayara karşı galibiyet, yenilgi ve beraberlik sayınız bu cihazın tarayıcı depolamasında tutulur.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../reversi/">Reversi</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Kendi web siteniz, oyununuz ya da kurumsal yazılım ihtiyacınız için <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibine ulaşabilirsiniz.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-kutu-kapmaca-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

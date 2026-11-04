@@ -42,7 +42,7 @@ function calculate(ev) {
   const raw = $('pek').value.trim();
   let pek = raw === '' ? min : parseNum(raw);
   const days = $('days').value.trim() === '' ? 30 : Number($('days').value.trim());
-  const bad = (m) => { el.result.hidden = true; showError(el.error, m); };
+  const bad = (m) => { el.result.hidden = true; el.result.classList.remove("is-active"); showError(el.error, m); };
   if (!Number.isFinite(pek) || pek <= 0) return bad('Kazanç geçerli bir sayı değil. Yalnızca rakam yazın (örnek: 45.000) ya da alanı boş bırakıp alt sınırı kullanın.');
   if (pek < min) return bad(`Prime esas kazanç alt sınırın (${fmt(min)}) altında olamaz. ${fmt(min)} ya da daha yüksek bir tutar girin; alanı boş bırakırsanız alt sınır kullanılır.`);
   if (!Number.isInteger(days) || days < 1 || days > params.gun_aylik) return bad(`Gün sayısı 1 ile ${params.gun_aylik} arasında bir tam sayı olmalı. Alanı düzeltip yeniden deneyin.`);
@@ -67,7 +67,7 @@ function calculate(ev) {
   $('r-saving').textContent = discount ? fmt(round2(monthlyFull - monthly)) : 'İndirim seçilmedi';
   $('r-note').textContent = note + 'Oran bileşenleri: ' + (params.bilesenler || []).map((b) => `${b.ad} %${String(b.yuzde).replace('.', ',')}`).join(', ') + '.';
   $('r-retire').textContent = `Emeklilik için genel olarak ${new Intl.NumberFormat('tr-TR').format(params.emeklilik_prim_gun?.genel ?? 9000)} gün sıkça anılır; bu bilgi yaklaşıktır ve kişiye özeldir. SGK'ya danışın.`;
-  el.result.hidden = false;
+  el.result.hidden = false; el.result.classList.add("is-active");
   lastText = `${status.ad}: PEK ${fmt(pek)}, oran %${rate}, aylık prim ${fmt(monthly)}, yıllık ${fmt(round2(monthly * 12))}`;
 }
 

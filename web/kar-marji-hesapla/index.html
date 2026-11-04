@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kâr Marjı Hesaplama – Marj, Markup ve Net Kâr (KDV ve Komisyon Dahil)</title>
+  <meta name="description" content="Maliyet ve satış fiyatından kâr marjı ile markup'ı hesaplayın; hedef marja göre satış fiyatı ya da azami maliyeti bulun. KDV, pazar yeri komisyonu ve kargo düşülmüş net kâr. Ücretsiz, kayıt yok, verileriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/kar-marji-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .km-fieldset { border: 0; padding: 0; margin: 0 0 12px; min-width: 0; }
+    .km-fieldset legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+    .km-extras { margin: 4px 0 0; padding: 12px 14px 2px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); }
+    .km-extras legend { padding: 0 6px; }
+    #bulk-wrap { margin-top: 8px; }
+    .bulk-row { display: grid; gap: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); }
+    .bulk-row .ba-field { margin: 0; }
+    .bulk-row input { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .bulk-out { font-family: var(--ba-mono); font-size: .92rem; color: var(--ba-text); overflow-wrap: anywhere; }
+    @media (min-width: 700px) { .bulk-row { grid-template-columns: 2fr 1.4fr 1.2fr 80px; } .bulk-out, .bulk-del { grid-column: span 2; } }
+    #csv-fallback { width: 100%; min-height: 96px; padding: 8px 12px; font: .85rem/1.4 var(--ba-mono); color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .km-table { width: 100%; border-collapse: collapse; margin: 14px 0 22px; font-size: .95rem; }
+    .km-table caption { text-align: left; font-weight: 600; padding: 0 0 8px; color: var(--ba-text-2); }
+    .km-table th, .km-table td { padding: 9px 12px; border-bottom: 1px solid var(--ba-border); text-align: right; }
+    .km-table th:first-child, .km-table td:first-child { text-align: left; }
+    .km-table thead th { background: var(--ba-surface-2); font-weight: 600; }
+    .km-table tr.is-hl td { background: var(--ba-primary-soft); color: var(--ba-ink); font-weight: 600; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Kâr Marjı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/kar-marji-hesapla/"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kâr marjı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Kâr marjı = (KDV hariç satış fiyatı − maliyet) ÷ KDV hariç satış fiyatı × 100 formülüyle bulunur. Satış fiyatı 100 TL, maliyet 80 TL ise kâr 20 TL ve marj yüzde 20'dir. Araçta maliyet ile satış fiyatını yazmanız yeterlidir; marj ve markup birlikte görünür."}},{"@type":"Question","name":"Marj yüzde 20 ise markup kaç eder?","acceptedAnswer":{"@type":"Answer","text":"Markup yüzde 25 eder. Dönüşüm formülü markup = marj ÷ (1 − marj) şeklindedir: 0,20 ÷ 0,80 = 0,25. Tersi için marj = markup ÷ (1 + markup) kullanılır. Sayfadaki tabloda sık kullanılan oranlar hazırdır."}},{"@type":"Question","name":"Brüt kâr marjı ile net kâr marjı arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Brüt marj yalnızca satış fiyatı ile ürün maliyetini karşılaştırır. Net marj ise pazar yeri komisyonu, kargo ve paketleme gibi satışa bağlı kesintileri de düşer. Komisyon ve kargo ne kadar yüksekse iki rakam arasındaki fark o kadar açılır."}},{"@type":"Question","name":"Hedef marja göre satış fiyatı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Satış fiyatı = maliyet ÷ (1 − hedef marj) formülüyle bulunur. Maliyet 80 TL ve hedef marj yüzde 20 ise fiyat 100 TL olur. Maliyetin üzerine doğrudan yüzde 20 eklemek 96 TL verir ve marjı yaklaşık yüzde 16,67'de bırakır."}},{"@type":"Question","name":"Kâr marjı hesabında KDV dahil mi hariç mi fiyat kullanılır?","acceptedAnswer":{"@type":"Answer","text":"KDV hariç fiyat kullanılır, çünkü KDV işletmenin geliri değil devlete aktarılan tutardır. Etiketinizde KDV dahil fiyat yazıyorsa satış fiyatı seçeneğini \"KDV dahil\" yapın; araç KDV'yi ayırıp marjı KDV hariç tutar üzerinden hesaplar. Maliyet alanına her zaman KDV hariç tutar yazın."}},{"@type":"Question","name":"Pazar yeri komisyonu marjı nasıl etkiler?","acceptedAnswer":{"@type":"Answer","text":"Komisyon satış tutarından yüzde olarak kesilir ve doğrudan kârdan düşer. Maliyeti 80 TL, KDV hariç satış fiyatı 100 TL olan üründe yüzde 15 komisyon 15 TL tutar; 20 TL'lik brüt kâr 5 TL'lik net kâra iner ve net marj yüzde 5 olur. Komisyonun KDV dahil ya da hariç fiyata uygulanması pazar yerine göre değişir; araçta iki seçenek de vardır."}},{"@type":"Question","name":"Birden çok ürünün ortalama kâr marjı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"İki yöntem vardır. Basit ortalama, satırların marjlarının ortalamasıdır. Genel (ağırlıklı) marj ise toplam kârı toplam satışa böler ve satış adetlerini hesaba katar. İşletmenin gerçek marjı genel marjdır; ürün listesi modu ikisini de gösterir."}},{"@type":"Question","name":"İyi bir kâr marjı yüzde kaçtır?","acceptedAnswer":{"@type":"Answer","text":"Tek bir doğru yüzde yoktur. Marj sektöre, ürün türüne, satış hacmine ve sabit giderlere göre değişir. Önemli olan marjın sabit giderlerinizi karşılayıp makul bir kâr bırakmasıdır; bunu başabaş analiziyle kontrol edebilirsiniz."}},{"@type":"Question","name":"Negatif marj ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Satış fiyatı maliyetin ya da komisyon ve kargo dahil toplam maliyetin altındaysa kâr negatiftir; yani her satışta para kaybedersiniz. Araç bu durumda uyarı verir; komisyon veya kargo girdiyseniz zarar etmemek için gereken asgari satış fiyatını da gösterir. Giriş alanlarına negatif sayı yazmayın; zararı sonuç satırlarında görürsünüz."}},{"@type":"Question","name":"Girdiğim rakamlar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesap tarayıcınızda yapılır; maliyetleriniz, fiyatlarınız ve ürün adlarınız sunucuya yüklenmez, çerezle izlenmez. Sayfa bir kez açıldıktan sonra internet olmadan da çalışır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Kâr Marjı Hesaplama</span></h1>
+      <p class="lead">Maliyetiniz ve satış fiyatınızla brüt kâr marjını ve markup'ı hesaplayın; hedef marj için gereken satış fiyatını ya da ödeyebileceğiniz azami maliyeti bulun. KDV, pazar yeri komisyonu ve kargo düşülünce net kârınızın ne kadar kaldığını görün. Girdiğiniz rakamlar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="km-fieldset">
+          <legend>Ne hesaplamak istiyorsunuz?</legend>
+          <div class="kdv-modes">
+            <label><input type="radio" name="mode" value="kar" checked> Maliyet + satış fiyatı → kâr, marj, markup</label>
+            <label><input type="radio" name="mode" value="fiyat"> Maliyet + hedef marj → satış fiyatı</label>
+            <label><input type="radio" name="mode" value="maliyet"> Satış fiyatı + hedef marj → azami maliyet</label>
+            <label><input type="radio" name="mode" value="toplu"> Birden çok ürün: toplam ve ortalama marj</label>
+          </div>
+        </fieldset>
+
+        <div id="single-wrap">
+          <div class="kdv-grid">
+            <div class="ba-field" data-mode="kar fiyat"><label for="m-cost">Birim maliyet (₺, KDV hariç)</label><input id="m-cost" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 80"><div class="hint">Ürünün size mal olduğu KDV hariç tutar.</div></div>
+            <div class="ba-field" data-mode="kar maliyet"><label for="m-sale" id="sale-label">Satış fiyatı (₺, KDV hariç)</label><input id="m-sale" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 100"><div class="hint">KDV durumunu aşağıdan değiştirebilirsiniz.</div></div>
+            <div class="ba-field" data-mode="fiyat maliyet" hidden><label for="m-target">Hedef kâr marjı (%)</label><input id="m-target" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 20"><div class="hint">Kârın satış fiyatındaki payı; komisyon ve kargo girerseniz net marj sayılır.</div></div>
+          </div>
+        </div>
+
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="m-vat">KDV oranı</label>
+            <select id="m-vat"><option value="1">%1</option><option value="10">%10</option><option value="20" selected>%20</option><option value="ozel">Özel oran</option></select>
+            <div class="hint">Ürününüzün KDV oranını GİB listesinden doğrulayın.</div></div>
+          <div class="ba-field" data-mode="kar maliyet toplu"><label for="m-saletax">Girilen satış fiyatı</label>
+            <select id="m-saletax"><option value="haric" selected>KDV hariç</option><option value="dahil">KDV dahil</option></select>
+            <div class="hint">Maliyet her zaman KDV hariç girilir.</div></div>
+        </div>
+        <div class="ba-field" id="vat-custom-wrap" hidden><label for="m-vat-custom">Özel KDV oranı (%)</label><input id="m-vat-custom" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 8"></div>
+
+        <fieldset class="km-extras">
+          <legend>Komisyon ve kargo (isteğe bağlı)</legend>
+          <div class="kdv-grid c3">
+            <div class="ba-field"><label for="m-comm">Komisyon / kesinti (%)</label><input id="m-comm" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 15"></div>
+            <div class="ba-field"><label for="m-commbase">Komisyon neye uygulanır?</label>
+              <select id="m-commbase"><option value="haric" selected>KDV hariç satış fiyatı</option><option value="dahil">KDV dahil satış fiyatı</option></select></div>
+            <div class="ba-field"><label for="m-ship">Kargo / paketleme (₺, ürün başı)</label><input id="m-ship" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 20"></div>
+          </div>
+        </fieldset>
+
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results" id="result-rows"></dl>
+        <p class="kdv-note" id="result-note"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <div id="bulk-wrap" hidden>
+        <h3>Ürün listesi</h3>
+        <p class="hint">Her satıra ürün adı, KDV hariç maliyet ve satış fiyatı yazın; adet boş kalırsa 1 sayılır. KDV, komisyon ve kargo ayarları tüm satırlara uygulanır.</p>
+        <div id="bulk-rows"></div>
+        <div class="ba-actions"><button id="bulk-add" class="ba-btn" type="button">Satır ekle</button><button id="bulk-copy" class="ba-btn ba-btn-primary" type="button" disabled>CSV kopyala</button><button id="bulk-csv" class="ba-btn" type="button" disabled>CSV indir</button></div>
+        <p class="kdv-status" id="bulk-status" aria-live="polite"></p>
+        <div id="csv-fallback-wrap" hidden><label for="csv-fallback" class="hint">Kopyalanacak CSV metni</label><textarea id="csv-fallback" readonly rows="4"></textarea></div>
+        <dl class="kdv-results" id="bulk-totals" hidden>
+          <div class="kdv-row"><dt>Toplam ürün maliyeti</dt><dd id="mt-cost"></dd></div>
+          <div class="kdv-row"><dt>Toplam satış (KDV hariç)</dt><dd id="mt-sale"></dd></div>
+          <div class="kdv-row"><dt>Toplam komisyon ve kargo</dt><dd id="mt-fees"></dd></div>
+          <div class="kdv-row is-strong"><dt>Toplam net kâr</dt><dd id="mt-profit"></dd></div>
+          <div class="kdv-row is-strong"><dt>Genel marj (toplam kâr ÷ toplam satış)</dt><dd id="mt-margin"></dd></div>
+          <div class="kdv-row"><dt>Ortalama marj (satırların basit ortalaması)</dt><dd id="mt-avgmargin"></dd></div>
+          <div class="kdv-row"><dt>Ortalama markup</dt><dd id="mt-avgmarkup"></dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="kar-marji-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstteki seçeneklerden birini işaretleyin: mevcut fiyatın marjını görmek, hedef marja göre satış fiyatı bulmak, hedef marja göre ödeyebileceğiniz azami maliyeti öğrenmek ya da birden çok ürünü tek listede değerlendirmek.</li>
+        <li>Maliyeti KDV hariç, satış fiyatını seçtiğiniz KDV durumuna göre (hariç ya da dahil) yazın. Türkçe biçim geçerlidir: 1.250,50 ile 1250,5 aynı değeri ifade eder.</li>
+        <li>Pazar yerinde ya da kargolu satış yapıyorsanız "Komisyon ve kargo" bölümünü doldurun. Boş bırakırsanız hesap yalnızca brüt kâr üzerinden yapılır.</li>
+        <li>Sonuç siz yazdıkça güncellenir. "Sonucu kopyala" ile panoya alın; ürün listesinde "CSV kopyala" ya da "CSV indir" düğmelerini kullanın.</li>
+      </ol>
+
+      <h2>Kâr marjı nedir, nasıl hesaplanır?</h2>
+      <p>Kâr marjı, bir satıştan geriye kalan kârın satış fiyatındaki payıdır. Satış fiyatı 100 TL, maliyet 80 TL ise kâr 20 TL, kâr marjı yüzde 20'dir. Formül şöyledir: (satış fiyatı − maliyet) ÷ satış fiyatı × 100. Marj, "bir liralık cirodan kaç kuruş kâr kalıyor?" sorusunun cevabıdır; bu yüzden ürünleri ve işletmeleri karşılaştırırken en çok başvurulan orandır.</p>
+      <p>Hesapta iki ayrıntı sonucu belirler. Birincisi, satış fiyatının KDV hariç tutar olmasıdır. KDV'yi müşteriden devlet adına tahsil edersiniz; gelirinize girmez. KDV dahil 120 TL'ye sattığınız ürünün (yüzde 20 KDV) KDV hariç fiyatı 100 TL'dir ve marj bu 100 TL üzerinden hesaplanır. İkincisi, maliyetin de KDV hariç alınmasıdır; alış faturasındaki KDV'yi indirebiliyorsanız o tutar maliyetiniz sayılmaz. Bu araç ikisini ayrı tutar: maliyet daima KDV hariç yazılır, satış fiyatı için "dahil" ya da "hariç" seçersiniz. Örneğin etiketi 240 TL (KDV dahil) olan ve 150 TL'ye mal olan üründe KDV hariç satış 200 TL, kâr 50 TL, marj yüzde 25 ve markup yüzde 33,33'tür.</p>
+
+      <h2>Kâr marjı ile markup arasındaki fark</h2>
+      <p>Markup, aynı kârın maliyete oranıdır: kâr ÷ maliyet × 100. 80 TL maliyetli ve 100 TL'ye satılan üründe kâr 20 TL, marj yüzde 20, markup yüzde 25'tir. Aynı kâr iki farklı yüzde üretir, çünkü paydalar farklıdır. Markup her zaman marjdan büyüktür; marj yüzde 100'e ulaşamazken markup binlere çıkabilir. Dönüşüm formülleri: marj = markup ÷ (1 + markup), markup = marj ÷ (1 − marj). Aşağıdaki tablo, 100 TL maliyetli bir ürün için sık kullanılan değerleri gösterir.</p>
+      <table class="km-table">
+        <caption>Markup, kâr marjı ve satış fiyatı karşılaştırması (maliyet 100 TL, KDV hariç)</caption>
+        <thead><tr><th scope="col">Markup</th><th scope="col">Kâr marjı</th><th scope="col">Satış fiyatı</th></tr></thead>
+        <tbody>
+          <tr><td>%10</td><td>%9,09</td><td>110 ₺</td></tr>
+          <tr><td>%20</td><td>%16,67</td><td>120 ₺</td></tr>
+          <tr class="is-hl"><td>%25</td><td>%20,00</td><td>125 ₺</td></tr>
+          <tr><td>%30</td><td>%23,08</td><td>130 ₺</td></tr>
+          <tr><td>%40</td><td>%28,57</td><td>140 ₺</td></tr>
+          <tr><td>%50</td><td>%33,33</td><td>150 ₺</td></tr>
+          <tr><td>%75</td><td>%42,86</td><td>175 ₺</td></tr>
+          <tr><td>%100</td><td>%50,00</td><td>200 ₺</td></tr>
+          <tr><td>%150</td><td>%60,00</td><td>250 ₺</td></tr>
+          <tr><td>%200</td><td>%66,67</td><td>300 ₺</td></tr>
+          <tr><td>%300</td><td>%75,00</td><td>400 ₺</td></tr>
+        </tbody>
+      </table>
+      <p>Tedarikçiniz "maliyetin üstüne yüzde 30" diyorsa markup'tan söz eder; muhasebe raporundaki "brüt kâr marjı" ise satış fiyatına göre hesaplanır. Biri markup, öteki marjla konuşursa aynı "yüzde 30" iki farklı fiyat demektir: 100 TL maliyete yüzde 30 markup 130 TL eder, yüzde 30 marj ise yaklaşık 142,86 TL. Tabloda yüzde 25 markup'ın yüzde 20 marja denk geldiği satır vurgulanmıştır; pek çok kişi bu iki oranı birbirine eşit sanır.</p>
+
+      <div class="ba-ad" data-slot="kar-marji-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Brüt kâr marjı ve net kâr marjı</h2>
+      <p>Brüt kâr, yalnızca satış fiyatıyla ürün maliyeti arasındaki farktır. Gerçek satışta ise ürünle birlikte başka kalemler de gelir: pazar yeri komisyonu, kargo ve paketleme, ödeme altyapısı kesintisi. Bunlar düşüldükten sonra kalan tutar net kârdır. Örnek: KDV hariç 200 TL'ye sattığınız ürünün maliyeti 150 TL; brüt kâr 50 TL, brüt marj yüzde 25. Pazar yeri yüzde 12 komisyon (24 TL) alıyor, kargo ve paketleme 18 TL tutuyor; net kâr 8 TL'ye, net marj yüzde 4'e iner. Yalnızca brüt marja bakarak fiyat veren bir satıcı, aslında ürün başına çok küçük bir kârla çalışıyor olabilir.</p>
+      <p>Komisyonun hangi tutar üzerinden alındığı pazar yerine göre değişebilir. Araç iki seçenek sunar: KDV hariç satış fiyatı ya da KDV dahil satış fiyatı. Satıcı sözleşmenizdeki koşulu kontrol edip uygun olanı seçin. Komisyon ve kargo faturalarındaki KDV'nin indirilecek KDV olarak mahsup edilebildiği varsayılır; bu yüzden ayrıca maliyet sayılmaz. Mükellefiyet durumunuz farklıysa mali müşavirinize danışın.</p>
+
+      <h2>Hedef marja göre satış fiyatı ve azami maliyet</h2>
+      <p>İkinci mod "maliyet belli, marj hedefleniyor" durumunu çözer. Satış fiyatı = maliyet ÷ (1 − hedef marj) olur. Maliyeti 150 TL olan ürün için yüzde 30 marj hedefliyorsanız KDV hariç fiyat 150 ÷ 0,70 = 214,29 TL, yüzde 20 KDV ile 257,14 TL'dir. Pratikte sık yapılan hata, 150'nin üstüne yüzde 30 ekleyip 195 TL demektir; bu fiyatın marjı yalnızca yüzde 23,08'dir. Komisyon ve kargo girerseniz formül bunları da hesaba katar ve hedef marj net marj olarak yorumlanır.</p>
+      <p>Üçüncü mod tersini yapar: "Satış fiyatım belli, marjım yüzde 25 olmalı; ürünü en fazla kaça almalıyım?" Azami maliyet = KDV hariç satış fiyatı × (1 − hedef marj) formülüyle bulunur. 500 TL (KDV dahil) satılan bir ürünün KDV hariç fiyatı 416,67 TL'dir; yüzde 25 marj için azami maliyet 312,50 TL çıkar. Tedarikçiyle pazarlık ederken ya da rakibin fiyatına uymak zorunda kaldığınızda bu rakam size alış fiyatında üst sınır verir.</p>
+
+      <h2>Birden çok ürün: genel marj ve ortalama marj</h2>
+      <p>Ürün listesi modunda her satıra ürün adı, maliyet, satış fiyatı ve isteğe bağlı adet girin. Araç iki ayrı rakam verir. "Genel marj", toplam kârın toplam satışa oranıdır ve satış adetlerini hesaba katar; mağazanın gerçek marjı odur. "Ortalama marj" ise satırların marjlarının basit ortalamasıdır. İkisi birbirinden çok uzaklaşabilir. A ürününde maliyet 80, fiyat 100 olsun (marj yüzde 20); B ürününde maliyet 20, fiyat 50 (marj yüzde 60). Basit ortalama yüzde 40'tır. Oysa A'dan 9, B'den 1 adet satarsanız toplam kâr 210 TL, toplam satış 950 TL olur ve genel marj yalnızca yüzde 22,11'dir. Karar verirken genel marja bakın; ortalama marj, ürün çeşitlerini birbiriyle kıyaslamak için uygundur.</p>
+      <p>Listeyi CSV olarak kopyalayabilir ya da indirebilirsiniz. Dosya noktalı virgülle ayrılır ve Excel'in Türkçe sürümünde doğrudan açılır. Panoya kopyalanan metni Excel'e yapıştırdıktan sonra Veri menüsündeki "Metni Sütunlara Dönüştür" ile ayırabilirsiniz. Tüm işlem tarayıcınızda gerçekleşir; liste hiçbir yere gönderilmez.</p>
+
+      <h2>Kâr marjı hesabında sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Marjı markup ile karıştırmak.</strong> İki oran aynı kâr için farklıdır; fiyat verirken hangisini hedeflediğinizi net tutun.</li>
+        <li><strong>KDV dahil fiyat üzerinden kâr hesaplamak.</strong> KDV gelir değildir; kâr yalnızca KDV hariç tutardan çıkar.</li>
+        <li><strong>Kargo, ambalaj, fire ve komisyonu unutmak.</strong> Brüt marj sizi olduğundan zengin gösterir; net marjı mutlaka görün.</li>
+        <li><strong>İndirimde marja bakmamak.</strong> Yüzde 20 marjlı bir üründe yüzde 20 indirim kârı sıfıra indirir: 100 TL'lik ürün 80 TL'ye düşer, maliyet de 80 TL'dir.</li>
+        <li><strong>Sabit giderleri atlamak.</strong> Marj tek başına yeterli değildir; kira ve personel gibi giderleri karşılayıp karşılamadığınızı <a href="../basabas-noktasi-hesapla/">başabaş noktası hesaplama</a> ile kontrol edin.</li>
+        <li><strong>Marjı sektörler arasında kıyaslamak.</strong> Hızlı tüketimde düşük marj yüksek hacimle, hizmet işlerinde yüksek marj düşük hacimle çalışır; "iyi marj" sektöre göre değişir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Maliyetleriniz ve fiyat listeniz ticari sırdır; hesap tarayıcınızda yapılır, hiçbir yere iletilmez.</li>
+        <li><strong>Brüt ve net marj bir arada.</strong> Komisyon ve kargoyu girdiğiniz anda gerçek kârınızı görürsünüz.</li>
+        <li><strong>Üç yönlü hesap.</strong> Marjı bulur, hedef marjdan fiyat çıkarır ve hedef marjdan azami maliyeti verir.</li>
+        <li><strong>Marj ve markup ayrı gösterilir.</strong> İki oranı karıştırmadan karar verirsiniz.</li>
+        <li><strong>Türkçe sayı biçimi ve çevrimdışı kullanım.</strong> 1.250,50 gibi girişler doğru okunur; sayfa bir kez açıldıktan sonra internetsiz de çalışır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Kâr marjı nasıl hesaplanır?</summary><p>Kâr marjı = (KDV hariç satış fiyatı − maliyet) ÷ KDV hariç satış fiyatı × 100 formülüyle bulunur. Satış fiyatı 100 TL, maliyet 80 TL ise kâr 20 TL ve marj yüzde 20'dir. Araçta maliyet ile satış fiyatını yazmanız yeterlidir; marj ve markup birlikte görünür.</p></details>
+        <details><summary>Marj yüzde 20 ise markup kaç eder?</summary><p>Markup yüzde 25 eder. Dönüşüm formülü markup = marj ÷ (1 − marj) şeklindedir: 0,20 ÷ 0,80 = 0,25. Tersi için marj = markup ÷ (1 + markup) kullanılır. Sayfadaki tabloda sık kullanılan oranlar hazırdır.</p></details>
+        <details><summary>Brüt kâr marjı ile net kâr marjı arasındaki fark nedir?</summary><p>Brüt marj yalnızca satış fiyatı ile ürün maliyetini karşılaştırır. Net marj ise pazar yeri komisyonu, kargo ve paketleme gibi satışa bağlı kesintileri de düşer. Komisyon ve kargo ne kadar yüksekse iki rakam arasındaki fark o kadar açılır.</p></details>
+        <details><summary>Hedef marja göre satış fiyatı nasıl bulunur?</summary><p>Satış fiyatı = maliyet ÷ (1 − hedef marj) formülüyle bulunur. Maliyet 80 TL ve hedef marj yüzde 20 ise fiyat 100 TL olur. Maliyetin üzerine doğrudan yüzde 20 eklemek 96 TL verir ve marjı yaklaşık yüzde 16,67'de bırakır.</p></details>
+        <details><summary>Kâr marjı hesabında KDV dahil mi hariç mi fiyat kullanılır?</summary><p>KDV hariç fiyat kullanılır, çünkü KDV işletmenin geliri değil devlete aktarılan tutardır. Etiketinizde KDV dahil fiyat yazıyorsa satış fiyatı seçeneğini "KDV dahil" yapın; araç KDV'yi ayırıp marjı KDV hariç tutar üzerinden hesaplar. Maliyet alanına her zaman KDV hariç tutar yazın.</p></details>
+        <details><summary>Pazar yeri komisyonu marjı nasıl etkiler?</summary><p>Komisyon satış tutarından yüzde olarak kesilir ve doğrudan kârdan düşer. Maliyeti 80 TL, KDV hariç satış fiyatı 100 TL olan üründe yüzde 15 komisyon 15 TL tutar; 20 TL'lik brüt kâr 5 TL'lik net kâra iner ve net marj yüzde 5 olur. Komisyonun KDV dahil ya da hariç fiyata uygulanması pazar yerine göre değişir; araçta iki seçenek de vardır.</p></details>
+        <details><summary>Birden çok ürünün ortalama kâr marjı nasıl hesaplanır?</summary><p>İki yöntem vardır. Basit ortalama, satırların marjlarının ortalamasıdır. Genel (ağırlıklı) marj ise toplam kârı toplam satışa böler ve satış adetlerini hesaba katar. İşletmenin gerçek marjı genel marjdır; ürün listesi modu ikisini de gösterir.</p></details>
+        <details><summary>İyi bir kâr marjı yüzde kaçtır?</summary><p>Tek bir doğru yüzde yoktur. Marj sektöre, ürün türüne, satış hacmine ve sabit giderlere göre değişir. Önemli olan marjın sabit giderlerinizi karşılayıp makul bir kâr bırakmasıdır; bunu başabaş analiziyle kontrol edebilirsiniz.</p></details>
+        <details><summary>Negatif marj ne anlama gelir?</summary><p>Satış fiyatı maliyetin ya da komisyon ve kargo dahil toplam maliyetin altındaysa kâr negatiftir; yani her satışta para kaybedersiniz. Araç bu durumda uyarı verir; komisyon veya kargo girdiyseniz zarar etmemek için gereken asgari satış fiyatını da gösterir. Giriş alanlarına negatif sayı yazmayın; zararı sonuç satırlarında görürsünüz.</p></details>
+        <details><summary>Girdiğim rakamlar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; maliyetleriniz, fiyatlarınız ve ürün adlarınız sunucuya yüklenmez, çerezle izlenmez. Sayfa bir kez açıldıktan sonra internet olmadan da çalışır.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Bu araç matematiksel hesap yapar; mali, vergisel ya da yatırım tavsiyesi vermez. KDV oranı, komisyon ve vergi yükümlülükleri için mali müşavirinize danışın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../fiyat-hesapla/">Satış Fiyatı Hesaplama</a></li>
+        <li><a href="../basabas-noktasi-hesapla/">Başabaş Noktası Hesaplama</a></li>
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="kar-marji-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

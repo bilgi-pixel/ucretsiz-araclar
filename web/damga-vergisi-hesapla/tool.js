@@ -121,7 +121,7 @@ function render() {
   el.status.textContent = '';
   updateUi();
   try {
-    if (!el.amount.value.trim()) { showError(el.error, ''); el.result.hidden = true; return; }
+    if (!el.amount.value.trim()) { showError(el.error, ''); el.result.hidden = true; el.result.classList.remove("is-active"); return; }
     const { r, t, isCustom, months, copies } = compute();
     showError(el.error, '');
     setText('r-matrah', money(r.base));
@@ -139,10 +139,10 @@ function render() {
     if (copies > 1 && !el.copyEach.checked) notes.push('Nüsha sayısı sonucu değiştirmedi: vergi tek kâğıt üzerinden hesaplandı. Kurumunuz her nüshayı ayrı kâğıt sayıyorsa kutuyu işaretleyin.');
     if (t?.kira && months > 0) notes.push(`Matrah: ${money(r.base / months)} × ${months} ay.`);
     el.unsure.textContent = notes.join(' ');
-    el.result.hidden = false;
+    el.result.hidden = false; el.result.classList.add("is-active");
   } catch (err) {
     showError(el.error, err.message);
-    el.result.hidden = true;
+    el.result.hidden = true; el.result.classList.remove("is-active");
   }
 }
 
