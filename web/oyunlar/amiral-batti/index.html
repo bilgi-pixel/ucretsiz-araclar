@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Amiral Battı Oyna – Ücretsiz Online Amiral Battı (kurulumsuz)</title>
+  <meta name="description" content="Amiral Battı'yı tarayıcınızda ücretsiz oynayın: gemilerinizi sürükleyip yerleştirin, av-hedef yapay zekâlı bilgisayara karşı ya da aynı cihazda arkadaşınızla oynayın. Kurulum ve kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/amiral-batti/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    :root { --ab-water: #e4eef7; --ab-line: #b5cbdd; --ab-ship: #4a5b6d; --ab-ship-edge: #2d3a47; --ab-dot: #1b4b73; --ab-hit: #a3271f; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ab-water: #1d2a37; --ab-line: #3a4c5e; --ab-ship: #8fa3b8; --ab-ship-edge: #c3d1de; --ab-dot: #9cc7ee; --ab-hit: #ff8a80; } }
+    :root[data-theme="dark"] { --ab-water: #1d2a37; --ab-line: #3a4c5e; --ab-ship: #8fa3b8; --ab-ship-edge: #c3d1de; --ab-dot: #9cc7ee; --ab-hit: #ff8a80; }
+    .game-box { margin-bottom: 64px; }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    @media (max-width: 420px) { .game-box { padding: 12px 8px; } }
+    .ab-options { display: grid; gap: 12px; grid-template-columns: 1fr; max-width: 420px; }
+    .ab-options select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .ab-top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 0; }
+    .ab-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0 10px; }
+    .ab-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 6px; text-align: center; min-width: 0; }
+    .ab-stats span { display: block; font-size: .78rem; color: var(--ba-text-muted); font-family: var(--ba-mono); overflow-wrap: anywhere; }
+    .ab-stats strong { font-size: 1.3rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .ab-hint { margin: 0 0 6px; font-size: .9rem; color: var(--ba-text-muted); }
+    .ab-status { min-height: 1.5em; margin: 6px 0 12px; font-weight: 600; color: var(--ba-text); }
+    .ab-counts { margin: 0 0 10px; font-size: .9rem; color: var(--ba-text-2); font-variant-numeric: tabular-nums; }
+    .ab-cover { text-align: center; padding: 36px 16px; border: 2px dashed var(--ba-border-hover); border-radius: var(--ba-radius); background: var(--ba-surface-2); }
+    .ab-cover h3 { margin: 0 0 8px; }
+    .ab-cover p { margin: 0 auto 18px; max-width: 460px; }
+    .ab-place { margin: 0 0 16px; }
+    .ab-place h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .ab-tray { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin: 0 0 10px; }
+    .ab-ship { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px; font: inherit; font-weight: 600; font-size: .9rem; text-align: left; color: var(--ba-text); background: var(--ba-surface); border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); cursor: grab; touch-action: none; user-select: none; }
+    .ab-ship[aria-pressed="true"] { border-color: var(--ba-primary); background: var(--ba-primary-soft); }
+    .ab-ship[data-placed="1"] { opacity: .8; }
+    .ab-ship:focus-visible, .ab-cell:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 1px; }
+    .ab-pips { display: inline-flex; gap: 2px; flex: none; }
+    .ab-pips i { display: block; width: 12px; height: 12px; background: var(--ab-ship); border-radius: 2px; }
+    .ab-orient { margin: 0 0 6px; font-size: .9rem; font-weight: 600; }
+    .ab-boards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    @media (min-width: 760px) { .ab-boards:has(#ab-wrap-target:not([hidden])) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .ab-board-wrap h3 { margin: 0 0 8px; font-size: 1rem; }
+    .ab-board { display: grid; grid-template-columns: 1.5em repeat(10, minmax(0, 1fr)); width: 100%; max-width: 460px; user-select: none; }
+    .ab-axis { display: grid; place-items: center; font-size: .72rem; font-family: var(--ba-mono); color: var(--ba-text-muted); aspect-ratio: auto; min-height: 1.5em; }
+    .ab-cell { position: relative; display: block; aspect-ratio: 1; min-width: 0; min-height: 0; padding: 0; margin: 0; background: var(--ab-water); border: 1px solid var(--ab-line); border-radius: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    div.ab-cell { cursor: default; }
+    .ab-cell[aria-disabled="true"] { cursor: default; }
+    .ab-cell[data-ship="1"]::before { content: ""; position: absolute; inset: 12% 0; background: var(--ab-ship); border: 1px solid var(--ab-ship-edge); }
+    .ab-cell[data-ship="1"][data-or="v"]::before { inset: 0 12%; }
+    .ab-cell[data-ship="1"][data-or="h"][data-pos="start"]::before { border-radius: 40% 0 0 40%; left: 6%; }
+    .ab-cell[data-ship="1"][data-or="h"][data-pos="end"]::before { border-radius: 0 40% 40% 0; right: 6%; }
+    .ab-cell[data-ship="1"][data-or="v"][data-pos="start"]::before { border-radius: 40% 40% 0 0; top: 6%; }
+    .ab-cell[data-ship="1"][data-or="v"][data-pos="end"]::before { border-radius: 0 0 40% 40%; bottom: 6%; }
+    .ab-cell[data-reveal="1"]::before { content: ""; position: absolute; inset: 22%; background: var(--ab-ship); opacity: .55; border-radius: 3px; }
+    .ab-cell[data-s="m"]::after { content: ""; position: absolute; inset: 38%; border-radius: 50%; background: var(--ab-dot); }
+    .ab-cell[data-s="h"]::after, .ab-cell[data-s="s"]::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; background: var(--ab-hit); font-weight: 700; font-size: .85rem; line-height: 1; }
+    .ab-cell[data-s="s"]::after { background: #5e1a25; outline: 2px solid var(--ab-hit); outline-offset: -2px; }
+    .ab-cell.is-last { box-shadow: inset 0 0 0 3px var(--ba-accent); z-index: 1; }
+    .ab-cell.is-prev-ok { background: #bfe5cf; }
+    .ab-cell.is-prev-bad { background: #f3c0bb; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ab-cell.is-prev-ok { background: #24523a; } :root:not([data-theme="light"]) .ab-cell.is-prev-bad { background: #6b2a25; } }
+    :root[data-theme="dark"] .ab-cell.is-prev-ok { background: #24523a; }
+    :root[data-theme="dark"] .ab-cell.is-prev-bad { background: #6b2a25; }
+    body.ab-dragging, body.ab-dragging * { cursor: grabbing !important; }
+    .ab-fleet { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 4px; font-size: .85rem; }
+    .ab-fleet li { display: flex; align-items: center; gap: 8px; margin: 0; }
+    .ab-fleet li[data-sunk="1"] span:last-child { text-decoration: line-through; color: var(--ba-text-muted); }
+    .ab-fleet li[data-sunk="1"] .ab-pips i { background: var(--ab-hit); }
+    .ab-turnbar { margin: 16px 0 0; }
+    .ab-log { margin: 16px 0 0; padding-left: 20px; font-size: .88rem; color: var(--ba-text-2); }
+    .ab-log:empty { display: none; }
+    .game-box .ba-result { margin: 16px 0 0; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Amiral Battı – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Amiral Battı: sürükle-bırak gemi yerleştirme, av-hedef yapay zekâlı bilgisayar rakip, aynı cihazda iki kişilik mod ve istatistik tablosu.","applicationCategory":"GameApplication","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":["SinglePlayer","MultiPlayer"],"inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/amiral-batti/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Amiral Battı nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Her oyuncu 10×10 tahtaya beş gemi yerleştirir: 5, 4, 3, 3 ve 2 hücrelik. Sonra sırayla rakibin denizinde bir hücreye ateş edilir. Isabet ya da ıska bildirilir; bir geminin tüm hücreleri vurulunca gemi batar. Rakibin bütün gemilerini önce batıran kazanır."}},
+  {"@type":"Question","name":"Gemiler birbirine değebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Gemiler yan yana hatta uç uca durabilir, ancak aynı hücreyi paylaşamaz ve tahtanın dışına taşamaz. Bu sayfa klasik kuralı uygular."}},
+  {"@type":"Question","name":"Bilgisayar hile yapıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bilgisayar yalnızca attığı atışların sonucunu ve hangi gemilerin battığını bilir; sizin gemi konumlarınıza bakmaz. Zor seviyede isabet sonrası komşu hücreleri tarar, hizalı isabetlerin uçlarını dener ve avlanırken dama deseni kullanır."}},
+  {"@type":"Question","name":"Gemileri nasıl yerleştirir ve döndürürüm?","acceptedAnswer":{"@type":"Answer","text":"Listeden bir gemi seçip tahtada bir hücreye tıklayın ya da gemiyi fareyle tahtaya sürükleyin. R tuşu veya Döndür düğmesi yönü yatay ile dikey arasında değiştirir. Rastgele yerleştir düğmesi tüm filoyu sizin için dizer. Yerleştirdiğiniz bir gemiye tıklayarak tekrar alabilirsiniz."}},
+  {"@type":"Question","name":"İki kişi aynı cihazda nasıl oynar?","acceptedAnswer":{"@type":"Answer","text":"Rakip listesinden İki oyuncu seçeneğini seçin. İki oyuncu sırayla gemilerini yerleştirir; her devirde ekran gizlenir ve Cihazı rakibe ver ekranı çıkar. Her atıştan sonra da aynı devir yapılır, böylece kimse rakibin tahtasını göremez."}},
+  {"@type":"Question","name":"Klavyeyle ve telefonda oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sekme tuşuyla tahtaya gelin, ok tuşlarıyla hücreler arasında gezinin, Enter ile gemi koyun ya da ateş edin, R ile gemiyi döndürün. Telefonda gemiyi seçip hücreye dokunmak yeterlidir."}},
+  {"@type":"Question","name":"İstatistiklerim nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca tarayıcınızın localStorage alanında. Sunucuya gönderilmez ve çerez ya da izleme kullanılmaz. İstatistiği sıfırla düğmesiyle veya tarayıcı verilerini silerek temizleyebilirsiniz."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Amiral Battı</span> Oyna – Ücretsiz Online Amiral Battı</h1>
+      <p class="lead">Beş gemilik filonuzu sürükleyip yerleştirin, bilgisayarın av-hedef yapay zekâsına karşı savaşın ya da cihazı arkadaşınıza uzatıp iki kişilik oynayın. İstatistik, klavye desteği ve tam ekran hazır; kurulum, üyelik ve indirme yok.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Amiral Battı oyunu</h2>
+      <div class="ab-options">
+        <div class="ba-field"><label for="ab-opp">Rakip</label>
+          <select id="ab-opp">
+            <option value="hard">Bilgisayar – zor (av ve hedef)</option>
+            <option value="easy">Bilgisayar – kolay (rastgele atış)</option>
+            <option value="two">İki oyuncu (aynı cihazda sırayla)</option>
+          </select></div>
+      </div>
+      <div class="ab-top">
+        <button id="ab-restart" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button>
+        <button id="ab-reset-stats" class="ba-btn" type="button">İstatistiği sıfırla</button>
+        <button id="ab-full" class="ba-btn" type="button">Tam ekran</button>
+      </div>
+      <div class="ab-stats" role="group" aria-label="İstatistik">
+        <div><span id="ab-l1">Oynanan</span><strong id="ab-s1">0</strong></div>
+        <div><span id="ab-l2">Kazanılan</span><strong id="ab-s2">0</strong></div>
+        <div><span id="ab-l3">En az atış</span><strong id="ab-s3">–</strong></div>
+      </div>
+      <p class="ab-hint" id="ab-hint"></p>
+      <p class="ab-status" id="ab-status" role="status" aria-live="polite"></p>
+
+      <div class="ab-cover" id="ab-cover" hidden>
+        <h3 id="ab-cover-title">Cihazı rakibe verin</h3>
+        <p id="ab-cover-text"></p>
+        <button id="ab-cover-btn" class="ba-btn ba-btn-primary" type="button">Hazırım</button>
+      </div>
+
+      <div id="ab-stage">
+        <div class="ab-place" id="ab-place">
+          <h3 id="ab-place-title">Gemilerini yerleştir</h3>
+          <div class="ab-tray" id="ab-tray" role="group" aria-label="Gemiler"></div>
+          <p class="ab-orient" id="ab-orient" aria-live="polite">Yön: yatay</p>
+          <div class="ab-top" style="margin-top:0">
+            <button id="ab-rotate" class="ba-btn" type="button">Döndür (R)</button>
+            <button id="ab-random" class="ba-btn" type="button">Rastgele yerleştir</button>
+            <button id="ab-clear" class="ba-btn" type="button">Temizle</button>
+            <button id="ab-start" class="ba-btn ba-btn-primary" type="button" disabled>Savaşa başla</button>
+          </div>
+        </div>
+        <p class="ab-counts" id="ab-counts" hidden></p>
+        <div class="ab-boards" id="ab-boards">
+          <div class="ab-board-wrap" id="ab-wrap-target" hidden>
+            <h3 id="ab-target-title">Hedef denizi</h3>
+            <div class="ab-board" id="ab-target" role="group" aria-label="Hedef denizi"></div>
+            <ul class="ab-fleet" id="ab-fleet-target" aria-label="Rakip filosu"></ul>
+          </div>
+          <div class="ab-board-wrap" id="ab-wrap-own">
+            <h3 id="ab-own-title">Senin filon</h3>
+            <div class="ab-board" id="ab-own" role="group" aria-label="Filonun tahtası"></div>
+            <ul class="ab-fleet" id="ab-fleet-own" aria-label="Senin filon"></ul>
+          </div>
+        </div>
+        <div class="ab-turnbar" id="ab-turnbar" hidden>
+          <button id="ab-endturn" class="ba-btn ba-btn-primary" type="button">Turu bitir</button>
+        </div>
+      </div>
+      <ol class="ab-log" id="ab-log" aria-label="Son atışlar"></ol>
+      <div class="ba-result" id="ab-result">
+        <h3 id="ab-result-title">Oyun bitti</h3>
+        <p id="ab-result-text"></p>
+        <div class="ba-actions"><button id="ab-again" class="ba-btn ba-btn-success" type="button">Tekrar oyna</button></div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-amiral-batti-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Amiral Battı nedir?</h2>
+      <p>Amiral Battı, iki oyuncunun birbirinin gemilerini görmeden bulmaya çalıştığı bir tahmin ve strateji oyunudur. Her oyuncunun gizli bir deniz tahtası vardır; gemiler bu tahtaya yatay ya da dikey olarak yerleştirilir. Sırayla bir hücre adı söylenir, rakip "ıska" ya da "isabet" der, bir geminin bütün hücreleri vurulduğunda ise "battı" der. Rakibin bütün gemilerini ilk batıran kazanır. Kuralları bir dakikada öğrenilir, ama iyi oynamak olasılık hesabı, sabır ve biraz da blöf ister.</p>
+      <p>Bu sayfada oyunu iki şekilde oynayabilirsiniz: yenilgiyi kabullenmeyen bir yapay zekâya karşı ya da aynı cihazı paylaşan bir arkadaşınıza karşı. Oyun tamamen tarayıcınızda çalışır. Hiçbir dosya yüklenmez, hesap açmanız gerekmez, atışlarınız bir sunucuya gönderilmez. Sayfa bir kez açıldıktan sonra internet kesilse de oynamaya devam edebilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Rakibi seçin.</strong> "Rakip" listesinden zor ya da kolay bilgisayarı, ya da aynı cihazda iki oyuncu modunu seçin. Seçim değiştiğinde yeni bir oyun başlar.</li>
+        <li><strong>Gemilerinizi yerleştirin.</strong> Beş geminiz var: amiral gemisi (5 hücre), kruvazör (4), iki muhrip (3 ve 3) ve denizaltı (2). Listeden bir gemi seçip tahtada bir hücreye tıklayın ya da fareyle tahtaya sürükleyin. R tuşu yönü değiştirir. Acele ediyorsanız "Rastgele yerleştir" filoyu sizin için dizer.</li>
+        <li><strong>Savaşı başlatın.</strong> Bütün gemiler yerleşince "Savaşa başla" düğmesi açılır. İlk atışı siz yaparsınız.</li>
+        <li><strong>Ateş edin.</strong> Hedef denizinde bir hücreye tıklayın. Sonuç hemen yazılır: ıska, isabet ya da "battı". Ardından sıra rakibe geçer.</li>
+        <li><strong>Filoyu batırın.</strong> Rakibin beş gemisini de batırdığınızda kazanırsınız. Atış sayınız ve isabet oranınız sonuç kutusunda görünür, en iyi sonucunuz kaydedilir.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> Gemi seçmek, yerleştirmek ve ateş etmek için tıklayın. Listeden bir gemiyi tahtaya sürükleyebilir, tahtadaki bir gemiyi tutup başka yere taşıyabilirsiniz.</li>
+        <li><strong>Dokunmatik:</strong> Gemiye dokunup seçin, sonra tahtada istediğiniz hücreye dokunun. Yerleşik gemiye dokunmak onu geri alır.</li>
+        <li><strong>Klavye:</strong> Sekme tuşuyla tahtaya gelin, ok tuşlarıyla hücreler arasında gezinin, Enter ya da Boşluk ile gemi koyun veya ateş edin. R tuşu seçili gemiyi döndürür.</li>
+        <li><strong>Ekran okuyucu:</strong> Her hücre "C5: atış yapılmadı" gibi okunur; sonuçlar durum satırında duyurulur.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar.</li>
+      </ul>
+
+      <h2>Bilgisayar nasıl düşünüyor?</h2>
+      <p><strong>Zor seviye:</strong> Bilgisayar iki aşamalı klasik bir yöntem kullanır. İlk aşama "av"dır: hiç isabet yokken tahtayı rastgele ama dama deseninde tarar. En küçük gemi iki hücrelik olduğu için her ikinci hücreye atmak, her gemiye en az bir kez isabet etmeyi garanti eder ve atış sayısını yarıya indirir. Bir gemi battıkça desen aralığı kalan en küçük gemiye göre genişler. İkinci aşama "hedef"tir: isabet gelince bilgisayar o hücrenin dört komşusunu dener; iki isabet yan yana gelirse geminin yönünü anlar ve dizinin iki ucunu hedefler. Gemi batınca avlanmaya döner.</p>
+      <p><strong>Kolay seviye:</strong> Bilgisayar boş hücrelerden birini tamamen rastgele seçer. İsabet aldığında bile komşulara bakmaz; çocuklar ve yeni başlayanlar için rahat bir rakiptir.</p>
+      <p>İkisinde de bilgisayar hile yapmaz: sizin gemi konumlarınızı görmez, yalnızca kendi attığı atışların sonuçlarını ve hangi gemilerin battığını bilir.</p>
+
+      <h2>İki oyunculu mod: cihazı rakibe verin</h2>
+      <p>Aynı ekranı paylaşan iki kişi için tasarlandı. Önce Oyuncu 1 gemilerini yerleştirir ve savaşa başla düğmesine basar; ekran hemen gizlenir ve "Cihazı Oyuncu 2'ye verin" mesajı çıkar. Oyuncu 2 hazır olduğunda kendi gemilerini yerleştirir. Savaş başladıktan sonra her atışın ardından "Turu bitir" düğmesi çıkar; basıldığında ekran yine gizlenir ve cihaz rakibe devredilir. Böylece kimse kendi sırası gelmeden rakibin filosunu ya da onun atış sonuçlarını göremez. Oyun bitince ayakta kalan gemiler açılır.</p>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Gemileri kenara yığmayın, ama tamamen ortaya da koymayın.</strong> Deneyimli oyuncular ilk atışlarını merkeze yakın yapar; bu yüzden sürekli aynı yere dizen oyuncu tahmin edilir hâle gelir. Karışık dağıtın.</li>
+        <li><strong>Dama deseniyle avlanın.</strong> Rastgele atmak yerine bir hücre atlayarak tarayın. Bilgisayarın zor seviyesi de bunu yapar.</li>
+        <li><strong>İsabet gelince sistemli olun.</strong> Dört komşuyu tek tek deneyin; ikinci isabette yönü bulur, dizinin iki ucunu da kapatırsınız.</li>
+        <li><strong>Batan gemiyi hesaba katın.</strong> Her batışla kalan gemilerin olası konumları daralır. Örneğin üç hücrelik gemiler gittiyse sığmayacağı boşluklara atış harcamayın.</li>
+        <li><strong>Yan yana gemiler olabilir.</strong> Bir gemi battığında etrafındaki isabetler başka bir gemiye ait olabilir; o hücreleri taramayı unutmayın.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-amiral-batti-b" aria-label="Reklam"></div>
+
+      <h2>Oyunun kısa tarihi</h2>
+      <p>Hücre adı söyleyerek rakibin gizli gemilerini aramak, yirminci yüzyılın başlarından beri kâğıt ve kalemle oynanan bir oyundur. Okullarda kareli defterin iki sayfasına çizilen tahtalar ve harf-rakam koordinatları çoğumuzun çocukluk anısıdır. Zamanla farklı ülkelerde plastik tahtalı basılı versiyonlar çıktı, ardından ilk bilgisayar sürümleri geldi. Oyunun kalıcılığının sebebi basit: kural karmaşası yok, ama her oyun farklı ve her atışta gerilim var.</p>
+      <p>Bilgisayar bilimi açısından da ilginç bir problemdir. Rakibin gizli durumunu tahmin etmek, eksik bilgiyle karar vermenin küçük bir örneğidir. Dama deseni, olasılık haritaları ve isabet sonrası hedefleme gibi yöntemler hep aynı soruya cevap verir: sınırlı atışla en çok bilgi nasıl kazanılır?</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalısınız?</h2>
+      <ul>
+        <li><strong>Gizlilik:</strong> Gemi konumlarınız ve istatistikleriniz yalnızca bu cihazın tarayıcısında kalır. Dosya yüklemez, hesap istemez, sizi izlemez.</li>
+        <li><strong>Dürüst rakip:</strong> Bilgisayar sizin tahtanızı görmez; kazanma vaadi ya da "premium" tuzağı yoktur.</li>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve oynayın. İsterseniz tarayıcıdan uygulama olarak yükleyip çevrimdışı da kullanabilirsiniz.</li>
+        <li><strong>Mobil uyumlu ve erişilebilir:</strong> 360 piksel genişliğe kadar çalışır, klavyeyle oynanır ve ekran okuyucuya duyuru yapar.</li>
+        <li><strong>Reklamlar dürüst yerleşimde:</strong> Reklamlar yalnızca oyun kutusunun altında ve sayfanın belirli bölümlerinde yer alır; oyun düğmelerinin yanında hiç görünmez.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Amiral Battı nasıl oynanır?</summary><p>Her oyuncu 10×10 tahtaya beş gemi yerleştirir: 5, 4, 3, 3 ve 2 hücrelik. Sonra sırayla rakibin denizinde bir hücreye ateş edilir. Isabet ya da ıska bildirilir; bir geminin tüm hücreleri vurulunca gemi batar. Rakibin bütün gemilerini önce batıran kazanır.</p></details>
+        <details><summary>Gemiler birbirine değebilir mi?</summary><p>Evet. Gemiler yan yana hatta uç uca durabilir, ancak aynı hücreyi paylaşamaz ve tahtanın dışına taşamaz. Bu sayfa klasik kuralı uygular.</p></details>
+        <details><summary>Bilgisayar hile yapıyor mu?</summary><p>Hayır. Bilgisayar yalnızca attığı atışların sonucunu ve hangi gemilerin battığını bilir; sizin gemi konumlarınıza bakmaz. Zor seviyede isabet sonrası komşu hücreleri tarar, hizalı isabetlerin uçlarını dener ve avlanırken dama deseni kullanır.</p></details>
+        <details><summary>Gemileri nasıl yerleştirir ve döndürürüm?</summary><p>Listeden bir gemi seçip tahtada bir hücreye tıklayın ya da gemiyi fareyle tahtaya sürükleyin. R tuşu veya Döndür düğmesi yönü yatay ile dikey arasında değiştirir. Rastgele yerleştir düğmesi tüm filoyu sizin için dizer. Yerleştirdiğiniz bir gemiye tıklayarak tekrar alabilirsiniz.</p></details>
+        <details><summary>İki kişi aynı cihazda nasıl oynar?</summary><p>Rakip listesinden İki oyuncu seçeneğini seçin. İki oyuncu sırayla gemilerini yerleştirir; her devirde ekran gizlenir ve "Cihazı rakibe ver" ekranı çıkar. Her atıştan sonra da aynı devir yapılır, böylece kimse rakibin tahtasını göremez.</p></details>
+        <details><summary>Klavyeyle ve telefonda oynanır mı?</summary><p>Evet. Sekme tuşuyla tahtaya gelin, ok tuşlarıyla hücreler arasında gezinin, Enter ile gemi koyun ya da ateş edin, R ile gemiyi döndürün. Telefonda gemiyi seçip hücreye dokunmak yeterlidir.</p></details>
+        <details><summary>İstatistiklerim nerede saklanıyor?</summary><p>Yalnızca tarayıcınızın localStorage alanında. Sunucuya gönderilmez ve çerez ya da izleme kullanılmaz. "İstatistiği sıfırla" düğmesiyle veya tarayıcı verilerini silerek temizleyebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dort-bagla/">Dört Bağla</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-amiral-batti-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

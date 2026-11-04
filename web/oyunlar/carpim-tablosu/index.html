@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Çarpım Tablosu Oyna – Ücretsiz Online Çarpım Tablosu Alıştırması (kurulumsuz)</title>
+  <meta name="description" content="Çarpım tablosunu oyunla öğrenin: 1-12 arası belirli sayı veya karışık, çoktan seçmeli ya da yazarak cevap, 60 saniyelik yarış, bölme modu, yanlışları tekrar çözme ve yazdırılabilir çarpım tablosu. Kurulum ve kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/carpim-tablosu/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. */
+    .game-box { margin-bottom: 64px; }
+    .ct-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .ct-tabs .ba-btn[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    :root[data-theme="dark"] .ct-tabs .ba-btn[aria-pressed="true"] { color: #1a0d10; }
+    .ct-options { display: grid; gap: 14px; padding: 14px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .ct-fs { border: 0; margin: 0; padding: 0; min-width: 0; }
+    .ct-fs legend { font-weight: 600; font-size: .9rem; padding: 0; margin-bottom: 6px; }
+    .ct-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ct-pill { position: relative; display: inline-flex; }
+    .ct-pill input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .ct-pill span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid var(--ba-border-hover); border-radius: 999px; background: var(--ba-surface); font-size: .92rem; font-weight: 500; color: var(--ba-text); }
+    .ct-pill input:hover + span { border-color: var(--ba-primary); }
+    .ct-pill input:checked + span { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    .ct-pill input:focus-visible + span { outline: 2px solid var(--ba-primary); outline-offset: 2px; }
+    :root[data-theme="dark"] .ct-pill input:checked + span { color: #1a0d10; }
+    .ct-select { min-height: 44px; padding: 6px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); max-width: 100%; }
+    .ct-start { margin-top: 14px; }
+    .ct-note { margin: 0 0 8px; font-size: .9rem; color: var(--ba-text-2); }
+    .ct-q { margin: 10px 0 14px; text-align: center; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--ba-primary); overflow-wrap: anywhere; }
+    .ct-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ct-choice { min-height: 60px; justify-content: center; font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; gap: 8px; }
+    .ct-choice kbd { font-size: .72rem; opacity: .7; border: 1px solid var(--ba-border-hover); border-radius: 4px; padding: 0 5px; }
+    .ct-choice.is-right { background: var(--ba-success); border-color: var(--ba-success); color: #fff; }
+    .ct-choice.is-wrong { background: var(--ba-danger); border-color: var(--ba-danger); color: #fff; }
+    .ct-form { display: flex; align-items: flex-end; gap: 10px; }
+    .ct-form .ba-field { flex: 1 1 auto; min-width: 0; }
+    .ct-form .ba-field input { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+    .ct-fb { min-height: 3em; margin: 14px 0 6px; text-align: center; font-weight: 600; }
+    .ct-fb[data-kind="ok"] { color: var(--ba-success); }
+    .ct-fb[data-kind="bad"], .ct-fb[data-kind="warn"] { color: var(--ba-danger); }
+    .ct-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+    .ct-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 8px 10px; text-align: center; min-width: 0; }
+    .ct-stats span { display: block; font-size: .72rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .06em; text-transform: uppercase; }
+    .ct-stats strong { font-size: 1.2rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .ct-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .ct-result-score { font-size: 3rem; font-weight: 700; text-align: center; color: var(--ba-primary); margin: 6px 0; }
+    .ct-wrong-list { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 8px 0 14px; padding: 0; }
+    .ct-wrong-list li { margin: 0; padding: 4px 10px; border: 1px solid var(--ba-border); border-radius: 999px; background: var(--ba-surface); font-variant-numeric: tabular-nums; font-size: .9rem; }
+    .ct-grid-wrap { overflow-x: auto; max-width: 100%; margin-top: 12px; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    #ct-grid { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .85rem; }
+    #ct-grid th, #ct-grid td { border: 1px solid var(--ba-border); padding: 6px 8px; text-align: center; min-width: 34px; }
+    #ct-grid thead th { background: var(--ba-surface-2); }
+    #ct-grid tbody tr { cursor: pointer; }
+    #ct-grid tr.is-hl td, #ct-grid tr.is-hl th { background: var(--ba-primary); color: #fff; }
+    #ct-grid tr.is-hl .ct-rowbtn { color: #fff; }
+    .ct-rowbtn { min-width: 32px; min-height: 32px; border: 0; background: transparent; font: inherit; font-weight: 700; color: var(--ba-text); cursor: pointer; }
+    .ct-rowbtn:focus-visible { outline: 2px solid var(--ba-primary); outline-offset: 1px; }
+    .ba-content { overflow-wrap: anywhere; }
+    @media print {
+      .ba-topbar, .ba-header, .ba-footer, .ba-ad, .ba-content, .ba-hero, .ct-tabs, .ct-noprint { display: none !important; }
+      #ct-play-panel { display: none !important; }
+      .game-box { border: 0; box-shadow: none; }
+      #ct-grid tr.is-hl td, #ct-grid tr.is-hl th { background: #ddd; color: #000; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Çarpım Tablosu Alıştırması","description":"Çarpım ve bölme tablosunu çoktan seçmeli veya yazarak alıştıran, 60 saniyelik yarış ve süresiz çalışma modlu ücretsiz tarayıcı oyunu.","genre":"Eğitici","applicationCategory":"Game","operatingSystem":"Web tarayıcısı","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/carpim-tablosu/","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},
+  {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Çarpım tablosu en hızlı nasıl ezberlenir?","acceptedAnswer":{"@type":"Answer","text":"Önce kolay tablolarla (1, 2, 5, 10) başlayın, sonra her seferinde yalnızca bir tabloya odaklanın. Günde 5-10 dakikalık kısa ve düzenli tekrar, uzun ama seyrek çalışmadan daha etkilidir. Yanlış yaptığınız işlemleri tekrar çözmek ezberi en çok pekiştiren adımdır."}},
+  {"@type":"Question","name":"Çarpım tablosunda hangi sayılar öğrenilir?","acceptedAnswer":{"@type":"Answer","text":"Oyun 1'den 12'ye kadar tabloları kapsar. Okullarda genellikle 10'a kadar öğretilir; 11 ve 12 ile çalışmak zihinden hesabı ve günlük hayattaki çarpmaları kolaylaştırır."}},
+  {"@type":"Question","name":"Bölme modu ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Bölme modu çarpım tablosunu tersten sorar, örneğin 56 bölü 7. Çarpma ve bölmenin aynı bilginin iki yüzü olduğunu gösterir ve bölme işlemini hızlandırır."}},
+  {"@type":"Question","name":"60 saniyelik yarışta puan nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her doğru cevap 10 puandır. Arka arkaya doğru cevaplarda seri bonusu eklenir; bonus her seri adımında 2 puan artar ve en fazla 10 puana ulaşır. Yanlış cevap seriyi sıfırlar ama puan düşürmez."}},
+  {"@type":"Question","name":"Yanlış yaptığım işlemleri nasıl tekrar çözerim?","acceptedAnswer":{"@type":"Answer","text":"Oyun bitince yanlış yaptığınız işlemler listelenir. Yanlışları tekrar çöz düğmesiyle yalnızca bu işlemlerden oluşan bir tur başlatırsınız."}},
+  {"@type":"Question","name":"Çarpım tablosunu yazdırabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Çarpım tablosu sekmesinde 1-10 veya 1-12 tablosunu seçip Yazdır düğmesine basın. Yazdırma çıktısında yalnızca tablo yer alır, bir satıra tıklayarak vurgulamak da mümkündür."}},
+  {"@type":"Question","name":"En iyi skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"En iyi skorlar yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlerseniz silinir."}},
+  {"@type":"Question","name":"Klavye ile oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Çoktan seçmeli modda 1, 2, 3 ve 4 tuşları şıkları seçer. Yazarak cevap modunda sayıyı yazıp Enter'a basarsınız."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Çarpım Tablosu</span> Oyna – Ücretsiz Online Alıştırma</h1>
+      <p class="lead">Çarpım tablosunu sıkılmadan öğren: istediğin sayıyı seç, şıklı ya da yazarak çöz, 60 saniyelik yarışta seri yap, bölme moduyla işlemi tersten dene ve yanlışlarını tekrar çöz. Yazdırılabilir çarpım tablosu da burada.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Çarpım Tablosu Alıştırması</h2>
+      <noscript><p class="ba-error is-active">Oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır. Ayarlardan JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+      <div class="ct-tabs">
+        <button type="button" class="ba-btn" id="ct-tab-play" aria-pressed="true">Alıştırma</button>
+        <button type="button" class="ba-btn" id="ct-tab-table" aria-pressed="false">Çarpım tablosu</button>
+      </div>
+
+      <div id="ct-play-panel">
+        <div id="ct-setup">
+          <div class="ct-options">
+            <div class="ct-fs"><label for="ct-table" class="ct-lbl"><strong>Hangi tablo?</strong></label><br>
+              <select id="ct-table" class="ct-select">
+                <option value="mix" selected>Karışık (2-12)</option>
+                <option value="1">1 tablosu</option><option value="2">2 tablosu</option><option value="3">3 tablosu</option><option value="4">4 tablosu</option>
+                <option value="5">5 tablosu</option><option value="6">6 tablosu</option><option value="7">7 tablosu</option><option value="8">8 tablosu</option>
+                <option value="9">9 tablosu</option><option value="10">10 tablosu</option><option value="11">11 tablosu</option><option value="12">12 tablosu</option>
+              </select>
+            </div>
+            <fieldset class="ct-fs"><legend>İşlem</legend>
+              <div class="ct-pills">
+                <label class="ct-pill"><input type="radio" name="ct-op" value="mul" checked><span>Çarpma</span></label>
+                <label class="ct-pill"><input type="radio" name="ct-op" value="div"><span>Bölme (ters)</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="ct-fs"><legend>Cevap şekli</legend>
+              <div class="ct-pills">
+                <label class="ct-pill"><input type="radio" name="ct-answer" value="choice" checked><span>Çoktan seçmeli (4 şık)</span></label>
+                <label class="ct-pill"><input type="radio" name="ct-answer" value="type"><span>Yazarak cevap</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="ct-fs"><legend>Süre</legend>
+              <div class="ct-pills">
+                <label class="ct-pill"><input type="radio" name="ct-time" value="60" checked><span>60 saniye yarış</span></label>
+                <label class="ct-pill"><input type="radio" name="ct-time" value="0"><span>Süresiz çalışma</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <button type="button" class="ba-btn ba-btn-primary ct-start" id="ct-start">Başla</button>
+        </div>
+
+        <div id="ct-game" hidden>
+          <p class="ct-note" id="ct-mode-note"></p>
+          <div class="ct-q" id="ct-q" aria-live="polite">—</div>
+          <div class="ct-choices" id="ct-choices" role="group" aria-label="Cevap şıkları"></div>
+          <form class="ct-form" id="ct-typeform" novalidate autocomplete="off" hidden>
+            <div class="ba-field"><label for="ct-input">Cevabın</label><input id="ct-input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="go" maxlength="4"></div>
+            <button class="ba-btn ba-btn-primary" id="ct-submit" type="submit">Cevapla</button>
+          </form>
+          <p class="ct-fb" id="ct-fb" role="status" aria-live="polite"></p>
+          <div class="ct-stats" role="group" aria-label="Oyun durumu">
+            <div><span>Puan</span><strong id="ct-score">0</strong></div>
+            <div><span>Seri</span><strong id="ct-streak">0</strong></div>
+            <div><span>Doğru</span><strong id="ct-correct">0</strong></div>
+            <div><span>Yanlış</span><strong id="ct-wrong">0</strong></div>
+            <div id="ct-timer-box"><span>Kalan</span><strong id="ct-timer">60 sn</strong></div>
+          </div>
+          <div class="ct-actions"><button type="button" class="ba-btn" id="ct-finish">Bitir</button></div>
+        </div>
+
+        <div id="ct-result" hidden>
+          <h3>Sonuç</h3>
+          <div class="ct-result-score" id="ct-res-score">0</div>
+          <p id="ct-res-summary" role="status"></p>
+          <p><strong id="ct-res-best"></strong></p>
+          <div id="ct-wrong-block" hidden>
+            <p><strong>Yanlış yaptığın işlemler</strong></p>
+            <ul class="ct-wrong-list" id="ct-wrong-list"></ul>
+            <button type="button" class="ba-btn ba-btn-primary" id="ct-retry">Yanlışları tekrar çöz</button>
+          </div>
+          <p id="ct-perfect" hidden>Hiç yanlışın yok, harika! Daha zor bir tabloyla ya da bölme moduyla devam edebilirsin.</p>
+          <div class="ct-actions">
+            <button type="button" class="ba-btn" id="ct-again">Aynı ayarlarla yeniden oyna</button>
+            <button type="button" class="ba-btn" id="ct-menu">Ayarlara dön</button>
+          </div>
+        </div>
+
+        <div class="ct-stats ct-noprint" role="group" aria-label="En iyi skorlar">
+          <div><span>En iyi (yarış)</span><strong id="ct-best-race">henüz yok</strong></div>
+          <div><span>En iyi (çalışma)</span><strong id="ct-best-practice">henüz yok</strong></div>
+        </div>
+      </div>
+
+      <div id="ct-table-panel" hidden>
+        <div class="ct-pills ct-noprint" style="align-items:center">
+          <label for="ct-size"><strong>Tablo boyutu</strong></label>
+          <select id="ct-size" class="ct-select"><option value="10">1 – 10</option><option value="12" selected>1 – 12</option></select>
+          <button type="button" class="ba-btn" id="ct-print">Yazdır</button>
+        </div>
+        <p class="ct-note ct-noprint">Bir satıra tıklayarak vurgula; ilk sütundaki sayıya Tab ile gelip Enter da kullanabilirsin.</p>
+        <div class="ct-grid-wrap"><table id="ct-grid" aria-label="Çarpım tablosu"></table></div>
+      </div>
+    </section>
+    <div class="ba-ad" data-slot="oyun-carpim-tablosu-a" aria-label="Reklam"></div>
+    <section class="ba-content">
+      <h2>Çarpım tablosu alıştırması nasıl çalışır?</h2>
+      <p>Çarpım tablosu, matematiğin geri kalanının üzerine kurulduğu temel yapı taşlarından biridir. Kesirler, oranlar, yüzdeler, alan hesapları ve hatta günlük alışveriş, çarpma işlemini akıcı yapabilen biri için çok daha kolaydır. Bu sayfa, çarpım tablosunu ezber yerine tekrar ve geri bildirimle pekiştirmeniz için hazırlandı. Kayıt gerekmez, kurulum gerekmez; sayfayı açıp başlamanız yeterli.</p>
+      <ol class="ba-steps">
+        <li>Hangi tabloyu çalışmak istediğini seç. "Karışık" seçeneği 2 ile 12 arasındaki sayılardan rastgele sorular üretir; tek bir tablo seçersen o sayı her soruda yer alır.</li>
+        <li>İşlemi belirle: çarpma (7 × 8 = ?) ya da bölme (56 ÷ 7 = ?). Bölme modu aynı bilgiyi tersinden yoklar.</li>
+        <li>Cevap şeklini seç: dört şıklı mod hızlı tekrar için, yazarak cevap modu gerçek hatırlama için uygundur.</li>
+        <li>60 saniyelik yarışı ya da süresiz çalışmayı seçip "Başla" düğmesine bas. Çoktan seçmelide 1-4 tuşlarını, yazarak cevapta Enter'ı kullanabilirsin.</li>
+        <li>Oyun bitince puanını, doğruluk yüzdeni ve yanlış yaptığın işlemleri gör; "Yanlışları tekrar çöz" ile sadece zorlandığın işlemlere dön.</li>
+      </ol>
+      <h2>Oyun modları</h2>
+      <h3>Çoktan seçmeli ve yazarak cevap</h3>
+      <p>Çoktan seçmeli modda dört şık görürsün. Yanlış şıklar rastgele sayılar değil, gerçek hatalara benzer değerlerdir: doğru sonucun bir çarpan kadar fazlası ya da azı gibi. Bu yüzden şıkları elemek yerine sonucu zihninde hesaplayıp doğrulaman daha verimlidir. Yazarak cevap modunda şık yoktur; sonucu kendin üretirsin. Öğrenme araştırmaları, bir bilgiyi hatırlamaya çalışmanın onu sadece tanımaktan daha güçlü pekiştirdiğini gösterir. Şıklı modla başlayıp yazarak moda geçmek iyi bir yol haritasıdır.</p>
+      <h3>60 saniyelik yarış</h3>
+      <p>Yarışta sayaç ilk sorudan itibaren işler. Her doğru cevap 10 puandır; art arda doğrularda seri bonusu eklenir. Bonus seri ilerledikçe 2'şer puan artar ve en fazla 10 puana çıkar. Yanlış cevap seriyi sıfırlar ama puanını düşürmez; böylece cesurca hızlanabilirsin. En iyi yarış skorun bu cihazda saklanır ve kendi rekorunu kırmak için bir hedef sunar.</p>
+      <h3>Süresiz çalışma</h3>
+      <p>Süre baskısı olmadan çalışmak isteyen öğrenciler ve yeni başlayanlar için süresiz moddur. İstediğin kadar soru çöz, bitirmek istediğinde "Bitir" düğmesine bas. Çalışma modunun skoru ayrı bir rekor olarak tutulur, yarış rekoruyla karışmaz.</p>
+      <h3>Bölme modu</h3>
+      <p>Bölme, çarpmanın tersidir ve çoğu öğrencinin takıldığı yer burasıdır. Bölme modunda 63 ÷ 9 gibi sorular gelir; cevabı bulmanın en kısa yolu "9 ile hangi sayıyı çarparsam 63 olur?" diye sormaktır. Böylece çarpım tablosunu ezberlemek bölmeyi de otomatik olarak çözer.</p>
+      <h3>Yanlışları tekrar çözme</h3>
+      <p>Bir tur bittiğinde yanlış yaptığın benzersiz işlemler listelenir. "Yanlışları tekrar çöz" düğmesi, yalnızca bu işlemlerden oluşan kısa bir tur başlatır. Her zaman zorlandığın işlemler (genellikle 6×7, 6×8, 7×8, 7×9, 8×9 gibi) listede ortaya çıkar; bunları kısa aralıklarla tekrar etmek, tümünü baştan çözmekten çok daha verimlidir.</p>
+      <h2>Çarpım tablosunu kolay öğrenme yöntemleri</h2>
+      <p>Ezber kuru bir tekrar gibi görünse de arkasında akıllı yöntemler vardır. Aşağıdakiler hile değil, işlemlerin yapısını anlamaya dayanan yöntemlerdir.</p>
+      <ul>
+        <li><strong>Değişme özelliği:</strong> 7×8 ile 8×7 aynı sonucu verir. Tabloyu yarıya indirir: 144 işlem yerine yaklaşık 78 farklı işlem öğrenirsin.</li>
+        <li><strong>1, 2, 5 ve 10 tabloları:</strong> 1 ile çarpmak sayıyı değiştirmez, 2 ile çarpmak ikiye katlamaktır, 10 ile çarpmak sona sıfır eklemektir, 5 ile çarpmak ise 10 ile çarpıp ikiye bölmektir. Bu dört tablo kolayca bitince işin yarısı biter.</li>
+        <li><strong>9 tablosu:</strong> 9 ile çarpmak, 10 ile çarpıp o sayıyı çıkarmaktır. 9×7 için 70 − 7 = 63. Sonuçların rakamları toplamı da 9 eder: 6 + 3.</li>
+        <li><strong>11 tablosu:</strong> Tek basamaklı sayıyı iki kez yaz: 11×6 = 66. İki basamaklı sayılarda rakamları ayırıp toplamı ortaya yaz: 11×23 = 253.</li>
+        <li><strong>4 tablosu:</strong> İki kez ikiye katla. 4×7 için 7→14→28.</li>
+        <li><strong>Karesi bilinenlerden komşu bulma:</strong> 7×8'i bilmiyorsan 7×7 = 49'dan başla ve 7 ekle: 56. Kareler (6×6, 7×7, 8×8) çıpa görevi görür.</li>
+        <li><strong>Parçalama:</strong> 12×7 = 10×7 + 2×7 = 70 + 14 = 84. Büyük işlemi bildiğin iki küçük işleme bölmek zihinden hesabın temelidir.</li>
+      </ul>
+      <h2>Verimli çalışma programı</h2>
+      <p>Hafıza, aralıklı tekrarla güçlenir. Günde bir kez 10 dakika çalışmak, haftada bir kez bir saat çalışmaktan çok daha etkilidir. Önerilen bir program: ilk hafta yalnızca 2, 5, 10 ve 1 tablolarını çalış; ikinci hafta 3 ve 4; üçüncü hafta 6, 7, 8 ve 9; dördüncü hafta karışık yarışa geç. Her oturumun sonunda yanlışları tekrar çöz. Yarış modunu ilk günlerde değil, bir tabloyu rahat bildikten sonra aç; erken yarış stres yaratır ve yanlış alışkanlık oluşturabilir.</p>
+      <p>Velilere not: çocuğun yanlış yapmasına tepki göstermeyin, doğru cevabın ekranda hemen gösterildiğini hatırlatın. Hedef kusursuz skor değil, bir önceki oturuma göre ilerlemektir. Yüksek skor yerine akıcılık ve doğruluk ön plandadır.</p>
+      <div class="ba-ad" data-slot="oyun-carpim-tablosu-b" aria-label="Reklam"></div>
+      <h2>Çarpım tablosu sekmesi ve yazdırma</h2>
+      <p>Oyunun üstündeki "Çarpım tablosu" sekmesi, 1-10 veya 1-12 boyutunda eksiksiz bir tablo gösterir. Bir satıra tıklayınca o satır vurgulanır; böylece örneğin 7 tablosunu tek başına görebilirsin. Yazdır düğmesine bastığında tarayıcının yazdırma penceresi açılır ve yalnızca tablo basılır; menü, reklam ve açıklama metni çıktıya girmez. Çıktıyı sınıf panosuna, defter kapağına ya da çalışma masasına asabilirsin. Küçük ekranlarda tablo yatay kaydırılabilir.</p>
+      <h2>Çarpım tablosunun kısa tarihi</h2>
+      <p>Çarpma tabloları binlerce yıldır kullanılır. Mezopotamya'da kil tabletlere işlenmiş çarpım listeleri bulunmuştur; eski Çin'de bambu şeritlere yazılmış çarpım tabloları kullanılmıştır. Avrupa'da ve Anadolu'da medreselerde ve okullarda tablo, kâğıdın yaygınlaşmasıyla birlikte kitaplara girmiş, "Pisagor tablosu" adıyla da anılmıştır. Bugün 10×10 ya da 12×12 tablolar okullarda temel ders araçlarıdır. 12'ye kadar tablo, ölçü birimlerinin düzine ve ayla bağlantılı kullanımından miras kalmış bir gelenektir.</p>
+      <h2>Erişilebilirlik ve gizlilik</h2>
+      <p>Oyun klavye ile tamamen kullanılabilir: şıkları 1-4 tuşlarıyla seçebilir, yazarak modda Enter ile cevaplayabilir, tablo satırlarını Tab ve Enter ile vurgulayabilirsin. Mobil ekranlarda düğmeler büyüktür, sayı girişinde sayısal klavye açılır. Oyun tamamen tarayıcında çalışır; cevapların, puanların ve rekorların hiçbiri sunucuya gönderilmez. En iyi skorlar yalnızca bu cihazdaki yerel depolamada durur ve tarayıcı verilerini temizlediğinde silinir. Sayfada izleme kodu ya da çerez yoktur.</p>
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Çarpım tablosu en hızlı nasıl ezberlenir?</summary><p>Önce kolay tablolarla (1, 2, 5, 10) başla, sonra her seferinde yalnızca bir tabloya odaklan. Günde 5-10 dakikalık kısa ve düzenli tekrar, uzun ama seyrek çalışmadan daha etkilidir. Yanlış yaptığın işlemleri tekrar çözmek ezberi en çok pekiştiren adımdır.</p></details>
+      <details><summary>Çarpım tablosunda hangi sayılar öğrenilir?</summary><p>Oyun 1'den 12'ye kadar tabloları kapsar. Okullarda genellikle 10'a kadar öğretilir; 11 ve 12 ile çalışmak zihinden hesabı ve günlük hayattaki çarpmaları kolaylaştırır.</p></details>
+      <details><summary>Bölme modu ne işe yarar?</summary><p>Bölme modu çarpım tablosunu tersten sorar, örneğin 56 ÷ 7. Çarpma ve bölmenin aynı bilginin iki yüzü olduğunu gösterir ve bölme işlemini hızlandırır.</p></details>
+      <details><summary>60 saniyelik yarışta puan nasıl hesaplanıyor?</summary><p>Her doğru cevap 10 puandır. Arka arkaya doğru cevaplarda seri bonusu eklenir; bonus her seri adımında 2 puan artar ve en fazla 10 puana ulaşır. Yanlış cevap seriyi sıfırlar ama puan düşürmez.</p></details>
+      <details><summary>Yanlış yaptığım işlemleri nasıl tekrar çözerim?</summary><p>Oyun bitince yanlış yaptığın işlemler listelenir. "Yanlışları tekrar çöz" düğmesiyle yalnızca bu işlemlerden oluşan bir tur başlatırsın.</p></details>
+      <details><summary>Çarpım tablosunu yazdırabilir miyim?</summary><p>Evet. "Çarpım tablosu" sekmesinde 1-10 veya 1-12 tablosunu seçip Yazdır düğmesine bas. Çıktıda yalnızca tablo yer alır; bir satıra tıklayarak vurgulamak da mümkündür.</p></details>
+      <details><summary>En iyi skorum nerede saklanıyor?</summary><p>En iyi skorlar yalnızca tarayıcının yerel depolamasında (localStorage) tutulur, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlersen silinir.</p></details>
+      <details><summary>Klavye ile oynayabilir miyim?</summary><p>Evet. Çoktan seçmeli modda 1, 2, 3 ve 4 tuşları şıkları seçer. Yazarak cevap modunda sayıyı yazıp Enter'a basarsın.</p></details>
+      </div>
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../matematik-yarisi/">Matematik Yarışı</a></li>
+        <li><a href="../sayi-tahmin/">Sayı Tahmin Oyunu</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../yuzde-hesapla/">Yüzde hesaplama</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+    <div class="ba-ad" data-slot="oyun-carpim-tablosu-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
