@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Ping Pong Oyna – Ücretsiz Online Ping Pong (kurulumsuz)</title>
+  <meta name="description" content="Ping pong oyununu tarayıcıda hemen oynayın: bilgisayara karşı (kolay, orta, zor) ya da aynı klavyede iki kişi, her vuruşta hızlanan top, ilk 7 veya 11 sayıya ulaşan kazanır. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/ping-pong/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .pp-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 640px; margin: 0 auto 12px; }
+    .pp-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .pp-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .pp-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; white-space: nowrap; }
+    .game-box .ba-options { max-width: 640px; margin: 0 auto 14px; padding: 12px; gap: 10px; }
+    @media (min-width: 600px) { .game-box .ba-options { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); } }
+    @media (max-width: 599px) { .game-box .ba-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } .game-box .ba-options .ba-field:first-child { grid-column: 1 / -1; } }
+    .pp-stage { position: relative; width: 100%; max-width: 640px; margin: 0 auto; aspect-ratio: 8 / 5; border-radius: var(--ba-radius); overflow: hidden; background: #121418; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .pp-stage[data-state="oynuyor"] { cursor: none; }
+    .pp-stage canvas { width: 100%; height: 100%; display: block; }
+    .pp-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 12px; text-align: center; background: rgba(18, 20, 24, .88); color: #fff; }
+    .pp-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.15rem, 5vw, 1.7rem); }
+    .pp-overlay p { margin: 0; color: #d7d8db; max-width: 42ch; font-size: .9rem; line-height: 1.45; }
+    .pp-overlay .ba-btn-primary { color: #fff; }
+    @media (max-width: 480px) { .pp-overlay { gap: 8px; padding: 8px; } .pp-overlay p { font-size: .8rem; line-height: 1.35; } .pp-overlay .ba-btn { min-height: 38px; padding-top: 6px; padding-bottom: 6px; } }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pp-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .pp-overlay .ba-btn-primary { color: #1a0d10; }
+    .game-box .ba-actions { justify-content: center; }
+    .pp-hint { max-width: 560px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .pp-history { max-width: 640px; margin: 18px auto 0; padding-top: 14px; border-top: 1px solid var(--ba-border); }
+    .pp-history h3 { margin: 0 0 6px; font-size: 1rem; }
+    .pp-history .pp-sum { margin: 0 0 8px; font-size: .88rem; color: var(--ba-text-2); }
+    .pp-history ol { margin: 0 0 10px; padding-left: 1.3em; font-size: .88rem; color: var(--ba-text-2); }
+    .pp-history li { margin: 2px 0; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .pp-stage { max-width: min(100%, max(240px, calc((100vh - 360px) * 1.6))); }
+    /* Oyun sayfasında kahraman alanı sıkıştırılır: oyun ilk ekranda görünsün. */
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Ping Pong – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz ping pong oyunu: bilgisayara karşı kolay, orta ve zor seviyeler ya da aynı klavyede iki kişilik mod, her vuruşta hızlanan top, ilk 7 veya 11 sayıya ulaşan kazanır, maç geçmişi.","applicationCategory":"Game","genre":"Sports","playMode":["SinglePlayer","MultiPlayer"],"operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/ping-pong/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Ping pong oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Raketinizi yukarı aşağı hareket ettirip topu rakibin tarafına geri gönderirsiniz. Top sizin tarafınızdan geçerse rakip bir sayı kazanır. Seçtiğiniz hedefe, yani 7 ya da 11 sayıya ilk ulaşan maçı kazanır."}},
+  {"@type":"Question","name":"Aynı klavyede iki kişi nasıl oynar?","acceptedAnswer":{"@type":"Answer","text":"Mod olarak İki kişi seçin. Soldaki oyuncu W ve S tuşlarını, sağdaki oyuncu yukarı ve aşağı ok tuşlarını kullanır. Dokunmatik ekranda ekranın sol yarısı sol raketi, sağ yarısı sağ raketi sürükleyerek yönetir; iki parmak aynı anda çalışır."}},
+  {"@type":"Question","name":"Telefonda nasıl oynarım?","acceptedAnswer":{"@type":"Answer","text":"Bilgisayara karşı modda parmağınızı oyun alanında yukarı aşağı sürükleyin; raket parmağınızın hareketi kadar kayar ve parmağınız raketi örtmez. İki kişilik modda her oyuncu ekranın kendi yarısında sürükler."}},
+  {"@type":"Question","name":"Kolay, orta ve zor seviyeler arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Bilgisayarın raket hızı ve hata payı değişir. Kolayda raket yavaştır, topu geç fark eder ve sık yanılır. Orta dengelidir. Zorda raket çok hızlıdır, topun duvardan yansıyacağı yeri önceden hesaplar ve neredeyse hiç yanılmaz; onu ancak hızlanan topla yenebilirsiniz."}},
+  {"@type":"Question","name":"Top neden hızlanıyor, açıyı nasıl belirlerim?","acceptedAnswer":{"@type":"Answer","text":"Top her raket vuruşunda biraz hızlanır ve sayı alındığında yeniden yavaş başlar. Dönüş açısı topun raketin neresine değdiğine bağlıdır: orta bölge topu yataya yakın, uçlar ise eğik gönderir. Böylece rakibin ulaşmakta zorlanacağı köşelere atış yapabilirsiniz."}},
+  {"@type":"Question","name":"Maç kaç sayıya kadar oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun başlamadan önce ilk 7 ya da ilk 11 sayıyı seçersiniz. Hedefe ilk ulaşan oyuncu maçı kazanır; beraberlik ya da iki sayı farkı kuralı yoktur. Her sayıdan sonra top, sayıyı kaybeden oyuncuya doğru servis edilir."}},
+  {"@type":"Question","name":"Skor ve maç geçmişi nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Biten her maç ve seçtiğiniz ayarlar tarayıcınızın yerel depolama alanında (localStorage) saklanır; son 20 maç tutulur. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Geçmiş temizle düğmesiyle ya da tarayıcı verilerini silerek sıfırlayabilirsiniz."}},
+  {"@type":"Question","name":"Oyunu nasıl duraklatırım?","acceptedAnswer":{"@type":"Answer","text":"Maç sırasında P ya da Boşluk tuşuna ya da Duraklat düğmesine basın; devam etmek için yine P veya Boşluk yeterlidir. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, çevrimdışı çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir; siteyi uygulama olarak kurmak da mümkündür."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Ping Pong Oyna – Ücretsiz Online Ping Pong</h1>
+      <p class="lead">Bilgisayara karşı kolay, orta ya da zor seviyede ya da aynı klavyede arkadaşınızla ping pong oynayın. Top her vuruşta hızlanır, açıyı raketin temas noktası belirler; ilk 7 ya da 11 sayıya ulaşan kazanır. Kurulum, üyelik ve indirme yok; maç geçmişiniz bu cihazda saklanır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Ping pong oyun alanı</h2>
+
+      <div class="ba-options" role="group" aria-label="Maç ayarları">
+        <div class="ba-field"><label for="sel-mode">Mod</label><select id="sel-mode"><option value="cpu">Bilgisayara karşı</option><option value="two">İki kişi (aynı cihaz)</option></select></div>
+        <div class="ba-field" id="field-diff"><label for="sel-diff">Zorluk</label><select id="sel-diff"><option value="kolay">Kolay</option><option value="orta" selected>Orta</option><option value="zor">Zor</option></select></div>
+        <div class="ba-field"><label for="sel-target">Maç hedefi</label><select id="sel-target"><option value="7" selected>İlk 7 sayı</option><option value="11">İlk 11 sayı</option></select></div>
+      </div>
+
+      <div class="pp-hud" aria-label="Skor tablosu">
+        <div class="pp-stat"><span id="label-left">Sen</span><strong id="score-left">0</strong></div>
+        <div class="pp-stat"><span id="label-right">Rakip</span><strong id="score-right">0</strong></div>
+        <div class="pp-stat"><span>Hedef</span><strong id="hud-target">7</strong></div>
+        <div class="pp-stat"><span>Vuruş</span><strong id="hud-rally">0</strong></div>
+      </div>
+
+      <div class="pp-stage" id="stage" tabindex="0" role="group" aria-label="Ping pong oyun alanı. Sol raket için W ve S ya da yukarı ve aşağı ok tuşları; iki kişilik modda sağ raket yukarı ve aşağı ok tuşlarıyla. Duraklatmak için P ya da Boşluk. Dokunmatik ekranda parmağınızı yukarı aşağı sürükleyin.">
+        <canvas id="board" width="640" height="400" role="img" aria-label="İki raket ve toptan oluşan ping pong masası"></canvas>
+        <div class="pp-overlay" id="overlay">
+          <h3 id="overlay-title">Ping Pong</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+
+      <p class="pp-hint">Raket: W S ve ↑ ↓ (bilgisayara karşı ikisi de sol raketi, iki kişilikte W S sol, ↑ ↓ sağ), fare ya da parmakla sürükleme. Duraklat: P veya Boşluk. Ayarlar yalnızca top oyunda değilken değişir. Maç geçmişi yalnızca bu tarayıcıda saklanır.</p>
+
+      <div class="pp-history">
+        <h3>Son maçlar</h3>
+        <p class="pp-sum" id="history-sum">Henüz kayıtlı maç yok.</p>
+        <ol id="history" aria-label="Son beş maç"></ol>
+        <button type="button" class="ba-btn" id="btn-clear" hidden>Geçmişi temizle</button>
+      </div>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-ping-pong-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Ping pong oyunu nedir?</h2>
+      <p>Ping pong, masa tenisinin basitleştirilmiş bir bilgisayar sürümüdür: iki raket, bir top ve ortadaki görünmez bir ağ. Her oyuncu kendi kenarındaki raketi yukarı aşağı kaydırarak topu rakibin tarafına geri yollar. Top sizin tarafınızdan geçip arkadaki kenara ulaşırsa rakip bir sayı kazanır. Seçtiğiniz hedefe, yani ilk 7 ya da ilk 11 sayıya ulaşan oyuncu maçı alır. Kuralları bir dakikada öğrenilir; ancak topun hızlandıkça zorlaşması ve açının rakibi köşeye sıkıştırmasına izin vermesi, her maçı farklı kılar.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Hiçbir şey indirmeniz, hesap açmanız ya da e-posta vermeniz gerekmez. Masa, raketler ve top kodla çizilir; dış görsel ya da ses dosyası kullanılmaz. Seçtiğiniz ayarlar ve biten maçların sonuçları yalnızca tarayıcınızın yerel depolama alanında tutulur; sunucumuza hiçbir bilgi gönderilmez. Oyun alanı reklamsızdır; reklamlar yalnızca sayfa içeriğinin aralarında yer alır.</p>
+
+      <h2>Ping pong nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Modu ve hedefi seçin.</strong> Bilgisayara karşı ya da iki kişi seçin; bilgisayarı seçtiyseniz zorluğu belirleyin. Ardından maçın ilk 7 ya da ilk 11 sayıya kadar oynanacağını seçin.</li>
+        <li><strong>Başlat'a basın.</strong> Top ortada kısa süre bekler ve Servis yazısı görünür. İlk servis sol oyuncuya doğru gelir; sonraki her servis sayıyı kaybeden oyuncuya doğrudur.</li>
+        <li><strong>Raketi topun hizasına getirin.</strong> Klavyede W ve S ya da yukarı ve aşağı ok tuşlarını, fareyle imleci, dokunmatik ekranda parmağınızı kullanın.</li>
+        <li><strong>Topu geri gönderin.</strong> Topun raketinizin neresine değdiği dönüş açısını belirler. Her vuruşta top biraz hızlanır, bu yüzden uzun karşılıklı vuruşlar giderek gerginleşir.</li>
+        <li><strong>Hedef sayıya ulaşın.</strong> Her sayıdan sonra servis yenilenir ve top yeniden yavaş başlar. İlk hedefe ulaşan maçı kazanır; sonuç ekranda görünür ve maç geçmişine eklenir.</li>
+      </ol>
+
+      <h2>Oyun modları</h2>
+      <p>Oyunda iki mod vardır. <strong>Bilgisayara karşı</strong> modda siz soldaki raketi yönetirsiniz, sağdaki raketi bilgisayar kullanır. Üç zorluk seviyesi bulunur: Kolayda bilgisayar yavaş hareket eder, topu ancak ekranın yarısını geçtiğinde fark eder ve her gelen topta rastgele bir hata payı taşır; sık sık topu kaçırır, ilk maçlar ve çocuklar için uygundur. Ortada bilgisayar daha hızlıdır ve topu erken izler, ama hâlâ makul bir hata payı vardır. Zorda raket çok hızlıdır, topun üst ve alt duvardan yansıyarak ineceği yeri önceden hesaplar ve hatası çok küçüktür; onu ancak top yeterince hızlandığında ya da dik açılı vuruşlarla yakalayabilirsiniz.</p>
+      <p><strong>İki kişi</strong> modunda bilgisayar rakip olmaz; aynı cihazda iki oyuncu oynar. Soldaki oyuncu W ve S, sağdaki oyuncu yukarı ve aşağı ok tuşlarını kullanır. Dokunmatik ekranda ekran ortadan ikiye bölünür: sol yarıyı sürükleyen parmak sol raketi, sağ yarıyı sürükleyen parmak sağ raketi yönetir ve iki parmak aynı anda çalışabilir. Tabletlerde iki oyuncunun karşılıklı oturması en rahat düzendir.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Bilgisayara karşı modda W ve S tuşları ile yukarı ve aşağı ok tuşlarının ikisi de sol raketi hareket ettirir; hangisi elinize yakınsa onu kullanın. İki kişi modunda W ve S sol raketi, ok tuşları sağ raketi yönetir. P ya da Boşluk oyunu duraklatır ve sürdürür.</li>
+        <li><strong>Fare:</strong> Bilgisayara karşı modda imleç oyun alanında yukarı aşağı gittikçe sol raket imlecin hizasında kalır; tıklamaya gerek yoktur. İki kişi modunda fare basılı tutularak sürüklenebilir.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızı oyun alanında yukarı aşağı sürükleyin. Raket, parmağınızın kaydığı mesafe kadar hareket eder; böylece parmağınız raketi örtmez. İki kişi modunda ekranın yarısı bir oyuncuya aittir.</li>
+        <li><strong>Düğmeler:</strong> Başlat, Duraklat, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır. Tam ekran modunda oyun alanı büyür ve sayfadaki reklamlar görünmez.</li>
+      </ul>
+
+      <h2>Top hızı ve açı</h2>
+      <p>Her serviste top yavaş bir hızla başlar. Topu her raketle karşıladığınızda ya da rakip karşıladığında hız bir miktar artar; hız belirli bir sınıra kadar yükselir ve sayı alındığında yeniden başa döner. Sayaç ekrandaki Vuruş kutusunda görünür; uzun bir seri hem heyecanlıdır hem de risklidir, çünkü hızlanan top dar bir zaman penceresi bırakır.</p>
+      <p>Topun dönüş yönü, raketin hangi noktasına çarptığına bağlıdır. Topu raketin tam ortasıyla karşılarsanız top yataya yakın, düz gider. Raketin üst ya da alt ucuna doğru gittikçe açı genişler ve top duvara doğru eğik çıkar; en uç noktada sapma yaklaşık elli iki derecedir. Bu, ping pongun asıl stratejisidir: topu nereye göndermek istiyorsanız, raketin o yöne bakan ucuyla karşılayın. Üst kenara yakın bir vuruş topu yukarı, alt kenara yakın bir vuruş aşağı gönderir. Top üst ve alt duvarlardan yansır, bu yüzden dar açılı bir vuruş bile tahtayı bir uçtan bir uca tarayabilir.</p>
+
+      <h2>Maç kuralları ve maç geçmişi</h2>
+      <p>Maç, seçtiğiniz hedefe ilk ulaşan oyuncuya aittir. Beraberlik ya da iki sayı fark kuralı yoktur; 7 sayılık maç kısa bir mola için, 11 sayılık maç daha uzun ve dengeli bir karşılaşma için uygundur. Her sayıdan sonra top ortada kısa bir süre bekler ve sayıyı kaybeden oyuncuya doğru servis edilir; böylece geride olan oyuncu topu karşılamak için bir şans daha bulur.</p>
+      <p>Maç bittiğinde sonuç ekranında skor ve en uzun vuruş serisi görünür. Sonuç, seçtiğiniz modla birlikte maç geçmişine eklenir. Geçmişte son beş maç gösterilir, arka planda en çok yirmi maç saklanır. Geçmiş yalnızca tarayıcınızın yerel depolama alanındadır; başka bir cihaza taşınmaz ve Geçmişi temizle düğmesiyle istediğiniz zaman silebilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="oyun-ping-pong-b" aria-label="Reklam"></div>
+
+      <h2>Ping pongda strateji ipuçları</h2>
+      <ul>
+        <li><strong>Raketi ortaya yakın tutun.</strong> Top karşı taraftayken raketi alanın ortasına doğru getirin; top hangi yöne dönerse dönsün daha kısa mesafe kat edersiniz.</li>
+        <li><strong>Ucu bilinçli kullanın.</strong> Topu rakibin uzak köşesine göndermek için raketin ucuyla karşılayın. Rakip raketi ortada bırakmışsa açılı bir vuruş çoğu zaman sayı getirir.</li>
+        <li><strong>Hızlı topta erken hareket edin.</strong> Top hızlandıkça tepki süreniz kısalır. Topun duvardan yansıyacağı noktayı önceden tahmin edip raketi oraya doğru götürmeye başlayın.</li>
+        <li><strong>Bilgisayara karşı tempoyu bozun.</strong> Zor seviyede bilgisayar neredeyse hiç yanılmaz; onu yormanın yolu, hız arttıkça açıyı kullanmak ve topu mümkün olduğunca uzun süre oyunda tutmaktır. Hızlanan top onun raket hızını aşar.</li>
+        <li><strong>Kolayda hata payından yararlanın.</strong> Kolay bilgisayar topu geç fark eder; ilk vuruşlarda topu hızlı ve açılı göndermek çoğu zaman yeterlidir.</li>
+        <li><strong>İki kişilik modda ritmi değiştirin.</strong> Hep aynı yere vurmak rakibe alışma fırsatı verir. Bir düz, bir açılı vuruş dönüşümlü kullanın.</li>
+        <li><strong>Mola verin.</strong> Dikkatiniz dağıldığında P ya da Boşluk tuşuyla duraklatın; oyun sekme arka plana alındığında kendiliğinden durur.</li>
+      </ul>
+
+      <h2>Ping pong oyunlarının kısa tarihi</h2>
+      <p>Masa tenisini taklit eden elektronik oyunlar, bilgisayar oyunlarının en eski ve en yalın örnekleri arasındadır. 1970'lerin başında salon makinelerinde ve ilk ev oyun konsollarında, ekranın iki yanında kayan çubuklarla oynanan masa tenisi benzeri oyunlar büyük ilgi gördü. Gerçek bir kortun ya da masanın yerini yalnızca iki çubuk, bir nokta ve bir ortadaki çizgi almıştı; ama top rakibe doğru gittikçe heyecan artıyor, oyuncular rakiplerinin hatasını bekliyordu. Bu sadelik, türü onlarca yıl boyunca canlı tuttu. Bugün hâlâ yeni oyun geliştiricileri ilk denemelerini bu oyunla yapar, çünkü fizik, çarpışma ve yapay zekâ gibi temel kavramların tamamı bu küçük oyunda bir araya gelir.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı; hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor. Fizik sabit zaman adımlarıyla hesaplanır, hızlı bir top bile raketin içinden geçemez ve her oyuncu aynı kurallarla oynar. Oyun alanı ekranın çözünürlüğüne göre net çizilir.</p>
+
+      <h2>Neden Bilişim Ajans ping pong oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın.</li>
+        <li><strong>Tek ve iki kişilik mod.</strong> Bilgisayara karşı üç seviye, ya da aynı cihazda arkadaşınızla; ekstra hesap ya da bağlantı gerekmez.</li>
+        <li><strong>Klavye, fare ve dokunmatik.</strong> 360 piksel genişliğindeki telefonlarda da sığar; sürükleme göreceli çalıştığı için parmağınız raketi kapatmaz.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun alanının ve düğmelerin yanında görünmez. Tam ekran modunda hiçbir reklam görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca ayarlarınız ve maç geçmişiniz kendi cihazınızda saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Erişilebilirlik</h2>
+      <p>Oyun tamamen klavyeyle oynanabilir ve oyun alanına odaklandığınızda ok tuşları sayfayı kaydırmaz. Ayarlar, kolayca kullanılabilen standart açılır listelerdir. Sayılar, maç sonucu ve duraklatma gibi önemli olaylar ekran okuyucular için ayrıca duyurulur. Oyunda kayan arka plan, yanıp sönen efekt ya da ani parlama yoktur; yalnızca raketler ve top hareket eder.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Ping pong oyunu nasıl oynanır?</summary><p>Raketinizi yukarı aşağı hareket ettirip topu rakibin tarafına geri gönderirsiniz. Top sizin tarafınızdan geçerse rakip bir sayı kazanır. Seçtiğiniz hedefe, yani 7 ya da 11 sayıya ilk ulaşan maçı kazanır.</p></details>
+        <details><summary>Aynı klavyede iki kişi nasıl oynar?</summary><p>Mod olarak İki kişi seçin. Soldaki oyuncu W ve S tuşlarını, sağdaki oyuncu yukarı ve aşağı ok tuşlarını kullanır. Dokunmatik ekranda ekranın sol yarısı sol raketi, sağ yarısı sağ raketi sürükleyerek yönetir; iki parmak aynı anda çalışır.</p></details>
+        <details><summary>Telefonda nasıl oynarım?</summary><p>Bilgisayara karşı modda parmağınızı oyun alanında yukarı aşağı sürükleyin; raket parmağınızın hareketi kadar kayar ve parmağınız raketi örtmez. İki kişilik modda her oyuncu ekranın kendi yarısında sürükler.</p></details>
+        <details><summary>Kolay, orta ve zor seviyeler arasındaki fark nedir?</summary><p>Bilgisayarın raket hızı ve hata payı değişir. Kolayda raket yavaştır, topu geç fark eder ve sık yanılır. Orta dengelidir. Zorda raket çok hızlıdır, topun duvardan yansıyacağı yeri önceden hesaplar ve neredeyse hiç yanılmaz; onu ancak hızlanan topla yenebilirsiniz.</p></details>
+        <details><summary>Top neden hızlanıyor, açıyı nasıl belirlerim?</summary><p>Top her raket vuruşunda biraz hızlanır ve sayı alındığında yeniden yavaş başlar. Dönüş açısı topun raketin neresine değdiğine bağlıdır: orta bölge topu yataya yakın, uçlar ise eğik gönderir. Böylece rakibin ulaşmakta zorlanacağı köşelere atış yapabilirsiniz.</p></details>
+        <details><summary>Maç kaç sayıya kadar oynanır?</summary><p>Oyun başlamadan önce ilk 7 ya da ilk 11 sayıyı seçersiniz. Hedefe ilk ulaşan oyuncu maçı kazanır; beraberlik ya da iki sayı farkı kuralı yoktur. Her sayıdan sonra top, sayıyı kaybeden oyuncuya doğru servis edilir.</p></details>
+        <details><summary>Skor ve maç geçmişi nerede saklanıyor?</summary><p>Biten her maç ve seçtiğiniz ayarlar tarayıcınızın yerel depolama alanında (localStorage) saklanır; son 20 maç tutulur. Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Geçmiş temizle düğmesiyle ya da tarayıcı verilerini silerek sıfırlayabilirsiniz.</p></details>
+        <details><summary>Oyunu nasıl duraklatırım?</summary><p>Maç sırasında P ya da Boşluk tuşuna ya da Duraklat düğmesine basın; devam etmek için yine P veya Boşluk yeterlidir. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar.</p></details>
+        <details><summary>Oyun ücretsiz mi, çevrimdışı çalışır mı?</summary><p>Ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir; siteyi uygulama olarak kurmak da mümkündür.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Ayarlarınız ve maç geçmişiniz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../xox/">XOX</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-ping-pong-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

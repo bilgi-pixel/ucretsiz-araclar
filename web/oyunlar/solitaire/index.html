@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Solitaire Oyna – Ücretsiz Online Solitaire (kurulumsuz)</title>
+  <meta name="description" content="Solitaire (Klondike) oyununu tarayıcınızda ücretsiz oynayın: 1 veya 3 kart çekme, sürükle-bırak, çift tıkla temele gönder, sınırsız geri al, ipucu ve otomatik tamamla. Kurulum ve kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/solitaire/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel oyun düzeni; tema token'ları ba.css'ten gelir. Kart ölçüleri cqw ile
+       (kart genişliğinin yüzdesi) verilir; böylece 360 px'te kartlar kendiliğinden daralır. */
+    .game-box { margin-bottom: 64px; padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .game-box:fullscreen { overflow: auto; background: var(--ba-bg); padding: 16px; border-radius: 0; }
+    .sl-options { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sl-options .ba-field select { width: 100%; min-height: 44px; padding: 8px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .sl-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+    .sl-toolbar .ba-btn { min-height: 44px; padding: 8px 14px; }
+    @media (max-width: 480px) { .sl-toolbar { gap: 6px; } .sl-toolbar .ba-btn { min-height: 40px; padding: 6px 11px; font-size: .9rem; } }
+    .sl-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 12px 0 8px; }
+    .sl-stats > div { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .sl-stats span { display: block; font-size: .64rem; color: var(--ba-text-muted); font-family: var(--ba-mono); letter-spacing: .04em; text-transform: uppercase; }
+    .sl-stats strong { font-size: 1.05rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    @media (min-width: 560px) { .sl-stats > div { padding: 8px 10px; } .sl-stats span { font-size: .78rem; letter-spacing: .08em; } .sl-stats strong { font-size: 1.2rem; } }
+    .sl-record { margin: 0 0 8px; font-size: .92rem; color: var(--ba-text-2); }
+    .sl-record b { color: var(--ba-text); font-variant-numeric: tabular-nums; }
+    .sl-status { min-height: 2.9em; margin: 6px 0 12px; font-size: .95rem; color: var(--ba-text-2); }
+    .game-box .ba-result { margin: 0 0 14px; }
+
+    /* Masa: üst sıra (deste, atık, 4 temel) ve alt sıra (7 sütun) aynı 7 sütunlu ızgarada. */
+    .sl-board { position: relative; width: 100%; max-width: 820px; margin: 0 auto; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 16px 6px; padding-bottom: 8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    @media (max-width: 480px) { .sl-board { gap: 10px 3px; } }
+    .game-box:fullscreen .sl-board { max-width: min(1100px, 100%); }
+    .sl-pile { position: relative; container-type: inline-size; min-width: 0; border-radius: 8px; }
+    .sl-stack { position: relative; width: 100%; height: 140cqw; }
+    .sl-slot { position: absolute; left: 0; top: 0; width: 100cqw; height: 140cqw; margin: 0; padding: 0; border: 2px dashed var(--ba-border-hover); border-radius: 8cqw; background: var(--ba-surface-2); color: var(--ba-text-muted); font: inherit; font-size: 50cqw; line-height: 1; cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; }
+    .sl-card { position: absolute; left: 0; width: 100cqw; height: 140cqw; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; display: block; text-align: left; font: inherit; font-family: var(--ba-font); border-radius: 8cqw; border: 1px solid #9d9792; background: #fff; color: #16181d; box-shadow: 0 1px 2px rgba(0, 0, 0, .28); -webkit-tap-highlight-color: transparent; }
+    .sl-card.red { color: #b3121f; }
+    button.sl-card { cursor: pointer; }
+    .sl-card[data-act="1"] { touch-action: none; }
+    .sl-card .c { position: absolute; left: 7cqw; top: 3cqw; font-size: 24cqw; line-height: 1; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+    .sl-card .m { position: absolute; left: 0; right: 0; top: 26cqw; bottom: 0; display: grid; place-items: center; font-size: 58cqw; line-height: 1; }
+    .sl-card .m.f { font-size: 52cqw; font-weight: 700; bottom: 22cqw; }
+    .sl-card .m2 { position: absolute; left: 0; right: 0; bottom: 8cqw; text-align: center; font-size: 30cqw; line-height: 1; }
+    .sl-card.down { background: repeating-linear-gradient(45deg, #7b2331 0 6px, #8c2c3c 6px 12px); border-color: #5e1a25; box-shadow: inset 0 0 0 3px #fff, 0 1px 2px rgba(0, 0, 0, .3); }
+    .sl-card .cnt { position: absolute; left: 50%; bottom: 10cqw; transform: translateX(-50%); background: #fff; color: #5e1a25; font-size: 24cqw; font-weight: 700; line-height: 1.2; padding: 1px 7px; border-radius: 99px; font-variant-numeric: tabular-nums; }
+    .sl-card.sel { outline: 3px solid var(--ba-primary); outline-offset: 1px; box-shadow: 0 0 0 6px rgba(123, 35, 49, .22), 0 4px 10px rgba(0, 0, 0, .3); z-index: 3; }
+    .sl-card:focus-visible, .sl-slot:focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; z-index: 4; }
+    .is-hint { outline: 3px dashed var(--ba-success); outline-offset: 2px; z-index: 4; animation: slPulse 1s ease-in-out infinite; }
+    @keyframes slPulse { 50% { box-shadow: 0 0 0 7px rgba(31, 122, 77, .3); } }
+    .is-dragging { opacity: .25; }
+    .sl-pile.drop-ok { outline: 3px dashed var(--ba-success); outline-offset: 3px; }
+    .sl-ghost { position: absolute; z-index: 60; container-type: inline-size; pointer-events: none; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .35)); }
+    .sl-ghost .sl-card { box-shadow: none; }
+    .sl-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 70; }
+    .sl-fx i { position: absolute; top: -2.5rem; left: var(--x); font-style: normal; font-size: 2rem; line-height: 1; color: var(--ba-text); animation: slFall var(--d) linear var(--dl) infinite; }
+    .sl-fx i.r { color: #d6293e; }
+    @keyframes slFall { from { top: -2.5rem; transform: rotate(0deg); } to { top: 100%; transform: rotate(300deg); } }
+    @media (prefers-reduced-motion: reduce) { .sl-fx { display: none; } .is-hint { animation: none; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Solitaire (Klondike) – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz Klondike solitaire: 1 veya 3 kart çekme, sürükle-bırak, ipucu, sınırsız geri al ve otomatik tamamla.","applicationCategory":"GameApplication","operatingSystem":"Web","gamePlatform":"Web tarayıcısı","playMode":"SinglePlayer","genre":"Kart oyunu","inLanguage":"tr","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/solitaire/","publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Solitaire nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Amaç, tüm kartları As'tan Papaz'a doğru takımlarına göre dört temel yığınına taşımaktır. Sütunlarda kartlar azalan sırayla ve zıt renkli olarak dizilir; kapalı kartlar açıldıkça yeni hamleler ortaya çıkar. Hamle kalmayınca desteden kart çekilir."}},
+  {"@type":"Question","name":"1 kart çekme ile 3 kart çekme arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"1 kart çekmede desteden her seferinde tek kart gelir ve her atık kartına ulaşabilirsiniz. 3 kart çekmede üç kart gelir ama yalnızca en üstteki oynanabilir; bu yüzden oyun daha zordur ve daha fazla planlama gerektirir."}},
+  {"@type":"Question","name":"Boş sütuna hangi kart konabilir?","acceptedAnswer":{"@type":"Answer","text":"Varsayılan kuralda yalnızca Papaz ya da Papaz ile başlayan açık bir dizi konabilir. Ayarlardan herhangi bir kartın konabildiği daha kolay seçeneği açabilirsiniz."}},
+  {"@type":"Question","name":"Her dağıtım çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Dağıtım rastgele yapılır ve kazanılabilirlik garantisi verilmez; bazı dağıtımlar en iyi oyunla bile çözülemez. Dağıtımı beğenmezseniz yeni oyun başlatabilir ya da aynı dağıtımı baştan deneyebilirsiniz."}},
+  {"@type":"Question","name":"Hamleyi geri alabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Geri al düğmesi sınırsızdır; oyunun başına kadar her hamleyi sırayla geri alabilirsiniz. Klavyede U tuşu da aynı işi yapar."}},
+  {"@type":"Question","name":"Klavyeyle ve dokunmatik ekranla oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tab tuşuyla yığınlar arasında gezinir, Enter ile kartı seçer ve hedef yığında yeniden Enter ile bırakırsınız. Telefon ve tabletlerde kartları parmağınızla sürükleyebilir ya da iki dokunuşla seçip bırakabilirsiniz."}},
+  {"@type":"Question","name":"İstatistiklerim nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Oynanan ve kazanılan oyun sayısı, en iyi süre ve en az hamle yalnızca kendi tarayıcınızın localStorage alanında tutulur. Hiçbir sunucuya gönderilmez; tarayıcı verilerini silerseniz kayıtlar da silinir."}},
+  {"@type":"Question","name":"İnternet olmadan oynanır mı?","acceptedAnswer":{"@type":"Answer","text":"Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; kartlar tarayıcıda çizilir. Siteyi tarayıcıdan uygulama olarak yüklerseniz çevrimdışı da açılır."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1><span class="ba-grad">Solitaire</span> Oyna – Ücretsiz Online Klondike</h1>
+      <p class="lead">Klasik tek kişilik iskambil oyununu tarayıcınızda oynayın: kartları sürükleyip bırakın, çift tıkla temele gönderin, gerektiğinde ipucu alın ya da hamlenizi geri alın. 1 veya 3 kart çekme seçeneği var; kurulum, üyelik ve indirme gerekmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool game-box" id="oyun-kutusu" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Solitaire oyunu</h2>
+      <div class="sl-options">
+        <div class="ba-field"><label for="sl-draw">Çekme sayısı</label>
+          <select id="sl-draw">
+            <option value="1">1 kart çek (kolay)</option>
+            <option value="3">3 kart çek (zor)</option>
+          </select></div>
+        <div class="ba-field"><label for="sl-empty">Boş sütuna</label>
+          <select id="sl-empty">
+            <option value="king">Yalnızca Papaz</option>
+            <option value="any">Herhangi bir kart</option>
+          </select></div>
+      </div>
+      <div class="sl-toolbar" role="group" aria-label="Oyun komutları">
+        <button id="sl-new" class="ba-btn ba-btn-primary" type="button">Yeni oyun</button>
+        <button id="sl-replay" class="ba-btn" type="button" title="Aynı dağıtımı baştan oyna">Tekrar oyna</button>
+        <button id="sl-undo" class="ba-btn" type="button" disabled>Geri al</button>
+        <button id="sl-hint" class="ba-btn" type="button">İpucu</button>
+        <button id="sl-auto" class="ba-btn" type="button" disabled>Otomatik tamamla</button>
+        <button id="sl-full" class="ba-btn" type="button">Tam ekran</button>
+      </div>
+      <div class="sl-stats" role="group" aria-label="Oyun durumu">
+        <div><span>Hamle</span><strong id="sl-moves">0</strong></div>
+        <div><span>Skor</span><strong id="sl-score">0</strong></div>
+        <div><span>Süre</span><strong id="sl-time">0:00</strong></div>
+        <div><span>Dağıtım</span><strong id="sl-seed">–</strong></div>
+      </div>
+      <p class="sl-record" id="sl-record">Oynanan: <b id="sl-st-played">0</b> · Kazanılan: <b id="sl-st-won">0</b> · En iyi süre: <b id="sl-st-time">—</b> · En az hamle: <b id="sl-st-moves">—</b></p>
+      <p class="sl-status" id="sl-status" role="status" aria-live="polite"></p>
+      <div class="ba-result" id="sl-result">
+        <h3 id="sl-result-title">Tebrikler, oyunu kazandınız!</h3>
+        <p id="sl-result-text"></p>
+        <div class="ba-actions"><button id="sl-again" class="ba-btn ba-btn-success" type="button">Yeni oyun</button></div>
+      </div>
+      <div class="sl-board" id="sl-board" role="group" aria-label="Solitaire masası. Tab ile yığınlar arasında gezinin, oklarla yığın içinde ve yığınlar arasında dolaşın, Enter ile kartı seçin ya da bırakın.">
+        <div class="sl-pile" id="sl-stock" data-pile="s" data-n="0" role="group" style="grid-column:1;grid-row:1"></div>
+        <div class="sl-pile" id="sl-waste" data-pile="w" data-n="0" role="group" style="grid-column:2;grid-row:1"></div>
+        <div class="sl-pile" id="sl-f0" data-pile="f" data-n="0" role="group" style="grid-column:4;grid-row:1"></div>
+        <div class="sl-pile" id="sl-f1" data-pile="f" data-n="1" role="group" style="grid-column:5;grid-row:1"></div>
+        <div class="sl-pile" id="sl-f2" data-pile="f" data-n="2" role="group" style="grid-column:6;grid-row:1"></div>
+        <div class="sl-pile" id="sl-f3" data-pile="f" data-n="3" role="group" style="grid-column:7;grid-row:1"></div>
+        <div class="sl-pile" id="sl-t0" data-pile="t" data-n="0" role="group" style="grid-column:1;grid-row:2"></div>
+        <div class="sl-pile" id="sl-t1" data-pile="t" data-n="1" role="group" style="grid-column:2;grid-row:2"></div>
+        <div class="sl-pile" id="sl-t2" data-pile="t" data-n="2" role="group" style="grid-column:3;grid-row:2"></div>
+        <div class="sl-pile" id="sl-t3" data-pile="t" data-n="3" role="group" style="grid-column:4;grid-row:2"></div>
+        <div class="sl-pile" id="sl-t4" data-pile="t" data-n="4" role="group" style="grid-column:5;grid-row:2"></div>
+        <div class="sl-pile" id="sl-t5" data-pile="t" data-n="5" role="group" style="grid-column:6;grid-row:2"></div>
+        <div class="sl-pile" id="sl-t6" data-pile="t" data-n="6" role="group" style="grid-column:7;grid-row:2"></div>
+      </div>
+      <noscript><p class="ba-note">Solitaire oyunu JavaScript gerektirir; lütfen tarayıcınızda JavaScript'i etkinleştirin.</p></noscript>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-solitaire-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Solitaire (Klondike) nedir?</h2>
+      <p>Solitaire, tek kişi oynanan iskambil oyunlarının en bilinenidir. Türkçede çoğu zaman "pasyans" diye de anılan bu oyun ailesinin en yaygın üyesi Klondike'dır ve bu sayfadaki sürüm de odur. Amaç, 52 kartlık desteyi masada belirli kurallara göre dizip her takımı As'tan Papaz'a kadar ayrı bir yığına, yani temele taşımaktır. Dört temelin de on üçer kartla dolması oyunu kazandırır. Kurallar kısa olsa da hangi kartı ne zaman açacağınıza, hangi hamleyi bekleteceğinize ve desteyi ne zaman çekeceğinize dair kararlarınız sonucu belirler. Bu yüzden oyun hem dinlendirici hem de düşündürücüdür.</p>
+      <p>Bu sayfada oyun tamamen tarayıcınızda çalışır. Kartlar resim dosyası değil, HTML ve CSS ile çizilir; yani sayfa açıldıktan sonra dışarıdan hiçbir şey indirilmez ve internet bağlantınız kesilse bile oyun sürer. Üyelik, kurulum ya da dosya yükleme yoktur. Kaydedilen tek veri oynadığınız oyun sayısı, kazandıklarınız, en iyi süreniz ve en az hamle sayınızdır; bunlar yalnızca bu cihazın tarayıcı belleğinde durur.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Masayı tanıyın.</strong> Üst sırada solda çekme destesi ve atık yığını, sağda dört temel yığını bulunur. Altta yedi sütun yer alır; sütunlarda sırasıyla 1, 2, 3 ve 7'ye kadar kart vardır ve her sütunun yalnızca en üstteki kartı açıktır.</li>
+        <li><strong>Sütunlarda azalan sırayla ve renk değiştirerek dizin.</strong> Kırmızı bir 6'yı siyah bir 7'nin üzerine koyabilirsiniz; siyah 6'yı ise kırmızı 7'nin üzerine. Açık kartlardan oluşan düzgün bir dizi tek hamlede birlikte taşınır.</li>
+        <li><strong>Kapalı kartları açın.</strong> Bir sütundaki açık kartları başka yere taşıdığınızda altındaki kapalı kart kendiliğinden açılır. Kapalı kart açmak puan kazandırır ve yeni olanaklar yaratır.</li>
+        <li><strong>Temelleri doldurun.</strong> Temele konan ilk kart As olmalıdır; ardından aynı takımdan 2, 3, 4 ve Papaz'a kadar sırayla ilerlersiniz. Bir kartı hangi temelin üzerine bırakırsanız bırakın, doğru takımın yığınına gider.</li>
+        <li><strong>Gerekirse desteden çekin.</strong> Sütunlarda hamle kalmadığında çekme destesine dokunun. Çekilen kartlar atık yığınına geçer ve atığın en üstteki kartı oynanabilir. Deste bitince boş deste yuvasına dokunarak atığı yeniden desteye çevirebilirsiniz; tur sayısında sınır yoktur.</li>
+      </ol>
+
+      <h2>Kuralların ayrıntıları</h2>
+      <ul>
+        <li><strong>Sütunlar (tableau):</strong> Bir kart, yalnızca kendinden bir büyük ve zıt renkli kartın üzerine konabilir. Maça ile sinek siyah, kupa ile karo kırmızıdır. Birlikte taşıdığınız dizinin ilk kartı hedefe uymalıdır; dizinin geri kalanı zaten kendi içinde düzgündür.</li>
+        <li><strong>Boş sütun:</strong> Klasik kuralda boş sütuna yalnızca Papaz (ya da Papaz ile başlayan dizi) konur. Ayarlardan "Herhangi bir kart" seçeneğini işaretlerseniz boş sütuna her kart konabilir; bu, oyunu belirgin biçimde kolaylaştırır.</li>
+        <li><strong>Temeller:</strong> Her temel tek bir takımı barındırır ve As'la başlar. Temele aynı anda yalnızca bir kart konur. Temeldeki kartı gerektiğinde sütuna geri alabilirsiniz, ancak bu hamle puan kaybettirir.</li>
+        <li><strong>Atık:</strong> Atığın yalnızca en üstteki kartı oynanabilir. Üstteki kart oynanınca bir alttaki kart erişilebilir olur.</li>
+        <li><strong>Kazanma:</strong> Dört temelin her biri Papaz'a ulaştığında oyun kazanılır. Tüm kartlar açık kaldığında "Otomatik tamamla" düğmesi kalan işi sizin için bitirir.</li>
+      </ul>
+
+      <h2>1 kart mı, 3 kart mı çekmeli?</h2>
+      <p>Çekme sayısı, oyunun zorluğunu en çok değiştiren ayardır. <strong>1 kart çekmede</strong> deste her çevrildiğinde atığın tamamını tek tek görür ve her kartı oynama şansı bulursunuz. Oyun daha affedicidir; yeni başlayanlar için de önerilir. <strong>3 kart çekmede</strong> üç kart birden gelir, ama yalnızca en üstteki oynanabilir. Altındaki iki kart, ancak üsttekini oynadıktan sonra erişilebilir hâle gelir. Bu yüzden desteyi her çevirişinizde farklı kartlara ulaşırsınız: hangi kartı ne zaman oynadığınız, sonraki turda hangi kartların açılacağını değiştirir.</p>
+      <p>Bu fark pratikte büyüktür. 1 kart modunda iyi bir oyuncu çoğu dağıtımı rahatça sonuçlandırabilir; 3 kart modunda ise planlama çok daha önemlidir ve kazanma oranı belirgin biçimde düşer. Çekme sayısını ya da boş sütun kuralını oyun sırasında değiştirdiğinizde ayar kaydedilir ve bir sonraki dağıtımdan itibaren geçerli olur; henüz hamle yapmadıysanız aynı dağıtıma hemen uygulanır.</p>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Sürükle-bırak:</strong> Bir açık kartı fareyle ya da parmağınızla tutup hedef sütuna veya temele sürükleyin. Kartı birkaç yığının üzerine denk getirdiğinizde en çok örtüştüğü geçerli hedefe gider; geçersizse kart yerine döner ve nedeni durum satırında yazar.</li>
+        <li><strong>Tıkla-tıkla:</strong> Bir karta dokunarak seçin, ardından hedef sütuna ya da temele dokunun. Seçili kart çerçeveyle işaretlenir; aynı karta yeniden dokunmak seçimi kaldırır.</li>
+        <li><strong>Çift tıklama:</strong> Atığın ya da bir sütunun en üstteki kartına iki kez hızlıca dokunursanız kart, gidebiliyorsa doğrudan temele gönderilir.</li>
+        <li><strong>Klavye:</strong> Tab tuşu yığınlar arasında dolaştırır. Oklar yığın içinde ve yığınlar arasında gezinmeyi sağlar. Enter ya da Boşluk kartı seçer; hedef yığına gidip yeniden Enter'a basmak kartı bırakır. Esc seçimi kaldırır, F kartı temele gönderir, U hamleyi geri alır, H ipucu verir. Desteye Enter ile kart çekersiniz.</li>
+        <li><strong>Geri al:</strong> Sınırsızdır; oyunun başına kadar her hamle, her çekme ve her açılan kart sırayla geri alınabilir.</li>
+        <li><strong>İpucu:</strong> Geçerli ve işe yarar bir hamleyi vurgular. Temele gidebilen kartlar öncelikli, kapalı kart açan hamleler ikinci sıradadır; hamle yoksa deste çekmenizi önerir. Düğmeye tekrar basmak bir sonraki öneriyi gösterir.</li>
+        <li><strong>Tekrar oyna / Yeni oyun:</strong> Her dağıtımın bir numarası vardır. "Tekrar oyna" aynı dağıtımı, kartları aynı sırayla yeniden kurar; "Yeni oyun" yepyeni bir dağıtım yapar.</li>
+        <li><strong>Tam ekran:</strong> Yalnızca oyun kutusunu ekrana yayar; tarayıcınız desteklemiyorsa düğme görünmez.</li>
+      </ul>
+
+      <h2>Puanlama</h2>
+      <p>Skor, standart Klondike puanlamasına dayanır ve her zaman sıfırın altına inmez. Temele her kart gönderdiğinizde 10 puan alırsınız. Atıktan bir sütuna kart taşımak 5 puan, bir sütunda kapalı bir kartı açmak da 5 puan kazandırır. Temeldeki bir kartı sütuna geri almak ise 15 puan götürür. Hamle sayısı her çekme, taşıma ve yeniden çevirme ile bir artar; geri alırsanız hamle sayısı da önceki değerine döner. Süre, ilk hamlenizle birlikte işlemeye başlar ve oyun kazanıldığında durur. En iyi süreniz ile en az hamle sayınız yalnızca oyunu kazandığınızda güncellenir.</p>
+
+      <h2>Daha çok kazanmak için strateji ipuçları</h2>
+      <ul>
+        <li><strong>Kapalı kartları öncelikle açın.</strong> En çok kapalı kart içeren sütundan hamle yapmak, oyunun en kritik yatırımıdır. İki seçenek arasında kalırsanız hangisi daha fazla kapalı kart açacaksa onu seçin.</li>
+        <li><strong>As ve ikileri hemen temele gönderin.</strong> Bunlar sütunlarda hiçbir işe yaramaz. Daha yüksek kartları ise acele etmeden temele taşıyın; çünkü onlar sütunlarda başka kartlara yuva olabilir.</li>
+        <li><strong>Temelleri dengeli ilerletin.</strong> Bir takımı çok önde götürürseniz ihtiyaç duyduğunuz zıt renkli kartlar temelde kilitli kalabilir. Temellerin arasındaki fark genellikle iki ya da üç kartı geçmemelidir.</li>
+        <li><strong>Boş sütunu boşuna doldurmayın.</strong> Boş sütun değerli bir araçtır. Elinizde ona koyabileceğiniz bir Papaz yoksa sütunu boş bırakmak çoğunlukla daha iyidir.</li>
+        <li><strong>Desteyi çekmeden önce masayı tarayın.</strong> Her çekme, atığı ve deste turunu ilerletir. Önce sütunlarda ve atığın üstünde yapabileceğiniz tüm hamleleri tüketin.</li>
+        <li><strong>Aynı renkli iki kartı aynı yere beklemeyin.</strong> Aynı sayıda iki kırmızı kart varsa ve ikisi de siyah bir karta gidebiliyorsa, hangisinin kapalı kart açtığına bakın; diğeri başka bir sütuna yuva olabilir.</li>
+        <li><strong>3 kart modunda sırayı hatırlayın.</strong> Atık yelpazesinde gördüğünüz alttaki kartlar, üsttekini oynadığınızda erişilebilir olacaktır. Hangi kartı oynarsanız sonraki turda hangi kartlara ulaşacağınızı önceden düşünün.</li>
+        <li><strong>Geri al ve ipucunu öğrenmek için kullanın.</strong> Sınırsız geri alma, farklı yolları denemenize izin verir. Skor ya da süre peşindeyseniz bunları az kullanın.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-solitaire-b" aria-label="Reklam"></div>
+
+      <h2>Her dağıtım kazanılabilir mi?</h2>
+      <p>Hayır, her dağıtım çözülemeyebilir. Kartlar rastgele dağıtılır ve bu sayfa kazanılabilirlik garantisi vermez. Bazı dağıtımlarda kritik kartlar birbirini kilitler; en mükemmel oyunla bile sonuç alınamaz. Bilgisayar araştırmaları, bütün kartları baştan görebilen bir oyuncu için dağıtımların büyük çoğunluğunun çözülebildiğini, ancak gerçek oyunda kapalı kartlar yüzünden kazanma oranının bundan belirgin biçimde daha düşük olduğunu gösterir. Dolayısıyla kaybetmek oyunun doğal bir parçasıdır.</p>
+      <p>Dağıtım beğenilmediğinde iki yol vardır: "Yeni oyun" bambaşka bir dağıtım yapar; "Tekrar oyna" ise aynı kart sırasını yeniden kurar ve bu sefer farklı bir yol denemenizi sağlar. Dağıtım numarasını not alırsanız ileride aynı oyuna dönmek için kullanabilirsiniz. Sayfa kazanılamayan dağıtımı sizin yerinize ayıklamaz; çünkü bu, oyunu gerçek solitaire olmaktan çıkarırdı.</p>
+
+      <h2>Klondike'ın kısa tarihi</h2>
+      <p>Tek kişilik iskambil oyunlarının kökleri on sekizinci yüzyıl Avrupa'sına uzanır; İngilizcede "patience", Fransızcada "réussite" gibi adlarla anılan bu oyunlar zamanla yüzlerce çeşide ayrıldı. Klondike adının, on dokuzuncu yüzyılın sonundaki Klondike altın hücumuyla ilişkilendirildiği söylenir. Oyunun bugünkü yaygınlığı ise bilgisayar çağının eseridir: 1990'lı yılların başında masaüstü işletim sistemlerine eklenmesiyle milyonlarca insan fareyle kart sürüklemeyi ilk kez bu oyunla öğrendi. O günden bugüne solitaire, kuralları az ama derinliği bol bir klasik olarak her platformda yer alıyor.</p>
+      <p>Bu sürüm, o klasik deneyimi modern tarayıcılara taşır. Kart çizimleri ve oyun mantığı sıfırdan yazılmıştır; hiçbir şirketin ya da markanın görseli ve adı kullanılmaz. Oyun bir eğlence ve zihin dinlendirme aracıdır; tıbbi bir test ya da tedavi yerine geçmez.</p>
+
+      <h2>Neden Bilişim Ajans'ta oynamalısınız?</h2>
+      <ul>
+        <li><strong>Gizlilik:</strong> Oyun tarayıcınızda çalışır. Dosya yüklemez, hesap istemez, sizi izlemez. Tek kalıcı veri, istatistikleriniz ve ayarlarınızdır; bunlar yalnızca bu cihazın localStorage alanında durur.</li>
+        <li><strong>Kurulum yok:</strong> Sayfayı açın ve oynayın. İsterseniz tarayıcıdan "uygulama olarak yükle" diyerek ana ekranınıza ekleyebilirsiniz.</li>
+        <li><strong>Mobil uyumlu:</strong> Masa 360 piksel genişlikteki telefon ekranlarına sığar; kartlar ekrana göre daralır ve parmakla sürüklenebilir.</li>
+        <li><strong>Dürüst tasarım:</strong> Sahte geri sayım, yanıltıcı düğme ya da "premium" tuzağı yoktur. Reklamlar oyun alanının dışında, yalnızca belirli bölümlerde yer alır.</li>
+        <li><strong>Erişilebilirlik:</strong> Klavyeyle tamamen oynanır, ekran okuyucuya durum bildirimleri yapılır, "hareketi azalt" tercihinde animasyonlar kapanır.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Solitaire nasıl oynanır?</summary><p>Amaç, tüm kartları As'tan Papaz'a doğru takımlarına göre dört temel yığınına taşımaktır. Sütunlarda kartlar azalan sırayla ve zıt renkli olarak dizilir; kapalı kartlar açıldıkça yeni hamleler ortaya çıkar. Hamle kalmayınca desteden kart çekersiniz.</p></details>
+        <details><summary>1 kart çekme ile 3 kart çekme arasındaki fark nedir?</summary><p>1 kart çekmede desteden her seferinde tek kart gelir ve her atık kartına ulaşabilirsiniz. 3 kart çekmede üç kart gelir ama yalnızca en üstteki oynanabilir; bu yüzden oyun daha zordur ve daha fazla planlama gerektirir.</p></details>
+        <details><summary>Boş sütuna hangi kart konabilir?</summary><p>Varsayılan klasik kuralda yalnızca Papaz ya da Papaz ile başlayan açık bir dizi konabilir. Ayarlardan "Herhangi bir kart" seçeneğini işaretlerseniz her kart boş sütuna konur ve oyun kolaylaşır.</p></details>
+        <details><summary>Her dağıtım çözülebilir mi?</summary><p>Hayır. Dağıtım rastgele yapılır ve kazanılabilirlik garantisi verilmez; bazı dağıtımlar en iyi oyunla bile çözülemez. Beğenmediğiniz bir dağıtımda "Yeni oyun" ile yenisini başlatabilir ya da "Tekrar oyna" ile aynı dağıtımı baştan deneyebilirsiniz.</p></details>
+        <details><summary>Hamleyi geri alabilir miyim?</summary><p>Evet. Geri al düğmesi sınırsızdır: oyunun başına kadar her hamleyi sırayla geri alabilirsiniz. Klavyede U tuşu aynı işi yapar. Oyun kazanıldıktan sonra geri alma kapanır.</p></details>
+        <details><summary>Klavyeyle ve dokunmatik ekranla oynanır mı?</summary><p>Evet. Tab tuşuyla yığınlar arasında gezinir, Enter ile kartı seçer ve hedef yığında yeniden Enter ile bırakırsınız. Telefon ve tabletlerde kartları parmağınızla sürükleyebilir ya da iki dokunuşla seçip bırakabilirsiniz.</p></details>
+        <details><summary>İstatistiklerim nerede saklanıyor, başkaları görebilir mi?</summary><p>Oynanan ve kazanılan oyun sayısı, en iyi süre ve en az hamle yalnızca kendi tarayıcınızın localStorage alanında tutulur. Hiçbir sunucuya gönderilmez ve başka kimse göremez. Tarayıcı verilerini silerseniz ya da başka bir cihaz kullanırsanız kayıtlar görünmez.</p></details>
+        <details><summary>İnternet olmadan oynanır mı?</summary><p>Sayfa bir kez yüklendikten sonra oyun için internet gerekmez; kartlar tarayıcıda çizilir. Siteyi tarayıcıdan uygulama olarak yüklerseniz çevrimdışı da açılır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../dama/">Dama</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel oyun, web sitesi ya da yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="oyun-solitaire-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

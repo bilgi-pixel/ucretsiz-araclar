@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kelime Avı Oyna – Ücretsiz Online Kelime Avı (kurulumsuz)</title>
+  <meta name="description" content="Kelime avını ücretsiz oyna: yedi kategori, 10×10, 12×12 ve 15×15 ızgara, kolay-orta-zor düzey, ipucu ve en iyi süre. Yazdırılabilir bulmaca ve cevap anahtarı. Kayıt yok, dosya yüklenmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/kelime-avi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; tema token'ları ba.css'ten gelir. Izgara renkleri tema değişse de sabittir (açık zemin, koyu harf). */
+    .ba-hero.game-hero { padding: 28px 0 64px; }
+    .game-hero .lead { margin-bottom: .8em; }
+    .game-hero .ba-badges { margin-bottom: 0; }
+    .game-box { max-width: 800px; margin-left: auto; margin-right: auto; padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .g-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .g-stat { background: #5e1a25; color: #fff; border-radius: var(--ba-radius-sm); padding: 8px 4px; text-align: center; min-width: 0; }
+    .g-label { display: block; font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: #f0d3da; line-height: 1.2; min-height: 2.4em; }
+    @media (min-width: 480px) { .g-label { font-size: .72rem; letter-spacing: .08em; min-height: 0; } }
+    .g-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.15rem; line-height: 1.3; overflow-wrap: anywhere; }
+    @media (min-width: 480px) { .g-stat strong { font-size: 1.35rem; } }
+    .g-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin: 14px 0 0; }
+    .g-bar .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .g-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+    .g-seg button { min-height: 44px; min-width: 52px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); }
+    .g-seg button:hover { border-color: var(--ba-primary); }
+    .g-seg button[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .g-seg button[aria-pressed="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .g-seg button[aria-pressed="true"] { color: #1a0d10; }
+    .ka-field { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+    .ka-field select { min-height: 44px; padding: 6px 10px; font: inherit; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); max-width: 100%; }
+    .ka-field select:focus-visible { outline: 3px solid var(--ba-primary); outline-offset: 2px; }
+    .g-hint { text-align: center; font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .p-status { min-height: 3em; margin: 12px 0 0; text-align: center; color: var(--ba-text-2); }
+    .p-status[data-kind="ok"] { color: var(--ba-success); font-weight: 600; }
+    .p-status[data-kind="warn"] { color: var(--ba-danger); }
+
+    /* Izgara + kelime listesi */
+    .ka-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+    @media (min-width: 720px) { .ka-layout { grid-template-columns: minmax(0, 1fr) 200px; align-items: start; } }
+    .ka-board { width: 100%; max-width: 560px; margin: 0 auto; border: 2px solid #5e1a25; border-radius: 10px; overflow: hidden; background: #fff8f3; }
+    .ka-grid { --n: 12; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); grid-template-rows: repeat(var(--n), minmax(0, 1fr)); aspect-ratio: 1 / 1; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; container-type: inline-size; }
+    .ka-cell {
+      margin: 0; padding: 0; border: 0; border-right: 1px solid #ecd5da; border-bottom: 1px solid #ecd5da; border-radius: 0;
+      min-width: 0; min-height: 0; box-sizing: border-box; display: grid; place-items: center; cursor: pointer;
+      background: transparent; color: #3a0d18; font-family: inherit; font-weight: 700; line-height: 1;
+      font-size: clamp(9px, calc(100cqw / var(--n) * .52), 28px);
+      user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    .ka-cell:focus-visible { outline: 3px solid #0b3d91; outline-offset: -3px; position: relative; z-index: 1; }
+    .ka-cell.sel { background: #7b2331; color: #fff; }
+    .ka-cell.sel:focus-visible { outline-color: #ffd98a; }
+    .ka-cell.sel.bad { background: #a02a40; box-shadow: inset 0 0 0 2px #ffd98a; }
+    .ka-cell.fd.f0 { background: #ffd98a; }
+    .ka-cell.fd.f1 { background: #a8e0f5; }
+    .ka-cell.fd.f2 { background: #f8b4d9; }
+    .ka-cell.fd.f3 { background: #b9e8c0; }
+    .ka-cell.fd.f4 { background: #d4c4f5; }
+    .ka-cell.fd.f5 { background: #ffc9a8; }
+    .ka-cell.hint { box-shadow: inset 0 0 0 3px #7b2331; animation: kaHint 1.1s ease-in-out infinite; }
+    @keyframes kaHint { 0%, 100% { background-color: #fff1b8; } 50% { background-color: #ffd98a; } }
+    .ka-grid.done .ka-cell.fd { animation: kaWin .6s ease both; }
+    @keyframes kaWin { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
+    .ka-side { min-width: 0; }
+    .ka-h { margin: 0 0 8px; font-size: 1rem; }
+    .ka-words { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+    @media (min-width: 720px) { .ka-words { display: grid; gap: 5px; } }
+    .ka-words li { padding: 5px 12px; border-radius: 999px; background: var(--ba-surface-2); border: 1px solid var(--ba-border-hover); font-weight: 600; font-size: .92rem; color: var(--ba-text); overflow-wrap: anywhere; }
+    .ka-words li.hinted { border-color: var(--ba-primary); box-shadow: 0 0 0 2px var(--ba-primary); }
+    .ka-words li.found { color: var(--ba-text-2); border-style: dashed; }
+    .ka-words li.found .w { text-decoration: line-through; text-decoration-thickness: 2px; }
+    .ka-result { margin-top: 14px; padding: 14px; border-radius: var(--ba-radius); border: 2px solid var(--ba-success); background: var(--ba-surface-2); text-align: center; }
+    .ka-result h3 { margin: 0 0 6px; }
+    .ka-result p { margin: 0 0 10px; }
+    .game-ad-a { margin-top: clamp(96px, 30vh, 240px); }
+    .game-box:fullscreen { max-width: none; border-radius: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; background: var(--ba-surface); }
+    .game-box:fullscreen > * { width: 100%; max-width: 980px; }
+    .game-box:fullscreen .ka-board { max-width: min(78vh, 100%); }
+    @media (prefers-reduced-motion: reduce) {
+      .ka-cell.hint { animation: none; background-color: #ffd98a; }
+      .ka-grid.done .ka-cell.fd { animation: none; }
+    }
+
+    /* Yazdırma: yalnızca bulmaca sayfası ve (isteğe bağlı) cevap anahtarı çıkar. Ekranda gizlidir. */
+    .ka-print { display: none; }
+    .pr-check { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .pr-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      html, body { background: #fff !important; color: #000 !important; }
+      .ba-topbar, .ba-header, .ba-footer, .ba-hero { display: none !important; }
+      #ka-main > :not(#print-sheet) { display: none !important; }
+      #ka-main { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+      .ka-print { display: block !important; font-family: Arial, Helvetica, sans-serif; color: #000; }
+      .ka-print .pr-page { break-inside: avoid; }
+      .ka-print .pr-answers { break-before: page; page-break-before: always; }
+      .ka-print[data-answers="0"] .pr-answers { display: none !important; }
+      .pr-title { font-size: 22pt; font-weight: 700; margin: 0 0 2mm; }
+      .pr-meta { font-size: 10pt; margin: 0 0 4mm; color: #333; }
+      .pr-fill { font-size: 11pt; margin: 0 0 5mm; }
+      .pr-grid { --n: 12; display: grid; grid-template-columns: repeat(var(--n), 1fr); width: 100%; max-width: 176mm; border: .5mm solid #000; margin: 0 0 6mm; }
+      .pr-grid span { display: grid; place-items: center; aspect-ratio: 1 / 1; border: .15mm solid #888; font-weight: 700; font-size: calc(170mm / var(--n) * .52); line-height: 1; }
+      .pr-grid span.k { background: #d9d9d9 !important; box-shadow: inset 0 0 0 .5mm #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .pr-sub { font-size: 12pt; font-weight: 700; margin: 0 0 2mm; }
+      .pr-words, .pr-anslist { list-style: none; margin: 0; padding: 0; columns: 3; column-gap: 6mm; font-size: 11pt; }
+      .pr-anslist { columns: 2; font-size: 10pt; }
+      .pr-words li, .pr-anslist li { break-inside: avoid; padding: 0 0 1.4mm; }
+      .pr-words li::before { content: "☐ "; }
+      .pr-foot { margin: 6mm 0 0; font-size: 9pt; color: #444; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Kelime Avı – Bilişim Ajans","applicationCategory":"GameApplication","operatingSystem":"Web","genre":"Kelime bulmacası","playMode":"SinglePlayer","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/kelime-avi/"},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Kelime avı nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Izgaradaki harfler arasında listedeki kelimeleri arayın. Bir kelimeyi bulunca ilk harfine basıp son harfine doğru fare ya da parmağınızla sürükleyin. Kelime doğruysa renklenir ve listede üstü çizilir. Tüm kelimeleri bulunca oyun biter."}},
+  {"@type":"Question","name":"Kelimeler hangi yönlerde saklı?","acceptedAnswer":{"@type":"Answer","text":"Kolay düzeyde kelimeler yalnızca soldan sağa, yukarıdan aşağıya ve sol üstten sağ alta (çapraz) yazılıdır; ters yön yoktur. Orta düzeyde bir çapraz yön ve sağdan sola yön eklenir. Zor düzeyde sekiz yönün hepsi kullanılır."}},
+  {"@type":"Question","name":"Klavyeyle oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Izgaraya Tab ile girin, ok tuşlarıyla harfler arasında gezin. Shift basılı tutup ok tuşlarına basarak seçimi uzatın; köşegen için Shift ile Home, End, PageUp ve PageDown kullanılır. Enter seçimi onaylar, Escape iptal eder."}},
+  {"@type":"Question","name":"İpucu düğmesi ne yapar, süremi etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"İpucu, bulunmamış bir kelimenin ilk harfini vurgular. Süre durmaz; kullandığınız ipucu sayısı sonuçta gösterilir. İpucu kullanılan oyun, adil olması için en iyi süre olarak kaydedilmez."}},
+  {"@type":"Question","name":"Bulmacayı yazdırabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Yazdır düğmesi harf ızgarasını ve kelime listesini tek sayfada, isterseniz cevap anahtarını ayrı bir sayfada yazdırır. Menü, reklam ve düğmeler çıktıya girmez."}},
+  {"@type":"Question","name":"Türkçe harfler doğru işleniyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Kelimeler Türkçe büyük harf kurallarıyla yazılır ve ızgarada noktalı İ ile noktasız I ayrı harflerdir. Ç, Ğ, Ö, Ş ve Ü de alfabedeki yerlerinde kullanılır; kelimeler hiçbir zaman Q, W ya da X içermez."}},
+  {"@type":"Question","name":"En iyi süre nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Her ızgara boyutu ve zorluk için ayrı en iyi süre tutulur. Tarayıcı verilerini temizlerseniz sıfırlanır; hiçbir sunucuya gönderilmez."}},
+  {"@type":"Question","name":"Telefonda oynanır mı, oyun ücretli mi?","acceptedAnswer":{"@type":"Answer","text":"Oyun telefonda ve tablette çalışır; harfleri parmağınızla sürükleyebilir ya da ilk ve son harfe sırayla dokunabilirsiniz. Oyun tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool game-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Kelime Avı Oyna – Ücretsiz Online Kelime Avı Bulmacası</h1><p class="lead">Harf ızgarasında gizlenmiş kelimeleri bulun: yedi kategori, üç ızgara boyutu, kolay-orta-zor düzey, ipucu ve en iyi süre. Bulmacayı yazdırıp kâğıtta da çözebilirsiniz. Kayıt yok, hiçbir şey yüklenmez.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow" id="ka-main">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Kelime avı oyun alanı</h2>
+      <div class="g-stats">
+        <div class="g-stat"><span class="g-label">Bulunan</span><strong id="found-count">—</strong></div>
+        <div class="g-stat"><span class="g-label">Süre</span><strong id="time">00:00</strong></div>
+        <div class="g-stat"><span class="g-label">İpucu</span><strong id="hint-count">0</strong></div>
+        <div class="g-stat"><span class="g-label">En iyi süre</span><strong id="best">—</strong></div>
+      </div>
+      <div class="g-bar">
+        <label class="ka-field" for="kategori">Kategori <select id="kategori"><option>Yükleniyor…</option></select></label>
+      </div>
+      <div class="g-bar">
+        <div class="g-seg" role="group" aria-label="Izgara boyutu">
+          <button type="button" data-size-btn="10" aria-pressed="false">10×10</button>
+          <button type="button" data-size-btn="12" aria-pressed="true">12×12</button>
+          <button type="button" data-size-btn="15" aria-pressed="false">15×15</button>
+        </div>
+        <div class="g-seg" role="group" aria-label="Zorluk">
+          <button type="button" data-level-btn="kolay" aria-pressed="true">Kolay</button>
+          <button type="button" data-level-btn="orta" aria-pressed="false">Orta</button>
+          <button type="button" data-level-btn="zor" aria-pressed="false">Zor</button>
+        </div>
+      </div>
+      <div class="g-bar">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-new">Yeni bulmaca</button>
+        <button type="button" class="ba-btn" id="btn-hint">İpucu</button>
+        <button type="button" class="ba-btn" id="btn-print">Yazdır</button>
+        <label class="pr-check"><input type="checkbox" id="print-answers" checked> Cevap anahtarını da yazdır</label>
+        <button type="button" class="ba-btn" id="btn-full" hidden>Tam ekran</button>
+      </div>
+      <p class="ba-error" id="error" role="alert"></p>
+      <div class="ka-layout">
+        <div class="ka-board">
+          <div class="ka-grid" id="grid" role="group" aria-label="Harf ızgarası" data-size="12"></div>
+        </div>
+        <div class="ka-side">
+          <h3 class="ka-h" id="h-liste">Bulunacak kelimeler</h3>
+          <ul class="ka-words" id="words" aria-labelledby="h-liste"></ul>
+        </div>
+      </div>
+      <p class="p-status" id="status" aria-live="polite"></p>
+      <div class="ka-result" id="result" hidden>
+        <h3 id="result-title">Tebrikler!</h3>
+        <p id="result-msg"></p>
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-again">Yeni bulmaca</button>
+      </div>
+      <p class="g-hint">Fare ya da parmakla ilk harften son harfe sürükleyin · ya da ilk ve son harfe sırayla dokunun · klavyede oklarla gezin, Shift ile seçimi uzatın, Enter ile onaylayın. Izgara üzerinde sayfa kaymaz; kaydırmak için ızgaranın dışına dokunun.</p>
+    </section>
+
+    <div class="ba-ad game-ad-a" data-slot="oyun-kelime-avi-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Kelime avı nedir?</h2>
+      <p>Kelime avı, kare bir harf ızgarasının içine saklanmış kelimeleri bulma oyunudur. Izgaranın yanında ya da altında hangi kelimeleri arayacağınızı gösteren bir liste bulunur; sizin işiniz bu kelimeleri harflerin arasında bulup işaretlemektir. Kelimeler soldan sağa, yukarıdan aşağıya ya da çapraz yazılmış olabilir, zor düzeylerde tersten de okunabilir. Kalan kareler rastgele harflerle doldurulduğu için gözünüz önce yanıltıcı çizgilerle uğraşır, sonra doğru dizilişi yakalarsınız.</p>
+      <p>Bu sayfadaki kelime avı tarayıcınızda çalışır; bir şey indirmenizi ya da kayıt olmanızı istemez. Kelime listeleri, bulmaca üretimi, süre ve en iyi süre tamamen sizin cihazınızda hesaplanır. Bulmacayı beğenirseniz tek tuşla yazdırıp kâğıt üzerinde de çözebilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Kategoriyi seçin.</strong> Hayvanlar, meyveler, şehirler, meslekler, renkler, spor ve genel kelimeler arasından seçim yaparsınız. Kategori değişince bulmaca yenilenir.</li>
+        <li><strong>Izgara boyutunu ve zorluğu belirleyin.</strong> 10×10 ızgarada sekiz, 12×12 ızgarada on iki, 15×15 ızgarada on altı kelime saklıdır. Kolay, orta ve zor düzeyler kelimelerin yazılabileceği yönleri değiştirir.</li>
+        <li><strong>Kelimeyi bulun.</strong> Listedeki bir kelimenin ilk harfine basın, parmağınızı ya da fareyi son harfe doğru sürükleyin ve bırakın. Seçim, en yakın düz çizgiye (yatay, dikey, çapraz) otomatik oturur.</li>
+        <li><strong>Takıldığınızda ipucu isteyin.</strong> İpucu düğmesi, henüz bulunmamış bir kelimenin ilk harfini vurgular. Kaç ipucu kullandığınız sonuçta gösterilir.</li>
+        <li><strong>Bitirin.</strong> Son kelimeyi bulduğunuzda süre durur; süreniz, ipucu sayınız ve en iyi süreniz görünür.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare:</strong> İlk harfe basılı tutup son harfe sürükleyin. Aynı sonuç için ilk harfe bir kez tıklayıp ardından son harfe de tıklayabilirsiniz; bu, sürüklemekte zorlananlar için daha rahat bir yoldur.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızı ilk harften son harfe kaydırın ya da iki harfe sırayla dokunun. Izgaranın üzerinde sayfa kaymaz; sayfayı kaydırmak için ızgaranın dışındaki alana dokunun.</li>
+        <li><strong>Klavye:</strong> Tab tuşuyla ızgaraya girin ve ok tuşlarıyla bir harften ötekine geçin. Shift tuşunu basılı tutup ok tuşlarına bastığınızda seçim o yönde uzar. Köşegen yönler için Shift ile Home (sol üst), PageUp (sağ üst), End (sol alt) ve PageDown (sağ alt) tuşlarını kullanın. Enter seçimi onaylar, Escape iptal eder. Shift kullanmadan da başlayabilirsiniz: bir harfte Enter'a basın, oklarla son harfe gidin, yeniden Enter'a basın.</li>
+        <li><strong>İpucu:</strong> Henüz bulunmamış bir kelimenin ilk harfini yanıp sönen çerçeveyle işaretler.</li>
+        <li><strong>Yazdır:</strong> Bulmacayı ve kelime listesini yazdırılabilir tek sayfa olarak hazırlar.</li>
+        <li><strong>Tam ekran:</strong> Destekleyen tarayıcılarda oyunu ekranı kaplayacak şekilde büyütür; reklamlar bu görünümde yer almaz.</li>
+      </ul>
+
+      <h2>Kategoriler, ızgara boyutu ve zorluk</h2>
+      <p>Yedi kategorinin her biri kırktan fazla Türkçe kelime içerir ve bu kelimeler özenle elle yazılmıştır. <strong>Hayvanlar</strong> kategorisi evcil ve yabani canlıları, <strong>meyveler</strong> yaz ve kış meyvelerini, <strong>şehirler</strong> Türkiye'deki 81 ilin adlarını, <strong>meslekler</strong> günlük hayatta karşılaştığınız işleri, <strong>renkler</strong> temel ve ince renk adlarını, <strong>spor</strong> branşlar ile spor terimlerini, <strong>genel</strong> ise eşya, doğa ve günlük hayattan kelimeleri kapsar. Her yeni bulmacada listeden farklı kelimeler seçildiği için aynı kategoriyi defalarca oynasanız bile ızgara hep başka olur.</p>
+      <p>Izgara büyüdükçe oyun uzar. 10×10 boyutu kısa bir mola için, 12×12 boyutu orta uzunlukta bir bulmaca için, 15×15 boyutu ise sabır isteyen uzun bir oturum için uygundur. Zorluk düzeyi kelimelerin yazılabileceği yönleri belirler: <strong>kolay</strong> düzeyde yalnızca soldan sağa, yukarıdan aşağıya ve sol üstten sağ alta yazılır, yani hiçbir kelime tersten okunmaz. <strong>Orta</strong> düzeyde sol alttan sağ üste çapraz yön ve sağdan sola yön eklenir. <strong>Zor</strong> düzeyde sekiz yönün tamamı kullanılır; kelimeler aşağıdan yukarıya ya da sağ alttan sol üste de yazılabilir.</p>
+
+      <h2>İpucu, süre ve en iyi süre</h2>
+      <p>Süre, bulmaca oluşturulduğunda başlar ve son kelimeyi bulduğunuzda durur. Sekme arka planda kaldığında süre ilerlemez. İpucu kullanmak serbesttir ancak adil bir karşılaştırma için ipucu kullandığınız oyunlar en iyi süre olarak kaydedilmez; sonuç ekranında kullandığınız ipucu sayısı yine de gösterilir. İpucusuz bitirdiğiniz oyunlarda süreniz, her ızgara boyutu ve zorluk için ayrı ayrı, yalnızca tarayıcınızın localStorage alanında saklanır. Hiçbir sunucuya gönderilmez; tarayıcı verilerini temizlerseniz sıfırlanır.</p>
+
+      <h2>Yazdırılabilir bulmaca ve cevap anahtarı</h2>
+      <p>Kelime avı kâğıtta da çok keyifli bir etkinliktir. <strong>Yazdır</strong> düğmesine bastığınızda sayfadaki menü, reklam ve düğmeler çıktıya girmez; yalnızca başlığı, harf ızgarasını ve kutucuklu kelime listesini içeren tek bir A4 sayfası hazırlanır. "Cevap anahtarını da yazdır" kutusu işaretliyse, ikinci sayfada kelimelerin ızgaradaki yerleri gri zeminle gösterilir ve her kelimenin kaçıncı satır ve sütunda, hangi yönde başladığı yazılır. Öğretmenler sınıf etkinliği için, aileler yolculuk ya da bekleme anları için bulmacayı önceden basabilir. Çıktı, ekranda çözmekte olduğunuz bulmacanın aynısıdır; "Yeni bulmaca" düğmesi hem ekrandaki ızgarayı hem de çıktıyı yeniler. Farklı bir bulmaca basmak için önce yenisini üretin, sonra yazdırın.</p>
+
+      <div class="ba-ad" data-slot="oyun-kelime-avi-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce zor harfleri arayın.</strong> Ç, Ğ, Ö, Ş, Ü gibi az rastlanan harfler içeren kelimeleri bulmak daha kolaydır; ızgarada bu harflerin yanında hemen bir kelime başlangıcı arayın.</li>
+        <li><strong>İlk iki harfe odaklanın.</strong> Bir kelimenin ilk iki harfini aynı anda arayın. Izgarada yan yana bu iki harfi gördüğünüzde diğer yönlere de bakın.</li>
+        <li><strong>Satırları sırayla tarayın.</strong> Gözünüzü soldan sağa gezdirirken kelimenin ilk harfini hatırlamaya çalışın; sonra aynı işi sütunlar için yapın. Çapraz yönleri en sona bırakmak çoğu zaman işe yarar.</li>
+        <li><strong>Uzun kelimelerle başlayın.</strong> Uzun kelimeler ızgarada daha az yerde uyabilir ve bulunduklarında çok sayıda kareyi eler.</li>
+        <li><strong>Ters yönü unutmayın.</strong> Orta ve zor düzeylerde kelime sağdan sola ya da aşağıdan yukarıya yazılmış olabilir. Bulamadığınız bir kelimeyi tersten okumayı deneyin.</li>
+        <li><strong>İpucunu son çare yapın.</strong> İpucu yalnızca ilk harfi vurgular; kelimeyi yine siz bulursunuz. Yine de en iyi süre için ipucu kullanmamak gerekir.</li>
+      </ul>
+
+      <h2>Kelime avının kısa tarihi</h2>
+      <p>Kelime avı bulmacasının, 1960'ların sonunda Amerika Birleşik Devletleri'nde ortaya çıktığı kabul edilir. En çok anılan kayıt, 1968'de Oklahoma'nın Norman kentinde yayımlanan bir gazete ekinde çıkan ilk örneklerdir; bulmacayı hazırlayan kişinin Norman E. Gibat olduğu söylenir. Kısa sürede dünyaya yayılan oyun bugün dergi sayfalarının, okul etkinliklerinin ve çocuk kitaplarının vazgeçilmez köşesidir. Bulmacanın başarısı, kurallarının tek cümleyle anlatılabilmesinden gelir: "Listedeki kelimeleri bul."</p>
+      <p>Bilgisayarlar yaygınlaşınca bulmacaları elle tasarlamak yerine program üretmeye başladı. İyi bir üretici kelimeleri ızgaraya rastgele ama çakışmasız yerleştirir, kalan kareleri doldurur ve dolgu harflerinin yanlışlıkla aynı kelimeyi ikinci kez oluşturmamasına dikkat eder. Bu sayfadaki üretici de böyle çalışır.</p>
+
+      <h2>Eğitimde ve evde kelime avı</h2>
+      <p>Kelime avı, görsel dikkati ve kelime bilgisini birlikte çalıştırdığı için sınıflarda sık kullanılır. Yeni öğrenilen sözcükleri pekiştirmek, doğru yazımı öğretmek ve çocukların harf tanıma becerisini geliştirmek için ideal bir etkinliktir. Türkçe için özellikle faydalı bir yanı da vardır: noktalı İ ile noktasız I, ince ve kalın ünlüler gibi Türkçeye özgü harf ayrımları bulmacada aynen korunur. Çocuk "ISPARTA" ile "İSTANBUL" arasındaki farkı bu şekilde fark eder. Yazdırılabilir çıktıyı ders etkinliği, ödev ya da yarışma sayfası olarak kullanabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans'ın kelime avı?</h2>
+      <ul>
+        <li><strong>Kurulum yok:</strong> Tarayıcı yeterlidir; bilgisayar, telefon ve tablette aynı sayfa çalışır.</li>
+        <li><strong>Kayıt yok, yükleme yok:</strong> Skorlarınız ve tercihleriniz cihazınızda kalır.</li>
+        <li><strong>Türkçe doğru işlenir:</strong> İ ve I, Ç, Ğ, Ö, Ş, Ü harfleri doğru büyük harf kurallarıyla gösterilir.</li>
+        <li><strong>Her bulmaca hazır ve tutarlı:</strong> Listedeki her kelime ızgarada vardır; yerleşemeyen kelime listeye girmez.</li>
+        <li><strong>Erişilebilirlik:</strong> Klavye ile tam kontrol, ekran okuyucu etiketleri ve hareketi azalt tercihine saygı.</li>
+        <li><strong>Yazdırılabilir:</strong> Cevap anahtarıyla birlikte, menüsüz sade bir A4 sayfası.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Kelime avı nasıl oynanır?</summary><p>Izgaradaki harfler arasında listedeki kelimeleri arayın. Bir kelimeyi bulunca ilk harfine basıp son harfine doğru fare ya da parmağınızla sürükleyin. Kelime doğruysa renklenir ve listede üstü çizilir. Tüm kelimeleri bulunca oyun biter.</p></details>
+      <details><summary>Kelimeler hangi yönlerde saklı?</summary><p>Kolay düzeyde kelimeler yalnızca soldan sağa, yukarıdan aşağıya ve sol üstten sağ alta (çapraz) yazılıdır; ters yön yoktur. Orta düzeyde bir çapraz yön ve sağdan sola yön eklenir. Zor düzeyde sekiz yönün hepsi kullanılır.</p></details>
+      <details><summary>Klavyeyle oynayabilir miyim?</summary><p>Evet. Izgaraya Tab ile girin, ok tuşlarıyla harfler arasında gezin. Shift basılı tutup ok tuşlarına basarak seçimi uzatın; köşegen için Shift ile Home, End, PageUp ve PageDown kullanılır. Enter seçimi onaylar, Escape iptal eder.</p></details>
+      <details><summary>İpucu düğmesi ne yapar, süremi etkiler mi?</summary><p>İpucu, bulunmamış bir kelimenin ilk harfini vurgular. Süre durmaz; kullandığınız ipucu sayısı sonuçta gösterilir. İpucu kullanılan oyun, adil olması için en iyi süre olarak kaydedilmez.</p></details>
+      <details><summary>Bulmacayı yazdırabilir miyim?</summary><p>Evet. Yazdır düğmesi harf ızgarasını ve kelime listesini tek sayfada, isterseniz cevap anahtarını ayrı bir sayfada yazdırır. Menü, reklam ve düğmeler çıktıya girmez.</p></details>
+      <details><summary>Türkçe harfler doğru işleniyor mu?</summary><p>Evet. Kelimeler Türkçe büyük harf kurallarıyla yazılır ve ızgarada noktalı İ ile noktasız I ayrı harflerdir. Ç, Ğ, Ö, Ş ve Ü de alfabedeki yerlerinde kullanılır; kelimeler hiçbir zaman Q, W ya da X içermez.</p></details>
+      <details><summary>En iyi süre nerede saklanıyor?</summary><p>Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Her ızgara boyutu ve zorluk için ayrı en iyi süre tutulur. Tarayıcı verilerini temizlerseniz sıfırlanır; hiçbir sunucuya gönderilmez.</p></details>
+      <details><summary>Telefonda oynanır mı, oyun ücretli mi?</summary><p>Oyun telefonda ve tablette çalışır; harfleri parmağınızla sürükleyebilir ya da ilk ve son harfe sırayla dokunabilirsiniz. Oyun tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez. Giderler sayfadaki reklamlarla karşılanır.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kelime-bulmaca/">Kelime Bulmaca</a></li>
+        <li><a href="../adam-asmaca/">Adam Asmaca</a></li>
+        <li><a href="../yapboz/">Yapboz</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-kelime-avi-c" aria-label="Reklam"></div>
+
+    <!-- Yazdırma sayfası: ekranda gizli, yalnızca yazdırırken görünür. -->
+    <div class="ka-print" id="print-sheet" data-answers="1" aria-hidden="true">
+      <div class="pr-page">
+        <p class="pr-title" id="pr-title">Kelime Avı</p>
+        <p class="pr-meta" id="pr-meta"></p>
+        <p class="pr-fill">Adı soyadı: ______________________ &nbsp; Süre: ____________</p>
+        <div class="pr-grid" id="pr-grid"></div>
+        <p class="pr-sub">Aranacak kelimeler</p>
+        <ul class="pr-words" id="pr-words"></ul>
+        <p class="pr-foot">araclar.bilisimajans.com/oyunlar/kelime-avi/ · Bilişim Ajans · ücretsiz kelime avı</p>
+      </div>
+      <div class="pr-page pr-answers">
+        <p class="pr-title">Cevap anahtarı</p>
+        <p class="pr-meta">Gri kareler kelimelerin yerini gösterir.</p>
+        <div class="pr-grid" id="pr-grid-ans"></div>
+        <ul class="pr-anslist" id="pr-ans-list"></ul>
+      </div>
+    </div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

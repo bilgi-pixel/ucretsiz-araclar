@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Yapboz Oyna – Ücretsiz Online Yapboz (kurulumsuz)</title>
+  <meta name="description" content="Yapbozu ücretsiz oyna: 3×3'ten 6×6'ya parça sayısı, hazır örnek görseller ve kendi fotoğrafınla yapboz. Sürükle-bırak, süre ve en iyi süre. Fotoğraf cihazından çıkmaz, kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/yapboz/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; tema token'ları ba.css'ten gelir. Tahta ve parça renkleri tema değişse de sabittir (bordo tonları). */
+    .ba-hero.game-hero { padding: 28px 0 64px; }
+    .game-hero .lead { margin-bottom: .8em; }
+    .game-hero .ba-badges { margin-bottom: 0; }
+    .game-box { position: relative; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .g-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .g-stat { background: #5e1a25; color: #fff; border-radius: var(--ba-radius-sm); padding: 8px 4px; text-align: center; min-width: 0; }
+    .g-label { display: block; font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: #f0d3da; line-height: 1.2; min-height: 2.4em; }
+    @media (min-width: 480px) { .g-label { font-size: .72rem; letter-spacing: .08em; min-height: 0; } }
+    .g-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.15rem; line-height: 1.3; overflow-wrap: anywhere; }
+    @media (min-width: 480px) { .g-stat strong { font-size: 1.35rem; } }
+    .g-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin: 14px 0 0; }
+    .g-bar .ba-btn { min-height: 44px; padding: 8px 14px; }
+    .g-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+    .g-seg button { min-height: 44px; min-width: 52px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; border: 1px solid var(--ba-border-hover); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); }
+    .g-seg button:hover { border-color: var(--ba-primary); }
+    .g-seg button[aria-pressed="true"] { background: var(--ba-primary); border-color: var(--ba-primary); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .g-seg button[aria-pressed="true"] { color: #1a0d10; } }
+    :root[data-theme="dark"] .g-seg button[aria-pressed="true"] { color: #1a0d10; }
+    .g-hint { text-align: center; font-size: .88rem; color: var(--ba-text-muted); margin: 8px 0 0; }
+    .p-status { min-height: 3em; margin: 12px 0 0; text-align: center; color: var(--ba-text-2); }
+    .p-status[data-kind="ok"] { color: var(--ba-success); font-weight: 600; }
+    .p-status[data-kind="warn"] { color: var(--ba-danger); }
+
+    .photo-panel { margin-top: 14px; padding: 12px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); }
+    .pp-row { display: flex; gap: 12px; align-items: center; }
+    .thumb { width: 72px; height: 72px; flex: none; border-radius: 6px; border: 1px solid var(--ba-border-hover); background-color: #d3bcc2; background-image: var(--img, none); background-size: cover; background-position: center; }
+    .pp-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; flex: 1 1 0; min-width: 0; }
+    .pp-actions .ba-btn { min-height: 44px; padding: 8px 14px; }
+    #photo:focus-visible + label { outline: 2px solid var(--ba-primary); outline-offset: 3px; }
+    .pp-check { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .pp-check input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .photo-panel .g-hint { text-align: left; margin-top: 8px; font-size: .82rem; }
+
+    /* Yapboz alanı: tahta ve tepsi aynı kapta; cqw birimi parça boyutunu tahta genişliğine bağlar. */
+    .yb-area { --n: 4; --tp: max(calc(100cqw / var(--n) * .55), 40px); width: 100%; max-width: 460px; margin: 14px auto 0; container-type: inline-size; }
+    .yb-board { position: relative; width: 100%; aspect-ratio: 1 / 1; background: #e9d3d9; border-radius: 4px; box-shadow: 0 0 0 3px #5e1a25; }
+    .yb-slots { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); grid-template-rows: repeat(var(--n), minmax(0, 1fr)); }
+    .yb-slot { position: relative; min-width: 0; min-height: 0; cursor: pointer; background: rgba(123, 35, 49, .05); box-shadow: inset 0 0 0 1px rgba(94, 26, 37, .3); }
+    .yb-slot.hover { background: rgba(255, 217, 138, .6); box-shadow: inset 0 0 0 3px #7b2331; }
+    .yb-slot:focus-visible { outline: none; }
+    .yb-slot:focus-visible::after { content: ""; position: absolute; inset: 0; border: 3px solid #0b3d91; box-shadow: inset 0 0 0 1px #fff; z-index: 7; pointer-events: none; }
+    .nums .yb-slot:not(.filled)::before { content: attr(data-num); position: absolute; inset: 0; display: grid; place-items: center; color: rgba(94, 26, 37, .6); font-weight: 700; font-size: calc(100cqw / var(--n) * .3); }
+
+    .yb-piece {
+      position: relative; flex: none; width: var(--tp); height: var(--tp); margin: 0; padding: 0; border: 0; box-sizing: border-box;
+      touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; -webkit-tap-highlight-color: transparent;
+      background-color: #3a0d18; background-image: var(--img); background-repeat: no-repeat;
+      background-size: calc(var(--n) * 100%) calc(var(--n) * 100%);
+      background-position: calc(var(--gc) / (var(--n) - 1) * 100%) calc(var(--gr) / (var(--n) - 1) * 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6), 0 1px 3px rgba(0, 0, 0, .35);
+    }
+    .yb-piece.in-slot { position: absolute; inset: 0; width: 100%; height: 100%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6); }
+    .yb-piece span { display: none; position: absolute; left: 3px; top: 3px; padding: 1px 5px; border-radius: 4px; background: rgba(58, 13, 24, .85); color: #fff; font-size: 11px; font-weight: 700; line-height: 1.3; pointer-events: none; }
+    .nums .yb-piece span { display: block; }
+    .yb-piece.selected { outline: 3px solid #ffd98a; outline-offset: -3px; box-shadow: 0 0 0 3px #7b2331; z-index: 4; }
+    .yb-piece:focus-visible { outline: 3px solid #0b3d91; outline-offset: -3px; box-shadow: inset 0 0 0 5px #fff; z-index: 6; }
+    .yb-piece.locked { cursor: default; box-shadow: inset 0 0 0 2px #ffd98a; }
+    .yb-piece.glow { animation: ybGlow .9s ease-out; }
+    @keyframes ybGlow {
+      0% { box-shadow: inset 0 0 0 3px #fff, 0 0 0 0 rgba(255, 217, 138, .95); filter: brightness(1.5); }
+      100% { box-shadow: inset 0 0 0 2px #ffd98a, 0 0 18px 8px rgba(255, 217, 138, 0); filter: brightness(1); }
+    }
+    .yb-piece.dragging { z-index: 30; cursor: grabbing; transition: none; box-shadow: 0 10px 24px rgba(0, 0, 0, .5), inset 0 0 0 2px #fff; }
+    .yb-board.solved .yb-piece { box-shadow: none; }
+    .yb-tray { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-content: flex-start; margin-top: 12px; padding: 8px; min-height: calc(var(--tp) + 20px); background: var(--ba-surface-2); border: 1px dashed var(--ba-border-hover); border-radius: 10px; }
+    .yb-tray:empty::before { content: "Tüm parçalar tahtada. Yanlış yerdeki parçaları sürükleyip yer değiştirebilirsiniz."; color: var(--ba-text-2); font-size: .88rem; text-align: center; padding: 6px; align-self: center; }
+    .yb-preview { position: absolute; inset: 0; z-index: 12; pointer-events: none; background: #000; border-radius: 4px; overflow: hidden; }
+    .yb-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .yb-preview.final { animation: ybFade .7s ease both; }
+    @keyframes ybFade { from { opacity: 0; } to { opacity: 1; } }
+    .yb-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 50; border-radius: var(--ba-radius-lg); }
+    .yb-confetti i { position: absolute; top: -14px; width: 9px; height: 14px; opacity: 0; animation: ybFall 2s ease-in forwards; }
+    @keyframes ybFall { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx, 0), 720px) rotate(540deg); opacity: .9; } }
+    /* Oyun kontrol düğmeleri ile reklam arasında geniş boşluk (yanlışlıkla tıklamayı önler). */
+    .game-ad-a { margin-top: clamp(96px, 30vh, 240px); }
+    .game-box:fullscreen { max-width: none; border-radius: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; background: var(--ba-surface); }
+    .game-box:fullscreen > * { width: 100%; max-width: 760px; }
+    .game-box:fullscreen .yb-area { max-width: min(62vh, 100%); }
+    @media (prefers-reduced-motion: reduce) {
+      .yb-piece.glow { animation: none; }
+      .yb-preview.final { animation: none; }
+      .yb-confetti { display: none; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Yapboz – Bilişim Ajans","applicationCategory":"GameApplication","operatingSystem":"Web","genre":"Yapboz","playMode":"SinglePlayer","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/oyunlar/yapboz/"},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Yapboz nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Karışık parçalar tahtanın altındaki tepsidedir. Bir parçayı tutup tahtadaki yerine sürükleyin. Parça doğru yere oturursa kilitlenir ve hafifçe parlar; yanlış yere bırakırsanız yerinde kalır ama kilitlenmez, istediğiniz zaman başka bir kareyle yer değiştirebilirsiniz. Tüm parçalar yerine oturunca yapboz tamamlanır."}},
+  {"@type":"Question","name":"Kaç parçalı yapboz oynayabilirim?","acceptedAnswer":{"@type":"Answer","text":"Dört boyut vardır: 3×3 (9 parça), 4×4 (16 parça), 5×5 (25 parça) ve 6×6 (36 parça). Yeni başlıyorsanız 3×3 ile ısının, zorlu bir yapboz için 6×6'yı seçin."}},
+  {"@type":"Question","name":"Kendi fotoğrafımla yapboz yapabilir miyim, fotoğrafım sunucuya gidiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Fotoğraf seç düğmesiyle cihazınızdan bir JPG, PNG, WebP ya da GIF seçebilirsiniz. Fotoğraf yalnızca tarayıcınızın belleğinde parçalara bölünür; hiçbir sunucuya yüklenmez ve cihazınızdan çıkmaz. Sayfayı kapattığınızda bellekten silinir."}},
+  {"@type":"Question","name":"Önizleme göster düğmesi ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Tamamlanmış resmi tahtanın üzerinde gösterir; böylece parçaları nereye koyacağınızı kontrol edebilirsiniz. Bir parçayı sürüklemeye başladığınızda önizleme kendiliğinden kapanır. Önizleme kullanmak süreyi ya da en iyi süreyi etkilemez."}},
+  {"@type":"Question","name":"Klavyeyle ya da dokunarak oynayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Dokunmatik ekranda parçayı parmağınızla sürükleyebilir ya da parçaya dokunup ardından tahtada bir kareye dokunabilirsiniz. Klavyede Tab ile tepsiye girin, ok tuşlarıyla parça seçin, Enter ile alın, ok tuşlarıyla bir kareye gidin ve Enter ile bırakın; Escape seçimi iptal eder."}},
+  {"@type":"Question","name":"En iyi süre nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Her parça sayısı için ayrı en iyi süre tutulur. Tarayıcı verilerini temizlerseniz sıfırlanır; hiçbir sunucuya gönderilmez."}},
+  {"@type":"Question","name":"Yüklediğim fotoğraf açılmazsa ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Dosyanın bir resim olduğundan emin olun. Bozuk, çok büyük (yaklaşık 100 megapikselden fazla) ya da desteklenmeyen biçimdeki dosyalar açılmaz ve size Türkçe bir uyarı gösterilir. Fotoğrafı küçültüp JPG ya da PNG olarak yeniden deneyin; oyununuz bozulmaz."}},
+  {"@type":"Question","name":"Oyun ücretli mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Oyun tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool game-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1>Yapboz Oyna – Ücretsiz Online Resimli Yapboz</h1><p class="lead">Karışık parçaları tahtadaki yerine sürükleyin. 9'dan 36 parçaya dört boyut, hazır örnek görseller ya da kendi fotoğrafınız; süre, hamle sayacı ve en iyi süre. Fotoğraf cihazınızdan çıkmaz.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <h2 id="h-oyun" class="visually-hidden">Yapboz oyun alanı</h2>
+      <div class="g-stats">
+        <div class="g-stat"><span class="g-label">Kalan parça</span><strong id="remaining">—</strong></div>
+        <div class="g-stat"><span class="g-label">Süre</span><strong id="time">00:00</strong></div>
+        <div class="g-stat"><span class="g-label">Hamle</span><strong id="moves">0</strong></div>
+        <div class="g-stat"><span class="g-label">En iyi süre</span><strong id="best">—</strong></div>
+      </div>
+      <div class="g-bar">
+        <div class="g-seg" role="group" aria-label="Parça sayısı">
+          <button type="button" data-size-btn="3" aria-pressed="false">3×3</button>
+          <button type="button" data-size-btn="4" aria-pressed="true">4×4</button>
+          <button type="button" data-size-btn="5" aria-pressed="false">5×5</button>
+          <button type="button" data-size-btn="6" aria-pressed="false">6×6</button>
+        </div>
+      </div>
+      <div class="photo-panel" id="photo-panel">
+        <div class="pp-row">
+          <div class="thumb" id="thumb" role="img" aria-label="Seçili yapboz görselinin küçük önizlemesi"></div>
+          <div class="pp-actions">
+            <div class="g-seg" role="group" aria-label="Örnek görsel">
+              <button type="button" data-sample="gunbatimi" aria-pressed="true">Gün batımı</button>
+              <button type="button" data-sample="desen" aria-pressed="false">Geometrik desen</button>
+              <button type="button" data-sample="sehir" aria-pressed="false">Gece şehri</button>
+            </div>
+            <input type="file" id="photo" accept="image/*" class="visually-hidden">
+            <label for="photo" class="ba-btn">Fotoğraf seç</label>
+            <label class="pp-check"><input type="checkbox" id="show-nums"> Parça numaralarını göster (kolay mod)</label>
+          </div>
+        </div>
+        <p class="g-hint">Fotoğrafınız yalnızca bu cihazda, tarayıcınızın belleğinde parçalara bölünür; hiçbir yere yüklenmez. Resim ortadan kare olarak kırpılır.</p>
+        <p class="g-hint" id="photo-note" aria-live="polite"></p>
+      </div>
+      <div class="g-bar">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-shuffle">Parçaları karıştır</button>
+        <button type="button" class="ba-btn" id="btn-preview" aria-pressed="false">Önizleme göster</button>
+        <button type="button" class="ba-btn" id="btn-full" hidden>Tam ekran</button>
+      </div>
+      <p class="ba-error" id="error" role="alert"></p>
+      <div class="yb-area" id="area" data-image="gunbatimi">
+        <div class="yb-board" id="board" data-n="4" role="group" aria-label="Yapboz tahtası. Kareleri oklarla gezin, Enter ile seçili parçayı bırakın.">
+          <div class="yb-slots" id="slots"></div>
+          <div class="yb-preview" id="preview" hidden><img id="preview-img" alt="Tamamlanmış yapboz görseli" width="840" height="840"></div>
+        </div>
+        <div class="yb-tray" id="tray" role="group" aria-label="Dağınık parçalar"></div>
+      </div>
+      <p class="p-status" id="status" aria-live="polite"></p>
+      <p class="g-hint">Parçayı tutup tahtaya sürükleyin · ya da parçaya, sonra bir kareye dokunun · klavyede Tab ile tepsiye girin, ok tuşlarıyla parça seçin, Enter ile alın, ok tuşlarıyla kareye gidip Enter ile bırakın. Altın çerçeveli parçalar doğru yerindedir ve kilitlidir.</p>
+      <div class="yb-confetti" id="confetti" aria-hidden="true"></div>
+    </section>
+
+    <div class="ba-ad game-ad-a" data-slot="oyun-yapboz-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Yapboz nedir?</h2>
+      <p>Yapboz, bir resmin küçük parçalara bölünüp karıştırıldığı ve bu parçaların yeniden yerli yerine konduğu klasik bir zeka oyunudur. Adı "yap" ve "boz" fiillerinden gelir; çünkü oyunun özü resmi bozup yeniden yapmaktır. Tek başına oynanabildiği için sabır, dikkat ve göz hafızası isteyen sakin bir uğraştır. Bu sayfadaki sürüm tarayıcınızda çalışır; bir şey indirmenizi ya da kayıt olmanızı istemez.</p>
+      <p>Oyun alanı iki bölümden oluşur. Üstte ızgaralı bir tahta bulunur; her kare tamamlanmış resmin bir parçasının yeridir. Altta ise karışık parçaların durduğu bir tepsi vardır. Sizin işiniz parçaları tepsiden alıp tahtada olması gereken yere koymaktır. Parça doğru yere oturduğunda yerine kilitlenir ve hafifçe parlar, böylece bir daha yanlışlıkla taşınmaz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Parça sayısını seçin.</strong> 3×3 (9 parça), 4×4 (16 parça), 5×5 (25 parça) ya da 6×6 (36 parça). Boyut değişince parçalar yeniden karıştırılır.</li>
+        <li><strong>Bir görsel seçin.</strong> Gün batımı, geometrik desen ve gece şehri hazır örneklerdir; isterseniz Fotoğraf seç düğmesiyle kendi fotoğrafınızı kullanabilirsiniz.</li>
+        <li><strong>Parçaları yerine sürükleyin.</strong> Tepsideki bir parçayı tutup tahtadaki karenin üzerine bırakın. Doğru yerse parça kilitlenir; yanlışsa yerinde kalır ve sonra değiştirilebilir. Süre ilk hamlenizle başlar.</li>
+        <li><strong>Yanlış yerleştirdiğiniz parçaları düzeltin.</strong> Tahtadaki kilitsiz bir parçayı başka bir karenin üzerine bırakırsanız iki parça yer değiştirir; parçayı tepsiye geri de bırakabilirsiniz.</li>
+        <li><strong>Tamamlayın.</strong> Son parça yerine oturduğunda süre durur, bütün resim dikişsiz biçimde görünür ve hamle sayınız ile süreniz gösterilir.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> Parçayı tutup sürükleyin ve bırakın. Parça sürüklerken tahtadaki kare ölçüsüne büyür; bıraktığınız yerde işaretçinin altındaki kare hedeftir. Sayfanın kenarına yaklaşırsanız sayfa kendiliğinden kayar, böylece uzun sayfalarda da parçayı taşıyabilirsiniz.</li>
+        <li><strong>Dokun-seç-yerleştir:</strong> Sürüklemek zor geliyorsa parçaya bir kez dokunarak seçin, sonra tahtada bir kareye dokunun. Seçili parça o kareye gider. Tahtadaki kilitsiz bir parçaya dokunup başka bir kareye dokunarak da yerini değiştirebilirsiniz.</li>
+        <li><strong>Klavye:</strong> Tab ile tepsiye girin, ok tuşlarıyla parçalar arasında gezin, Enter ya da Boşluk ile parçayı alın. Odak tahtaya geçer; ok tuşlarıyla bir kareye gidin ve Enter ile bırakın. Escape seçimi iptal eder. Her kare, ekran okuyucu için "boş", "doğru parça yerleşti" ya da "bu karenin parçası değil" olarak etiketlenir.</li>
+        <li><strong>Önizleme göster:</strong> Tamamlanmış resmi tahtanın üzerinde gösterir. Bir parçayı sürüklemeye başlayınca kendiliğinden kapanır.</li>
+        <li><strong>Parça numaraları:</strong> "Parça numaralarını göster" kutusunu işaretlerseniz her parçanın ve boş karenin üzerinde numara görünür; bu, çocuklar ve ilk kez oynayanlar için bir kolay moddur.</li>
+        <li><strong>Tam ekran:</strong> Destekleyen tarayıcılarda oyunu ekranı kaplayacak şekilde büyütür; reklamlar bu görünümde yer almaz.</li>
+      </ul>
+
+      <h2>Örnek görseller ve kendi fotoğrafınızla yapboz</h2>
+      <p>Üç örnek görselin hepsi bu sayfada, tarayıcınızın çizim yeteneğiyle üretilir; dışarıdan hiçbir resim indirilmez. <strong>Gün batımı</strong> renk geçişleri ve dağ siluetleri, <strong>geometrik desen</strong> keskin renk blokları, <strong>gece şehri</strong> ise ışıklı pencereler ve ay ışığıyla farklı türden ipuçları sunar. Geçişli gökyüzü parçaları zor, desenli parçalar ise renk eşleştirme açısından kolaydır.</p>
+      <p>Kendi fotoğrafınızı kullanmak için <strong>Fotoğraf seç</strong> düğmesine basın ve cihazınızdan bir JPG, PNG, WebP ya da GIF dosyası seçin. Fotoğraf ortadan kare olarak kırpılır, seçtiğiniz parça sayısına göre bölünür ve karıştırılır. Gizlilik açısından önemli nokta şudur: fotoğraf hiçbir sunucuya yüklenmez. Tarayıcınız dosyayı yalnızca bu sayfanın belleğinde açar, küçültüp kırpar ve parçalar hâlinde gösterir. Sayfayı kapattığınızda ya da yenilediğinizde fotoğraf bellekten silinir; hiçbir yere kaydedilmez. Dosya bozuksa, bir resim değilse ya da çok büyükse (yaklaşık 100 megapikselin üzerinde) size Türkçe bir uyarı gösterilir ve oyununuz bozulmaz. Aile fotoğrafı, evcil hayvanınız ya da bir tatil karesi, hediye olarak paylaşabileceğiniz kişisel bir yapboza dönüşür.</p>
+
+      <h2>Parça sayısı ve zorluk</h2>
+      <p>Parça sayısı arttıkça her parçanın taşıdığı bilgi azalır ve yapboz zorlaşır. <strong>3×3</strong> boyutu çocuklar ve kısa bir mola için, <strong>4×4</strong> boyutu dengeli bir başlangıç için uygundur. <strong>5×5</strong> ve <strong>6×6</strong> boyutlarında artık sistematik düşünmek gerekir: kenar parçalarını ayırmak, renk kümeleri oluşturmak ve önizlemeye düzenli bakmak büyük fark yaratır. Aynı görselle farklı boyutları denemek, resmi tanıma ve bölgesel hafızanızı da geliştirir.</p>
+
+      <h2>Süre, hamle ve en iyi süre</h2>
+      <p>Süre, ilk parçayı yerleştirdiğiniz anda başlar ve son parça yerine oturduğunda durur; sekme arka planda kaldığında ilerlemez. Hamle sayacı her yerleştirmeyi, yer değiştirmeyi ve parçayı tepsiye geri almayı bir hamle olarak sayar. Tamamladığınızda hem süreniz hem hamle sayınız gösterilir. En iyi süreniz her parça sayısı için ayrı ayrı, yalnızca tarayıcınızın localStorage alanında saklanır. Hiçbir sunucuya gönderilmez; tarayıcı verilerini temizlerseniz sıfırlanır.</p>
+
+      <div class="ba-ad" data-slot="oyun-yapboz-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce köşeleri ve kenarları bulun.</strong> Resmin dört köşesi ve çerçevesi genellikle tanıması en kolay parçalardır. Çerçeveyi kurmak, geri kalanını daraltır.</li>
+        <li><strong>Renge göre gruplayın.</strong> Gökyüzü, deniz, bina gibi aynı renk ailesindeki parçaları gözünüzle ayırın; sonra bu grupları ilgili bölgeye taşıyın.</li>
+        <li><strong>Önizlemeyi sık kullanın.</strong> Önizleme sürenizi etkilemez. Bir parça hakkında emin değilseniz resme bakın ve parçadaki renk, çizgi ve ışık yönünü karşılaştırın.</li>
+        <li><strong>Yanlış parçayı bekletmeyin.</strong> Yanlış yere koyduğunuz parça başka bir karenin doğru adayını engelliyor olabilir. Şüphelendiğiniz parçayı tepsiye geri alın ya da yer değiştirin.</li>
+        <li><strong>Ayrıntılı bölgelerden başlayın.</strong> Yazı, pencere, ağaç dalı ya da keskin bir desen gibi benzersiz ayrıntılar içeren parçalar sizi hemen doğru kareye götürür.</li>
+        <li><strong>Büyük yapbozlarda sakin kalın.</strong> 6×6 yapboz bir sabır oyunudur. Köşelerden başlayıp kenarlara, sonra içeriye ilerlemek yorulmadan çözmenizi sağlar.</li>
+      </ul>
+
+      <h2>Yapbozun kısa tarihi</h2>
+      <p>Yapbozun 18. yüzyılın ortasında İngiltere'de, harita yapımcısı ve oymacı John Spilsbury'nin ahşaba yapıştırdığı bir haritayı ülke sınırlarından keserek çocuklara coğrafya öğretmesiyle ortaya çıktığı sıkça anlatılır. İngilizcedeki "jigsaw puzzle" adı ise sonradan, parçaların ince bir el testeresiyle kesilmeye başlanmasından gelir. Önce eğitim aracı olarak görülen yapboz, 19. yüzyılda aileler için eğlenceye dönüştü. 20. yüzyılda karton baskı ve basma kalıplarla ucuzladı, böylece dünya çapında yaygınlaştı.</p>
+      <p>Bugün yapboz hem kutu olarak hem de bilgisayar ve telefonda yaşıyor. Dijital yapbozun avantajı parçaların kaybolmaması, kutunun masada yer kaplamaması ve istediğiniz fotoğrafı yapboza çevirebilmenizdir. Bu sayfadaki yapboz kare parçalı ve ızgaralı bir sürümdür; klasik kutu yapbozlarındaki tırnaklı şekillerin yerine net kare bölmeler kullanılır, böylece hem küçük ekranlarda hem klavyeyle rahatça oynanır.</p>
+
+      <h2>Neden Bilişim Ajans'ın yapbozu?</h2>
+      <ul>
+        <li><strong>Kurulum yok:</strong> Tarayıcı yeterlidir; bilgisayar, telefon ve tablette aynı sayfa çalışır.</li>
+        <li><strong>Kayıt yok, yükleme yok:</strong> Fotoğrafınız ve skorlarınız cihazınızda kalır.</li>
+        <li><strong>Sürükle-bırak ve dokun-seç:</strong> Fare, parmak ve klavye ile eşit derecede rahat oynanır.</li>
+        <li><strong>Dört boyut, üç hazır görsel:</strong> 9, 16, 25 ve 36 parça; istediğinizde kendi fotoğrafınız.</li>
+        <li><strong>Erişilebilirlik:</strong> Klavye ile tam kontrol, ekran okuyucu etiketleri ve hareketi azalt tercihine saygı (kutlama animasyonu kapanır).</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <details><summary>Yapboz nasıl oynanır?</summary><p>Karışık parçalar tahtanın altındaki tepsidedir. Bir parçayı tutup tahtadaki yerine sürükleyin. Parça doğru yere oturursa kilitlenir ve hafifçe parlar; yanlış yere bırakırsanız yerinde kalır ama kilitlenmez, istediğiniz zaman başka bir kareyle yer değiştirebilirsiniz. Tüm parçalar yerine oturunca yapboz tamamlanır.</p></details>
+      <details><summary>Kaç parçalı yapboz oynayabilirim?</summary><p>Dört boyut vardır: 3×3 (9 parça), 4×4 (16 parça), 5×5 (25 parça) ve 6×6 (36 parça). Yeni başlıyorsanız 3×3 ile ısının, zorlu bir yapboz için 6×6'yı seçin.</p></details>
+      <details><summary>Kendi fotoğrafımla yapboz yapabilir miyim, fotoğrafım sunucuya gidiyor mu?</summary><p>Evet. Fotoğraf seç düğmesiyle cihazınızdan bir JPG, PNG, WebP ya da GIF seçebilirsiniz. Fotoğraf yalnızca tarayıcınızın belleğinde parçalara bölünür; hiçbir sunucuya yüklenmez ve cihazınızdan çıkmaz. Sayfayı kapattığınızda bellekten silinir.</p></details>
+      <details><summary>Önizleme göster düğmesi ne işe yarar?</summary><p>Tamamlanmış resmi tahtanın üzerinde gösterir; böylece parçaları nereye koyacağınızı kontrol edebilirsiniz. Bir parçayı sürüklemeye başladığınızda önizleme kendiliğinden kapanır. Önizleme kullanmak süreyi ya da en iyi süreyi etkilemez.</p></details>
+      <details><summary>Klavyeyle ya da dokunarak oynayabilir miyim?</summary><p>Evet. Dokunmatik ekranda parçayı parmağınızla sürükleyebilir ya da parçaya dokunup ardından tahtada bir kareye dokunabilirsiniz. Klavyede Tab ile tepsiye girin, ok tuşlarıyla parça seçin, Enter ile alın, ok tuşlarıyla bir kareye gidin ve Enter ile bırakın; Escape seçimi iptal eder.</p></details>
+      <details><summary>En iyi süre nerede saklanıyor?</summary><p>Yalnızca bu tarayıcının localStorage alanında, cihazınızda saklanır. Her parça sayısı için ayrı en iyi süre tutulur. Tarayıcı verilerini temizlerseniz sıfırlanır; hiçbir sunucuya gönderilmez.</p></details>
+      <details><summary>Yüklediğim fotoğraf açılmazsa ne yapmalıyım?</summary><p>Dosyanın bir resim olduğundan emin olun. Bozuk, çok büyük (yaklaşık 100 megapikselden fazla) ya da desteklenmeyen biçimdeki dosyalar açılmaz ve size Türkçe bir uyarı gösterilir. Fotoğrafı küçültüp JPG ya da PNG olarak yeniden deneyin; oyununuz bozulmaz.</p></details>
+      <details><summary>Oyun ücretli mi, kayıt gerekiyor mu?</summary><p>Hayır. Oyun tamamen ücretsizdir, hesap açmanız ya da bir şey kurmanız gerekmez. Giderler sayfadaki reklamlarla karşılanır.</p></details>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../kelime-avi/">Kelime Avı</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../../">Tüm araçlar ve oyunlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-yapboz-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script type="module" src="game.js"></script>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

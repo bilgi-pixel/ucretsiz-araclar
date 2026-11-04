@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Uzay Savaşı Oyna – Ücretsiz Online Uzay Savaşı (kurulumsuz)</title>
+  <meta name="description" content="Uzay savaşı oyununu tarayıcıda hemen oynayın: gemiyi ok tuşları ya da parmağınızla yönlendirin, dalga dalga gelen düşmanları vurun, çift atış, kalkan ve hız güçlendirmelerini toplayın, her 5. dalgada patronu yenin. Ücretsiz, kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/uzay-savasi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Oyuna özel düzen; renk ve ölçü token'ları ba.css'ten gelir. */
+    .game-box { padding: 14px; }
+    @media (min-width: 768px) { .game-box { padding: 24px; } }
+    .us-hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 420px; margin: 0 auto 12px; }
+    .us-stat { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 6px 4px; text-align: center; min-width: 0; }
+    .us-stat span { display: block; font-family: var(--ba-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-muted); line-height: 1.3; }
+    .us-stat strong { display: block; font-family: var(--ba-mono); font-size: 1.2rem; font-weight: 500; color: var(--ba-text); line-height: 1.3; white-space: nowrap; }
+    .us-stat.lives strong { color: var(--ba-primary); letter-spacing: .05em; }
+    @media (max-width: 400px) { .us-stat span { font-size: .62rem; letter-spacing: .02em; } }
+    .us-buff { max-width: 420px; margin: 0 auto 8px; text-align: center; font-weight: 600; font-size: .9rem; color: var(--ba-primary); }
+    .us-stage { position: relative; width: 100%; max-width: 420px; margin: 0 auto; aspect-ratio: 3 / 4; border-radius: var(--ba-radius); overflow: hidden; background: #0d0f1a; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .us-stage canvas { width: 100%; height: 100%; display: block; }
+    .us-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; background: rgba(13, 15, 26, .86); color: #fff; }
+    .us-overlay h3 { margin: 0; color: #fff; font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .us-overlay p { margin: 0; color: #d7d8db; max-width: 34ch; font-size: .95rem; line-height: 1.5; }
+    .us-overlay .ba-btn-primary { color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .us-overlay .ba-btn-primary { color: #1a0d10; } }
+    :root[data-theme="dark"] .us-overlay .ba-btn-primary { color: #1a0d10; }
+    .game-box .ba-actions { justify-content: center; }
+    .us-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; max-width: 520px; margin: 14px auto 0; padding: 0; list-style: none; font-size: .85rem; color: var(--ba-text-2); }
+    .us-legend li { margin: 0; display: inline-flex; align-items: center; gap: 6px; }
+    .us-legend svg { flex: none; }
+    .us-cap { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700; display: inline-grid; place-items: center; flex: none; border: 2px solid transparent; }
+    .us-cap.c { background: #7b2331; border-color: #e8a0b3; }
+    .us-cap.k { background: #2f6f9f; border-color: #bde3ff; }
+    .us-cap.h { background: #2f7d4f; border-color: #bdf0cf; }
+    .us-hint { max-width: 520px; margin: 12px auto 0; font-size: .88rem; color: var(--ba-text-muted); text-align: center; }
+    .game-box:fullscreen { overflow: auto; display: flex; flex-direction: column; justify-content: center; background: var(--ba-bg); border-radius: 0; }
+    .game-box:fullscreen .us-stage { max-width: min(100%, max(200px, calc((100vh - 300px) * .75))); }
+    /* Oyun sayfasında kahraman alanı sıkıştırılır: oyun ilk ekranda görünsün. */
+    .ba-hero.ba-hero-tool { padding: 26px 0 64px; }
+    .ba-hero h1 { font-size: clamp(1.65rem, 3.8vw, 2.4rem); margin-bottom: .35em; }
+    .ba-hero p.lead { font-size: 1rem; line-height: 1.55; margin-bottom: .9em; }
+    .ba-hero .ba-crumb { margin-bottom: 12px; }
+    .ba-hero .ba-badges { margin-bottom: 0; }
+    @media (min-width: 768px) { .ba-hero.ba-hero-tool { padding: 34px 0 68px; } }
+    .game-box + .ba-ad { margin-top: 52px; }
+    .ba-content { overflow-wrap: anywhere; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Uzay Savaşı – Bilişim Ajans","description":"Tarayıcıda oynanan ücretsiz uzay savaşı oyunu: dalga dalga düşmanlar, düşman mermileri, çift atış, kalkan ve hız güçlendirmeleri, her 5. dalgada patron, 3 can ve en yüksek skor.","applicationCategory":"Game","genre":"Arcade","playMode":"SinglePlayer","operatingSystem":"Web","inLanguage":"tr","url":"https://araclar.bilisimajans.com/oyunlar/uzay-savasi/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Uzay savaşı oyunu nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Gemiyi sol ve sağ ok tuşları ya da A ve D ile yönlendirir, Boşluk tuşunu basılı tutarak ateş edersiniz. Dalga dalga inen düşmanları vurur, düşman mermilerinden kaçar ve üç canınız bitmeden mümkün olduğunca yüksek skor yaparsınız."}},
+  {"@type":"Question","name":"Telefonda nasıl oynarım, ateş düğmesi var mı?","acceptedAnswer":{"@type":"Answer","text":"Ayrı bir ateş düğmesi yoktur. Parmağınızı oyun alanında sağa sola sürüklediğinizde gemi hareket eder ve parmağınız ekrandayken gemi kendiliğinden ateş eder. Sürükleme göreceli çalıştığı için parmağınız gemiyi örtmez."}},
+  {"@type":"Question","name":"Güçlendirmeler nelerdir, nasıl kazanılır?","acceptedAnswer":{"@type":"Answer","text":"Üç güçlendirme vardır: Ç çift atış (12 saniye), K kalkan (bir hasarı emer) ve H hız (10 saniye, gemi ve ateş hızlanır). Her sekizinci düşman bir kapsül bırakır; kapsülü gemiyle yakalamanız gerekir."}},
+  {"@type":"Question","name":"Patron ne zaman çıkar, nasıl yenilir?","acceptedAnswer":{"@type":"Answer","text":"Her 5. dalgada (5, 10, 15 ...) tek bir büyük patron gelir. Sağa sola salınır, yelpaze biçiminde mermi atar ve canı yarıya inince hızlanır. Mermilerin arasındaki boşluklardan kayarak ateş etmeye devam edin; üst çubuk kalan canını gösterir."}},
+  {"@type":"Question","name":"Kaç canım var, kalkan canı korur mu?","acceptedAnswer":{"@type":"Answer","text":"3 canla başlarsınız. Düşman mermisi, düşman gövdesi ya da yere inen filo bir can götürür. Kalkan aktifse hasarı can yerine kendisi alır ve kaybolur; her hasardan sonra kısa süre dokunulmazsınız."}},
+  {"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcınızın yerel depolama alanında (localStorage). Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız sıfırlanır."}},
+  {"@type":"Question","name":"Oyunu nasıl duraklatırım?","acceptedAnswer":{"@type":"Answer","text":"P tuşuna ya da Duraklat düğmesine basın; devam etmek için yine P ya da Boşluk yeterlidir. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar."}},
+  {"@type":"Question","name":"Hareketi azalt ayarı açıksa ne değişir?","acceptedAnswer":{"@type":"Answer","text":"Cihazınızda hareketi azaltma tercihi açıksa patlama parçacıkları üretilmez, arka plandaki yıldızlar kaymaz ve hasar sonrası gemi yanıp sönmek yerine sabit yarı saydam görünür. Oyunun kuralları ve zorluğu değişmez."}},
+  {"@type":"Question","name":"Oyun ücretsiz mi, çevrimdışı çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir; siteyi uygulama olarak kurmak da mümkündür."}}
+  ]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol>
+      <h1>Uzay Savaşı Oyna – Ücretsiz Online Uzay Savaşı</h1>
+      <p class="lead">Gemiyi ok tuşlarıyla ya da parmağınızla yönlendirin, dalga dalga inen düşmanları vurun, kapsülleri toplayıp her beşinci dalgadaki patronu yenin. Kurulum, üyelik ve indirme yok; en yüksek skorunuz bu cihazda saklanır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+    </div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="game-box" aria-labelledby="h-oyun">
+      <noscript><p class="ba-note">Bu oyunun çalışması için tarayıcınızda JavaScript açık olmalıdır.</p></noscript>
+      <h2 id="h-oyun" class="visually-hidden">Uzay savaşı oyun alanı</h2>
+      <div class="us-hud" aria-label="Oyun bilgileri">
+        <div class="us-stat"><span>Skor</span><strong id="score">0</strong></div>
+        <div class="us-stat"><span>En yüksek</span><strong id="best">0</strong></div>
+        <div class="us-stat"><span>Dalga</span><strong id="wave">1</strong></div>
+        <div class="us-stat lives" aria-label="Kalan can: 3"><span>Can</span><strong id="lives">♥♥♥</strong></div>
+      </div>
+      <p class="us-buff" id="buff" hidden></p>
+
+      <div class="us-stage" id="stage" tabindex="0" role="group" aria-label="Uzay savaşı oyun alanı. Gemi için sol ve sağ ok tuşları ya da A ve D, ateş için Boşluk tuşunu basılı tutun, duraklatmak için P. Dokunmatik ekranda parmağınızı sürükleyin, gemi kendiliğinden ateş eder.">
+        <canvas id="board" width="420" height="560" role="img" aria-label="Gemi, düşmanlar, mermiler ve yıldızlardan oluşan oyun alanı"></canvas>
+        <div class="us-overlay" id="overlay">
+          <h3 id="overlay-title">Uzay Savaşı</h3>
+          <p id="overlay-text">Başlat düğmesine basın.</p>
+          <button type="button" class="ba-btn ba-btn-primary" id="overlay-btn">Başlat</button>
+        </div>
+      </div>
+
+      <div class="ba-actions">
+        <button type="button" class="ba-btn ba-btn-primary" id="btn-main">Başlat</button>
+        <button type="button" class="ba-btn" id="btn-restart">Yeniden başlat</button>
+        <button type="button" class="ba-btn" id="btn-full" aria-pressed="false">Tam ekran</button>
+      </div>
+
+      <ul class="us-legend" aria-label="Düşman ve güçlendirme anahtarı">
+        <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 4h18z" fill="#c25a72"/></svg>Üçgen: 1 vuruş</li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l10 10-10 10L2 12z" fill="#b8860b"/></svg>Elmas: 2 vuruş</li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12l5-9h10l5 9-5 9H7z" fill="#2a8077"/></svg>Altıgen: 3 vuruş</li>
+        <li><span class="us-cap c" aria-hidden="true">Ç</span>Çift atış</li>
+        <li><span class="us-cap k" aria-hidden="true">K</span>Kalkan</li>
+        <li><span class="us-cap h" aria-hidden="true">H</span>Hız</li>
+      </ul>
+      <p class="us-hint">Hareket: ← → (A D), fare ya da parmakla sürükleme. Ateş: Boşluk basılı tutulur, fare düğmesi ya da parmak ekrandayken kendiliğinden. Duraklat: P. En yüksek skor yalnızca bu tarayıcıda saklanır.</p>
+      <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-uzay-savasi-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+
+      <h2>Uzay savaşı oyunu nedir?</h2>
+      <p>Uzay savaşı, ekranın altındaki küçük bir geminin yatayda kayarak yukarıdan gelen düşman filolarını vurduğu klasik bir arcade atış oyunudur. Amaç basittir: düşmanlar sizi vurmadan ya da yere inmeden onları indirmek. Her dalga bir öncekinden biraz daha kalabalık, hızlı ve ateşlidir; beşinci dalgadan itibaren her beş dalgada bir büyük bir patron çıkar. Üç canınız vardır ve her hasar bir canı götürür. Bütün canlar tükenince oyun biter, skorunuz ve ulaştığınız dalga ekranda görünür.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Hiçbir şey indirmeniz, hesap açmanız ya da e-posta vermeniz gerekmez. Gemi, düşmanlar, mermiler ve yıldız arka planı kodla çizilir; dış görsel ya da ses dosyası kullanılmaz. En yüksek skorunuz yalnızca tarayıcınızın yerel depolama alanında tutulur, sunucumuza hiçbir bilgi gönderilmez. Oyun alanı reklamsızdır; reklamlar yalnızca sayfa içeriğinin aralarında yer alır.</p>
+
+      <h2>Uzay savaşı nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li><strong>Başlat'a basın.</strong> Gemi oyun alanının altında ortada başlar ve ilk dalga yukarıdan süzülerek yerine oturur. Bu sırada düşmanlar henüz ateş etmez, gemiyi konumlandırmak için zamanınız vardır.</li>
+        <li><strong>Gemiyi yönlendirin.</strong> Sol ve sağ ok tuşlarını, A ve D tuşlarını, fareyi ya da dokunmatik ekranda parmağınızı kullanın. Gemi ekranın kenarlarında durur.</li>
+        <li><strong>Ateş edin.</strong> Boşluk tuşunu basılı tutun; gemi belirli aralıklarla otomatik ateş eder. Dokunmatik ekranda parmağınız oyun alanındayken ateş kendiliğinden sürer.</li>
+        <li><strong>Mermilerden kaçının.</strong> Düşmanlar aşağıya doğru kırmızı mermiler atar; bazıları doğrudan geminize nişan alır. Mermilerin arasındaki boşluklara kayın.</li>
+        <li><strong>Dalgayı temizleyin.</strong> Son düşman düşünce bonus puan kazanır ve bir sonraki dalgaya geçersiniz. Beşinci, onuncu, on beşinci dalgalarda patron sizi bekler.</li>
+      </ol>
+
+      <h2>Kontroller</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Sol ve sağ ok tuşları ya da A ve D geminizi hareket ettirir. Boşluk tuşu basılı tutulduğu sürece ateş eder; her tuş vuruşuna tek tek basmanız gerekmez. P tuşu oyunu duraklatır ve sürdürür.</li>
+        <li><strong>Fare:</strong> İmleci oyun alanında sağa sola götürdüğünüzde gemi imlecin altında kalır. Sol fare düğmesini basılı tuttuğunuz sürece gemi ateş eder.</li>
+        <li><strong>Dokunmatik ekran:</strong> Parmağınızı oyun alanında sağa sola sürükleyin. Gemi, parmağınızın kaydığı mesafe kadar hareket eder; böylece parmak gemiyi örtmez. Parmak ekrandayken gemi kendiliğinden ateş eder, ayrı bir ateş düğmesine gerek yoktur.</li>
+        <li><strong>Düğmeler:</strong> Başlat, Duraklat, Yeniden başlat ve Tam ekran düğmeleri fareyle ya da Tab ve Enter tuşlarıyla kullanılır. Tam ekran modunda oyun alanı büyür ve sayfadaki reklamlar görünmez.</li>
+      </ul>
+
+      <h2>Düşman türleri ve dalgalar</h2>
+      <p>Oyunda üç sıradan düşman şekli vardır. Aşağıya bakan üçgenler en zayıf olanlardır: tek vuruşta düşerler ve 10 puan verirler. Elmas biçimli düşmanlar iki vuruş ister ve 20 puan verir; ikinci dalgadan itibaren üst sıralarda görünürler. Altıgenler üç vuruş ister ve 30 puan getirir; üçüncü dalgadan itibaren filonun en üst sırasını oluştururlar. Elmas ve altıgenlerin üzerinde kalan dayanıklılığı gösteren noktalar bulunur; her vuruşta bir nokta silinir. Böylece dayanıklılığı renge bakmadan, nokta sayısından okuyabilirsiniz.</p>
+      <p>Düşmanlar bir filo halinde yana doğru ilerler, ekranın kenarına değince bir adım aşağı iner ve yön değiştirir. Dalga numarası büyüdükçe filo iki satırdan beş satıra kadar genişler, yedinci dalgadan itibaren her satıra bir düşman daha eklenir; filonun yan hızı artar ve ateş sıklığı yükselir. Filodan düşmanlar azaldıkça kalanlar da hızlanır, bu yüzden son birkaç düşman sandığınızdan daha zor vurulabilir. Filonun alt sırası gemi hizasına yaklaşırsa düşmanlar yere inmiş sayılır: bir can gider ve filo yeniden en üste döner.</p>
+
+      <h2>Güçlendirmeler</h2>
+      <p>Her sekizinci düşman, aşağı doğru süzülen bir kapsül bırakır; ayrıca nadiren başka düşmanlar da kapsül düşürür. Kapsülü gemiyle yakalarsanız etkisi başlar, kaçırırsanız kapsül alt kenardan kaybolur ve hiçbir şey kaybetmezsiniz. Her yakalanan kapsül 25 puan da verir.</p>
+      <ul>
+        <li><strong>Ç (çift atış):</strong> 12 saniye boyunca gemi aynı anda iki mermi atar; vuruş gücünüz iki katına çıkar ve geniş filolarda iki sütunu birden tarayabilirsiniz.</li>
+        <li><strong>K (kalkan):</strong> Geminin çevresinde bir halka belirir ve sıradaki ilk hasarı emer. Süre sınırı yoktur, ancak yalnızca bir hasar dayanır; kullanıldığında kaybolur.</li>
+        <li><strong>H (hız):</strong> 10 saniye boyunca gemi daha hızlı hareket eder ve daha sık ateş eder. Mermiden kaçarken ve patrona yetişirken özellikle işe yarar.</li>
+      </ul>
+
+      <h2>Patron savaşları</h2>
+      <p>Her beşinci dalgada filo yerine tek bir büyük patron gelir. Patron, ekranın üstünde sağa sola salınır ve belirli aralıklarla yelpaze biçiminde mermi gönderir; üç saldırıdan birinde doğrudan geminize nişan alır. Canı yarıya indiğinde hem hızlanır hem de mermi sayısını artırır. Patronun kalan canı ekranın üstündeki çubukta görünür. İlk patron 36 vuruşla düşer, sonraki her patron için 24 vuruş daha gerekir. Patronu yenmek 500 puan, ikinci patronda 1000 puan ve böyle devam eden bir ödül verir; ayrıca bir kalkan kapsülü bırakır.</p>
+
+      <h2>Puanlama, can ve en yüksek skor</h2>
+      <p>Üçgen 10, elmas 20 ve altıgen 30 puan getirir. Dayanıklı bir düşmana kırmadan verdiğiniz her vuruş 2 puandır. Her dalgayı temizlediğinizde dalga numarasının elli katı kadar bonus alırsınız; örneğin dördüncü dalga 200 bonus puandır. Oyuna üç canla başlarsınız. En yüksek skorunuz tarayıcınızın localStorage alanına yazılır; başka bir cihaza ya da tarayıcıya taşınmaz ve tarayıcı verilerini temizlediğinizde silinir.</p>
+
+      <div class="ba-ad" data-slot="oyun-uzay-savasi-b" aria-label="Reklam"></div>
+
+      <h2>Uzay savaşında strateji ipuçları</h2>
+      <ul>
+        <li><strong>Ekranın ortasına yakın durun.</strong> Ortada durmak her iki yana da en kısa mesafede kaçmanızı sağlar. Yalnızca kapsül toplamak ya da bir sütunu temizlemek için kenara gidin ve hemen geri dönün.</li>
+        <li><strong>Önce alt sıradaki düşmanları vurun.</strong> Yalnızca her sütunun en alttaki düşmanı ateş edebilir. Alt sırayı temizlemek hem mermi sayısını düşürür hem de filonun yere inmesini geciktirir.</li>
+        <li><strong>Mermiye değil boşluğa bakın.</strong> Gözünüzü geminizde değil, düşman mermileri arasındaki boşlukta tutun. Küçük ve erken hareketler, son anda yapılan sert kaçışlardan daha güvenlidir.</li>
+        <li><strong>Doğrudan nişan alan mermileri okuyun.</strong> Bazı mermiler atıldığı anda geminizin bulunduğu yere doğru eğik gider. Böyle bir mermi gördüğünüzde olduğunuz yerde beklemeyin; erken ve kısa bir yan hareket çoğu zaman yeter, çünkü mermi sizin eski konumunuzu hedefler.</li>
+        <li><strong>Kalkanı patron için koruyun.</strong> Kalkanın süresi yoktur ve tek bir hasarı emer. Bir kalkan kapsülü yakaladıysanız, mümkünse onu patron dalgasına kadar harcamadan taşıyın; patronun yelpaze mermileri tek hatada can götürmenin en kolay yoludur.</li>
+        <li><strong>Çift atışı geniş filolarda kullanın.</strong> İki mermi aynı anda çıktığı için iki sütunu birden tarar ve altıgenlerin dayanıklılığını hızla düşürür.</li>
+        <li><strong>Patronda yan hareketi öğrenin.</strong> Patron düzenli bir sinüs eğrisiyle salınır; konumunu tahmin edip altında kalabilirsiniz. Canı yarıya inince hızlanacağını unutmayın.</li>
+        <li><strong>Mola verin.</strong> Dikkatiniz dağıldığında P tuşuyla duraklatın; oyun sekme arka plana alındığında kendiliğinden durur.</li>
+      </ul>
+
+      <h2>Uzay savaşı oyunlarının kısa tarihi</h2>
+      <p>Uzay temalı oyunlar, bilgisayar oyunlarının en eski türlerinden biridir. 1960'lı yıllarda üniversite laboratuvarlarındaki bilgisayarlarda, iki uzay gemisinin birbirine ateş ettiği ilk örnekler yazıldı. 1970'lerin sonunda salon makineleri, yukarıdan sıra sıra inen düşmanlara karşı sabit bir top gibi yatayda kayan tek bir savunma aracı fikrini yaygınlaştırdı. Sonraki yıllarda ekran dikey kaydırmalı oldu, güçlendirme kapsülleri toplayarak silah geliştirmek ve bölüm sonunda büyük bir patronla karşılaşmak türün vazgeçilmez öğeleri haline geldi. Bugün hâlâ yeni oyunlarda aynı döngüyü görmek mümkün: kaçın, vurun, güçlenin ve bir sonraki dalgaya hazırlanın.</p>
+      <p>Bu sayfadaki sürüm sıfırdan, yalnızca tarayıcının kendi özellikleriyle yazıldı; hiçbir dış kütüphane, görsel ya da ses dosyası kullanmıyor. Fizik sabit zaman adımlarıyla hesaplanır; bu sayede hızlı ya da yavaş bir bilgisayarda aynı kurallar geçerli olur ve oyun alanı ekranın çözünürlüğüne göre net çizilir.</p>
+
+      <h2>Neden Bilişim Ajans uzay savaşı oyunu?</h2>
+      <ul>
+        <li><strong>Kurulum ve üyelik yok.</strong> Sayfayı açın, Başlat'a basın.</li>
+        <li><strong>Klavye, fare ve dokunmatik.</strong> 360 piksel genişliğindeki telefonlarda da sığar; sürükleme göreceli çalıştığı için parmağınız gemiyi kapatmaz ve ateş kendiliğinden sürer.</li>
+        <li><strong>Reklamsız oyun alanı.</strong> Reklamlar yalnızca sayfa içeriğinin aralarındadır; oyun alanının ve düğmelerin yanında görünmez. Tam ekran modunda hiçbir reklam görünmez.</li>
+        <li><strong>Gizlilik.</strong> Çerez, izleme ya da hesap yoktur. Yalnızca rekorunuz kendi cihazınızda saklanır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfayı bir kez açtıktan sonra internet olmadan da oynayabilirsiniz.</li>
+      </ul>
+
+      <h2>Erişilebilirlik ve hareket ayarı</h2>
+      <p>Oyun tamamen klavyeyle oynanabilir. Oyun alanına odaklandığınızda ok tuşları sayfayı kaydırmaz. Düşman türleri yalnızca renkle değil şekil ve nokta sayısıyla da ayrılır; güçlendirme kapsüllerinin üzerinde harfler yazar. Önemli olaylar (can kaybı, dalga başı, güçlendirme kazanma) ekran okuyucular için ayrıca duyurulur. Cihazınızda hareketi azaltma tercihi açıksa patlama parçacıkları üretilmez, yıldızlar kaymaz ve hasar sonrası gemi yanıp sönmek yerine sabit yarı saydam görünür.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Uzay savaşı oyunu nasıl oynanır?</summary><p>Gemiyi sol ve sağ ok tuşları ya da A ve D ile yönlendirir, Boşluk tuşunu basılı tutarak ateş edersiniz. Dalga dalga inen düşmanları vurur, düşman mermilerinden kaçar ve üç canınız bitmeden mümkün olduğunca yüksek skor yaparsınız.</p></details>
+        <details><summary>Telefonda nasıl oynarım, ateş düğmesi var mı?</summary><p>Ayrı bir ateş düğmesi yoktur. Parmağınızı oyun alanında sağa sola sürüklediğinizde gemi hareket eder ve parmağınız ekrandayken gemi kendiliğinden ateş eder. Sürükleme göreceli çalıştığı için parmağınız gemiyi örtmez.</p></details>
+        <details><summary>Güçlendirmeler nelerdir, nasıl kazanılır?</summary><p>Üç güçlendirme vardır: Ç çift atış (12 saniye), K kalkan (bir hasarı emer) ve H hız (10 saniye, gemi ve ateş hızlanır). Her sekizinci düşman bir kapsül bırakır; kapsülü gemiyle yakalamanız gerekir.</p></details>
+        <details><summary>Patron ne zaman çıkar, nasıl yenilir?</summary><p>Her 5. dalgada (5, 10, 15 ...) tek bir büyük patron gelir. Sağa sola salınır, yelpaze biçiminde mermi atar ve canı yarıya inince hızlanır. Mermilerin arasındaki boşluklardan kayarak ateş etmeye devam edin; üst çubuk kalan canını gösterir.</p></details>
+        <details><summary>Kaç canım var, kalkan canı korur mu?</summary><p>3 canla başlarsınız. Düşman mermisi, düşman gövdesi ya da yere inen filo bir can götürür. Kalkan aktifse hasarı can yerine kendisi alır ve kaybolur; her hasardan sonra kısa süre dokunulmazsınız.</p></details>
+        <details><summary>En yüksek skorum nerede saklanıyor?</summary><p>Tarayıcınızın yerel depolama alanında (localStorage). Hiçbir sunucuya gönderilmez ve başka cihazlarla eşitlenmez. Tarayıcı verilerini temizlerseniz ya da gizli pencerede oynarsanız sıfırlanır.</p></details>
+        <details><summary>Oyunu nasıl duraklatırım?</summary><p>P tuşuna ya da Duraklat düğmesine basın; devam etmek için yine P ya da Boşluk yeterlidir. Sekmeyi arka plana aldığınızda oyun kendiliğinden duraklar.</p></details>
+        <details><summary>Hareketi azalt ayarı açıksa ne değişir?</summary><p>Cihazınızda hareketi azaltma tercihi açıksa patlama parçacıkları üretilmez, arka plandaki yıldızlar kaymaz ve hasar sonrası gemi yanıp sönmek yerine sabit yarı saydam görünür. Oyunun kuralları ve zorluğu değişmez.</p></details>
+        <details><summary>Oyun ücretsiz mi, çevrimdışı çalışır mı?</summary><p>Ücretsizdir; kayıt, indirme ya da eklenti gerekmez. Sayfa bir kez yüklendikten sonra internet olmadan da oynanabilir; siteyi uygulama olarak kurmak da mümkündür.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">🔒</span><span><strong>Gizlilik notu:</strong> Bu oyun hiçbir kişisel veri toplamaz. Skorunuz yalnızca tarayıcınızın yerel depolama alanında durur ve bilgisayarınızdan ya da telefonunuzdan çıkmaz.</span></p>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../blok-dusurme/">Blok Düşürme</a></li>
+        <li><a href="../../">Tüm Ücretsiz Araçlar</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Web sitesi, oyun ya da özel yazılım ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-uzay-savasi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
