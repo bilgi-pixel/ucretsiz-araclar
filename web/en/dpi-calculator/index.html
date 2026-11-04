@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>DPI Calculator – Convert Pixels to Inches and cm, Print Size and Screen PPI</title>
+  <meta name="description" content="Free DPI calculator: convert pixels to inches or centimeters, find the pixels needed for 4x6, 8x10 or A4 prints and work out screen PPI. Runs in your browser, nothing is uploaded.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/dpi-calculator/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/dpi-hesapla/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/dpi-calculator/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/dpi-hesapla/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .dpi-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; border: 0; padding: 0; margin: 0 0 14px; }
+    .dpi-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .dpi-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .dpi-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .dpi-grid { grid-template-columns: 1fr 1fr; } .dpi-grid.c3 { grid-template-columns: 1fr 1fr 1fr; } }
+    .dpi-grid .ba-field { margin: 0; }
+    .dpi-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .dpi-chip { min-height: 40px; padding: 6px 14px; font: inherit; font-weight: 600; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: 999px; cursor: pointer; }
+    .dpi-chip:hover, .dpi-chip:focus-visible { border-color: var(--ba-primary); }
+    .dpi-chip[aria-pressed="true"] { border: 2px solid var(--ba-primary); background: var(--ba-primary-soft); padding: 5px 13px; }
+    .dpi-box { margin-top: 16px; padding: 14px 18px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); }
+    .dpi-box h3 { margin: 0 0 8px; font-size: 1rem; }
+    .dpi-results { margin: 0; display: grid; gap: 4px; }
+    .dpi-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .dpi-row:last-child { border-bottom: 0; }
+    .dpi-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .dpi-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1rem; text-align: right; overflow-wrap: anywhere; }
+    .dpi-row.is-strong dd { font-weight: 700; font-size: 1.15rem; color: var(--ba-text); }
+    .conv-line { font-family: var(--ba-mono); font-size: .95rem; margin: 12px 0 0; overflow-wrap: anywhere; color: var(--ba-text-2); }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .dpi-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .dpi-sec { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--ba-border); }
+    .dpi-sec h3 { margin: 0 0 4px; font-size: 1.1rem; }
+    .dpi-sec h4 { margin: 14px 0 4px; font-size: .95rem; }
+    .dpi-small { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+    .ba-tool table, .ba-content table { width: 100%; border-collapse: collapse; margin: 12px 0 8px; font-size: .95rem; }
+    .ba-tool th, .ba-tool td, .ba-content th, .ba-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ba-border); vertical-align: middle; }
+    .ba-tool th, .ba-content th { background: var(--ba-surface-2); }
+    .ba-tool td { white-space: nowrap; }
+    /* Dar ekranda örnek ekran tablosu satır kartına dönüşür: "Uygula" düğmesi yatay kaydırma gerektirmeden görünür. */
+    @media (max-width: 640px) {
+      .dpi-print th, .dpi-print td { padding: 6px 5px; font-size: .85rem; }
+      #devices-wrap table, #devices-wrap tbody { display: block; }
+      #devices-wrap thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      #devices-wrap tr { display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--ba-border); }
+      #devices-wrap td { padding: 2px 0; border: 0; white-space: nowrap; font-size: .9rem; }
+      #devices-wrap td:nth-of-type(1) { grid-column: 1 / 4; grid-row: 1; font-weight: 600; white-space: normal; font-size: 1rem; }
+      #devices-wrap td:nth-of-type(2) { grid-column: 1; grid-row: 2; }
+      #devices-wrap td:nth-of-type(3) { grid-column: 2; grid-row: 2; }
+      #devices-wrap td:nth-of-type(4) { grid-column: 3; grid-row: 2; }
+      #devices-wrap td:nth-of-type(4)::after { content: " PPI"; }
+      #devices-wrap td:nth-of-type(5) { grid-column: 4; grid-row: 1 / span 2; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"DPI Calculator – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/dpi-calculator/"}
+  </script>
+  <script type="application/ld+json" id="faq-ld">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"How many inches is 3000 pixels at 300 DPI?","acceptedAnswer":{"@type":"Answer","text":"Exactly 10 inches, which is 25.4 centimeters. Divide the pixel count by the DPI to get inches (3000 ÷ 300 = 10), then multiply by 2.54 for centimeters. Printed at 150 DPI the same 3000 pixels stretch to 20 inches, but the print looks softer."}},{"@type":"Question","name":"How many pixels do I need for an 8x10 print?","acceptedAnswer":{"@type":"Answer","text":"At 300 DPI you need 2400 × 3000 pixels, and at 150 DPI you need 1200 × 1500 pixels. Multiply each side in inches by the DPI. If the photo has a different shape, such as 3:2, it will be cropped to fit unless you accept white borders."}},{"@type":"Question","name":"Is DPI the same as PPI?","acceptedAnswer":{"@type":"Answer","text":"Strictly, no. DPI counts the dots a printer places per inch, while PPI counts the pixels per inch of an image or screen. In everyday use people swap the two words, and the arithmetic for converting pixels to inches is identical for both."}},{"@type":"Question","name":"Is 150 DPI enough for printing?","acceptedAnswer":{"@type":"Answer","text":"For posters, flyers and wall prints that people view from a meter or more away, 150 DPI is usually fine. For photos you hold in your hands, books and brochures, 300 DPI is the safer target. Paper, printer and viewing distance all matter, so ask your print shop if the job is important."}},{"@type":"Question","name":"Can I raise the DPI of a low-resolution photo?","acceptedAnswer":{"@type":"Answer","text":"Changing the DPI label in a file does not add pixels. If you enlarge the print the pixels simply spread out and the picture gets blurrier. Upscaling software can invent extra pixels, but it cannot recover real detail, so the best fix is to find or shoot a higher-resolution original."}},{"@type":"Question","name":"What is the PPI of a 27-inch Full HD monitor?","acceptedAnswer":{"@type":"Answer","text":"About 81.59 PPI. The diagonal of a 1920 × 1080 grid is roughly 2202.9 pixels, and dividing that by 27 inches gives the density. The same resolution on a 24-inch panel is about 91.79 PPI, so smaller screens look sharper at equal resolution."}},{"@type":"Question","name":"How do I find the DPI stored in an image file?","acceptedAnswer":{"@type":"Answer","text":"This calculator does not read files, it only does the math. On Windows, right-click the file, choose Properties, then open the Details tab to see the horizontal and vertical resolution. On a Mac, open the image in Preview and choose Tools, then Adjust Size."}},{"@type":"Question","name":"Should I type commas or dots in the number fields?","acceptedAnswer":{"@type":"Answer","text":"Use a dot for decimals (25.4) and, if you like, commas for thousands (3,000). Do not add letters or units inside the box; choose the unit from the drop-down list instead. If a value cannot be read the page tells you which field to fix."}},{"@type":"Question","name":"Are my values sent anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The calculation runs in your browser with JavaScript. Nothing is uploaded, stored or tracked, and once the page has loaded it also works offline."}}]}</script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-hesapla">Calculators</a></li></ol>
+      <h1><span class="ba-grad">DPI Calculator</span> (Pixels to Inches &amp; cm)</h1>
+      <p class="lead">Convert pixels to inches or centimeters, find out how large your photo can print, and see how many pixels a 4×6, 8×10 or A4 print needs. Screen PPI is included too. The numbers you type never leave your device.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Files never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+
+      <fieldset class="dpi-modes">
+        <legend class="visually-hidden">Calculation type</legend>
+        <label><input type="radio" name="mode" id="m-a" value="a" checked> Pixels → inches / cm</label>
+        <label><input type="radio" name="mode" id="m-b" value="b"> Inches / cm / mm → pixels</label>
+        <label><input type="radio" name="mode" id="m-c" value="c"> Screen PPI</label>
+      </fieldset>
+
+      <div id="panel-a">
+        <div class="dpi-grid c3">
+          <div class="ba-field"><label for="a-w">Width (pixels)</label><input id="a-w" type="text" inputmode="decimal" autocomplete="off" value="3000"></div>
+          <div class="ba-field"><label for="a-h">Height (pixels, optional)</label><input id="a-h" type="text" inputmode="decimal" autocomplete="off" value="2000"></div>
+          <div class="ba-field"><label for="a-dpi">DPI</label><input id="a-dpi" type="text" inputmode="decimal" autocomplete="off" value="300">
+            <div class="dpi-chips" role="group" aria-label="Quick DPI choice" data-target="a-dpi">
+              <button type="button" class="dpi-chip" data-dpi="72" aria-pressed="false">72 DPI</button><button type="button" class="dpi-chip" data-dpi="96" aria-pressed="false">96 DPI</button><button type="button" class="dpi-chip" data-dpi="150" aria-pressed="false">150 DPI</button><button type="button" class="dpi-chip" data-dpi="300" aria-pressed="true">300 DPI</button>
+            </div></div>
+        </div>
+      </div>
+
+      <div id="panel-b" hidden>
+        <div class="dpi-grid c3">
+          <div class="ba-field"><label for="b-w">Width</label><input id="b-w" type="text" inputmode="decimal" autocomplete="off" value="8.5"></div>
+          <div class="ba-field"><label for="b-h">Height (optional)</label><input id="b-h" type="text" inputmode="decimal" autocomplete="off" value="11"></div>
+          <div class="ba-field"><label for="b-unit">Unit</label><select id="b-unit"><option value="in" selected>inches (in)</option><option value="cm">centimeters (cm)</option><option value="mm">millimeters (mm)</option></select></div>
+        </div>
+        <div class="dpi-grid" style="margin-top:12px">
+          <div class="ba-field"><label for="b-dpi">DPI</label><input id="b-dpi" type="text" inputmode="decimal" autocomplete="off" value="300">
+            <div class="dpi-chips" role="group" aria-label="Quick DPI choice" data-target="b-dpi">
+              <button type="button" class="dpi-chip" data-dpi="72" aria-pressed="false">72 DPI</button><button type="button" class="dpi-chip" data-dpi="96" aria-pressed="false">96 DPI</button><button type="button" class="dpi-chip" data-dpi="150" aria-pressed="false">150 DPI</button><button type="button" class="dpi-chip" data-dpi="300" aria-pressed="true">300 DPI</button>
+            </div></div>
+        </div>
+      </div>
+
+      <div id="panel-c" hidden>
+        <div class="dpi-grid c3">
+          <div class="ba-field"><label for="c-w">Width (pixels)</label><input id="c-w" type="text" inputmode="decimal" autocomplete="off" value="1920"></div>
+          <div class="ba-field"><label for="c-h">Height (pixels)</label><input id="c-h" type="text" inputmode="decimal" autocomplete="off" value="1080"></div>
+          <div class="ba-field"><label for="c-d">Diagonal (inches)</label><input id="c-d" type="text" inputmode="decimal" autocomplete="off" value="27"></div>
+        </div>
+      </div>
+
+      <p class="dpi-note">Use a dot for decimals (25.4); commas work as thousands separators (3,000). 1 inch is taken as 2.54 cm.</p>
+      <div id="error" class="ba-error" role="alert"></div>
+
+      <div id="result" class="dpi-box" aria-live="polite" hidden>
+        <h3 id="r-title">Result</h3>
+        <dl class="dpi-results" id="r-rows"></dl>
+        <p class="conv-line" id="r-line"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Copy result</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <div id="devices-wrap" class="dpi-sec" hidden>
+        <h3>Example screens and their PPI</h3>
+        <p class="dpi-note" style="margin-top:0">Typical device classes. The Apply button writes the values into the form above.</p>
+        <table>
+          <thead><tr><th scope="col">Device</th><th scope="col">Resolution</th><th scope="col">Diagonal</th><th scope="col">PPI</th><th scope="col">Action</th></tr></thead>
+          <tbody id="devices"></tbody>
+        </table>
+      </div>
+
+      <div class="dpi-sec">
+        <h3>Quick answer: my photo is X pixels, how large can it print?</h3>
+        <p class="dpi-note" style="margin-top:0">Enter the pixel size of your photo to see the print size at different quality levels and for standard paper sizes.</p>
+        <div class="dpi-grid">
+          <div class="ba-field"><label for="q-w">Photo width (pixels)</label><input id="q-w" type="text" inputmode="decimal" autocomplete="off" value="3000"></div>
+          <div class="ba-field"><label for="q-h">Photo height (pixels)</label><input id="q-h" type="text" inputmode="decimal" autocomplete="off" value="2000"></div>
+        </div>
+        <div id="q-error" class="ba-error" role="alert"></div>
+        <div id="q-result" class="dpi-box" aria-live="polite" hidden>
+          <h3>Printable size</h3>
+          <dl class="dpi-results" id="q-rows"></dl>
+          <div>
+            <h4>Filling standard sizes by cropping</h4>
+            <dl class="dpi-results" id="q-papers"></dl>
+          </div>
+          <p class="conv-line" id="q-line"></p>
+          <div class="ba-actions"><button id="q-copy" class="ba-btn" type="button">Copy result</button></div>
+          <p class="kdv-status" id="q-status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="dpi-sec">
+        <h3>Ready-made table: pixels needed for common prints</h3>
+        <p class="dpi-note" style="margin-top:0">Width × height in pixels, short side first. For landscape prints swap the two numbers.</p>
+        <table class="dpi-print">
+          <thead><tr><th scope="col">Print size</th><th scope="col">150 DPI</th><th scope="col">300 DPI</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">4 × 6 in</th><td>600 × 900</td><td>1200 × 1800</td></tr>
+            <tr><th scope="row">5 × 7 in</th><td>750 × 1050</td><td>1500 × 2100</td></tr>
+            <tr><th scope="row">8 × 10 in</th><td>1200 × 1500</td><td>2400 × 3000</td></tr>
+            <tr><th scope="row">US Letter (8.5 × 11 in)</th><td>1275 × 1650</td><td>2550 × 3300</td></tr>
+            <tr><th scope="row">11 × 14 in</th><td>1650 × 2100</td><td>3300 × 4200</td></tr>
+            <tr><th scope="row">A4 (8.27 × 11.69 in)</th><td>1240 × 1754</td><td>2480 × 3508</td></tr>
+            <tr><th scope="row">16 × 20 in</th><td>2400 × 3000</td><td>4800 × 6000</td></tr>
+          </tbody>
+        </table>
+        <p class="dpi-note">Print shops often ask for an extra 0.125 inch of bleed on every edge; if your job needs bleed, add 0.25 inch to each dimension before you calculate.</p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="en-dpi-calculator-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to use the DPI calculator</h2>
+      <ol class="ba-steps">
+        <li>Pick one of the three modes at the top. "Pixels → inches / cm" tells you how large an image prints, "Inches / cm / mm → pixels" tells you how many pixels a given print size requires, and "Screen PPI" measures the pixel density of a monitor, phone or television.</li>
+        <li>Type your values. In pixel mode enter the width and, if you like, the height, then tap 72, 96, 150 or 300 DPI or type your own number. When the height is left empty only the width is calculated.</li>
+        <li>The result appears as you type, so there is no calculate button to press. Sizes are shown in inches, centimeters and millimeters together. "Copy result" puts a one-line summary on your clipboard, handy for an email to a print shop or a note in a design brief.</li>
+        <li>If you want to know whether a photo is big enough for a print, use the quick answer box. Enter the pixel size and you will see the physical size at 300, 200 and 150 DPI, plus the effective DPI for standard paper sizes such as 4×6, 8×10 and A4.</li>
+        <li>If you enter something the page cannot read, an error message explains which field is wrong and how to fix it, for example by removing a unit or replacing a comma used as a decimal mark.</li>
+      </ol>
+
+      <h2>What are pixels, DPI and PPI?</h2>
+      <p>A pixel is the smallest building block of a digital image, a tiny square holding one color. A photo described as 3000 × 2000 pixels has 3000 columns and 2000 rows, six million dots in total, or six megapixels. DPI stands for dots per inch and describes how tightly a printer packs ink dots into one inch of paper. PPI stands for pixels per inch and describes the same idea for images and screens. Print professionals care about the difference, but for converting a pixel count into a physical size the two behave identically, so this page says DPI when talking about paper and PPI when talking about displays.</p>
+      <p>The most common misunderstanding is that DPI changes the number of pixels in a file. It does not. A 3000 × 2000 image is always six megapixels. DPI only decides how widely those pixels are spread when the image is printed. Pack them tightly and you get a small, crisp print; spread them out and you get a large print that looks softer. The DPI value saved in a file is just a suggested print density, and editing that label with resampling switched off does not touch a single pixel.</p>
+
+      <h2>The formulas behind the numbers</h2>
+      <p>Everything on this page comes from three short calculations. Divide pixels by DPI to get inches, and multiply inches by 2.54 for centimeters. Go the other way by dividing a length in inches by one and multiplying by DPI. For screens, take the diagonal of the pixel grid with the Pythagorean theorem and divide by the diagonal size in inches.</p>
+      <ul>
+        <li><strong>Pixels to inches:</strong> inches = pixels ÷ DPI. Example: 3000 pixels at 300 DPI is 10 inches, or 25.4 cm.</li>
+        <li><strong>Inches to pixels:</strong> pixels = inches × DPI. Example: 8 inches at 300 DPI needs 2400 pixels.</li>
+        <li><strong>Screen PPI:</strong> PPI = √(width² + height²) ÷ diagonal. Example: a 27-inch 1920 × 1080 monitor has a pixel diagonal of 2202.9, so 2202.9 ÷ 27 = 81.59 PPI.</li>
+      </ul>
+
+      <h2>How many DPI do you really need?</h2>
+      <p>It depends on how closely people will look at the result. For photographs, brochures, business cards and books, which are held at arm's length or closer, 300 DPI is the usual target because the eye can no longer pick out individual dots. For posters, banners and large wall prints that are viewed from a meter or more, 150 DPI often looks perfectly good, and billboards viewed from the road can drop far lower. Photo labs and online print services usually publish a minimum resolution for each product, so check their upload page if you can.</p>
+      <p>Large prints are a good illustration of why pixel count matters more than any DPI tag. A modern 12-megapixel phone photo is about 4000 × 3000 pixels. At 300 DPI that is a bit over 13 inches wide, enough for a very sharp 8×10. Stretch the same file to a 24×36 poster and the density falls to about 111 DPI, which is acceptable from across the room but visibly soft up close. Cropping makes things worse, because you throw away pixels you need.</p>
+
+      <h2>Why Bilişim Ajans' DPI calculator?</h2>
+      <p>This calculator does only what its name says and does it quickly. It combines pixel-to-inch conversion, print requirements and screen density in a single page, so you do not have to hop between three different tools. The values are processed locally in your browser with JavaScript. There is no upload, no account and no tracking, and after the first visit the page keeps working without a connection. The interface is built for phones as well as desktops, and every control can be used with the keyboard.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-dpi-calculator-b" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>Practical examples</h2>
+      <p>Imagine you have a 1600 × 1200 pixel image from an old digital camera and you want to hang it as a 5×7 print. Enter the dimensions in the quick answer box and you will see that it reaches roughly 229 DPI when filling a 5×7 frame by cropping, which is good, but only about 133 DPI when stretched to 8×10, which is soft. That single check can save you a wasted print order.</p>
+      <p>Another common case is preparing a graphic for a specific print size. A designer asked to deliver a US Letter flyer at 300 DPI needs a canvas of 2550 × 3300 pixels. Switch to the second mode, leave the unit on inches, type 8.5 and 11, and the answer appears instantly. If the printer wants half an inch of bleed on each side, enter 9.5 and 12 instead and you will get 2850 × 3600 pixels.</p>
+      <p>Screen density helps when you buy a monitor or design for several devices. A 24-inch Full HD monitor is about 92 PPI, a 27-inch 4K monitor is about 163 PPI, and a recent phone with a 6.1-inch display and a 2556 × 1179 panel is above 450 PPI. Knowing these numbers explains why text that looks smooth on a phone can look jagged on an older monitor, and why designers export images at two or three times their displayed size for high-density screens.</p>
+
+      <h2>Tips for sharper prints</h2>
+      <ul>
+        <li>Start from the original file whenever possible. Photos sent through messaging apps are often shrunk to about 1600 pixels on the long side, which is too small for anything larger than a 5×7.</li>
+        <li>Crop before you calculate. If you will remove a quarter of the frame, use the cropped pixel dimensions, because that is what the printer will actually receive.</li>
+        <li>Do not enlarge by raising the DPI number in an editor with resampling turned on. It adds guessed pixels, not detail, and can create a plastic look.</li>
+        <li>Keep text and logos as vector artwork when you can. Vector shapes stay sharp at any size and do not depend on DPI at all.</li>
+        <li>Leave a safe margin. Print shops trim paper slightly differently from job to job, so keep important content at least a quarter inch from the edge.</li>
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      <details><summary>How many inches is 3000 pixels at 300 DPI?</summary><p>Exactly 10 inches, which is 25.4 centimeters. Divide the pixel count by the DPI to get inches, then multiply by 2.54 for centimeters. At 150 DPI the same 3000 pixels stretch to 20 inches, but the print looks softer.</p></details>
+      <details><summary>How many pixels do I need for an 8x10 print?</summary><p>At 300 DPI you need 2400 × 3000 pixels, and at 150 DPI you need 1200 × 1500 pixels. If your photo has a different shape, such as 3:2, it will be cropped to fit unless you accept white borders.</p></details>
+      <details><summary>Is DPI the same as PPI?</summary><p>Strictly, no. DPI counts printer dots per inch and PPI counts image or screen pixels per inch. In everyday use the words are swapped, and the arithmetic for converting pixels to inches is the same for both.</p></details>
+      <details><summary>Is 150 DPI enough for printing?</summary><p>For posters, flyers and wall prints viewed from a meter or more, usually yes. For handheld photos, books and brochures, aim for 300 DPI. Ask your print shop if the job is important, because paper and printer type change the answer.</p></details>
+      <details><summary>Can I raise the DPI of a low-resolution photo?</summary><p>Changing the DPI label does not add pixels. If you enlarge the print the pixels spread out and the picture gets blurrier. Upscaling software can invent pixels but cannot recover real detail, so the best fix is a higher-resolution original.</p></details>
+      <details><summary>What is the PPI of a 27-inch Full HD monitor?</summary><p>About 81.59 PPI. The same resolution on a 24-inch panel is about 91.79 PPI, so smaller screens look sharper at equal resolution. Switch to the Screen PPI mode to try your own display.</p></details>
+      <details><summary>How do I find the DPI stored in an image file?</summary><p>This calculator does not read files. On Windows, right-click the file, choose Properties and open the Details tab. On a Mac, open the image in Preview and choose Tools, then Adjust Size. If you need to change the pixel size itself, use the Resize Image tool.</p></details>
+      <details><summary>Should I type commas or dots in the number fields?</summary><p>Use a dot for decimals (25.4) and, if you like, commas for thousands (3,000). Do not add letters or units inside the box; choose the unit from the list instead.</p></details>
+      <details><summary>Are my values sent anywhere?</summary><p>No. The calculation runs in your browser. Nothing is uploaded, stored or tracked, and once the page has loaded it also works offline.</p></details>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../resize-image/">Resize Image</a></li>
+        <li><a href="../compress-image/">Compress Image</a></li>
+        <li><a href="../aspect-ratio-calculator/">Aspect Ratio Calculator</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need custom software, a faster website or help with digital projects? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-dpi-calculator-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
