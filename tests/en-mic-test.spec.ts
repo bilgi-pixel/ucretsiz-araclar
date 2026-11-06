@@ -522,6 +522,18 @@ test.describe('state transitions and races', () => {
     }, ms);
   }
 
+  /** Sekmeyi gizlenmiş (ya da yeniden görünür) gibi gösterir ve visibilitychange olayını tetikler. */
+  async function setHidden(page: Page, hidden: boolean) {
+    await page.evaluate((h) => {
+      Object.defineProperty(document, 'hidden', { value: h, configurable: true });
+      Object.defineProperty(document, 'visibilityState', { value: h ? 'hidden' : 'visible', configurable: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, hidden);
+  }
+
+  /** Kaydedilen her akış için: en az bir izi hâlâ canlı mı? */
+  const liveStreams = (page: Page) => page.evaluate(() => (window as any).__streams.map((s: MediaStream) => s.getTracks().some((t) => t.readyState === 'live')));
+
   test('sound then silence: badge drops to "No sound" after the ~1.2 s hold, then the silence warning appears', async ({ page }) => {
     const g = guard(page);
     await page.addInitScript(() => {
@@ -578,6 +590,46 @@ test.describe('state transitions and races', () => {
     expect(g.errors).toEqual([]);
   });
 
+  test('a device picked while a processing-triggered restart is still opening the mic is not lost', async ({ page }) => {
+    const g = guard(page);
+    await slowGum(page, 800);
+    await page.goto(URL);
+    // Mikrofon gerçek bir cihazla açılmalı: varsayılan açılışta getSettings "default" döndürür, o listede
+    // olmadığı için liste eşitlemesi hiç çalışmaz ve "seçimi geri çekme" hatası görünmez kalır.
+    await expect.poll(() => page.locator('#mic-device option').count()).toBeGreaterThan(2);
+    const opts = await page.locator('#mic-device option').evaluateAll((os) => os.map((o) => [(o as HTMLOptionElement).value, o.textContent || '']));
+    const ids = opts.map(([v]) => v).filter(Boolean);
+    const first = ids[0];
+    const other = ids.at(-1)!;
+    expect(other).not.toBe(first);
+    const otherLabel = opts.find(([v]) => v === other)![1];
+    await page.locator('#mic-device').selectOption(first);
+    await page.locator('#mic-start').click();
+    await expect(page.locator('#mic-stop')).toBeEnabled({ timeout: 5000 });
+    await expect(page.locator('#mic-device')).toHaveValue(first);
+    expect(await page.evaluate(() => (window as any).__streams[0].getAudioTracks()[0].getSettings().deviceId)).toBe(first);
+    await page.locator('#opt-echo').uncheck();              // yeniden başlatma ilk cihazla başlar
+    await page.locator('#mic-device').selectOption(other); // o sürerken cihaz değişir
+    await expect.poll(() => page.evaluate(() => (window as any).__streams.length), { timeout: 8000 }).toBe(3);
+    await expect(page.locator('#mic-stop')).toBeEnabled({ timeout: 5000 });
+    await page.waitForTimeout(400);
+    expect(await page.evaluate(() => (window as any).__gum.length)).toBe(3);
+    const last = await page.evaluate(() => (window as any).__gum.at(-1).audio);
+    expect(last.deviceId).toEqual({ exact: other });
+    expect([last.echoCancellation, last.noiseSuppression, last.autoGainControl]).toEqual([false, true, true]);
+    // Ara açılış biterken liste eski cihaza geri çekilmemeli
+    await expect(page.locator('#mic-device')).toHaveValue(other);
+    expect(await page.evaluate(() => (window as any).__streams.at(-1).getAudioTracks()[0].getSettings().deviceId)).toBe(other);
+    expect(await liveStreams(page)).toEqual([false, false, true]);
+    // Bağlantı ayrıntıları son açılan cihazı ve işleme durumunu gösterir
+    await expect(page.locator('#info-device')).toHaveText(otherLabel);
+    await expect(page.locator('#info-processing')).toHaveText('Echo cancellation off · noise suppression on · auto gain on');
+    await expect(page.locator('#opt-echo')).not.toBeChecked();
+    await expect(page.locator('#mic-error')).not.toHaveClass(/is-active/);
+    expect(g.errors).toEqual([]);
+    expect(g.external).toEqual([]);
+  });
+
   test('tab hidden while the mic is still opening: it is not left running in the background', async ({ page }) => {
     const g = guard(page);
     await slowGum(page, 500);
@@ -596,6 +648,47 @@ test.describe('state transitions and races', () => {
     await expect(page.locator('#mic-sound')).toHaveText('Microphone off');
     await expect(page.locator('#mic-error')).not.toHaveClass(/is-active/);
     expect(g.errors).toEqual([]);
+  });
+
+  test('tab hidden while the audio context is still resuming: the mic closes without an error', async ({ page }) => {
+    const g = guard(page);
+    await slowGum(page, 0);
+    // Bağlamı "suspended" gösterip resume'u geciktirir; kapanmış bağlamın resume'u gerçek tarayıcıdaki gibi reddedilir.
+    await page.addInitScript(() => {
+      const w = window as any;
+      const R = window.AudioContext;
+      w.__ctxs = [];
+      w.__resumeCalls = 0;
+      w.AudioContext = class extends R {
+        held = true;
+        constructor(o?: AudioContextOptions) { super(o); w.__ctxs.push(this); }
+        get state(): AudioContextState { const s = super.state; return this.held && s !== 'closed' ? 'suspended' : s; }
+        async resume() {
+          w.__resumeCalls++;
+          await new Promise((r) => setTimeout(r, 700));
+          this.held = false;
+          return super.resume();
+        }
+      };
+    });
+    await page.goto(URL);
+    await page.locator('#mic-start').click();
+    await expect.poll(() => page.evaluate(() => (window as any).__resumeCalls), { timeout: 5000 }).toBe(1);
+    await setHidden(page, true);
+    await expect(page.locator('#mic-paused')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).__ctxs[0].state)).toBe('closed');
+    expect(await liveStreams(page)).toEqual([false]);
+    await page.waitForTimeout(1000); // bekleyen resume sonuçlansın
+    await expect(page.locator('#mic-error')).not.toHaveClass(/is-active/);
+    await expect(page.locator('#mic-error')).toHaveText('');
+    await expect(page.locator('#mic-stop')).toBeDisabled();
+    await expect(page.locator('#mic-start')).toBeEnabled();
+    await expect(page.locator('#mic-hint')).toHaveAttribute('data-state', 'idle');
+    await expect(page.locator('#mic-sound')).toHaveText('Microphone off');
+    await expect(page.locator('#info-device')).toHaveText('–');
+    expect(await page.evaluate(() => (window as any).__ctxs.length)).toBe(1);
+    expect(g.errors).toEqual([]);
+    expect(g.external).toEqual([]);
   });
 
   test('double-clicking the record button never leaves a second recorder running', async ({ page }) => {

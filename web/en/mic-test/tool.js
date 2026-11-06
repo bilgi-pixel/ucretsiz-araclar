@@ -256,15 +256,21 @@ async function startMic() {
       autoGainControl: els.optAgc.checked,
     };
     if (id) audio.deviceId = { exact: id };
-    micStream = await navigator.mediaDevices.getUserMedia({ audio, video: false });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio, video: false });
+    micStream = stream;
     // İzin/açılış beklenirken sekme gizlendiyse mikrofon arka planda açık kalmasın.
     if (document.hidden) { stopMic(); els.paused.hidden = false; return; }
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    micCtx = new Ctx();
-    if (micCtx.state === 'suspended') await micCtx.resume();
-    if (!micCtx) return; // beklerken durduruldu (ör. sekme gizlendi)
-    const src = micCtx.createMediaStreamSource(micStream);
-    const analyser = micCtx.createAnalyser();
+    const ctx = new Ctx();
+    micCtx = ctx;
+    // resume beklenirken mikrofon durdurulabilir (ör. sekme gizlendi): stopMic bağlamı kapatıp micCtx'i boşaltır.
+    // Kapanmış bağlamın resume'u reddedilebilir; bu bir hata değil, sessizce çıkılır.
+    if (ctx.state === 'suspended') {
+      try { await ctx.resume(); } catch (e) { if (micCtx === ctx) throw e; }
+    }
+    if (micCtx !== ctx) return; // beklerken durduruldu
+    const src = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0;
     src.connect(analyser); // hoparlöre bağlanmaz: geri besleme (ıslık) olmaz
@@ -313,10 +319,12 @@ async function startMic() {
 
     els.stop.disabled = false;
     if (hasRecorder) { els.recToggle.disabled = false; if (!recBlob) setRecStatus('idle', 'Ready. Press "Start recording" and speak for a few seconds.'); }
-    const track = micStream.getAudioTracks()[0];
-    showInfo(track, micCtx.sampleRate);
+    const track = stream.getAudioTracks()[0];
+    showInfo(track, ctx.sampleRate);
     await fillDevices();
-    const cur = track && typeof track.getSettings === 'function' && track.getSettings().deviceId;
+    // Listeyi açılan cihaza eşitle; ama bu açılış sürerken kullanıcı başka cihaz seçtiyse (kuyrukta
+    // yeniden başlatma var) seçimini ezme, yoksa sıradaki açılış eski cihazla yapılır.
+    const cur = !restartQueued && track && typeof track.getSettings === 'function' && track.getSettings().deviceId;
     if (cur && [...els.device.options].some((o) => o.value === cur)) els.device.value = cur;
   } catch (err) {
     stopMic();
