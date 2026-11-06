@@ -6,7 +6,13 @@ import { load, loadAll, dump, CORE_SCHEMA, DEFAULT_SCHEMA, Type, types } from '.
 const $ = (id) => document.getElementById(id);
 const WARN_SIZE = 5 * 1024 * 1024;   // 5 MB üstü: "yavaşlayabilir" uyarısı
 const BIG_SIZE = 50 * 1024 * 1024;   // 50 MB üstü: güçlü uyarı
-const PREVIEW_MAX = 1_000_000;       // önizlemede gösterilen en fazla karakter (indirme tam olur)
+const PREVIEW_MAX = 200_000;         // önizlemede gösterilen en fazla karakter (kopyala/indir tam olur)
+/* Tarayıcı metin kutusundaki (ve pre'deki) metnin tamamını satırlara dizer. Birkaç MB'lık tek
+   satırlık JSON bu yüzden ana iş parçacığını yavaş makinede onlarca saniye kilitler (dönüşümün
+   kendisi birkaç saniye sürer). Bu uzunluğun üstündeki metin kutuya tam konmaz: tamamı bellekte
+   tutulur, kutuda salt okunur kısa bir baş kısım gösterilir. */
+const INPUT_MAX = 500_000;
+const INPUT_PREVIEW = 20_000;        // büyük metinde kutuda gösterilen baş kısım (karakter)
 const NODE_LIMIT = 5_000_000;        // takma ad (alias) genişlemesiyle oluşabilecek en fazla düğüm
 const PROGRESS_MIN = 100_000;        // bu uzunluğun üstünde ilerleme çubuğu gösterilir
 const SCAN_MAX = 2 * 1024 * 1024;    // yinelenen JSON anahtarı taraması bu boyuta kadar yapılır
@@ -48,7 +54,11 @@ let mode = 'json2yaml';       // json2yaml | yaml2json
 let outText = '';             // son çıktının tamamı (önizleme kısaltılsa da kopyala/indir tamamını kullanır)
 let outKind = 'yaml';         // son çıktının türü: yaml | json
 let fileBase = 'veri';
+let bigText = null;           // kutuya sığmayan büyük girişin tamamı; null ise giriş kutunun kendisidir
 let busy = false;
+let again = false;            // dönüşüm sürerken yeni istek geldi: bitince güncel girişle yeniden çalış
+let loadGen = 0;              // girişi değiştiren her eylemde artar; bekleyen dosya okuma/dönüşüm bırakılır
+let readGen = 0;              // ilerleme çubuğunda "Dosya okunuyor…" gösteren yüklemenin loadGen değeri
 
 /** Kullanıcıya gösterilecek, çözüm öneren dönüşüm hatası. */
 class ConvertError extends Error {
@@ -437,14 +447,49 @@ function setMode(m) {
 }
 
 const paint = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+const hasContent = (s) => /\S/.test(s); // trim() gibi çok MB'lık kopya üretmez
+
+/** Dönüştürülecek girişin tamamı (büyük metinde kutudaki kısaltılmış baş kısım değil). */
+const sourceText = () => (bigText !== null ? bigText : input.value);
+
+/** Girişi değiştirir. Büyük metin kutuya tam konmaz; kutu kısa bir baş kısımla salt okunur olur. */
+function setSource(text) {
+  const note = $('in-note');
+  if (text.length <= INPUT_MAX) {
+    bigText = null;
+    input.readOnly = false;
+    input.value = text;
+    note.hidden = true;
+    note.textContent = '';
+    return;
+  }
+  bigText = text;
+  let cut = INPUT_PREVIEW;
+  const c = text.charCodeAt(cut - 1);
+  if (c >= 0xD800 && c <= 0xDBFF) cut--; // vekil çiftini (emoji vb.) ortadan bölme
+  input.readOnly = true;
+  input.value = `${text.slice(0, cut)}\n…`;
+  note.textContent = `Metin büyük (${text.length.toLocaleString('tr')} karakter) olduğu için kutuda yalnızca ilk ${cut.toLocaleString('tr')} karakter gösteriliyor ve kutu salt okunur. Dönüşüm, kopyalama ve indirme metnin tamamıyla yapılır. Başka bir metin girmek için "Temizle" düğmesine basın.`;
+  note.hidden = false;
+}
 
 async function convert() {
-  if (busy) return;
+  if (busy) { again = true; return; }
+  busy = true;
+  try {
+    await convertOnce();
+  } finally {
+    busy = false;
+    if (again) { again = false; convert(); }
+  }
+}
+
+async function convertOnce() {
   clearErrors();
   showMsg($('info'), '');
-  if (input.value.charCodeAt(0) === 0xFEFF) input.value = input.value.slice(1); // BOM görünmez; konumlar kaymasın
-  const text = input.value;
-  if (!text.trim()) {
+  if (sourceText().charCodeAt(0) === 0xFEFF) setSource(sourceText().slice(1)); // BOM görünmez; konumlar kaymasın
+  const text = sourceText();
+  if (!hasContent(text)) {
     hideResult();
     outText = '';
     showMsg($('info'), mode === 'json2yaml'
@@ -452,7 +497,6 @@ async function convert() {
       : 'Giriş boş. YAML metnini kutuya yapıştırın, bir .yaml / .yml dosyası seçin ya da "Örnek yükle" düğmesine basın.');
     return;
   }
-  busy = true;
   const btn = $('btn-convert');
   btn.disabled = true;
   const prog = $('progress');
@@ -460,10 +504,18 @@ async function convert() {
   if (text.length > BIG_SIZE) showMsg($('warning'), `Metin ${formatBytes(text.length)}; 50 MB üstünde tarayıcı uzun süre yanıt vermeyebilir. Mümkünse bilgisayarda deneyin ya da dosyayı parçalara bölün.`);
   else if (text.length > WARN_SIZE) showMsg($('warning'), `Metin ${formatBytes(text.length)}; 5 MB üstünde dönüşüm birkaç saniye sürebilir. Önizleme kısaltılır, kopyalanan ve indirilen çıktı tam olur.`);
   try {
+    // Her beklemeden sonra: bu sırada giriş değiştiyse (başka dosya, Temizle, Örnek), yön radyosu
+    // değiştiyse (YAML çıktısı .json adıyla sunulmasın) ya da yeniden dönüşüm istendiyse eski girişin
+    // sonucu gösterilmez; gerekirse convert() güncel girişle yeniden çalışır.
+    const gen = loadGen;
+    const m = mode;
+    const stale = () => again || gen !== loadGen || mode !== m;
     if (big) { setProgress(prog, 20, 'Ayrıştırılıyor…'); await paint(); }
+    if (stale()) return;
     const o = options();
     const r = mode === 'json2yaml' ? jsonToYaml(text, o) : yamlToJson(text, o);
     if (big) { setProgress(prog, 85, 'Çıktı hazırlanıyor…'); await paint(); }
+    if (stale()) return;
     outText = r.out;
     outKind = mode === 'json2yaml' ? 'yaml' : 'json';
     const preview = outText.length > PREVIEW_MAX ? `${outText.slice(0, PREVIEW_MAX)}\n…` : outText;
@@ -491,7 +543,8 @@ async function convert() {
     if (e instanceof ConvertError) {
       showError($('error'), e.message);
       if (e.snippet) { $('error-snippet').textContent = e.snippet; $('error-snippet').hidden = false; }
-      if (e.pos !== null && e.pos !== undefined) goTo(e.pos);
+      // Büyük metinde kutu yalnızca baş kısmı tutar; konum orada olmayabilir (satır/sütun mesajda yazılı).
+      if (e.pos !== null && e.pos !== undefined && bigText === null) goTo(e.pos);
     } else if (e instanceof RangeError) {
       showError($('error'), 'Veri çok derin iç içe geçmiş ya da çok büyük; tarayıcının sınırı aşıldı. Veriyi daha küçük parçalara bölüp yeniden deneyin.');
     } else if (e && e.name === 'YAMLException') {
@@ -502,7 +555,6 @@ async function convert() {
   } finally {
     setProgress(prog, null);
     btn.disabled = false;
-    busy = false;
   }
 }
 
@@ -525,6 +577,7 @@ async function readFileText(f) {
 async function loadFile(files) {
   const f = files[0];
   if (!f) return;
+  const gen = ++loadGen; // en son seçilen dosya kazanır: okunurken başka giriş gelirse bu yükleme bırakılır
   // Yeni dosya seçilince eski çıktı geçersizdir.
   hideResult();
   outText = '';
@@ -538,21 +591,36 @@ async function loadFile(files) {
   }
   if (f.size > BIG_SIZE) showMsg($('warning'), `Dosya ${formatBytes(f.size)}; 50 MB üstü dosyalar tarayıcıyı uzun süre dondurabilir. Mümkünse bilgisayarda deneyin ya da dosyayı parçalara bölün.`);
   else if (f.size > WARN_SIZE) showMsg($('warning'), `Dosya ${formatBytes(f.size)}; 5 MB üstünde dönüşüm birkaç saniye sürebilir. Önizleme kısaltılır, indirilen dosya tam olur.`);
+  const prog = $('progress');
+  if (f.size > PROGRESS_MIN) { readGen = gen; setProgress(prog, 5, 'Dosya okunuyor…'); await paint(); }
+  // Bu yükleme bırakıldıysa kendi "Dosya okunuyor…" çubuğunu kaldırır (Temizle, desteklenmeyen dosya
+  // gibi dönüşüm başlatmayan eylemlerden sonra ekranda takılı kalmasın). Çubuğu daha yeni bir yükleme
+  // aldıysa ya da dönüşüm sürüyorsa dokunmaz; onu sahibi kapatır.
+  const abandoned = () => {
+    if (gen === loadGen) return false;
+    if (readGen === gen) { readGen = 0; if (!busy) setProgress(prog, null); }
+    return true;
+  };
+  if (abandoned()) return;
   let read;
   try {
     read = await readFileText(f);
   } catch (e) {
+    if (abandoned()) return;
+    setProgress(prog, null);
     showError($('error'), e instanceof ConvertError ? e.message : 'Dosya okunamadı. Dosyanın başka bir programda açık olmadığını kontrol edip yeniden seçin.');
     return;
   }
+  if (abandoned()) return;
   if (ext === 'json') setMode('json2yaml');
   else if (ext === 'yaml' || ext === 'yml') setMode('yaml2json');
-  input.value = read.text;
+  setSource(read.text);
   fileBase = baseName(f.name) || 'veri';
   const dir = mode === 'json2yaml' ? 'JSON → YAML' : 'YAML → JSON';
   $('file-name').textContent = `${f.name} (${formatBytes(f.size)}, ${read.enc}) yüklendi · yön: ${dir}`;
   if (read.legacy) showMsg($('warning'), 'Dosya UTF-8 değil; Türkçe Windows kodlaması (Windows-1254) varsayılarak okundu. Karakterler bozuk görünüyorsa dosyayı UTF-8 olarak kaydedip yeniden seçin.');
-  if (!read.text.trim()) {
+  if (!hasContent(read.text)) {
+    setProgress(prog, null);
     hideResult();
     showMsg($('info'), 'Dosya boş. İçinde JSON ya da YAML metni olan bir dosya seçin.');
     return;
@@ -605,15 +673,16 @@ for (const r of document.querySelectorAll('input[name="mode"]')) {
 $('btn-swap').addEventListener('click', async () => {
   const next = mode === 'json2yaml' ? 'yaml2json' : 'json2yaml';
   const prev = outText;
+  loadGen++;
   setMode(next);
   clearErrors();
   showMsg($('info'), '');
   if (prev) {
     // Çıktı yeni giriş olur ve ters yönde hemen dönüştürülür; eski girişe ait uyarı geçersizdir.
     showMsg($('warning'), '');
-    input.value = prev;
+    setSource(prev);
     await convert();
-  } else if (input.value.trim()) {
+  } else if (hasContent(sourceText())) {
     // Çıktı yoksa (ör. "YAML gibi görünüyor" ipucundan sonra) aynı giriş yeni yönde dönüştürülür.
     await convert();
   } else {
@@ -625,14 +694,16 @@ $('btn-convert').addEventListener('click', convert);
 $('btn-copy').addEventListener('click', copyOut);
 $('btn-download').addEventListener('click', downloadOut);
 $('btn-sample').addEventListener('click', () => {
-  input.value = SAMPLES[mode];
+  loadGen++;
+  setSource(SAMPLES[mode]);
   fileBase = 'ornek';
   $('file-name').textContent = '';
   showMsg($('warning'), ''); // önceki dosyanın boyut/kodlama uyarısı örneğe ait değil
   convert();
 });
 $('btn-clear').addEventListener('click', () => {
-  input.value = '';
+  loadGen++;
+  setSource('');
   outText = '';
   output.textContent = '';
   fileBase = 'veri';
@@ -647,6 +718,18 @@ $('btn-clear').addEventListener('click', () => {
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); convert(); }
 });
+// Çok büyük metin yapıştırılırsa da kutuya tam konmaz (INPUT_MAX açıklaması); yapıştırmanın seçili
+// alanın yerine geçme davranışı korunur.
+input.addEventListener('paste', (e) => {
+  const t = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+  if (input.readOnly || t.length + input.value.length <= INPUT_MAX) return;
+  e.preventDefault();
+  loadGen++;
+  const v = input.value;
+  const text = v.slice(0, input.selectionStart) + t + v.slice(input.selectionEnd);
+  setSource(text);
+  if (text.length > WARN_SIZE) showMsg($('warning'), 'Metin 5 MB üstünde; dönüşüm birkaç saniye sürebilir.');
+});
 input.addEventListener('input', () => {
   if (input.value.length > WARN_SIZE) showMsg($('warning'), 'Metin 5 MB üstünde; dönüşüm birkaç saniye sürebilir.');
   else if ($('warning').textContent.startsWith('Metin')) showMsg($('warning'), '');
@@ -654,7 +737,7 @@ input.addEventListener('input', () => {
 
 // Seçenek değişince, sonuç görünüyorsa çıktıyı hemen yenile.
 for (const id of ['opt-indent', 'opt-sort', 'opt-width', 'opt-split', 'opt-minify', 'opt-dates']) {
-  $(id).addEventListener('change', () => { if (!result.hidden && input.value.trim()) convert(); });
+  $(id).addEventListener('change', () => { if (!result.hidden && hasContent(sourceText())) convert(); });
 }
 
 setMode('json2yaml');

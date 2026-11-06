@@ -16,6 +16,14 @@ async function convert(page: Page, text: string) {
 
 const out = (page: Page) => page.locator('#output').evaluate((el) => el.textContent as string);
 
+/** 5 MB üstü, tek satırlık JSON dizisi (60 000 kayıt). */
+function bigJson() {
+  const row = JSON.stringify({ ad: 'Ayşe Yılmaz', şehir: 'Diyarbakır', not: 'x'.repeat(60) });
+  const big = Buffer.from(`[${Array(60000).fill(row).join(',')}]`, 'utf8');
+  expect(big.length).toBeGreaterThan(5 * 1024 * 1024);
+  return big;
+}
+
 test.describe('JSON YAML Dönüştürücü', () => {
   test('JSON → YAML bilinen değer, indirme .yaml, dış istek ve sayfa hatası yok', async ({ page }) => {
     const external = trackExternalRequests(page);
@@ -214,14 +222,17 @@ test.describe('JSON YAML Dönüştürücü', () => {
     await file.setInputFiles({ name: 'resim.yaml', mimeType: 'application/yaml', buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 0, 0, 0x0d]) });
     await expect(page.locator('#error')).toContainText('metin gibi görünmüyor');
 
-    // 5 MB üstü dosya: uyarı, kısaltılmış önizleme, tam indirme
-    const row = JSON.stringify({ ad: 'Ayşe Yılmaz', şehir: 'Diyarbakır', not: 'x'.repeat(60) });
-    const big = Buffer.from(`[${Array(60000).fill(row).join(',')}]`, 'utf8');
-    expect(big.length).toBeGreaterThan(5 * 1024 * 1024);
-    await file.setInputFiles({ name: 'buyuk.json', mimeType: 'application/json', buffer: big });
+    // 5 MB üstü dosya: uyarı, kısaltılmış önizleme, tam indirme. Metnin tamamı metin kutusuna konmaz
+    // (birkaç MB'lık tek satırı dizmek tarayıcıyı yavaş makinede onlarca saniye kilitler); kutu salt
+    // okunur kısa bir baş kısım gösterir, dönüşüm tam metinle yapılır.
+    await file.setInputFiles({ name: 'buyuk.json', mimeType: 'application/json', buffer: bigJson() });
     await expect(page.locator('#warning')).toContainText('5 MB');
     await expect(page.locator('#result')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('#error')).toBeHidden();
     await expect(page.locator('#result-notes')).toContainText('Önizleme');
+    await expect(page.locator('#input')).not.toBeEditable();
+    await expect(page.locator('#in-note')).toContainText('salt okunur');
+    expect((await page.locator('#input').inputValue()).length).toBeLessThan(50_000);
     const [dl2] = await Promise.all([page.waitForEvent('download'), page.locator('#btn-download').click()]);
     expect(dl2.suggestedFilename()).toBe('buyuk.yaml');
     const body = readFileSync((await dl2.path())!, 'utf8');
@@ -230,6 +241,121 @@ test.describe('JSON YAML Dönüştürücü', () => {
     await page.locator('#btn-sample').click();
     await expect(page.locator('#warning')).toBeHidden();
     await expect.poll(() => out(page)).toContain('uygulama: Bilişim Ajans Araçları');
+    // Örnek küçük metindir: kutu yeniden düzenlenebilir, büyük metin notu kalkar.
+    await expect(page.locator('#input')).toBeEditable();
+    await expect(page.locator('#in-note')).toBeHidden();
+    expect(errors).toEqual([]);
+  });
+
+  test('büyük dosya 4 kat yavaş işlemcide: ilerleme gösterilir, makul sürede döner, yön değiştirilir, son seçilen dosya kazanır', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'CPU kısıtı yalnızca Chromium CDP ile uygulanabilir');
+    test.setTimeout(120_000);
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    await open(page);
+    // İlerleme etiketlerini sırayla kaydet (dönüşüm hızlı biterse görünürlüğü yoklamak yarışlı olurdu).
+    await page.evaluate(() => {
+      const w = window as unknown as { __prog: string[] };
+      w.__prog = [];
+      const label = document.querySelector('#progress .label')!;
+      new MutationObserver((recs) => {
+        for (const r of recs) for (const n of Array.from(r.addedNodes)) w.__prog.push(n.textContent || '');
+      }).observe(label, { childList: true });
+    });
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+    const file = page.locator('#drop input[type=file]');
+    const big = bigJson();
+
+    // Düzeltmeden önce bu adım 4x kısıtta 2 dakikada bile bitmiyordu (metin kutusu dizilimi).
+    await test.step('4x CPU: büyük JSON → YAML', async () => {
+      await file.setInputFiles({ name: 'buyuk.json', mimeType: 'application/json', buffer: big });
+      const t0 = Date.now();
+      await expect(page.locator('#result')).toBeVisible({ timeout: 30_000 });
+      test.info().annotations.push({ type: 'süre (4x CPU, dosya seçildikten sonra)', description: `${Date.now() - t0} ms` });
+      await expect(page.locator('#result-info')).toContainText('JSON → YAML');
+      await expect(page.locator('#progress')).toBeHidden();
+      expect(await page.evaluate(() => (window as unknown as { __prog: string[] }).__prog)).toEqual(['Dosya okunuyor…', 'Ayrıştırılıyor…', 'Çıktı hazırlanıyor…']);
+      await expect(page.locator('#input')).not.toBeEditable();
+    });
+
+    // Yönü değiştir: büyük YAML çıktısı girişe geçer (kutuya yine tam konmaz) ve JSON'a döner.
+    await test.step('4x CPU: yönü değiştir, büyük YAML → JSON', async () => {
+      await page.locator('#btn-swap').click();
+      await expect(page.locator('#mode-y2j')).toBeChecked();
+      await expect(page.locator('#result-info')).toContainText('YAML → JSON', { timeout: 30_000 });
+      await expect(page.locator('#result')).toBeVisible();
+      await expect(page.locator('#input')).not.toBeEditable();
+      expect(await page.locator('#input').inputValue()).toMatch(/^- ad: Ayşe Yılmaz\n/);
+      const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#btn-download').click()]);
+      expect(dl.suggestedFilename()).toBe('buyuk.json');
+      const back = JSON.parse(readFileSync((await dl.path())!, 'utf8'));
+      expect(back).toHaveLength(60000);
+      expect(back[59999]).toEqual({ ad: 'Ayşe Yılmaz', şehir: 'Diyarbakır', not: 'x'.repeat(60) });
+    });
+
+    // Büyük dosya okunur/dönüşürken küçük dosya seçilirse ekranda küçük dosyanın sonucu kalır.
+    // Kısıt kaldırılır: Playwright'ın 7 MB'lık dosyayı sayfaya aktarması da kısıtlanıp testi uzatıyordu.
+    await test.step('büyük dosya sürerken küçük dosya seçilir', async () => {
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+      await file.setInputFiles({ name: 'buyuk.json', mimeType: 'application/json', buffer: big });
+      await file.setInputFiles({ name: 'paket.json', mimeType: 'application/json', buffer: Buffer.from('{"ad":"Ayşe"}') });
+      await expect.poll(() => out(page), { timeout: 30_000 }).toBe('ad: Ayşe\n');
+      // Bekleyen büyük okuma/dönüşüm sonradan bitse de sonucun üzerine yazmaz.
+      await page.evaluate(() => new Promise((r) => setTimeout(r, 1000)));
+      await expect(page.locator('#progress')).toBeHidden();
+      await expect(page.locator('#btn-convert')).toBeEnabled();
+      expect(await out(page)).toBe('ad: Ayşe\n');
+      await expect(page.locator('#file-name')).toContainText('paket.json');
+      await expect(page.locator('#input')).toBeEditable();
+      await expect(page.locator('#input')).toHaveValue('{"ad":"Ayşe"}');
+      const [dl2] = await Promise.all([page.waitForEvent('download'), page.locator('#btn-download').click()]);
+      expect(dl2.suggestedFilename()).toBe('paket.yaml');
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('yarışlar: okunurken Temizle ilerleme çubuğunu bırakmaz; dönüşüm sürerken yön değişirse eski sonuç gösterilmez', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    await open(page);
+    // 100 000 karakter üstü: ilerleme çubuğunun gösterildiği yol (dosya okuma + dönüşüm adımları).
+    const mid = `[${Array(2000).fill(JSON.stringify({ ad: 'Ayşe', not: 'x'.repeat(80) })).join(',')}]`;
+    expect(mid.length).toBeGreaterThan(100_000);
+
+    // Dosya seçilir seçilmez (okuma bitmeden) Temizle: "Dosya okunuyor…" çubuğu ekranda takılı kalmaz.
+    await page.evaluate((text) => {
+      const input = document.querySelector('#drop input[type=file]') as HTMLInputElement;
+      const dt = new DataTransfer();
+      dt.items.add(new File([text], 'orta.json', { type: 'application/json' }));
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      (document.querySelector('#btn-clear') as HTMLButtonElement).click();
+    }, mid);
+    await page.evaluate(() => new Promise((r) => setTimeout(r, 500)));
+    await expect(page.locator('#progress')).toBeHidden();
+    await expect(page.locator('#result')).toBeHidden();
+    await expect(page.locator('#input')).toHaveValue('');
+
+    // "Çıktı hazırlanıyor…" adımında yön radyosu YAML → JSON yapılır: YAML çıktısı "JSON olarak indir"
+    // altında gösterilmez; sonuç gizli kalır, yeniden Dönüştür yeni yönde doğru JSON verir.
+    await page.evaluate(() => {
+      const label = document.querySelector('#progress .label')!;
+      const mo = new MutationObserver(() => {
+        if (label.textContent!.startsWith('Çıktı')) { mo.disconnect(); (document.querySelector('#mode-y2j') as HTMLInputElement).click(); }
+      });
+      mo.observe(label, { childList: true });
+    });
+    await convert(page, mid);
+    await expect(page.locator('#mode-y2j')).toBeChecked();
+    await expect(page.locator('#btn-convert')).toBeEnabled();
+    await expect(page.locator('#progress')).toBeHidden();
+    await expect(page.locator('#result')).toBeHidden();
+    await page.locator('#btn-convert').click();
+    await expect(page.locator('#result-info')).toContainText('YAML → JSON');
+    const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#btn-download').click()]);
+    expect(dl.suggestedFilename()).toBe('veri.json');
+    expect(JSON.parse(readFileSync((await dl.path())!, 'utf8'))).toEqual(JSON.parse(mid));
     expect(errors).toEqual([]);
   });
 
