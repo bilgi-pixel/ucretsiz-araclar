@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hanoi Kuleleri Oyna – Ücretsiz Online Hanoi Kuleleri Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online Hanoi Kuleleri oyunu: diskleri üç çubuk arasında taşıyıp tüm kuleyi hedef çubuğa kurun. 3 ile 8 disk, geri alma, en az hamle sayacı, klavye ve dokunmatik desteği. Kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/hanoi-kuleleri/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .gm-help { display: none; }
+    .gm-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gm-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .gm-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .gm-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .gm-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .gm-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .gm-controls .ba-btn { flex: 1 1 130px; min-height: 44px; padding: 8px 16px; }
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .gm-big { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; }
+    .gm-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+    .gm-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .gm-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .gm-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .game-box * { animation: none !important; transition: none !important; } }
+
+    .hn-pegs { display: flex; gap: 6px; width: min(100%, 440px); margin: 14px auto 0; }
+    .hn-peg { position: relative; display: flex; flex-direction: column-reverse; align-items: center; gap: 2px; flex: 1 1 0; min-width: 0; height: 236px; padding: 0 2px 6px; background: #1f2226; border: 2px solid #5a5f68; border-radius: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: transform .15s ease; }
+    .hn-peg:hover:not(:disabled) { border-color: #8b919b; }
+    .hn-peg:focus-visible { outline: 3px solid #ffd75e; outline-offset: 3px; }
+    .hn-peg.is-sel { transform: translateY(-8px); border-color: #ffd75e; box-shadow: 0 0 0 2px #ffd75e; }
+    .hn-peg.is-goal:not(.is-sel) { border-color: #58c46a; }
+    .hn-peg:disabled { cursor: default; }
+    .hn-rod { position: absolute; left: 50%; bottom: 0; width: 8px; height: 92%; margin-left: -4px; background: #8b919b; border-radius: 4px 4px 0 0; }
+    .hn-disc { position: relative; z-index: 1; flex: none; display: grid; place-items: center; height: 22px; border-radius: 6px; font-size: 13px; line-height: 1; font-weight: 700; color: rgba(0, 0, 0, .72); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .18), inset 0 2px 0 rgba(255, 255, 255, .3); }
+    .hn-size { display: flex; align-items: center; justify-content: center; gap: 10px; width: min(100%, 440px); margin: 12px auto 0; font-size: .9rem; color: var(--ba-text-2); }
+    .hn-size .ba-btn { min-height: 44px; min-width: 44px; padding: 0 14px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Hanoi Kuleleri – Disk Taşıma Bulmaca Oyunu","description":"Tarayıcıda oynanan ücretsiz Hanoi Kuleleri bulmacası: diskleri üç çubuk arasında taşıyarak kuleyi hedef çubuğa kurun. 3 ile 8 disk, geri alma, klavye ve dokunmatik desteği.","inLanguage":"tr","genre":["Bulmaca","Mantık"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/hanoi-kuleleri/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Hanoi Kuleleri ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma ya da ödeme yoktur."}},{"@type":"Question","name":"Hanoi Kuleleri kuralları nelerdir?","acceptedAnswer":{"@type":"Answer","text":"Aynı anda yalnızca bir disk taşınır ve her zaman bir çubuğun en üstündeki disk alınır. Hiçbir disk, kendisinden daha küçük bir diskin üstüne konamaz. Amaç tüm kuleyi soldaki çubuktan sağdaki üçüncü çubuğa taşımaktır."}},{"@type":"Question","name":"En az kaç hamlede çözülür?","acceptedAnswer":{"@type":"Answer","text":"n disk için en az hamle sayısı 2 üzeri n eksi 1 formülüyle bulunur: 3 disk için 7, 4 disk için 15, 5 disk için 31, 6 disk için 63, 7 disk için 127, 8 disk için 255 hamle. Oyun, ekranda o anki disk sayısı için en az hamleyi gösterir."}},{"@type":"Question","name":"Yanlış hamle yaparsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Kural dışı bir taşıma yapılmaz ve hamle sayılmaz; oyun nedenini bir mesajla açıklar. Yasal ama istemediğiniz bir hamle yaptıysanız Geri al düğmesine ya da U tuşuna basarak hamleleri tek tek geri alabilirsiniz."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Önce diskin bulunduğu çubuğa, sonra hedef çubuğa dokunun. Seçili çubuk yukarı kalkar. Üç çubuk 360 piksel genişliğindeki ekranlara da sığar ve rahat dokunulacak boyuttadır."}},{"@type":"Question","name":"Sadece klavyeyle oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. 1, 2 ve 3 tuşları çubukları doğrudan seçer; yön tuşları ve Tab çubuklar arasında gezdirir. U geri alır, R baştan başlatır, Esc seçimi iptal eder."}},{"@type":"Question","name":"Disk sayısını nasıl değiştiririm?","acceptedAnswer":{"@type":"Answer","text":"Çubukların altındaki artı ve eksi düğmeleriyle 3 ile 8 arasında seçebilirsiniz. Bir kuleyi bitirdiğinizde Bir disk daha ekle düğmesi de sizi bir üst zorluğa taşır. Disk sayısını değiştirmek oyunu baştan başlatır."}},{"@type":"Question","name":"Rekorlarım nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Her disk sayısı için en iyi hamle sayınız ayrı tutulur ve hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekorlar sıfırlanır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Hanoi Kuleleri Oyna</span>: Ücretsiz Online Hanoi Kuleleri Oyunu</h1><p class="lead">Üç çubuk, birbirinden farklı boyda diskler ve tek bir kural: büyük disk, küçük diskin üstüne konmaz. Tüm kuleyi soldaki çubuktan sağdaki çubuğa taşıyın. 3 diskle başlayın, 8 diske kadar zorlaşın; en az hamle sayısını yakalamaya çalışın. Süre baskısı yok, hamleleri geri alabilirsiniz. Kurulum ve kayıt gerekmez, rekorlarınız yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="oyun" aria-label="Hanoi Kuleleri oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Hanoi Kuleleri</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="gm-stats" aria-label="Skor bilgileri">
+          <div><dt>Disk</dt><dd id="hn-discs">3</dd></div>
+          <div><dt>Hamle</dt><dd id="hn-moves">0</dd></div>
+          <div><dt>En az</dt><dd id="hn-min">7</dd></div>
+          <div><dt>En iyi</dt><dd id="hn-best">–</dd></div>
+        </dl>
+
+        <div class="hn-pegs" id="hn-pegs" role="group" aria-label="Çubuklar"></div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3 id="sonuc-baslik">Kule taşındı</h3>
+          <p class="gm-big"><span id="sonuc-disk">3</span> disk</p>
+          <p class="gm-record" id="sonuc-rekor" hidden>Bu disk sayısında yeni en iyi hamle!</p>
+          <p class="gm-record" id="sonuc-mukemmel" hidden>En az hamle sayısına ulaştınız.</p>
+          <p><b id="sonuc-hamle">0</b> hamlede taşıdınız (en az: <b id="sonuc-en-az">7</b>).</p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="hn-next">Bir disk daha ekle</button>
+            <button type="button" class="ba-btn" id="hn-again">Tekrar oyna</button>
+          </div>
+        </div>
+
+        <p class="gm-msg" id="hn-msg" role="status" aria-live="polite"></p>
+
+        <div class="hn-size">
+          <span>Disk sayısı:</span>
+          <button type="button" class="ba-btn" id="hn-less" aria-label="Disk sayısını azalt">−</button>
+          <button type="button" class="ba-btn" id="hn-more" aria-label="Disk sayısını artır">+</button>
+        </div>
+
+        <div class="gm-controls">
+          <button type="button" class="ba-btn" id="hn-undo" aria-keyshortcuts="U">Geri al (U)</button>
+          <button type="button" class="ba-btn" id="hn-restart" aria-keyshortcuts="R">Baştan başla (R)</button>
+        </div>
+
+        <div class="gm-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Fare ya da dokunmatik: önce diskin alınacağı çubuğa, sonra hedef çubuğa tıklayın. Seçili çubuk yukarı kalkar; aynı çubuğa tekrar tıklarsanız seçim iptal olur.</li>
+            <li>Klavye: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> doğrudan çubuk seçer, <kbd>←</kbd> <kbd>→</kbd> ya da <kbd>Tab</kbd> çubuklar arasında gezer, <kbd>Enter</kbd> seçer, <kbd>Esc</kbd> iptal eder, <kbd>U</kbd> geri alır, <kbd>R</kbd> baştan başlatır.</li>
+            <li>Her diskin üzerinde boyutunu gösteren bir sayı vardır: 1 en küçük disktir. Hedef, sağdaki 3. çubuktur.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-hanoi-kuleleri-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Hanoi Kuleleri nedir?</h2>
+      <p>Hanoi Kuleleri, üç çubuk ve boyları birbirinden farklı bir dizi diskle oynanan klasik bir mantık bulmacasıdır. Başlangıçta bütün diskler soldaki çubukta, en büyük disk en altta, en küçük disk en üstte olacak biçimde bir kule oluşturur. Amacınız bu kuleyi, aynı sırayla, sağdaki çubuğa taşımaktır. Kural yalnızca birdir ama oyunu düşündürücü kılan da odur: aynı anda yalnızca bir disk taşınabilir ve hiçbir disk, kendisinden daha küçük bir diskin üstüne konamaz.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da reklam izleyerek ek hak kazanmanız gerekmez; oyunda para, bahis ya da ödül sistemi yoktur. Sayfa bir kez yüklendikten sonra bağlantı kopsa bile oyun çalışmaya devam eder. Seçtiğiniz disk sayısı ve her disk sayısı için en iyi hamle sayınız yalnızca bu cihazdaki tarayıcının yerel depolamasında saklanır; hiçbir sunucuya gönderilmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Taşımak istediğiniz diskin bulunduğu çubuğa tıklayın ya da dokunun. Çubuk yukarı kalkarak seçildiğini gösterir; taşınacak disk her zaman o çubuğun en üstündeki disktir.</li>
+        <li>Ardından diskin gideceği çubuğa tıklayın. Taşıma yalnızca hedef çubuk boşsa ya da hedef çubuğun en üstündeki disk, taşıdığınız diskten büyükse olur.</li>
+        <li>Kural çiğnenirse oyun sizi cezalandırmaz; yalnızca neden olmadığını açıklayan bir mesaj gösterir ve hamle sayılmaz.</li>
+        <li>Diskleri en az hamleyle taşımaya çalışın. Üstteki “En az” kutusu o disk sayısı için kuramsal olarak mümkün olan en küçük hamle sayısını gösterir.</li>
+        <li>Tüm diskler 3. çubukta toplandığında bulmaca çözülür. “Bir disk daha ekle” düğmesiyle daha zor bir kuleye geçebilir ya da aynı kuleyi daha az hamleyle yeniden deneyebilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> İki dokunuşla oynanır: kaynak çubuk, sonra hedef çubuk. Çubuklar telefon ekranında bile geniş ve rahat dokunulabilir boyuttadır; 360 piksel genişliğindeki küçük ekranlarda da üç çubuk yan yana sığar.</li>
+        <li><strong>Klavye:</strong> <kbd>1</kbd>, <kbd>2</kbd> ve <kbd>3</kbd> tuşları çubukları doğrudan seçer; ilk tuşa kaynağı, ikinci tuşa hedefi belirtirsiniz. Yön tuşları ve <kbd>Tab</kbd> çubuklar arasında gezdirir, <kbd>Enter</kbd> ya da boşluk seçer. <kbd>U</kbd> son hamleyi geri alır, <kbd>R</kbd> kuleyi baştan kurar, <kbd>Esc</kbd> seçimi iptal eder.</li>
+        <li><strong>Ekran okuyucu:</strong> Her çubuk, üzerindeki diskleri alttan üste sayan bir etikete sahiptir. Her hamleden sonra ne olduğu ya da hamlenin neden olmadığı, ekran okuyucuların okuyabileceği bir durum satırında yazılır.</li>
+        <li><strong>Disk numaraları:</strong> Diskler yalnızca boyuyla ve renkle değil, üzerindeki sayıyla da ayırt edilir. Bu yüzden renkleri ayırt etmekte zorlananlar da rahatça oynayabilir.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu ekrana yayar ve dikkat dağıtan her şeyi gizler.</li>
+      </ul>
+
+      <h2>Kaç disk, kaç hamle?</h2>
+      <p>Hanoi Kuleleri'nin en güzel yanlarından biri, kesin bir matematiksel formülle çözülebilmesidir. n diskli bir kuleyi taşımak için gereken en az hamle sayısı 2'nin n'inci kuvvetinden bir çıkarılarak bulunur. Üç disk için bu 7, dört disk için 15, beş disk için 31, altı disk için 63, yedi disk için 127 ve sekiz disk için 255 hamledir. Her yeni disk, gereken hamle sayısını yaklaşık iki katına çıkarır; yani oyun küçük bir artışla hızla uzar.</p>
+      <p>Oyunda 3 ile 8 disk arasında seçim yapabilirsiniz. Üç diskli kule kuralı öğrenmek için idealdir. Dört ve beş disk, çözümün düzenini fark etmeye başladığınız kademedir. Altı ve yedi diskte hamle sayısını izlemek, yani sistematik bir yöntem kullanmak şarttır. Sekiz disk ise 255 hamlelik uzun bir sabır ve dikkat sınavıdır; geri alma düğmesi bu noktada hayat kurtarır.</p>
+
+      <h2>En az hamleyle çözmenin yöntemi</h2>
+      <p>Bulmacayı denemeyle değil, özyinelemeli (kendini tekrar eden) bir düşünceyle çözmek mümkündür. Büyük bir kuleyi taşımak istediğinizde önce üstündeki küçük kuleyi (bir diskli eksik kuleyi) yedek çubuğa, sonra en büyük diski hedefe, ardından yedek çubuktaki küçük kuleyi hedefe taşırsınız. Küçük kule için de aynı yöntem geçerlidir. Bu fikri sürekli uygularsanız hamleler kendiliğinden en az sayıya ulaşır.</p>
+      <p>Pratik bir kural daha vardır: en küçük disk (1 numaralı) her ikinci hamlede hareket eder. Disk sayısı çiftse 1 numaralı diski sırayla 1. çubuktan 2. çubuğa, 3. çubuğa, tekrar 1. çubuğa şeklinde ilerletin; tek ise 1. çubuktan 3. çubuğa, 2. çubuğa, tekrar 1. çubuğa doğru ilerletin. Diğer hamlelerde ise 1 numaralı diske dokunmadan, geriye kalan iki çubuk arasında yasal olan tek hamleyi yapın. Bu döngüyü kurmak ilk başta zor gelebilir; ama birkaç denemeden sonra neredeyse kendiliğinden oturur.</p>
+
+      <div class="ba-ad" data-slot="oyun-hanoi-kuleleri-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Hedefi her zaman akılda tutun.</strong> Dört diskli bir kulede 4 numaralı disk 3. çubuğa ancak 1, 2 ve 3 numaralı diskler 2. çubukta toplandıktan sonra geçebilir. Önce o ara hedefe odaklanın.</li>
+        <li><strong>En küçük diski tutarlı yönlendirin.</strong> 1 numaralı diski rastgele çubuklara götürmek hamle israfının en büyük nedenidir. Yukarıdaki döngüyü izlemek bunu önler.</li>
+        <li><strong>Geri taşımak israftır.</strong> Az önce yaptığınız hamlenin tam tersini yapıyorsanız bir hata yapmışsınız demektir; geri al düğmesini kullanıp yolunuzu yeniden planlayın.</li>
+        <li><strong>Küçükten başlayın.</strong> Önce 3 diskle 7 hamlelik çözümü ezberleyin, sonra 4 diske geçin. Her seviye bir öncekinin üzerine kurulur; 5 diskli çözüm, 4 diskli çözümün iki kopyasıdır.</li>
+        <li><strong>Hamle sayacını kullanın.</strong> “En az” kutusuyla kendi hamle sayınızı karşılaştırın. Aradaki fark büyükse fazladan hamleleri bulmak, çözümü iyileştirmenin en etkili yoludur.</li>
+        <li><strong>Acele etmeyin.</strong> Süre sınırı yoktur. Bu oyun hız değil, planlama oyunudur; her hamleden önce bir adım sonrasını düşünmek yeterlidir.</li>
+      </ul>
+
+      <h2>Kısa tarihçe: efsane ve matematik</h2>
+      <p>Bulmaca, 1883'te Fransız matematikçi Édouard Lucas tarafından tanıtıldı. Bulmacaya eşlik eden efsane de çoğunlukla ona atfedilir: Uzak Doğu'da bir tapınakta rahipler, üç elmas çubuğa dizilmiş altın diskleri bir çubuktan ötekine taşır; 64 diskin tamamı taşındığında dünyanın sonu gelecektir. Efsane edebi bir süstür, ama arkasındaki matematik gerçektir. 64 diskin en az hamle sayısı 2'nin 64'üncü kuvvetinden bir eksiktir; bu, yaklaşık 18,4 kentilyon hamle demektir. Saniyede bir hamle yapılsa bile iş yaklaşık 585 milyar yıl sürer.</p>
+      <p>Hanoi Kuleleri o günden bugüne bilgisayar bilimi derslerinin vazgeçilmez örneklerinden biri oldu. Özyinelemeyi, yani bir problemi kendisinin daha küçük bir kopyasına indirgemeyi anlatmak için kullanılır; programlama öğrenen hemen herkes bir noktada bu bulmacayı çözen bir kod yazar. Psikolojide de sıklıkla planlama ve problem çözme becerisini gözlemlemek için benzer kule bulmacaları kullanılır. Bu sayfadaki oyun ise bunların hiçbirini ölçmez; yalnızca keyifli bir zihin egzersizi sunar.</p>
+
+      <h2>Zihin için faydası</h2>
+      <p>Bu tür oyunlar planlama, kısa süreli bellek ve adım adım düşünme gerektirir. Bir hamlenin sonucunu önceden zihinde canlandırmak, “şimdi bunu yaparsam şuna ulaşırım” diye zincirleme düşünmek işlevsel bir egzersizdir. Bununla birlikte oyun tıbbi bir araç değildir ve herhangi bir sağlık iddiası taşımaz; yalnızca eğlenceli bir bulmacadır. Uzun süre ekrana bakıyorsanız arada mola vermeyi unutmayın.</p>
+
+      <h2>Okul ve öğretim kullanımı</h2>
+      <p>Öğretmenler Hanoi Kuleleri'ni ders içinde üstel büyümeyi, örüntü bulmayı ve özyinelemeli düşünmeyi göstermek için kullanır. Üç disk için 7, dört disk için 15 hamle gerektiğini sınıfça bulmak, ardından “beş disk için kaç hamle gerekir?” sorusuna ulaşmak, öğrencilerin kuralı kendi başlarına keşfetmesini sağlar. Bu sayfayı projeksiyonda gösterip hamleleri sınıfla birlikte yapabilir, “En az” kutusunu öğrencilerin tahminleriyle karşılaştırabilirsiniz.</p>
+
+      <h2>Neden bu sürüm?</h2>
+      <p>Bu Hanoi Kuleleri sürümü, sade ve hızlı olması için sıfırdan yazıldı. Reklam izleme zorunluluğu, sahte geri sayım, yanıltıcı düğme ya da hile yoktur. Tüm çubuklar klavyeyle ve ekran okuyucuyla kullanılabilir, 360 piksel genişlikteki telefonlarda taşma olmaz ve hareket azaltma tercihine saygı gösterilir. Bilişim Ajans'ın ücretsiz araçları ve oyunları aynı ilkeyle hazırlanır: hesap yok, takip yok, dosya yükleme yok.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Hamleleriniz ve rekorlarınız hiçbir sunucuya gönderilmez; en iyi hamle sayıları ve seçtiğiniz disk sayısı yalnızca tarayıcının yerel depolamasında (localStorage) tutulur. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekorlarınız sıfırlanır; depolama kapalıysa oyun yine çalışır, yalnızca ilerlemeniz saklanmaz.</p>
+
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Hanoi Kuleleri ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma ya da ödeme yoktur.</p></details>
+      <details><summary>Hanoi Kuleleri kuralları nelerdir?</summary><p>Aynı anda yalnızca bir disk taşınır ve her zaman bir çubuğun en üstündeki disk alınır. Hiçbir disk, kendisinden daha küçük bir diskin üstüne konamaz. Amaç tüm kuleyi soldaki çubuktan sağdaki üçüncü çubuğa taşımaktır.</p></details>
+      <details><summary>En az kaç hamlede çözülür?</summary><p>n disk için en az hamle sayısı 2 üzeri n eksi 1 formülüyle bulunur: 3 disk için 7, 4 disk için 15, 5 disk için 31, 6 disk için 63, 7 disk için 127, 8 disk için 255 hamle. Oyun, ekranda o anki disk sayısı için en az hamleyi gösterir.</p></details>
+      <details><summary>Yanlış hamle yaparsam ne olur?</summary><p>Kural dışı bir taşıma yapılmaz ve hamle sayılmaz; oyun nedenini bir mesajla açıklar. Yasal ama istemediğiniz bir hamle yaptıysanız Geri al düğmesine ya da U tuşuna basarak hamleleri tek tek geri alabilirsiniz.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Önce diskin bulunduğu çubuğa, sonra hedef çubuğa dokunun. Seçili çubuk yukarı kalkar. Üç çubuk 360 piksel genişliğindeki ekranlara da sığar ve rahat dokunulacak boyuttadır.</p></details>
+      <details><summary>Sadece klavyeyle oynanabilir mi?</summary><p>Evet. 1, 2 ve 3 tuşları çubukları doğrudan seçer; yön tuşları ve Tab çubuklar arasında gezdirir. U geri alır, R baştan başlatır, Esc seçimi iptal eder.</p></details>
+      <details><summary>Disk sayısını nasıl değiştiririm?</summary><p>Çubukların altındaki artı ve eksi düğmeleriyle 3 ile 8 arasında seçebilirsiniz. Bir kuleyi bitirdiğinizde Bir disk daha ekle düğmesi de sizi bir üst zorluğa taşır. Disk sayısını değiştirmek oyunu baştan başlatır.</p></details>
+      <details><summary>Rekorlarım nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Her disk sayısı için en iyi hamle sayınız ayrı tutulur ve hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekorlar sıfırlanır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../su-siralama/">Su Sıralama</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../blok-bulmaca/">Blok Bulmaca</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-hanoi-kuleleri-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
