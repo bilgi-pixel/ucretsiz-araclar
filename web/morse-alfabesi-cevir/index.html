@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Morse Alfabesi Çevirici – Metinden Morse'a, Morse'dan Metne (Sesli)</title>
+  <meta name="description" content="Metni Morse koduna, Morse kodunu metne çevirin; Türkçe harfler (Ç, Ğ, Ö, Ş, Ü) desteklenir, sonucu sesli dinleyebilirsiniz. Ücretsiz, kayıt yok, yazdıklarınız tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/morse-alfabesi-cevir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+  
+    .morse-text { width: 100%; min-height: 110px; padding: 10px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; }
+    .morse-out { font-family: var(--ba-mono); font-size: 1.05rem; letter-spacing: .04em; }
+    .morse-opts { border: 0; padding: 0; margin: 0 0 12px; }
+    .morse-opts legend { font-weight: 600; margin-bottom: 4px; }
+    .morse-wpm { display: inline-flex; align-items: center; gap: 8px; }
+    .morse-wpm select { min-height: 44px; padding: 6px 10px; font: inherit; border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: var(--ba-surface); color: var(--ba-text); }</style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Morse Alfabesi Çevirici – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/morse-alfabesi-cevir/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Metni Morse koduna nasıl çeviririm?","acceptedAnswer":{"@type":"Answer","text":"Üstte \"Metin → Morse\" yönünü seçin, kutuya metni yazın ve \"Çevir\" düğmesine basın. Harfler boşlukla, sözcükler \" / \" ile ayrılmış nokta-çizgi dizisi sonuç kutusunda görünür."}},{"@type":"Question","name":"Morse kodunu metne çevirirken nelere dikkat etmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Harfler arasında tek boşluk, sözcükler arasında eğik çizgi (/) ya da en az üç boşluk bırakın. Nokta için . veya •, çizgi için - veya – kullanabilirsiniz. Tanınmayan kodlar \"?\" olarak gösterilir ve altta listelenir."}},{"@type":"Question","name":"Türkçe karakterler (Ç, Ğ, Ö, Ş, Ü) destekleniyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Ç, Ğ, Ö, Ş ve Ü için yaygın Morse uzantıları kullanılır. İ ve ı ise ayrı bir koda sahip olmadığından I olarak gönderilir. Yurt dışına gönderecekseniz karşı tarafın aynı uzantıları tanıdığından emin olun."}},{"@type":"Question","name":"SOS Morse kodunda nasıl yazılır?","acceptedAnswer":{"@type":"Answer","text":"SOS, üç nokta, üç çizgi, üç nokta olarak \"... --- ...\" biçiminde yazılır. Gerçek tehlike çağrısında harfler arasında boşluk bırakılmadan sürekli gönderilir; çevirici yalnızca yazılı biçimini üretir."}},{"@type":"Question","name":"Sesli çalma nasıl çalışıyor, internet gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Ses, tarayıcınızın kendi ses motoruyla (WebAudio) üretilir; internet gerekmez ve hiçbir ses dosyası indirilmez. Bir nokta bir birim, çizgi üç birim sürer; hız WPM olarak seçilir. Ses yalnızca \"Sesli çal\" düğmesine bastığınızda çalar."}},{"@type":"Question","name":"Yazdığım metin bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Çeviri tamamen tarayıcınızda yapılır, metin sunucuya iletilmez ve saklanmaz. Sayfa çerez ya da izleme kodu içermez."}},{"@type":"Question","name":"Rakamlar ve noktalama işaretleri çevriliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. 0-9 rakamları ve nokta, virgül, soru işareti, ünlem, parantez, tire, eşittir, artı, tırnak, @ gibi yaygın işaretler çevrilir. Karşılığı olmayan karakterler atlanır ve hangileri atlandığı bildirilir."}},{"@type":"Question","name":"Morse kodu hâlâ kullanılıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Gündelik haberleşmede yerini dijital sistemlere bıraksa da amatör telsizcilikte, havacılıktaki bazı yardımcı seyrüsefer işaretlerinde, izcilikte ve acil durum sinyallerinde kullanılmaya devam eder."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#donustur">Dönüştür</a></li></ol>
+      <h1><span class="ba-grad">Morse Alfabesi Çevirici</span> – Metni Morse'a, Morse'u Metne</h1>
+      <p class="lead">Metin yazın, Morse kodu (nokta ve çizgi) karşılığını görün; ya da Morse kodunu yapıştırıp düz yazıya çevirin. Türkçe harfler desteklenir, sonucu kopyalayabilir veya sesli dinleyebilirsiniz. Yazdıklarınız bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <fieldset class="morse-opts"><legend>Çeviri yönü</legend>
+          <div class="kdv-modes"><label><input type="radio" name="mode" value="encode" checked> Metin → Morse</label><label><input type="radio" name="mode" value="decode"> Morse → Metin</label></div>
+        </fieldset>
+        <div class="ba-field"><label for="input">Girdi</label><textarea id="input" class="morse-text" placeholder="Örn. Merhaba Dünya" spellcheck="false"></textarea><div class="hint">Morse girerken harfleri boşlukla, sözcükleri / işaretiyle ayırın.</div></div>
+        <div class="ba-actions"><button id="convert" class="ba-btn ba-btn-primary" type="submit">Çevir</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <label class="visually-hidden" for="out">Çeviri sonucu</label>
+        <textarea id="out" class="morse-text morse-out" readonly></textarea>
+        <p class="kdv-note" id="r-note"></p>
+        <div class="ba-actions">
+          <button id="copy" class="ba-btn" type="button">Sonucu kopyala</button>
+          <button id="swap" class="ba-btn" type="button">Sonucu girişe taşı ve ters çevir</button>
+          <button id="play" class="ba-btn" type="button">Sesli çal</button>
+          <label class="morse-wpm" for="wpm">Hız <select id="wpm"><option value="10">10 WPM (yavaş)</option><option value="15" selected>15 WPM</option><option value="20">20 WPM (hızlı)</option></select></label>
+        </div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="morse-alfabesi-cevir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üstte çeviri yönünü seçin: "Metin → Morse" düz yazıyı nokta ve çizgiye, "Morse → Metin" ise nokta ve çizgiyi okunur yazıya çevirir.</li>
+        <li>Girdi kutusuna metni yazın ya da Morse kodunu yapıştırın. Morse girerken harfleri tek boşlukla, sözcükleri eğik çizgi (/) ile ayırın; örneğin "... --- ..." SOS demektir.</li>
+        <li>"Çevir" düğmesine basın. Sonuç altta görünür; "Sonucu kopyala" ile panoya alabilirsiniz.</li>
+        <li>Metni Morse'a çevirdiyseniz "Sesli çal" ile kodu bip sesleriyle dinleyin, hız ayarını 10, 15 ya da 20 WPM olarak seçin.</li>
+        <li>Çıktıyı hemen geri çevirip kontrol etmek için "Sonucu girişe taşı ve ters çevir" düğmesini kullanın.</li>
+      </ol>
+
+      <h2>Morse alfabesi nedir?</h2>
+      <p>Morse alfabesi, harfleri ve rakamları kısa ve uzun sinyallerin dizisiyle gösteren bir kodlama sistemidir. Kısa sinyale "nokta", uzun sinyale "çizgi" denir; ışıkla, sesle, bayrakla ya da telgraf hattında elektrik darbesiyle iletilebilir. On dokuzuncu yüzyılın ortasında telgrafın yaygınlaşmasıyla birlikte Samuel Morse ve Alfred Vail'in geliştirdiği sistem, daha sonra uluslararası kullanıma uygun hâle getirildi. Bugün "Uluslararası Morse Kodu" olarak bilinen biçim denizcilikte, havacılıkta, amatör telsizcilikte ve izcilikte hâlâ öğretilir.</p>
+      <p>Kodun akıllıca yanı, sık kullanılan harflere kısa karşılık vermesidir. İngilizcede en çok kullanılan E harfi yalnızca tek bir noktadır, T harfi ise tek bir çizgi. Az kullanılan Q, J ya da X gibi harfler daha uzundur. Böylece ortalama bir mesaj, hepsi aynı uzunlukta olsaydı olacağından daha kısa sürede gönderilir. Rakamlar her zaman beş işaretten oluşur ve düzenli bir örüntü izler: 1 sayısı bir nokta ve dört çizgidir, 5 sayısı beş noktadır, 6'dan itibaren noktalar çizgilerin yerini alır.</p>
+
+      <h2>Süre kuralları: nokta, çizgi ve boşluklar</h2>
+      <p>Morse'da anlam yalnızca işaretin türünden değil, sürelerinden de gelir. Standart kurala göre bir nokta bir birim süredir, çizgi üç birimdir. Aynı harfin işaretleri arasında bir birim, harfler arasında üç birim, sözcükler arasında yedi birim sessizlik bırakılır. Bu araçtaki sesli çalma özelliği tam olarak bu oranları kullanır. Hız "dakikada kelime" (WPM) ile ifade edilir ve "PARIS" sözcüğü ölçü alınır: 15 WPM'de bir birim yaklaşık 80 milisaniyedir. Yeni başlayanlar için 10 WPM rahat bir hızdır; deneyimli operatörler 20 WPM ve üzerinde alım yapar.</p>
+      <p>Yazılı Morse'da bu süreler karakter olarak karşılık bulur: işaretler bitişik yazılır, harfler tek boşlukla, sözcükler " / " ile ayrılır. Bazı kaynaklar sözcükleri üç boşlukla ayırır; bu çevirici hem eğik çizgiyi hem de üç ve daha fazla boşluğu sözcük ayırıcı olarak kabul eder. Noktayı "•" veya "·", çizgiyi "–" veya "—" ile yazan kaynaklardan kopyaladığınız metinleri de olduğu gibi yapıştırabilirsiniz.</p>
+
+      <h2>Türkçe harfler ve noktalama</h2>
+      <p>Orijinal Morse kodu yalnızca Latin alfabesinin 26 harfini içerir. Türkçedeki Ç, Ğ, Ö, Ş ve Ü için yaygın kullanılan uzantılar eklenmiştir: Ç "-.-..", Ğ "--.-.", Ö "---.", Ş ".--.." ve Ü "..--" biçiminde yazılır. Noktalı İ ve noktasız ı için ayrı bir standart olmadığından ikisi de I harfinin karşılığı ".." olarak gönderilir; bu yüzden "ışık" ve "işik" Morse'da aynı görünür. Karşı tarafın metni doğru okuması için bağlamdan yararlanması gerekir. Resmî telsiz sınavlarında ve denizcilikte Türkçe harflerin kullanımı kuruma göre değişebildiğinden, sınav için çalışıyorsanız ilgili kurumun güncel tablosunu esas alın.</p>
+      <p>Araç noktalama işaretlerinden nokta, virgül, soru işareti, ünlem, kesme işareti, eğik çizgi, parantezler, iki nokta, noktalı virgül, eşittir, artı, tire, alt çizgi, tırnak, dolar ve et (@) işaretlerini çevirir. Karşılığı olmayan bir karakter yazarsanız (örneğin emoji) bu karakter atlanır ve hangi karakterlerin atlandığı sonucun altında belirtilir; böylece sessizce kaybolan bir harf olmaz.</p>
+
+
+
+      <div class="ba-ad" data-slot="morse-alfabesi-cevir-b" aria-label="Reklam"></div>
+
+      <h2>Morse kodu nerelerde kullanılır?</h2>
+      <ul>
+        <li><strong>Amatör telsizcilik:</strong> Dünyanın dört bir yanındaki telsiz meraklıları düşük güçle bile uzak mesafeye ulaşabildiği için Morse ile haberleşmeyi sever. "CQ" çağrısı ve "73" selamı gibi kısaltmalar bu geleneğin parçasıdır.</li>
+        <li><strong>Denizcilik ve acil durum:</strong> SOS işareti, yani "... --- ...", harf olarak değil tek bir sürekli dizi olarak gönderilir ve evrensel tehlike işareti kabul edilir. Işıkla, düdükle ya da el feneriyle de verilebilir.</li>
+        <li><strong>İzcilik ve kampçılık:</strong> Fener, ayna ya da düdükle mesaj vermek etkinlik oyunlarının klasiğidir. Çocuklara kodlama mantığını öğretmenin eğlenceli bir yoludur.</li>
+        <li><strong>Erişilebilirlik:</strong> Morse tek bir düğmeyle girilebildiği için bazı yardımcı teknoloji cihazlarında ve telefon klavyelerinde alternatif giriş yöntemi olarak kullanılır.</li>
+        <li><strong>Bulmaca, oyun ve hediye:</strong> Bilmecelerde, kaçış oyunlarında, takılarda ya da dövme tasarımlarında gizli mesaj yazmak için Morse çok sevilir.</li>
+      </ul>
+
+      <h2>Morse öğrenmek için ipuçları</h2>
+      <p>Tabloyu ezberlemeye çalışmak yerine kodu sesle öğrenmek çok daha verimlidir. Her harfi yazıya bakarak değil, kulağınızda bir melodi gibi tanımayı hedefleyin. Önce kısa ve sık kullanılan harflerle (E, T, A, N, I, M) başlayın, sonra yavaş yavaş uzun harflere geçin. Bu araçla kısa sözcükler yazıp "Sesli çal" düğmesiyle dinlemek iyi bir başlangıçtır. Hız ayarını düşük tutun; doğruluk oturduktan sonra hızlandırın. Her gün on beş dakikalık düzenli çalışma, uzun ve seyrek çalışmaktan daha iyi sonuç verir. Çalışma sırasında Morse'u çıktısına bakmadan çözmeye, sonra "Sonucu girişe taşı ve ters çevir" ile kendinizi denetlemeye çalışın.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <p>Morse kodu yazarken en sık görülen hata, harflerin arasındaki boşluğu unutmaktır. "...---..." ifadesi üç farklı biçimde okunabilir; boşluklar olmadan çözüm belirsiz olur. Bu nedenle harfler arasında mutlaka bir boşluk, sözcükler arasında eğik çizgi kullanın. İkinci yaygın hata, tire (-) yerine farklı bir karakter yapıştırmaktır. Metin düzenleyiciler bazen tireyi uzun tireye çevirir; bu araç bunu otomatik düzeltir. Son olarak, Türkçe karakterlerin farklı ülkelerde farklı kodlandığını unutmayın: yurt dışındaki bir alıcı Ğ ya da Ş için aynı kodu tanımayabilir, bu durumda mesajı ASCII harflerle (G, S) yazmak daha güvenlidir.</p>
+
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Metni Morse koduna nasıl çeviririm?</summary><p>Üstte "Metin → Morse" yönünü seçin, kutuya metni yazın ve "Çevir" düğmesine basın. Harfler boşlukla, sözcükler " / " ile ayrılmış nokta-çizgi dizisi sonuç kutusunda görünür.</p></details>
+        <details><summary>Morse kodunu metne çevirirken nelere dikkat etmeliyim?</summary><p>Harfler arasında tek boşluk, sözcükler arasında eğik çizgi (/) ya da en az üç boşluk bırakın. Nokta için . veya •, çizgi için - veya – kullanabilirsiniz. Tanınmayan kodlar "?" olarak gösterilir ve altta listelenir.</p></details>
+        <details><summary>Türkçe karakterler (Ç, Ğ, Ö, Ş, Ü) destekleniyor mu?</summary><p>Evet. Ç, Ğ, Ö, Ş ve Ü için yaygın Morse uzantıları kullanılır. İ ve ı ise ayrı bir koda sahip olmadığından I olarak gönderilir. Yurt dışına gönderecekseniz karşı tarafın aynı uzantıları tanıdığından emin olun.</p></details>
+        <details><summary>SOS Morse kodunda nasıl yazılır?</summary><p>SOS, üç nokta, üç çizgi, üç nokta olarak "... --- ..." biçiminde yazılır. Gerçek tehlike çağrısında harfler arasında boşluk bırakılmadan sürekli gönderilir; çevirici yalnızca yazılı biçimini üretir.</p></details>
+        <details><summary>Sesli çalma nasıl çalışıyor, internet gerekir mi?</summary><p>Ses, tarayıcınızın kendi ses motoruyla (WebAudio) üretilir; internet gerekmez ve hiçbir ses dosyası indirilmez. Bir nokta bir birim, çizgi üç birim sürer; hız WPM olarak seçilir. Ses yalnızca "Sesli çal" düğmesine bastığınızda çalar.</p></details>
+        <details><summary>Yazdığım metin bir yere gönderiliyor mu?</summary><p>Hayır. Çeviri tamamen tarayıcınızda yapılır, metin sunucuya iletilmez ve saklanmaz. Sayfa çerez ya da izleme kodu içermez.</p></details>
+        <details><summary>Rakamlar ve noktalama işaretleri çevriliyor mu?</summary><p>Evet. 0-9 rakamları ve nokta, virgül, soru işareti, ünlem, parantez, tire, eşittir, artı, tırnak, @ gibi yaygın işaretler çevrilir. Karşılığı olmayan karakterler atlanır ve hangileri atlandığı bildirilir.</p></details>
+        <details><summary>Morse kodu hâlâ kullanılıyor mu?</summary><p>Evet. Gündelik haberleşmede yerini dijital sistemlere bıraksa da amatör telsizcilikte, havacılıktaki bazı yardımcı seyrüsefer işaretlerinde, izcilikte ve acil durum sinyallerinde kullanılmaya devam eder.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sifreli-mesaj/">Şifreli Mesaj (Sezar ve Base64)</a></li>
+        <li><a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü (İkilik, Onaltılık)</a></li>
+        <li><a href="../base64-donustur/">Base64 Dönüştür</a></li>
+        <li><a href="../metin-araclari/">Metin Araçları</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="morse-alfabesi-cevir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

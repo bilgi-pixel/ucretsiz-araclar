@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Fibonacci Sayıları Hesaplama – n. Terim, İlk n Terim ve Fibonacci Mi Kontrolü</title>
+  <meta name="description" content="Fibonacci dizisinin n. terimini tam basamaklarıyla hesaplayın, ilk terimleri listeleyin, bir sayının Fibonacci sayısı olup olmadığını öğrenin. Ücretsiz, kayıt yok, tarayıcınızda çalışır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/fibonacci-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+  
+    .fib-list { font-family: var(--ba-mono); font-size: .95rem; line-height: 1.7; overflow-wrap: anywhere; margin: 6px 0 0; }
+    .fib-full { width: 100%; min-height: 70px; padding: 8px 12px; font-family: var(--ba-mono); font-size: .9rem; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); resize: vertical; }
+    .fib-box + .fib-box { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--ba-border); }
+    .fib-big { font-family: var(--ba-mono); font-size: 1.15rem; font-weight: 700; overflow-wrap: anywhere; margin: 0 0 10px; }</style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Fibonacci Sayıları Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/fibonacci-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Fibonacci dizisi nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"İlk iki terim 0 ve 1 olarak alınır; sonraki her terim kendinden önceki iki terimin toplamıdır. Yani 0, 1, 1, 2, 3, 5, 8, 13… Araç bu işlemi n adım boyunca tekrarlayarak istediğiniz terimi bulur."}},{"@type":"Question","name":"Dizi neden 0 ile başlıyor, bazı kitaplarda 1 ile başlıyor?","acceptedAnswer":{"@type":"Answer","text":"İki gösterim de kullanılır. Matematikte ve programlamada F(0)=0, F(1)=1 yaygındır; bazı ders kitapları 1, 1, 2, 3 diye başlar. Bu araçta ilk terim F(0)=0 kabul edilir, dolayısıyla 10. sıradaki değer 55'tir."}},{"@type":"Question","name":"En fazla kaçıncı terime kadar hesaplayabilirim?","acceptedAnswer":{"@type":"Answer","text":"Sıra 5.000'e kadar kabul edilir. F(5000) yaklaşık bin basamaklı bir sayıdır ve tam olarak gösterilir. Çok uzun sonuçlar ekranda kısaltılır, tamamı \"Tam sayı\" kutusunda bulunur."}},{"@type":"Question","name":"Sonuçlar neden tam olarak doğru?","acceptedAnswer":{"@type":"Answer","text":"Hesap BigInt türüyle yapılır; bu tür sınırsız büyüklükte tam sayıyı hatasız tutar. Sıradan bir hesap makinesinde ya da kayan noktalı sayılarda büyük terimlerin son basamakları yuvarlanır, burada yuvarlanmaz."}},{"@type":"Question","name":"Bir sayının Fibonacci sayısı olup olmadığı nasıl anlaşılır?","acceptedAnswer":{"@type":"Answer","text":"m sayısı için 5m²+4 ya da 5m²−4'ten biri tam kare ise m bir Fibonacci sayısıdır. İkinci kutuya sayıyı yazdığınızda araç bu testi uygular ve evet ise kaçıncı terim olduğunu da gösterir."}},{"@type":"Question","name":"Altın oranla ilişkisi nedir?","acceptedAnswer":{"@type":"Answer","text":"Ardışık iki terimin oranı, terimler büyüdükçe altın orana (yaklaşık 1,618034) yaklaşır. Sonuç bölümündeki F(n)/F(n−1) satırı bu oranı ondalık olarak gösterir."}},{"@type":"Question","name":"Toplam satırı neyi ifade eder?","acceptedAnswer":{"@type":"Answer","text":"F(0)'dan F(n)'e kadar tüm terimlerin toplamıdır. Bu toplam her zaman F(n+2) − 1'e eşittir; araç bu kısa yolu kullanarak toplamı anında verir."}},{"@type":"Question","name":"Girdiğim sayılar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesap tarayıcınızda yapılır; yazdığınız sayılar sunucuya iletilmez, saklanmaz. Sayfa çerez ya da izleme kodu içermez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Fibonacci Sayıları Hesaplama</span> – n. Terim ve Fibonacci Mi?</h1>
+      <p class="lead">Fibonacci dizisinin istediğiniz terimini tam basamaklarıyla hesaplayın, ilk terimleri listeleyin, terimlerin toplamını ve altın orana yaklaşımı görün; bir sayının Fibonacci sayısı olup olmadığını kontrol edin. Hesap tarayıcınızda yapılır, girdiğiniz değerler hiçbir yere gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <div class="fib-box">
+        <form id="form-n" class="kdv-form" novalidate>
+          <div class="ba-field"><label for="n">Terim sırası (n)</label><input id="n" type="text" inputmode="numeric" autocomplete="off" placeholder="Örn. 50"><div class="hint">0 ile 5.000 arasında bir tam sayı. F(0) = 0, F(1) = 1 kabul edilir.</div></div>
+          <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Fibonacci terimini hesapla</button></div>
+        </form>
+        <div id="result-n" class="ba-result" aria-live="polite" hidden>
+          <h3>Sonuç</h3>
+          <p class="fib-big"><span id="r-title"></span> <span id="r-term"></span></p>
+          <dl class="kdv-results">
+            <div class="kdv-row"><dt>Basamak sayısı</dt><dd id="r-digits"></dd></div>
+            <div class="kdv-row"><dt>F(0) + … + F(n) toplamı</dt><dd id="r-sum"></dd></div>
+            <div class="kdv-row"><dt>F(n) / F(n−1) oranı</dt><dd id="r-ratio"></dd></div>
+          </dl>
+          <h4 id="r-list-title">İlk terimler</h4>
+          <p class="fib-list" id="r-list"></p>
+          <div class="ba-field"><label for="r-full">Tam sayı (kopyalamak için)</label><textarea id="r-full" class="fib-full" readonly></textarea></div>
+          <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Tam sayıyı kopyala</button></div>
+          <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="fib-box">
+        <form id="form-check" class="kdv-form" novalidate>
+          <div class="ba-field"><label for="chk">Bu sayı Fibonacci sayısı mı?</label><input id="chk" type="text" inputmode="numeric" autocomplete="off" placeholder="Örn. 144"><div class="hint">Negatif olmayan bir tam sayı yazın.</div></div>
+          <div class="ba-actions"><button id="check" class="ba-btn ba-btn-primary" type="submit">Kontrol et</button></div>
+        </form>
+        <div id="result-check" class="ba-result" aria-live="polite" hidden><h3>Kontrol sonucu</h3><p id="c-msg"></p></div>
+      </div>
+      <div id="error" class="ba-error" role="alert"></div>
+    </section>
+
+    <div class="ba-ad" data-slot="fibonacci-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Terim sırası" alanına öğrenmek istediğiniz sırayı yazın; örneğin 50. Fibonacci sayısını istiyorsanız 50 yazın (dizi 0'dan başladığı için F(50) kastedilir).</li>
+        <li>"Fibonacci terimini hesapla" düğmesine basın. Sonuç tam basamaklarıyla görünür; 40 basamaktan uzun sayılar kısaltılarak gösterilir, tamamı "Tam sayı" kutusundadır.</li>
+        <li>Altta basamak sayısını, 0'dan n'e kadar olan terimlerin toplamını ve ardışık iki terimin oranını (altın oran yaklaşımı) görürsünüz. İlk 30 terim listelenir.</li>
+        <li>Bir sayının dizide olup olmadığını merak ediyorsanız ikinci kutuya yazıp "Kontrol et" deyin; evet ise kaçıncı terim olduğu da söylenir.</li>
+      </ol>
+
+      <h2>Fibonacci dizisi nedir?</h2>
+      <p>Fibonacci dizisi, her terimin kendinden önceki iki terimin toplamı olduğu sayı dizisidir: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144… Bazı kitaplar diziyi 1, 1, 2, 3 diye başlatır; bu araç matematikte ve programlamada yaygın olan 0 ve 1 başlangıcını kullanır. Buna göre F(0) = 0, F(1) = 1 ve n ≥ 2 için F(n) = F(n−1) + F(n−2) olur. Dizi adını, 1202 tarihli kitabı Liber Abaci'de bir tavşan üreme problemiyle tanıtan İtalyan matematikçi Leonardo Pisano'dan, yani Fibonacci'den alır. Aslında Hint matematikçiler dizinin özelliklerini ondan yüzyıllar önce incelemişti.</p>
+      <p>Tavşan problemi şöyledir: Bir çift yeni doğmuş tavşan olsun. Her çift, iki ay sonra erginleşir ve sonra her ay bir yeni çift doğurur. Hiçbiri ölmezse n. ay sonunda kaç çift olur? Yanıt tam olarak Fibonacci sayılarıdır. Gerçek tavşanlar elbette bu kadar düzenli davranmaz, ama problem dizinin neden "kendini tekrar eden büyüme" modeli olduğunu çok iyi gösterir.</p>
+
+      <h2>Neden tam basamak önemli?</h2>
+      <p>Fibonacci sayıları çok hızlı büyür. F(50) 12.586.269.025, F(100) ise 354.224.848.179.261.915.075 olur. Sıradan bir hesap makinesi ya da JavaScript'in normal sayı türü, yaklaşık 9 katrilyonun (2 üzeri 53) üzerindeki tam sayıları artık kesin olarak tutamaz; son basamaklar sessizce yuvarlanır. Bu araç BigInt adı verilen sınırsız büyüklükte tam sayı türünü kullanır. Böylece F(1000) gibi 209 basamaklı bir sayıyı bile tek bir rakam hatası olmadan görürsünüz. Üst sınırı 5.000 olarak tuttuk; F(5000) yaklaşık bin basamaklıdır ve tarayıcıda anında hesaplanır.</p>
+      <p>Toplam satırı da bir özelliğe dayanır: ilk n+1 terimin toplamı, F(n+2) − 1 değerine eşittir. Örneğin 0'dan 10'a kadar terimlerin toplamı 0+1+1+2+3+5+8+13+21+34+55 = 143'tür ve F(12) − 1 = 144 − 1 ile aynıdır. Araç, toplamı bu kısa yoldan hesaplar ve aynı zamanda formülü doğrulamanıza yardım eder.</p>
+
+      <h2>Altın oran bağlantısı</h2>
+      <p>Ardışık iki Fibonacci sayısının oranı, terimler büyüdükçe altın orana (yaklaşık 1,6180339887) yaklaşır. 8/5 = 1,6; 13/8 = 1,625; 21/13 ≈ 1,6154; 89/55 ≈ 1,61818. Sonuç kutusundaki "F(n) / F(n−1)" satırı bu yakınsamayı dokuz ondalıkla gösterir; n birkaç düzine olduğunda altın oranın tüm bu basamakları kararlı hâle gelir. Bu oran, mimaride, tasarımda ve doğa gözlemlerinde sıkça anılır. Çam kozalağındaki sarmalların ya da ayçiçeği tohumlarının dizilişindeki sarmal sayılarının sık sık ardışık Fibonacci sayıları olması buna örnektir; ancak her "altın oran" iddiası kanıtlanmış değildir, bu yüzden abartılı yorumlara temkinli yaklaşın.</p>
+
+      <h2>Bir sayı Fibonacci sayısı mı? Kontrol yöntemi</h2>
+      <p>Bir sayıyı tüm dizinin içinde aramak yerine zarif bir ölçüt vardır: m negatif olmayan bir tam sayı olsun. m ancak ve ancak 5m²+4 ya da 5m²−4 ifadelerinden en az biri tam kare ise bir Fibonacci sayısıdır. Örneğin m = 144 için 5·144² − 4 = 103.676 değil, 5·144²+4 = 103.684 = 322² olduğundan 144 dizide yer alır. m = 145 için hiçbiri tam kare çıkmaz, dolayısıyla 145 Fibonacci sayısı değildir. Araç bu testi BigInt ile yapar; 300 basamağa kadar sayıları kontrol edebilir ve "evet" ise kaçıncı terim olduğunu söyler.</p>
+
+
+
+      <div class="ba-ad" data-slot="fibonacci-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Fibonacci sayılarının kullanım alanları</h2>
+      <ul>
+        <li><strong>Ödev ve sınav hazırlığı:</strong> Dizi, ardışık toplama mantığını öğretmek için ortaokuldan üniversiteye kadar kullanılır; hesaplayıcıyla elle bulduğunuz terimleri kontrol edebilirsiniz.</li>
+        <li><strong>Programlama ve algoritmalar:</strong> Özyineleme, dinamik programlama ve bellekleme (memoization) konularının klasik örneğidir. Mülakat sorularında sık geçer; doğru sonucu hızla referans olarak almak için bu araç işe yarar.</li>
+        <li><strong>Veri yapıları:</strong> Fibonacci yığınları ve Fibonacci arama gibi yöntemlerde dizinin özelliklerinden yararlanılır.</li>
+        <li><strong>Tasarım:</strong> Boşluk ölçüleri, yazı boyutu kademeleri ve görsel oranlar için Fibonacci ya da altın oran temelli ölçek kullanan tasarımcılar vardır.</li>
+        <li><strong>Finans analizi hakkında not:</strong> Teknik analizde "Fibonacci düzeltme seviyeleri" kullanılır; bu araç yalnızca matematiksel hesap yapar, yatırım ya da alım-satım tavsiyesi vermez.</li>
+      </ul>
+
+      <h2>Hesaplama yöntemi ve sınırlar</h2>
+      <p>Terimler iteratif yöntemle, yani iki değişkeni sürekli güncelleyerek bulunur. Özyinelemeli (kendini çağıran) basit yaklaşım terim sayısı arttıkça üstel biçimde yavaşlar; iteratif yöntem ise n adımda biter ve büyük n için bile milisaniyeler içinde sonuç verir. Sonuçlar tam sayıdır, yuvarlama hatası içermez. Oran satırı ise 9 ondalık basamakla kesilerek gösterilir; yuvarlama yapılmaz. Girişte yalnızca rakam kabul edilir: eksi işareti, ondalık ya da harf yazarsanız hata mesajıyla düzeltmeniz istenir. 5.000'in üzerindeki sıralar, sonucun binlerce basamaklı olması ve ekranda anlamlı biçimde gösterilememesi nedeniyle kabul edilmez.</p>
+
+      <h2>Örnek değerler</h2>
+      <p>Kendinizi sınamak için birkaç referans: F(10) = 55, F(20) = 6.765, F(30) = 832.040, F(40) = 102.334.155, F(50) = 12.586.269.025. F(0)'dan F(12)'ye kadar terimlerin toplamı 376'dır; bu da F(14) − 1 = 377 − 1 ile aynıdır. Dizi geriye de uzatılabilir (negatif indisler), ancak bu araç yalnızca 0 ve pozitif sıraları destekler.</p>
+
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Fibonacci dizisi nasıl hesaplanır?</summary><p>İlk iki terim 0 ve 1 olarak alınır; sonraki her terim kendinden önceki iki terimin toplamıdır. Yani 0, 1, 1, 2, 3, 5, 8, 13… Araç bu işlemi n adım boyunca tekrarlayarak istediğiniz terimi bulur.</p></details>
+        <details><summary>Dizi neden 0 ile başlıyor, bazı kitaplarda 1 ile başlıyor?</summary><p>İki gösterim de kullanılır. Matematikte ve programlamada F(0)=0, F(1)=1 yaygındır; bazı ders kitapları 1, 1, 2, 3 diye başlar. Bu araçta ilk terim F(0)=0 kabul edilir, dolayısıyla 10. sıradaki değer 55'tir.</p></details>
+        <details><summary>En fazla kaçıncı terime kadar hesaplayabilirim?</summary><p>Sıra 5.000'e kadar kabul edilir. F(5000) yaklaşık bin basamaklı bir sayıdır ve tam olarak gösterilir. Çok uzun sonuçlar ekranda kısaltılır, tamamı "Tam sayı" kutusunda bulunur.</p></details>
+        <details><summary>Sonuçlar neden tam olarak doğru?</summary><p>Hesap BigInt türüyle yapılır; bu tür sınırsız büyüklükte tam sayıyı hatasız tutar. Sıradan bir hesap makinesinde ya da kayan noktalı sayılarda büyük terimlerin son basamakları yuvarlanır, burada yuvarlanmaz.</p></details>
+        <details><summary>Bir sayının Fibonacci sayısı olup olmadığı nasıl anlaşılır?</summary><p>m sayısı için 5m²+4 ya da 5m²−4'ten biri tam kare ise m bir Fibonacci sayısıdır. İkinci kutuya sayıyı yazdığınızda araç bu testi uygular ve evet ise kaçıncı terim olduğunu da gösterir.</p></details>
+        <details><summary>Altın oranla ilişkisi nedir?</summary><p>Ardışık iki terimin oranı, terimler büyüdükçe altın orana (yaklaşık 1,618034) yaklaşır. Sonuç bölümündeki F(n)/F(n−1) satırı bu oranı ondalık olarak gösterir.</p></details>
+        <details><summary>Toplam satırı neyi ifade eder?</summary><p>F(0)'dan F(n)'e kadar tüm terimlerin toplamıdır. Bu toplam her zaman F(n+2) − 1'e eşittir; araç bu kısa yolu kullanarak toplamı anında verir.</p></details>
+        <details><summary>Girdiğim sayılar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; yazdığınız sayılar sunucuya iletilmez, saklanmaz. Sayfa çerez ya da izleme kodu içermez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../asal-carpan-hesapla/">Asal Çarpanlara Ayırma</a></li>
+        <li><a href="../kombinasyon-permutasyon/">Kombinasyon ve Permütasyon</a></li>
+        <li><a href="../hesap-makinesi/">Hesap Makinesi</a></li>
+        <li><a href="../us-logaritma-hesapla/">Üs ve Logaritma Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="fibonacci-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

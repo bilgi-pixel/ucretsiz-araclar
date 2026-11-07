@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Sayı Yuvarlama Hesaplama – Yukarı, Aşağı, En Yakın Basamağa ve Bankacı Yuvarlaması</title>
+  <meta name="description" content="Sayıyı istediğiniz ondalık basamağa ya da en yakın 5, 10, 0,05 katına yuvarlayın; yarım yukarı, yukarı (tavan), aşağı (taban), kesme ve bankacı yuvarlamasını yan yana görün. Ücretsiz, tarayıcıda çalışır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/yuvarlama-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form select { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form input:focus, .kdv-form select:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } .kdv-grid.c3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; white-space: nowrap; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .kdv-rates { font-size: .88rem; color: var(--ba-text-muted); margin: 12px 0 0; }
+  
+    .yv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .yv-grid { grid-template-columns: 2fr 1fr; } }
+    .yv-copy { min-height: 36px; padding: 4px 10px; font-size: .85rem; margin-left: 6px; }
+    .kdv-row dt small { color: var(--ba-text-muted); font-size: .8rem; }
+    .kdv-row dd { white-space: normal; text-align: right; }
+    .yv-wrap { overflow-wrap: anywhere; }
+    .yv-fieldset { border: 0; padding: 0; margin: 0 0 12px; }
+    .yv-fieldset legend { font-weight: 600; margin-bottom: 4px; }</style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Sayı Yuvarlama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/yuvarlama-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Sayıyı en yakın tam sayıya nasıl yuvarlarım?","acceptedAnswer":{"@type":"Answer","text":"\"Basamağa göre\" seçeneğinde ondalık basamak sayısını 0 bırakın ve sayıyı yazıp \"Yuvarla\" düğmesine basın. Matematiksel yuvarlama satırı, okulda öğrendiğiniz kurala göre en yakın tam sayıyı gösterir."}},{"@type":"Question","name":"Yukarı ve aşağı yuvarlama negatif sayılarda nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Yukarı (tavan) her zaman artı sonsuza doğru, aşağı (taban) eksi sonsuza doğrudur. −2,3 sayısı yukarı yuvarlanınca −2, aşağı yuvarlanınca −3 olur. Sıfıra doğru gitmek isterseniz \"Kesme\" satırına bakın."}},{"@type":"Question","name":"Bankacı yuvarlaması nedir, ne zaman kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Tam yarımda en yakın çift sayıya yuvarlama yöntemidir: 2,5 → 2, 3,5 → 4. Çok sayıda yuvarlamanın toplamında yukarı doğru sistematik kayma olmasın diye istatistik ve bilimsel hesaplarda kullanılır."}},{"@type":"Question","name":"Onlara, yüzlere ya da binlere nasıl yuvarlarım?","acceptedAnswer":{"@type":"Answer","text":"Ondalık basamak sayısına negatif değer yazın: −1 onlara, −2 yüzlere, −3 binlere yuvarlar. Örneğin 1234,5678 için −2 yazdığınızda 1200 bulunur."}},{"@type":"Question","name":"0,05 gibi bir değerin katına yuvarlama mümkün mü?","acceptedAnswer":{"@type":"Answer","text":"Evet. \"En yakın kata göre\" seçeneğini açıp kat alanına 0,05 (ya da 0,25, 5, 50) yazın. Sayı bu değerin en yakın katına yuvarlanır; örneğin 1,23 sayısı 1,25 olur."}},{"@type":"Question","name":"1,005 neden bazı yerlerde 1,00, burada 1,01 çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Birçok yazılım ondalık sayıları ikilik tabanda saklar ve 1,005 değerini tam tutamaz. Bu araç sayıyı yazdığınız ondalık metin olarak işlediğinden 1,005 tam olarak 1,005 sayılır ve matematiksel yuvarlama 1,01 verir."}},{"@type":"Question","name":"Çok uzun sayıları yuvarlayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Sayı BigInt ile metin olarak işlendiği için uzun sayılarda da basamak kaybı olmaz. Bilimsel gösterim (1e10) ve binlik ayraç desteklenmez; sayıyı düz yazın."}},{"@type":"Question","name":"Yazdığım sayılar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesap tarayıcınızda yapılır; sayılar sunucuya iletilmez ve saklanmaz. Sayfa çerez ya da izleme kodu içermez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Sayı Yuvarlama</span> – Yukarı, Aşağı, En Yakın Basamağa</h1>
+      <p class="lead">Bir sayıyı istediğiniz ondalık basamağa, onlara, yüzlere ya da en yakın 0,05 veya 5 katına yuvarlayın. Beş yöntemin sonucunu yan yana görün: matematiksel, yukarı, aşağı, kesme ve bankacı yuvarlaması. Sayılar tarayıcınızda işlenir, hiçbir yere gönderilmez.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="yv-grid">
+          <div class="ba-field"><label for="value">Yuvarlanacak sayı</label><input id="value" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 2,5 ya da 1234,5678"><div class="hint">Ondalık için virgül ya da nokta kullanın; eksi sayılar da olur.</div></div>
+        </div>
+        <fieldset class="yv-fieldset"><legend>Yuvarlama ölçüsü</legend>
+          <div class="kdv-modes"><label><input type="radio" name="by" value="digits" checked> Basamağa göre</label><label><input type="radio" name="by" value="step"> En yakın kata göre</label></div>
+        </fieldset>
+        <div class="yv-grid">
+          <div class="ba-field" id="digits-wrap"><label for="digits">Ondalık basamak sayısı</label><input id="digits" type="text" inputmode="numeric" autocomplete="off" value="0"><div class="hint">0 = tam sayıya, 2 = virgülden sonra 2 basamağa, −1 = onlara, −2 = yüzlere.</div></div>
+          <div class="ba-field" id="step-wrap" hidden><label for="step">Yuvarlama katı</label><input id="step" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 0,05 ya da 5"><div class="hint">Sayı bu değerin en yakın katına yuvarlanır (örn. 0,05 → 5 kuruş).</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Yuvarla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+            <div class="kdv-row"><dt>Matematiksel yuvarlama<br><small>0,5 sıfırdan uzağa, yani klasik okul kuralı</small></dt><dd><span id="r-half"></span> <button class="ba-btn yv-copy" type="button" data-copy="r-half" aria-label="Matematiksel yuvarlama sonucunu kopyala">Kopyala</button></dd></div>
+            <div class="kdv-row"><dt>Yukarı yuvarlama (tavan)<br><small>her zaman daha büyük değere</small></dt><dd><span id="r-ceil"></span> <button class="ba-btn yv-copy" type="button" data-copy="r-ceil" aria-label="Yukarı yuvarlama (tavan) sonucunu kopyala">Kopyala</button></dd></div>
+            <div class="kdv-row"><dt>Aşağı yuvarlama (taban)<br><small>her zaman daha küçük değere</small></dt><dd><span id="r-floor"></span> <button class="ba-btn yv-copy" type="button" data-copy="r-floor" aria-label="Aşağı yuvarlama (taban) sonucunu kopyala">Kopyala</button></dd></div>
+            <div class="kdv-row"><dt>Kesme (sıfıra doğru)<br><small>fazla basamaklar atılır</small></dt><dd><span id="r-trunc"></span> <button class="ba-btn yv-copy" type="button" data-copy="r-trunc" aria-label="Kesme (sıfıra doğru) sonucunu kopyala">Kopyala</button></dd></div>
+            <div class="kdv-row"><dt>Bankacı yuvarlaması<br><small>0,5 çifte doğru</small></dt><dd><span id="r-bank"></span> <button class="ba-btn yv-copy" type="button" data-copy="r-bank" aria-label="Bankacı yuvarlaması sonucunu kopyala">Kopyala</button></dd></div>
+        </dl>
+        <p class="kdv-note" id="r-note"></p>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="yuvarlama-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Yuvarlanacak sayı" alanına sayıyı yazın; ondalık ayracı olarak virgül ya da nokta kullanabilirsiniz.</li>
+        <li>Yuvarlama ölçüsünü seçin. "Basamağa göre" ile virgülden sonra kaç basamak kalacağını (ya da negatif değerle onlara, yüzlere yuvarlamayı) belirlersiniz. "En yakın kata göre" ile 0,05, 0,25, 5, 50 gibi bir değerin katına yuvarlarsınız.</li>
+        <li>"Yuvarla" düğmesine basın. Beş yöntemin sonucu alt alta görünür; her satırın yanındaki "Kopyala" düğmesiyle istediğiniz değeri panoya alabilirsiniz.</li>
+        <li>Sonuçları karşılaştırıp işinize uygun olanı seçin: örneğin fiş tutarı için matematiksel, bütçe tavanı için yukarı, stok için aşağı yuvarlama genelde uygundur.</li>
+      </ol>
+
+      <h2>Yuvarlama yöntemleri arasındaki fark</h2>
+      <p><strong>Matematiksel (yarım yukarı) yuvarlama</strong> okulda öğretilen kuraldır: atılacak kısım yarımdan küçükse sayı aşağı, yarım ya da fazlaysa yukarı yuvarlanır. Araçta yarım değer, sıfırdan uzağa gider: 2,5 → 3 ve −2,5 → −3 olur. <strong>Yukarı yuvarlama (tavan)</strong> sayıyı her zaman daha büyük değere taşır: 2,1 → 3, −2,9 → −2. <strong>Aşağı yuvarlama (taban)</strong> tersini yapar: 2,9 → 2, −2,1 → −3. Negatif sayılarda yön kavramı kafa karıştırır; burada "yukarı" artı sonsuz, "aşağı" eksi sonsuz yönüdür. <strong>Kesme</strong> ise fazla basamakları atar, yani sıfıra doğru yuvarlar: 2,9 → 2 ve −2,9 → −2.</p>
+      <p><strong>Bankacı yuvarlaması</strong> (yarıya çift yuvarlama) tam yarımda en yakın çift sayıyı seçer: 0,5 → 0, 1,5 → 2, 2,5 → 2, 3,5 → 4. Amaç, çok sayıda yuvarlamanın toplamında sistematik bir yukarı kayma olmamasını sağlamaktır. Bu yöntem istatistikte, bilimsel hesaplarda ve birçok programlama dilinin yuvarlama işlevinde (IEEE 754 varsayılan modu) kullanılır. Atılacak kısım yarımdan farklıysa bankacı yuvarlaması klasik yuvarlamayla aynı sonucu verir; fark yalnızca tam yarımda ortaya çıkar.</p>
+
+      <h2>Neden Excel ya da hesap makinesi bazen farklı sonuç verir?</h2>
+      <p>Bilgisayarlar ondalık sayıları ikilik tabanda tuttuğu için 1,005 gibi bir değeri tam olarak saklayamaz; gerçekte 1,00499999999999989… değerine yakın bir sayıdır. Bu yüzden birçok yazılımda "1,005 sayısını 2 basamağa yuvarla" işlemi 1,01 yerine 1,00 verir. Bu araç sayıyı kayan noktalı sayı olarak değil, yazdığınız ondalık metin olarak ele alır ve BigInt tam sayılarla hesaplar. 1,005 yazdığınızda tam olarak 1,005 üzerinden işlem yapılır ve matematiksel yuvarlama 1,01 sonucunu verir. Böylece fatura, hesap pusulası ve ödev gibi "kuruşu kuruşuna" tutması gereken işlerde beklediğiniz sonucu görürsünüz.</p>
+
+
+
+      <div class="ba-ad" data-slot="yuvarlama-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Basamağa göre yuvarlama örnekleri</h2>
+      <p>3,14159 sayısını 2 basamağa yuvarlarsanız 3,14 olur; 3 basamakta 3,142 çıkar. 1234,5678 sayısını 0 basamağa yuvarlarsanız 1235'e, −1 basamağa (onlara) 1230'a, −2 basamağa (yüzlere) 1200'e ulaşırsınız. 0,125 sayısını 2 basamağa yuvarladığınızda matematiksel yöntem 0,13, bankacı yöntemi 0,12 verir; çünkü 0,125 tam yarımdır ve 2 çifttir. Tavan ve taban sonuçları ise 0,13 ve 0,12'dir. Yöntemler arasındaki bu farkı tek ekranda görmek, hangi kuralı kullanmanız gerektiğine karar vermenizi kolaylaştırır.</p>
+
+      <h2>En yakın kata yuvarlama</h2>
+      <p>Bazı durumlarda ondalık basamak değil, belirli bir değerin katı istenir. Nakit ödemelerde küçük para birimi olmadığında fiyatlar 5 kuruşun, bazen 25 kuruşun katına yuvarlanır. Bir raf fiyatını 0,05'in katına yuvarlamak için "En yakın kata göre" seçeneğini açıp 0,05 yazın: 1,23 → 1,25 olur, çünkü 1,23, 1,20 ile 1,25 arasındadır ve 1,25'e daha yakındır. Aynı şekilde 7 sayısını 5'in katına yuvarlarsanız matematiksel yöntem 5, tavan 10, taban 5 verir. Süre, koli adedi, malzeme ölçüsü ve hedef puanlar gibi durumlarda da bu özellik işinizi görür.</p>
+
+      <h2>Hangi durumda hangi yöntem?</h2>
+      <ul>
+        <li><strong>Fatura ve fiş tutarları:</strong> Çoğu zaman matematiksel yuvarlama beklenir. Ancak ticari uygulamalar ve mevzuat farklı kural koyabilir; geçerli kuralı muhasebecinize ya da ilgili mevzuata danışarak doğrulayın.</li>
+        <li><strong>Gereken malzeme, koli, bilet sayısı:</strong> Eksik kalmaması için yukarı (tavan) yuvarlama kullanılır; 2,1 koli gerekiyorsa 3 koli sipariş edilir.</li>
+        <li><strong>Dağıtılabilir miktar, kalan stok:</strong> Fazla vaat edilmemesi için aşağı (taban) yuvarlama uygundur.</li>
+        <li><strong>Ölçüm ve istatistik:</strong> Çok sayıda değerin ortalaması alınacaksa bankacı yuvarlaması sistematik hatayı azaltır.</li>
+        <li><strong>Gösterim:</strong> Sadece görünümü kısaltmak istiyorsanız (örn. ekranda iki basamak göstermek) kesme ya da matematiksel yuvarlamadan birini tercih edin, ama hesabı yuvarlanmamış değerlerle sürdürün.</li>
+      </ul>
+
+      <h2>Sınırlar ve girdi kuralları</h2>
+      <p>Araç, çok uzun sayıları da hatasız işler; yine de bilimsel gösterimi (1e5 gibi) kabul etmez, sayıyı olduğu gibi yazmalısınız. Binlik ayracı kullanmayın (1.000 yerine 1000 yazın) çünkü nokta ondalık ayracı olarak yorumlanır. Basamak sayısı −12 ile 12 arasında olmalıdır. Yuvarlama katı sıfır olamaz. Geçersiz bir giriş yaptığınızda araç ne yanlış olduğunu ve nasıl düzelteceğinizi Türkçe olarak söyler.</p>
+
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Sayıyı en yakın tam sayıya nasıl yuvarlarım?</summary><p>"Basamağa göre" seçeneğinde ondalık basamak sayısını 0 bırakın ve sayıyı yazıp "Yuvarla" düğmesine basın. Matematiksel yuvarlama satırı, okulda öğrendiğiniz kurala göre en yakın tam sayıyı gösterir.</p></details>
+        <details><summary>Yukarı ve aşağı yuvarlama negatif sayılarda nasıl çalışır?</summary><p>Yukarı (tavan) her zaman artı sonsuza doğru, aşağı (taban) eksi sonsuza doğrudur. −2,3 sayısı yukarı yuvarlanınca −2, aşağı yuvarlanınca −3 olur. Sıfıra doğru gitmek isterseniz "Kesme" satırına bakın.</p></details>
+        <details><summary>Bankacı yuvarlaması nedir, ne zaman kullanılır?</summary><p>Tam yarımda en yakın çift sayıya yuvarlama yöntemidir: 2,5 → 2, 3,5 → 4. Çok sayıda yuvarlamanın toplamında yukarı doğru sistematik kayma olmasın diye istatistik ve bilimsel hesaplarda kullanılır.</p></details>
+        <details><summary>Onlara, yüzlere ya da binlere nasıl yuvarlarım?</summary><p>Ondalık basamak sayısına negatif değer yazın: −1 onlara, −2 yüzlere, −3 binlere yuvarlar. Örneğin 1234,5678 için −2 yazdığınızda 1200 bulunur.</p></details>
+        <details><summary>0,05 gibi bir değerin katına yuvarlama mümkün mü?</summary><p>Evet. "En yakın kata göre" seçeneğini açıp kat alanına 0,05 (ya da 0,25, 5, 50) yazın. Sayı bu değerin en yakın katına yuvarlanır; örneğin 1,23 sayısı 1,25 olur.</p></details>
+        <details><summary>1,005 neden bazı yerlerde 1,00, burada 1,01 çıkıyor?</summary><p>Birçok yazılım ondalık sayıları ikilik tabanda saklar ve 1,005 değerini tam tutamaz. Bu araç sayıyı yazdığınız ondalık metin olarak işlediğinden 1,005 tam olarak 1,005 sayılır ve matematiksel yuvarlama 1,01 verir.</p></details>
+        <details><summary>Çok uzun sayıları yuvarlayabilir miyim?</summary><p>Evet. Sayı BigInt ile metin olarak işlendiği için uzun sayılarda da basamak kaybı olmaz. Bilimsel gösterim (1e10) ve binlik ayraç desteklenmez; sayıyı düz yazın.</p></details>
+        <details><summary>Yazdığım sayılar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda yapılır; sayılar sunucuya iletilmez ve saklanmaz. Sayfa çerez ya da izleme kodu içermez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yuzde-hesapla/">Yüzde Hesaplama</a></li>
+        <li><a href="../ortalama-hesapla/">Ortalama Hesaplama</a></li>
+        <li><a href="../kdv-hesapla/">KDV Hesaplama</a></li>
+        <li><a href="../kesir-hesapla/">Kesir Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="yuvarlama-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
