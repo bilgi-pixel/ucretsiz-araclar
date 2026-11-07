@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hours Calculator – Time Card, Hours Worked &amp; Overtime Calculator</title>
+  <meta name="description" content="Free hours calculator: add up hours worked each day and week from start and end times, subtract breaks, see decimal hours, overtime and gross pay. Private and in your browser.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/en/hours-calculator/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/saat-hesapla/">
+  <link rel="alternate" hreflang="en" href="https://araclar.bilisimajans.com/en/hours-calculator/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/saat-hesapla/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .hc-table, .hc-table tbody { display: block; width: 100%; }
+    .ba-tool table.hc-table { display: block; overflow: visible; }
+    .hc-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; padding: 12px 0; border-bottom: 1px solid var(--ba-border); }
+    .hc-table th { grid-column: 1 / -1; text-align: left; font-weight: 700; padding: 0; border: 0; background: none; }
+    .hc-table td { display: block; padding: 0; border: 0; min-width: 0; }
+    .hc-table td input { width: 100%; min-width: 0; min-height: 44px; padding: 8px 10px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .hc-table td input:focus { border-color: var(--ba-primary); }
+    .hc-lab { display: block; font-size: .8rem; font-weight: 600; color: var(--ba-text-2); margin-bottom: 3px; }
+    .hc-out { font-weight: 700; font-variant-numeric: tabular-nums; align-self: end; padding-bottom: 10px !important; }
+    .hc-out::before { content: "Hours: "; font-weight: 500; color: var(--ba-text-2); }
+    @media (min-width: 700px) {
+      .hc-table tr { grid-template-columns: 110px 1fr 1fr 1fr 110px; align-items: end; }
+      .hc-table th { grid-column: auto; align-self: end; padding-bottom: 10px; }
+    }
+    .hc-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 16px; }
+    .hc-rows { margin: 8px 0 0; }
+    .hc-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--ba-border); }
+    .hc-row dt { font-weight: 500; }
+    .hc-row dd { margin: 0; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+    .hc-row.is-strong dd { font-size: 1.15rem; }
+    .hc-warn { margin-top: 12px; padding: 10px 12px; border-radius: var(--ba-radius-sm); background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); font-size: .92rem; }
+    .hc-status { margin: 8px 0 0; font-size: .9rem; color: var(--ba-text-muted); min-height: 1.4em; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hours Calculator – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://araclar.bilisimajans.com/en/hours-calculator/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"How do I calculate hours worked between two times?","acceptedAnswer":{"@type":"Answer","text":"Subtract the start time from the end time and then subtract any unpaid break. For example, 9:00 AM to 5:30 PM is 8 hours 30 minutes, and with a 30 minute lunch it is 8 hours. The calculator does this for each day and adds the week up."}},{"@type":"Question","name":"How do I convert minutes to decimal hours?","acceptedAnswer":{"@type":"Answer","text":"Divide the minutes by 60. Fifteen minutes is 0.25 hours, 30 minutes is 0.5 hours and 45 minutes is 0.75 hours. The calculator shows the weekly total in both hours and minutes and in decimal hours."}},{"@type":"Question","name":"Does the calculator handle night shifts that go past midnight?","acceptedAnswer":{"@type":"Answer","text":"Yes. If the end time is earlier than the start time, the shift is counted as ending the next day. A shift from 10:00 PM to 6:00 AM is calculated as 8 hours. Enter equal start and end times only if you worked zero hours."}},{"@type":"Question","name":"Can I use the 24-hour clock?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can type 17:30, 1730 or 5:30 PM. All formats are understood and mixed styles in the same week are fine."}},{"@type":"Question","name":"How is overtime calculated?","acceptedAnswer":{"@type":"Answer","text":"Hours above your weekly threshold count as overtime. The default threshold is 40 hours and the default multiplier is 1.5, which matches the usual US federal rule for non-exempt employees. You can change both numbers to match your own contract or local rules."}},{"@type":"Question","name":"Does the tool subtract lunch breaks automatically?","acceptedAnswer":{"@type":"Answer","text":"No. It subtracts only the unpaid break that you enter for each day, because policies differ. Leave the break empty if you are paid during lunch."}},{"@type":"Question","name":"Is gross pay the same as take-home pay?","acceptedAnswer":{"@type":"Answer","text":"No. Gross pay is the amount before taxes and deductions. The calculator multiplies hours by your hourly rate and does not estimate income tax, social security or other withholding."}},{"@type":"Question","name":"What should I do if my result looks too high?","acceptedAnswer":{"@type":"Answer","text":"Check AM and PM. A day that shows more than 16 hours almost always means a time like 5:30 was read as the morning. Add PM or use 17:30 and calculate again."}},{"@type":"Question","name":"Is my data stored or sent anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. Everything is calculated in your browser, nothing is saved and nothing is sent over the network. When you close or reload the page the entries are cleared."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>100% free</span><i aria-hidden="true"></i><span>no sign-up</span><i aria-hidden="true"></i><span>files never leave your device</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Free Tools home"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Free<br>Tools</span></a><nav class="ba-nav" aria-label="Site"><a href="../">All tools</a><a class="ba-nav-site" href="https://bilisimajans.com/">Back to bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Breadcrumb"><li><a href="../">Tools</a></li><li><a href="../#h-hesapla">Calculators</a></li></ol>
+      <h1><span class="ba-grad">Hours Calculator</span> – Time Card, Hours Worked and Overtime</h1>
+      <p class="lead">Enter your start and end times, subtract unpaid breaks and see the total hours worked for each day and for the week, in hours and minutes and in decimal hours. Add an hourly rate to preview overtime and gross pay. Your entries never leave your device.</p>
+      <ul class="ba-badges" aria-label="Assurances"><li>100% free</li><li>No sign-up</li><li>Your entries never leave your device</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Tool</h2>
+      <form id="form" novalidate>
+        <p class="hc-status" style="margin-top:0">Fill in the days you worked. Times can be typed as 9:00 AM, 9am or 24-hour 17:30. If the end time is earlier than the start time, the shift is counted as ending the next day.</p>
+        <table class="hc-table"><caption class="visually-hidden">Weekly time card</caption><tbody id="rows"></tbody></table>
+        <div class="hc-grid">
+          <div class="ba-field"><label for="f-rate">Hourly rate ($, optional)</label><input id="f-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 18.50"></div>
+          <div class="ba-field"><label for="f-limit">Overtime starts after (hours per week)</label><input id="f-limit" type="text" inputmode="decimal" autocomplete="off" placeholder="40"></div>
+          <div class="ba-field"><label for="f-mult">Overtime multiplier</label><input id="f-mult" type="text" inputmode="decimal" autocomplete="off" placeholder="1.5"></div>
+        </div>
+        <div class="ba-actions">
+          <button id="calc" class="ba-btn ba-btn-primary" type="submit">Calculate hours</button>
+          <button id="fill" class="ba-btn" type="button">Fill Mon–Fri 9 to 5:30</button>
+          <button id="clear" class="ba-btn" type="button">Clear</button>
+        </div>
+        <p id="fill-status" class="hc-status" role="status" aria-live="polite"></p>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Your week</h3>
+        <dl class="hc-rows">
+          <div class="hc-row is-strong"><dt>Total time worked</dt><dd id="r-total"></dd></div>
+          <div class="hc-row"><dt>Decimal hours</dt><dd id="r-dec"></dd></div>
+          <div class="hc-row"><dt>Days worked</dt><dd id="r-days"></dd></div>
+          <div class="hc-row"><dt>Average per day worked</dt><dd id="r-avg"></dd></div>
+          <div class="hc-row"><dt>Regular hours</dt><dd id="r-reg"></dd></div>
+          <div class="hc-row"><dt>Overtime hours</dt><dd id="r-ot"></dd></div>
+          <div class="hc-row"><dt>Gross pay</dt><dd id="r-pay"></dd></div>
+        </dl>
+        <p id="warn" class="hc-warn" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Copy time card</button></div>
+        <p id="copy-status" class="hc-status" role="status" aria-live="polite"></p>
+      </div>
+      <p class="hc-status">For information only. Overtime rules and rounding policies vary by country, state and employer; this is not payroll or legal advice.</p>
+    </section>
+
+    <div class="ba-ad" data-slot="en-hours-calculator-a" aria-label="Advertisement"></div>
+
+    <article class="ba-content">
+      <h2>How to use the hours calculator</h2>
+      <ol class="ba-steps">
+        <li>Type a start time and an end time for each day you worked. Use whatever style is natural: <strong>9:00 AM</strong>, <strong>9am</strong>, <strong>0900</strong> or <strong>17:30</strong> all work.</li>
+        <li>Enter the unpaid break in minutes, such as 30 or 45. Leave it empty if you were paid for the break. A value like 0:30 is also accepted.</li>
+        <li>Optional: add an hourly rate to see gross pay, and change the overtime threshold or multiplier if your job uses different rules.</li>
+        <li>Press <strong>Calculate hours</strong>. You get hours and minutes per day, the weekly total, the same total in decimal hours and a regular and overtime split.</li>
+        <li>Use <strong>Copy time card</strong> to paste the result into an email, a message to your manager or a spreadsheet.</li>
+      </ol>
+
+      <h2>A time card calculator for real work weeks</h2>
+      <p>Most people who search for an hours calculator want to answer one of three questions. How many hours did I work today, once my lunch break is taken out? How many hours did I work this week, and am I over the overtime line? And what is my gross pay for the period? This page answers all three from a single time card, so you do not need to subtract clock times in your head or convert 7 hours and 45 minutes into 7.75 by hand.</p>
+      <p>The calculator reads times the way people write them. If the end time is earlier than the start time, it assumes the shift continues past midnight, which means a night shift from 10:00 PM to 6:30 AM is counted as 8 hours and 30 minutes. Unpaid breaks are subtracted from each day separately, and every row can have its own start, end and break, so it also suits split schedules, short Saturday shifts and part-time weeks.</p>
+
+      <h2>Hours and minutes versus decimal hours</h2>
+      <p>Payroll systems usually multiply an hourly wage by decimal hours, but clocks and schedules use hours and minutes. Mixing the two is the most common source of pay mistakes. Seven hours and thirty minutes is 7.5 hours, not 7.30. The calculator shows both so you can compare your time card with a pay stub.</p>
+      <table>
+        <thead><tr><th>Minutes</th><th>Decimal hours</th><th>Minutes</th><th>Decimal hours</th></tr></thead>
+        <tbody>
+          <tr><td>6</td><td>0.10</td><td>36</td><td>0.60</td></tr>
+          <tr><td>10</td><td>0.17</td><td>45</td><td>0.75</td></tr>
+          <tr><td>15</td><td>0.25</td><td>50</td><td>0.83</td></tr>
+          <tr><td>20</td><td>0.33</td><td>54</td><td>0.90</td></tr>
+          <tr><td>30</td><td>0.50</td><td>60</td><td>1.00</td></tr>
+        </tbody>
+      </table>
+
+<div class="ba-ad" data-slot="en-hours-calculator-b" aria-label="Advertisement"></div>
+
+      <h2>Overtime in plain language</h2>
+      <p>In the United States, the federal Fair Labor Standards Act generally requires overtime pay of at least one and a half times the regular rate for hours worked over 40 in a work week by employees who are covered and not exempt. Some states add daily overtime or double-time rules, and many employers have their own policies, union agreements or different pay periods. In the United Kingdom there is no general statutory overtime premium, and what counts as overtime depends on the contract. For that reason the calculator lets you set both the threshold and the multiplier. The defaults are 40 hours and 1.5 times.</p>
+      <p>When you enter an hourly rate, regular hours are paid at that rate and overtime hours at the rate multiplied by your multiplier. The result is gross pay, before taxes, benefits or other deductions. It is a convenient way to sanity-check a paycheck or to estimate what an extra shift is worth, but your employer's payroll record is always the official figure.</p>
+
+      <h2>Common uses</h2>
+      <ul>
+        <li><strong>Employees:</strong> check that a time clock, scheduling app or paper timesheet adds up to the hours on your pay stub.</li>
+        <li><strong>Freelancers and contractors:</strong> total the hours you worked for a client before you send an invoice.</li>
+        <li><strong>Managers and small business owners:</strong> add up a part-time employee's week without opening a spreadsheet.</li>
+        <li><strong>Students and caregivers:</strong> keep track of hours for volunteering, placements, tutoring or childcare.</li>
+        <li><strong>Shift workers:</strong> handle night shifts, early starts and split days where simple subtraction goes wrong.</li>
+      </ul>
+
+      <h2>Tips for accurate time cards</h2>
+      <p>Always write AM or PM, or use 24-hour times, when you enter data. The most frequent mistake is typing 5:30 for the end of a day shift, which the calculator treats as 5:30 in the morning and therefore as a very long overnight shift. When a day comes out above 16 hours, the tool shows a warning so you can spot this immediately.</p>
+      <p>Record the real start and end of work, then subtract only the breaks that are genuinely unpaid. Many employers round punches to the nearest quarter hour or use the seven-minute rule, but rounding policies must be neutral over time and are set by the employer. If you are on a rounded system, enter the rounded times to match your pay stub. For date calculations, such as the number of days between two shifts or pay periods, our <a href="../date-difference-calculator/">Date Difference Calculator</a> is a handy companion, and the <a href="../timer/">Timer</a> and <a href="../stopwatch/">Stopwatch</a> help you track a task as it happens.</p>
+
+      <h2>A worked example</h2>
+      <p>Suppose you work Monday to Thursday from 8:30 AM to 5:00 PM with a 45 minute unpaid lunch, and on Friday from 8:30 AM to 12:30 PM with no break. Each of the four long days comes to 7 hours and 45 minutes, which is 7.75 in decimal. Friday is 4 hours. The weekly total is 4 &times; 7:45 plus 4:00, which is 35 hours exactly. At 20 dollars an hour the gross pay is 700 dollars and there is no overtime. If you also covered a Saturday shift of 6 hours, the total would be 41 hours; one hour would count as overtime and, at time and a half, the pay would be 40 &times; 20 plus 1 &times; 30, or 830 dollars before deductions. Entering the same week into the calculator takes under a minute and confirms the arithmetic.</p>
+
+      <h2>What this tool does not do</h2>
+      <p>The calculator does not know your location, your employment contract, tax rules, meal-break laws or which hours are exempt. It adds up the times that you enter and applies the overtime settings that you choose. For legal questions or payroll disputes, talk to your employer, your payroll department or a qualified adviser.</p>
+
+      <h2>Private by design</h2>
+      <p>Your times and pay rate are processed only in your browser. Nothing is uploaded, no account is needed and there is no tracking of what you enter. Close the tab and the data is gone, so copy the result first if you need to keep it.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="ba-faq">
+        <details><summary>How do I calculate hours worked between two times?</summary><p>Subtract the start time from the end time and then subtract any unpaid break. For example, 9:00 AM to 5:30 PM is 8 hours 30 minutes, and with a 30 minute lunch it is 8 hours. The calculator does this for each day and adds the week up.</p></details>
+        <details><summary>How do I convert minutes to decimal hours?</summary><p>Divide the minutes by 60. Fifteen minutes is 0.25 hours, 30 minutes is 0.5 hours and 45 minutes is 0.75 hours. The calculator shows the weekly total in both hours and minutes and in decimal hours.</p></details>
+        <details><summary>Does the calculator handle night shifts that go past midnight?</summary><p>Yes. If the end time is earlier than the start time, the shift is counted as ending the next day. A shift from 10:00 PM to 6:00 AM is calculated as 8 hours. Enter equal start and end times only if you worked zero hours.</p></details>
+        <details><summary>Can I use the 24-hour clock?</summary><p>Yes. You can type 17:30, 1730 or 5:30 PM. All formats are understood and mixed styles in the same week are fine.</p></details>
+        <details><summary>How is overtime calculated?</summary><p>Hours above your weekly threshold count as overtime. The default threshold is 40 hours and the default multiplier is 1.5, which matches the usual US federal rule for non-exempt employees. You can change both numbers to match your own contract or local rules.</p></details>
+        <details><summary>Does the tool subtract lunch breaks automatically?</summary><p>No. It subtracts only the unpaid break that you enter for each day, because policies differ. Leave the break empty if you are paid during lunch.</p></details>
+        <details><summary>Is gross pay the same as take-home pay?</summary><p>No. Gross pay is the amount before taxes and deductions. The calculator multiplies hours by your hourly rate and does not estimate income tax, social security or other withholding.</p></details>
+        <details><summary>What should I do if my result looks too high?</summary><p>Check AM and PM. A day that shows more than 16 hours almost always means a time like 5:30 was read as the morning. Add PM or use 17:30 and calculate again.</p></details>
+        <details><summary>Is my data stored or sent anywhere?</summary><p>No. Everything is calculated in your browser, nothing is saved and nothing is sent over the network. When you close or reload the page the entries are cleared.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="ba-related">
+        <li><a href="../date-difference-calculator/">Date Difference Calculator</a></li>
+        <li><a href="../timer/">Online Timer</a></li>
+        <li><a href="../stopwatch/">Stopwatch</a></li>
+        <li><a href="../percentage-calculator/">Percentage Calculator</a></li>
+        <li><a href="../">All free tools (English hub)</a></li>
+      </ul>
+      <p class="ba-note">Need custom software, a faster website or help with digital projects? The team at <a href="https://bilisimajans.com/">Bilişim Ajans</a> can help.</p>
+    </article>
+
+    <div class="ba-ad" data-slot="en-hours-calculator-c" aria-label="Advertisement"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Free, private online tools by Bilişim Ajans, Diyarbakır, Türkiye. Everything runs in your browser, so your files never leave your device.</p><p class="ba-footer-line">100% free · no sign-up · files never leave your device</p></div>
+      <div><h2 class="ba-footer-h">Tools</h2><ul><li><a href="../percentage-calculator/">Percentage Calculator</a></li><li><a href="../age-calculator/">Age Calculator</a></li><li><a href="../unit-converter/">Unit Converter</a></li><li><a href="../zip-files/">Zip Files (Create &amp; Extract)</a></li><li><a href="../password-generator/">Password Generator</a></li><li><a href="../">All tools</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Company</h2><ul><li><a href="../../hakkimizda/">About (Turkish)</a></li><li><a href="../../gizlilik/">Privacy policy (Turkish)</a></li><li><a href="https://bilisimajans.com/iletisim">Contact</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans · All tools are free.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
