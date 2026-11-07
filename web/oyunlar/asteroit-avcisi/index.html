@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Asteroit Avcısı Oyna – Ücretsiz Online Uzay Gemisi Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online asteroit avcısı oyunu: küçük geminizi döndürün, ilerletin ve kayaları vurup parçalayın. Klavye ve dokunmatik kontrol, seviyeler, rekor kaydı. Kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/asteroit-avcisi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .gm-help { display: none; }
+    .gm-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gm-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .gm-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .gm-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .gm-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .gm-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .gm-controls .ba-btn { flex: 1 1 130px; min-height: 44px; padding: 8px 16px; }
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .gm-big { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; }
+    .gm-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+    .gm-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .gm-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .gm-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .game-box * { animation: none !important; transition: none !important; } }
+
+    .as-canvas { display: block; width: min(100%, 320px); height: auto; aspect-ratio: 320 / 420; margin: 0 auto; border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: #0b1020; touch-action: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+    .as-canvas:focus-visible { outline: 3px solid #ffd75e; outline-offset: 3px; }
+    .as-pad { display: flex; gap: 8px; width: min(100%, 320px); margin: 10px auto 0; }
+    .as-pad .ba-btn { flex: 1 1 0; min-width: 0; min-height: 56px; padding: 0 4px; font-size: 1.3rem; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .game-box:fullscreen .as-canvas { max-height: 72vh; width: auto; }
+    .gm-stats dt { font-size: .66rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Asteroit Avcısı – Uzay Gemisi Oyunu","description":"Tarayıcıda oynanan ücretsiz uzay gemisi oyunu: gemiyi döndürüp ilerletin, uzay kayalarını vurun ve çarpmadan seviyeleri geçin. Klavye ve dokunmatik kontrol, rekor kaydı.","inLanguage":"tr","genre":["Aksiyon","Arcade"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/asteroit-avcisi/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Asteroit Avcısı ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp Başla düğmesine ya da boşluk tuşuna basmanız yeterlidir. Uygulama indirme, hesap açma ya da ödeme yoktur."}},{"@type":"Question","name":"Oyunun amacı nedir?","acceptedAnswer":{"@type":"Answer","text":"Geminizi yönetip ekrandaki uzay kayalarını vurarak yok etmek ve kayalara çarpmadan olabildiğince çok seviye geçmektir. Üç canınız vardır; hepsi biterse oyun biter."}},{"@type":"Question","name":"Hangi tuşlarla oynanır?","acceptedAnswer":{"@type":"Answer","text":"Sol ve sağ yön tuşları ya da A ve D gemiyi döndürür, yukarı ok ya da W itki verir, boşluk ateş eder. P veya Esc duraklatır, R baştan başlatır."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanının altındaki dört düğmeyi kullanın: sola dön, itki, sağa dön ve ateş. Düğmeler basılı tutulabilir ve birden fazla parmakla aynı anda kullanılabilir. Oyun alanı 360 piksel genişliğindeki ekranlara da sığar."}},{"@type":"Question","name":"Puanlar nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"İri kayayı vurmak 20, orta parçayı vurmak 50, küçük parçayı vurmak 100 puan verir. Küçük parçalar daha zor hedef olduğu için daha değerlidir. Bir iri kayanın tamamını temizlemek toplam 520 puan getirir."}},{"@type":"Question","name":"Gemi neden yavaşlamıyor?","acceptedAnswer":{"@type":"Answer","text":"Uzayda sürtünme çok az olduğu için gemi itkiyi bıraktığınızda da aynı yönde kaymaya devam eder; yalnızca çok hafifçe yavaşlar. Durmak için gemiyi ters yöne çevirip kısa bir itki vermelisiniz."}},{"@type":"Question","name":"Oyun kendiliğinden duruyor, bu normal mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun kendiliğinden duraklatılır, böylece farkında olmadan can kaybetmezsiniz. P tuşuyla, boşlukla ya da Devam et düğmesiyle sürdürebilirsiniz."}},{"@type":"Question","name":"Rekorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır; Rekoru sıfırla düğmesiyle de elle silebilirsiniz."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Asteroit Avcısı Oyna</span>: Ücretsiz Online Uzay Gemisi Oyunu</h1><p class="lead">Uzay boşluğunda tek başınıza küçük bir gemiyi yönetiyorsunuz ve etrafınızda dönen kayalar var. Gemiyi döndürün, itki verin, ateş edin; büyük kayalar daha küçük parçalara ayrılır, hepsini temizleyince yeni seviye başlar. Klavye, ekran düğmeleri ya da dokunmatik kontrolle oynayın. Kurulum ve kayıt gerekmez, rekorunuz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="hazir" aria-label="Asteroit Avcısı oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Asteroit Avcısı</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="gm-stats" aria-label="Skor bilgileri">
+          <div><dt>Skor</dt><dd id="as-score">0</dd></div>
+          <div><dt>Rekor</dt><dd id="as-best">0</dd></div>
+          <div><dt>Can</dt><dd id="as-lives">3</dd></div>
+          <div><dt>Seviye</dt><dd id="as-level">1</dd></div>
+        </dl>
+
+        <canvas class="as-canvas" id="as-canvas" width="320" height="420" tabindex="0" role="application" aria-label="Oyun alanı. Başlamak için Boşluk, Enter ya da dokunun."></canvas>
+
+        <div class="as-pad" role="group" aria-label="Gemi düğmeleri">
+          <button type="button" class="ba-btn" id="as-left" aria-label="Sola dön">◀</button>
+          <button type="button" class="ba-btn" id="as-up" aria-label="İtki ver (ilerle)">▲</button>
+          <button type="button" class="ba-btn" id="as-right" aria-label="Sağa dön">▶</button>
+          <button type="button" class="ba-btn" id="as-fire" aria-label="Ateş et">●</button>
+        </div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3 id="sonuc-baslik">Oyun bitti</h3>
+          <p class="gm-big">Skor <span id="sonuc-skor">0</span></p>
+          <p>Ulaştığınız seviye: <span id="sonuc-seviye">1</span></p>
+          <p class="gm-record" id="sonuc-rekor" hidden>Yeni en yüksek skor!</p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="as-again">Tekrar oyna</button>
+          </div>
+        </div>
+
+        <p class="gm-msg" id="as-msg" role="status" aria-live="polite"></p>
+
+        <div class="gm-controls">
+          <button type="button" class="ba-btn" id="as-start" aria-keyshortcuts="P">Başla</button>
+          <button type="button" class="ba-btn" id="as-reset">Rekoru sıfırla</button>
+        </div>
+
+        <div class="gm-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Klavye: <kbd>←</kbd> <kbd>→</kbd> (ya da <kbd>A</kbd> <kbd>D</kbd>) gemiyi döndürür, <kbd>↑</kbd> (ya da <kbd>W</kbd>) itki verir, <kbd>Boşluk</kbd> ateş eder. <kbd>P</kbd> ya da <kbd>Esc</kbd> duraklatır, <kbd>R</kbd> baştan başlatır.</li>
+            <li>Dokunmatik: ◀ ▶ döner, ▲ ilerler, ● ateş eder. Düğmeleri basılı tutabilirsiniz; ● basılı tutulunca otomatik seri ateş eder.</li>
+            <li>Ekranın bir kenarından çıkan gemi, mermi ve kayalar karşı kenardan girer.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-asteroit-avcisi-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Asteroit Avcısı nedir?</h2>
+      <p>Asteroit Avcısı, uzay temalı klasik bir arcade oyunudur. Ekranın ortasında küçük bir uzay gemisiyle başlarsınız; çevrenizde yavaşça dönen iri kayalar vardır. Gemiyi istediğiniz yöne çevirebilir, itki vererek hızlandırabilir ve ileri doğru mermi atabilirsiniz. Bir mermi kayaya isabet edince kaya yok olmaz, iki küçük parçaya ayrılır; küçük parçalar da vurulunca daha küçüklere bölünür ve en sonunda tamamen yok olur. Tüm kayalar temizlendiğinde bir sonraki seviye başlar ve bu kez daha fazla, daha hızlı kaya gelir.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da reklam izleyerek can kazanmanız gerekmez; oyunda para, bahis ya da ödül sistemi yoktur. Sayfa bir kez yüklendikten sonra bağlantı kopsa bile oyun çalışmaya devam eder. En yüksek skorunuz yalnızca bu cihazdaki tarayıcının yerel depolamasında saklanır, hiçbir sunucuya gönderilmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>“Başla” düğmesine, oyun alanına ya da klavyede boşluk tuşuna basarak oyunu başlatın. Gemi ekranın ortasında, kısa süre kayalardan korunmuş olarak belirir (yanıp söner).</li>
+        <li>Sol ve sağ yön tuşlarıyla gemiyi döndürün. Geminin sivri ucu hangi yöne bakıyorsa itki ve mermiler o yöne gider.</li>
+        <li>Yukarı ok tuşunu basılı tutarak itki verin. Uzayda sürtünme çok az olduğu için gemi bıraktığınızda da bir süre aynı yöne kaymaya devam eder; yavaşlamak için gemiyi ters yöne çevirip itki vermeniz gerekir.</li>
+        <li>Boşluk tuşuyla ateş edin. Aynı anda en fazla beş mermi havada olabilir ve her mermi kısa bir süre sonra kendiliğinden kaybolur. Bu yüzden mermileri boşuna harcamamak önemlidir.</li>
+        <li>Bir kayaya çarparsanız bir can kaybedersiniz ve gemi ortada yeniden doğar. Üç can biterse oyun biter. Ekrandaki tüm kayaları temizlerseniz yeni seviyeye geçersiniz.</li>
+      </ol>
+
+      <h2>Puanlama ve seviyeler</h2>
+      <p>Kayaların üç boyutu vardır. İri bir kayayı vurmak 20 puan, orta boy bir parçayı vurmak 50 puan, en küçük parçayı vurmak ise 100 puan kazandırır. Yani küçük parçalar daha zor hedef oldukları için daha değerlidir. Bir iri kayayı tamamen yok etmek için toplam yedi mermi gerekir: bir iri kaya, iki orta parçaya, her orta parça da iki küçük parçaya ayrılır. Böylece tek bir iri kaya size toplam 20 + 2 × 50 + 4 × 100 = 520 puan getirir.</p>
+      <p>Her yeni seviyede ekrana bir kaya daha eklenir (en çok dokuz iri kayaya kadar) ve kayalar biraz daha hızlı hareket eder. Seviye başında yeni kayalar her zaman geminizden uzakta belirir ve geminiz kısa bir süre dokunulmazdır; böylece haksız bir çarpışmayla karşılaşmazsınız.</p>
+
+      <h2>Kontroller: klavye, fare ve dokunmatik</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Sol ve sağ yön tuşları (ya da <kbd>A</kbd> ve <kbd>D</kbd>) döner, yukarı ok (ya da <kbd>W</kbd>) itki verir, <kbd>Boşluk</kbd> ateş eder. <kbd>P</kbd> ya da <kbd>Esc</kbd> duraklatır, <kbd>R</kbd> baştan başlatır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Oyun alanının altındaki dört büyük düğme sırasıyla sola dönme, itki, sağa dönme ve ateş içindir. Hepsi basılı tutulabilir; birden fazla parmakla aynı anda hem dönüp hem ateş edebilirsiniz.</li>
+        <li><strong>Fare:</strong> Oyun alanına tıklamak oyunu başlatır ya da duraklatılmış oyunu sürdürür. Oyun sırasında ekran düğmelerini fareyle de basılı tutabilirsiniz.</li>
+        <li><strong>Otomatik duraklatma:</strong> Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun kendiliğinden duraklar.</li>
+        <li><strong>Ekran okuyucu:</strong> Oyun alanının etiketi skoru, canı, seviyeyi ve oyun durumunu bildirir; seviye geçişi ve çarpışma bir durum satırında yazılır.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu ekrana yayar.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-asteroit-avcisi-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Sürekli itki vermeyin.</strong> Gemi hızlandıkça döndürmek ve nişan almak zorlaşır. Kısa itkilerle kayarak ilerlemek ve çoğu zaman olduğunuz yerde durup dönerek ateş etmek daha güvenlidir.</li>
+        <li><strong>Önce iri kayaları değil, size en yakın olanı vurun.</strong> En büyük tehdit, en yakın ve size doğru gelen kayadır; uzaktaki kaya size zaman tanır.</li>
+        <li><strong>Küçük parçalar daha hızlıdır.</strong> Bir kaya parçalandığında yavrular daha hızlı gider. Bu yüzden çok sayıda küçük parçayla çevrilmemek için iri kayaları tek tek ve uzak mesafeden vurun.</li>
+        <li><strong>Kenarları kullanın.</strong> Ekranın kenarından çıkan her şey karşı kenardan girer. Kaçarken kenardan geçmek sizi bir anda güvenli bir bölgeye taşıyabilir; ama kayalar da aynı yolu izler.</li>
+        <li><strong>Mermi sayısını izleyin.</strong> Beş mermi hakkınız dolduğunda ateş etmek bir süre boşa gider. Sürekli basılı tutmak yerine isabet ihtimali yüksek anlarda ateş edin.</li>
+        <li><strong>Doğuş anındaki dokunulmazlığı kullanın.</strong> Gemi yeniden doğduktan sonra yanıp sönerken kısa süre çarpışmaz. Bu süreyi, kayalardan uzaklaşmak ve nişan almak için değerlendirin.</li>
+      </ul>
+
+      <h2>Kısa tarihçe: asteroit oyunları</h2>
+      <p>Uzay gemisi ile kaya parçalama fikri, video oyunlarının erken dönemine, 1970'lerin sonundaki salon oyunlarına uzanır. O dönem ekranlar bugünkü gibi renkli piksellerle değil, ince parlak çizgilerle (vektör grafikle) çizilirdi ve bu görünüm türün imzası haline geldi. Ekranın kenarından çıkan nesnenin karşı kenardan girmesi de aynı dönemden kalma bir tasarım tercihidir; ekran küçük ama oyun alanı sınırsız hissedilir.</p>
+      <p>Bu sayfadaki oyun, aynı türün temel fikrini kendi çizimleri ve kendi kodlarıyla sıfırdan yeniden kurar. Kullanılan görseller yalnızca tarayıcıda çizilen basit çizgilerdir; hiçbir hazır görsel ya da dış kaynak yoktur. Oyunun adı da kendimize aittir ve bilinen herhangi bir ticari ürünün adıyla ilişkili değildir.</p>
+
+      <h2>Zihin ve el-göz koordinasyonu</h2>
+      <p>Bu tür oyunlar dikkat, hızlı karar verme ve el-göz koordinasyonu gerektirir. Hareket eden birden çok nesneyi aynı anda takip etmek, öncelik sıralaması yapmak ve doğru anda ateş etmek eğlenceli bir odaklanma alıştırmasıdır. Bununla birlikte oyun tıbbi bir araç değildir ve herhangi bir sağlık iddiası taşımaz; yalnızca eğlenceli bir zaman geçirme aracıdır. Uzun süre ekrana bakıyorsanız arada mola vermeyi ve gözlerinizi dinlendirmeyi unutmayın.</p>
+
+      <h2>Neden bu sürüm?</h2>
+      <p>Bu oyun hafif ve hızlı olması için dış kütüphane kullanmadan yazıldı; sayfa yüklendikten sonra internet bağlantısı gerekmez. Reklam izleme zorunluluğu, sahte geri sayım, yanıltıcı düğme ya da hile yoktur. Oyun klavyeyle ve dokunmatik ekranla eşit rahatlıkta oynanır; 360 piksel genişlikteki telefonlarda taşma olmaz. Bilişim Ajans'ın ücretsiz araçları ve oyunları aynı ilkeyle hazırlanır: hesap yok, takip yok, dosya yükleme yok.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Skorunuz hiçbir sunucuya gönderilmez; en yüksek skor yalnızca tarayıcının yerel depolamasında (localStorage) tutulur. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekorunuz sıfırlanır; depolama kapalıysa oyun yine çalışır, yalnızca rekorunuz saklanmaz. “Rekoru sıfırla” düğmesi kayıtlı en yüksek skoru istediğiniz zaman siler.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Asteroit Avcısı ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp Başla düğmesine ya da boşluk tuşuna basmanız yeterlidir. Uygulama indirme, hesap açma ya da ödeme yoktur.</p></details>
+      <details><summary>Oyunun amacı nedir?</summary><p>Geminizi yönetip ekrandaki uzay kayalarını vurarak yok etmek ve kayalara çarpmadan olabildiğince çok seviye geçmektir. Üç canınız vardır; hepsi biterse oyun biter.</p></details>
+      <details><summary>Hangi tuşlarla oynanır?</summary><p>Sol ve sağ yön tuşları ya da A ve D gemiyi döndürür, yukarı ok ya da W itki verir, boşluk ateş eder. P veya Esc duraklatır, R baştan başlatır.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Oyun alanının altındaki dört düğmeyi kullanın: sola dön, itki, sağa dön ve ateş. Düğmeler basılı tutulabilir ve birden fazla parmakla aynı anda kullanılabilir. Oyun alanı 360 piksel genişliğindeki ekranlara da sığar.</p></details>
+      <details><summary>Puanlar nasıl hesaplanıyor?</summary><p>İri kayayı vurmak 20, orta parçayı vurmak 50, küçük parçayı vurmak 100 puan verir. Küçük parçalar daha zor hedef olduğu için daha değerlidir. Bir iri kayanın tamamını temizlemek toplam 520 puan getirir.</p></details>
+      <details><summary>Gemi neden yavaşlamıyor?</summary><p>Uzayda sürtünme çok az olduğu için gemi itkiyi bıraktığınızda da aynı yönde kaymaya devam eder; yalnızca çok hafifçe yavaşlar. Durmak için gemiyi ters yöne çevirip kısa bir itki vermelisiniz.</p></details>
+      <details><summary>Oyun kendiliğinden duruyor, bu normal mi?</summary><p>Evet. Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun kendiliğinden duraklatılır, böylece farkında olmadan can kaybetmezsiniz. P tuşuyla, boşlukla ya da Devam et düğmesiyle sürdürebilirsiniz.</p></details>
+      <details><summary>Rekorum nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır; Rekoru sıfırla düğmesiyle de elle silebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../uzay-savasi/">Uzay Savaşı</a></li>
+        <li><a href="../tugla-kirma/">Tuğla Kırma</a></li>
+        <li><a href="../gokyuzu-ziplama/">Gökyüzü Zıplama</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-asteroit-avcisi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

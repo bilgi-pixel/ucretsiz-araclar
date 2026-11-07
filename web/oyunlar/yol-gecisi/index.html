@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Yol Geçişi Oyna – Ücretsiz Online Karşıdan Karşıya Geçme Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online yol geçişi oyunu: sonsuz yollarda araçlara çarpmadan ileri sıçrayın, ağaçlara takılmayın. Klavye ve dokunmatik kontrol, kaydırma, rekor kaydı. Kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/yol-gecisi/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .gm-help { display: none; }
+    .gm-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gm-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .gm-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .gm-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .gm-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .gm-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .gm-controls .ba-btn { flex: 1 1 130px; min-height: 44px; padding: 8px 16px; }
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .gm-big { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; }
+    .gm-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+    .gm-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .gm-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .gm-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .game-box * { animation: none !important; transition: none !important; } }
+
+    .yg-canvas { display: block; width: min(100%, 288px); height: auto; aspect-ratio: 288 / 384; margin: 0 auto; border: 2px solid var(--ba-border); border-radius: var(--ba-radius-sm); background: #4e9a4f; touch-action: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+    .yg-canvas:focus-visible { outline: 3px solid #ffd75e; outline-offset: 3px; }
+    .yg-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(100%, 288px); margin: 10px auto 0; }
+    .yg-pad .ba-btn { min-height: 52px; padding: 0; font-size: 1.3rem; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .yg-pad #yg-up { grid-column: 2; grid-row: 1; }
+    .yg-pad #yg-left { grid-column: 1; grid-row: 2; }
+    .yg-pad #yg-down { grid-column: 2; grid-row: 2; }
+    .yg-pad #yg-right { grid-column: 3; grid-row: 2; }
+    .game-box:fullscreen .yg-canvas { max-height: 70vh; width: auto; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Yol Geçişi – Karşıdan Karşıya Geçme Oyunu","description":"Tarayıcıda oynanan ücretsiz yol geçme oyunu: sonsuz yollarda araçların arasından ileri sıçrayın, ağaçlardan kaçının ve olabildiğince çok satır ilerleyin. Klavye ve dokunmatik kontrol, rekor kaydı.","inLanguage":"tr","genre":["Aksiyon","Hiper-gündelik"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/yol-gecisi/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Yol Geçişi ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp Başla düğmesine ya da yukarı ok tuşuna basmanız yeterlidir. Uygulama indirme, hesap açma ya da ödeme yoktur."}},{"@type":"Question","name":"Oyunun amacı nedir?","acceptedAnswer":{"@type":"Answer","text":"Civcivi araçlara çarptırmadan ve ekranın gerisinde bırakmadan olabildiğince çok satır ileri götürmektir. Skor, ulaştığınız en uzak satırın sayısıdır."}},{"@type":"Question","name":"Hangi tuşlarla oynanır?","acceptedAnswer":{"@type":"Answer","text":"Yön tuşları ya da W, A, S, D bir kare sıçratır; boşluk ileri sıçratır. P veya Esc duraklatır, R baştan başlatır. Tuşu basılı tutmak sürekli sıçratmaz, her adım için yeniden basmanız gerekir."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Oyun alanına dokunun ya da parmağınızı gitmek istediğiniz yöne kaydırın. İsterseniz ekranın altındaki yön düğmelerini de kullanabilirsiniz. Oyun alanı 360 piksel genişliğindeki ekranlara da sığar."}},{"@type":"Question","name":"Neden bazen çarpmadığım halde oyun bitiyor?","acceptedAnswer":{"@type":"Answer","text":"Kamera zamanla yukarı kayar ve ekranın altında kalırsanız oyun biter. Çimenlikte bile sonsuza dek beklenemez. Sonuç kutusunda oyunun neden bittiği de yazar."}},{"@type":"Question","name":"Ağaçların içinden geçebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Ağaçlar yolu kapatır; bir ağaca doğru sıçrarsanız civciv yerinde kalır. Boş bir sütun bulup oradan ilerlemeniz gerekir."}},{"@type":"Question","name":"Oyun kendiliğinden duruyor, bu normal mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun kendiliğinden duraklatılır, böylece farkında olmadan çarpmazsınız. P tuşuyla, boşlukla ya da Devam et düğmesiyle sürdürebilirsiniz."}},{"@type":"Question","name":"Rekorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır; Rekoru sıfırla düğmesiyle de elle silebilirsiniz."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Yol Geçişi Oyna</span>: Ücretsiz Online Karşıdan Karşıya Geçme Oyunu</h1><p class="lead">Küçük sarı civcivinizle bitmeyen bir yolda ilerliyorsunuz: önünüzde çimenlik şeritler, trafiği hiç eksilmeyen yollar ve ağaçlar var. Bir adım ileri sıçrayın, araçların arasındaki boşluğu kollayın, çok bekleyip de ekranın gerisinde kalmayın. Klavye, ekran düğmeleri ya da kaydırma hareketiyle oynayın. Kurulum ve kayıt gerekmez, rekorunuz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="hazir" aria-label="Yol Geçişi oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Yol Geçişi</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="gm-stats" aria-label="Skor bilgileri">
+          <div><dt>Skor</dt><dd id="yg-score">0</dd></div>
+          <div><dt>En yüksek</dt><dd id="yg-best">0</dd></div>
+        </dl>
+
+        <canvas class="yg-canvas" id="yg-canvas" width="288" height="384" tabindex="0" role="application" aria-label="Oyun alanı. Başlamak için Boşluk, Enter ya da dokunun."></canvas>
+
+        <div class="yg-pad" role="group" aria-label="Yön düğmeleri">
+          <button type="button" class="ba-btn" id="yg-up" aria-label="İleri sıçra">▲</button>
+          <button type="button" class="ba-btn" id="yg-left" aria-label="Sola sıçra">◀</button>
+          <button type="button" class="ba-btn" id="yg-down" aria-label="Geri sıçra">▼</button>
+          <button type="button" class="ba-btn" id="yg-right" aria-label="Sağa sıçra">▶</button>
+        </div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3 id="sonuc-baslik">Oyun bitti</h3>
+          <p class="gm-big">Skor <span id="sonuc-skor">0</span></p>
+          <p id="sonuc-neden">Araç çarptı.</p>
+          <p class="gm-record" id="sonuc-rekor" hidden>Yeni en yüksek skor!</p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="yg-again">Tekrar oyna</button>
+          </div>
+        </div>
+
+        <p class="gm-msg" id="yg-msg" role="status" aria-live="polite"></p>
+
+        <div class="gm-controls">
+          <button type="button" class="ba-btn" id="yg-start" aria-keyshortcuts="P">Başla</button>
+          <button type="button" class="ba-btn" id="yg-reset">Rekoru sıfırla</button>
+        </div>
+
+        <div class="gm-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Klavye: <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> (ya da <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>) bir kare sıçratır. <kbd>P</kbd> ya da <kbd>Esc</kbd> duraklatır, <kbd>R</kbd> baştan başlatır.</li>
+            <li>Dokunmatik: oyun alanına dokunmak ileri sıçratır; parmağınızı bir yöne kaydırırsanız o yöne sıçrar. Ekrandaki ▲ ◀ ▼ ▶ düğmeleri de aynı işi yapar.</li>
+            <li>Ağaçlar yolu kapatır. Ekranın altından geride kalırsanız, yani kamera sizi geçerse oyun biter.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-yol-gecisi-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Yol Geçişi nedir?</h2>
+      <p>Yol Geçişi, her turu birkaç dakika süren, sonsuza uzanan bir karşıdan karşıya geçme oyunudur. Küçük sarı bir civcivi yönetirsiniz; önünüzde sırayla çimenlik şeritler ve araçların her iki yönde aktığı yollar dizilir. Her sıçrayışta bir kare ilerlersiniz. Bir yola girerken araçların arasındaki boşluğu kollar, güvenli anda karşıya geçer, çimenlikte nefes alır ve bir sonraki yola hazırlanırsınız. Bir araç size çarparsa ya da kameranın gerisinde kalırsanız oyun biter.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da reklam izleyerek ek can kazanmanız gerekmez; oyunda para, bahis ya da ödül sistemi yoktur. Sayfa bir kez yüklendikten sonra bağlantı kopsa bile oyun çalışmaya devam eder. En yüksek skorunuz yalnızca bu cihazdaki tarayıcının yerel depolamasında saklanır, hiçbir sunucuya gönderilmez.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>“Başla” düğmesine, oyun alanına dokunarak ya da klavyede yukarı ok tuşuna basarak oyunu başlatın. Civciv, ekranın alt kısmında güvenli bir çimenliğin üzerinde başlar.</li>
+        <li>Yukarı ok tuşuyla (ya da oyun alanına dokunarak) bir kare ileri sıçrayın. Sola ve sağa sıçramak için yan oklara, geri gelmek için aşağı oka basın. Hareket kare kare ilerler; tuşu basılı tutmak sürekli sıçratmaz, her sıçrayış için tuşa yeniden basmanız gerekir.</li>
+        <li>Yola girmeden önce araçların yönünü ve hızını izleyin. Her şeridin araç yönü ve hızı farklıdır; bazı şeritler ağır kamyonlarla yavaş, bazıları küçük arabalarla hızlıdır.</li>
+        <li>Çimenlikteki ağaçların içinden geçemezsiniz; bir ağaca doğru sıçrarsanız civciv yerinde kalır. Boş bir sütun bulup oradan ilerleyin.</li>
+        <li>Ekranda kaç satır ileri gittiyseniz skorunuz o kadardır. Çok uzun süre beklerseniz kamera yavaşça yukarı kayar ve sizi geride bırakırsa oyun biter.</li>
+      </ol>
+
+      <h2>Puanlama ve zorluk</h2>
+      <p>Skor, başlangıç şeridine göre ulaştığınız en uzak satırın sayısıdır. Geri sıçramak puanı düşürmez, ama daha önce ulaştığınız satırı da yeniden saymaz; yalnızca rekor satırı aştığınızda skor artar. Zorluk iki yolla yükselir. Birincisi, ilerledikçe yollardaki araçlar daha hızlı akar. İkincisi, kameranın yukarı kayma hızı da zamanla ve skorla birlikte hafifçe artar; bu yüzden uzun süre beklemek eninde sonunda sizi geride bırakır.</p>
+      <p>Oyun adil olacak biçimde tasarlandı: ilk üç şerit her zaman boş çimenliktir, bir yol dizisi üçten fazla ardışık şerit sürmez ve her çimenlik şeridinde en çok üç ağaç bulunur. Yani ardı ardına gelen kapalı bir duvarla karşılaşmazsınız; kaybettiğinizde bunun nedeni zamanlamanızdır.</p>
+
+      <h2>Kontroller: klavye, fare ve dokunmatik</h2>
+      <ul>
+        <li><strong>Klavye:</strong> Yön tuşları (ya da <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>) bir kare sıçratır. <kbd>Boşluk</kbd> da ileri sıçratır. <kbd>P</kbd> ya da <kbd>Esc</kbd> oyunu duraklatır, <kbd>R</kbd> baştan başlatır.</li>
+        <li><strong>Dokunmatik ekran:</strong> Oyun alanına kısa bir dokunuş ileri sıçratır. Parmağınızı sola, sağa, yukarı ya da aşağı kaydırırsanız civciv o yöne gider. Ekranın altındaki dört büyük yön düğmesi de aynı işi görür.</li>
+        <li><strong>Fare:</strong> Oyun alanına tıklamak ileri sıçratır; ekrandaki yön düğmelerine de tıklayabilirsiniz.</li>
+        <li><strong>Otomatik duraklatma:</strong> Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun kendiliğinden duraklar.</li>
+        <li><strong>Ekran okuyucu:</strong> Oyun alanının etiketi skoru ve oyun durumunu bildirir; oyun sonu nedeni bir durum satırında yazılır.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu ekrana yayar.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="oyun-yol-gecisi-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Önce izleyin, sonra sıçrayın.</strong> Bir yolun kenarında durup araçların bir tur dönüşünü izlemek, tahmin etmenizi kolaylaştırır. Çimenlikte beklemek tehlikesizdir; yalnızca kameranın hızına dikkat edin.</li>
+        <li><strong>Kısa boşlukları değil, uzun boşlukları seçin.</strong> İki araç arasındaki boşluk bir kareden büyükse geçebilirsiniz, ama sıçrayışın ardından da bir sonraki adımı atmanız gerekebilir. Geniş boşluk size düzeltme payı bırakır.</li>
+        <li><strong>Art arda yolları planlayın.</strong> İki yol birleştiğinde ortada güvenli bir çimen yoktur. Ardışık iki yolda önce birinci yolun boşluğuna girin, sonra ikinci yolun araç yönüne göre bekleyip geçin.</li>
+        <li><strong>Araç yönüne bakın.</strong> Kamyonlar uzundur ve geçişleri daha çok sürer; küçük arabalar daha hızlıdır. Kamyonun kuyruğu geçtikten hemen sonra sıçramak çoğu zaman güvenlidir.</li>
+        <li><strong>Ağaçlara göre sütun seçin.</strong> Bir sonraki çimenlikte hangi sütunların boş olduğuna yol üzerindeyken bakın. Yanlış sütunda kalırsanız ağaç önünüzü keser ve zaman kaybedersiniz.</li>
+        <li><strong>Çok bekleme.</strong> Kamera hep ilerler. Güvenli bir çimenlikte bile bir süre sonra geride kalma riski başlar; ritminizi koruyun.</li>
+      </ul>
+
+      <h2>Kısa tarihçe: karşıdan karşıya geçme oyunları</h2>
+      <p>Bir karakteri araçlarla dolu bir yoldan karşıya geçirmek, video oyunlarının en eski ve en kolay anlaşılan fikirlerinden biridir. 1980'lerin salon oyunlarında yolların, nehirlerin ve engellerin dizildiği tek ekranlık sahnelerde karakteri karşı kıyıya ulaştırmak amaçtı. Daha sonra akıllı telefonların yaygınlaşmasıyla bu fikir sonsuza uzanan, kamerası kendiliğinden ilerleyen bir biçime dönüştü; tek parmakla oynanabilmesi ve her turun kısa sürmesi onu mobil oyunlar arasında çok sevilen bir tür yaptı.</p>
+      <p>Bu sayfadaki oyun, türün temel fikrini kendi çizimleri ve sıfırdan yazılmış kodlarıyla uygular. Karakter, araçlar ve çimenlikler tarayıcıda çizilen basit şekillerdir; hazır görsel ya da dış kaynak yoktur. Oyunun adı ve karakteri bize aittir ve bilinen herhangi bir ticari ürünle bağlantılı değildir.</p>
+
+      <h2>Zihin ve el-göz koordinasyonu</h2>
+      <p>Bu tür oyunlar dikkat, zamanlama ve hızlı karar verme gerektirir. Hareket eden araçların aralıklarını tahmin etmek ve doğru anda harekete geçmek, kısa süreli odaklanma için eğlenceli bir alıştırmadır. Bununla birlikte oyun tıbbi bir araç değildir ve herhangi bir sağlık iddiası taşımaz; yalnızca eğlenceli bir zaman geçirme aracıdır. Oyun gerçek yollarda dikkat gerektiren davranışların yerini tutmaz; gerçek trafikte her zaman kurallara ve yaya geçitlerine uyun. Uzun süre ekrana bakıyorsanız arada mola vermeyi unutmayın.</p>
+
+      <h2>Neden bu sürüm?</h2>
+      <p>Bu oyun hafif ve hızlı olması için dış kütüphane kullanmadan yazıldı; sayfa yüklendikten sonra internet bağlantısı gerekmez. Reklam izleme zorunluluğu, sahte geri sayım, yanıltıcı düğme ya da hile yoktur. Oyun klavyeyle ve dokunmatik ekranla eşit rahatlıkta oynanır; 360 piksel genişlikteki telefonlarda taşma olmaz. Bilişim Ajans'ın ücretsiz araçları ve oyunları aynı ilkeyle hazırlanır: hesap yok, takip yok, dosya yükleme yok.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Skorunuz hiçbir sunucuya gönderilmez; en yüksek skor yalnızca tarayıcının yerel depolamasında (localStorage) tutulur. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekorunuz sıfırlanır; depolama kapalıysa oyun yine çalışır, yalnızca rekorunuz saklanmaz. “Rekoru sıfırla” düğmesi kayıtlı en yüksek skoru istediğiniz zaman siler.</p>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Yol Geçişi ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açıp Başla düğmesine ya da yukarı ok tuşuna basmanız yeterlidir. Uygulama indirme, hesap açma ya da ödeme yoktur.</p></details>
+      <details><summary>Oyunun amacı nedir?</summary><p>Civcivi araçlara çarptırmadan ve ekranın gerisinde bırakmadan olabildiğince çok satır ileri götürmektir. Skor, ulaştığınız en uzak satırın sayısıdır.</p></details>
+      <details><summary>Hangi tuşlarla oynanır?</summary><p>Yön tuşları ya da W, A, S, D bir kare sıçratır; boşluk ileri sıçratır. P veya Esc duraklatır, R baştan başlatır. Tuşu basılı tutmak sürekli sıçratmaz, her adım için yeniden basmanız gerekir.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Oyun alanına dokunun ya da parmağınızı gitmek istediğiniz yöne kaydırın. İsterseniz ekranın altındaki yön düğmelerini de kullanabilirsiniz. Oyun alanı 360 piksel genişliğindeki ekranlara da sığar.</p></details>
+      <details><summary>Neden bazen çarpmadığım halde oyun bitiyor?</summary><p>Kamera zamanla yukarı kayar ve ekranın altında kalırsanız oyun biter. Çimenlikte bile sonsuza dek beklenemez. Sonuç kutusunda oyunun neden bittiği de yazar.</p></details>
+      <details><summary>Ağaçların içinden geçebilir miyim?</summary><p>Hayır. Ağaçlar yolu kapatır; bir ağaca doğru sıçrarsanız civciv yerinde kalır. Boş bir sütun bulup oradan ilerlemeniz gerekir.</p></details>
+      <details><summary>Oyun kendiliğinden duruyor, bu normal mi?</summary><p>Evet. Başka bir sekmeye geçtiğinizde ya da pencere odağını kaybettiğinizde oyun kendiliğinden duraklatılır, böylece farkında olmadan çarpmazsınız. P tuşuyla, boşlukla ya da Devam et düğmesiyle sürdürebilirsiniz.</p></details>
+      <details><summary>Rekorum nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır; Rekoru sıfırla düğmesiyle de elle silebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../ucan-kus/">Uçan Kuş</a></li>
+        <li><a href="../dinozor-kosusu/">Dinozor Koşusu</a></li>
+        <li><a href="../gokyuzu-ziplama/">Gökyüzü Zıplama</a></li>
+        <li><a href="../yilan-oyunu/">Yılan Oyunu</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-yol-gecisi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
