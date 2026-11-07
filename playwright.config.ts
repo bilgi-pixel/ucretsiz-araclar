@@ -7,6 +7,9 @@ export default defineConfig({
   testDir: './tests',
   timeout: 60_000,
   fullyParallel: true,
+  // CI'da (2 vCPU, ~3600 test) yük kaynaklı aralıklı zamanlama hataları için 2 yeniden deneme;
+  // yeniden denemede geçen testler raporda "flaky" olarak görünür, gerçek hatalar yine kırılır.
+  retries: process.env.CI ? 2 : 0,
   reporter: [['list']],
   use: {
     baseURL: `http://127.0.0.1:${port}`,
