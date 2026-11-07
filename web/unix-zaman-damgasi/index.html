@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Unix Zaman Damgası Çevirici – Epoch Time Tarihe, Tarih Zaman Damgasına (Türkiye Saati)</title>
+  <meta name="description" content="Unix zaman damgasını (epoch) tarihe, tarihi saniye ve milisaniye cinsinden zaman damgasına çevirin; UTC, Türkiye saati ve cihaz saatini görün. Ücretsiz, kayıt yok, verileriniz tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/unix-zaman-damgasi/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/unix-zaman-damgasi/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/unix-zaman-damgasi/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form input[type="number"], .kdv-form input[type="datetime-local"], .kdv-form select, .kdv-form textarea { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form textarea { min-height: 180px; font-family: var(--ba-mono); font-size: .95rem; resize: vertical; }
+    .kdv-form input:focus, .kdv-form select:focus, .kdv-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label, .kdv-checks label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input, .kdv-checks input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-checks { display: flex; flex-wrap: wrap; gap: 0 18px; margin-bottom: 8px; }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; overflow-wrap: anywhere; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .big-out { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); overflow-wrap: anywhere; }
+    .ba-result, .ba-content { overflow-wrap: anywhere; }
+    .list-out { font-family: var(--ba-mono); font-size: .92rem; line-height: 1.7; margin: 0; overflow-wrap: anywhere; }
+    .kdv-form h3 { margin: 18px 0 8px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Unix Zaman Damgası Çevirici – Bilişim Ajans","applicationCategory":"DeveloperApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/unix-zaman-damgasi/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Unix zaman damgası ne demektir?","acceptedAnswer":{"@type":"Answer","text":"1 Ocak 1970 saat 00:00:00 UTC'den bu yana geçen saniye sayısıdır. Zamanı tek bir sayıyla gösterdiği için saat dilimi ve tarih biçimi karmaşasını ortadan kaldırır."}},{"@type":"Question","name":"Zaman damgasının saniye mi milisaniye mi olduğunu nasıl anlarım?","acceptedAnswer":{"@type":"Answer","text":"Günümüzde saniye cinsinden değerler 10 haneli (1700000000 gibi), milisaniye cinsinden değerler 13 haneli (1700000000000 gibi) olur. Araç \"Otomatik algıla\" seçiliyken bu ayrımı kendisi yapar; emin değilseniz birimi elle seçin."}},{"@type":"Question","name":"1700000000 hangi tarihe karşılık gelir?","acceptedAnswer":{"@type":"Answer","text":"14 Kasım 2023 saat 22:13:20 UTC'ye; Türkiye saatiyle 15 Kasım 2023 saat 01:13:20'ye (Çarşamba) karşılık gelir."}},{"@type":"Question","name":"Türkiye saati neden UTC+3?","acceptedAnswer":{"@type":"Answer","text":"Türkiye 2016 yılından itibaren yıl boyunca kalıcı yaz saati uygulamasıyla UTC+3'ü kullanıyor. Bu nedenle sonuçlardaki Türkiye saati, UTC saatinin 3 saat ilerisidir. 2016 öncesi tarihlerde kış aylarında UTC+2 kullanıldığı için araç o dönemlerde farklı fark gösterir."}},{"@type":"Question","name":"Negatif zaman damgası girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Negatif değerler 1 Ocak 1970'ten önceki tarihleri gösterir. Örneğin -86400, 31 Aralık 1969'a karşılık gelir."}},{"@type":"Question","name":"2038 sorunu nedir, bu araç etkilenir mi?","acceptedAnswer":{"@type":"Answer","text":"32 bitlik işaretli tam sayıda saklanan zaman damgaları 19 Ocak 2038'de taşar. Bu araç JavaScript'in 64 bit tabanlı tarih altyapısını kullandığı için etkilenmez ve 2038 sonrası tarihleri doğru gösterir."}},{"@type":"Question","name":"Ondalıklı zaman damgası girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. 1700000000.5 gibi bir değer saniye cinsinden yarım saniyeyi de içerir; sonuç ISO biçiminde .500 milisaniye ile görünür. Ondalık ayırıcı olarak nokta ya da virgül kullanılabilir."}},{"@type":"Question","name":"Bu araç saatimi ya da verilerimi bir yere gönderiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Dönüşümler tarayıcınızda çalışan kodla yapılır. Sayfa sunucuya hiçbir bilgi göndermez, çerez ya da izleme kodu kullanmaz. Üstteki canlı saat yalnızca cihazınızın saatini okur."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#dosya">Dosya ve Metin</a></li></ol>
+      <h1><span class="ba-grad">Unix Zaman Damgası</span> Çevirici – Epoch ↔ Tarih</h1>
+      <p class="lead">Unix zaman damgasını (epoch time) okunabilir tarihe, tarih ve saati de saniye ya da milisaniye cinsinden zaman damgasına çevirin. Sonuçları UTC, Türkiye saati ve cihazınızın saat diliminde görün. Girdiğiniz değerler bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <p class="kdv-note" style="margin:0 0 12px">Şu anki Unix zamanı: <strong id="now-sec" style="font-family:var(--ba-mono)">…</strong> saniye</p>
+      <h3>Zaman damgasından tarihe</h3>
+      <form id="form-ts" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="ts">Unix zaman damgası</label><input id="ts" type="text" inputmode="numeric" autocomplete="off" placeholder="Örn. 1700000000"><div class="hint">Saniye (10 hane) ya da milisaniye (13 hane) yazın.</div></div>
+          <div class="ba-field"><label for="unit">Birim</label><select id="unit"><option value="auto" selected>Otomatik algıla</option><option value="s">Saniye</option><option value="ms">Milisaniye</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="ts-calc" class="ba-btn ba-btn-primary" type="submit">Tarihe çevir</button><button id="ts-now" class="ba-btn" type="button">Şimdiki zamanı kullan</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="res-ts" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row is-strong"><dt>UTC (ISO 8601)</dt><dd id="o-iso"></dd></div>
+          <div class="kdv-row"><dt>Türkiye saati (UTC+3)</dt><dd id="o-tr"></dd></div>
+          <div class="kdv-row"><dt id="o-local-l">Cihazınızın saati</dt><dd id="o-local"></dd></div>
+          <div class="kdv-row"><dt>Göreli</dt><dd id="o-rel"></dd></div>
+          <div class="kdv-row"><dt>Kullanılan birim</dt><dd id="o-unit"></dd></div>
+        </dl>
+      </div>
+
+      <h3>Tarihten zaman damgasına</h3>
+      <form id="form-dt" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="dt">Tarih ve saat</label><input id="dt" type="datetime-local" step="1"><div class="hint">Gün, ay, yıl, saat ve dakikayı seçin.</div></div>
+          <div class="ba-field"><label for="tz">Bu saat hangi saat diliminde?</label><select id="tz"><option value="tr" selected>Türkiye saati</option><option value="utc">UTC (evrensel saat)</option><option value="local">Cihazımın saat dilimi</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="dt-calc" class="ba-btn ba-btn-primary" type="submit">Zaman damgasına çevir</button><button id="dt-now" class="ba-btn" type="button">Şimdiyi doldur</button></div>
+      </form>
+      <div id="error2" class="ba-error" role="alert"></div>
+      <div id="res-dt" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl class="kdv-results">
+          <div class="kdv-row is-strong"><dt>Saniye</dt><dd id="o-sec"></dd></div>
+          <div class="kdv-row"><dt>Milisaniye</dt><dd id="o-ms"></dd></div>
+          <div class="kdv-row"><dt>UTC (ISO 8601)</dt><dd id="o-iso2"></dd></div>
+        </dl>
+        <div class="ba-actions"><button class="ba-btn" type="button" data-copy="o-sec">Saniyeyi kopyala</button><button class="ba-btn" type="button" data-copy="o-ms">Milisaniyeyi kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="unix-zaman-damgasi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Elinizde 1700000000 gibi bir sayı varsa üstteki kutuya yazın. Birimi "Otomatik algıla" bırakırsanız 10 haneli sayılar saniye, 13 haneli sayılar milisaniye olarak yorumlanır.</li>
+        <li>"Tarihe çevir" düğmesine basın. Sonuçta aynı anı UTC (ISO 8601), Türkiye saati ve cihazınızın saat diliminde, haftanın günüyle birlikte görürsünüz; ayrıca "2 yıl önce" gibi göreli bir ifade de gösterilir.</li>
+        <li>Tersini yapmak için alttaki bölümde tarih ve saati seçin, saat diliminin hangisi olduğunu belirleyin ve "Zaman damgasına çevir" düğmesine basın. Saniye ve milisaniye karşılıkları kopyalama düğmeleriyle panoya alınabilir.</li>
+        <li>"Şimdiki zamanı kullan" ve "Şimdiyi doldur" düğmeleri, o anki saati sizin yerinize forma yazar. Üstteki "Şu anki Unix zamanı" satırı her saniye güncellenen gerçek saattir.</li>
+      </ol>
+
+      <h2>Unix zaman damgası nedir?</h2>
+      <p>Unix zaman damgası (Unix time, epoch time, POSIX time), 1 Ocak 1970 saat 00:00:00 UTC anından bu yana geçen saniye sayısıdır. Bu başlangıç anına "epoch" denir. Örneğin 0 değeri tam olarak epoch anını, 1700000000 değeri ise 14 Kasım 2023 saat 22:13:20 UTC'yi temsil eder; bu an Türkiye'de 15 Kasım 2023 saat 01:13:20'dir. Zaman tek bir tam sayıyla ifade edildiği için saat dilimi, yaz saati uygulaması ve tarih biçimi karmaşasından bağımsızdır. Bilgisayarlar zamanı bu sayı olarak saklar, karşılaştırır ve gerektiğinde insanların okuyacağı biçime çevirir.</p>
+      <p>Bu yaklaşımın en büyük avantajı hesap kolaylığıdır. İki olay arasındaki süre, zaman damgalarının farkıdır; bir olaydan bir gün sonrası ise 86.400 saniye eklemekle bulunur. Veritabanlarında, günlük (log) dosyalarında, JWT belirteçlerinin süre alanlarında (exp, iat), API yanıtlarında ve dosya sistemlerinde zaman çoğunlukla Unix zaman damgası olarak karşınıza çıkar.</p>
+
+      <h2>Saniye mi, milisaniye mi?</h2>
+      <p>Farklı sistemler aynı kavramı farklı birimde kullanır. Unix, PHP, Python'un time.time() fonksiyonu ve birçok veritabanı saniye cinsinden çalışır; sonuç bugün 10 haneli bir sayıdır. JavaScript'in Date.now() fonksiyonu, Java'nın System.currentTimeMillis() çağrısı ve pek çok mobil uygulama ise milisaniye kullanır; bu sayılar 13 hanelidir. Bazı sistemler mikrosaniye (16 hane) ya da nanosaniye (19 hane) bile döndürür. Bu araç otomatik algılamada 100 milyar (10¹¹) ve üzerindeki değerleri milisaniye sayar; bu sınır saniye olarak yaklaşık 5138 yılına, milisaniye olarak 1973 yılına karşılık gelir. Yanlış anlaşılma ihtimali varsa birimi elle seçin. Sonucun 1970 yılına çok yakın ya da 50 bin yıl sonrasında çıkması, birimin yanlış seçildiğinin işaretidir.</p>
+
+      <div class="ba-ad" data-slot="unix-zaman-damgasi-b" aria-label="Reklam"></div>
+
+      <h2>Saat dilimleri ve Türkiye saati</h2>
+      <p>Unix zaman damgası her zaman UTC'ye göre tanımlıdır; yani küresel olarak aynı andır. Saat dilimi yalnızca ekranda gösterilirken devreye girer. Türkiye, 2016 yılından itibaren yıl boyunca UTC+3 saatini kullanır; yaz-kış saati uygulaması yoktur. Daha eski tarihlerde ise Türkiye'de kışın UTC+2, yazın UTC+3 uygulanıyordu. Bu araç saat dilimi kurallarını tarayıcının yerleşik veritabanından aldığı için 2016 öncesi tarihleri de doğru gösterir: örneğin 1 Ocak 2000 gece yarısı Türkiye saatiyle 946677600 değerine, yani UTC+2'ye karşılık gelir.</p>
+      <p>"Cihazımın saat dilimi" seçeneği, bilgisayarınızın ya da telefonunuzun ayarlarındaki bölgeyi kullanır. Başka bir ülkedeki bir ekiple çalışıyorsanız ve toplantı saatini zaman damgasına çevirmek istiyorsanız tarihi girmeden önce doğru saat dilimini seçtiğinizden emin olun.</p>
+
+      <h2>2038 sorunu</h2>
+      <p>Zaman damgasını 32 bitlik işaretli bir tam sayıda saklayan eski sistemler, 19 Ocak 2038 saat 03:14:07 UTC'de (zaman damgası 2147483647) taşma yaşayacaktır. Bir saniye sonra sayaç en küçük negatif değere döner ve tarih 1901 yılına atlar. Buna "2038 sorunu" ya da "Y2K38" denir. Modern sistemler 64 bitlik tam sayı kullandığından bu sorundan etkilenmez; ancak gömülü cihazlar ve eski veritabanı sütunları risk taşır. Aracı 2147483647 ve 2147483648 değerleriyle deneyerek farkı kendiniz görebilirsiniz; tarayıcı tarihleri 64 bit mantıkla tuttuğu için sonuç doğru görünür.</p>
+
+      <h2>Kullanım alanları</h2>
+      <ul>
+        <li><strong>Yazılım geliştirme:</strong> API yanıtlarındaki created_at, updated_at gibi alanları okumak, token süresini (exp) çözmek ve test verisi üretmek için sık kullanılır.</li>
+        <li><strong>Günlük kayıtları:</strong> Sunucu loglarındaki zaman damgalarını insan okuyabilir tarihe çevirip olayların sırasını anlamak mümkün olur.</li>
+        <li><strong>Veritabanı sorguları:</strong> Belirli bir tarih aralığını sorgulamak için başlangıç ve bitiş zaman damgalarını bu araçla hesaplayabilirsiniz.</li>
+        <li><strong>Dosya ve e-posta başlıkları:</strong> Bazı dosya biçimleri ve e-posta başlıkları zamanı epoch olarak tutar.</li>
+        <li><strong>Eğitim ve merak:</strong> Doğum gününüzün ya da önemli bir olayın kaçıncı saniyede gerçekleştiğini görmek eğlencelidir. Tarihler arası süreyi gün olarak bulmak için <a href="../tarih-farki/">iki tarih arası gün hesaplama</a> aracı daha uygundur.</li>
+      </ul>
+
+      <h2>Artık saniye notu</h2>
+      <p>Unix zamanı her günü tam 86.400 saniye sayar ve artık saniyeleri dikkate almaz. Gerçek dünyada UTC'ye zaman zaman bir artık saniye eklenmiştir, ancak Unix zaman damgasında bu saniyeler yoktur: ya tekrarlanır ya da yok sayılır. Bu yüzden iki zaman damgası arasındaki fark, gerçek geçen süreden birkaç saniye farklı olabilir; günlük kullanım ve yazılım geliştirme için bu fark önemsizdir.</p>
+
+      <h2>Programlama dillerinde zaman damgası</h2>
+      <p>Geçerli zaman damgasını almak için JavaScript'te Math.floor(Date.now() / 1000), Python'da int(time.time()), PHP'de time() ve MySQL'de UNIX_TIMESTAMP() kullanılır. Tersine, bir zaman damgasından tarih elde etmek için JavaScript'te new Date(saniye * 1000), Python'da datetime.fromtimestamp(saniye, tz=timezone.utc) yazılır. Dikkat edilmesi gereken en önemli nokta birim farkıdır: JavaScript milisaniye bekler, çoğu sunucu tarafı dil saniye bekler. Bu araçta aynı değeri iki birimde yan yana gördüğünüz için kodunuzdaki sonucu hızlıca doğrulayabilirsiniz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Tüm dönüşüm tarayıcınızda yapılır; girdiğiniz değerler hiçbir sunucuya iletilmez.</li>
+        <li><strong>Türkiye saati hazır.</strong> Sonuçta UTC ile birlikte Türkiye saatini doğrudan görürsünüz.</li>
+        <li><strong>İki yönlü.</strong> Zaman damgasından tarihe ve tarihten zaman damgasına, saniye ve milisaniye olarak.</li>
+        <li><strong>Net hata mesajları.</strong> Geçersiz girişlerde ne yapmanız gerektiği Türkçe anlatılır.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Unix zaman damgası ne demektir?</summary><p>1 Ocak 1970 saat 00:00:00 UTC'den bu yana geçen saniye sayısıdır. Zamanı tek bir sayıyla gösterdiği için saat dilimi ve tarih biçimi karmaşasını ortadan kaldırır.</p></details>
+        <details><summary>Zaman damgasının saniye mi milisaniye mi olduğunu nasıl anlarım?</summary><p>Günümüzde saniye cinsinden değerler 10 haneli (1700000000 gibi), milisaniye cinsinden değerler 13 haneli (1700000000000 gibi) olur. Araç "Otomatik algıla" seçiliyken bu ayrımı kendisi yapar; emin değilseniz birimi elle seçin.</p></details>
+        <details><summary>1700000000 hangi tarihe karşılık gelir?</summary><p>14 Kasım 2023 saat 22:13:20 UTC'ye; Türkiye saatiyle 15 Kasım 2023 saat 01:13:20'ye (Çarşamba) karşılık gelir.</p></details>
+        <details><summary>Türkiye saati neden UTC+3?</summary><p>Türkiye 2016 yılından itibaren yıl boyunca kalıcı yaz saati uygulamasıyla UTC+3'ü kullanıyor. Bu nedenle sonuçlardaki Türkiye saati, UTC saatinin 3 saat ilerisidir. 2016 öncesi tarihlerde kış aylarında UTC+2 kullanıldığı için araç o dönemlerde farklı fark gösterir.</p></details>
+        <details><summary>Negatif zaman damgası girebilir miyim?</summary><p>Evet. Negatif değerler 1 Ocak 1970'ten önceki tarihleri gösterir. Örneğin -86400, 31 Aralık 1969'a karşılık gelir.</p></details>
+        <details><summary>2038 sorunu nedir, bu araç etkilenir mi?</summary><p>32 bitlik işaretli tam sayıda saklanan zaman damgaları 19 Ocak 2038'de taşar. Bu araç JavaScript'in 64 bit tabanlı tarih altyapısını kullandığı için etkilenmez ve 2038 sonrası tarihleri doğru gösterir.</p></details>
+        <details><summary>Ondalıklı zaman damgası girebilir miyim?</summary><p>Evet. 1700000000.5 gibi bir değer saniye cinsinden yarım saniyeyi de içerir; sonuç ISO biçiminde .500 milisaniye ile görünür. Ondalık ayırıcı olarak nokta ya da virgül kullanılabilir.</p></details>
+        <details><summary>Bu araç saatimi ya da verilerimi bir yere gönderiyor mu?</summary><p>Hayır. Dönüşümler tarayıcınızda çalışan kodla yapılır. Sayfa sunucuya hiçbir bilgi göndermez, çerez ya da izleme kodu kullanmaz. Üstteki canlı saat yalnızca cihazınızın saatini okur.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar tarayıcınızın saat dilimi veritabanına dayanır. Hukuki ya da mali bir işlemde kesin zaman gerekiyorsa resmî kaynaktaki kaydı esas alın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../zaman-dilimi-cevirici/">Saat Dilimi Çevirici</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir</a></li>
+        <li><a href="../base64-donustur/">Base64 Kodla / Çöz</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="unix-zaman-damgasi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

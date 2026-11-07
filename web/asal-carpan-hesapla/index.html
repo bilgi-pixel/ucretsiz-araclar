@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Asal Sayı Mı? Asal Çarpanlara Ayırma Hesaplama – Bölenler ve Asal Sayı Listesi</title>
+  <meta name="description" content="Bir sayının asal olup olmadığını öğrenin, asal çarpanlarına ayırın; bölen sayısını, bölenlerini, Euler φ değerini ve önceki-sonraki asalı görün. Ücretsiz, kayıt yok, sayılarınız tarayıcınızdan çıkmaz.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/asal-carpan-hesapla/">
+  <link rel="alternate" hreflang="tr" href="https://araclar.bilisimajans.com/asal-carpan-hesapla/">
+  <link rel="alternate" hreflang="x-default" href="https://araclar.bilisimajans.com/asal-carpan-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    /* Sayfaya özel küçük düzen; tema token'ları ba.css'ten gelir. */
+    .kdv-form .ba-field { margin-bottom: 12px; }
+    .kdv-form input[type="text"], .kdv-form input[type="number"], .kdv-form input[type="datetime-local"], .kdv-form select, .kdv-form textarea { width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ba-text); background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .kdv-form textarea { min-height: 180px; font-family: var(--ba-mono); font-size: .95rem; resize: vertical; }
+    .kdv-form input:focus, .kdv-form select:focus, .kdv-form textarea:focus { border-color: var(--ba-primary); outline-offset: 0; }
+    .kdv-grid { display: grid; gap: 12px; }
+    @media (min-width: 600px) { .kdv-grid { grid-template-columns: 1fr 1fr; } }
+    .kdv-modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .kdv-modes label, .kdv-checks label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; cursor: pointer; }
+    .kdv-modes input, .kdv-checks input { width: 20px; height: 20px; accent-color: var(--ba-primary); }
+    .kdv-checks { display: flex; flex-wrap: wrap; gap: 0 18px; margin-bottom: 8px; }
+    .kdv-results { margin: 0; display: grid; gap: 6px; }
+    .kdv-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px dashed var(--ba-border); }
+    .kdv-row:last-child { border-bottom: 0; }
+    .kdv-row dt { margin: 0; color: var(--ba-text-2); font-size: .95rem; }
+    .kdv-row dd { margin: 0; font-family: var(--ba-mono); font-size: 1.05rem; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+    .kdv-row.is-strong dd { font-weight: 700; font-size: 1.25rem; color: var(--ba-text); }
+    .kdv-note { font-size: .85rem; color: var(--ba-text-muted); margin: 10px 0 0; overflow-wrap: anywhere; }
+    .kdv-status { font-size: .88rem; color: var(--ba-success); margin: 8px 0 0; min-height: 1.3em; }
+    .big-out { font-size: 1.35rem; font-weight: 700; margin: 0 0 12px; color: var(--ba-primary); overflow-wrap: anywhere; }
+    .ba-result, .ba-content { overflow-wrap: anywhere; }
+    .list-out { font-family: var(--ba-mono); font-size: .92rem; line-height: 1.7; margin: 0; overflow-wrap: anywhere; }
+    .kdv-form h3 { margin: 18px 0 8px; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Asal Çarpanlara Ayırma – Bilişim Ajans","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/asal-carpan-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"1 asal sayı mıdır?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Asal sayı, 1'den büyük olup yalnızca 1'e ve kendisine bölünebilen sayıdır. 1'in tek bir pozitif böleni vardır; bu nedenle ne asal ne de bileşik sayı sayılır."}},{"@type":"Question","name":"En küçük ve tek çift asal sayı hangisidir?","acceptedAnswer":{"@type":"Answer","text":"2'dir. 2 yalnızca 1'e ve kendisine bölünür. Diğer bütün çift sayılar 2'ye de bölündüğü için en az üç böleni vardır ve asal olamaz."}},{"@type":"Question","name":"Bu araç en fazla kaç haneli sayıyı işler?","acceptedAnswer":{"@type":"Answer","text":"15 haneye kadar (999.999.999.999.999) pozitif tam sayıları işler. Daha büyük sayılar tarayıcının güvenli tam sayı sınırını aşabileceği için kabul edilmez ve yanlış sonuç üretmemek adına hata mesajı gösterilir."}},{"@type":"Question","name":"Asal çarpanlarına ayırma sonucu 2^3 × 3^2 × 5 ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Sayının 2'nin üçüncü kuvveti, 3'ün karesi ve 5'in çarpımına eşit olduğunu gösterir: 8 × 9 × 5 = 360. Üs, ilgili asalın kaç kez çarpan olduğunu belirtir."}},{"@type":"Question","name":"Bölen sayısı nasıl bulunuyor?","acceptedAnswer":{"@type":"Answer","text":"Asal çarpanların üslerine 1 eklenir ve sonuçlar çarpılır. 360 = 2³ × 3² × 5 için (3+1) × (2+1) × (1+1) = 24 bölen vardır. Bölenler listesi sayfada küçükten büyüğe sıralanır."}},{"@type":"Question","name":"Euler φ değeri neyi gösterir?","acceptedAnswer":{"@type":"Answer","text":"1'den n'ye kadar olan sayılardan n ile ortak böleni 1 olanların sayısıdır. Asal bir p için φ(p) = p − 1'dir. Şifreleme ve sayılar teorisi derslerinde kullanılır."}},{"@type":"Question","name":"Sayıyı yazarken nokta kullanırsam sorun olur mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Nokta, boşluk ve alt çizgi binlik ayırıcı sayılır ve silinir. Ancak virgül ya da küsurat kabul edilmez; yalnızca tam sayı girin."}},{"@type":"Question","name":"Girdiğim sayılar bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm hesap tarayıcınızda çalışan kodla yapılır. Sayfa sunucuya sayı göndermez, çerez ya da izleme kodu içermez."}},{"@type":"Question","name":"Asal sayıların sonu var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Öklid'in yaklaşık 2300 yıl önce gösterdiği gibi asal sayılar sonsuzdur. Bu yüzden her sayı için \"sonraki asal\" her zaman vardır; araçta 15 hane sınırına yakın sayılarda bu değer sınırın üzerinde olabilir."}},{"@type":"Question","name":"Bir aralıktaki asalları en fazla hangi sınıra kadar listeleyebilirim?","acceptedAnswer":{"@type":"Answer","text":"Üst sınır 1.000.000'dur. 1 ile 1.000.000 arasında 78.498 asal sayı vardır; liste ekranda ilk 2.000 asalla sınırlanır, toplam adet ise her zaman doğru gösterilir."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#hesapla" class="ba-nav-optional">Hesapla</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#hesapla">Hesaplama</a></li></ol>
+      <h1><span class="ba-grad">Asal Çarpanlara Ayırma</span> ve Asal Sayı Hesaplama</h1>
+      <p class="lead">Bir sayının asal olup olmadığını anında öğrenin, asal çarpanlarına ayırın; bölenlerini, bölen sayısını ve komşu asalları görün. İsterseniz belirli bir aralıktaki tüm asal sayıları da listeleyin. Girdiğiniz sayılar bilgisayarınızdan çıkmaz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="kdv-form" novalidate>
+        <div class="ba-field"><label for="n">Sayı</label><input id="n" type="text" inputmode="numeric" autocomplete="off" placeholder="Örn. 360"><div class="hint">1 ile 999.999.999.999.999 arasında pozitif bir tam sayı. Binlik ayırıcı olarak nokta kullanabilirsiniz.</div></div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <p class="big-out" id="r-big"></p>
+        <dl class="kdv-results">
+          <div class="kdv-row is-strong"><dt>Asal çarpanlar</dt><dd id="r-factors"></dd></div>
+          <div class="kdv-row"><dt>Bölen sayısı</dt><dd id="r-count"></dd></div>
+          <div class="kdv-row"><dt>Bölenlerin toplamı</dt><dd id="r-sum"></dd></div>
+          <div class="kdv-row"><dt>Euler φ değeri</dt><dd id="r-phi"></dd></div>
+          <div class="kdv-row"><dt>Önceki asal sayı</dt><dd id="r-prev"></dd></div>
+          <div class="kdv-row"><dt>Sonraki asal sayı</dt><dd id="r-next"></dd></div>
+        </dl>
+        <h3>Tüm pozitif bölenler</h3>
+        <p class="list-out" id="r-divs"></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="kdv-status" id="copy-status" aria-live="polite"></p>
+      </div>
+
+      <h3>Aralıktaki asal sayıları listele</h3>
+      <form id="range-form" class="kdv-form" novalidate>
+        <div class="kdv-grid">
+          <div class="ba-field"><label for="from">Başlangıç</label><input id="from" type="text" inputmode="numeric" autocomplete="off" placeholder="Örn. 1"></div>
+          <div class="ba-field"><label for="to">Bitiş (en fazla 1.000.000)</label><input id="to" type="text" inputmode="numeric" autocomplete="off" placeholder="Örn. 100"></div>
+        </div>
+        <div class="ba-actions"><button id="range-calc" class="ba-btn" type="submit">Asalları listele</button></div>
+      </form>
+      <div id="range-error" class="ba-error" role="alert"></div>
+      <div id="range-result" class="ba-result" aria-live="polite" hidden>
+        <p class="big-out" id="range-count"></p>
+        <p class="list-out" id="range-list"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="asal-carpan-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>"Sayı" alanına çarpanlarına ayırmak ya da asal olup olmadığını öğrenmek istediğiniz pozitif tam sayıyı yazın. 1.000.000 gibi nokta ile ayrılmış yazımlar da kabul edilir.</li>
+        <li>"Hesapla" düğmesine basın ya da klavyede Enter tuşuna basın. Sayı asalsa bunu başlıkta görürsünüz; asal değilse asal çarpanları üslü biçimde (örneğin 2^3 × 3^2 × 5) listelenir.</li>
+        <li>Aynı tabloda bölen sayısını, bölenlerin toplamını, Euler φ değerini ve girdiğiniz sayıya en yakın önceki ve sonraki asal sayıyı bulursunuz. Altta sayının tüm pozitif bölenleri küçükten büyüğe sıralanır.</li>
+        <li>Belirli bir aralıktaki asalları görmek için sayfadaki ikinci kutuyu kullanın: başlangıç ve bitiş değerlerini girip "Asalları listele" düğmesine basın.</li>
+      </ol>
+
+      <h2>Asal sayı nedir?</h2>
+      <p>Asal sayı, 1'den büyük olan ve yalnızca 1'e ile kendisine tam bölünebilen doğal sayıdır. 2, 3, 5, 7, 11, 13 ve 17 ilk asal sayılardandır. 2 tek çift asal sayıdır; diğer bütün çift sayılar en az 2'ye de bölündüğü için asal olamaz. 1 sayısı ise tanım gereği asal kabul edilmez, çünkü yalnızca bir böleni vardır. Asal olmayan ve 1'den büyük sayılara bileşik sayı denir; her bileşik sayı asal sayıların çarpımı olarak yazılabilir.</p>
+      <p>Aritmetiğin temel teoremi, 1'den büyük her doğal sayının asal çarpanlarının çarpımı olarak, sıralama dışında tek bir biçimde yazılabileceğini söyler. Örneğin 360 = 2 × 2 × 2 × 3 × 3 × 5 şeklindedir ve bu yazılış 360 için tektir. Bu özellik, ebob ve ekok hesabından kesirleri sadeleştirmeye, tam kare ve tam küp sayıları tanımaya kadar pek çok konunun dayanağıdır.</p>
+
+      <h2>Asal çarpanlarına ayırma nasıl yapılır?</h2>
+      <p>Okulda öğretilen yöntem, sayıyı sırayla en küçük asal sayılara bölmektir. 360 için önce 2'ye bölünür: 360 → 180 → 90 → 45. Sonra 2 artık bölmediği için 3'e geçilir: 45 → 15 → 5. Son olarak 5 asal olduğundan işlem biter. Çarpanlar 2, 2, 2, 3, 3 ve 5'tir; üslü yazılışı 2³ × 3² × 5 olur. Bu araç aynı mantığı kullanır, ancak her seferinde yalnızca 6k±1 biçimindeki adayları dener. Bu, 2 ve 3 dışındaki bütün asalların 6'nın bir fazlası ya da bir eksiği olması gerçeğine dayanır ve işlem sayısını yaklaşık üçte bire indirir.</p>
+      <p>Bir sayının asal olup olmadığı ise çarpanlarına ayrılmadan, çok daha hızlı bir olasılıksız (deterministik) Miller-Rabin sınaması ile belirlenir. Bu nedenle 15 haneli bir asal sayıyı bile saniyenin küçük bir kesrinde tanıyabilirsiniz. Çarpanlara ayırma ise sayı bileşikse yapılır; iki büyük asalın çarpımı olan 15 haneli bir sayıda bile bu işlem yalnızca birkaç yüz milisaniye sürer.</p>
+
+      <h2>Bölen sayısı, bölenler toplamı ve Euler φ</h2>
+      <p>Asal çarpanlar bilindiğinde diğer değerler kolayca bulunur. Sayı p₁^a₁ × p₂^a₂ × … biçiminde yazılmışsa bölen sayısı (a₁+1) × (a₂+1) × … ile bulunur. 360 = 2³ × 3² × 5¹ için bu (3+1) × (2+1) × (1+1) = 24'tür. Bölenlerin toplamı her asal için 1 + p + p² + … + p^a toplamlarının çarpımına eşittir; 360 için 15 × 13 × 6 = 1170 elde edilir. Euler φ fonksiyonu ise 1'den n'ye kadar olan sayılardan n ile aralarında asal olanların sayısını verir; 360 için 96'dır. Bu değer şifrelemede, örneğin RSA algoritmasında kullanılan temel büyüklüklerden biridir.</p>
+      <p>Bölenlerin toplamından hareketle "mükemmel sayı" gibi özel sayıları da tanıyabilirsiniz. Bir sayının kendisi hariç bölenlerinin toplamı kendisine eşitse sayı mükemmeldir: 6 (1+2+3) ve 28 (1+2+4+7+14) bunun örnekleridir. Bu araçta bölenlerin toplamı sayının kendisi dahil verildiğinden, mükemmel sayılarda sonuç sayının tam iki katı çıkar; 28 için 56 görürsünüz.</p>
+
+      <div class="ba-ad" data-slot="asal-carpan-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Asal sayılar nerede kullanılır?</h2>
+      <ul>
+        <li><strong>Matematik dersleri:</strong> Ortaokulda ebob-ekok, çarpanlar ve katlar konuları asal çarpanlara ayırmaya dayanır. Elde ettiğiniz çarpan listesiyle kendi çözümünüzü kontrol edebilirsiniz.</li>
+        <li><strong>Kesirleri sadeleştirme:</strong> Pay ve paydayı asal çarpanlarına ayırırsanız ortak çarpanları görüp sadeleştirmeyi hatasız yaparsınız. Bunun için <a href="../ebob-ekok/">EBOB-EKOK hesaplama</a> aracına da göz atın.</li>
+        <li><strong>Şifreleme:</strong> İnternet bankacılığı ve güvenli bağlantılar, çok büyük iki asal sayının çarpımını çarpanlarına ayırmanın zorluğuna dayanır. Bu sayfadaki araç böyle yüzlerce haneli sayılara değil, 15 haneye kadar olan sayılara yöneliktir.</li>
+        <li><strong>Programlama ve yarışmalar:</strong> Asal testi, eleği ve çarpanlara ayırma, algoritma sorularında sık karşılaşılan konulardır. Örnek bir girdi için hızlı bir doğrulama kaynağı olarak kullanılabilir.</li>
+        <li><strong>Bulmaca ve merak:</strong> İkiz asallar (11-13, 17-19, 41-43 gibi aralarında yalnızca 2 fark olan asal çiftleri), mükemmel sayılar ve Mersenne asalları gibi konular asal sayı dünyasının eğlenceli köşeleridir.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar</h2>
+      <p>En yaygın yanlış, 1'in asal olduğunu düşünmektir. Asal sayı tanımı en az iki farklı pozitif böleni gerektirir; 1'in ise tek böleni vardır. İkinci hata, 2'nin asal olmadığını sanmaktır: 2 yalnızca 1'e ve kendisine bölünür, dolayısıyla asaldır. Üçüncü yaygın hata, "tek sayı asaldır" varsayımıdır; 9, 15, 21, 25 ve 27 gibi tek sayıların hepsi bileşiktir. Son olarak, bir sayının 2, 3, 5 ve 7'ye bölünmemesi onun asal olduğunu göstermez; 121 (11 × 11) ve 169 (13 × 13) bu dört sayıya bölünmediği hâlde bileşiktir. Emin olmak için aracı kullanmanız yeterlidir.</p>
+
+      <h2>Hızlı bölünebilme kuralları</h2>
+      <p>Elle çarpanlarına ayırırken küçük asallar için bölünebilme kuralları zaman kazandırır. Son rakamı çift olan sayılar 2'ye bölünür. Rakamları toplamı 3'ün katı olan sayılar 3'e bölünür. Son rakamı 0 ya da 5 olan sayılar 5'e bölünür. Son iki basamağın oluşturduğu sayı 4'ün katı ise sayı 4'e, rakamları toplamı 9'un katı ise 9'a bölünür. 11 için tek ve çift sıradaki rakamların toplamları arasındaki fark 0 ya da 11'in katı olmalıdır. Araç bu hesapların hepsini sizin yerinize yapar, ancak kuralları bilmek sınavlarda elinizdeki en hızlı yöntemdir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap tarayıcınızda yapılır; girdiğiniz sayılar hiçbir sunucuya iletilmez, saklanmaz.</li>
+        <li><strong>Hızlı ve kesin.</strong> Asal testi deterministiktir; "muhtemelen asal" gibi belirsiz sonuçlar vermez.</li>
+        <li><strong>Eksiksiz sonuç.</strong> Çarpanlar, bölenler, φ değeri, önceki ve sonraki asal tek ekranda.</li>
+        <li><strong>Kayıt ve reklam tuzağı yok.</strong> Giriş yapmadan, sahte düğmelere basmadan kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>1 asal sayı mıdır?</summary><p>Hayır. Asal sayı, 1'den büyük olup yalnızca 1'e ve kendisine bölünebilen sayıdır. 1'in tek bir pozitif böleni vardır; bu nedenle ne asal ne de bileşik sayı sayılır.</p></details>
+        <details><summary>En küçük ve tek çift asal sayı hangisidir?</summary><p>2'dir. 2 yalnızca 1'e ve kendisine bölünür. Diğer bütün çift sayılar 2'ye de bölündüğü için en az üç böleni vardır ve asal olamaz.</p></details>
+        <details><summary>Bu araç en fazla kaç haneli sayıyı işler?</summary><p>15 haneye kadar (999.999.999.999.999) pozitif tam sayıları işler. Daha büyük sayılar tarayıcının güvenli tam sayı sınırını aşabileceği için kabul edilmez ve yanlış sonuç üretmemek adına hata mesajı gösterilir.</p></details>
+        <details><summary>Asal çarpanlarına ayırma sonucu 2^3 × 3^2 × 5 ne anlama gelir?</summary><p>Sayının 2'nin üçüncü kuvveti, 3'ün karesi ve 5'in çarpımına eşit olduğunu gösterir: 8 × 9 × 5 = 360. Üs, ilgili asalın kaç kez çarpan olduğunu belirtir.</p></details>
+        <details><summary>Bölen sayısı nasıl bulunuyor?</summary><p>Asal çarpanların üslerine 1 eklenir ve sonuçlar çarpılır. 360 = 2³ × 3² × 5 için (3+1) × (2+1) × (1+1) = 24 bölen vardır. Bölenler listesi sayfada küçükten büyüğe sıralanır.</p></details>
+        <details><summary>Euler φ değeri neyi gösterir?</summary><p>1'den n'ye kadar olan sayılardan n ile ortak böleni 1 olanların sayısıdır. Asal bir p için φ(p) = p − 1'dir. Şifreleme ve sayılar teorisi derslerinde kullanılır.</p></details>
+        <details><summary>Sayıyı yazarken nokta kullanırsam sorun olur mu?</summary><p>Hayır. Nokta, boşluk ve alt çizgi binlik ayırıcı sayılır ve silinir. Ancak virgül ya da küsurat kabul edilmez; yalnızca tam sayı girin.</p></details>
+        <details><summary>Girdiğim sayılar bir yere gönderiliyor mu?</summary><p>Hayır. Tüm hesap tarayıcınızda çalışan kodla yapılır. Sayfa sunucuya sayı göndermez, çerez ya da izleme kodu içermez.</p></details>
+        <details><summary>Asal sayıların sonu var mı?</summary><p>Hayır. Öklid'in yaklaşık 2300 yıl önce gösterdiği gibi asal sayılar sonsuzdur. Bu yüzden her sayı için "sonraki asal" her zaman vardır; araçta 15 hane sınırına yakın sayılarda bu değer sınırın üzerinde olabilir.</p></details>
+        <details><summary>Bir aralıktaki asalları en fazla hangi sınıra kadar listeleyebilirim?</summary><p>Üst sınır 1.000.000'dur. 1 ile 1.000.000 arasında 78.498 asal sayı vardır; liste ekranda ilk 2.000 asalla sınırlanır, toplam adet ise her zaman doğru gösterilir.</p></details>
+      </div>
+
+      <p class="ba-note"><span aria-hidden="true">ℹ️</span><span><strong>Bilgilendirme:</strong> Sonuçlar matematiksel hesaplamadır; ders ve sınavlarda işlem basamaklarını kendiniz de yazmayı unutmayın.</span></p>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../ebob-ekok/">EBOB-EKOK Hesaplama</a></li>
+        <li><a href="../karekok-hesapla/">Karekök ve Üs Hesaplama</a></li>
+        <li><a href="../kesir-hesapla/">Kesir Hesaplama</a></li>
+        <li><a href="../hesap-makinesi/">Hesap Makinesi</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="asal-carpan-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
