@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Mücevher Eşleştir Oyna – Ücretsiz Online Üçlü Eşleştirme Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online mücevher eşleştirme oyunu: 8x8 tahtada komşu mücevherleri değiştirip 3 ve üzeri sıra yapın, zincirleme patlatın. 25 hamle, ipucu, klavye ve dokunmatik desteği. Kayıt yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/mucevher-eslestir/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .gm-help { display: none; }
+    .gm-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gm-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .gm-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .gm-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .gm-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .gm-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .gm-controls .ba-btn { flex: 1 1 130px; min-height: 44px; padding: 8px 16px; }
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .gm-big { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; }
+    .gm-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+    .gm-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .gm-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .gm-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .game-box * { animation: none !important; transition: none !important; } }
+
+    .mu-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; width: min(100%, 440px); margin: 14px auto 0; padding: 6px; background: #1f2226; border-radius: 12px; }
+    .mu-cell { aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 8px; font-size: clamp(14px, 4.6vw, 22px); line-height: 1; font-weight: 700; color: rgba(0, 0, 0, .62); cursor: pointer; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .2), inset 0 2px 0 rgba(255, 255, 255, .3); transition: transform .12s; }
+    .mu-cell:hover:not(:disabled) { transform: scale(1.06); }
+    .mu-cell:focus-visible { outline: 3px solid #fff; outline-offset: 1px; z-index: 1; position: relative; }
+    .mu-cell.is-sel { outline: 3px solid #ffd75e; outline-offset: 1px; transform: scale(1.1); position: relative; z-index: 1; }
+    .mu-cell.is-hint { animation: mu-pulse .8s ease-in-out 3; }
+    .mu-cell:disabled { cursor: default; opacity: .75; }
+    @keyframes mu-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 0 3px #fff; } }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Mücevher Eşleştir – Üçlü Eşleştirme Bulmaca Oyunu","description":"Tarayıcıda oynanan ücretsiz üçlü eşleştirme oyunu: 8x8 tahtada komşu mücevherleri değiştirerek 3 ve üzeri sıra yapın, zincirleme patlatın. 25 hamle, klavye ve dokunmatik desteği.","inLanguage":"tr","genre":["Bulmaca","Eşleştirme"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/mucevher-eslestir/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Mücevher Eşleştir ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ek hamle kazanma yoktur."}},{"@type":"Question","name":"Hangi değişimler geçerli sayılır?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca yan yana ya da alt alta duran iki mücevher yer değiştirebilir ve değişimden sonra en az üç aynı mücevher bir sıra oluşturmalıdır. Eşleşme oluşmayan değişimde mücevherler yerine döner ve hamleniz harcanmaz."}},{"@type":"Question","name":"Kaç hamlem var?","acceptedAnswer":{"@type":"Answer","text":"Her oyun yirmi beş hamleyle başlar. Hamle sayısı üst kısımdaki bilgi kutusunda görünür. Hamleler bitince oyun sona erer ve skorunuz kaydedilir."}},{"@type":"Question","name":"Puan nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Her patlayan mücevher on puandır. Zincirin her halkası çarpanı bir artırır; ayrıca dörtlü ve daha uzun sıralar üçlüden fazla her mücevher için ek puan verir."}},{"@type":"Question","name":"Hamle kalmazsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Tahtada hiçbir geçerli hamle kalmazsa tahta otomatik olarak karıştırılır ve bir mesajla bildirilir; oyun sıkışıp kalmaz."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Bir mücevhere, sonra komşusuna dokunun. Tahta 360 piksel genişliğindeki ekranlarda bile sığar. İsterseniz tam ekran düğmesiyle alanı büyütebilirsiniz."}},{"@type":"Question","name":"Sadece klavyeyle oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tab ile tahtaya girin, yön tuşlarıyla gezin, Enter ya da boşlukla seçin; seçiliyken bir yön tuşu mücevheri o yöne kaydırır. H ipucu, R yeni oyun, Esc seçimi iptal eder."}},{"@type":"Question","name":"Renkleri ayırt edemiyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Her mücevherin ayrı bir simgesi vardır: daire, üçgen, kare, baklava, yıldız ve kalp. Oyunu yalnızca simgelere bakarak da oynayabilirsiniz; ekran okuyucular mücevher adlarını okur."}},{"@type":"Question","name":"En yüksek skorum nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Mücevher Eşleştir Oyna</span>: Ücretsiz Online Üçlü Eşleştirme Oyunu</h1><p class="lead">Renkli mücevherlerden üçünü ya da daha fazlasını yan yana getirin, patlatın ve zincirleme puanları toplayın. Yirmi beş hamlede en yüksek skoru yapmaya çalışın. Fareyle tıklayın, parmağınızla dokunun ya da klavyeyle oynayın. Kurulum ve kayıt gerekmez, rekorunuz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="oyun" aria-label="Mücevher Eşleştir oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Mücevher Eşleştir</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="gm-stats" aria-label="Skor bilgileri">
+          <div><dt>Skor</dt><dd id="mu-score">0</dd></div>
+          <div><dt>Hamle</dt><dd id="mu-moves">25</dd></div>
+          <div><dt>En yüksek</dt><dd id="mu-best">0</dd></div>
+        </dl>
+
+        <div class="mu-grid" id="mu-grid" role="group" aria-label="Mücevher tahtası"></div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3>Hamleleriniz bitti</h3>
+          <p class="gm-big"><span id="sonuc-skor">0</span> puan</p>
+          <p class="gm-record" id="sonuc-rekor" hidden>Yeni en yüksek skor!</p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="mu-new">Yeni oyun</button>
+          </div>
+        </div>
+
+        <p class="gm-msg" id="mu-msg" role="status" aria-live="polite"></p>
+
+        <div class="gm-controls">
+          <button type="button" class="ba-btn" id="mu-hint" aria-keyshortcuts="H">İpucu (H)</button>
+          <button type="button" class="ba-btn" id="mu-restart" aria-keyshortcuts="R">Yeni oyun (R)</button>
+        </div>
+
+        <div class="gm-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Fare ya da dokunmatik: bir mücevhere, sonra yanındaki ya da altındaki komşusuna tıklayın; ikisi yer değiştirir. Eşleşme oluşmazsa hamle harcanmaz.</li>
+            <li>Klavye: <kbd>Tab</kbd> tahtaya girer, yön tuşları imleci taşır, <kbd>Enter</kbd> ya da <kbd>Boşluk</kbd> seçer; seçiliyken yön tuşu mücevheri o yöne kaydırır. <kbd>H</kbd> ipucu, <kbd>R</kbd> yeni oyun, <kbd>Esc</kbd> seçimi iptal eder.</li>
+            <li>Her mücevherin ayrı bir simgesi vardır; renkleri ayırt etmekte zorlananlar simgelere bakabilir.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-mucevher-eslestir-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Mücevher Eşleştir nedir?</h2>
+      <p>Mücevher Eşleştir, sekiz sütun ve sekiz satırlık bir tahtada renkli mücevherleri yer değiştirerek aynı türden üç ya da daha fazlasını yan yana veya alt alta getirmeye dayanan bir eşleştirme bulmacasıdır. Bu tür oyunlar "üçlü eşleştirme" ya da İngilizce adıyla "match-3" olarak bilinir ve mobil oyun dünyasının en çok oynanan türlerinden biridir. Kural çok kolay öğrenilir; ustalık ise hangi hamleyi ne zaman yapacağınızı, zincirleme patlamaları nasıl kurduğunuzu planlamakta yatar.</p>
+      <p>Bu sayfadaki sürümde yirmi beş hamleniz vardır. Her hamlede komşu iki mücevheri değiştirirsiniz; değişim en az bir eşleşme oluşturuyorsa hamle sayılır, oluşturmuyorsa tahta eski haline döner ve hamleniz harcanmaz. Eşleşen mücevherler tahtadan kalkar, üstteki mücevherler aşağı düşer, boşalan yerlere yenileri gelir. Yeni gelenler kendiliğinden yeni eşleşmeler yaparsa bir zincir başlar ve puanınız katlanır. Yirmi beş hamle bitince oyun sona erer ve skorunuz en yüksek skorunuzla karşılaştırılır.</p>
+      <p>Oyun tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da ödeme yapmanız gerekmez; oyunda ek hamle satışı, canlar, bekleme süresi ya da reklam izleyerek kazanılan ödül yoktur. Sayfa yüklendikten sonra bağlantınız kopsa bile oynamaya devam edebilirsiniz.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Bir mücevhere tıklayın ya da dokunun; seçildiğini sarı çerçeveden anlarsınız.</li>
+        <li>Seçtiğiniz mücevherin hemen yanındaki ya da hemen altındaki ve üstündeki komşuya tıklayın. İkisi yer değiştirir. Çapraz değişim yoktur.</li>
+        <li>Değişimden sonra aynı türden en az üç mücevher yan yana ya da alt alta gelmişse bunlar patlar ve puan kazanırsınız. Gelmemişse mücevherler eski yerine döner.</li>
+        <li>Patlayan mücevherlerin üstündekiler aşağı kayar, yukarıdan yeni mücevherler dolar. Kendiliğinden oluşan yeni eşleşmeler zincir sayılır.</li>
+        <li>Yirmi beş hamle bitince oyun sona erer. "Yeni oyun" düğmesiyle yeni bir tahtayla başlarsınız.</li>
+      </ol>
+
+      <h2>Puanlama nasıl işler?</h2>
+      <p>Her patlayan mücevher on puan değerindedir. Zincirin her halkası bir öncekinin çarpanını bir artırır: ilk eşleşme normal puan verir, kendiliğinden doğan ikinci eşleşme iki katı, üçüncüsü üç katı puan getirir. Ayrıca dört, beş ya da daha uzun bir sıra yaparsanız üçlüden fazla her mücevher için ek bonus kazanırsınız. Bu yüzden tek bir iyi hamle, birden fazla küçük hamleden çok daha değerli olabilir.</p>
+      <p>Skor yalnızca eşleşmelerden gelir. Ek hamle, süre bonusu ya da satın alınabilen güç artırıcı yoktur; iki oyuncu aynı tahtayla başlasa bile farkı yalnızca hamle seçimi yaratır. Hamle kalmayan nadir durumlarda tahta otomatik olarak karıştırılır, böylece oyun sıkışıp kalmaz.</p>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> İki dokunuşla oynanır: önce mücevher, sonra komşusu. Uzak bir mücevhere dokunursanız seçim oraya taşınır. Tahta 360 piksel genişliğindeki telefon ekranlarında bile sığar.</li>
+        <li><strong>Klavye:</strong> Tab tuşu tahtaya girer, yön tuşları imleci hareket ettirir. Enter ya da boşluk tuşu mücevheri seçer; seçiliyken bir yön tuşuna basarsanız mücevher o yöndeki komşusuyla yer değiştirir. H ipucu gösterir, R yeni oyun başlatır, Esc seçimi iptal eder.</li>
+        <li><strong>Ekran okuyucu:</strong> Her hücre satır, sütun ve mücevher adını söyler; her hamlenin sonucu bir durum satırında yazılır.</li>
+        <li><strong>Renk körlüğü:</strong> Daire, üçgen, kare, baklava, yıldız ve kalp simgeleri sayesinde oyun renge bakmadan da oynanabilir.</li>
+        <li><strong>Tam ekran:</strong> "Tam ekran" düğmesi yalnızca oyun kutusunu ekrana yayar.</li>
+      </ul>
+
+
+      <div class="ba-ad" data-slot="oyun-mucevher-eslestir-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Alttan başlamayın, üstten başlayın.</strong> Alttaki bir eşleşme üstündeki her şeyi düşürür ve rastgele yeni eşleşmeler yaratabilir; ancak bu şansa bağımlıdır. Üstteki eşleşmeler tahtayı daha az bozar ve planınızı korumanızı sağlar. Hamle sayınız azaldıkça alttan oynamanın şansını kullanın.</li>
+        <li><strong>Dört ve beşliler için fırsat kollayın.</strong> Uzun sıralar ek bonus verir. Bir türden dört mücevher aynı sırada duruyorsa ve aralarında yabancı bir mücevher varsa, onu dışarı almak çoğu zaman iki küçük eşleşmeden daha değerlidir.</li>
+        <li><strong>Zinciri planlayın.</strong> Bir eşleşme yaparken patlayan mücevherlerin üstündeki türlere bakın. Üstte aynı türden mücevherler iki sütunda bekliyorsa, patlama onları yan yana düşürür ve ücretsiz bir ikinci eşleşme verir.</li>
+        <li><strong>İpucunu öğrenme aracı olarak kullanın.</strong> İpucu düğmesi geçerli bir hamleyi gösterir, ama en iyisini göstermez. Hangi hamlelerin var olduğunu görerek tahtayı okumayı öğrenirsiniz; sonra daha iyisini kendiniz bulursunuz.</li>
+        <li><strong>Son hamlelere dikkat.</strong> Son üç hamlede tek bir büyük zincir kurmak, küçük eşleşmelerle puan toplamaktan çoğu zaman daha kazançlıdır. Tahtayı önceden okuyun ve "tek hamleyle en çok mücevher" sorusunu sorun.</li>
+        <li><strong>Acele etmeyin.</strong> Süre sınırı yoktur. Hamleler sınırlı olduğu için her seçim tartışmaya değer.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar</h2>
+      <p>En sık yapılan hata, ilk gördüğünüz eşleşmeyi hemen yapmaktır. Tahtada genellikle birden fazla geçerli hamle vardır ve aralarındaki fark büyük olabilir; bir saniye durup tüm tahtayı taramak çoğu zaman iki katı puan getirir. İkinci hata, yalnızca üçlü eşleşmeler yapmaktır. Dört ve beşli sıralar hem ek puan verir hem de tahtayı daha çok temizler. Üçüncü hata, son hamlelerde ihtiyatlı davranmaktır: hamle bittiğinde tahtada kalan fırsatın hiçbir değeri yoktur, o yüzden son hamlelerde büyük bir zincir için risk almaya değer.</p>
+      <p>Bir de "hamle harcanmaz" kuralını bilmek önemlidir. Eşleşme oluşturmayan bir değişim denemek size hiçbir şeye mal olmaz; bu yüzden şüphelendiğiniz bir hamleyi denemekten çekinmeyin. Yine de tahtayı kafanızda okuyabildiğinizde oyun çok daha tatmin edici hale gelir.</p>
+
+      <h2>Kısa tarihçe: üçlü eşleştirme oyunları</h2>
+      <p>Üçlü eşleştirme oyunlarının kökleri 1980'lerin bulmaca oyunlarına uzanır. Renkli parçaları sıralayıp patlatma fikri, düşen blokların sıralandığı oyunlarla birlikte bilgisayar bulmacalarının temel taşlarından oldu. Yer değiştirerek eşleştirme mantığı ise 2000'li yılların başında tarayıcı oyunlarında yaygınlaştı ve kısa sürede kullanıcıların en sevdiği türlerden birine dönüştü. Telefonların dokunmatik ekranları bu türe mükemmel uydu: tek parmakla, iki dokunuşla, bir dakikada oynanabilen bir oyun.</p>
+      <p>Bugün bu türün sayısız çeşidi vardır; çoğu görev, güçlendirici ve satın alma sistemleriyle büyümüştür. Bu sayfadaki sürüm ise türün çıplak halini sunar: yalnızca tahta, hamle ve skor. Amaç sizi uzun süre ekrana bağlamak değil, kısa ve temiz bir bulmaca keyfi vermektir.</p>
+
+      <h2>Zihin için faydası</h2>
+      <p>Eşleştirme oyunları görsel tarama, örüntü tanıma ve kısa vadeli planlama gerektirir. Tahtaya bakıp birkaç hamle sonrasını zihninizde canlandırmak, dikkat için hoş bir egzersizdir. Yine de oyun bir tedavi ya da sağlık aracı değildir; herhangi bir tıbbi iddia taşımaz. Uzun süre ekrana baktıysanız arada mola verin, gözlerinizi dinlendirin.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Hamleleriniz hiçbir sunucuya gönderilmez; en yüksek skorunuz yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır. Depolama kapalıysa ya da bozulmuşsa oyun hata vermeden çalışmaya devam eder, yalnızca rekoru hatırlamaz.</p>
+      <p>Sayfadaki reklam alanları oyun kutusunun dışındadır; hiçbir düğmenin yanında ya da üstünde yer almaz ve tam ekran modunda görünmez. Oyunu oynamak için reklama tıklamanız gerekmez.</p>
+
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Mücevher Eşleştir ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ek hamle kazanma yoktur.</p></details>
+      <details><summary>Hangi değişimler geçerli sayılır?</summary><p>Yalnızca yan yana ya da alt alta duran iki mücevher yer değiştirebilir ve değişimden sonra en az üç aynı mücevher bir sıra oluşturmalıdır. Eşleşme oluşmayan değişimde mücevherler yerine döner ve hamleniz harcanmaz.</p></details>
+      <details><summary>Kaç hamlem var?</summary><p>Her oyun yirmi beş hamleyle başlar. Hamle sayısı üst kısımdaki bilgi kutusunda görünür. Hamleler bitince oyun sona erer ve skorunuz kaydedilir.</p></details>
+      <details><summary>Puan nasıl hesaplanır?</summary><p>Her patlayan mücevher on puandır. Zincirin her halkası çarpanı bir artırır; ayrıca dörtlü ve daha uzun sıralar üçlüden fazla her mücevher için ek puan verir.</p></details>
+      <details><summary>Hamle kalmazsa ne olur?</summary><p>Tahtada hiçbir geçerli hamle kalmazsa tahta otomatik olarak karıştırılır ve bir mesajla bildirilir; oyun sıkışıp kalmaz.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Bir mücevhere, sonra komşusuna dokunun. Tahta 360 piksel genişliğindeki ekranlarda bile sığar. İsterseniz tam ekran düğmesiyle alanı büyütebilirsiniz.</p></details>
+      <details><summary>Sadece klavyeyle oynanabilir mi?</summary><p>Evet. Tab ile tahtaya girin, yön tuşlarıyla gezin, Enter ya da boşlukla seçin; seçiliyken bir yön tuşu mücevheri o yöne kaydırır. H ipucu, R yeni oyun, Esc seçimi iptal eder.</p></details>
+      <details><summary>Renkleri ayırt edemiyorum, ne yapmalıyım?</summary><p>Her mücevherin ayrı bir simgesi vardır: daire, üçgen, kare, baklava, yıldız ve kalp. Oyunu yalnızca simgelere bakarak da oynayabilirsiniz; ekran okuyucular mücevher adlarını okur.</p></details>
+      <details><summary>En yüksek skorum nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız rekor sıfırlanır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../blok-bulmaca/">Blok Bulmaca</a></li>
+        <li><a href="../su-siralama/">Su Sıralama</a></li>
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-mucevher-eslestir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
