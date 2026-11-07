@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Işık Söndür Oyna – Ücretsiz Online 5x5 Işık Bulmacası (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online ışık söndürme bulmacası: 5x5 tahtada bir kareye basınca komşuları da değişir, tüm ışıkları söndürün. Sınırsız seviye, yıldız puanı, klavye ve dokunmatik desteği.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/isik-sondur/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .gm-help { display: none; }
+    .gm-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gm-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .gm-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .gm-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .gm-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .gm-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .gm-controls .ba-btn { flex: 1 1 130px; min-height: 44px; padding: 8px 16px; }
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .gm-big { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; }
+    .gm-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+    .gm-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .gm-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .gm-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .game-box * { animation: none !important; transition: none !important; } }
+
+    .is-board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; width: min(100%, 360px); margin: 14px auto 0; padding: 8px; background: #15171b; border: 1px solid #3d4046; border-radius: 10px; }
+    .is-cell { aspect-ratio: 1 / 1; min-width: 0; padding: 0; display: grid; place-items: center; font-size: 1.6rem; line-height: 1; color: transparent; background: #2a2d33; border: 2px solid #3d4046; border-radius: 8px; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: background .12s ease, box-shadow .12s ease; }
+    .is-cell:hover:not(:disabled) { border-color: #6b6f77; }
+    .is-cell:focus-visible { outline: 3px solid #ffd75e; outline-offset: 2px; }
+    .is-cell.is-on { background: #ffd75e; border-color: #fff2b8; color: #7a5200; box-shadow: 0 0 14px rgba(255, 215, 94, .55); }
+    .is-cell:disabled { cursor: default; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Işık Söndür – 5x5 Işık Bulmacası","description":"Tarayıcıda oynanan ücretsiz ışık söndürme bulmacası: 5x5 ızgarada bir kareye basınca kendisi ve komşuları yön değiştirir; tüm ışıkları söndürün. Sınırsız seviye, yıldız puanı, klavye ve dokunmatik desteği.","inLanguage":"tr","genre":["Bulmaca","Mantık"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/isik-sondur/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Işık Söndür ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ilerleme yoktur."}},{"@type":"Question","name":"Bir kareye basınca neler değişir?","acceptedAnswer":{"@type":"Answer","text":"Bastığınız kare ile onun hemen üstündeki, altındaki, solundaki ve sağındaki kareler yön değiştirir: yanan sönük olur, sönük yanar. Köşe ve kenar karelerinin komşusu daha az olduğu için daha az kareyi etkiler; çapraz komşular etkilenmez."}},{"@type":"Question","name":"Seviye ne zaman biter?","acceptedAnswer":{"@type":"Answer","text":"Tahtadaki bütün ışıklar söndüğünde seviye biter. Süre sınırı ve hamle sınırı yoktur. Hamle sayınıza göre bir ile üç arasında yıldız gösterilir, ama sonraki seviyeye geçmek için yıldız gerekmez."}},{"@type":"Question","name":"Yıldızlar nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Her seviyenin bir hedef hamle sayısı vardır. Bu sayıya eşit ya da daha az hamleyle bitirirseniz üç yıldız, hedefin üç fazlasına kadar iki yıldız, daha fazlasında bir yıldız alırsınız."}},{"@type":"Question","name":"Her seviye çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Seviyeler, söndürülmüş tahtaya rastgele hamleler uygulanarak üretilir; bu hamleleri tersine çevirmek her zaman bir çözümdür. Takıldığınızda geri alabilir ya da seviyeyi baştan başlatabilirsiniz."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Bir kareye dokunmanız yeterlidir. Kareler 360 piksel genişliğindeki ekranlarda bile rahat dokunulacak boyutta kalır. Sayfa yatay kaydırma gerektirmez."}},{"@type":"Question","name":"Sadece klavyeyle oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tab ya da yön tuşlarıyla kareler arasında gezer, Enter ya da boşluk tuşuyla basarsınız. U son hamleyi geri alır, R seviyeyi baştan başlatır. Her hamleden sonra yanan ışık sayısı ekran okuyucuların okuyabileceği bir durum satırında yazılır."}},{"@type":"Question","name":"İlerlemem nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız ilerleme ve rekor sıfırlanır."}},{"@type":"Question","name":"Aynı kareye iki kez basarsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Etkiler birbirini götürür ve tahta basmadan önceki hâline döner. Bu yüzden iyi bir çözümde her kareye en fazla bir kez basılır; çift basış yalnızca hamle sayınızı artırır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Işık Söndür Oyna</span>: Ücretsiz Online 5x5 Işık Bulmacası</h1><p class="lead">Bir kareye bastığınızda o kare ve dört komşusu yön değiştirir; amaç tahtadaki bütün ışıkları söndürmek. Kural iki cümle, ama çözmek gerçekten düşündürür. Seviyeler giderek zorlaşır, hamle başına geri alma ve yıldız puanı vardır. Fareyle tıklayın, dokunun ya da klavyeyle oynayın. Kurulum ve kayıt gerekmez, ilerlemeniz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="oyun" aria-label="Işık Söndür oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Işık Söndür · 5×5</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="gm-stats" aria-label="Skor bilgileri">
+          <div><dt>Seviye</dt><dd id="is-level">1</dd></div>
+          <div><dt>Hamle</dt><dd id="is-moves">0</dd></div>
+          <div><dt>Yanan</dt><dd id="is-lit">0</dd></div>
+          <div><dt>En yüksek</dt><dd id="is-best">0</dd></div>
+        </dl>
+
+        <div class="is-board" id="is-board" role="group" aria-label="Işık tahtası, 5 satır 5 sütun"></div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3 id="sonuc-baslik">Tüm ışıklar söndü</h3>
+          <p class="gm-big">Seviye <span id="sonuc-seviye">1</span></p>
+          <p class="gm-record" id="sonuc-rekor" hidden>Yeni en yüksek seviye!</p>
+          <p><b id="sonuc-hamle">0</b> hamlede çözdünüz. Yıldız: <b id="sonuc-yildiz">★☆☆</b></p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="is-next">Sonraki seviye</button>
+            <button type="button" class="ba-btn" id="is-again">Bu seviyeyi tekrar oyna</button>
+          </div>
+        </div>
+
+        <p class="gm-msg" id="is-msg" role="status" aria-live="polite"></p>
+
+        <div class="gm-controls">
+          <button type="button" class="ba-btn" id="is-undo" aria-keyshortcuts="U">Geri al (U)</button>
+          <button type="button" class="ba-btn" id="is-restart" aria-keyshortcuts="R">Baştan başla (R)</button>
+          <button type="button" class="ba-btn" id="is-reset">İlk seviyeye dön</button>
+        </div>
+
+        <div class="gm-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Fare ya da dokunmatik: bir kareye tıklayın; o kare ile üstündeki, altındaki, solundaki ve sağındaki kareler yön değiştirir.</li>
+            <li>Klavye: <kbd>Tab</kbd> ya da yön tuşları kareler arasında gezer, <kbd>Enter</kbd> ya da boşluk tuşu basar, <kbd>U</kbd> geri alır, <kbd>R</kbd> seviyeyi baştan başlatır.</li>
+            <li>Yanan ışıklar sarı zeminde dolu daire simgesiyle gösterilir; renge bakmadan da ayırt edebilirsiniz.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-isik-sondur-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Işık Söndür nedir?</h2>
+      <p>Işık Söndür, 5 satır ve 5 sütundan oluşan bir ızgarada oynanan klasik bir mantık bulmacasıdır. Her kare ya yanıyordur ya da sönüktür. Bir kareye bastığınızda yalnızca o kare değil, onun üstündeki, altındaki, solundaki ve sağındaki komşu kareler de yön değiştirir: yanan sönük olur, sönük yanar. Amacınız tahtadaki bütün ışıkları söndürmektir. Kural iki cümleyle anlatılabilir, ama bir tahtayı az hamleyle çözmek şaşırtıcı biçimde düşündürücüdür; çünkü her basış başka karelerin durumunu da bozar. Süre sınırı yoktur, puan kaybı yoktur ve her hamleyi geri alabilirsiniz.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da reklam izlemeniz gerekmez; oyunda para, bahis ya da ödül sistemi yoktur. Sayfa bir kez yüklendikten sonra bağlantı kopsa bile oyun çalışır. Seviyeniz ve en yüksek seviyeniz yalnızca bu cihazdaki tarayıcının yerel depolamasında saklanır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Tahtaya bakın: sarı ve dolu daireli kareler yanan ışıklardır, koyu kareler sönüktür. Üstteki “Yanan” kutusu kaç ışığın açık olduğunu gösterir.</li>
+        <li>Bir kareye tıklayın ya da dokunun. Seçtiğiniz kare ve onun dört komşusu (üst, alt, sol, sağ) yön değiştirir. Kenar ve köşe karelerinin komşusu daha azdır, bu yüzden daha az kareyi etkiler.</li>
+        <li>Hamlelerinizi, yanan ışık sayısını azaltacak biçimde planlayın. Bazen bir ışığı söndürmek için önce başka bir kareyi yakmak gerekir.</li>
+        <li>Bütün ışıklar söndüğünde seviye biter ve hamle sayınıza göre bir ile üç arasında yıldız alırsınız.</li>
+        <li>Takıldığınızda “Geri al” ile son hamleyi iptal edebilir ya da “Baştan başla” ile aynı seviyeyi yeniden deneyebilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> Kareye tek tıklama ya da dokunma yeter. Kareler 360 piksel genişliğindeki küçük ekranlarda bile rahat dokunulacak boyutta kalır.</li>
+        <li><strong>Klavye:</strong> <kbd>Tab</kbd> ya da yön tuşları kareler arasında gezdirir. <kbd>Enter</kbd> veya boşluk tuşu basar. <kbd>U</kbd> son hamleyi geri alır, <kbd>R</kbd> seviyeyi baştan başlatır.</li>
+        <li><strong>Ekran okuyucu:</strong> Her karenin etiketi satır ve sütun numarasını ve ışığın yanıp yanmadığını söyler. Her hamleden sonra yanan ışık sayısı bir durum satırında okunur.</li>
+        <li><strong>Renk bağımlılığı yok:</strong> Yanan ışık yalnızca sarı renkle değil, dolu daire simgesiyle de gösterilir.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu ekrana yayar.</li>
+      </ul>
+
+      <h2>Seviyeler ve yıldız puanı</h2>
+      <p>Her seviye, söndürülmüş bir tahtadan başlanıp belirli sayıda rastgele kareye basılarak üretilir. Bu yöntem iki sonuç doğurur: seviye her zaman çözülebilirdir ve seviyenin “hedef hamle sayısı” bellidir. Birinci seviyede hedef 3 hamledir; her seviyede bir artar ve 14 hamlede durur. Hedef, bir çözümün var olduğunu garanti eden sayıdır; çoğu zaman daha kısa bir çözüm de bulunabilir. Aynı kareye iki kez basmak etkisiz olduğundan, iyi bir çözümde her kareye en fazla bir kez basılır.</p>
+      <p>Hamle sayınız hedefe eşit ya da altındaysa üç yıldız, hedefin üç fazlasına kadar iki yıldız, daha fazlasında bir yıldız alırsınız. Yıldızlar yalnızca bilgi içindir; seviye atlamak için üç yıldız gerekmez. Seviyeler tohumludur: aynı numaralı seviye her açılışta aynı dizilimle gelir. Seviye sayısında üst sınır yoktur, ancak zorluk 12. seviyeden sonra sabit kalır. “İlk seviyeye dön” düğmesi güncel seviyenizi sıfırlar, rekorunuzu silmez.</p>
+
+
+      <div class="ba-ad" data-slot="oyun-isik-sondur-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Sırayı önemsemeyin.</strong> Bu oyunda hamlelerin sırası sonucu değiştirmez; yalnızca hangi karelere kaç kez bastığınız önemlidir. İstediğiniz sırayla basabilirsiniz.</li>
+        <li><strong>İki kez basmak iptaldir.</strong> Aynı kareye çift sayıda basarsanız tahta ilk hâline döner. Yani her kareye ya bir kez basarsınız ya hiç basmazsınız.</li>
+        <li><strong>Satır satır ilerleyin.</strong> Bilinen bir yöntem, üst satırdan başlamaktır: bir satırdaki her yanan ışığı, onun hemen altındaki kareye basarak söndürürsünüz. Bu şekilde üstteki satırlar teker teker temizlenir ve sorun alt satırlara taşınır.</li>
+        <li><strong>Son satırı okuyun.</strong> Üstteki dört satırı temizlediğinizde son satırda kalan ışıkların deseni, ilk satırda hangi karelere basmanız gerektiğini söyler. Bu, oyunun bilinen bir kestirmesidir; desen tanımayı öğrenmek zaman alır ama keyiflidir.</li>
+        <li><strong>Geri almayı deneme için kullanın.</strong> Bir hamlenin etkisini görmek için basıp geri alabilirsiniz. Hamle sayınız geri aldıkça düşer, yıldız puanınızı bozmaz.</li>
+        <li><strong>Küçük desenleri tanıyın.</strong> Köşede tek yanan ışık, ortada artı biçimli beş ışık gibi desenler tek hamleyle çözülür. Desenleri ezberlerseniz büyük tahtalar daha kolay görünür.</li>
+      </ul>
+
+      <h2>Kısa tarihçe: ışık bulmacaları</h2>
+      <p>Işık söndürme türü, 1990'lı yıllarda elektronik oyuncaklarla yaygınlaştı. Piyasaya çıkan el oyuncaklarında 5×5'lik bir düğme ızgarası vardı ve her düğme kendi ışığını ve komşularınınkini değiştiriyordu. Oyunun matematiği de ilginçtir: bir tahtadaki ışık durumu, ikili sayı sistemi ve doğrusal cebirle (iki elemanlı bir cisim üzerinde) incelenebilir. Her hamle bir vektör toplamına karşılık gelir ve aynı kareye iki kez basmanın etkisiz olması, işlemlerin “iki ile toplama” olmasından kaynaklanır. Bu matematiksel yapı sayesinde bazı 5×5 tahtaların çözümü, hamle sayısı en küçük olacak biçimde hesaplanabilir. Bu sayfadaki üretici ise bunu tersten yapar: çözümü bilinen rastgele hamlelerle tahtayı karıştırır, böylece seviye her zaman çözülebilir olur.</p>
+
+      <h2>Zihin için faydası</h2>
+      <p>Işık Söndür, neden-sonuç ilişkilerini önceden kurmayı gerektirir. Bir hamlenin beş kareyi birden etkilemesi, “şunu yaparsam bunlar da değişir” diye zincirleme düşünmeyi öğretir. Yine de bu oyun tıbbi bir araç değildir ve bir sağlık iddiası taşımaz; yalnızca eğlenceli bir bulmacadır. Uzun süre ekrana bakıyorsanız arada mola vermeyi unutmayın.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Hamleleriniz ve seviyeniz hiçbir sunucuya gönderilmez; en yüksek seviye ve kaldığınız yer yalnızca tarayıcının yerel depolamasında (localStorage) tutulur. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız ilerlemeniz sıfırlanır; depolama kapalıysa oyun yine çalışır, yalnızca kayıt tutulmaz. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez. Oyunda ses yoktur.</p>
+
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Işık Söndür ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ilerleme yoktur.</p></details>
+      <details><summary>Bir kareye basınca neler değişir?</summary><p>Bastığınız kare ile onun hemen üstündeki, altındaki, solundaki ve sağındaki kareler yön değiştirir: yanan sönük olur, sönük yanar. Köşe ve kenar karelerinin komşusu daha az olduğu için daha az kareyi etkiler; çapraz komşular etkilenmez.</p></details>
+      <details><summary>Seviye ne zaman biter?</summary><p>Tahtadaki bütün ışıklar söndüğünde seviye biter. Süre sınırı ve hamle sınırı yoktur. Hamle sayınıza göre bir ile üç arasında yıldız gösterilir, ama sonraki seviyeye geçmek için yıldız gerekmez.</p></details>
+      <details><summary>Yıldızlar nasıl hesaplanıyor?</summary><p>Her seviyenin bir hedef hamle sayısı vardır. Bu sayıya eşit ya da daha az hamleyle bitirirseniz üç yıldız, hedefin üç fazlasına kadar iki yıldız, daha fazlasında bir yıldız alırsınız.</p></details>
+      <details><summary>Her seviye çözülebilir mi?</summary><p>Evet. Seviyeler, söndürülmüş tahtaya rastgele hamleler uygulanarak üretilir; bu hamleleri tersine çevirmek her zaman bir çözümdür. Takıldığınızda geri alabilir ya da seviyeyi baştan başlatabilirsiniz.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Bir kareye dokunmanız yeterlidir. Kareler 360 piksel genişliğindeki ekranlarda bile rahat dokunulacak boyutta kalır. Sayfa yatay kaydırma gerektirmez.</p></details>
+      <details><summary>Sadece klavyeyle oynanabilir mi?</summary><p>Evet. Tab ya da yön tuşlarıyla kareler arasında gezer, Enter ya da boşluk tuşuyla basarsınız. U son hamleyi geri alır, R seviyeyi baştan başlatır. Her hamleden sonra yanan ışık sayısı ekran okuyucuların okuyabileceği bir durum satırında yazılır.</p></details>
+      <details><summary>İlerlemem nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız ilerleme ve rekor sıfırlanır.</p></details>
+      <details><summary>Aynı kareye iki kez basarsam ne olur?</summary><p>Etkiler birbirini götürür ve tahta basmadan önceki hâline döner. Bu yüzden iyi bir çözümde her kareye en fazla bir kez basılır; çift basış yalnızca hamle sayınızı artırır.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../mayin-tarlasi/">Mayın Tarlası</a></li>
+        <li><a href="../su-siralama/">Su Sıralama</a></li>
+        <li><a href="../nonogram/">Nonogram</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-isik-sondur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

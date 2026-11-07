@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Su Sıralama Oyna – Ücretsiz Online Renk Sıralama Oyunu (kurulumsuz)</title>
+  <meta name="description" content="Ücretsiz online su sıralama oyunu: renkli sıvıları tüplere dökün, her tüpte tek renk kalsın. Sınırsız seviye, geri alma, klavye ve dokunmatik desteği. Kayıt ve kurulum yok.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/oyunlar/su-siralama/">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .game-box { position: relative; padding: 16px; overflow-x: clip; }
+    @media (max-width: 420px) { .game-box { padding: 12px 6px; } }
+    @media (min-width: 640px) { .game-box { padding: 24px; } }
+    .game-box + .ba-ad { margin-top: 64px; }
+    .gb-wrap { max-width: 640px; margin: 0 auto; }
+    .gb-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gb-title { margin: 0; font-family: var(--ba-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ba-text-muted); }
+    .gb-top .ba-icon-btn { min-height: 40px; font-size: .85rem; padding: 0 12px; }
+    .game-box:fullscreen { background: var(--ba-bg); overflow: auto; padding: 16px; border: 0; border-radius: 0; }
+    .game-box:fullscreen .gm-help { display: none; }
+    .gm-stats { display: flex; gap: 8px; margin: 0 auto 12px; width: min(100%, 440px); }
+    .gm-stats div { flex: 1 1 0; min-width: 0; padding: 6px 8px; text-align: center; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); }
+    .gm-stats dt { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ba-text-2); }
+    .gm-stats dd { margin: 0; font-family: var(--ba-mono); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--ba-text); }
+    .gm-msg { width: min(100%, 440px); min-height: 2.9em; margin: 10px auto 0; font-size: .9rem; color: var(--ba-text-2); overflow-wrap: anywhere; }
+    .gm-controls { display: flex; flex-wrap: wrap; gap: 10px; width: min(100%, 440px); margin: 6px auto 0; }
+    .gm-controls .ba-btn { flex: 1 1 130px; min-height: 44px; padding: 8px 16px; }
+    #sonuc { width: min(100%, 440px); margin: 14px auto 0; background: var(--ba-surface-2); border-color: var(--ba-primary); overflow-wrap: anywhere; }
+    #sonuc h3 { color: var(--ba-text); font-size: 1.25rem; }
+    #sonuc h3::before { content: none; display: none; }
+    #sonuc p + p { margin-top: 6px; }
+    .gm-big { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--ba-primary) !important; }
+    .gm-record { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--ba-success-soft); color: var(--ba-success) !important; font-weight: 700; }
+    .gm-help { width: min(100%, 440px); margin: 20px auto 0; padding: 12px 16px; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); font-size: .88rem; color: var(--ba-text-2); }
+    .gm-help h3 { margin: 0 0 6px; font-size: .95rem; color: var(--ba-text); }
+    .gm-help ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+    .game-box kbd, .ba-content kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; text-align: center; font-family: var(--ba-mono); font-size: .8rem; border: 1px solid var(--ba-border-hover); border-bottom-width: 2px; border-radius: 4px; background: var(--ba-surface); color: var(--ba-text); }
+    .ba-content { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { .game-box * { animation: none !important; transition: none !important; } }
+
+    .su-tubes { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 14px 10px; width: min(100%, 440px); margin: 22px auto 0; min-height: 160px; }
+    .su-tube { display: flex; flex-direction: column-reverse; justify-content: flex-start; gap: 2px; width: 44px; height: 148px; padding: 4px; background: #1f2226; border: 3px solid #5a5f68; border-top-width: 0; border-radius: 0 0 22px 22px; cursor: pointer; transition: transform .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .su-tube:hover:not(:disabled) { border-color: #8b919b; }
+    .su-tube:focus-visible { outline: 3px solid #ffd75e; outline-offset: 3px; }
+    .su-tube.is-sel { transform: translateY(-14px); border-color: #ffd75e; box-shadow: 0 0 0 2px #ffd75e; }
+    .su-tube.is-done { border-color: #58c46a; }
+    .su-tube:disabled { cursor: default; }
+    .su-seg { display: grid; place-items: center; flex: none; height: 32px; border-radius: 4px; font-size: 15px; line-height: 1; color: rgba(0, 0, 0, .62); font-weight: 700; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .18), inset 0 2px 0 rgba(255, 255, 255, .3); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"VideoGame","name":"Su Sıralama – Renk Sıralama Bulmaca Oyunu","description":"Tarayıcıda oynanan ücretsiz renk sıralama bulmacası: renkli sıvıları tüpler arasında dökerek her tüpü tek renge getirin. Sınırsız seviye, geri alma, klavye ve dokunmatik desteği.","inLanguage":"tr","genre":["Bulmaca","Mantık"],"applicationCategory":"Game","operatingSystem":"Web","playMode":"SinglePlayer","gamePlatform":"Web tarayıcısı","url":"https://araclar.bilisimajans.com/oyunlar/su-siralama/","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"publisher":{"@type":"Organization","name":"Bilişim Ajans"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Su Sıralama ücretsiz mi, kayıt gerekiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ek tüp kazanma yoktur."}},{"@type":"Question","name":"Hangi durumda sıvıyı dökebilirim?","acceptedAnswer":{"@type":"Answer","text":"Hedef tüp boşsa ya da hedef tüpün en üstündeki renk, döktüğünüz tüpün en üstündeki renkle aynıysa ve hedefte yer varsa dökebilirsiniz. Üstteki aynı renkli katmanların hepsi birlikte akar; hedefte yer yetmezse sığdığı kadarı geçer."}},{"@type":"Question","name":"Seviye ne zaman tamamlanır?","acceptedAnswer":{"@type":"Answer","text":"Her tüp ya tamamen boş ya da dört katmanı da aynı renkte olduğunda seviye biter. Süre sınırı ve hamle sınırı yoktur; hamle sayısı yalnızca bilgi olarak gösterilir."}},{"@type":"Question","name":"Yanlış hamle yaparsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Geri al düğmesine ya da U tuşuna basarak son hamleleri tek tek geri alabilirsiniz. Geri almanın sınırı yoktur, ancak seviyeyi baştan başlatırsanız geri alma geçmişi de sıfırlanır."}},{"@type":"Question","name":"Telefonda nasıl oynanır?","acceptedAnswer":{"@type":"Answer","text":"Önce dökeceğiniz tüpe, sonra hedef tüpe dokunun. Seçili tüp yukarı kalkar. Tüpler 360 piksel genişliğindeki ekranlarda bile rahat dokunulacak boyutta kalır ve sığmayanlar alt satıra geçer."}},{"@type":"Question","name":"Sadece klavyeyle oynanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Tab ya da sol ve sağ yön tuşlarıyla tüpler arasında gezer, Enter ile seçersiniz; 1 ile 9 arasındaki sayı tuşları doğrudan tüp seçer. U geri alır, R seviyeyi baştan başlatır, Esc seçimi iptal eder."}},{"@type":"Question","name":"Renkleri ayırt edemiyorum, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Her rengin ayrı bir simgesi vardır: daire, üçgen, kare, baklava, yıldız, artı, kalp, çiçek ve hilal. Oyunu renklere bakmadan yalnızca simgelerle de oynayabilirsiniz. Ekran okuyucular renk adlarını okur."}},{"@type":"Question","name":"İlerlemem nerede saklanıyor?","acceptedAnswer":{"@type":"Answer","text":"Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız ilerleme ve rekor sıfırlanır."}},{"@type":"Question","name":"Her seviye çözülebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Seviyeler rastgele dağıtılır ve iki boş tüp bulunduğu için hemen hemen hepsi çözülebilirdir. Çok zor görünen bir dizilimde geri alarak başka bir yol deneyin ya da seviyeyi baştan başlatın."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>    <section class="ba-hero ba-hero-tool"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li>Oyunlar</li></ol><h1><span class="ba-grad">Su Sıralama Oyna</span>: Ücretsiz Online Renk Sıralama Oyunu</h1><p class="lead">Karışık renkli sıvıları tüpler arasında dökerek her tüpte tek renk bırakın. Kural basit, seviyeler giderek zorlaşır; süre baskısı yok, istediğiniz kadar düşünebilir ve hamleleri geri alabilirsiniz. Fareyle tıklayın, parmağınızla dokunun ya da klavyeyle oynayın. Kurulum ve kayıt gerekmez, ilerlemeniz yalnızca bu cihazda kalır.</p><ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li><li>Veri cihazınızdan çıkmaz</li></ul></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="ba-tool game-box" id="oyun" data-phase="oyun" aria-label="Su Sıralama oyun alanı">
+      <div class="gb-wrap">
+        <div class="gb-top"><p class="gb-title">Su Sıralama</p><div class="gb-btns"><button type="button" class="ba-icon-btn" id="tam-ekran" aria-pressed="false" hidden>Tam ekran</button></div></div>
+        <noscript><p class="ba-error is-active">Bu oyun JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+
+        <dl class="gm-stats" aria-label="Skor bilgileri">
+          <div><dt>Seviye</dt><dd id="su-level">1</dd></div>
+          <div><dt>Hamle</dt><dd id="su-moves">0</dd></div>
+          <div><dt>En yüksek</dt><dd id="su-best">0</dd></div>
+        </dl>
+
+        <div class="su-tubes" id="su-tubes" role="group" aria-label="Tüpler"></div>
+
+        <div class="ba-result" id="sonuc" hidden>
+          <h3 id="sonuc-baslik">Seviye tamamlandı</h3>
+          <p class="gm-big">Seviye <span id="sonuc-seviye">1</span></p>
+          <p class="gm-record" id="sonuc-rekor" hidden>Yeni en yüksek seviye!</p>
+          <p><b id="sonuc-hamle">0</b> hamlede çözdünüz.</p>
+          <div class="ba-actions">
+            <button type="button" class="ba-btn ba-btn-primary" id="su-next">Sonraki seviye</button>
+            <button type="button" class="ba-btn" id="su-again">Bu seviyeyi tekrar oyna</button>
+          </div>
+        </div>
+
+        <p class="gm-msg" id="su-msg" role="status" aria-live="polite"></p>
+
+        <div class="gm-controls">
+          <button type="button" class="ba-btn" id="su-undo" aria-keyshortcuts="U">Geri al (U)</button>
+          <button type="button" class="ba-btn" id="su-restart" aria-keyshortcuts="R">Baştan başla (R)</button>
+          <button type="button" class="ba-btn" id="su-reset">İlk seviyeye dön</button>
+        </div>
+
+        <div class="gm-help">
+          <h3>Kontroller</h3>
+          <ul>
+            <li>Fare ya da dokunmatik: önce dökeceğiniz tüpe, sonra hedef tüpe tıklayın. Seçili tüp yukarı kalkar; aynı tüpe tekrar tıklarsanız seçim iptal olur.</li>
+            <li>Klavye: <kbd>Tab</kbd> ya da <kbd>←</kbd> <kbd>→</kbd> tüpler arasında gezer, <kbd>Enter</kbd> seçer, <kbd>1</kbd>–<kbd>9</kbd> doğrudan tüp seçer, <kbd>Esc</kbd> iptal eder, <kbd>U</kbd> geri alır, <kbd>R</kbd> seviyeyi baştan başlatır.</li>
+            <li>Her rengin ayrı bir simgesi vardır; renkleri ayırt etmekte zorlananlar simgelere bakabilir.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-su-siralama-a" aria-label="Reklam"></div>
+
+    <section class="ba-content">
+      <h2>Su Sıralama nedir?</h2>
+      <p>Su Sıralama, renkli sıvılarla dolu tüpleri düzenlediğiniz sakin bir mantık oyunudur. Her seviyede birkaç tüp vardır ve tüplerin içinde dört katmanlık karışık renkler bulunur. Amacınız, hiçbir tüpte iki farklı renk kalmayacak biçimde sıvıları bir tüpten ötekine dökmektir. Seviye tamamlandığında her tüp ya tamamen boştur ya da tek renkle tepeye kadar doludur. Süre sayacı, can ya da puan kaybı yoktur; yalnızca sizin planınız ve sabrınız belirleyicidir. Bu yüzden oyun hem birkaç dakikalık molalar hem de uzun bir zihin egzersizi için uygundur.</p>
+      <p>Bu sayfadaki sürüm tamamen tarayıcınızda çalışır. Uygulama indirmeniz, hesap açmanız ya da reklam izleyerek ek tüp kazanmanız gerekmez; oyunda para, bahis ya da ödül sistemi yoktur. Sayfa bir kez yüklendikten sonra bağlantı kopsa bile oyun çalışmaya devam eder. Seviye ilerlemeniz ve en yüksek seviyeniz yalnızca bu cihazdaki tarayıcının yerel depolamasında saklanır.</p>
+
+      <h2>Nasıl oynanır?</h2>
+      <ol class="ba-steps">
+        <li>Dökmek istediğiniz tüpe tıklayın ya da dokunun. Tüp yukarı kalkarak seçildiğini gösterir.</li>
+        <li>Ardından sıvıyı alacak tüpe tıklayın. Döküm yalnızca iki durumda olur: hedef tüp boşsa ya da hedef tüpün en üstündeki renk, döktüğünüz rengin aynısıysa.</li>
+        <li>Hedefte yeterli yer varsa üstteki aynı renkli bütün katmanlar birlikte akar. Yer yetmiyorsa sığdığı kadarı geçer, kalanı kaynak tüpte durur.</li>
+        <li>Bir tüp dört katmanla tek renge dolduğunda yeşil çerçeveyle tamamlandığını gösterir.</li>
+        <li>Tüm tüpler tek renkli ya da boş olduğunda seviye biter. “Sonraki seviye” düğmesiyle devam edersiniz. Takıldığınızda “Geri al” ile son hamleyi iptal edebilir ya da “Baştan başla” ile seviyeyi sıfırlayabilirsiniz.</li>
+      </ol>
+
+      <h2>Kontroller: fare, dokunmatik ve klavye</h2>
+      <ul>
+        <li><strong>Fare ve dokunmatik ekran:</strong> İki dokunuşla oynanır: kaynak tüp, sonra hedef tüp. Tüpler 360 piksel genişliğindeki küçük telefon ekranlarında bile rahat dokunulacak boyutta kalır; sığmayan tüpler alt satıra geçer.</li>
+        <li><strong>Klavye:</strong> <kbd>Tab</kbd> ya da yön tuşları tüpler arasında gezdirir, <kbd>Enter</kbd> ya da boşluk tuşu seçer. <kbd>1</kbd> ile <kbd>9</kbd> arasındaki sayı tuşları ilk dokuz tüpü doğrudan seçer. <kbd>U</kbd> geri alır, <kbd>R</kbd> seviyeyi baştan başlatır, <kbd>Esc</kbd> seçimi iptal eder.</li>
+        <li><strong>Ekran okuyucu:</strong> Her tüp, içindeki renkleri alttan üste sayan bir etikete sahiptir. Her hamleden sonra sonuç, ekran okuyucuların okuyabileceği bir durum satırında yazılır.</li>
+        <li><strong>Renk körlüğü:</strong> Her renk yalnızca renkle değil, ayrıca bir simgeyle de gösterilir. Daire, üçgen, kare, baklava, yıldız, artı, kalp, çiçek ve hilal simgeleri renkleri birbirinden ayırır.</li>
+        <li><strong>Tam ekran:</strong> “Tam ekran” düğmesi yalnızca oyun kutusunu ekrana yayar ve dikkat dağıtan her şeyi gizler.</li>
+      </ul>
+
+      <h2>Seviyeler nasıl ilerler?</h2>
+      <p>İlk seviyede üç renk ve iki boş tüp vardır; böylece kuralı rahatça öğrenirsiniz. Her iki seviyede bir renk sayısı artar ve en fazla dokuz renge çıkar. Boş tüp sayısı her zaman ikidir, bu yüzden ilerledikçe manevra alanınız göreli olarak daralır. Seviyeler tohumlu bir üreticiyle oluşturulur: aynı numaralı seviye her açılışta aynı dizilimle gelir. Bu sayede bir seviyeyi arkadaşınızla karşılaştırabilir, takıldığınız dizilimi tekrar tekrar deneyebilirsiniz. Üretici, hiçbir tüpün baştan tamamlanmış olmamasını sağlar. Rastgele dağılım pratikte neredeyse her zaman çözülebilir; yine de bir seviye gözünüze imkânsız görünürse “Baştan başla” ile temiz bir deneme yapın.</p>
+      <p>Seviye sayısında üst sınır yoktur. En yüksek tamamladığınız seviye “En yüksek” kutusunda görünür ve tarayıcıyı kapatıp açsanız bile kaldığınız seviyeden devam edersiniz. “İlk seviyeye dön” düğmesi güncel seviyenizi sıfırlar ama rekorunuzu silmez.</p>
+
+
+      <div class="ba-ad" data-slot="oyun-su-siralama-b" aria-label="Reklam"></div>
+
+      <h2>Strateji ipuçları</h2>
+      <ul>
+        <li><strong>Boş tüpü gereksiz harcamayın.</strong> Boş tüp en değerli kaynaktır. Başka bir çözüm varsa sıvıyı önce aynı renkli bir tüpün üstüne dökün; boş tüpü yalnızca gerçekten yer açmak için kullanın.</li>
+        <li><strong>Altta saklanan renkleri gün yüzüne çıkarın.</strong> Bir rengin en alttaki katmanı başka renklerin altında kalmışsa, onu tamamlamanın yolu üstündekileri uygun yerlere taşımaktır. Önce hangi rengin altta kaldığına bakın.</li>
+        <li><strong>Aynı renk üstte buluşsun.</strong> Aynı rengin üstte göründüğü iki tüp varsa birini ötekine dökmek hem yer açar hem de alttaki katmanları ortaya çıkarır.</li>
+        <li><strong>İleriye bakın.</strong> Dökmeden önce bir adım sonrasını düşünün: bu hamle hangi tüpü tek renge yaklaştırıyor, hangi alt katmanı kapatıyor? Geri alma düğmesi denemeler için vardır; çekinmeden kullanın.</li>
+        <li><strong>Tamamlanmış tüplere dokunmayın.</strong> Dört katmanı aynı renk olan tüp bitmiştir. İçinden döküp boşaltmak yalnızca yer kaybettirir.</li>
+        <li><strong>Çıkmaza girerseniz geri sarın.</strong> İki boş tüp de doluyorsa ve hiçbir dökümü yapamıyorsanız, geri alarak son birkaç hamleyi yeniden düşünün ya da seviyeyi baştan başlatın.</li>
+      </ul>
+
+      <h2>Kısa tarihçe: sıvı sıralama bulmacaları</h2>
+      <p>Sıvıları kaplar arasında dökerek belirli bir hedefe ulaşma fikri çok eskidir. Matematikte “su kabı problemleri” denen bulmacalarda, üzerinde ölçü işareti olmayan iki ya da üç kapla belirli bir miktar su ölçmeniz istenir. Bu tür sorular yüzyıllardır bulmaca kitaplarında ve zeka sorularında yer alır. Günümüzdeki renk sıralama oyunları ise ölçmekten çok sıralamaya dayanır: miktar sabittir, önemli olan katmanların sırasıdır. Dokunmatik ekranlı telefonlar yaygınlaştıkça iki dokunuşla oynanan bu tür oyunlar mobil dünyada çok sevildi; çünkü kuralı bir saniyede anlaşılır, ama ileri seviyeleri gerçekten düşündürür. Bilgisayar biliminde benzer bir problem, yığın (stack) veri yapılarıyla modellenir: her tüp bir yığındır ve yalnızca en üstteki eleman hareket edebilir.</p>
+
+      <h2>Zihin için faydası</h2>
+      <p>Bu tür oyunlar planlama, kısa süreli bellek ve görsel dikkat gerektirir. Hamleyi yapmadan önce sonucu zihinde canlandırmak, “eğer şunu dökersem bunu açabilirim” diye zincirleme düşünmek işlevsel bir egzersizdir. Bununla birlikte oyun tıbbi bir araç değildir ve herhangi bir sağlık iddiası taşımaz; yalnızca eğlenceli bir bulmacadır. Uzun süre ekrana bakıyorsanız arada mola vermeyi unutmayın.</p>
+
+      <h2>Gizlilik: verileriniz cihazınızda kalır</h2>
+      <p>Oyun tamamen tarayıcınızda çalışır. Hamleleriniz ve seviyeniz hiçbir sunucuya gönderilmez; en yüksek seviye ve kaldığınız yer yalnızca tarayıcının yerel depolamasında (localStorage) tutulur. Hesap, takip çerezi ya da analiz kodu yoktur. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız ilerlemeniz sıfırlanır; depolama kapalıysa oyun yine çalışır, yalnızca kayıt tutulmaz. Sayfadaki reklam alanları sitenin ücretsiz kalmasına yardımcı olur; oyun kutusunun dışında yer alır ve tam ekran modunda görünmez. Oyunda ses yoktur.</p>
+
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+      <details><summary>Su Sıralama ücretsiz mi, kayıt gerekiyor mu?</summary><p>Evet, tamamen ücretsizdir ve kayıt gerektirmez. Sayfayı açtığınız anda oyun başlar. Uygulama indirme, hesap açma, ödeme ya da reklam izleyerek ek tüp kazanma yoktur.</p></details>
+      <details><summary>Hangi durumda sıvıyı dökebilirim?</summary><p>Hedef tüp boşsa ya da hedef tüpün en üstündeki renk, döktüğünüz tüpün en üstündeki renkle aynıysa ve hedefte yer varsa dökebilirsiniz. Üstteki aynı renkli katmanların hepsi birlikte akar; hedefte yer yetmezse sığdığı kadarı geçer.</p></details>
+      <details><summary>Seviye ne zaman tamamlanır?</summary><p>Her tüp ya tamamen boş ya da dört katmanı da aynı renkte olduğunda seviye biter. Süre sınırı ve hamle sınırı yoktur; hamle sayısı yalnızca bilgi olarak gösterilir.</p></details>
+      <details><summary>Yanlış hamle yaparsam ne olur?</summary><p>Geri al düğmesine ya da U tuşuna basarak son hamleleri tek tek geri alabilirsiniz. Geri almanın sınırı yoktur, ancak seviyeyi baştan başlatırsanız geri alma geçmişi de sıfırlanır.</p></details>
+      <details><summary>Telefonda nasıl oynanır?</summary><p>Önce dökeceğiniz tüpe, sonra hedef tüpe dokunun. Seçili tüp yukarı kalkar. Tüpler 360 piksel genişliğindeki ekranlarda bile rahat dokunulacak boyutta kalır ve sığmayanlar alt satıra geçer.</p></details>
+      <details><summary>Sadece klavyeyle oynanabilir mi?</summary><p>Evet. Tab ya da sol ve sağ yön tuşlarıyla tüpler arasında gezer, Enter ile seçersiniz; 1 ile 9 arasındaki sayı tuşları doğrudan tüp seçer. U geri alır, R seviyeyi baştan başlatır, Esc seçimi iptal eder.</p></details>
+      <details><summary>Renkleri ayırt edemiyorum, ne yapmalıyım?</summary><p>Her rengin ayrı bir simgesi vardır: daire, üçgen, kare, baklava, yıldız, artı, kalp, çiçek ve hilal. Oyunu renklere bakmadan yalnızca simgelerle de oynayabilirsiniz. Ekran okuyucular renk adlarını okur.</p></details>
+      <details><summary>İlerlemem nerede saklanıyor?</summary><p>Yalnızca bu cihazdaki tarayıcının yerel depolamasında. Hiçbir sunucuya gönderilmez. Tarayıcı verilerini silerseniz ya da gizli pencerede oynarsanız ilerleme ve rekor sıfırlanır.</p></details>
+      <details><summary>Her seviye çözülebilir mi?</summary><p>Seviyeler rastgele dağıtılır ve iki boş tüp bulunduğu için hemen hemen hepsi çözülebilirdir. Çok zor görünen bir dizilimde geri alarak başka bir yol deneyin ya da seviyeyi baştan başlatın.</p></details>
+      </div>
+
+      <h2>İlgili oyunlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kaydirmali-bulmaca/">Kaydırmalı Bulmaca</a></li>
+        <li><a href="../sudoku/">Sudoku</a></li>
+        <li><a href="../2048-oyunu/">2048 Oyunu</a></li>
+        <li><a href="../hafiza-kartlari/">Hafıza Kartları</a></li>
+        <li><a href="../blok-bulmaca/">Blok Bulmaca</a></li>
+        <li><a href="../../">Tüm ücretsiz araçlar</a></li>
+      </ul>
+    </section>
+
+    <div class="ba-ad" data-slot="oyun-su-siralama-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
