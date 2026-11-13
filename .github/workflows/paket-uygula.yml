@@ -1,0 +1,65 @@
+name: Paket uygula
+
+# Bulut oturumunun hazırladığı değişiklik paketini (paketler/*.b64 = base64 tar.gz) açar,
+# paketteki testleri koşar, geçerse dosyaları main'e işler ve siteyi yayınlar.
+# Paket içinde PAKET-MESAJ.txt (commit mesajı) ve PAKET-TESTLER.txt (koşulacak spec yolları) bulunur.
+
+on:
+  push:
+    branches: [main]
+    paths: ["paketler/*.b64"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: paket-uygula
+  cancel-in-progress: false
+
+jobs:
+  uygula:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Paketi aç
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(paketler/*.b64)
+          if [ ${#files[@]} -eq 0 ]; then echo "Paket yok"; exit 0; fi
+          : > /tmp/mesaj.txt; : > /tmp/testler.txt
+          for f in "${files[@]}"; do
+            tr -d ' \r\n' < "$f" | base64 -d | tar -xzf - --no-same-owner
+            if [ -f PAKET-MESAJ.txt ]; then cat PAKET-MESAJ.txt >> /tmp/mesaj.txt; rm PAKET-MESAJ.txt; fi
+            if [ -f PAKET-TESTLER.txt ]; then cat PAKET-TESTLER.txt >> /tmp/testler.txt; rm PAKET-TESTLER.txt; fi
+            git rm -q "$f"
+          done
+          git status --short
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Paket testleri
+        env:
+          CI: "1"
+        run: |
+          set -euo pipefail
+          node scripts/check-tokens.mjs
+          node tests/make-fixtures.mjs
+          specs=$(grep -v '^\s*$' /tmp/testler.txt | tr '\n' ' ' || true)
+          npx playwright test $specs tests/mobile.spec.ts tests/hub.spec.ts --project=chromium --project=mobile
+      - name: İşle ve gönder
+        run: |
+          set -euo pipefail
+          git config user.name "Bilişim Ajans Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -F /tmp/mesaj.txt
+          git push
+      - name: Siteyi yayınla
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
