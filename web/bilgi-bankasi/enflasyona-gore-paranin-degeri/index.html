@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Enflasyona Göre Paranın Değeri ve Reel Getiri Hesaplama</title>
+  <meta name="description" content="Geçmişteki bir tutarın bugünkü değeri TÜFE endeksleri oranıyla, reel getiri Fisher denklemiyle bulunur. Formüller, maaş erimesi ve aylıktan yıllığa örnekler.">
+  <meta name="keywords" content="enflasyon hesaplama, paranın bugünkü değeri, reel getiri hesaplama, enflasyona göre maaş, tüfe hesaplama, 10 yıl önceki 100 tl bugün ne kadar, alım gücü, fisher denklemi">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/enflasyona-gore-paranin-degeri/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Enflasyona Göre Paranın Değeri ve Reel Getiri Hesaplama">
+  <meta property="og:description" content="Geçmişteki bir tutarın bugünkü değeri TÜFE endeksleri oranıyla, reel getiri Fisher denklemiyle bulunur. Formüller, maaş erimesi ve aylıktan yıllığa örnekler.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/enflasyona-gore-paranin-degeri/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Enflasyona Göre Paranın Değeri ve Reel Getiri Nasıl Hesaplanır?","description":"Geçmişteki bir tutarın bugünkü değeri TÜFE endeksleri oranıyla, reel getiri Fisher denklemiyle bulunur. Formüller, maaş erimesi ve aylıktan yıllığa örnekler.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/enflasyona-gore-paranin-degeri/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1170,"keywords":"enflasyon hesaplama, paranın bugünkü değeri, reel getiri hesaplama, enflasyona göre maaş, tüfe hesaplama, 10 yıl önceki 100 tl bugün ne kadar, alım gücü, fisher denklemi","articleSection":"Kredi, Faiz ve Bütçe","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Kredi, Faiz ve Bütçe","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#finans"},{"@type":"ListItem","position":4,"name":"Enflasyona Göre Paranın Değeri ve Reel Getiri Nasıl Hesaplanır?"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Enflasyona göre paranın bugünkü değeri nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Eski tutar, güncel TÜFE endeksinin o tarihteki TÜFE endeksine oranıyla çarpılır. Yalnızca yıllık oranlar biliniyorsa her yılın (1 + enflasyon) çarpanı art arda çarpılarak toplam artış katsayısı bulunur."}},{"@type":"Question","name":"Reel getiri nedir, nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Reel getiri, enflasyondan arındırılmış gerçek kazançtır. (1 + nominal getiri) ÷ (1 + enflasyon) − 1 formülüyle bulunur; %45 faiz ve %35 enflasyonda reel getiri %10 değil %7,41'dir."}},{"@type":"Question","name":"TÜFE ile ÜFE farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"TÜFE tüketicilerin satın aldığı mal ve hizmetlerin fiyatlarını, Yİ-ÜFE ise üreticilerin yurt içi satış fiyatlarını ölçer. Maaş, kira ve alım gücü hesaplarında genellikle TÜFE, maliyet hesaplarında ÜFE kullanılır."}},{"@type":"Question","name":"Maaşım enflasyon karşısında ne kadar eridi?","acceptedAnswer":{"@type":"Answer","text":"Yeni maaşı eski maaşa bölün, sonucu (1 + dönem enflasyonu) ile bölüp 1 çıkarın. 30.000 TL'den 40.000 TL'ye çıkan maaş %40 enflasyonda reel olarak yaklaşık %4,8 küçülmüş demektir."}},{"@type":"Question","name":"Yıllık enflasyon aylıktan nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Her ayın (1 + aylık oran) çarpanları birbiriyle çarpılır ve sonuçtan 1 çıkarılır. Her ay %3 enflasyon olursa yıllık oran toplama ile bulunan %36 değil, 1,03 üzeri 12 eksi 1 ile %42,58 olur."}},{"@type":"Question","name":"Faiz enflasyonu geçiyor mu nasıl anlarım?","acceptedAnswer":{"@type":"Answer","text":"Kesinti sonrası net faiz oranınızı aynı dönemin enflasyonuyla Fisher denklemine koyun. Sonuç sıfırdan büyükse faiz enflasyonu geçiyor, küçükse paranızın alım gücü faize rağmen azalıyor demektir."}},{"@type":"Question","name":"Fisher denklemi nedir?","acceptedAnswer":{"@type":"Answer","text":"Nominal faiz, reel faiz ve enflasyon arasındaki ilişkiyi kuran denklemdir: (1 + nominal) = (1 + reel) × (1 + enflasyon). Buradan reel faiz, nominal çarpanın enflasyon çarpanına bölünüp 1 çıkarılmasıyla bulunur."}},{"@type":"Question","name":"Alım gücü nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Paranın alım gücü 1 ÷ (1 + enflasyon) ile çarpılarak bulunur. %40 enflasyonda 100 TL'nin alım gücü 71,43 TL'ye iner; yani kayıp 1 − 1 ÷ 1,40 formülüyle %28,6 olarak hesaplanır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#finans">Kredi, Faiz ve Bütçe</a></li></ol><h1>Enflasyona Göre Paranın Değeri ve Reel Getiri Nasıl Hesaplanır?</h1><p class="lead">Geçmişteki bir tutarın bugünkü değerini bulmak için tutarı, <strong>bugünkü TÜFE endeksinin o tarihteki endekse oranıyla</strong> çarparsınız. Yıllık oranlarla çalışıyorsanız her yılın (1 + enflasyon) çarpanlarını art arda uygularsınız. Bir yatırımın ya da maaş artışının enflasyonu geçip geçmediğini ise reel getiri gösterir: <strong>(1 + nominal getiri) ÷ (1 + enflasyon) − 1</strong>. Bu sayfada formülleri, TÜFE ile ÜFE farkını, aylık enflasyondan yıllığa geçişi ve maaşınızın alım gücünü örnek oranlarla hesaplamayı anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Bugünkü değer = eski tutar × (bugünkü TÜFE endeksi ÷ eski tarihteki TÜFE endeksi).</li>
+        <li>Yıllık oranlarla: bugünkü değer = eski tutar × (1 + e₁) × (1 + e₂) × … şeklinde birikimli çarpılır.</li>
+        <li>Reel getiri (Fisher) = (1 + nominal oran) ÷ (1 + enflasyon) − 1; basit fark (nominal − enflasyon) yalnızca yaklaşıktır.</li>
+        <li>Aylık oranlardan yıllık enflasyon toplanarak değil çarpılarak bulunur: %3'lük 12 ay yıllık %42,58 eder.</li>
+        <li>Alım gücü kaybı = 1 − 1 ÷ (1 + enflasyon); %40 enflasyonda paranın alım gücü %28,6 azalır.</li>
+        <li>TÜFE tüketicinin ödediği fiyatları, Yİ-ÜFE üreticinin yurt içi satış fiyatlarını ölçer; kira ve maaş hesaplarında genellikle TÜFE kullanılır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Enflasyonun 100.000 TL üzerindeki etkisi: üç yıl boyunca yüzde 25, 40 ve 60 enflasyonla aynı sepeti almak için gereken tutar 125.000, 175.000 ve 280.000 TL'ye çıkar; reel getiri örneği yüzde 45 faiz ve yüzde 35 enflasyonla yüzde 7,41." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">Aynı sepetin fiyatı (örnek oranlar)</text>
+  <line x1="40" y1="330" x2="440" y2="330" class="sb" fill="none"/>
+  <rect x="60" y="270" width="70" height="60" rx="4" class="ps"/>
+  <rect x="160" y="255" width="70" height="75" rx="4" class="ps"/>
+  <rect x="260" y="225" width="70" height="105" rx="4" class="ps"/>
+  <rect x="360" y="162" width="70" height="168" rx="4" class="p"/>
+  <g class="sm mid">
+    <text x="95" y="262" class="b">100.000</text><text x="195" y="247" class="b">125.000</text>
+    <text x="295" y="217" class="b">175.000</text><text x="395" y="154" class="b">280.000</text>
+    <text x="95" y="350">Başlangıç</text><text x="195" y="350">1. yıl</text><text x="295" y="350">2. yıl</text><text x="395" y="350">3. yıl</text>
+    <text x="195" y="370" class="mu">%25</text><text x="295" y="370" class="mu">%40</text><text x="395" y="370" class="mu">%60</text>
+  </g>
+  <text x="40" y="80" class="sm">Çarpan: 1,25 × 1,40 × 1,60 = <tspan class="b">2,80</tspan></text>
+  <text x="40" y="102" class="sm">Alım gücü kaybı: 1 − 1 ÷ 2,80 = <tspan class="b dg">%64,3</tspan></text>
+  <rect x="470" y="60" width="230" height="270" rx="12" class="sf sb"/>
+  <text x="585" y="88" class="b mid">Reel getiri (Fisher)</text>
+  <text x="585" y="122" class="sm mid">Mevduat faizi %45</text>
+  <text x="585" y="144" class="sm mid">Enflasyon %35</text>
+  <line x1="490" y1="160" x2="680" y2="160" class="sb" fill="none"/>
+  <text x="585" y="186" class="sm mid">1,45 ÷ 1,35 − 1</text>
+  <text x="585" y="224" class="xl mid ok">%7,41</text>
+  <text x="585" y="256" class="sm mid mu">Basit fark %10 gösterir,</text>
+  <text x="585" y="274" class="sm mid mu">ama gerçek kazanç %7,41</text>
+  <text x="585" y="306" class="sm mid t2">Oranlar örnektir</text>
+  <rect x="20" y="386" width="680" height="1" class="sb"/>
+  <text x="360" y="408" class="sm mid t2">Gerçek hesap için TÜİK'in yayımladığı TÜFE endeks değerlerini kullanın.</text>
+</svg>
+      <figcaption>Örnek oranlarla: üç yıl önce 100.000 TL'ye alınan bir sepetin bugün 280.000 TL'ye mal olması, paranın alım gücünün %64,3 azalması demektir. Sağdaki kart reel getirinin Fisher denklemiyle nasıl bulunduğunu gösterir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Enflasyon paranın değerini nasıl etkiler?</a></li>
+      <li><a href="#b2">Geçmişteki paranın bugünkü değeri: formül</a></li>
+      <li><a href="#b3">Reel getiri nedir? Fisher denklemi</a></li>
+      <li><a href="#b4">Maaşım enflasyon karşısında ne kadar eridi?</a></li>
+      <li><a href="#b5">Aylık enflasyondan yıllık enflasyon nasıl bulunur?</a></li>
+      <li><a href="#b6">Geleceğe bakmak: N yıl sonra bir şey kaç para olur?</a></li>
+      <li><a href="#b7">TÜFE ile ÜFE farkı nedir, hangisi kullanılmalı?</a></li>
+      <li><a href="#b8">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-enflasyona-gore-paranin-degeri-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../enflasyon-hesapla/"><strong>Enflasyon ve Alım Gücü Hesaplama</strong><span>Geçmiş bir tutarın bugünkü değerini, N yıl sonraki fiyatı, reel getiriyi ve maaşın alım gücü kaybını hesaplayın; oranları siz girersiniz, veri saklanmaz.</span></a></li>
+          <li><a href="../../reel-faiz-hesapla/"><strong>Reel Faiz Hesaplama</strong><span>Faiz getiriniz enflasyonu yeniyor mu? Nominal faiz ve enflasyondan reel faizi ve alım gücü değişimini hesaplayın.</span></a></li>
+          <li><a href="../../satin-alma-gucu-hesapla/"><strong>Satın Alma Gücü Kaybı Hesaplama</strong><span>Enflasyon oranı ve süreye göre paranızın satın alma gücü kaybını ve aynı gücü koruyan tutarı hesaplayın.</span></a></li>
+          <li><a href="../../yuzde-degisim-hesapla/"><strong>Yüzde Değişim Hesaplama</strong><span>Eski ve yeni değer arasındaki yüzde artışı ya da azalışı bulun; fark, kat ve geri dönüş oranıyla birlikte.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Enflasyon paranın değerini nasıl etkiler?</h2>
+      <p>Enflasyon, mal ve hizmet fiyatlarının genel düzeyindeki sürekli artıştır. Fiyatlar yükseldiğinde aynı miktar parayla daha az şey alabilirsiniz; yani paranın nominal değeri (üzerinde yazan rakam) aynı kalsa da <strong>reel değeri</strong>, diğer adıyla <strong>alım gücü</strong> düşer. Cebinizdeki 1.000 TL'nin bir yıl sonra kaç ekmeğe, kaç litre yakıta yettiği bu yüzden değişir.</p>
+      <p>Türkiye'de enflasyonu resmî olarak Türkiye İstatistik Kurumu (TÜİK) ölçer ve her ayın başında bir önceki aya ait endeksleri yayımlar. Hesaplarınızda bu resmî verileri kullanmanız, kira artışı, maaş pazarlığı ya da yatırım karşılaştırması gibi durumlarda tartışmasız bir zemin sağlar. Bu yazıdaki örneklerde kullanılan oranlar yalnızca hesap mantığını göstermek içindir.</p>
+
+      <h2 id="b2">Geçmişteki paranın bugünkü değeri: formül</h2>
+      <p>En doğru yöntem endeks oranıdır. TÜİK, TÜFE'yi bir baz yıla göre endeks olarak yayımlar. Örneğin bir tarihte endeks 500, bugün 1.500 ise fiyatlar genel olarak 3 kat artmıştır; o tarihteki 100 TL bugün 300 TL'ye denk gelir. Bu yöntemde ara yılların oranlarıyla tek tek uğraşmazsınız.</p>
+      <p>Yalnızca yıllık enflasyon oranlarını biliyorsanız bunları art arda çarparsınız. Oranları toplamak yanlıştır: %25, %40 ve %60'lık üç yıl toplamda %125 değil, 1,25 × 1,40 × 1,60 = 2,80 kat, yani %180 artış demektir. Bu fark yüksek enflasyon dönemlerinde çok büyük hatalara yol açar.</p>
+      <div class="rh-formula">Bugünkü değer = eski tutar × (güncel TÜFE endeksi ÷ eski tarihteki TÜFE endeksi)<br>Yıllık oranlarla: bugünkü değer = eski tutar × (1 + e₁) × (1 + e₂) × … × (1 + eₙ)<br>Alım gücü kaybı = 1 − (eski tutar ÷ bugünkü değer)</div>
+      <ol class="ba-steps">
+        <li>Başlangıç tarihini ve tutarı belirleyin: üç yıl önce 100.000 TL.</li>
+        <li>Her yılın enflasyonunu (1 + oran) çarpanına çevirin: 1,25; 1,40; 1,60.</li>
+        <li>Çarpanları çarpın: 1,25 × 1,40 × 1,60 = 2,80.</li>
+        <li>Tutarı çarpanla çarpın: 100.000 × 2,80 = 280.000 TL. Üç yıl önceki 100.000 TL, bugünkü 280.000 TL'ye eşdeğerdir.</li>
+        <li>Alım gücü kaybını hesaplayın: 1 − 1 ÷ 2,80 = %64,3. Aynı 100.000 TL bugün eskisinin yalnızca %35,7'si kadar mal alır.</li>
+      </ol>
+      <p>&quot;10 yıl önceki 100 TL bugün ne kadar?&quot; sorusunun cevabı da aynı yöntemle bulunur: 10 yıl önceki ayın TÜFE endeksini ve son yayımlanan endeksi TÜİK'ten alıp oranlarını 100 ile çarparsınız. <a href="../../enflasyon-hesapla/">Enflasyon Hesaplama</a> aracı, oranları sizin girdiğiniz değerlerle bu hesabı otomatik yapar.</p>
+
+      <h2 id="b3">Reel getiri nedir? Fisher denklemi</h2>
+      <p>Reel getiri, bir yatırımın enflasyondan arındırılmış kazancıdır. Paranız mevduatta yılda %45 büyüse de fiyatlar %35 artmışsa, gerçekte zenginleşme oranınız %10 değildir. Doğru hesap, ekonomist Irving Fisher'ın adıyla anılan denklemle yapılır.</p>
+      <p>Fisher denklemi, nominal büyüme çarpanını enflasyon çarpanına böler. Basit çıkarma (nominal − enflasyon), oranlar küçükken iyi bir yaklaşıktır ama Türkiye'deki gibi yüksek oranlarda belirgin biçimde yanıltır.</p>
+      <div class="rh-formula">Reel getiri = (1 + nominal getiri) ÷ (1 + enflasyon) − 1<br>Örnek: (1 + 0,45) ÷ (1 + 0,35) − 1 = 0,0741 → %7,41<br>Yaklaşık formül (yalnız düşük oranlarda): reel ≈ nominal − enflasyon</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Nominal getiri</th><th>Enflasyon</th><th>Basit fark</th><th>Gerçek reel getiri (Fisher)</th></tr></thead>
+        <tbody>
+          <tr><td>%5</td><td>%3</td><td>%2,00</td><td>%1,94</td></tr>
+          <tr><td>%45</td><td>%35</td><td>%10,00</td><td>%7,41</td></tr>
+          <tr><td>%50</td><td>%40</td><td>%10,00</td><td>%7,14</td></tr>
+          <tr><td>%30</td><td>%40</td><td>−%10,00</td><td>−%7,14</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Oranlar örnektir. Mevduatta stopaj gibi kesintiler varsa nominal getiriyi net (kesinti sonrası) tutarla girin.</p>
+      <p>Faizin enflasyonu geçip geçmediğini anlamak için Fisher sonucunun sıfırdan büyük olup olmadığına bakmanız yeterlidir. Stopaj sonrası reel getiriyi görmek için <a href="../../reel-faiz-hesapla/">Reel Faiz Hesaplama</a> aracını kullanabilirsiniz.</p>
+
+      <h2 id="b4">Maaşım enflasyon karşısında ne kadar eridi?</h2>
+      <p>Maaşınızın alım gücünü ölçmek için maaş artış oranınızı aynı dönemin enflasyonuyla Fisher mantığıyla karşılaştırırsınız. Burada önemli olan, iki oranın aynı dönemi kapsamasıdır: Ocak'tan Ocak'a aldığınız zammı, aynı 12 ayın yıllık enflasyonuyla kıyaslamalısınız.</p>
+      <div class="rh-formula">Reel maaş değişimi = (yeni maaş ÷ eski maaş) ÷ (1 + dönem enflasyonu) − 1</div>
+      <ol class="ba-steps">
+        <li>Bir yıl önce net maaşınız 30.000 TL, bugün 40.000 TL olsun: nominal artış 40.000 ÷ 30.000 = 1,3333, yani %33,3.</li>
+        <li>Aynı dönemde enflasyon örnek olarak %40 olsun: çarpan 1,40.</li>
+        <li>Reel değişim: 1,3333 ÷ 1,40 − 1 = −%4,76. Maaşınız rakam olarak arttı ama alım gücünüz yaklaşık %4,8 azaldı.</li>
+        <li>Alım gücünü korumak için gereken maaş: 30.000 × 1,40 = 42.000 TL. Aradaki fark aylık 2.000 TL'dir.</li>
+      </ol>
+      <p>Aynı hesap kira için de geçerlidir. Kira artışlarında yasal üst sınır olarak çoğunlukla TÜFE'nin 12 aylık ortalaması kullanılır; ayrıntılar için <a href="../../rehber/kira-artisi-nasil-hesaplanir/">kira artışı rehberine</a> bakabilirsiniz. Belirli bir tutarın birkaç yıl sonra alım gücünün ne olacağını görmek için <a href="../../satin-alma-gucu-hesapla/">Satın Alma Gücü Kaybı Hesaplama</a> aracı kullanışlıdır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-enflasyona-gore-paranin-degeri-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">Aylık enflasyondan yıllık enflasyon nasıl bulunur?</h2>
+      <p>Aylık oranlar toplanmaz, bileşik olarak çarpılır. Çünkü her ayın artışı, bir önceki ayın artmış fiyatları üzerine gelir. Bu, <a href="../../bilgi-bankasi/bilesik-faiz-nedir/">bileşik faizdeki</a> &quot;faizin faizi&quot; mantığının aynısıdır.</p>
+      <p>Tersi de mümkündür: yıllık bir oranı eşdeğer aylık orana çevirmek için (1 + yıllık oran) değerinin 12. kökünü alıp 1 çıkarırsınız. Örneğin yıllık %42,58 enflasyon, aylık ortalama %3'e karşılık gelir.</p>
+      <div class="rh-formula">Yıllık oran = (1 + a₁) × (1 + a₂) × … × (1 + a₁₂) − 1<br>Sabit aylık oranda: yıllık = (1 + a)¹² − 1<br>Örnek: 1,03¹² − 1 = 0,4258 → %42,58 (toplamla bulunan %36 değil)<br>Eşdeğer aylık oran = (1 + yıllık)^(1/12) − 1</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sabit aylık enflasyon</th><th>Toplama ile (yanlış)</th><th>Bileşik yıllık (doğru)</th></tr></thead>
+        <tbody>
+          <tr><td>%1</td><td>%12</td><td>%12,68</td></tr>
+          <tr><td>%2</td><td>%24</td><td>%26,82</td></tr>
+          <tr><td>%3</td><td>%36</td><td>%42,58</td></tr>
+          <tr><td>%4</td><td>%48</td><td>%60,10</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b6">Geleceğe bakmak: N yıl sonra bir şey kaç para olur?</h2>
+      <p>Aynı formülü ileriye doğru da kullanabilirsiniz. Bugün fiyatı belli olan bir ürünün ya da hizmetin belirli bir enflasyon varsayımıyla birkaç yıl sonra ne kadar tutacağını görmek, birikim hedefi koyarken çok işe yarar. Burada kullandığınız oran bir tahmindir; tek bir değer yerine iyimser ve kötümser iki senaryo hesaplamak daha sağlıklı sonuç verir.</p>
+      <p>Örneğin bugün 1.000.000 TL olan bir aracın fiyatı, yıllık %30 enflasyon varsayımıyla 3 yıl sonra 1.000.000 × 1,30³ = 2.197.000 TL olur. Varsayım %20 olsaydı sonuç 1.728.000 TL çıkardı. İki senaryo arasındaki yaklaşık 470.000 TL'lik fark, uzun vadeli planlarda oran tahmininin ne kadar belirleyici olduğunu gösterir.</p>
+      <div class="rh-formula">N yıl sonraki fiyat = bugünkü fiyat × (1 + beklenen enflasyon)ᴺ<br>Örnek: 1.000.000 × 1,30³ = 2.197.000 TL</div>
+      <ul>
+        <li>Birikim hedefinizi bugünkü fiyatla değil, hedef tarihteki tahmini fiyatla belirleyin.</li>
+        <li>Hedef tarihe kadar birikiminizin getirisi en az bu enflasyon varsayımı kadar değilse hedef her yıl uzaklaşır.</li>
+        <li>Uzun vadeli hesapları her yıl gerçekleşen resmî enflasyonla güncelleyin.</li>
+      </ul>
+
+      <h2 id="b7">TÜFE ile ÜFE farkı nedir, hangisi kullanılmalı?</h2>
+      <p><strong>TÜFE (Tüketici Fiyat Endeksi)</strong>, hanelerin satın aldığı gıda, kira, ulaşım, giyim, eğitim gibi mal ve hizmetlerin fiyat değişimini ölçer. Günlük hayattaki alım gücü, maaş, kira ve emekli aylığı hesaplarında esas alınan endeks budur.</p>
+      <p><strong>Yİ-ÜFE (Yurt İçi Üretici Fiyat Endeksi)</strong> ise üreticilerin yurt içine sattıkları ürünlerin fabrika çıkış fiyatlarını ölçer. Ham madde ve enerji fiyatlarından daha hızlı etkilenir; işletmelerin maliyet hesaplarında, bazı sözleşme ve endekslemelerde kullanılır. İki endeks aynı dönemde farklı sonuçlar verebilir; hesapta hangisinin kullanılacağı sözleşmede ya da mevzuatta yazılıdır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>TÜFE</th><th>Yİ-ÜFE</th></tr></thead>
+        <tbody>
+          <tr><td>Ölçtüğü fiyat</td><td>Tüketicinin ödediği</td><td>Üreticinin satış fiyatı</td></tr>
+          <tr><td>Kullanım</td><td>Maaş, kira, emekli aylığı, alım gücü</td><td>Maliyet, bazı sözleşmeler ve endekslemeler</td></tr>
+          <tr><td>Yayımlayan</td><td>TÜİK, aylık</td><td>TÜİK, aylık</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b8">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Yıllık oranları toplamak:</strong> Çok yıllı hesapta oranlar çarpılır; toplamak sonucu küçültür.</li>
+        <li><strong>Reel getiriyi çıkarma ile bulmak:</strong> Yüksek enflasyonda Fisher denklemini kullanın.</li>
+        <li><strong>Farklı dönemleri karşılaştırmak:</strong> Maaş artışını ve enflasyonu aynı 12 ay için alın.</li>
+        <li><strong>Brüt getiriyi kullanmak:</strong> Stopaj ve masraf sonrası net getiriyi enflasyonla karşılaştırın.</li>
+        <li><strong>Ortalama ile yıllığı karıştırmak:</strong> 12 aylık ortalama TÜFE ile yıllık TÜFE farklı ölçülerdir; kira hesabında hangisinin geçerli olduğunu kontrol edin.</li>
+      </ul>
+      <p>İki değer arasındaki yüzde değişimi hızlıca bulmak için <a href="../../yuzde-degisim-hesapla/">Yüzde Değişim Hesaplama</a> aracını kullanabilirsiniz. Tüm araçlar tarayıcınızda çalışır ve girdiğiniz rakamları saklamaz.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Enflasyona göre paranın bugünkü değeri nasıl hesaplanır?</summary><p>Eski tutar, güncel TÜFE endeksinin o tarihteki TÜFE endeksine oranıyla çarpılır. Yalnızca yıllık oranlar biliniyorsa her yılın (1 + enflasyon) çarpanı art arda çarpılarak toplam artış katsayısı bulunur.</p></details>
+      <details><summary>Reel getiri nedir, nasıl hesaplanır?</summary><p>Reel getiri, enflasyondan arındırılmış gerçek kazançtır. (1 + nominal getiri) ÷ (1 + enflasyon) − 1 formülüyle bulunur; %45 faiz ve %35 enflasyonda reel getiri %10 değil %7,41'dir.</p></details>
+      <details><summary>TÜFE ile ÜFE farkı nedir?</summary><p>TÜFE tüketicilerin satın aldığı mal ve hizmetlerin fiyatlarını, Yİ-ÜFE ise üreticilerin yurt içi satış fiyatlarını ölçer. Maaş, kira ve alım gücü hesaplarında genellikle TÜFE, maliyet hesaplarında ÜFE kullanılır.</p></details>
+      <details><summary>Maaşım enflasyon karşısında ne kadar eridi?</summary><p>Yeni maaşı eski maaşa bölün, sonucu (1 + dönem enflasyonu) ile bölüp 1 çıkarın. 30.000 TL'den 40.000 TL'ye çıkan maaş %40 enflasyonda reel olarak yaklaşık %4,8 küçülmüş demektir.</p></details>
+      <details><summary>Yıllık enflasyon aylıktan nasıl bulunur?</summary><p>Her ayın (1 + aylık oran) çarpanları birbiriyle çarpılır ve sonuçtan 1 çıkarılır. Her ay %3 enflasyon olursa yıllık oran toplama ile bulunan %36 değil, 1,03 üzeri 12 eksi 1 ile %42,58 olur.</p></details>
+      <details><summary>Faiz enflasyonu geçiyor mu nasıl anlarım?</summary><p>Kesinti sonrası net faiz oranınızı aynı dönemin enflasyonuyla Fisher denklemine koyun. Sonuç sıfırdan büyükse faiz enflasyonu geçiyor, küçükse paranızın alım gücü faize rağmen azalıyor demektir.</p></details>
+      <details><summary>Fisher denklemi nedir?</summary><p>Nominal faiz, reel faiz ve enflasyon arasındaki ilişkiyi kuran denklemdir: (1 + nominal) = (1 + reel) × (1 + enflasyon). Buradan reel faiz, nominal çarpanın enflasyon çarpanına bölünüp 1 çıkarılmasıyla bulunur.</p></details>
+      <details><summary>Alım gücü nasıl hesaplanır?</summary><p>Paranın alım gücü 1 ÷ (1 + enflasyon) ile çarpılarak bulunur. %40 enflasyonda 100 TL'nin alım gücü 71,43 TL'ye iner; yani kayıp 1 − 1 ÷ 1,40 formülüyle %28,6 olarak hesaplanır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; yatırım tavsiyesi değildir, örneklerdeki oranlar temsilîdir. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.tuik.gov.tr/" rel="noopener">TÜİK – Tüketici Fiyat Endeksi</a></li>
+        <li><a href="https://www.tcmb.gov.tr/" rel="noopener">TCMB – Enflasyon verileri ve para politikası</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../bilesik-faiz-nedir/"><strong>Bileşik Faiz Nedir, Nasıl Hesaplanır? Basit Faizle Farkı ve Örnekler</strong><span>Bileşik faiz, faizin anaparaya eklenip sonraki dönemde onun da faiz kazanmasıdır: A = P × (1 + r/n)^(n·t). Basit faizle farkı, 72 kuralı, efektif faiz ve örnekler.</span></a></li>
+          <li><a href="../50-30-20-butce-kurali/"><strong>50/30/20 Kuralı ile Aylık Bütçe Nasıl Yapılır? Örnek Hesaplama</strong><span>50/30/20 kuralı net gelirin %50'sini ihtiyaçlara, %30'unu isteklere, %20'sini birikime ayırır. Asgari ücretle uyarlama, acil durum fonu ve örnek bütçe.</span></a></li>
+          <li><a href="../kyk-borcu-nasil-hesaplanir/"><strong>KYK Borcu Nasıl Hesaplanır, Ne Zaman ve Nasıl Ödenir? (2026)</strong><span>KYK borcu, aldığınız aylık kredilerin toplamıdır; 2026 itibarıyla faiz ve endeks farkı eklenmez. Geri ödeme normal öğrenim süresinden 2 yıl sonra başlar, örnekler.</span></a></li>
+          <li><a href="../ceyrek-altin-kac-gram-ayar-milyem/"><strong>Çeyrek Altın Kaç Gram? 22 ve 14 Ayar Farkı, Milyem Nedir</strong><span>Çeyrek altın 1,754 gram ve 22 ayardır; yarım 3,508, tam 7,016, Ata lira 7,216 gram. 22 ve 14 ayar farkı, milyem hesabı, ons ve has altın örnekleri.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-enflasyona-gore-paranin-degeri-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

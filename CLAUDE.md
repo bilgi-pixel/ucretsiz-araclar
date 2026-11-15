@@ -75,3 +75,26 @@ npx playwright test      # testler
 - `release-manager` — Pages yayını, Tauri sürümleri, sürüm notları.
 
 Ürün listesi ve sıra: `docs/PLAN.md`.
+
+## Bilgi Bankası (`web/bilgi-bankasi/`)
+
+En çok aranan "nedir / nasıl hesaplanır" sorularına uzun, özgün makaleler (AdSense için ana içerik bölümü).
+Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node scripts/bilgi/derle.mjs` üretir.
+
+- Yazım kuralları ve SVG infografik kuralları: `scripts/bilgi/YAZAR.md`. Doğrulama: `node scripts/bilgi/dogrula.mjs <slug>`.
+- Konu havuzu: `scripts/bilgi/konular.json` (araştırma ajanının seçtiği, araçlara bağlanan konular).
+- `derle.mjs` ana sayfada `<!-- bilgi:basla -->…<!-- bilgi:bitis -->` bölümünü, `#bilgi` sekmesini, sitemap'teki
+  `<!--bilgi-->` satırlarını, `tests/hub.spec.ts` kart sayısını ve `tests/bilgi-bankasi.json`'u günceller.
+- **Araç üreticisiyle birlikte çalışma:** `scripts/uret/derle.mjs` de `web/index.html`, `sitemap.xml` ve `hub.spec.ts`'e
+  yazar. İki üretici de dosyayı yerinde güncellediği için birbirinin işaretli bölümünü korur; ama paket hazırlamadan önce
+  **mutlaka `main`'in son hâlini çekin** ve iki derleyiciyi de bir kez çalıştırın. Eski bir kopyadan üretilen `index.html`
+  paketi diğer bölümü siler.
+- Bilgi kartları araç sayısına girmez (`hub.js` ve `uret/derle.mjs` rehber + bilgi kartlarını sayaçtan hariç tutar;
+  bilgi bölümü rehberlerden sonra, oyunlardan önce durur).
+
+### Bilgi Bankası yazarlarının araçlarda bulduğu, doğrulanması gereken iki parametre (16.11.2026)
+- `web/emekli-ikramiyesi-hesapla/parametreler.json` → `ikramiye_azami_hizmet_yili: 30`. Anayasa Mahkemesi'nin
+  2013/111 E., 2014/195 K. kararı (yürürlük 07.01.2015) ile 30 yıl sınırının kaldırıldığı belirtildi; makale buna göre yazıldı.
+  Resmî kaynaktan doğrulayıp araçla makaleyi uyumlu hâle getirin.
+- `web/gelir-vergisi-hesapla/parametreler.json` → `kira_istisna_tutari: 47000` 2025 gelirleri içindir; 2026 gelirleri için
+  mesken kira istisnası 58.000 TL (Gelir Vergisi Genel Tebliği Seri No: 332). Araç hangi yılı hesaplıyorsa ona göre güncelleyin.

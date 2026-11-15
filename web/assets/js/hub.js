@@ -34,4 +34,4 @@ applyFilter();
 
 // Hero başlığındaki araç sayısı: rehberler hariç kart sayısından türetilir.
 const countEl = document.getElementById('ba-count');
-if (countEl) countEl.textContent = String(document.querySelectorAll('[data-category]:not([data-category="rehber"]) .ba-card').length);
+if (countEl) countEl.textContent = String(document.querySelectorAll('[data-category]:not([data-category="rehber"]):not([data-category="bilgi"]) .ba-card').length);
