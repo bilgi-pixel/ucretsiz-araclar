@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>SRT Nedir? Altyazı Kaydırma ve Senkronizasyon Nasıl Yapılır</title>
+  <meta name="description" content="SRT, sıra numarası, zaman aralığı ve metinden oluşan düz metin altyazı dosyasıdır. Altyazı kaydırma, fps farkını düzeltme, VTT farkı ve bozuk Türkçe karakter.">
+  <meta name="keywords" content="srt nedir, altyazı kaydırma, altyazı senkronizasyonu, altyazı geç geliyor, srt dosyası nasıl açılır, vtt srt farkı, altyazı türkçe karakter bozuk, videoya altyazı ekleme">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/altyazi-dosyasi-srt-nedir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="SRT Nedir? Altyazı Kaydırma ve Senkronizasyon Nasıl Yapılır">
+  <meta property="og:description" content="SRT, sıra numarası, zaman aralığı ve metinden oluşan düz metin altyazı dosyasıdır. Altyazı kaydırma, fps farkını düzeltme, VTT farkı ve bozuk Türkçe karakter.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/altyazi-dosyasi-srt-nedir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"SRT Altyazı Dosyası Nedir? Altyazı Kaydırma ve Senkronizasyon Nasıl Yapılır","description":"SRT, sıra numarası, zaman aralığı ve metinden oluşan düz metin altyazı dosyasıdır. Altyazı kaydırma, fps farkını düzeltme, VTT farkı ve bozuk Türkçe karakter.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/altyazi-dosyasi-srt-nedir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1186,"keywords":"srt nedir, altyazı kaydırma, altyazı senkronizasyonu, altyazı geç geliyor, srt dosyası nasıl açılır, vtt srt farkı, altyazı türkçe karakter bozuk, videoya altyazı ekleme","articleSection":"Dosya, PDF ve Fotoğraf","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Dosya, PDF ve Fotoğraf","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#dijital"},{"@type":"ListItem","position":4,"name":"SRT Altyazı Dosyası Nedir? Altyazı Kaydırma ve Senkronizasyon Nasıl Yapılır"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"SRT dosyası nedir?","acceptedAnswer":{"@type":"Answer","text":"SRT, her altyazı satırını sıra numarası, başlangıç ve bitiş zamanı ve metinle tanımlayan düz metin bir altyazı dosyasıdır. Neredeyse tüm video oynatıcılar, televizyonlar ve video platformları tarafından desteklenir."}},{"@type":"Question","name":"Altyazı geride kalıyorsa nasıl düzeltilir?","acceptedAnswer":{"@type":"Answer","text":"Altyazı baştan sona aynı miktarda geç geliyorsa tüm başlangıç ve bitiş zamanlarından o süreyi çıkarırsınız. Farkı, videodaki bir konuşmanın başladığı an ile altyazıdaki zamanı karşılaştırarak bulabilirsiniz."}},{"@type":"Question","name":"Altyazı kaydırma nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Bir altyazı düzenleme aracında kaydırma süresini artı ya da eksi saniye olarak yazarsınız ve tüm zamanlar birlikte güncellenir. Kayma video ilerledikçe büyüyorsa önce kare hızı farkını düzeltmeniz gerekir."}},{"@type":"Question","name":"SRT ve VTT farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"VTT, WEBVTT başlığıyla başlar, milisaniyeyi virgül yerine noktayla ayırır ve konum ile stil bilgisi taşıyabilir. Web sayfalarındaki video oynatıcılar VTT, masaüstü oynatıcılar ve televizyonlar daha çok SRT kullanır."}},{"@type":"Question","name":"SRT dosyası nasıl düzenlenir?","acceptedAnswer":{"@type":"Answer","text":"SRT düz metin olduğu için Not Defteri gibi bir metin düzenleyiciyle açıp düzenleyebilirsiniz. Kaydederken uzantının .srt kalmasına, kodlamanın UTF-8 olmasına ve bloklar arasındaki boş satırların korunmasına dikkat edin."}},{"@type":"Question","name":"Altyazıdaki Türkçe karakterler neden bozuk çıkar?","acceptedAnswer":{"@type":"Answer","text":"Dosyanın karakter kodlaması oynatıcının beklediğinden farklıdır. Eski Türkçe altyazılar çoğunlukla Windows-1254 ile kaydedilmiştir; dosyayı UTF-8 olarak yeniden kaydetmek ya da oynatıcıda kodlamayı değiştirmek sorunu çözer."}},{"@type":"Question","name":"Videoya altyazı nasıl eklenir?","acceptedAnswer":{"@type":"Answer","text":"Bilgisayarda izlemek için SRT dosyasını videoyla aynı ad ve klasöre koymanız yeterlidir. Video platformlarında altyazı bölümünden dosyayı yüklersiniz. Görüntüye kalıcı yazı için video düzenleme programında altyazıyı gömmeniz gerekir."}},{"@type":"Question","name":"Zaman kodu formatı nasıl okunur?","acceptedAnswer":{"@type":"Answer","text":"SRT'de zaman saat:dakika:saniye,milisaniye biçimindedir; 00:42:12,700 videonun 42. dakikasının 12,7. saniyesidir. Video programlarındaki SS:DD:SN:KK biçiminde ise son hane kare numarasıdır."}},{"@type":"Question","name":"23,976 ve 25 fps altyazı nasıl uyumlu hâle getirilir?","acceptedAnswer":{"@type":"Answer","text":"23,976 fps için hazırlanmış altyazıyı 25 fps videoya uyarlamak için tüm zamanlar 0,95904 ile çarpılır; ters durumda 1,04271 ile çarpılır. Altyazı araçlarındaki fps dönüştürme seçeneği bu hesabı otomatik yapar."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#dijital">Dosya, PDF ve Fotoğraf</a></li></ol><h1>SRT Altyazı Dosyası Nedir? Altyazı Kaydırma ve Senkronizasyon Nasıl Yapılır</h1><p class="lead">SRT, her altyazı satırını bir sıra numarası, <strong>başlangıç --&gt; bitiş</strong> zaman aralığı ve ekranda görünecek metinle tanımlayan düz metin bir altyazı dosyasıdır. Altyazı videonun gerisinde ya da önünde kalıyorsa bütün zamanlara aynı süreyi ekleyerek ya da çıkararak, giderek açılıyorsa kare hızı farkını düzelterek senkronize edersiniz. Bu sayfada SRT dosyasının yapısını, zaman kodunun nasıl okunduğunu, altyazı kaydırma hesabını, 23,976 ile 25 fps farkını, VTT ile SRT'nin farkını ve bozuk Türkçe karakterlerin nedenini bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>SRT bloğu dört parçadır: sıra numarası, SS:DD:SN,mmm --&gt; SS:DD:SN,mmm zaman satırı, bir ya da iki satır metin ve boş bir satır.</li>
+        <li>Altyazı baştan sona aynı miktarda geç geliyorsa tüm zamanlardan o süreyi çıkarın; erken geliyorsa ekleyin.</li>
+        <li>Kayma video ilerledikçe büyüyorsa sorun kare hızı farkıdır; 23,976 fps için hazırlanmış altyazıyı 25 fps videoya uyarlamak için zamanlar 0,95904 ile çarpılır.</li>
+        <li>VTT, &quot;WEBVTT&quot; başlığıyla başlar ve milisaniyeyi nokta ile ayırır; web tarayıcılarındaki video oynatıcılar VTT kullanır.</li>
+        <li>Türkçe harfler ý, þ, ð ya da Ä± gibi görünüyorsa dosyanın karakter kodlaması yanlış okunuyordur; dosyayı UTF-8 olarak kaydetmek çoğu zaman sorunu çözer.</li>
+        <li>SRT düz metindir; Not Defteri gibi herhangi bir metin düzenleyiciyle açılıp düzenlenebilir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Bir SRT altyazı bloğunun parçalarını gösteren şema: sıra numarası, okla ayrılmış başlangıç ve bitiş zamanı, metin satırları, boş satır; altta altyazının 2,5 saniye geri kaydırılmasını gösteren zaman çizelgesi." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">SRT bloğunun anatomisi</text>
+  <rect x="30" y="46" width="380" height="176" rx="10" class="sf sb"/>
+  <text x="50" y="80" class="b">42</text>
+  <text x="50" y="112" class="b p">00:42:12,700 --> 00:42:15,300</text>
+  <text x="50" y="144">Yarın sabah erkenden yola çıkıyoruz.</text>
+  <text x="50" y="172">Hazır ol!</text>
+  <text x="50" y="204" class="sm mu">(boş satır)</text>
+  <g class="sm">
+    <line x1="420" y1="76" x2="450" y2="76" class="st" fill="none"/><text x="456" y="80">Sıra numarası</text>
+    <line x1="420" y1="108" x2="450" y2="108" class="st" fill="none"/><text x="456" y="104">Başlangıç --> bitiş</text>
+    <text x="456" y="120" class="t2">saat:dakika:saniye,milisaniye</text>
+    <line x1="420" y1="156" x2="450" y2="156" class="st" fill="none"/><text x="456" y="160">Metin: 1–2 satır</text>
+    <line x1="420" y1="200" x2="450" y2="200" class="st" fill="none"/><text x="456" y="204">Blok ayırıcı</text>
+  </g>
+  <text x="30" y="262" class="b">Altyazı 2,5 sn geç geliyor → tüm zamanlardan 2,5 sn çıkar</text>
+  <line x1="40" y1="330" x2="690" y2="330" class="st" fill="none"/>
+  <g class="sm mid">
+    <line x1="100" y1="324" x2="100" y2="336" class="st" fill="none"/><text x="100" y="354">42:08</text>
+    <line x1="260" y1="324" x2="260" y2="336" class="st" fill="none"/><text x="260" y="354">42:10</text>
+    <line x1="420" y1="324" x2="420" y2="336" class="st" fill="none"/><text x="420" y="354">42:12</text>
+    <line x1="580" y1="324" x2="580" y2="336" class="st" fill="none"/><text x="580" y="354">42:14</text>
+  </g>
+  <rect x="276" y="282" width="208" height="30" rx="6" class="oks"/>
+  <text x="380" y="302" class="sm mid b">Konuşma 42:10,2 – 42:12,8</text>
+  <rect x="476" y="370" width="208" height="30" rx="6" class="dgs"/>
+  <text x="580" y="390" class="sm mid b">Altyazı 42:12,7 – 42:15,3</text>
+  <line x1="470" y1="378" x2="300" y2="318" class="sp sw" fill="none"/>
+  <text x="250" y="390" class="sm b p">−2,5 sn</text>
+</svg>
+      <figcaption>Üstte tek bir SRT bloğunun anatomisi. Altta, altyazının videodan 2,5 saniye geç geldiği durumda tüm zamanlardan 2,5 saniye çıkarılarak senkronizasyonun nasıl sağlandığı gösterilmiştir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">SRT dosyası nedir?</a></li>
+      <li><a href="#b2">SRT bloğu ve zaman kodu nasıl okunur?</a></li>
+      <li><a href="#b3">Altyazı geride kalıyorsa nasıl düzeltilir? Sabit kaydırma</a></li>
+      <li><a href="#b4">Altyazı giderek kayıyorsa: kare hızı (fps) farkı</a></li>
+      <li><a href="#b5">SRT ile VTT arasındaki fark nedir?</a></li>
+      <li><a href="#b6">Altyazıdaki Türkçe karakterler neden bozuk çıkar?</a></li>
+      <li><a href="#b7">SRT dosyası nasıl açılır, düzenlenir ve videoya eklenir?</a></li>
+      <li><a href="#b8">İyi bir altyazının ölçüleri</a></li>
+      <li><a href="#b9">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-altyazi-dosyasi-srt-nedir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../altyazi-araci/"><strong>Altyazı Düzenleme (SRT, VTT)</strong><span>SRT, VTT ve ASS altyazılarda zamanı kaydırın, fps hız farkını düzeltin, SRT-VTT dönüştürün, Windows-1254 kodlu dosyalardaki bozuk Türkçe karakterleri onarın. Dosya yüklenmez.</span></a></li>
+          <li><a href="../../zaman-kodu-cevir/"><strong>Video Zaman Kodu (Timecode) Kare Çevirici</strong><span>Zaman kodunu (timecode) kare sayısına, kare sayısını zaman koduna çevirin; drop-frame ve gerçek süre hesabıyla.</span></a></li>
+          <li><a href="../../turkce-karakter-donustur/"><strong>Türkçe Karakterleri İngilizce Karaktere Çevirme</strong><span>ç, ğ, ı, İ, ö, ş, ü harflerini İngilizce klavyedeki karşılıklarına çevirip Türkçe karaktersiz metin elde edin.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">SRT dosyası nedir?</h2>
+      <p>SRT (SubRip Text), video altyazıları için en yaygın kullanılan dosya biçimidir. Adını, altyazıları DVD'lerden metne çeviren eski bir programdan alır. Bir SRT dosyası yalnızca düz metin içerir; resim, yazı tipi ya da renk bilgisi taşımaz. Bu sadelik onu neredeyse tüm video oynatıcılar, televizyonlar, video düzenleme programları ve video paylaşım platformları tarafından desteklenen evrensel bir biçim yapar.</p>
+      <p>Dosyanın içinde, her biri bir altyazı satırını temsil eden bloklar art arda dizilir. Her blok ekranda ne zaman hangi yazının görüneceğini söyler. Video dosyasıyla aynı adı taşıyan bir SRT dosyası (film.mp4 ve film.srt gibi) aynı klasörde durduğunda çoğu oynatıcı altyazıyı otomatik yükler.</p>
+
+      <h2 id="b2">SRT bloğu ve zaman kodu nasıl okunur?</h2>
+      <p>Bir SRT bloğu dört parçadan oluşur ve bloklar arasında mutlaka bir boş satır bulunur. Zaman satırında başlangıç ve bitiş, iki tire ve büyüktür işaretinden oluşan bir okla ayrılır.</p>
+      <div class="rh-formula">42<br>00:42:12,700 --&gt; 00:42:15,300<br>Yarın sabah erkenden yola çıkıyoruz.<br>Hazır ol!</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Parça</th><th>Örnek</th><th>Anlamı</th></tr></thead>
+        <tbody>
+          <tr><td>Sıra numarası</td><td>42</td><td>Bloğun dosyadaki sırası; 1'den başlar</td></tr>
+          <tr><td>Saat</td><td>00</td><td>Videonun kaçıncı saati</td></tr>
+          <tr><td>Dakika</td><td>42</td><td>Dakika (00–59)</td></tr>
+          <tr><td>Saniye</td><td>12</td><td>Saniye (00–59)</td></tr>
+          <tr><td>Milisaniye</td><td>,700</td><td>Virgülden sonra üç hane: 0,7 saniye</td></tr>
+          <tr><td>Süre</td><td>15,300 − 12,700</td><td>Yazı ekranda 2,6 saniye kalır</td></tr>
+        </tbody>
+      </table></div>
+      <p>SRT'de milisaniye virgülle ayrılır; bu, biçimin Avrupa kökenli bir alışkanlığıdır. Video düzenleme programlarında gördüğünüz SS:DD:SN:KK biçimindeki zaman kodunun son hanesi ise milisaniye değil kare (frame) numarasıdır. 25 fps bir videoda 12. kare 12 ÷ 25 = 0,48 saniyedir. İki gösterim arasında çevirme yapmak için <a href="../../zaman-kodu-cevir/">zaman kodu çevirici</a>yi kullanabilirsiniz.</p>
+
+      <h2 id="b3">Altyazı geride kalıyorsa nasıl düzeltilir? Sabit kaydırma</h2>
+      <p>En sık karşılaşılan durum, altyazının filmin başından sonuna kadar aynı miktarda geç ya da erken gelmesidir. Bu genellikle altyazının farklı bir sürüm için (örneğin başında jenerik ya da logo olan bir kopya için) hazırlanmasından kaynaklanır. Çözüm, tüm zaman değerlerine aynı süreyi eklemek ya da çıkarmaktır.</p>
+      <ol class="ba-steps">
+        <li>Videoda belirgin bir konuşmanın başladığı anı not edin: örneğin 42:10,2.</li>
+        <li>Aynı cümlenin altyazısının SRT'deki başlangıç zamanına bakın: 00:42:12,700.</li>
+        <li>Farkı bulun: 42:12,7 − 42:10,2 = 2,5 saniye. Altyazı 2,5 saniye geç geliyor.</li>
+        <li>Tüm başlangıç ve bitiş zamanlarından 2,5 saniye çıkarın: 00:42:12,700 --&gt; 00:42:15,300 satırı 00:42:10,200 --&gt; 00:42:12,800 olur.</li>
+        <li>Videonun sonlarına doğru başka bir konuşmada kontrol edin. Fark hâlâ sıfıra yakınsa işlem tamamdır.</li>
+      </ol>
+      <p>Bu işlemi yüzlerce satır için elle yapmak yerine <a href="../../altyazi-araci/">altyazı düzenleme aracı</a>nda kaydırma süresini yazmanız yeterlidir; tüm zamanlar tek seferde güncellenir. Birçok oynatıcı da oynatma sırasında altyazıyı geçici olarak kaydırmaya izin verir, ancak dosyayı düzeltmek kalıcı çözümdür.</p>
+
+      <h2 id="b4">Altyazı giderek kayıyorsa: kare hızı (fps) farkı</h2>
+      <p>Altyazı filmin başında doğru, ortasında birkaç saniye geride, sonunda daha da gerideyse sabit bir kaydırma işe yaramaz. Bu durumun en yaygın nedeni, altyazının farklı kare hızındaki bir sürüm için hazırlanmış olmasıdır. Sinema filmleri genellikle 23,976 fps'tir; bazı yayın ve kopya sürümleri ise 25 fps'e hızlandırılır. 25 fps sürüm aynı kareleri daha hızlı oynattığı için yaklaşık %4 daha kısa sürer.</p>
+      <div class="rh-formula">Hız oranı = 23,976 ÷ 25 = 0,95904<br>Yeni zaman = eski zaman × 0,95904 (23,976 için hazırlanmış altyazı, 25 fps video)<br>Yeni zaman = eski zaman × 1,04271 (25 fps için hazırlanmış altyazı, 23,976 fps video)</div>
+      <p>Örnek: 23,976 fps sürüm için hazırlanmış bir altyazıda 01:00:00,000'da başlayan satır, 25 fps videoda 3.600 × 0,95904 = 3.452,54 saniyede, yani 00:57:32,544'te görünmelidir. Fark bir saatte yaklaşık 2,5 dakikaya ulaşır; bu yüzden fps uyumsuzluğu çok hızlı fark edilir.</p>
+      <p><a href="../../altyazi-araci/">Altyazı aracı</a>, 23,976 ile 25 fps arasındaki hız farkını düzeltme seçeneği sunar. Bazen hem fps farkı hem de sabit bir kayma birlikte bulunur; önce hız farkını, ardından sabit kaydırmayı düzeltmek en kolay yoldur.</p>
+
+      <h2 id="b5">SRT ile VTT arasındaki fark nedir?</h2>
+      <p>WebVTT (VTT), web sayfalarındaki video oynatıcılar için geliştirilmiş bir altyazı biçimidir ve SRT'ye çok benzer. Tarayıcılar web sayfasındaki videolara altyazı eklerken VTT biçimini kullanır. SRT'yi VTT'ye çevirmek çoğu zaman birkaç küçük değişiklikten ibarettir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>SRT</th><th>VTT</th></tr></thead>
+        <tbody>
+          <tr><td>Dosya başlığı</td><td>Yok</td><td>İlk satır &quot;WEBVTT&quot; olmalı</td></tr>
+          <tr><td>Milisaniye ayırıcı</td><td>Virgül: 00:01:02,500</td><td>Nokta: 00:01:02.500</td></tr>
+          <tr><td>Sıra numarası</td><td>Zorunlu</td><td>İsteğe bağlı (kimlik olarak)</td></tr>
+          <tr><td>Saat hanesi</td><td>Her zaman yazılır</td><td>Bir saatten kısa videolarda atlanabilir</td></tr>
+          <tr><td>Konum ve stil</td><td>Çok sınırlı</td><td>Konum, hizalama ve stil desteği</td></tr>
+          <tr><td>Tipik kullanım</td><td>Oynatıcılar, televizyonlar, düzenleme programları</td><td>Web sayfalarındaki video oynatıcılar</td></tr>
+        </tbody>
+      </table></div>
+      <p>Daha gelişmiş bir biçim olan ASS/SSA ise yazı tipi, renk, konum ve efekt gibi biçimlendirmeleri taşır; anime ve karaoke altyazılarında yaygındır. <a href="../../altyazi-araci/">Altyazı aracı</a> SRT, VTT ve ASS dosyalarını açabilir ve SRT ile VTT arasında dönüştürme yapar.</p>
+
+      <div class="ba-ad" data-slot="bilgi-altyazi-dosyasi-srt-nedir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Altyazıdaki Türkçe karakterler neden bozuk çıkar?</h2>
+      <p>Bilgisayarlar harfleri sayılarla saklar ve hangi sayının hangi harfe karşılık geldiğini bir <strong>karakter kodlaması</strong> belirler. Eski Türkçe altyazıların çoğu, Windows'un Türkçe kodlaması olan Windows-1254 ile kaydedilmiştir. Oynatıcı bu dosyayı Batı Avrupa kodlamasıyla okursa Türkçeye özgü harfler başka harflere dönüşür. Günümüzde önerilen evrensel kodlama UTF-8'dir; ancak UTF-8 dosya eski kodlamayla okunursa da farklı türde bir bozulma görülür.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Doğru harf</th><th>Windows-1254 dosya Batı Avrupa olarak okunursa</th><th>UTF-8 dosya Windows-1254 olarak okunursa</th></tr></thead>
+        <tbody>
+          <tr><td>ı</td><td>ý</td><td>Ä±</td></tr>
+          <tr><td>ş</td><td>þ</td><td>ÅŸ</td></tr>
+          <tr><td>ğ</td><td>ð</td><td>ÄŸ</td></tr>
+          <tr><td>İ</td><td>Ý</td><td>Ä°</td></tr>
+          <tr><td>Ş</td><td>Þ</td><td>Åž</td></tr>
+          <tr><td>Ğ</td><td>Ð</td><td>Äž</td></tr>
+        </tbody>
+      </table></div>
+      <p>Bozulmanın türüne bakarak sorunun hangi yönde olduğunu anlayabilirsiniz. Tek harflik değişimlerde (ý, þ, ð) dosya Windows-1254'tür ve yanlış okunmaktadır; iki karakterlik dizilerde (Ä±, ÅŸ) dosya UTF-8'dir ama eski kodlamayla okunmaktadır. En kalıcı çözüm dosyayı UTF-8 olarak yeniden kaydetmektir. Altyazı aracındaki karakter onarma seçeneği bu dönüşümleri otomatik yapar; konunun genel açıklaması <a href="../../bilgi-bankasi/turkce-karakter-sorunu-nasil-duzeltilir/">Türkçe karakter sorunu</a> yazımızdadır.</p>
+      <p>Eski bir televizyon ya da oynatıcı Türkçe harfleri hiçbir kodlamada gösteremiyorsa son çare olarak harfleri İngilizce karşılıklarına çevirebilirsiniz; <a href="../../turkce-karakter-donustur/">Türkçe karakter dönüştürücü</a> ç, ğ, ı, ö, ş, ü harflerini c, g, i, o, s, u'ya çevirir. Bu yöntem okunabilirliği azalttığı için yalnızca zorunlu durumlarda kullanılmalıdır.</p>
+
+      <h2 id="b7">SRT dosyası nasıl açılır, düzenlenir ve videoya eklenir?</h2>
+      <ul>
+        <li><strong>Açmak ve düzenlemek:</strong> SRT düz metin olduğu için Not Defteri ya da herhangi bir metin düzenleyiciyle açılır. Düzenledikten sonra dosyayı .srt uzantısı ve UTF-8 kodlamasıyla kaydedin; uzantının .txt'ye dönüşmediğinden emin olun.</li>
+        <li><strong>Bilgisayarda izlerken:</strong> SRT dosyasını videoyla aynı klasöre ve aynı adla koyun (film.mp4 ve film.srt). Birden fazla dil için film.tr.srt gibi dil kodu eklemek birçok oynatıcıda işe yarar.</li>
+        <li><strong>Televizyonda izlerken:</strong> USB bellekte video ve SRT aynı adla aynı klasörde durmalıdır. Bazı televizyonlar UTF-8 yerine Windows-1254 bekleyebilir; Türkçe harfler bozuksa diğer kodlamayı deneyin.</li>
+        <li><strong>Video paylaşım platformunda:</strong> Video yükledikten sonra altyazı bölümünden SRT ya da VTT dosyasını yükleyebilirsiniz; izleyici altyazıyı açıp kapatabilir.</li>
+        <li><strong>Kalıcı (gömülü) altyazı:</strong> Yazının görüntüye işlenmesi gerekiyorsa (sosyal medya videoları gibi) bir video düzenleme programında altyazıyı &quot;yakmanız&quot; gerekir. Bu yöntemde altyazı kapatılamaz ve sonradan düzeltilemez.</li>
+      </ul>
+
+      <h2 id="b8">İyi bir altyazının ölçüleri</h2>
+      <p>Altyazı hazırlarken ya da düzenlerken izleyicinin rahat okuyabilmesi için yaygın olarak benimsenen bazı kurallar vardır. Bu değerler kurumdan kuruma biraz farklılık gösterse de iyi bir başlangıç noktasıdır.</p>
+      <ul>
+        <li>Bir blokta en fazla iki satır kullanın ve her satırı yaklaşık 40 karakter civarında tutun.</li>
+        <li>Bir altyazı ekranda en az bir saniye, en fazla altı yedi saniye kalsın.</li>
+        <li>Okuma hızını saniyede yaklaşık 15–17 karakteri aşmayacak biçimde ayarlayın; çocuklara yönelik içerikte daha yavaş tutun.</li>
+        <li>Ardışık iki blok arasında birkaç karelik boşluk bırakın ki göz yeni altyazının geldiğini fark etsin.</li>
+        <li>Satırları anlam bütünlüğünü bozmayacak yerlerden bölün; edat ile isim, sıfat ile isim aynı satırda kalsın.</li>
+      </ul>
+
+      <h2 id="b9">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Milisaniyeyi saniye sanmak:</strong> 00:00:05,500 beş buçuk saniyedir; virgülden sonraki üç hane milisaniyedir.</li>
+        <li><strong>fps farkına sabit kaydırma uygulamak:</strong> Kayma giderek büyüyorsa önce hız oranını düzeltin.</li>
+        <li><strong>Boş satırları silmek:</strong> Bloklar arasındaki boş satır kalkarsa oynatıcı dosyayı okuyamaz ya da altyazılar birleşir.</li>
+        <li><strong>Dosyayı yanlış kodlamayla kaydetmek:</strong> Türkçe harfler bozulursa dosyayı UTF-8 olarak yeniden kaydedin.</li>
+        <li><strong>Sıra numarasını önemsememek:</strong> Satır ekleyip sildikten sonra numaralar atlanırsa bazı katı oynatıcılar hata verebilir; düzenleme sonrası yeniden numaralandırmak iyi bir alışkanlıktır.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>SRT dosyası nedir?</summary><p>SRT, her altyazı satırını sıra numarası, başlangıç ve bitiş zamanı ve metinle tanımlayan düz metin bir altyazı dosyasıdır. Neredeyse tüm video oynatıcılar, televizyonlar ve video platformları tarafından desteklenir.</p></details>
+      <details><summary>Altyazı geride kalıyorsa nasıl düzeltilir?</summary><p>Altyazı baştan sona aynı miktarda geç geliyorsa tüm başlangıç ve bitiş zamanlarından o süreyi çıkarırsınız. Farkı, videodaki bir konuşmanın başladığı an ile altyazıdaki zamanı karşılaştırarak bulabilirsiniz.</p></details>
+      <details><summary>Altyazı kaydırma nasıl yapılır?</summary><p>Bir altyazı düzenleme aracında kaydırma süresini artı ya da eksi saniye olarak yazarsınız ve tüm zamanlar birlikte güncellenir. Kayma video ilerledikçe büyüyorsa önce kare hızı farkını düzeltmeniz gerekir.</p></details>
+      <details><summary>SRT ve VTT farkı nedir?</summary><p>VTT, WEBVTT başlığıyla başlar, milisaniyeyi virgül yerine noktayla ayırır ve konum ile stil bilgisi taşıyabilir. Web sayfalarındaki video oynatıcılar VTT, masaüstü oynatıcılar ve televizyonlar daha çok SRT kullanır.</p></details>
+      <details><summary>SRT dosyası nasıl düzenlenir?</summary><p>SRT düz metin olduğu için Not Defteri gibi bir metin düzenleyiciyle açıp düzenleyebilirsiniz. Kaydederken uzantının .srt kalmasına, kodlamanın UTF-8 olmasına ve bloklar arasındaki boş satırların korunmasına dikkat edin.</p></details>
+      <details><summary>Altyazıdaki Türkçe karakterler neden bozuk çıkar?</summary><p>Dosyanın karakter kodlaması oynatıcının beklediğinden farklıdır. Eski Türkçe altyazılar çoğunlukla Windows-1254 ile kaydedilmiştir; dosyayı UTF-8 olarak yeniden kaydetmek ya da oynatıcıda kodlamayı değiştirmek sorunu çözer.</p></details>
+      <details><summary>Videoya altyazı nasıl eklenir?</summary><p>Bilgisayarda izlemek için SRT dosyasını videoyla aynı ad ve klasöre koymanız yeterlidir. Video platformlarında altyazı bölümünden dosyayı yüklersiniz. Görüntüye kalıcı yazı için video düzenleme programında altyazıyı gömmeniz gerekir.</p></details>
+      <details><summary>Zaman kodu formatı nasıl okunur?</summary><p>SRT'de zaman saat:dakika:saniye,milisaniye biçimindedir; 00:42:12,700 videonun 42. dakikasının 12,7. saniyesidir. Video programlarındaki SS:DD:SN:KK biçiminde ise son hane kare numarasıdır.</p></details>
+      <details><summary>23,976 ve 25 fps altyazı nasıl uyumlu hâle getirilir?</summary><p>23,976 fps için hazırlanmış altyazıyı 25 fps videoya uyarlamak için tüm zamanlar 0,95904 ile çarpılır; ters durumda 1,04271 ile çarpılır. Altyazı araçlarındaki fps dönüştürme seçeneği bu hesabı otomatik yapar.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.w3.org/TR/webvtt1/" rel="noopener">W3C – WebVTT: The Web Video Text Tracks Format</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../turkce-karakter-sorunu-nasil-duzeltilir/"><strong>Türkçe Karakter Sorunu Nasıl Düzeltilir? Bozuk ı, ş, ğ ve İ Harfleri</strong><span>Ã¼, ÅŸ, Ä± gibi bozuk harfler, UTF-8 metnin başka bir kodlamayla açılmasından olur. CSV, e-posta, altyazı ve web için kodlama seçimi, İ/ı sorunu ve çözüm adımları.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../a4-kagit-boyutu-kac-cm/"><strong>A4 Kağıt Boyutu Kaç cm, Kaç Piksel? A3, A5 ve Diğer Kağıt Ölçüleri</strong><span>A4 kağıt 21 × 29,7 cm (210 × 297 mm) ölçüsündedir; 300 DPI'da 2480 × 3508 pikseldir. A0–A8, B ve C serisi, Letter farkı, inç karşılıkları ve zarf ölçüleri.</span></a></li>
+          <li><a href="../cmyk-ve-rgb-farki-baski/"><strong>CMYK ve RGB Farkı Nedir? Baskıda Renkler Neden Farklı Çıkar</strong><span>RGB ekranın ışıkla, CMYK baskının mürekkeple renk üretme yöntemidir. Baskıda renk kayması, RGB'den CMYK'ye çevirme, matbaaya dosya hazırlama ve DPI.</span></a></li>
+          <li><a href="../dpi-ve-cozunurluk-nedir/"><strong>DPI ve Çözünürlük Nedir? Baskı İçin Fotoğraf Kaç Piksel Olmalı</strong><span>DPI, bir inçe düşen nokta sayısıdır; kaliteli baskı için 300 DPI kullanılır. 10x15, A4 ve poster için gereken piksel, DPI-PPI farkı ve cm-piksel çevirme.</span></a></li>
+          <li><a href="../fotografa-yazi-nasil-eklenir/"><strong>Fotoğrafa Yazı Nasıl Eklenir? Uygulamasız Resme Yazı Yazma Yolları</strong><span>Fotoğrafa yazı eklemek için resmi tarayıcıda açıp metni yazın, konum, boyut ve rengi ayarlayıp indirin. Türkçe karakter, tarih, filigran ve okunurluk ipuçları.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-altyazi-dosyasi-srt-nedir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

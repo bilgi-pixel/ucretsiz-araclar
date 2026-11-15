@@ -54,11 +54,17 @@ export async function load(slug) {
   return (await import(url)).default;
 }
 
+// derle.mjs yayımlanacak makale kümesini buraya bildirir
+let YAYINDA = null;
+export const setYayinda = (set) => { YAYINDA = set; };
+
 // Metin içi biçim: izinli etiketler korunur, gerisi kaçırılır; [[arac:slug|metin]] bağlantıya döner.
 export function inline(s, depth = 2) {
   const up = '../'.repeat(depth);
   const keep = [];
   let t = String(s).replace(/\[\[(arac|bilgi|rehber):([a-z0-9-]+)\|([^\]]+)\]\]/g, (_, k, slug, txt) => {
+    // henüz yayımlanmamış Bilgi Bankası makalesine bağlantı verilmez (kırık bağlantı olmasın); metin düz kalır
+    if (k === 'bilgi' && YAYINDA && !YAYINDA.has(slug)) { keep.push(esc(txt)); return `\u0000${keep.length - 1}\u0000`; }
     const href = k === 'arac' ? `${up}${slug}/` : k === 'rehber' ? `${up}rehber/${slug}/` : `${up}${BOLUM}/${slug}/`;
     keep.push(`<a href="${href}">${esc(txt)}</a>`); return `\u0000${keep.length - 1}\u0000`;
   });

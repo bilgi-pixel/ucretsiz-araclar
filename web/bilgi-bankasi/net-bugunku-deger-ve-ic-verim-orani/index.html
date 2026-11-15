@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Net Bugünkü Değer (NBD) ve İç Verim Oranı (İVO) Hesaplama</title>
+  <meta name="description" content="NBD, gelecekteki nakit akışlarının bugüne indirgenmiş toplamından yatırımın çıkarılmasıdır; İVO, NBD'yi sıfır yapan orandır. Formül, örnek, Excel ve karar kuralı.">
+  <meta name="keywords" content="net bugünkü değer nedir, nbd hesaplama, iç verim oranı nedir, irr hesaplama, npv formülü, yatırım değerlendirme yöntemleri, iskonto oranı nasıl seçilir, excel npv irr">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/net-bugunku-deger-ve-ic-verim-orani/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Net Bugünkü Değer (NBD) ve İç Verim Oranı (İVO) Hesaplama">
+  <meta property="og:description" content="NBD, gelecekteki nakit akışlarının bugüne indirgenmiş toplamından yatırımın çıkarılmasıdır; İVO, NBD'yi sıfır yapan orandır. Formül, örnek, Excel ve karar kuralı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/net-bugunku-deger-ve-ic-verim-orani/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Net Bugünkü Değer ve İç Verim Oranı Nedir? NBD ve İVO Hesaplama","description":"NBD, gelecekteki nakit akışlarının bugüne indirgenmiş toplamından yatırımın çıkarılmasıdır; İVO, NBD'yi sıfır yapan orandır. Formül, örnek, Excel ve karar kuralı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/net-bugunku-deger-ve-ic-verim-orani/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1188,"keywords":"net bugünkü değer nedir, nbd hesaplama, iç verim oranı nedir, irr hesaplama, npv formülü, yatırım değerlendirme yöntemleri, iskonto oranı nasıl seçilir, excel npv irr","articleSection":"İşletme ve E-ticaret","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İşletme ve E-ticaret","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#isletme"},{"@type":"ListItem","position":4,"name":"Net Bugünkü Değer ve İç Verim Oranı Nedir? NBD ve İVO Hesaplama"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Net bugünkü değer nedir?","acceptedAnswer":{"@type":"Answer","text":"Net bugünkü değer, bir yatırımın gelecekteki nakit akışlarının seçilen iskonto oranıyla bugüne indirgenmiş toplamından ilk yatırım tutarının çıkarılmasıyla bulunan değerdir. Yatırımın beklenen getiriyi sağladıktan sonra ne kadar ek değer yarattığını gösterir."}},{"@type":"Question","name":"NBD nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Her yılın nakit akışını (1 + iskonto oranı) üzeri yıl sayısına bölerek bugünkü değerini bulursunuz. Bu değerleri toplayıp ilk yatırımı çıkardığınızda NBD elde edilir; elektronik tablolarda NPV işleviyle de hesaplanabilir."}},{"@type":"Question","name":"İç verim oranı (IRR) nedir?","acceptedAnswer":{"@type":"Answer","text":"İç verim oranı, bir yatırımın net bugünkü değerini sıfır yapan iskonto oranıdır ve yatırımın kendi yıllık getiri oranını gösterir. İşletmenin beklediği getiriden yüksekse yatırım genellikle kabul edilebilir bulunur."}},{"@type":"Question","name":"NBD pozitifse ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Pozitif NBD, yatırımın iskonto oranı olarak belirlediğiniz asgari getiriyi sağladığını ve bunun üzerine bugünkü para cinsinden ek değer yarattığını gösterir. Negatif NBD ise beklenen getirinin karşılanmadığı anlamına gelir."}},{"@type":"Question","name":"İskonto oranı nasıl seçilir?","acceptedAnswer":{"@type":"Answer","text":"İskonto oranı; paranın alternatif getirisi, yatırımın finansman maliyeti ve projenin riskine göre belirlenir. Nakit akışları enflasyonlu fiyatlarla tahmin edildiyse nominal, bugünkü fiyatlarla tahmin edildiyse reel oran kullanılmalıdır."}},{"@type":"Question","name":"Geri ödeme süresi yöntemi nedir?","acceptedAnswer":{"@type":"Answer","text":"Geri ödeme süresi, ilk yatırımın nakit girişleriyle kaç yılda geri kazanıldığını gösterir. Basit yöntem paranın zaman değerini dikkate almaz; iskontolu yöntem ise indirgenmiş akışları kullandığı için daha uzun bir süre verir."}},{"@type":"Question","name":"Excel'de NPV ve IRR nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"NBD için NPV işlevine oran ve birinci yıldan itibaren akışlar verilir, ilk yatırım işlevin dışında eklenir. İVO için IRR işlevine ilk yatırım dahil tüm akışlar verilir. Türkçe sürümde işlev adları NBD ve İÇ_VERİM_ORANI'dır."}},{"@type":"Question","name":"NBD ile İVO farklı sonuç verirse hangisine bakılır?","acceptedAnswer":{"@type":"Answer","text":"Birbirini dışlayan projeler arasında seçim yaparken genellikle NBD esas alınır, çünkü işletmeye kazandırılan değeri TL olarak gösterir ve daha gerçekçi bir yeniden yatırım varsayımına dayanır. İVO kontrol amaçlı kullanılır."}},{"@type":"Question","name":"Kârlılık endeksi nedir?","acceptedAnswer":{"@type":"Answer","text":"Kârlılık endeksi, nakit girişlerinin bugünkü değerleri toplamının ilk yatırıma bölünmesiyle bulunur. Endeksin 1'in üzerinde olması pozitif NBD ile aynı anlamı taşır ve sınırlı bütçeyi projeler arasında paylaştırırken kullanışlıdır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#isletme">İşletme ve E-ticaret</a></li></ol><h1>Net Bugünkü Değer ve İç Verim Oranı Nedir? NBD ve İVO Hesaplama</h1><p class="lead">Net bugünkü değer (NBD, NPV), bir yatırımın gelecekte sağlayacağı nakit akışlarının <strong>seçilen iskonto oranıyla bugüne indirgenip toplanması ve ilk yatırım tutarının çıkarılmasıyla</strong> bulunur; sonuç pozitifse yatırım, beklenen getirinin üzerinde değer yaratır. İç verim oranı (İVO, IRR) ise NBD'yi tam sıfır yapan iskonto oranıdır ve yatırımın kendi getiri oranını gösterir. Bu sayfada iki yöntemin formüllerini, adım adım çözümlü bir örneği, iskonto oranının nasıl seçileceğini, geri ödeme süresini, Excel'de hesaplamayı ve iki yöntem farklı sonuç verdiğinde hangisine bakılacağını bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>NBD = Σ [nakit akışı<sub>t</sub> ÷ (1 + r)<sup>t</sup>] − ilk yatırım; r iskonto oranı, t yıl sayısıdır.</li>
+        <li>NBD &gt; 0 ise yatırım, iskonto oranı kadar getiriyi karşılayıp üzerine değer katar; NBD &lt; 0 ise beklenen getiriyi sağlamaz.</li>
+        <li>İç verim oranı, NBD'yi sıfır yapan orandır; genellikle deneme-yanılma ya da hesap aracıyla bulunur.</li>
+        <li>Örnek: 100.000 TL yatırım ve 4 yıl boyunca 30, 35, 40, 45 bin TL akışla %15 iskontoda NBD ≈ 4.582 TL, İVO ≈ %17,1'dir.</li>
+        <li>İskonto oranı, paranın alternatif getirisi ile yatırımın riskini yansıtır; yüksek enflasyon dönemlerinde nominal ve reel oranlar karıştırılmamalıdır.</li>
+        <li>İki yöntem farklı proje öneriyorsa karar için genellikle NBD esas alınır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Örnek yatırımın net bugünkü değerinin iskonto oranına göre değişimini gösteren eğri: yüzde 0'da 50.000 TL, yüzde 15'te 4.582 TL, yüzde 17,1'de sıfır (iç verim oranı) ve daha yüksek oranlarda negatif." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">NBD profili: iskonto oranı arttıkça NBD düşer</text>
+  <line x1="60" y1="60" x2="60" y2="370" class="st" fill="none"/>
+  <line x1="60" y1="270" x2="680" y2="270" class="st sw" fill="none"/>
+  <g class="sm end">
+    <text x="54" y="74">50.000</text><text x="54" y="174">25.000</text><text x="54" y="274">0</text><text x="54" y="374">−25.000</text>
+  </g>
+  <line x1="60" y1="170" x2="680" y2="170" class="sb dash" fill="none"/>
+  <line x1="60" y1="370" x2="680" y2="370" class="sb dash" fill="none"/>
+  <g class="sm mid">
+    <text x="60" y="292">%0</text><text x="160" y="292">%5</text><text x="260" y="292">%10</text><text x="360" y="292">%15</text>
+    <text x="460" y="292">%20</text><text x="560" y="292">%25</text><text x="660" y="292">%30</text>
+  </g>
+  <polyline points="60,70 110,108 160,142 210,174 260,202 310,228 360,252 410,273 460,293 510,312 560,329 610,344 660,359" class="sp sw" fill="none"/>
+  <circle cx="360" cy="252" r="7" class="ok"/>
+  <text x="360" y="232" class="sm b mid ok">%15 → NBD 4.582 TL</text>
+  <circle cx="402" cy="270" r="7" class="dg"/>
+  <text x="430" y="252" class="sm b dg">İVO ≈ %17,1 (NBD = 0)</text>
+  <rect x="420" y="70" width="270" height="130" rx="10" class="sf sb"/>
+  <text x="436" y="96" class="b">Nakit akışları (TL)</text>
+  <text x="436" y="120" class="sm">0. yıl: −100.000</text>
+  <text x="436" y="142" class="sm">1. yıl: 30.000 · 2. yıl: 35.000</text>
+  <text x="436" y="164" class="sm">3. yıl: 40.000 · 4. yıl: 45.000</text>
+  <text x="436" y="188" class="sm t2">İskontosuz toplam: +50.000</text>
+  <text x="360" y="404" class="sm mid">İskonto oranı (yıllık)</text>
+</svg>
+      <figcaption>Eğri, aynı nakit akışlarının farklı iskonto oranlarıyla bugünkü değerini gösterir. Oran yükseldikçe NBD düşer; eğrinin sıfır çizgisini kestiği nokta iç verim oranıdır. %15 gibi İVO'nun altındaki her oran pozitif NBD verir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Paranın zaman değeri: neden indirgeme yapılır?</a></li>
+      <li><a href="#b2">Net bugünkü değer nedir, nasıl hesaplanır?</a></li>
+      <li><a href="#b3">Adım adım çözümlü örnek</a></li>
+      <li><a href="#b4">İç verim oranı (İVO, IRR) nedir?</a></li>
+      <li><a href="#b5">İskonto oranı nasıl seçilir?</a></li>
+      <li><a href="#b6">Geri ödeme süresi yöntemi nedir?</a></li>
+      <li><a href="#b7">Excel'de NPV ve IRR nasıl hesaplanır?</a></li>
+      <li><a href="#b8">NBD ile İVO farklı sonuç verirse hangisine bakılır?</a></li>
+      <li><a href="#b9">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-net-bugunku-deger-ve-ic-verim-orani-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../net-bugunku-deger-hesapla/"><strong>Net Bugünkü Değer (NBD) Hesaplama</strong><span>Yatırımın yıllık nakit akışlarını bugüne indirgeyin; net bugünkü değeri (NBD) ve kârlılık endeksini görün.</span></a></li>
+          <li><a href="../../ic-verim-orani-hesapla/"><strong>İç Verim Oranı (IRR) Hesaplama</strong><span>İlk yatırım ve dönemlik nakit akışlarından iç verim oranını (IRR) bulun; iskonto oranıyla karşılaştırın.</span></a></li>
+          <li><a href="../../bugunku-deger-hesapla/"><strong>Bugünkü Değer (PV) Hesaplama</strong><span>İleride alacağınız ya da ödeyeceğiniz bir tutarın bugünkü değerini (PV) iskonto oranına göre hesaplayın.</span></a></li>
+          <li><a href="../../geri-odeme-suresi-hesapla/"><strong>Yatırımın Geri Ödeme Süresi Hesaplama</strong><span>Yatırımın kendini kaç yıl ve kaç ayda amorti ettiğini basit ya da iskontolu yöntemle bulun.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Paranın zaman değeri: neden indirgeme yapılır?</h2>
+      <p>Bugün elinizdeki 100.000 TL, beş yıl sonra alacağınız 100.000 TL'den daha değerlidir. Çünkü bugünkü parayı faize yatırarak, başka bir işe yatırarak ya da borç kapatarak kullanabilirsiniz; ayrıca enflasyon ve belirsizlik gelecekteki paranın değerini azaltır. Bu ilkeye <strong>paranın zaman değeri</strong> denir.</p>
+      <p>Yatırım kararlarında farklı yıllarda gelen nakit akışlarını karşılaştırabilmek için hepsini aynı zamana, bugüne taşımak gerekir. Bu işleme <strong>indirgeme</strong> (iskonto) denir ve bileşik faizin tersidir. Gelecekteki bir tutarı bugüne çevirmek için (1 + r)<sup>t</sup> ile bölersiniz. Bileşik faizin mantığını <a href="../../bilgi-bankasi/bilesik-faiz-nedir/">bileşik faiz nedir</a> yazımız, tek bir tutarın bugünkü değerini hesaplamayı <a href="../../bugunku-deger-hesapla/">bugünkü değer hesaplama aracı</a> gösterir.</p>
+      <div class="rh-formula">Bugünkü değer (BD) = gelecekteki tutar ÷ (1 + r)^t<br>Örnek: 2 yıl sonra alınacak 35.000 TL, %15 iskontoyla 35.000 ÷ 1,15² ≈ 26.465 TL eder.</div>
+
+      <h2 id="b2">Net bugünkü değer nedir, nasıl hesaplanır?</h2>
+      <p>Net bugünkü değer, bir yatırımın tüm nakit girişlerinin bugünkü değerleri toplamından ilk yatırım tutarının (ve varsa diğer çıkışların bugünkü değerinin) çıkarılmasıdır. Seçtiğiniz iskonto oranı, yatırımdan beklediğiniz asgari getiridir; NBD bu getiriyi sağladıktan sonra yatırımın size ne kadar ek değer bıraktığını TL olarak söyler.</p>
+      <div class="rh-formula">NBD = −I₀ + NA₁ ÷ (1 + r)¹ + NA₂ ÷ (1 + r)² + … + NAₙ ÷ (1 + r)ⁿ<br>I₀: ilk yatırım · NAₜ: t. yılın net nakit akışı · r: iskonto oranı</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>NBD sonucu</th><th>Anlamı</th><th>Karar</th></tr></thead>
+        <tbody>
+          <tr><td>NBD &gt; 0</td><td>Yatırım, iskonto oranı kadar getiriyi sağlayıp üzerine değer katar</td><td>Kabul edilebilir</td></tr>
+          <tr><td>NBD = 0</td><td>Yatırım tam olarak beklenen getiriyi sağlar</td><td>Kayıtsız</td></tr>
+          <tr><td>NBD &lt; 0</td><td>Yatırım beklenen getirinin altında kalır</td><td>Reddedilir ya da yeniden değerlendirilir</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b3">Adım adım çözümlü örnek</h2>
+      <p>Bir işletme 100.000 TL'lik bir makine almayı düşünüyor. Makinenin dört yıl boyunca yıl sonlarında sırasıyla 30.000, 35.000, 40.000 ve 45.000 TL net nakit girişi sağlaması bekleniyor. İşletmenin bu tür yatırımlardan beklediği getiri, örnek olarak yıllık %15 olsun.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Yıl</th><th>Nakit akışı (TL)</th><th>İndirgeme çarpanı (1,15^t)</th><th>Bugünkü değer (TL)</th><th>Kümülatif BD (TL)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>−100.000</td><td>1,0000</td><td>−100.000</td><td>−100.000</td></tr>
+          <tr><td>1</td><td>30.000</td><td>1,1500</td><td>26.087</td><td>−73.913</td></tr>
+          <tr><td>2</td><td>35.000</td><td>1,3225</td><td>26.465</td><td>−47.448</td></tr>
+          <tr><td>3</td><td>40.000</td><td>1,5209</td><td>26.301</td><td>−21.147</td></tr>
+          <tr><td>4</td><td>45.000</td><td>1,7490</td><td>25.729</td><td>4.582</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Son satırdaki kümülatif değer net bugünkü değerdir: yaklaşık 4.582 TL.</p>
+      <p>NBD pozitif olduğu için yatırım, %15 beklenen getiriyi karşılayıp bugünkü para cinsinden yaklaşık 4.582 TL ek değer yaratır. İndirgeme yapılmasaydı toplam kazanç 50.000 TL görünecekti; aradaki fark paranın zaman değeridir.</p>
+      <p>Kârlılık endeksi de bu tablodan çıkar: girişlerin bugünkü değeri toplamı 104.582 TL, ilk yatırım 100.000 TL olduğundan endeks 104.582 ÷ 100.000 ≈ 1,05'tir. Endeksin 1'in üzerinde olması pozitif NBD ile aynı anlamı taşır. Bu hesabı kendi rakamlarınızla <a href="../../net-bugunku-deger-hesapla/">net bugünkü değer hesaplama aracı</a>nda yapabilirsiniz.</p>
+
+      <h2 id="b4">İç verim oranı (İVO, IRR) nedir?</h2>
+      <p>İç verim oranı, bir yatırımın NBD'sini sıfıra eşitleyen iskonto oranıdır. Başka bir deyişle, yatırımın nakit akışlarının kendi içinde ürettiği yıllık getiri oranıdır. İVO, işletmenin beklediği getiriden (iskonto oranından) yüksekse yatırım kabul edilebilir; düşükse yatırım beklentiyi karşılamaz.</p>
+      <div class="rh-formula">0 = −I₀ + Σ NAₜ ÷ (1 + İVO)^t<br>Karar: İVO &gt; beklenen getiri → kabul · İVO &lt; beklenen getiri → ret</div>
+      <p>Bu denklem genellikle doğrudan çözülemez; oran deneme yanılmayla daraltılarak bulunur. Örnekte %15'te NBD +4.582, %20'de −5.845 TL çıkar. Sıfır noktası bu ikisinin arasındadır; denemeleri sürdürdüğünüzde İVO'nun yaklaşık %17,1 olduğunu görürsünüz. Doğrusal ara değer tahmini de yakın bir sonuç verir: 15 + 5 × 4.582 ÷ (4.582 + 5.845) ≈ %17,2.</p>
+      <p><a href="../../ic-verim-orani-hesapla/">İç verim oranı hesaplama aracı</a> bu aramayı otomatik yapar; dönem aylıksa yıllık bileşik karşılığını da gösterir ve nakit akışları birden fazla kez işaret değiştiriyorsa birden çok İVO olabileceği konusunda uyarır.</p>
+
+      <h2 id="b5">İskonto oranı nasıl seçilir?</h2>
+      <p>İskonto oranı, NBD hesabının en kritik ve en tartışmalı girdisidir. Oran ne kadar yüksek seçilirse gelecekteki nakit akışları o kadar küçülür ve aynı proje daha az cazip görünür. Oran genellikle şu bileşenler düşünülerek belirlenir:</p>
+      <ul>
+        <li><strong>Alternatif getiri:</strong> Aynı parayı benzer riskli başka bir yere yatırsaydınız elde edeceğiniz getiri. Risksiz bir alternatif olarak devlet tahvili ya da mevduat faizi başlangıç noktası olabilir.</li>
+        <li><strong>Sermaye maliyeti:</strong> Yatırım kredi ile finanse ediliyorsa kredi faizi, öz kaynakla finanse ediliyorsa ortakların beklediği getiri; ikisinin ağırlıklı ortalaması sık kullanılır.</li>
+        <li><strong>Risk primi:</strong> Belirsizliği yüksek, yeni bir pazara giren ya da teknolojik riski olan projeler için orana ek pay eklenir.</li>
+        <li><strong>Enflasyon:</strong> Nakit akışlarını gelecekteki fiyatlarla (nominal) tahmin ediyorsanız nominal oran, bugünkü fiyatlarla (reel) tahmin ediyorsanız reel oran kullanın. İkisini karıştırmak, özellikle yüksek enflasyon dönemlerinde sonucu tamamen bozar.</li>
+      </ul>
+      <p>Tek bir orana güvenmek yerine birkaç farklı oranla hesap yapıp NBD'nin nasıl değiştiğine bakmak (duyarlılık analizi) daha sağlıklıdır. Enflasyonun paranın değerine etkisini <a href="../../bilgi-bankasi/enflasyona-gore-paranin-degeri/">enflasyona göre paranın değeri</a> yazımız anlatır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-net-bugunku-deger-ve-ic-verim-orani-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Geri ödeme süresi yöntemi nedir?</h2>
+      <p>Geri ödeme süresi, yatırımın ilk tutarının nakit girişleriyle kaç yılda geri kazanıldığını gösterir. Hesaplaması kolay ve sezgisel olduğu için KOBİ'lerde sık kullanılır; ancak geri ödemeden sonraki nakit akışlarını hiç dikkate almaz.</p>
+      <ol class="ba-steps">
+        <li><strong>Basit geri ödeme:</strong> Kümülatif nakit akışları 30.000, 65.000 ve 105.000 TL'dir. 100.000 TL'ye 2. yıldan sonra 35.000 TL kalır; 3. yılın 40.000 TL'lik akışının 35.000 ÷ 40.000 = 0,875'i gerekir. Süre yaklaşık 2,9 yıl, yani 2 yıl 10,5 aydır.</li>
+        <li><strong>İskontolu geri ödeme:</strong> Tablodaki bugünkü değerlerle 3. yıl sonunda 21.147 TL eksik kalır; 4. yılın 25.729 TL'lik bugünkü değerinin 21.147 ÷ 25.729 ≈ 0,82'si gerekir. Süre yaklaşık 3,8 yıldır.</li>
+      </ol>
+      <p>İskontolu geri ödeme süresi, paranın zaman değerini hesaba kattığı için her zaman basit geri ödeme süresinden uzundur. İki yöntemi birlikte <a href="../../geri-odeme-suresi-hesapla/">geri ödeme süresi hesaplama aracı</a>yla görebilirsiniz.</p>
+
+      <h2 id="b7">Excel'de NPV ve IRR nasıl hesaplanır?</h2>
+      <p>Elektronik tablolarda NBD için NPV (Türkçe sürümde NBD), İVO için IRR (Türkçe sürümde İÇ_VERİM_ORANI) işlevleri bulunur. Nakit akışlarını alt alta yazdığınızı varsayalım: B1 hücresinde −100.000, B2–B5 hücrelerinde 30.000, 35.000, 40.000 ve 45.000.</p>
+      <ul>
+        <li><strong>NBD:</strong> =NPV(0,15; B2:B5) + B1. NPV işlevi ilk değeri birinci dönemin sonunda kabul eder; bu yüzden bugün yapılan ilk yatırım işlevin dışında, ayrıca eklenir.</li>
+        <li><strong>İVO:</strong> =IRR(B1:B5). Bu işlevde ilk yatırım aralığın içinde yer alır, çünkü işlev NBD'yi sıfır yapan oranı arar.</li>
+        <li><strong>Düzensiz tarihler:</strong> Nakit akışları eşit aralıklı değilse tarihleri de dikkate alan XNPV ve XIRR işlevleri kullanılır.</li>
+        <li><strong>Ondalık ayırıcı:</strong> Türkçe bölge ayarlarında işlev bağımsız değişkenleri noktalı virgülle, ondalıklar virgülle yazılır.</li>
+      </ul>
+      <p>En sık yapılan hata, ilk yatırımı NPV işlevinin aralığına dahil etmektir. Bu durumda tüm akışlar bir dönem fazla indirgenir ve NBD olduğundan düşük çıkar.</p>
+
+      <h2 id="b8">NBD ile İVO farklı sonuç verirse hangisine bakılır?</h2>
+      <p>Tek bir projeyi kabul ya da ret için iki yöntem genellikle aynı sonucu verir. Ancak birbirini dışlayan iki proje arasında seçim yaparken çelişebilirler. Örnek olarak 100.000 TL'lik iki projeyi düşünelim: A projesi dört yılda 60.000, 40.000, 20.000 ve 10.000 TL; B projesi ise ilk üç yıl hiçbir şey, dördüncü yıl 170.000 TL getiriyor.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Proje</th><th>İVO</th><th>NBD (%5 iskonto)</th><th>NBD (%15 iskonto)</th></tr></thead>
+        <tbody>
+          <tr><td>A (erken nakit)</td><td>≈ %15,9</td><td>≈ 18.928 TL</td><td>≈ 1.288 TL</td></tr>
+          <tr><td>B (geç nakit)</td><td>≈ %14,2</td><td>≈ 39.859 TL</td><td>≈ −2.802 TL</td></tr>
+        </tbody>
+      </table></div>
+      <p>İVO'ya bakıldığında A daha cazip görünür. Ancak beklenen getiri %5 ise B'nin NBD'si iki kattan fazladır; yani işletmeye bugünkü para cinsinden daha çok değer katar. Beklenen getiri %15 olduğunda ise B negatife düşer ve A öne geçer. Bu çelişkinin nedeni, İVO'nun ara nakit akışlarının yine İVO oranında yeniden yatırılabileceğini varsaymasıdır; NBD ise iskonto oranında yeniden yatırım varsayar ve bu genellikle daha gerçekçidir.</p>
+      <p>Bu nedenle finans literatüründe birbirini dışlayan projeler arasında seçimde NBD esas alınır, İVO ise getiriyi oran olarak anlatmak ve kontrol amacıyla kullanılır. Nakit akışları birden fazla kez işaret değiştiren projelerde (örneğin ortada büyük bir yenileme yatırımı olan) birden çok İVO çıkabileceği için NBD'ye güvenmek daha da önemlidir.</p>
+
+      <h2 id="b9">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Nominal akışları reel oranla indirgemek:</strong> Enflasyonlu akışlar enflasyonsuz oranla indirgenirse NBD olduğundan çok yüksek çıkar.</li>
+        <li><strong>Excel NPV işlevine ilk yatırımı dahil etmek:</strong> Tüm akışlar bir yıl fazla indirgenir.</li>
+        <li><strong>Batık maliyetleri hesaba katmak:</strong> Karar öncesinde zaten harcanmış ve geri alınamayacak tutarlar nakit akışına eklenmez.</li>
+        <li><strong>Vergi ve işletme sermayesini unutmak:</strong> Nakit akışları vergi sonrası olmalı; stok ve alacak artışı gibi işletme sermayesi ihtiyaçları da düşülmelidir.</li>
+        <li><strong>Tek senaryoya güvenmek:</strong> İyimser, temel ve kötümser senaryolarla hesap yapmak riski görünür kılar.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Net bugünkü değer nedir?</summary><p>Net bugünkü değer, bir yatırımın gelecekteki nakit akışlarının seçilen iskonto oranıyla bugüne indirgenmiş toplamından ilk yatırım tutarının çıkarılmasıyla bulunan değerdir. Yatırımın beklenen getiriyi sağladıktan sonra ne kadar ek değer yarattığını gösterir.</p></details>
+      <details><summary>NBD nasıl hesaplanır?</summary><p>Her yılın nakit akışını (1 + iskonto oranı) üzeri yıl sayısına bölerek bugünkü değerini bulursunuz. Bu değerleri toplayıp ilk yatırımı çıkardığınızda NBD elde edilir; elektronik tablolarda NPV işleviyle de hesaplanabilir.</p></details>
+      <details><summary>İç verim oranı (IRR) nedir?</summary><p>İç verim oranı, bir yatırımın net bugünkü değerini sıfır yapan iskonto oranıdır ve yatırımın kendi yıllık getiri oranını gösterir. İşletmenin beklediği getiriden yüksekse yatırım genellikle kabul edilebilir bulunur.</p></details>
+      <details><summary>NBD pozitifse ne anlama gelir?</summary><p>Pozitif NBD, yatırımın iskonto oranı olarak belirlediğiniz asgari getiriyi sağladığını ve bunun üzerine bugünkü para cinsinden ek değer yarattığını gösterir. Negatif NBD ise beklenen getirinin karşılanmadığı anlamına gelir.</p></details>
+      <details><summary>İskonto oranı nasıl seçilir?</summary><p>İskonto oranı; paranın alternatif getirisi, yatırımın finansman maliyeti ve projenin riskine göre belirlenir. Nakit akışları enflasyonlu fiyatlarla tahmin edildiyse nominal, bugünkü fiyatlarla tahmin edildiyse reel oran kullanılmalıdır.</p></details>
+      <details><summary>Geri ödeme süresi yöntemi nedir?</summary><p>Geri ödeme süresi, ilk yatırımın nakit girişleriyle kaç yılda geri kazanıldığını gösterir. Basit yöntem paranın zaman değerini dikkate almaz; iskontolu yöntem ise indirgenmiş akışları kullandığı için daha uzun bir süre verir.</p></details>
+      <details><summary>Excel'de NPV ve IRR nasıl hesaplanır?</summary><p>NBD için NPV işlevine oran ve birinci yıldan itibaren akışlar verilir, ilk yatırım işlevin dışında eklenir. İVO için IRR işlevine ilk yatırım dahil tüm akışlar verilir. Türkçe sürümde işlev adları NBD ve İÇ_VERİM_ORANI'dır.</p></details>
+      <details><summary>NBD ile İVO farklı sonuç verirse hangisine bakılır?</summary><p>Birbirini dışlayan projeler arasında seçim yaparken genellikle NBD esas alınır, çünkü işletmeye kazandırılan değeri TL olarak gösterir ve daha gerçekçi bir yeniden yatırım varsayımına dayanır. İVO kontrol amaçlı kullanılır.</p></details>
+      <details><summary>Kârlılık endeksi nedir?</summary><p>Kârlılık endeksi, nakit girişlerinin bugünkü değerleri toplamının ilk yatırıma bölünmesiyle bulunur. Endeksin 1'in üzerinde olması pozitif NBD ile aynı anlamı taşır ve sınırlı bütçeyi projeler arasında paylaştırırken kullanışlıdır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; yatırım tavsiyesi değildir; önemli kararlar için mali müşavirinize ya da bir finans uzmanına danışın. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.tcmb.gov.tr/" rel="noopener">T.C. Merkez Bankası – Faiz ve enflasyon istatistikleri</a></li>
+        <li><a href="https://www.kosgeb.gov.tr/" rel="noopener">KOSGEB</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../bilesik-faiz-nedir/"><strong>Bileşik Faiz Nedir, Nasıl Hesaplanır? Basit Faizle Farkı ve Örnekler</strong><span>Bileşik faiz, faizin anaparaya eklenip sonraki dönemde onun da faiz kazanmasıdır: A = P × (1 + r/n)^(n·t). Basit faizle farkı, 72 kuralı, efektif faiz ve örnekler.</span></a></li>
+          <li><a href="../enflasyona-gore-paranin-degeri/"><strong>Enflasyona Göre Paranın Değeri ve Reel Getiri Nasıl Hesaplanır?</strong><span>Geçmişteki bir tutarın bugünkü değeri TÜFE endeksleri oranıyla, reel getiri Fisher denklemiyle bulunur. Formüller, maaş erimesi ve aylıktan yıllığa örnekler.</span></a></li>
+          <li><a href="../amortisman-nasil-hesaplanir/"><strong>Amortisman Nedir, Nasıl Hesaplanır? Normal ve Azalan Bakiyeler Yöntemi</strong><span>Normal amortisman = maliyet × (1 ÷ faydalı ömür). Azalan bakiyelerde oran iki katıdır, %50'yi geçemez. Faydalı ömür tablosu, 2026 gider sınırı, binek araç ve kıst.</span></a></li>
+          <li><a href="../bagkur-primi-ne-kadar/"><strong>Bağ-Kur Primi Ne Kadar, Nasıl Hesaplanır? 2026 Esnaf Rehberi</strong><span>Bağ-Kur primi, prime esas kazancın %35,75'idir; 2026'da alt sınırdan aylık 11.808,23 TL, 5 puan indirimle 10.156,73 TL ödenir. Hesaplama, ödeme günü ve emeklilik.</span></a></li>
+          <li><a href="../basabas-noktasi-nedir/"><strong>Başabaş Noktası Nedir, Nasıl Hesaplanır? Formül ve İşletme Örneği</strong><span>Başabaş noktası, gelirlerin tüm giderleri tam karşıladığı satış miktarıdır: sabit giderler ÷ (birim fiyat − birim değişken maliyet). Katkı payı, grafik ve kafe örneği.</span></a></li>
+          <li><a href="../favok-nedir-nasil-hesaplanir/"><strong>FAVÖK Nedir, Nasıl Hesaplanır? EBITDA, Faaliyet Kârı ve Marjı</strong><span>FAVÖK, faiz, amortisman ve vergi öncesi kârdır: faaliyet kârına amortisman eklenerek bulunur. EBITDA ile ilişkisi, FAVÖK marjı, net kârdan hesaplama ve çözümlü örnek.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-net-bugunku-deger-ve-ic-verim-orani-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

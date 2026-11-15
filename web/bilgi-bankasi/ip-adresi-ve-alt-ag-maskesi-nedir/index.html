@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>IP Adresi ve Alt Ağ Maskesi Nedir? Subnet ve CIDR Hesaplama</title>
+  <meta name="description" content="Alt ağ maskesi, IP adresinin hangi bitlerinin ağı, hangilerinin cihazı gösterdiğini belirler. 255.255.255.0 = /24 = 254 cihaz. Ağ ve yayın adresi bulma örnekli.">
+  <meta name="keywords" content="alt ağ maskesi nedir, subnet mask nedir, cidr hesaplama, /24 kaç ip, 255.255.255.0 ne demek, ip adresi sınıfları, ağ adresi yayın adresi bulma, özel ip genel ip farkı, ipv4 ipv6 farkı">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/ip-adresi-ve-alt-ag-maskesi-nedir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="IP Adresi ve Alt Ağ Maskesi Nedir? Subnet ve CIDR Hesaplama">
+  <meta property="og:description" content="Alt ağ maskesi, IP adresinin hangi bitlerinin ağı, hangilerinin cihazı gösterdiğini belirler. 255.255.255.0 = /24 = 254 cihaz. Ağ ve yayın adresi bulma örnekli.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/ip-adresi-ve-alt-ag-maskesi-nedir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"IP Adresi ve Alt Ağ Maskesi Nedir? Subnet, CIDR ve /24 Hesaplama","description":"Alt ağ maskesi, IP adresinin hangi bitlerinin ağı, hangilerinin cihazı gösterdiğini belirler. 255.255.255.0 = /24 = 254 cihaz. Ağ ve yayın adresi bulma örnekli.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/ip-adresi-ve-alt-ag-maskesi-nedir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1253,"keywords":"alt ağ maskesi nedir, subnet mask nedir, cidr hesaplama, /24 kaç ip, 255.255.255.0 ne demek, ip adresi sınıfları, ağ adresi yayın adresi bulma, özel ip genel ip farkı, ipv4 ipv6 farkı","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"IP Adresi ve Alt Ağ Maskesi Nedir? Subnet, CIDR ve /24 Hesaplama"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"IP adresi nedir?","acceptedAnswer":{"@type":"Answer","text":"IP adresi, bir ağa bağlı her cihaza verilen ve veri paketlerinin doğru yere ulaşmasını sağlayan numaradır. IPv4 adresleri 32 bittir ve 192.168.1.10 gibi noktayla ayrılmış dört sayıyla yazılır."}},{"@type":"Question","name":"Alt ağ maskesi ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Alt ağ maskesi, IP adresinin hangi bitlerinin ağı, hangilerinin cihazı gösterdiğini belirler. Cihaz bu bilgiyle hedefin aynı ağda olup olmadığına karar verir ve paketi doğrudan ya da ağ geçidi üzerinden gönderir."}},{"@type":"Question","name":"255.255.255.0 ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"255.255.255.0, ilk 24 bitin ağı ve son 8 bitin cihazı gösterdiği maskedir; CIDR gösterimiyle /24'tür. Bu ağda 256 adres bulunur ve bunların 254'ü cihazlara verilebilir."}},{"@type":"Question","name":"/24 ağda kaç IP adresi vardır?","acceptedAnswer":{"@type":"Answer","text":"/24 ağda 2 üzeri 8, yani 256 adres vardır. İlk adres ağ adresi, son adres yayın adresi olduğu için cihazlara verilebilecek adres sayısı 254'tür."}},{"@type":"Question","name":"CIDR gösterimi nasıl okunur?","acceptedAnswer":{"@type":"Answer","text":"Eğik çizgiden sonraki sayı, maskede soldan kaç bitin 1 olduğunu gösterir. 10.0.0.0/22 ifadesi ilk 22 bitin ağı gösterdiğini, ağda 2 üzeri 10, yani 1.024 adres bulunduğunu anlatır."}},{"@type":"Question","name":"Özel ve genel IP farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Genel IP internette tekildir ve doğrudan erişilebilir. Özel IP'ler 10.0.0.0/8, 172.16.0.0/12 ve 192.168.0.0/16 bloklarındadır, yalnızca yerel ağda kullanılır ve modem NAT ile tek bir genel adresin arkasında toplar."}},{"@type":"Question","name":"IPv4 ile IPv6 farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"IPv4 32 bitlik adreslerle yaklaşık 4,3 milyar adres sunar. IPv6 ise 128 bitliktir, on altılık sistemde iki nokta üst üsteyle yazılır ve adres sıkıntısını ortadan kaldıracak kadar geniş bir adres alanı sağlar."}},{"@type":"Question","name":"Ağ adresi ve yayın adresi nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Ağ adresi, IP ile maskenin bit bit VE işlemiyle bulunur. Yayın adresi, ağ adresinin cihaz bitlerinin tamamı 1 yapılarak elde edilir; örneğin 192.168.1.130/26 için ağ .128, yayın .191'dir."}},{"@type":"Question","name":"/30 ağ ne için kullanılır?","acceptedAnswer":{"@type":"Answer","text":"/30 ağda 4 adres vardır ve bunların yalnızca 2'si cihazlara verilebilir. Bu yüzden iki yönlendirici arasındaki noktadan noktaya bağlantılarda, adres israfını önlemek için tercih edilir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>IP Adresi ve Alt Ağ Maskesi Nedir? Subnet, CIDR ve /24 Hesaplama</h1><p class="lead">IP adresi, bir ağdaki cihazı tanımlayan 32 bitlik (IPv4) numaradır; <strong>alt ağ maskesi</strong> ise bu 32 bitin kaç tanesinin ağı, kaç tanesinin cihazı gösterdiğini belirler. En yaygın maske olan 255.255.255.0, CIDR gösterimiyle /24'tür: ilk 24 bit ağı, son 8 bit cihazı gösterir; ağda 256 adres bulunur ve bunların 254'ü cihazlara verilebilir. Bu sayfada IP adresinin yapısını, maskenin ikili sistemde nasıl çalıştığını, CIDR'ın nasıl okunduğunu, ağ ve yayın adresinin nasıl bulunduğunu, özel ve genel IP farkını ve IPv6'yı çözümlü örneklerle bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>IPv4 adresi 32 bittir ve noktayla ayrılmış dört sayıyla (her biri 0–255) yazılır: 192.168.1.130 gibi.</li>
+        <li>Alt ağ maskesi ağ bitlerini 1, cihaz bitlerini 0 yapar; 255.255.255.0 ikili sistemde 24 tane 1 ve 8 tane 0'dır.</li>
+        <li>CIDR gösterimi /n, maskedeki 1 sayısını verir; /n ağında 2<sup>32−n</sup> adres vardır.</li>
+        <li>Kullanılabilir cihaz sayısı = 2<sup>32−n</sup> − 2; /24'te 254, /26'da 62, /30'da 2'dir.</li>
+        <li>Ağ adresi = IP VE maske (bit bit); yayın adresi ağdaki son adrestir: 192.168.1.130/26 için ağ .128, yayın .191.</li>
+        <li>Özel adres blokları 10.0.0.0/8, 172.16.0.0/12 ve 192.168.0.0/16'dır; bunlar internette yönlendirilmez.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="192.168.1.130 adresinin /26 maskesiyle ikili gösterimi: 32 bitin 26'sı ağ, 6'sı cihaz kısmı; son baytta 130 ile 192'nin bit bit VE işlemiyle ağ adresi 128'in bulunması, ağ aralığı .128 ile .191." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">192.168.1.130 /26 nasıl çözülür?</text>
+  <g class="mid">
+    <rect x="30" y="50" width="150" height="40" rx="6" class="p"/><text x="105" y="76" class="b sf">192</text>
+    <rect x="190" y="50" width="150" height="40" rx="6" class="p"/><text x="265" y="76" class="b sf">168</text>
+    <rect x="350" y="50" width="150" height="40" rx="6" class="p"/><text x="425" y="76" class="b sf">1</text>
+    <rect x="510" y="50" width="76" height="40" rx="6" class="p"/><text x="548" y="76" class="b sf">2 bit</text>
+    <rect x="590" y="50" width="100" height="40" rx="6" class="oks"/><text x="640" y="76" class="b">6 bit</text>
+  </g>
+  <text x="30" y="112" class="sm b p">Ağ kısmı: 26 bit</text><text x="690" y="112" class="sm b ok end">Cihaz kısmı: 6 bit</text>
+  <text x="30" y="150" class="b">Son bayt üzerinde VE işlemi</text>
+  <g class="lg">
+    <text x="60" y="186">IP   130</text><text x="250" y="186" class="b">1 0 | 0 0 0 0 1 0</text>
+    <text x="60" y="218">Maske 192</text><text x="250" y="218" class="b">1 1 | 0 0 0 0 0 0</text>
+  </g>
+  <line x1="60" y1="232" x2="520" y2="232" class="st" fill="none"/>
+  <text x="60" y="262" class="lg b p">Ağ  128</text><text x="250" y="262" class="lg b p">1 0 | 0 0 0 0 0 0</text>
+  <text x="560" y="186" class="sm t2">1 VE 1 = 1</text><text x="560" y="210" class="sm t2">diğer her durum 0</text>
+  <rect x="30" y="292" width="660" height="110" rx="10" class="sf sb"/>
+  <text x="50" y="320" class="b">Blok: 2^6 = 64 adres · maske 255.255.255.192</text>
+  <rect x="50" y="336" width="100" height="44" rx="6" class="ps"/><text x="100" y="356" class="sm b mid">Ağ</text><text x="100" y="373" class="sm mid">.128</text>
+  <rect x="160" y="336" width="380" height="44" rx="6" class="oks"/><text x="350" y="356" class="sm b mid">Cihazlar: 62 adres</text><text x="350" y="373" class="sm mid">.129 – .190</text>
+  <rect x="550" y="336" width="120" height="44" rx="6" class="ps"/><text x="610" y="356" class="sm b mid">Yayın</text><text x="610" y="373" class="sm mid">.191</text>
+</svg>
+      <figcaption>Maskedeki 1'ler ağ kısmını, 0'lar cihaz kısmını işaretler. IP ile maske bit bit VE işlemine sokulduğunda ağ adresi çıkar. /26 bloğu 64 adreslidir: ilk adres ağ, son adres yayın adresidir, aradaki 62 adres cihazlara verilir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">IP adresi nedir?</a></li>
+      <li><a href="#b2">Alt ağ maskesi ne işe yarar? 255.255.255.0 ne demek?</a></li>
+      <li><a href="#b3">CIDR gösterimi nasıl okunur? /24, /26, /30</a></li>
+      <li><a href="#b4">Ağ adresi ve yayın adresi nasıl bulunur? Çözümlü örnek</a></li>
+      <li><a href="#b5">Özel ve genel IP farkı nedir?</a></li>
+      <li><a href="#b6">IP adresi sınıfları: A, B ve C</a></li>
+      <li><a href="#b7">IPv4 ile IPv6 farkı nedir?</a></li>
+      <li><a href="#b8">Sık yapılan hatalar</a></li>
+      <li><a href="#b9">Araçlarla alt ağ hesaplama</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-ip-adresi-ve-alt-ag-maskesi-nedir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../alt-ag-maskesi-cevir/"><strong>Alt Ağ Maskesi CIDR Çevirici</strong><span>Alt ağ maskesini /önek biçimine ya da tersine çevirin; joker maske, ikili yazım ve host sayısı da çıkar.</span></a></li>
+          <li><a href="../../cidr-hesapla/"><strong>CIDR Aralığı Hesaplama</strong><span>Bir CIDR bloğunun (ör. 192.168.1.0/24) adres aralığını, adres sayısını, maskesini ve yayın adresini bulun.</span></a></li>
+          <li><a href="../../ip-ikili-cevir/"><strong>IP Adresini İkili Sayıya Çevirme</strong><span>IPv4 adresini oktet oktet ikili sayıya çevirin ya da 32 biti yeniden IP adresine dönüştürün.</span></a></li>
+          <li><a href="../../ipv6-kisalt-genislet/"><strong>IPv6 Adresi Kısaltma ve Genişletme</strong><span>IPv6 adresini standart kısa biçime indirin ya da 8 grupluk tam yazımına açın; adres türünü de görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">IP adresi nedir?</h2>
+      <p>IP (Internet Protocol) adresi, bir ağa bağlı her cihaza verilen ve veri paketlerinin doğru yere ulaşmasını sağlayan numaradır. Posta adresine benzer: bir kısmı &quot;hangi sokak&quot; (ağ), bir kısmı &quot;hangi kapı&quot; (cihaz) bilgisini taşır. Bilgisayarınız, telefonunuz, yazıcınız, akıllı televizyonunuz ve modeminiz ağda birer IP adresiyle bulunur.</p>
+      <p>Bugün en yaygın kullanılan sürüm <strong>IPv4</strong>'tür. IPv4 adresi 32 bitten oluşur ve okunması kolay olsun diye 8 bitlik dört parçaya (oktet) bölünüp her parça 0 ile 255 arasında bir ondalık sayıyla yazılır: 192.168.1.130 gibi. Toplamda 2<sup>32</sup>, yani yaklaşık 4,3 milyar farklı IPv4 adresi vardır. İnternete bağlı cihaz sayısı bu rakamı çoktan aştığı için 128 bitlik <strong>IPv6</strong> geliştirilmiştir.</p>
+      <p>Bir IP adresinin ikili karşılığını görmek, alt ağ hesaplarını anlamanın anahtarıdır. 192 sayısı ikili sistemde 11000000, 168 sayısı 10101000'dır. Dönüşümü <a href="../../ip-ikili-cevir/">IP ikili çevirici</a> ile yapabilir, ikili sayıların mantığını <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> yazımızdan öğrenebilirsiniz.</p>
+
+      <h2 id="b2">Alt ağ maskesi ne işe yarar? 255.255.255.0 ne demek?</h2>
+      <p>Alt ağ maskesi (subnet mask), bir IP adresinin hangi bitlerinin ağı, hangilerinin o ağdaki cihazı tanımladığını söyler. Maske de 32 bittir: ağ kısmına karşılık gelen bitler 1, cihaz kısmına karşılık gelen bitler 0'dır ve 1'ler her zaman soldan başlayıp kesintisiz devam eder.</p>
+      <p>255.255.255.0 maskesi ikili sistemde 11111111.11111111.11111111.00000000 şeklindedir. İlk üç oktetin tüm bitleri 1 olduğu için ilk 24 bit ağı, son oktetin 8 biti cihazı gösterir. Yani 192.168.1.10 ve 192.168.1.200 aynı ağdadır ve birbirleriyle doğrudan konuşabilir; 192.168.2.10 ise farklı bir ağdadır ve ona ulaşmak için bir yönlendirici (router) gerekir.</p>
+      <p>Cihazınız bir paketi göndermeden önce hedef adresi kendi maskesiyle karşılaştırır. Hedef aynı ağdaysa paketi doğrudan gönderir; değilse varsayılan ağ geçidine (genellikle modem) yollar. Maske yanlış girildiğinde cihaz aynı ağdaki yazıcıyı &quot;başka ağda&quot; sanabilir ya da tersi olur; ağ sorunlarının önemli bir kısmı bu nedenle yaşanır.</p>
+
+      <h2 id="b3">CIDR gösterimi nasıl okunur? /24, /26, /30</h2>
+      <p>CIDR (Classless Inter-Domain Routing) gösterimi, maskeyi uzun uzun yazmak yerine maskedeki 1 bitlerinin sayısını eğik çizgiden sonra yazar. 192.168.1.0/24 ifadesi &quot;ilk 24 bit ağdır&quot; demektir ve 255.255.255.0 maskesiyle aynıdır. Bu gösterim, eski A, B, C sınıflarının katı sınırları yerine istenen büyüklükte ağ tanımlamayı sağlar.</p>
+      <div class="rh-formula">Toplam adres = 2^(32 − önek)<br>Kullanılabilir cihaz = 2^(32 − önek) − 2 (ağ ve yayın adresi çıkarılır)<br>Blok büyüklüğü (son anlamlı oktette) = 256 − maskenin o oktetteki değeri</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>CIDR</th><th>Alt ağ maskesi</th><th>Toplam adres</th><th>Kullanılabilir cihaz</th><th>Tipik kullanım</th></tr></thead>
+        <tbody>
+          <tr><td>/8</td><td>255.0.0.0</td><td>16.777.216</td><td>16.777.214</td><td>Çok büyük kurum ağları</td></tr>
+          <tr><td>/16</td><td>255.255.0.0</td><td>65.536</td><td>65.534</td><td>Kampüs, büyük şirket</td></tr>
+          <tr><td>/22</td><td>255.255.252.0</td><td>1.024</td><td>1.022</td><td>Orta büyüklükte ağ</td></tr>
+          <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td><td>Ev ve küçük ofis ağı</td></tr>
+          <tr><td>/25</td><td>255.255.255.128</td><td>128</td><td>126</td><td>Ağı ikiye bölmek</td></tr>
+          <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td><td>Kat ya da departman</td></tr>
+          <tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30</td><td>Küçük sunucu grubu</td></tr>
+          <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td><td>Küçük ofis, kamera ağı</td></tr>
+          <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td><td>İki yönlendirici arası bağlantı</td></tr>
+          <tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>Tek adres</td><td>Tek cihazı tanımlamak</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>/24 ağda kaç IP adresi vardır?</strong> 2<sup>8</sup> = 256 adres vardır. İlki (örneğin 192.168.1.0) ağ adresi, sonuncusu (192.168.1.255) yayın adresidir; cihazlara 192.168.1.1 ile 192.168.1.254 arasındaki 254 adres verilebilir. Maske ile CIDR arasında hızlı dönüşüm için <a href="../../alt-ag-maskesi-cevir/">alt ağ maskesi çevirici</a>yi kullanabilirsiniz.</p>
+
+      <h2 id="b4">Ağ adresi ve yayın adresi nasıl bulunur? Çözümlü örnek</h2>
+      <p>Ağ adresi, IP adresi ile maskenin bit bit VE (AND) işlemine sokulmasıyla bulunur: iki bit de 1 ise sonuç 1, diğer tüm durumlarda 0'dır. Yayın (broadcast) adresi ise ağ adresinin cihaz bitlerinin tamamı 1 yapılarak bulunur.</p>
+      <ol class="ba-steps">
+        <li>Adres ve önek: 192.168.1.130/26. Maske 26 bit 1'den oluşur: 255.255.255.192.</li>
+        <li>İlk üç oktette maske 255 olduğu için ağ adresinin ilk üç okteti IP'yle aynıdır: 192.168.1.</li>
+        <li>Son oktet: 130 = 10000010, 192 = 11000000. VE işlemi: 10000000 = 128. Ağ adresi 192.168.1.128'dir.</li>
+        <li>Blok büyüklüğü 256 − 192 = 64'tür. Bu ağ 128'den başlar, 128 + 64 − 1 = 191'de biter. Yayın adresi 192.168.1.191'dir.</li>
+        <li>Cihazlara verilebilecek adresler 192.168.1.129 ile 192.168.1.190 arasındaki 62 adrestir.</li>
+      </ol>
+      <p>Pratik bir kısa yol: blok büyüklüğünün katlarını yazın (0, 64, 128, 192). IP'nin son okteti hangi iki kat arasındaysa küçük olan ağ adresi, büyük olanın bir eksiği yayın adresidir. 130, 128 ile 192 arasında olduğu için ağ .128, yayın .191 bulunur.</p>
+      <p>Daha büyük bloklarda hesap üçüncü oktete taşar. Örneğin 10.0.0.0/22 bloğunda maske 255.255.252.0'dır, blok büyüklüğü üçüncü oktette 256 − 252 = 4'tür; ağ 10.0.0.0 ile 10.0.3.255 arasını kapsar ve 1.022 cihaz adresi içerir. Bu hesapları <a href="../../cidr-hesapla/">CIDR hesaplama aracı</a> ilk ve son adresi, toplam ve kullanılabilir adres sayısını göstererek yapar.</p>
+
+      <h2 id="b5">Özel ve genel IP farkı nedir?</h2>
+      <p>İnternette doğrudan erişilebilen adreslere <strong>genel (public) IP</strong> denir ve bunlar dünya genelinde tekildir. Evinizdeki ya da ofisinizdeki cihazlar ise genellikle <strong>özel (private) IP</strong> kullanır. Özel adres blokları internette yönlendirilmez; aynı adres milyonlarca farklı ev ağında aynı anda kullanılabilir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Blok</th><th>Aralık</th><th>Ne için kullanılır?</th></tr></thead>
+        <tbody>
+          <tr><td>10.0.0.0/8</td><td>10.0.0.0 – 10.255.255.255</td><td>Özel ağ; büyük kurum ağları</td></tr>
+          <tr><td>172.16.0.0/12</td><td>172.16.0.0 – 172.31.255.255</td><td>Özel ağ</td></tr>
+          <tr><td>192.168.0.0/16</td><td>192.168.0.0 – 192.168.255.255</td><td>Özel ağ; ev modemlerinde en yaygın</td></tr>
+          <tr><td>127.0.0.0/8</td><td>127.0.0.1 en bilineni</td><td>Geri döngü (cihazın kendisi)</td></tr>
+          <tr><td>169.254.0.0/16</td><td>169.254.0.1 – 169.254.255.254</td><td>Otomatik adres; DHCP'den adres alınamadığında</td></tr>
+          <tr><td>100.64.0.0/10</td><td>100.64.0.0 – 100.127.255.255</td><td>Servis sağlayıcı içi paylaşılan adres (CGNAT)</td></tr>
+        </tbody>
+      </table></div>
+      <p>Modeminiz, evdeki özel adresleri tek bir genel adresin arkasında toplar; bu işleme <strong>NAT</strong> (ağ adresi çevirisi) denir. Bilgisayarınızın ayarlarında 192.168.1.35 gibi bir adres görürken internetteki sitelerin sizi bambaşka bir adresle görmesi bundandır. Bilgisayarınızda 169.254 ile başlayan bir adres görüyorsanız cihaz modemden adres alamamış demektir; kablo ya da kablosuz bağlantıyı ve modemi kontrol edin.</p>
+
+      <div class="ba-ad" data-slot="bilgi-ip-adresi-ve-alt-ag-maskesi-nedir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">IP adresi sınıfları: A, B ve C</h2>
+      <p>CIDR'dan önce IPv4 adresleri ilk oktetlerine göre sınıflara ayrılırdı ve her sınıfın maskesi sabitti. Bugün yönlendirme sınıfsız yapılır; ancak sınıflar ders kitaplarında ve sınavlarda hâlâ sorulur.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sınıf</th><th>İlk oktet aralığı</th><th>Varsayılan maske</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>1 – 126</td><td>255.0.0.0 (/8)</td><td>127 geri döngü için ayrılmıştır</td></tr>
+          <tr><td>B</td><td>128 – 191</td><td>255.255.0.0 (/16)</td><td></td></tr>
+          <tr><td>C</td><td>192 – 223</td><td>255.255.255.0 (/24)</td><td></td></tr>
+          <tr><td>D</td><td>224 – 239</td><td>Yok</td><td>Çok noktaya yayın (multicast)</td></tr>
+          <tr><td>E</td><td>240 – 255</td><td>Yok</td><td>Deneysel, ayrılmış</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b7">IPv4 ile IPv6 farkı nedir?</h2>
+      <p>IPv6 adresleri 128 bittir; bu, 2<sup>128</sup> gibi pratikte tükenmeyecek kadar büyük bir adres alanı demektir. Adresler 16 bitlik sekiz gruba ayrılır ve on altılık sistemde, iki nokta üst üsteyle yazılır: 2001:0db8:0000:0000:0000:0000:0000:0001 gibi.</p>
+      <p>Bu uzun yazımı kısaltmak için kurallar vardır: her gruptaki baştaki sıfırlar atılır ve art arda gelen tamamen sıfır gruplar bir kez &quot;::&quot; ile gösterilir. Yukarıdaki adres 2001:db8::1 olarak yazılır. Kısaltma ve genişletme kurallarını uygulayan <a href="../../ipv6-kisalt-genislet/">IPv6 kısaltma ve genişletme aracı</a> adresin türünü de gösterir.</p>
+      <p>IPv6'da alt ağ mantığı aynıdır ve yine CIDR önekiyle yazılır; ancak son kullanıcı ağları için genellikle /64 bloklar kullanılır ve IPv4'teki gibi adres tasarrufu yapmak gerekmez. Ayrıca IPv6'da yayın adresi yoktur; bunun yerine çok noktaya yayın adresleri kullanılır.</p>
+
+      <h2 id="b8">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Ağ ve yayın adresini cihaza vermek:</strong> /24 ağda .0 ve .255 cihazlara verilmez; /26'da ise blok sınırları .64, .128 gibi farklı yerlerdedir.</li>
+        <li><strong>Maskeyi kesintili yazmak:</strong> 255.255.0.255 geçerli bir maske değildir; 1 bitleri soldan kesintisiz gelmelidir.</li>
+        <li><strong>/24'ü her yerde varsaymak:</strong> Kurumsal ağlarda farklı önekler kullanılabilir; ayarları ağ yöneticisinden alın.</li>
+        <li><strong>Kullanılabilir sayıdan 2 çıkarmayı unutmak:</strong> 2<sup>n</sup> toplam adrestir; cihaz sayısı için ağ ve yayın adresi düşülür (/31 ve /32 gibi özel durumlar hariç).</li>
+        <li><strong>Özel IP'yi dışarıdan erişilebilir sanmak:</strong> 192.168 ile başlayan bir adrese internetten doğrudan ulaşılamaz; dış erişim için modemde yönlendirme gerekir.</li>
+      </ul>
+
+      <h2 id="b9">Araçlarla alt ağ hesaplama</h2>
+      <ol class="ba-steps">
+        <li>Adresi ve maskeyi not edin; maske ondalık yazılmışsa <a href="../../alt-ag-maskesi-cevir/">alt ağ maskesi çevirici</a> ile CIDR önekine çevirin.</li>
+        <li><a href="../../cidr-hesapla/">CIDR hesaplama aracı</a>na blok bilgisini yazarak ağ adresi, yayın adresi, ilk ve son kullanılabilir adresi ve toplam adres sayısını görün.</li>
+        <li>Bit düzeyinde ne olduğunu görmek isterseniz <a href="../../ip-ikili-cevir/">IP ikili çevirici</a> ile adresi ve maskeyi ikili sisteme çevirin.</li>
+        <li>IPv6 adresleriyle çalışıyorsanız <a href="../../ipv6-kisalt-genislet/">IPv6 aracı</a>yla adresleri standart biçime getirin.</li>
+      </ol>
+      <p>İnternet bağlantınızın hızıyla ilgili sorularınız için <a href="../../bilgi-bankasi/internet-hizi-kac-mbps-olmali/">internet hızı kaç Mbps olmalı</a> yazımıza göz atabilirsiniz.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>IP adresi nedir?</summary><p>IP adresi, bir ağa bağlı her cihaza verilen ve veri paketlerinin doğru yere ulaşmasını sağlayan numaradır. IPv4 adresleri 32 bittir ve 192.168.1.10 gibi noktayla ayrılmış dört sayıyla yazılır.</p></details>
+      <details><summary>Alt ağ maskesi ne işe yarar?</summary><p>Alt ağ maskesi, IP adresinin hangi bitlerinin ağı, hangilerinin cihazı gösterdiğini belirler. Cihaz bu bilgiyle hedefin aynı ağda olup olmadığına karar verir ve paketi doğrudan ya da ağ geçidi üzerinden gönderir.</p></details>
+      <details><summary>255.255.255.0 ne anlama gelir?</summary><p>255.255.255.0, ilk 24 bitin ağı ve son 8 bitin cihazı gösterdiği maskedir; CIDR gösterimiyle /24'tür. Bu ağda 256 adres bulunur ve bunların 254'ü cihazlara verilebilir.</p></details>
+      <details><summary>/24 ağda kaç IP adresi vardır?</summary><p>/24 ağda 2 üzeri 8, yani 256 adres vardır. İlk adres ağ adresi, son adres yayın adresi olduğu için cihazlara verilebilecek adres sayısı 254'tür.</p></details>
+      <details><summary>CIDR gösterimi nasıl okunur?</summary><p>Eğik çizgiden sonraki sayı, maskede soldan kaç bitin 1 olduğunu gösterir. 10.0.0.0/22 ifadesi ilk 22 bitin ağı gösterdiğini, ağda 2 üzeri 10, yani 1.024 adres bulunduğunu anlatır.</p></details>
+      <details><summary>Özel ve genel IP farkı nedir?</summary><p>Genel IP internette tekildir ve doğrudan erişilebilir. Özel IP'ler 10.0.0.0/8, 172.16.0.0/12 ve 192.168.0.0/16 bloklarındadır, yalnızca yerel ağda kullanılır ve modem NAT ile tek bir genel adresin arkasında toplar.</p></details>
+      <details><summary>IPv4 ile IPv6 farkı nedir?</summary><p>IPv4 32 bitlik adreslerle yaklaşık 4,3 milyar adres sunar. IPv6 ise 128 bitliktir, on altılık sistemde iki nokta üst üsteyle yazılır ve adres sıkıntısını ortadan kaldıracak kadar geniş bir adres alanı sağlar.</p></details>
+      <details><summary>Ağ adresi ve yayın adresi nasıl bulunur?</summary><p>Ağ adresi, IP ile maskenin bit bit VE işlemiyle bulunur. Yayın adresi, ağ adresinin cihaz bitlerinin tamamı 1 yapılarak elde edilir; örneğin 192.168.1.130/26 için ağ .128, yayın .191'dir.</p></details>
+      <details><summary>/30 ağ ne için kullanılır?</summary><p>/30 ağda 4 adres vardır ve bunların yalnızca 2'si cihazlara verilebilir. Bu yüzden iki yönlendirici arasındaki noktadan noktaya bağlantılarda, adres israfını önlemek için tercih edilir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.rfc-editor.org/rfc/rfc1918" rel="noopener">IETF – RFC 1918: Özel ağlar için adres ayırma</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc4632" rel="noopener">IETF – RFC 4632: CIDR</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc5952" rel="noopener">IETF – RFC 5952: IPv6 adreslerinin metin gösterimi</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../internet-hizi-kac-mbps-olmali/"><strong>İnternet Hızı Kaç Mbps Olmalı? Mbps ile MB/s Farkı ve İndirme Süresi</strong><span>Ev için gereken internet hızı aynı anda yapılan işlerin toplamıdır: 4K yayın 15–25 Mbps, görüntülü görüşme 2–4 Mbps. Kişi sayısı, ping, fiber-VDSL ve hız testi.</span></a></li>
+          <li><a href="../http-durum-kodlari-404-500-nedir/"><strong>HTTP Durum Kodları Nedir? 404, 500, 301 ve 403 Hataları Ne Anlama Gelir</strong><span>HTTP durum kodu, sunucunun isteğe verdiği üç haneli cevaptır. 404 sayfa bulunamadı, 500 sunucu hatası, 301 kalıcı yönlendirme demektir. Nedenleri ve çözümleri.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../direnc-renk-kodlari-nasil-okunur/"><strong>Direnç Renk Kodları Nasıl Okunur? 4 ve 5 Bantlı Direnç Tablosu</strong><span>4 bantlı dirençte ilk iki bant rakam, üçüncü çarpan, dördüncü toleranstır: kahverengi-siyah-kırmızı-altın = 1 kΩ ±%5. Renk tablosu, 5 bantlı okuma ve SMD kodları.</span></a></li>
+          <li><a href="../gunes-paneli-kac-watt-gerekir/"><strong>Ev İçin Kaç Watt Güneş Paneli Gerekir? Panel, Akü ve İnverter Hesabı</strong><span>Gereken panel gücü = günlük tüketim ÷ (güneş saati × verim). Aylık 300 kWh için yaklaşık 2,8 kWp. Bağ evi, akü Ah ve inverter seçimi çözümlü örnekle.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-ip-adresi-ve-alt-ag-maskesi-nedir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

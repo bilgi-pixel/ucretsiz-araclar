@@ -3,7 +3,7 @@
 // Kullanım: node scripts/bilgi/derle.mjs
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { konular, validate, load, loadTools, rehberler, allSlugs, renderArticle, renderHub, hubCard, ROOT, WEB, BOLUM, SITE, KATEGORI } from './lib.mjs';
+import { setYayinda, konular, validate, load, loadTools, rehberler, allSlugs, renderArticle, renderHub, hubCard, ROOT, WEB, BOLUM, SITE, KATEGORI } from './lib.mjs';
 
 const konuList = konular();
 const base = { tools: loadTools(), rehber: rehberler(), bilgi: new Set([...allSlugs(), ...konuList.map((k) => k.slug)]) };
@@ -14,6 +14,7 @@ for (const slug of allSlugs()) {
 const order = Object.keys(KATEGORI);
 good.sort((a, b) => order.indexOf(a.kategori) - order.indexOf(b.kategori) || a.title.localeCompare(b.title, 'tr'));
 const ready = new Map(good.map((s) => [s.slug, s]));
+setYayinda(new Set(ready.keys()));
 const ctx = { ...base, ready, peers: (sp) => good.filter((o) => o.kategori === sp.kategori && o.slug !== sp.slug).map((o) => o.slug) };
 
 const out = join(WEB, BOLUM);

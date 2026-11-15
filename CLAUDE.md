@@ -100,3 +100,8 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   mesken kira istisnası 58.000 TL (Gelir Vergisi Genel Tebliği Seri No: 332). Araç hangi yılı hesaplıyorsa ona göre güncelleyin.
 - `web/temettu-verimi-hesapla/index.html` metnindeki ilk örnek stopajı "%10 kabul edilirse" diye hesaplıyor; temettü
   stopajı 22.12.2024'ten beri %15 (9286 sayılı CB Kararı). İkinci örnek zaten %15; ilkini düzeltin.
+- `web/kelime-sayfa-cevir/logic.js` 12 puntoda sayfa başına 500 kelime (İngilizce metne göre) varsayıyor; Türkçe kelimeler
+  eklerle uzun olduğu için sayfa sayısı düşük çıkabilir. Türkçe için daha düşük bir kelime/sayfa varsayımı ya da seçenek ekleyin.
+- `web/ayakkabi-numarasi-donustur`: EU → UK/US sabit farkla (34/33/31,5) çeviriyor; EU 6,67 mm, UK/US 8,47 mm adımlı olduğu için
+  uçlarda sapıyor (30 cm ayak: araç UK 13,5, formül 12). Paris noktası / barleycorn formülüne geçin.
+- `web/dogalgaz-tuketim-hesapla` 10,64 kWh/m³, `web/elektrik-tuketim-hesapla/parametreler.json` 9,2 kWh/m³ kullanıyor; tek değerde birleştirin.
