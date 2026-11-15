@@ -167,6 +167,12 @@ export function renderPage(spec, titles) {
   const header = top.replace('<a href="../#hesapla" class="ba-nav-optional">Hesapla</a>', `<a href="../#${spec.category}" class="ba-nav-optional">${esc(cat.crumb)}</a>`);
   const app = { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: `${spec.title} – Bilişim Ajans`, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web', inLanguage: 'tr', offers: { '@type': 'Offer', price: '0', priceCurrency: 'TRY' }, url: `${SITE}/${slug}/` };
   const faq = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: spec.faq.map(([q, a]) => ({ '@type': 'Question', name: plain(q), acceptedAnswer: { '@type': 'Answer', text: plain(a) } })) };
+  // Kırıntı yapısal verisi: Araçlar → kategori → sayfa (scripts/seo-uygula.mjs ile aynı biçim)
+  const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Araçlar', item: `${SITE}/` },
+    { '@type': 'ListItem', position: 2, name: cat.crumb, item: `${SITE}/#${spec.category}` },
+    { '@type': 'ListItem', position: 3, name: spec.title + (spec.h1Tail ? ' – ' + spec.h1Tail : ''), item: `${SITE}/${slug}/` },
+  ] };
   const ld = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
   const half = Math.min(2, spec.sections.length - 1);
   const related = spec.related.filter((r) => titles.has(r));
@@ -183,6 +189,17 @@ export function renderPage(spec, titles) {
   <link rel="stylesheet" href="../assets/css/ba.css">
   <link rel="manifest" href="../manifest.webmanifest">
   <meta name="theme-color" content="#7b2331">
+  <meta property="og:title" content="${esc(spec.pageTitle)}">
+  <meta property="og:description" content="${esc(spec.description)}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${SITE}/${slug}/">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:image" content="${SITE}/assets/img/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">
+  ${ld(crumbs)}
+  </script>
   <script type="application/ld+json">
   ${ld(app)}
   </script>

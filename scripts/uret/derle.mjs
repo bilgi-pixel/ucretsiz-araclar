@@ -63,6 +63,8 @@ const guides = (hub.slice(hub.indexOf('data-category="rehber"'), hub.indexOf('da
 const toolCount = total - guides;
 const round = Math.floor(toolCount / 50) * 50;
 hub = hub.replace(/<title>\d+\+ Ücretsiz Online Araç ve Oyun/, `<title>${round}+ Ücretsiz Online Araç ve Oyun`);
+// JS'siz görünen sayaç (hub.js ile aynı kural: rehber dışındaki kartlar)
+hub = hub.replace(/(<span id="ba-count">)\d+(<\/span>)/, `$1${toolCount}$2`);
 writeFileSync(join(WEB, 'index.html'), hub);
 
 // 5) sitemap
