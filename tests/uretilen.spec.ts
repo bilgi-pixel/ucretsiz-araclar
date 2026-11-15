@@ -6,7 +6,7 @@ import { trackExternalRequests, expectNoConsoleErrors } from './helpers';
 // scripts/uret/derle.mjs tarafından üretilen form tabanlı araçlar: her araç için içerik,
 // reklam yerleşimi, hesap örnekleri (2 başarılı + 1 hata), 360 px taşma ve dış istek denetimi.
 type Case = { in?: Record<string, string>; out?: Record<string, string>; match?: Record<string, string>; text?: string; textMatch?: string; error?: boolean };
-type Tool = { slug: string; title: string; types: Record<string, string>; defaults: Record<string, string>; cases: Case[] };
+type Tool = { slug: string; title: string; pdf?: boolean; types: Record<string, string>; defaults: Record<string, string>; cases: Case[] };
 const tools: Tool[] = JSON.parse(readFileSync(join(__dirname, 'uretilen.json'), 'utf8'));
 
 for (const t of tools) {
@@ -45,7 +45,9 @@ for (const t of tools) {
         }
         else await el.fill(val);
       }
+      const n = Number(await page.locator('#form').getAttribute('data-n') || 0);
       await page.locator('#calc').click();
+      await expect(page.locator('#form')).toHaveAttribute('data-n', String(n + 1));
       if (c.error) {
         await expect(page.locator('#error')).toHaveClass(/is-active/);
         await expect(page.locator('#result')).toBeHidden();
@@ -59,6 +61,15 @@ for (const t of tools) {
       for (const [k, re] of Object.entries(c.match || {})) expect(map.get(k) || '', `${t.slug} · ${k}`).toMatch(new RegExp(re));
       if (c.text !== undefined) await expect(page.locator('#out')).toHaveValue(c.text);
       if (c.textMatch) expect(await page.locator('#out').inputValue()).toMatch(new RegExp(c.textMatch));
+      if (t.pdf && c === t.cases[0]) {
+        // PDF çıktısı: önizleme görünür, indirilen dosya gerçek bir PDF
+        await expect(page.locator('#onizleme')).toBeVisible();
+        const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#pdf').click()]);
+        expect(dl.suggestedFilename()).toMatch(/\.pdf$/);
+        const bytes = readFileSync((await dl.path())!);
+        expect(bytes.subarray(0, 5).toString()).toBe('%PDF-');
+        expect(bytes.length).toBeGreaterThan(3000);
+      }
     }
 
     await page.setViewportSize({ width: 360, height: 740 });

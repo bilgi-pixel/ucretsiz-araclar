@@ -78,7 +78,7 @@ writeFileSync(join(WEB, 'sitemap.xml'), sm);
 const data = good.map((s) => {
   const ok = s.cases.filter((c) => !c.error).slice(0, 2), er = s.cases.filter((c) => c.error).slice(0, 1);
   const defaults = {}; for (const f of s.inputs) defaults[f.id] = f.value !== undefined ? String(f.value) : (f.type === 'select' ? String(f.options[0][0]) : '');
-  return { slug: s.slug, title: s.title, types: Object.fromEntries(s.inputs.map((f) => [f.id, f.type])), defaults, cases: [...ok, ...er] };
+  return { slug: s.slug, title: s.title, pdf: !!s.pdf, types: Object.fromEntries(s.inputs.map((f) => [f.id, f.type])), defaults, cases: [...ok, ...er] };
 });
 writeFileSync(join(ROOT, 'tests', 'uretilen.json'), JSON.stringify(data) + '\n');
 const hs = join(ROOT, 'tests', 'hub.spec.ts');

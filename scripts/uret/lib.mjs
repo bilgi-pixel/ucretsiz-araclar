@@ -22,6 +22,7 @@ export const CATS = {
   gelistirici: { ad: 'Geliştirici ve Web', alt: 'kod, renk, ağ, SEO, doğrulama', crumb: 'Geliştirici', icon: '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13 5l-2 14"/>' },
   zaman: { ad: 'Tarih ve Zaman', alt: 'gün, hafta, süre, takvim', crumb: 'Tarih ve Zaman', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
   egitim: { ad: 'Eğitim', alt: 'not, ortalama, çalışma planı', crumb: 'Eğitim', icon: '<path d="M3 9l9-5 9 5-9 5zM7 11v5c3 2 7 2 10 0v-5"/>' },
+  planlama: { ad: 'Planlayıcılar ve Çizelgeler', alt: 'günlük, haftalık, aylık; yazdırılabilir PDF', crumb: 'Planlayıcılar', icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>' },
   gunluk: { ad: 'Günlük Yaşam', alt: 'araç, mutfak, ev, hobi, teknoloji', crumb: 'Günlük Yaşam', icon: '<path d="M4 11l8-7 8 7M6 10v10h12V10"/>' },
 };
 
@@ -55,7 +56,7 @@ export function logicSource(spec) {
   return `// ${spec.title} — hesap mantığı. DOM yok, ağ yok; tarayıcıda çalışır.\n${src}\n`;
 }
 
-const RESERVED = new Set(['form', 'error', 'result', 'rows', 'out', 'note', 'calc', 'clear', 'copy']);
+const RESERVED = new Set(['form', 'error', 'result', 'rows', 'out', 'note', 'calc', 'clear', 'copy', 'pdf', 'onizleme']);
 const TYPES = new Set(['number', 'text', 'textarea', 'select', 'date']);
 const BANNED = /https?:\/\/|www\.|<script|<a\s|onclick|javascript:/i;
 
@@ -128,6 +129,26 @@ export async function validate(spec, slug, { known } = {}) {
     for (const [k, want] of Object.entries(c.out || {})) need(map.get(k) === String(want), `case ${i + 1}: "${k}" beklenen "${want}", hesaplanan "${map.get(k)}"`);
     for (const [k, re] of Object.entries(c.match || {})) need(map.has(k) && new RegExp(re).test(map.get(k)), `case ${i + 1}: "${k}" /${re}/ ile eşleşmiyor: "${map.get(k)}"`);
     if (c.text !== undefined) need(r.text === c.text, `case ${i + 1}: text beklenen ${JSON.stringify(c.text)}, hesaplanan ${JSON.stringify(r.text)}`);
+    if (spec.pdf) {
+      const P = r.pdf, [pw, ph] = P && (P.boyut === 'a5' ? [148, 210] : [210, 297]) || [], W = P && P.yatay ? ph : pw, H = P && P.yatay ? pw : ph;
+      if (!P || !Array.isArray(P.sayfalar) || !P.sayfalar.length || !['a4', 'a5'].includes(P.boyut) || !/^[a-z0-9-]+$/.test(P.ad || '')) { E.push(`case ${i + 1}: pdf { ad (slug), boyut: 'a4'|'a5', yatay?, sayfalar: [[işlem…]…] } döndürmeli`); continue; }
+      need(P.sayfalar.length <= 60, `case ${i + 1}: en fazla 60 sayfa`);
+      if (c.pdfSayfa !== undefined) need(P.sayfalar.length === c.pdfSayfa, `case ${i + 1}: beklenen sayfa ${c.pdfSayfa}, üretilen ${P.sayfalar.length}`);
+      let n = 0;
+      for (const ops of P.sayfalar) for (const op of ops) {
+        n++;
+        const o = op[op.length - 1] && typeof op[op.length - 1] === 'object' ? op[op.length - 1] : null, a = o ? op.slice(1, -1) : op.slice(1);
+        const nums = op[0] === 'yazi' ? a.slice(1) : a;
+        const okN = nums.every((x) => typeof x === 'number' && Number.isFinite(x));
+        const arity = { cizgi: 4, kutu: 4, daire: 3, yazi: 4 }[op[0]];
+        if (!arity || a.length !== arity || !okN || (op[0] === 'yazi' && typeof a[0] !== 'string')) { E.push(`case ${i + 1}: geçersiz pdf işlemi: ${JSON.stringify(op).slice(0, 90)}`); break; }
+        const [x, y] = op[0] === 'yazi' ? [a[1], a[2]] : [a[0], a[1]];
+        const x2 = op[0] === 'cizgi' ? a[2] : op[0] === 'kutu' ? a[0] + a[2] : x, y2 = op[0] === 'cizgi' ? a[3] : op[0] === 'kutu' ? a[1] + a[3] : y;
+        if (Math.min(x, x2) < 4 || Math.min(y, y2) < 4 || Math.max(x, x2) > W - 4 || Math.max(y, y2) > H - 4) { E.push(`case ${i + 1}: pdf işlemi sayfa kenar boşluğunun (4 mm) dışında (${W}×${H} mm): ${JSON.stringify(op).slice(0, 90)}`); break; }
+        if (op[0] === 'yazi' && (a[3] < 5 || a[3] > 40)) { E.push(`case ${i + 1}: yazı puntosu 5–40 olmalı`); break; }
+      }
+      need(n >= 20, `case ${i + 1}: pdf sayfaları neredeyse boş (${n} işlem)`);
+    } else need(!r.pdf, `case ${i + 1}: pdf döndürüyorsa spec'te pdf: true olmalı`);
     if (c.textMatch) need(typeof r.text === 'string' && new RegExp(c.textMatch).test(r.text), `case ${i + 1}: text /${c.textMatch}/ ile eşleşmiyor`);
   }
   return E;
@@ -231,7 +252,7 @@ ${spec.inputs.map(field).join('\n')}
         <dl id="rows" class="ar-results"></dl>
         <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
         <p class="ar-note" id="note" hidden></p>
-        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+${spec.pdf ? '        <canvas id="onizleme" class="ar-onizleme" role="img" aria-label="İlk sayfanın önizlemesi" hidden></canvas>\n' : ''}        <div class="ba-actions">${spec.pdf ? '<button id="pdf" class="ba-btn ba-btn-primary" type="button" hidden>PDF indir</button>' : ''}<button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
         <p class="ar-status" id="copy-status" aria-live="polite"></p>
       </div>
     </section>
