@@ -105,3 +105,8 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
 - `web/ayakkabi-numarasi-donustur`: EU → UK/US sabit farkla (34/33/31,5) çeviriyor; EU 6,67 mm, UK/US 8,47 mm adımlı olduğu için
   uçlarda sapıyor (30 cm ayak: araç UK 13,5, formül 12). Paris noktası / barleycorn formülüne geçin.
 - `web/dogalgaz-tuketim-hesapla` 10,64 kWh/m³, `web/elektrik-tuketim-hesapla/parametreler.json` 9,2 kWh/m³ kullanıyor; tek değerde birleştirin.
+- `web/bel-kalca-orani-hesapla/logic.js`: kadında 0,80–0,84 "orta", erkekte 1,00 "yüksek risk" eşiği kullanıyor; DSÖ eşiği kadında
+  0,85, erkekte 0,90 ve üzeri. Hangi sınıflamanın kullanıldığını sayfada belirtin ya da DSÖ eşiğine geçin.
+- Kablo kesiti aracı yalnızca gerilim düşümüne bakıyor (kısa hatta 25 A için 1,5 mm² çıkabiliyor); akım taşıma kapasitesi kontrolü ekleyin.
+- Evcil hayvan yaşı aracı 1 yaş altını doğrusal hesaplıyor (6 aylık kedi → 7,5; yaygın tablolar ~10) ve dev ırk köpeklerin ilk iki yılını
+  küçük ırkla aynı sayıyor. UPS aracındaki "Aküden çekilen akım" satırı aküleri seri bağlı varsayıyor; sayfada belirtin.

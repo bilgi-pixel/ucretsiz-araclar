@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>RAID 0, 1, 5, 10 Farkı: Kapasite Hesabı ve Disk Güvenliği</title>
+  <meta name="description" content="RAID 0 hız, RAID 1 ayna, RAID 5 tek eşlik, RAID 10 ayna+şerit sağlar. Kaç disk gerektiği, kullanılabilir kapasite formülleri, NAS için seçim ve RAID'in yedek olmadığı.">
+  <meta name="keywords" content="raid nedir, raid 0 raid 1 farkı, raid 5 nedir, raid 10 kapasite, raid kapasite hesaplama, nas raid seçimi, raid 5 kaç disk, raid yedekleme mi">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/raid-0-1-5-10-farki/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="RAID 0, 1, 5, 10 Farkı: Kapasite Hesabı ve Disk Güvenliği">
+  <meta property="og:description" content="RAID 0 hız, RAID 1 ayna, RAID 5 tek eşlik, RAID 10 ayna+şerit sağlar. Kaç disk gerektiği, kullanılabilir kapasite formülleri, NAS için seçim ve RAID'in yedek olmadığı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/raid-0-1-5-10-farki/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"RAID 0, 1, 5 ve 10 Farkı Nedir? RAID Kapasitesi ve Disk Güvenliği","description":"RAID 0 hız, RAID 1 ayna, RAID 5 tek eşlik, RAID 10 ayna+şerit sağlar. Kaç disk gerektiği, kullanılabilir kapasite formülleri, NAS için seçim ve RAID'in yedek olmadığı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/raid-0-1-5-10-farki/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1455,"keywords":"raid nedir, raid 0 raid 1 farkı, raid 5 nedir, raid 10 kapasite, raid kapasite hesaplama, nas raid seçimi, raid 5 kaç disk, raid yedekleme mi","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"RAID 0, 1, 5 ve 10 Farkı Nedir? RAID Kapasitesi ve Disk Güvenliği"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"RAID nedir?","acceptedAnswer":{"@type":"Answer","text":"RAID, birden fazla fiziksel diski tek bir mantıksal disk gibi çalıştırarak hız, kapasite ya da arıza toleransı sağlayan depolama yöntemidir. Şeritleme, aynalama ve eşlik tekniklerinin farklı birleşimleri RAID 0, 1, 5, 6 ve 10 seviyelerini oluşturur."}},{"@type":"Question","name":"RAID 0 ve RAID 1 arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"RAID 0 veriyi disklere bölerek hız ve tam kapasite sağlar ama hiçbir koruma sunmaz; tek disk arızası tüm veriyi yok eder. RAID 1 her diske verinin tam kopyasını yazar, kapasite tek disk kadardır ama bir disk bozulduğunda veri korunur."}},{"@type":"Question","name":"RAID 5 kaç disk ister?","acceptedAnswer":{"@type":"Answer","text":"RAID 5 en az 3 disk ister. Kullanılabilir kapasite disk sayısının bir eksiği ile tek disk kapasitesinin çarpımıdır; örneğin 3 adet 4 TB disk 8 TB, 4 adet 4 TB disk 12 TB kullanılabilir alan verir."}},{"@type":"Question","name":"RAID 10 kullanılabilir kapasitesi nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"RAID 10'da kapasite disk sayısının yarısı ile tek disk kapasitesinin çarpımıdır. Dört adet 4 TB diskle 8 TB, altı adet 4 TB diskle 12 TB kullanılabilir alan elde edilir; disk sayısı çift olmalıdır."}},{"@type":"Question","name":"NAS cihazında hangi RAID seçilmeli?","acceptedAnswer":{"@type":"Answer","text":"İki diskli NAS'ta RAID 1, üç dört diskli ve kapasite öncelikli kullanımda RAID 5, büyük disklerle dört ve üzeri yuvada RAID 6, yoğun yazma gerektiren işlerde RAID 10 yaygın tercihtir. Hangisini seçerseniz seçin ayrı bir yedek gerekir."}},{"@type":"Question","name":"RAID yedekleme yerine geçer mi?","acceptedAnswer":{"@type":"Answer","text":"Geçmez. RAID yalnızca disk arızasına karşı sistemi çalışır tutar; silinen dosyayı, fidye yazılımını, yangın ya da hırsızlık gibi olayları kurtarmaz. Verinin ayrı bir ortamda ve başka bir konumda yedeği bulunmalıdır."}},{"@type":"Question","name":"Neden 4 TB disk 3,6 TB görünür?","acceptedAnswer":{"@type":"Answer","text":"Üretici 1 TB'ı 10 üzeri 12 bayt sayar, işletim sistemi ise 2 üzeri 40 bayt olan TiB ile hesaplar ama TB yazar. 4 TB bu yüzden yaklaşık 3,64 TiB görünür; diskte eksik alan yoktur."}},{"@type":"Question","name":"Farklı boyutta disklerle RAID kurulur mu?","acceptedAnswer":{"@type":"Answer","text":"Kurulabilir, ancak klasik RAID'de her disk dizideki en küçük disk kadar kullanılır ve büyük disklerin fazla alanı boşa gider. Bazı NAS yazılımlarının esnek RAID türleri bu kaybı azaltır."}},{"@type":"Question","name":"RAID 5 mi RAID 6 mı daha güvenli?","acceptedAnswer":{"@type":"Answer","text":"RAID 6 daha güvenlidir çünkü aynı anda iki disk arızasına dayanır. Büyük kapasiteli disklerde yeniden oluşturma uzun sürdüğü için bu süreçte ikinci bir arıza riski RAID 5'i zayıflatır; bedeli bir disk daha az kullanılabilir alandır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>RAID 0, 1, 5 ve 10 Farkı Nedir? RAID Kapasitesi ve Disk Güvenliği</h1><p class="lead">RAID, birden fazla diski tek bir birim gibi çalıştırarak <strong>hız, kapasite ya da arıza toleransı</strong> kazandıran bir depolama yöntemidir: RAID 0 diskleri birleştirip hızlandırır ama hiç koruma sağlamaz, RAID 1 bir diskin birebir kopyasını tutar, RAID 5 bir disk kapasitesini eşlik bilgisine ayırarak tek disk arızasına dayanır, RAID 10 ise ayna çiftlerini şeritleyerek hem hız hem güvenlik sunar. Dört adet 4 TB diskle RAID 0 16 TB, RAID 5 12 TB, RAID 10 ise 8 TB kullanılabilir alan verir. Bu rehberde seviyelerin farkını, formülleri, NAS seçimini ve RAID'in neden yedek yerine geçmediğini bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>RAID 0 (şeritleme): en az 2 disk, kapasite n × disk, arıza toleransı yok; bir disk bozulursa tüm veri gider.</li>
+        <li>RAID 1 (aynalama): en az 2 disk, kapasite tek disk kadar, en az bir disk arızasına dayanır.</li>
+        <li>RAID 5 (dağıtık eşlik): en az 3 disk, kapasite (n − 1) × disk, tek disk arızasına dayanır.</li>
+        <li>RAID 6 (çift eşlik): en az 4 disk, kapasite (n − 2) × disk, aynı anda iki disk arızasına dayanır.</li>
+        <li>RAID 10 (ayna + şerit): en az 4 ve çift sayıda disk, kapasite n ÷ 2 × disk, her ayna çiftinden birer disk arızasına dayanır.</li>
+        <li>RAID yedekleme değildir: silinen dosyayı, fidye yazılımını ve cihaz kaybını kurtarmaz.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Dört adet 4 TB diskle RAID 0, RAID 1, RAID 5, RAID 6 ve RAID 10 seviyelerinde kullanılabilir kapasite ve yedekliğe ayrılan alanı gösteren yatay çubuk grafik; her satırın sağında dayanabildiği disk arızası sayısı." viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">4 × 4 TB disk: hangi RAID ne kadar alan verir?</text>
+  <g class="sm">
+    <text x="20" y="58" class="mu">Seviye</text>
+    <text x="130" y="58" class="mu">Kullanılabilir alan (koyu) / yedeklik (açık) — 16 TB ham</text>
+    <text x="700" y="58" class="mu end">Tolerans</text>
+  </g>
+  <text x="20" y="96" class="b">RAID 0</text>
+  <rect x="130" y="76" width="440" height="30" rx="4" class="p"/>
+  <text x="350" y="97" class="mid b sf">16 TB</text>
+  <text x="700" y="97" class="end b dg">0 disk</text>
+  <text x="20" y="156" class="b">RAID 1</text>
+  <rect x="130" y="136" width="110" height="30" rx="4" class="p"/>
+  <rect x="240" y="136" width="330" height="30" rx="4" class="ps"/>
+  <text x="185" y="157" class="mid b sf">4 TB</text>
+  <text x="405" y="157" class="mid sm">12 TB kopya</text>
+  <text x="700" y="157" class="end b ok">3 disk</text>
+  <text x="20" y="216" class="b">RAID 5</text>
+  <rect x="130" y="196" width="330" height="30" rx="4" class="p"/>
+  <rect x="460" y="196" width="110" height="30" rx="4" class="ps"/>
+  <text x="295" y="217" class="mid b sf">12 TB</text>
+  <text x="515" y="217" class="mid sm">eşlik</text>
+  <text x="700" y="217" class="end b">1 disk</text>
+  <text x="20" y="276" class="b">RAID 6</text>
+  <rect x="130" y="256" width="220" height="30" rx="4" class="p"/>
+  <rect x="350" y="256" width="220" height="30" rx="4" class="ps"/>
+  <text x="240" y="277" class="mid b sf">8 TB</text>
+  <text x="460" y="277" class="mid sm">çift eşlik</text>
+  <text x="700" y="277" class="end b ok">2 disk</text>
+  <text x="20" y="336" class="b">RAID 10</text>
+  <rect x="130" y="316" width="220" height="30" rx="4" class="p"/>
+  <rect x="350" y="316" width="220" height="30" rx="4" class="ps"/>
+  <text x="240" y="337" class="mid b sf">8 TB</text>
+  <text x="460" y="337" class="mid sm">ayna</text>
+  <text x="700" y="337" class="end b">1–2 disk</text>
+  <rect x="20" y="364" width="680" height="52" rx="8" class="sf sb"/>
+  <text x="36" y="386" class="b">RAID 5: (4 − 1) × 4 TB = 12 TB</text>
+  <text x="36" y="406" class="sm t2">İşletim sisteminde: 12 × 10¹² ÷ 2⁴⁰ ≈ 10,91 TiB görünür</text>
+</svg>
+      <figcaption>Aynı dört disk (toplam 16 TB ham alan) farklı RAID seviyelerinde farklı kullanılabilir kapasite verir. Koyu bölüm veriye, açık bölüm yedekliğe ayrılan alandır. Kapasite arttıkça arıza toleransı azalır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">RAID nedir?</a></li>
+      <li><a href="#b2">RAID 0 ve RAID 1 arasındaki fark nedir?</a></li>
+      <li><a href="#b3">RAID 5, RAID 6 ve RAID 10 nasıl çalışır?</a></li>
+      <li><a href="#b4">RAID kapasitesi nasıl hesaplanır?</a></li>
+      <li><a href="#b5">Neden 4 TB disk 3,6 TB görünür?</a></li>
+      <li><a href="#b6">Farklı boyutta disklerle RAID kurulur mu?</a></li>
+      <li><a href="#b7">NAS cihazında hangi RAID seçilmeli?</a></li>
+      <li><a href="#b8">RAID yedekleme yerine geçer mi?</a></li>
+      <li><a href="#b9">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-raid-0-1-5-10-farki-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../raid-kapasite-hesapla/"><strong>RAID Kapasitesi Hesaplama</strong><span>RAID 0, 1, 5, 6 ve 10 için kullanılabilir kapasiteyi, yedekliğe giden alanı ve hata toleransını hesaplayın.</span></a></li>
+          <li><a href="../../gb-tb-cevir/"><strong>Gigabayt Terabayt Çevirici</strong><span>GB değerini TB'ye, TB değerini GB'ye çevirin; disk etiketindeki kapasite ile bilgisayarda görünen değeri karşılaştırın.</span></a></li>
+          <li><a href="../../gib-gb-cevir/"><strong>Gibibayt Gigabayt (GiB – GB) Çevirici</strong><span>GiB değerini GB'ye, GB değerini GiB'ye çevirin; 1024 ve 1000 tabanlı birimler arasındaki farkı net olarak görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">RAID nedir?</h2>
+      <p>RAID (Redundant Array of Independent Disks, bağımsız disklerden oluşan yedekli dizi), iki ya da daha fazla fiziksel diski bir denetleyici yardımıyla tek bir mantıksal disk gibi kullanmaktır. İşletim sistemi tek bir sürücü görür; verinin hangi diske nasıl yazılacağına RAID denetleyicisi ya da yazılımı karar verir.</p>
+      <p>RAID üç temel tekniğin birleşimidir. <strong>Şeritleme</strong> (striping) veriyi parçalara bölüp disklere sırayla dağıtır ve okuma-yazma hızını artırır. <strong>Aynalama</strong> (mirroring) aynı veriyi birden fazla diske birebir yazar. <strong>Eşlik</strong> (parity) ise verinin matematiksel bir özetini saklar; bir disk kaybolduğunda eksik veri bu özetten yeniden hesaplanır.</p>
+      <p>RAID donanım (ayrı bir kart ya da anakart denetleyicisi) ya da yazılım (işletim sistemi veya NAS yazılımı) ile kurulabilir. Ev ve küçük ofis NAS cihazlarında yazılım RAID yaygındır ve günümüz işlemcilerinde performans farkı çoğu iş için hissedilmez.</p>
+
+      <h2 id="b2">RAID 0 ve RAID 1 arasındaki fark nedir?</h2>
+      <p><strong>RAID 0</strong> yalnızca şeritleme yapar. Bir dosyanın ilk parçası birinci diske, ikinci parçası ikinci diske yazılır. İki disk aynı anda çalıştığı için sıralı okuma ve yazma hızı teorik olarak disk sayısıyla artar ve kapasitenin tamamı kullanılabilir. Bedeli ağırdır: dizideki herhangi bir disk bozulduğunda her dosyanın bir parçası kaybolur ve <strong>tüm veri</strong> kullanılamaz hâle gelir. İki diskli bir RAID 0'ın arıza riski tek diskin yaklaşık iki katıdır.</p>
+      <p><strong>RAID 1</strong> aynalama yapar. İki diskin her biri verinin tam kopyasını tutar. Disklerden biri bozulursa sistem diğeriyle çalışmaya devam eder; bozuk disk değiştirildiğinde kopya yeniden oluşturulur. Kullanılabilir kapasite tek bir diskinkiyle sınırlıdır ve yazma hızı artmaz, okuma ise bazı denetleyicilerde hızlanabilir.</p>
+      <p>Kısacası RAID 0 &quot;hız ve alan, sıfır güvenlik&quot;, RAID 1 &quot;güvenlik, yarı alan&quot; demektir. Video kurgusunda geçici çalışma alanı gibi kaybedilse de yeniden üretilebilen veriler için RAID 0, muhasebe dosyaları ve belge arşivi gibi kaybı kabul edilemeyen veriler için RAID 1 düşünülür.</p>
+
+      <h2 id="b3">RAID 5, RAID 6 ve RAID 10 nasıl çalışır?</h2>
+      <p><strong>RAID 5</strong> veriyi şeritler ve her şerit için bir eşlik bloğu hesaplar; eşlik blokları tek diske değil tüm disklere dağıtılır. Eşlik, diğer blokların XOR işlemiyle bulunur. Bir disk bozulduğunda kalan blokların XOR'u eksik bloğu verir. Bu yüzden RAID 5 en az <strong>3 disk</strong> ister, bir disklik alanı eşliğe ayırır ve tek disk arızasına dayanır.</p>
+      <p><strong>RAID 6</strong> aynı mantığı iki farklı eşlikle uygular; en az 4 disk ister, iki disklik alanı yedekliğe ayırır ve aynı anda iki diskin bozulmasına dayanır. Büyük kapasiteli disklerde yeniden oluşturma (rebuild) günler sürebildiği için bu süreçte ikinci bir arızaya karşı RAID 6 daha güvenlidir.</p>
+      <p><strong>RAID 10</strong> (1+0), diskleri önce ikişerli ayna çiftlerine ayırır, sonra bu çiftleri şeritler. En az 4 ve çift sayıda disk gerekir; kapasitenin yarısı kullanılır. Eşlik hesabı olmadığı için yazma performansı yüksektir ve yeniden oluşturma yalnızca bozulan diskin eşini kopyalamak olduğundan hızlıdır. Her ayna çiftinden bir disk bozulabilir; ancak aynı çiftin iki diski birden giderse veri kaybolur.</p>
+
+      <h2 id="b4">RAID kapasitesi nasıl hesaplanır?</h2>
+      <p>Kullanılabilir kapasite, eşit boyutlu diskler için aşağıdaki basit formüllerle bulunur. Formüllerde n disk sayısı, C tek diskin kapasitesidir.</p>
+      <div class="rh-formula">RAID 0  = n × C<br>RAID 1  = C<br>RAID 5  = (n − 1) × C<br>RAID 6  = (n − 2) × C<br>RAID 10 = (n ÷ 2) × C</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Seviye</th><th>En az disk</th><th>4 × 4 TB ile kapasite</th><th>Verim</th><th>Dayanabildiği arıza</th><th>Yazma performansı</th></tr></thead>
+        <tbody>
+          <tr><td>RAID 0</td><td>2</td><td>16 TB</td><td>%100</td><td>Yok</td><td>Çok yüksek</td></tr>
+          <tr><td>RAID 1</td><td>2</td><td>4 TB</td><td>%25 (4 disk ayna)</td><td>3 disk</td><td>Tek disk kadar</td></tr>
+          <tr><td>RAID 5</td><td>3</td><td>12 TB</td><td>%75</td><td>1 disk</td><td>Orta (eşlik hesabı)</td></tr>
+          <tr><td>RAID 6</td><td>4</td><td>8 TB</td><td>%50</td><td>2 disk</td><td>Düşük-orta</td></tr>
+          <tr><td>RAID 10</td><td>4 (çift)</td><td>8 TB</td><td>%50</td><td>1 garanti, en çok 2</td><td>Yüksek</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">RAID 1'in verimi iki diskte %50'dir; dört diskin hepsini aynalamak verimi %25'e düşürür. Pratikte dört diskle RAID 1 yerine RAID 10 ya da RAID 6 tercih edilir.</p>
+      <p>Çözümlü örnek: Beş adet 8 TB diskle RAID 5 kurarsanız (5 − 1) × 8 = 32 TB kullanılabilir alan elde edersiniz; yedekliğe 8 TB gider ve kapasite verimi 32 ÷ 40 = %80 olur. Aynı disklerle RAID 6 kurarsanız (5 − 2) × 8 = 24 TB alan, %60 verim ve iki disk toleransı elde edersiniz.</p>
+
+      <h2 id="b5">Neden 4 TB disk 3,6 TB görünür?</h2>
+      <p>Disk üreticileri kapasiteyi ondalık sistemle verir: 1 TB = 10<sup>12</sup> bayt. Windows ve birçok NAS arayüzü ise ikili sistemle (1 TiB = 2<sup>40</sup> bayt) hesaplar ama yine &quot;TB&quot; yazar. 4 × 10<sup>12</sup> ÷ 1.099.511.627.776 ≈ <strong>3,64</strong> olduğu için 4 TB'lık disk yaklaşık 3,6 TB görünür. Disk eksik değildir, yalnızca birim farklıdır.</p>
+      <p>RAID dizisinde de aynı fark geçerlidir: 12 TB'lık bir RAID 5 birimi arayüzde yaklaşık 10,9 TB görünür. Bunun üzerine dosya sistemi yapıları ve NAS'ın sistem bölümü de birkaç yüz GB yer kaplar. Birimler arasındaki farkın ayrıntısı <a href="../../bilgi-bankasi/gb-kac-mb-veri-birimleri/">veri birimleri</a> yazısında anlatılıyor; hızlı dönüşüm için <a href="../../gib-gb-cevir/">GiB GB çevirici</a> ve <a href="../../gb-tb-cevir/">GB TB çevirici</a> işinizi görür.</p>
+
+      <div class="ba-ad" data-slot="bilgi-raid-0-1-5-10-farki-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Farklı boyutta disklerle RAID kurulur mu?</h2>
+      <p>Klasik RAID'de dizideki her disk, <strong>en küçük disk kadar</strong> kullanılır. 2 TB, 4 TB ve 4 TB'lık üç diskle RAID 5 kurarsanız her disk 2 TB sayılır ve kullanılabilir alan (3 − 1) × 2 = 4 TB olur; büyük disklerdeki 4 TB boşa gider. Bu yüzden dizi kurarken aynı kapasitede, mümkünse aynı sınıfta diskler seçmek gerekir.</p>
+      <p>Bazı NAS yazılımları farklı boyutlu diskleri bölümlere ayırarak daha verimli kullanan esnek RAID türleri sunar. Bu yöntemler kullanışlıdır ama klasik seviyelerden farklı çalışır; kapasite ve tolerans değerlerini cihazınızın kendi hesaplayıcısından doğrulamanız gerekir.</p>
+      <p>Arızalanan bir diski değiştirirken yeni diskin kapasitesi eskisinden küçük olmamalıdır. Aynı etiketli iki disk bile birkaç MB farklı olabildiği için çok az daha büyük bir disk seçmek güvenli tercihtir.</p>
+
+      <h2 id="b7">NAS cihazında hangi RAID seçilmeli?</h2>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Durum</th><th>Önerilen seviye</th><th>Gerekçe</th></tr></thead>
+        <tbody>
+          <tr><td>2 diskli ev ya da ofis NAS'ı</td><td>RAID 1</td><td>Tek seçenek olan yedekli yapı; bir disk bozulursa çalışmaya devam eder</td></tr>
+          <tr><td>3–4 diskli, kapasite öncelikli</td><td>RAID 5</td><td>Bir disk kaybıyla en yüksek kullanılabilir alan</td></tr>
+          <tr><td>4+ diskli, büyük (8 TB üstü) diskler</td><td>RAID 6</td><td>Uzun yeniden oluşturma sırasında ikinci arızaya karşı koruma</td></tr>
+          <tr><td>Sanal makine, veritabanı, yoğun yazma</td><td>RAID 10</td><td>Yüksek yazma performansı ve hızlı yeniden oluşturma</td></tr>
+          <tr><td>Geçici, yeniden üretilebilir veri</td><td>RAID 0</td><td>Yalnızca hız; kaybı tolere edilebilecek veriler için</td></tr>
+          <tr><td>Güvenlik kamerası kayıt cihazı</td><td>RAID 5 ya da tek disk + yedek</td><td>Sürekli yazma; kapasite ve maliyet dengesi</td></tr>
+        </tbody>
+      </table></div>
+      <p>Kamera kayıt cihazı için toplam disk ihtiyacını önce hesaplamak, RAID seviyesini seçmeyi kolaylaştırır; bunun için <a href="../../bilgi-bankasi/guvenlik-kamerasi-kac-gun-kayit-yapar/">güvenlik kamerası kayıt süresi</a> yazısına bakabilirsiniz. Kendi disk sayınız ve kapasitenizle tüm seviyeleri karşılaştırmak için <a href="../../raid-kapasite-hesapla/">RAID Kapasitesi Hesaplama</a> aracını kullanın; araç kullanılabilir alanı, yedekliğe giden alanı, işletim sisteminde görünecek TiB değerini ve arıza toleransını birlikte gösterir.</p>
+
+      <h2 id="b8">RAID yedekleme yerine geçer mi?</h2>
+      <p>Hayır. RAID'in tek görevi, bir ya da iki diskin <strong>fiziksel olarak</strong> bozulması durumunda sistemin çalışmaya devam etmesidir. Bir dosyayı yanlışlıkla silerseniz, fidye yazılımı verileri şifrelerse ya da bir yazılım hatası dosyayı bozarsa bu değişiklik anında tüm disklere yazılır. Ayna da eşlik de bozulmuş veriyi sadakatle korur.</p>
+      <p>Yangın, su baskını, hırsızlık, elektrik dalgalanması ya da NAS cihazının kendisinin arızalanması da RAID'in koruma alanı dışındadır. Yaygın kabul gören <strong>3-2-1 kuralı</strong>; verinin en az 3 kopyasının, 2 farklı ortamda ve en az 1'inin başka bir konumda tutulmasını önerir. RAID'li NAS bu kopyalardan yalnızca biridir; harici disk ve uzak konumdaki ya da bulut yedeği tamamlayıcıdır.</p>
+
+      <h2 id="b9">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Aynı partiden diskler:</strong> Aynı gün üretilmiş ve aynı yükle çalışan diskler benzer zamanlarda yıpranabilir; mümkünse farklı partilerden alın.</li>
+        <li><strong>Uyarıyı görmezden gelmek:</strong> RAID 5'te bir disk bozulduğunda dizi &quot;bozulmuş&quot; (degraded) durumda çalışır ve artık hiçbir korumanız yoktur. Diski hemen değiştirin.</li>
+        <li><strong>Masaüstü disk kullanmak:</strong> 7/24 çalışan NAS'larda bu kullanım için tasarlanmış diskler titreşim ve hata kurtarma süresi açısından daha uygundur.</li>
+        <li><strong>Yeniden oluşturma sırasında yük bindirmek:</strong> Rebuild sürerken büyük kopyalama işleri hem süreyi uzatır hem de ikinci arıza riskini artırır.</li>
+        <li><strong>RAID'i yedek sanmak:</strong> En pahalı hata budur; ayrı bir yedek planı mutlaka yapın.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>RAID nedir?</summary><p>RAID, birden fazla fiziksel diski tek bir mantıksal disk gibi çalıştırarak hız, kapasite ya da arıza toleransı sağlayan depolama yöntemidir. Şeritleme, aynalama ve eşlik tekniklerinin farklı birleşimleri RAID 0, 1, 5, 6 ve 10 seviyelerini oluşturur.</p></details>
+      <details><summary>RAID 0 ve RAID 1 arasındaki fark nedir?</summary><p>RAID 0 veriyi disklere bölerek hız ve tam kapasite sağlar ama hiçbir koruma sunmaz; tek disk arızası tüm veriyi yok eder. RAID 1 her diske verinin tam kopyasını yazar, kapasite tek disk kadardır ama bir disk bozulduğunda veri korunur.</p></details>
+      <details><summary>RAID 5 kaç disk ister?</summary><p>RAID 5 en az 3 disk ister. Kullanılabilir kapasite disk sayısının bir eksiği ile tek disk kapasitesinin çarpımıdır; örneğin 3 adet 4 TB disk 8 TB, 4 adet 4 TB disk 12 TB kullanılabilir alan verir.</p></details>
+      <details><summary>RAID 10 kullanılabilir kapasitesi nasıl hesaplanır?</summary><p>RAID 10'da kapasite disk sayısının yarısı ile tek disk kapasitesinin çarpımıdır. Dört adet 4 TB diskle 8 TB, altı adet 4 TB diskle 12 TB kullanılabilir alan elde edilir; disk sayısı çift olmalıdır.</p></details>
+      <details><summary>NAS cihazında hangi RAID seçilmeli?</summary><p>İki diskli NAS'ta RAID 1, üç dört diskli ve kapasite öncelikli kullanımda RAID 5, büyük disklerle dört ve üzeri yuvada RAID 6, yoğun yazma gerektiren işlerde RAID 10 yaygın tercihtir. Hangisini seçerseniz seçin ayrı bir yedek gerekir.</p></details>
+      <details><summary>RAID yedekleme yerine geçer mi?</summary><p>Geçmez. RAID yalnızca disk arızasına karşı sistemi çalışır tutar; silinen dosyayı, fidye yazılımını, yangın ya da hırsızlık gibi olayları kurtarmaz. Verinin ayrı bir ortamda ve başka bir konumda yedeği bulunmalıdır.</p></details>
+      <details><summary>Neden 4 TB disk 3,6 TB görünür?</summary><p>Üretici 1 TB'ı 10 üzeri 12 bayt sayar, işletim sistemi ise 2 üzeri 40 bayt olan TiB ile hesaplar ama TB yazar. 4 TB bu yüzden yaklaşık 3,64 TiB görünür; diskte eksik alan yoktur.</p></details>
+      <details><summary>Farklı boyutta disklerle RAID kurulur mu?</summary><p>Kurulabilir, ancak klasik RAID'de her disk dizideki en küçük disk kadar kullanılır ve büyük disklerin fazla alanı boşa gider. Bazı NAS yazılımlarının esnek RAID türleri bu kaybı azaltır.</p></details>
+      <details><summary>RAID 5 mi RAID 6 mı daha güvenli?</summary><p>RAID 6 daha güvenlidir çünkü aynı anda iki disk arızasına dayanır. Büyük kapasiteli disklerde yeniden oluşturma uzun sürdüğü için bu süreçte ikinci bir arıza riski RAID 5'i zayıflatır; bedeli bir disk daha az kullanılabilir alandır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.snia.org/" rel="noopener">SNIA – Ortak RAID Disk Veri Biçimi (DDF) belirtimi</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../guvenlik-kamerasi-kac-gun-kayit-yapar/"><strong>Güvenlik Kamerası Kaç Gün Kayıt Yapar? Disk Kapasitesi ve Bant Genişliği</strong><span>Kayıt süresi = disk kapasitesi ÷ (kamera sayısı × bit hızı × 10,8 GB). 1 TB disk 4 kamerada kaç gün tutar, H.265 farkı, hareket algılama ve PoE güç hesabı.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+          <li><a href="../direnc-renk-kodlari-nasil-okunur/"><strong>Direnç Renk Kodları Nasıl Okunur? 4 ve 5 Bantlı Direnç Tablosu</strong><span>4 bantlı dirençte ilk iki bant rakam, üçüncü çarpan, dördüncü toleranstır: kahverengi-siyah-kırmızı-altın = 1 kΩ ±%5. Renk tablosu, 5 bantlı okuma ve SMD kodları.</span></a></li>
+          <li><a href="../gunes-paneli-kac-watt-gerekir/"><strong>Ev İçin Kaç Watt Güneş Paneli Gerekir? Panel, Akü ve İnverter Hesabı</strong><span>Gereken panel gücü = günlük tüketim ÷ (güneş saati × verim). Aylık 300 kWh için yaklaşık 2,8 kWp. Bağ evi, akü Ah ve inverter seçimi çözümlü örnekle.</span></a></li>
+          <li><a href="../hash-nedir-sha256-md5/"><strong>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</strong><span>Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-raid-0-1-5-10-farki-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

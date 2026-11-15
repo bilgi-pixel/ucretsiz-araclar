@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Base64 Nedir, Ne İşe Yarar? Kodlama ve Çözme Rehberi</title>
+  <meta name="description" content="Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.">
+  <meta name="keywords" content="base64 nedir, base64 ne işe yarar, base64 çözme, base64 decode, base64 resim, base64 şifreleme mi, base64 boyut artışı, base32 nedir">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/base64-nedir-ne-ise-yarar/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Base64 Nedir, Ne İşe Yarar? Kodlama ve Çözme Rehberi">
+  <meta property="og:description" content="Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/base64-nedir-ne-ise-yarar/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır","description":"Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/base64-nedir-ne-ise-yarar/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1217,"keywords":"base64 nedir, base64 ne işe yarar, base64 çözme, base64 decode, base64 resim, base64 şifreleme mi, base64 boyut artışı, base32 nedir","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Base64 nedir?","acceptedAnswer":{"@type":"Answer","text":"Base64, ikili veriyi büyük ve küçük harfler, rakamlar ile + ve / işaretlerinden oluşan 64 karakterlik bir alfabeyle düz metne çeviren kodlama yöntemidir. RFC 4648 standardında tanımlanmıştır ve metin kabul eden ortamlarda veri taşımak için kullanılır."}},{"@type":"Question","name":"Base64 ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"E-posta eklerini göndermeye, küçük resimleri HTML ya da CSS içine gömmeye, JSON ve API'lerde dosya taşımaya, sertifika ve belirteç dosyalarını metin olarak saklamaya yarar. Amaç verinin metin sistemlerinden bozulmadan geçmesidir."}},{"@type":"Question","name":"Base64 bir şifreleme yöntemi mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır, Base64 bir kodlamadır ve anahtar kullanmaz. Herkes standart bir çözücüyle saniyeler içinde orijinal veriye ulaşabilir. Gizli bilgileri korumak için gerçek şifreleme algoritmaları kullanılmalıdır."}},{"@type":"Question","name":"Base64 kodlu metin nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Metni Base64 Kodla / Çöz aracına yapıştırıp çözme seçeneğini kullanmanız yeterlidir. Sonuç metinse ekranda görünür, dosyaysa indirilebilir. Hata alırsanız araya giren boşlukları ve satır sonlarını temizleyin."}},{"@type":"Question","name":"Resim neden Base64'e çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Küçük simge ve görseller Base64'e çevrilerek data URI biçiminde doğrudan HTML, CSS ya da e-posta içine yazılabilir. Böylece ayrı bir dosya isteği gerekmez; ancak boyut yaklaşık üçte bir arttığı için büyük resimlerde önerilmez."}},{"@type":"Question","name":"Base64 dosya boyutunu ne kadar büyütür?","acceptedAnswer":{"@type":"Answer","text":"Her 3 bayt 4 karaktere dönüştüğü için boyut 4/3 katına, yani yaklaşık yüzde 33 oranında artar. E-postadaki gibi satır sonları eklenirse artış yaklaşık yüzde 37'ye çıkar."}},{"@type":"Question","name":"Base64 ile Base32 farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Base64 64 karakterlik alfabe kullanır ve karakter başına 6 bit taşır; boyutu yüzde 33 artırır. Base32 yalnızca büyük harfler ve 2–7 rakamlarını kullanır, karakter başına 5 bit taşır ve boyutu yüzde 60 artırır ama büyük-küçük harf karışıklığına dayanıklıdır."}},{"@type":"Question","name":"URL kodlama ile Base64 aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. URL kodlama yalnızca boşluk, Türkçe harf ve özel işaretleri yüzde işaretiyle başlayan dizilere çevirir, metnin geri kalanını korur. Base64 ise verinin tamamını 64 karakterlik alfabeyle yeniden yazar."}},{"@type":"Question","name":"Base64 metninin sonundaki eşittir işareti nedir?","acceptedAnswer":{"@type":"Answer","text":"Eşittir işareti dolgudur ve çıktının 4 karakterin katı olmasını sağlar. Tek eşittir son blokta 2 bayt, iki eşittir son blokta 1 bayt olduğunu gösterir; veri uzunluğu 3'ün katıysa dolgu olmaz."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</h1><p class="lead">Base64, resim, PDF ya da herhangi bir ikili veriyi yalnızca <strong>64 güvenli karakterden</strong> (A–Z, a–z, 0–9, + ve /) oluşan düz metne çeviren bir kodlama yöntemidir; amacı gizlemek değil, veriyi metin kabul eden sistemlerden bozulmadan geçirmektir. Her 3 bayt veri 4 karaktere dönüştüğü için kodlanmış veri yaklaşık <strong>%33 büyür</strong>. Base64 bir şifreleme değildir: anahtar gerektirmez ve herkes saniyeler içinde çözebilir. Bu rehberde nasıl çalıştığını, adım adım bir kodlama örneğini, nerelerde kullanıldığını ve Base32 ile URL kodlamadan farkını bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Base64, ikili veriyi 64 karakterlik alfabeyle metne çeviren, RFC 4648 ile tanımlanmış bir kodlamadır.</li>
+        <li>3 bayt (24 bit) altışar bitlik 4 gruba bölünür; her grup alfabeden bir karaktere karşılık gelir.</li>
+        <li>Kodlanan veri yaklaşık 4/3 oranında, yani %33 büyür; satır sonu eklenirse artış biraz daha fazladır.</li>
+        <li>Sondaki = ya da == işaretleri dolgudur; son grubun 1 ya da 2 bayt eksik olduğunu gösterir.</li>
+        <li>Base64 şifreleme değildir; anahtarı yoktur ve herkes geri çözebilir. Parola ya da gizli bilgiyi korumaz.</li>
+        <li>URL-safe Base64, adreslerde sorun çıkaran + ve / yerine - ve _ kullanır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Man kelimesinin Base64'e dönüşümü: üç harfin ASCII baytları 77, 97, 110 yan yana 24 bit olarak yazılıyor, altışar bitlik dört gruba bölünüyor ve 19, 22, 5, 46 değerleri T, W, F, u karakterlerine dönüşüyor." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">"Man" nasıl "TWFu" olur?</text>
+  <g class="mid">
+    <rect x="60" y="54" width="200" height="56" rx="8" class="p"/>
+    <text x="160" y="80" class="lg b sf">M</text><text x="160" y="100" class="sm sf">ASCII 77</text>
+    <rect x="260" y="54" width="200" height="56" rx="8" class="ps"/>
+    <text x="360" y="80" class="lg b">a</text><text x="360" y="100" class="sm">ASCII 97</text>
+    <rect x="460" y="54" width="200" height="56" rx="8" class="p"/>
+    <text x="560" y="80" class="lg b sf">n</text><text x="560" y="100" class="sm sf">ASCII 110</text>
+  </g>
+  <text x="40" y="142" class="sm mu">8 bitlik baytlar</text>
+  <g class="b mid">
+    <text x="160" y="142">01001101</text><text x="360" y="142">01100001</text><text x="560" y="142">01101110</text>
+  </g>
+  <line x1="60" y1="160" x2="660" y2="160" class="sb dash" fill="none"/>
+  <text x="40" y="190" class="sm mu">6 bitlik gruplar</text>
+  <g class="mid">
+    <rect x="60" y="200" width="146" height="44" rx="6" class="sf sb"/><text x="133" y="228" class="b">010011</text>
+    <rect x="211" y="200" width="146" height="44" rx="6" class="sf sb"/><text x="284" y="228" class="b">010110</text>
+    <rect x="362" y="200" width="146" height="44" rx="6" class="sf sb"/><text x="435" y="228" class="b">000101</text>
+    <rect x="513" y="200" width="147" height="44" rx="6" class="sf sb"/><text x="586" y="228" class="b">101110</text>
+    <text x="133" y="270" class="sm">= 19</text><text x="284" y="270" class="sm">= 22</text>
+    <text x="435" y="270" class="sm">= 5</text><text x="586" y="270" class="sm">= 46</text>
+    <rect x="98" y="284" width="70" height="56" rx="8" class="oks"/><text x="133" y="320" class="xl">T</text>
+    <rect x="249" y="284" width="70" height="56" rx="8" class="oks"/><text x="284" y="320" class="xl">W</text>
+    <rect x="400" y="284" width="70" height="56" rx="8" class="oks"/><text x="435" y="320" class="xl">F</text>
+    <rect x="551" y="284" width="70" height="56" rx="8" class="oks"/><text x="586" y="320" class="xl">u</text>
+  </g>
+  <rect x="60" y="360" width="600" height="44" rx="8" class="sf sb"/>
+  <text x="360" y="380" class="sm mid b">Alfabe: 0–25 A–Z · 26–51 a–z · 52–61 0–9 · 62 + · 63 /</text>
+  <text x="360" y="397" class="sm mid t2">3 bayt → 4 karakter: boyut 4/3 kat, yani yaklaşık %33 büyür</text>
+</svg>
+      <figcaption>3 bayt girer, 4 karakter çıkar. &quot;Man&quot; kelimesinin 24 biti altışar bitlik dört parçaya bölünür; her parçanın 0–63 arasındaki değeri Base64 alfabesinde bir harfe karşılık gelir ve sonuç TWFu olur.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Base64 nedir?</a></li>
+      <li><a href="#b2">Base64 nasıl çalışır? Adım adım kodlama</a></li>
+      <li><a href="#b3">Sondaki = işareti ne anlama gelir?</a></li>
+      <li><a href="#b4">Base64 ne işe yarar? Kullanım alanları</a></li>
+      <li><a href="#b5">Base64 bir şifreleme yöntemi mi?</a></li>
+      <li><a href="#b6">Base64 dosya boyutunu ne kadar büyütür?</a></li>
+      <li><a href="#b7">Base64, Base32, Hex ve URL kodlama karşılaştırması</a></li>
+      <li><a href="#b8">Base64 kodlu metin nasıl çözülür?</a></li>
+      <li><a href="#b9">Sık karşılaşılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-base64-nedir-ne-ise-yarar-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../base64-donustur/"><strong>Base64 Kodla / Çöz</strong><span>Metni ve dosyayı Base64'e çevirin, Base64'ü metne ya da dosyaya geri alın; URL-safe, data URI, resim önizleme, hex ve URL kodlama. Dosya yüklenmez.</span></a></li>
+          <li><a href="../../base32-cevir/"><strong>Base32 Kodlama ve Çözme</strong><span>Metni Base32 olarak kodlayın ya da Base32 dizgisini çözün; RFC 4648 alfabesi, dolgulu ve dolgusuz çıktı.</span></a></li>
+          <li><a href="../../url-kodla/"><strong>URL Kodla / Çöz ve Metin Kodlama Araçları</strong><span>URL kodlama/çözme, HTML entity, Unicode kaçış, URL ayrıştırıcı, UTM oluşturucu ve Türkçe slug aracı tek sayfada. Metin sunucuya gitmez.</span></a></li>
+          <li><a href="../../hex-metin-cevir/"><strong>Metni Hex Koda Çevirme</strong><span>Yazıyı onaltılık (hex) bayt koduna çevirin ya da hex dizisini metne geri dönüştürün; boşluklu, bitişik ve 0x önekli biçimler.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Base64 nedir?</h2>
+      <p>Bilgisayardaki her dosya sonuçta bir bayt dizisidir ve her bayt 0 ile 255 arasında bir değer alır. Bu değerlerin bir kısmı ekranda görünmeyen kontrol karakterlerine, satır sonuna ya da sistemden sisteme farklı yorumlanan kodlara karşılık gelir. E-posta, JSON, XML, HTML ya da URL gibi <strong>metin için tasarlanmış</strong> ortamlara bu baytları doğrudan koymak verinin bozulmasına yol açabilir.</p>
+      <p><strong>Base64</strong>, bu sorunu çözmek için ikili veriyi yalnızca her sistemde aynı görünen 64 karakterle yazar: 26 büyük harf, 26 küçük harf, 10 rakam ve iki işaret (+ ile /). Eşittir işareti (=) ise yalnızca sonda dolgu olarak kullanılır. Bu alfabe ve kurallar <strong>RFC 4648</strong> standardında tanımlanmıştır.</p>
+      <p>Adındaki 64 sayısı alfabedeki karakter sayısından gelir. 64 = 2<sup>6</sup> olduğu için her karakter tam 6 bit bilgi taşır; Base64'ün bütün matematiği bu basit ilişkiye dayanır.</p>
+
+      <h2 id="b2">Base64 nasıl çalışır? Adım adım kodlama</h2>
+      <p>Kodlayıcı veriyi üçer baytlık bloklar hâlinde okur. Üç bayt 3 × 8 = 24 bit eder; bu 24 bit altışar bitlik 4 gruba bölünür ve her grubun değeri (0–63) alfabedeki karşılığına çevrilir. Görseldeki &quot;Man&quot; örneğini adım adım izleyelim.</p>
+      <ol class="ba-steps">
+        <li>Harflerin ASCII değerlerini bulun: M = 77, a = 97, n = 110.</li>
+        <li>Her birini 8 bitlik ikili sayıya çevirin: 01001101, 01100001, 01101110.</li>
+        <li>Bitleri yan yana yazıp altışarlı gruplara ayırın: 010011 | 010110 | 000101 | 101110.</li>
+        <li>Her grubu onluğa çevirin: 19, 22, 5, 46.</li>
+        <li>Alfabeden karşılıklarını alın: 19 = T, 22 = W, 5 = F, 46 = u. Sonuç: <code>TWFu</code>.</li>
+      </ol>
+      <p>İkili sayılara çevirme adımı size yabancı geliyorsa <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> yazısı temel mantığı anlatır. Çözme işlemi aynı adımların tersidir: her karakter 6 bitlik değerine çevrilir, bitler birleştirilir ve sekizerli gruplar hâlinde baytlara ayrılır.</p>
+
+      <h2 id="b3">Sondaki = işareti ne anlama gelir?</h2>
+      <p>Veri uzunluğu her zaman 3'ün katı olmaz. Son blokta 1 ya da 2 bayt kalırsa eksik bitler sıfırla tamamlanır ve çıktının 4 karakterin katı olması için sona <strong>=</strong> dolgusu eklenir. Bir = işareti son blokta 2 bayt, iki = işareti 1 bayt olduğunu gösterir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Girdi</th><th>Bayt sayısı</th><th>Base64 çıktısı</th><th>Dolgu</th></tr></thead>
+        <tbody>
+          <tr><td>H</td><td>1</td><td>SA==</td><td>2 adet =</td></tr>
+          <tr><td>Hi</td><td>2</td><td>SGk=</td><td>1 adet =</td></tr>
+          <tr><td>Man</td><td>3</td><td>TWFu</td><td>yok</td></tr>
+          <tr><td>Merhaba</td><td>7</td><td>TWVyaGFiYQ==</td><td>2 adet =</td></tr>
+          <tr><td>ğ</td><td>2 (UTF-8: C4 9F)</td><td>xJ8=</td><td>1 adet =</td></tr>
+          <tr><td>Ağ</td><td>3 (41 C4 9F)</td><td>QcSf</td><td>yok</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Türkçe karakterler UTF-8'de 2 bayt tuttuğu için &quot;ğ&quot; tek harf olsa da 2 baytlık veri gibi kodlanır.</p>
+      <p>Bazı uygulamalar, özellikle URL ve belirteç (token) kullanan sistemler, dolguyu hiç yazmaz. Çözücü uzunluktan eksik baytı anlayabildiği için bu genellikle sorun olmaz; ancak katı bir çözücü dolgusuz veriyi reddedebilir. Hata alırsanız sona uzunluğu 4'ün katına tamamlayacak kadar = eklemeyi deneyin.</p>
+
+      <h2 id="b4">Base64 ne işe yarar? Kullanım alanları</h2>
+      <ul>
+        <li><strong>E-posta ekleri:</strong> E-posta protokolü başlangıçta yalnızca 7 bitlik metin taşımak için tasarlandı. PDF, fotoğraf gibi ekler MIME standardıyla Base64'e çevrilip 76 karakterlik satırlar hâlinde gönderilir.</li>
+        <li><strong>Gömülü resimler (data URI):</strong> Küçük bir simge, ayrı bir dosya isteği yerine <code>data:image/png;base64,…</code> biçiminde doğrudan HTML ya da CSS içine yazılabilir.</li>
+        <li><strong>API ve JSON:</strong> JSON metin biçimidir; bir dosyayı JSON içinde göndermek gerektiğinde içerik Base64 olarak bir alana konur.</li>
+        <li><strong>Kimlik doğrulama başlıkları:</strong> HTTP Basic kimlik doğrulamada kullanıcı adı ve parola Base64 ile birleştirilir. Bu bir koruma değildir; güvenliği sağlayan HTTPS bağlantısıdır.</li>
+        <li><strong>Belirteçler:</strong> JWT gibi belirteçlerin parçaları URL-safe Base64 ile yazılır; içerik okunabilir, yalnızca imza değiştirilmesini engeller.</li>
+        <li><strong>Sertifika ve anahtar dosyaları:</strong> PEM biçimindeki sertifikaların BEGIN ve END satırları arasındaki uzun metin Base64'tür.</li>
+      </ul>
+
+      <h2 id="b5">Base64 bir şifreleme yöntemi mi?</h2>
+      <p>Hayır. Bu, Base64 hakkındaki en yaygın yanlış anlamadır. <strong>Kodlama</strong> (encoding), veriyi başka bir biçimde yazmaktır ve herkesin bildiği sabit bir kuralla geri çevrilir. <strong>Şifreleme</strong> (encryption) ise veriyi yalnızca anahtara sahip olanın açabileceği biçime sokar. Base64'te anahtar yoktur; çözmek için tek gereken herhangi bir çözücüdür.</p>
+      <p>Bir yapılandırma dosyasında ya da kaynak kodda Base64 ile yazılmış bir parola görürseniz bunu açık metin olarak saklanmış kabul edin. Gizli bilgiler gerçek şifreleme algoritmalarıyla korunmalı, parolalar ise geri çözülemeyen özetleme yöntemleriyle saklanmalıdır.</p>
+      <p>Base64'ün tek &quot;gizleme&quot; etkisi, metnin ilk bakışta okunmamasıdır. Bu nedenle kötü niyetli yazılımlar ve oltalama e-postaları da içeriklerini Base64 ile gizlemeye çalışır; güvenlik yazılımları bu yüzden Base64 bloklarını çözerek tarar.</p>
+
+      <div class="ba-ad" data-slot="bilgi-base64-nedir-ne-ise-yarar-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Base64 dosya boyutunu ne kadar büyütür?</h2>
+      <p>Her 3 bayt 4 karakter olduğu için kodlanmış veri asıl verinin 4/3 katıdır. Satır sonu eklenmezse artış yaklaşık <strong>%33,3</strong>'tür. E-postadaki gibi her 76 karakterde bir satır sonu (2 bayt) eklenirse artış yaklaşık %37'ye çıkar.</p>
+      <div class="rh-formula">Base64 uzunluğu = 4 × ⌈bayt sayısı ÷ 3⌉<br>Örnek: 300 KB = 300.000 bayt → 4 × 100.000 = 400.000 karakter ≈ 400 KB</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Asıl dosya</th><th>Base64 (satır sonsuz)</th><th>E-posta ekinde (76 karakterlik satırlar)</th></tr></thead>
+        <tbody>
+          <tr><td>30 KB simge</td><td>40 KB</td><td>yaklaşık 41 KB</td></tr>
+          <tr><td>300 KB fotoğraf</td><td>400 KB</td><td>yaklaşık 410 KB</td></tr>
+          <tr><td>3 MB PDF</td><td>4 MB</td><td>yaklaşık 4,1 MB</td></tr>
+          <tr><td>15 MB video</td><td>20 MB</td><td>yaklaşık 20,5 MB</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">E-posta servislerinin ek sınırı kodlanmış boyuta uygulandığı için 25 MB sınırlı bir hesaptan pratikte yaklaşık 18 MB'lık dosya gönderilebilir.</p>
+      <p>Bu yüzden büyük resimleri Base64 ile sayfaya gömmek iyi bir fikir değildir: sayfa ağırlaşır ve tarayıcı resmi ayrıca önbelleğe alamaz. Data URI yöntemi birkaç KB'lık simgeler için mantıklıdır. Boyut birimlerini karşılaştırmak için <a href="../../bilgi-bankasi/gb-kac-mb-veri-birimleri/">veri birimleri</a> yazısı yardımcı olur.</p>
+
+      <h2 id="b7">Base64, Base32, Hex ve URL kodlama karşılaştırması</h2>
+      <p>Aynı aileden başka kodlamalar da vardır. Aralarındaki fark, kullandıkları alfabenin büyüklüğü ve dolayısıyla verimlilikleridir. Alfabe küçüldükçe her karakter daha az bit taşır, çıktı uzar ama karakterler daha &quot;güvenli&quot; olur.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Kodlama</th><th>Alfabe</th><th>Karakter başına bit</th><th>Boyut artışı</th><th>Tipik kullanım</th></tr></thead>
+        <tbody>
+          <tr><td>Hex (Base16)</td><td>0–9, A–F</td><td>4</td><td>%100</td><td>Hash değerleri, renk kodları, bayt dökümü</td></tr>
+          <tr><td>Base32</td><td>A–Z, 2–7</td><td>5</td><td>%60</td><td>İki adımlı doğrulama anahtarları, büyük-küçük harf duyarsız ortamlar</td></tr>
+          <tr><td>Base64</td><td>A–Z, a–z, 0–9, +, /</td><td>6</td><td>%33</td><td>E-posta ekleri, data URI, API</td></tr>
+          <tr><td>Base64 URL-safe</td><td>A–Z, a–z, 0–9, -, _</td><td>6</td><td>%33</td><td>URL, dosya adı, JWT</td></tr>
+          <tr><td>URL (yüzde) kodlama</td><td>Yalnızca sorunlu karakterler %XX olur</td><td>değişken</td><td>değişken</td><td>Adres ve form verisi</td></tr>
+        </tbody>
+      </table></div>
+      <p>URL kodlama ile Base64 aynı şey değildir. URL kodlama metnin büyük kısmını olduğu gibi bırakır ve yalnızca boşluk, Türkçe harf ya da özel işaretleri %20, %C4%9F gibi dizilere çevirir. Base64 ise verinin tamamını yeniden yazar. Ayrıntılar için <a href="../../bilgi-bankasi/url-kodlama-yuzde-20-nedir/">URL kodlama ve %20</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="b8">Base64 kodlu metin nasıl çözülür?</h2>
+      <ol class="ba-steps">
+        <li><a href="../../base64-donustur/">Base64 Kodla / Çöz</a> aracını açın ve çözme sekmesini seçin.</li>
+        <li>Base64 metnini kutuya yapıştırın. data:image/… ile başlayan bir data URI yapıştırırsanız araç resmi önizleme olarak gösterir.</li>
+        <li>İçerik metinse çözülen yazı ekranda görünür; dosyaysa (PDF, resim) indirip açabilirsiniz.</li>
+        <li>Metin anlamsız karakterlerle çıkıyorsa içerik ikili bir dosya olabilir ya da karakter kodlaması farklıdır; çıktıyı onaltılık olarak görmek için <a href="../../hex-metin-cevir/">Metni Hex Koda Çevirme</a> aracını kullanın.</li>
+        <li>Alfabede yalnızca büyük harfler ve 2–7 rakamları görüyorsanız veri büyük olasılıkla Base32'dir; <a href="../../base32-cevir/">Base32 Kodlama ve Çözme</a> aracını deneyin.</li>
+      </ol>
+      <p>Araç tamamen tarayıcınızda çalışır; yapıştırdığınız metin ya da seçtiğiniz dosya hiçbir sunucuya yüklenmez. Yine de içinde gizli bilgi olabilecek belirteçleri ve sertifikaları paylaşılan bilgisayarlarda çözerken dikkatli olun.</p>
+
+      <h2 id="b9">Sık karşılaşılan hatalar</h2>
+      <ul>
+        <li><strong>Geçersiz karakter:</strong> Kopyalarken araya giren boşluk, satır sonu ya da tırnak çözmeyi bozar. Metni temizleyip yeniden deneyin.</li>
+        <li><strong>URL-safe ile standart karışması:</strong> İçinde - ve _ olan bir metni standart çözücü reddedebilir; bunları + ve / ile değiştirin ya da URL-safe seçeneğini işaretleyin.</li>
+        <li><strong>Türkçe karakterlerin bozulması:</strong> Metin UTF-8 dışında bir kodlamayla kodlanmışsa ğ, ş, ı gibi harfler yanlış çıkar. Ayrıntı için <a href="../../bilgi-bankasi/turkce-karakter-sorunu-nasil-duzeltilir/">Türkçe karakter sorunu</a> yazısına bakın.</li>
+        <li><strong>Base64'ü sıkıştırma sanmak:</strong> Base64 boyutu küçültmez, büyütür.</li>
+        <li><strong>Gizli bilgiyi Base64 ile saklamak:</strong> Kodlama koruma sağlamaz; parola ve anahtarlar gerçek şifrelemeyle korunmalıdır.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Base64 nedir?</summary><p>Base64, ikili veriyi büyük ve küçük harfler, rakamlar ile + ve / işaretlerinden oluşan 64 karakterlik bir alfabeyle düz metne çeviren kodlama yöntemidir. RFC 4648 standardında tanımlanmıştır ve metin kabul eden ortamlarda veri taşımak için kullanılır.</p></details>
+      <details><summary>Base64 ne işe yarar?</summary><p>E-posta eklerini göndermeye, küçük resimleri HTML ya da CSS içine gömmeye, JSON ve API'lerde dosya taşımaya, sertifika ve belirteç dosyalarını metin olarak saklamaya yarar. Amaç verinin metin sistemlerinden bozulmadan geçmesidir.</p></details>
+      <details><summary>Base64 bir şifreleme yöntemi mi?</summary><p>Hayır, Base64 bir kodlamadır ve anahtar kullanmaz. Herkes standart bir çözücüyle saniyeler içinde orijinal veriye ulaşabilir. Gizli bilgileri korumak için gerçek şifreleme algoritmaları kullanılmalıdır.</p></details>
+      <details><summary>Base64 kodlu metin nasıl çözülür?</summary><p>Metni Base64 Kodla / Çöz aracına yapıştırıp çözme seçeneğini kullanmanız yeterlidir. Sonuç metinse ekranda görünür, dosyaysa indirilebilir. Hata alırsanız araya giren boşlukları ve satır sonlarını temizleyin.</p></details>
+      <details><summary>Resim neden Base64'e çevrilir?</summary><p>Küçük simge ve görseller Base64'e çevrilerek data URI biçiminde doğrudan HTML, CSS ya da e-posta içine yazılabilir. Böylece ayrı bir dosya isteği gerekmez; ancak boyut yaklaşık üçte bir arttığı için büyük resimlerde önerilmez.</p></details>
+      <details><summary>Base64 dosya boyutunu ne kadar büyütür?</summary><p>Her 3 bayt 4 karaktere dönüştüğü için boyut 4/3 katına, yani yaklaşık yüzde 33 oranında artar. E-postadaki gibi satır sonları eklenirse artış yaklaşık yüzde 37'ye çıkar.</p></details>
+      <details><summary>Base64 ile Base32 farkı nedir?</summary><p>Base64 64 karakterlik alfabe kullanır ve karakter başına 6 bit taşır; boyutu yüzde 33 artırır. Base32 yalnızca büyük harfler ve 2–7 rakamlarını kullanır, karakter başına 5 bit taşır ve boyutu yüzde 60 artırır ama büyük-küçük harf karışıklığına dayanıklıdır.</p></details>
+      <details><summary>URL kodlama ile Base64 aynı şey mi?</summary><p>Hayır. URL kodlama yalnızca boşluk, Türkçe harf ve özel işaretleri yüzde işaretiyle başlayan dizilere çevirir, metnin geri kalanını korur. Base64 ise verinin tamamını 64 karakterlik alfabeyle yeniden yazar.</p></details>
+      <details><summary>Base64 metninin sonundaki eşittir işareti nedir?</summary><p>Eşittir işareti dolgudur ve çıktının 4 karakterin katı olmasını sağlar. Tek eşittir son blokta 2 bayt, iki eşittir son blokta 1 bayt olduğunu gösterir; veri uzunluğu 3'ün katıysa dolgu olmaz.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.rfc-editor.org/rfc/rfc4648" rel="noopener">IETF – RFC 4648: Base16, Base32 ve Base64 Veri Kodlamaları</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc2045" rel="noopener">IETF – RFC 2045: MIME Bölüm Bir</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../url-kodlama-yuzde-20-nedir/"><strong>URL Kodlama Nedir? %20, %C3%BC Ne Demek ve Türkçe Karakterli Linkler</strong><span>Linkteki %20 boşluk, %C3%BC ise ü harfidir. URL kodlama (percent encoding) nedir, Türkçe karakterler neden bozuk görünür, punycode ve query string nasıl okunur?</span></a></li>
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../turkce-karakter-sorunu-nasil-duzeltilir/"><strong>Türkçe Karakter Sorunu Nasıl Düzeltilir? Bozuk ı, ş, ğ ve İ Harfleri</strong><span>Ã¼, ÅŸ, Ä± gibi bozuk harfler, UTF-8 metnin başka bir kodlamayla açılmasından olur. CSV, e-posta, altyazı ve web için kodlama seçimi, İ/ı sorunu ve çözüm adımları.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../direnc-renk-kodlari-nasil-okunur/"><strong>Direnç Renk Kodları Nasıl Okunur? 4 ve 5 Bantlı Direnç Tablosu</strong><span>4 bantlı dirençte ilk iki bant rakam, üçüncü çarpan, dördüncü toleranstır: kahverengi-siyah-kırmızı-altın = 1 kΩ ±%5. Renk tablosu, 5 bantlı okuma ve SMD kodları.</span></a></li>
+          <li><a href="../gunes-paneli-kac-watt-gerekir/"><strong>Ev İçin Kaç Watt Güneş Paneli Gerekir? Panel, Akü ve İnverter Hesabı</strong><span>Gereken panel gücü = günlük tüketim ÷ (güneş saati × verim). Aylık 300 kWh için yaklaşık 2,8 kWp. Bağ evi, akü Ah ve inverter seçimi çözümlü örnekle.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-base64-nedir-ne-ise-yarar-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

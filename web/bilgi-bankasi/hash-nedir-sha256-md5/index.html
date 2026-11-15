@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hash Nedir? SHA-256, MD5 ve Dosya Doğrulama Rehberi</title>
+  <meta name="description" content="Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.">
+  <meta name="keywords" content="hash nedir, sha256 nedir, md5 nedir, dosya hash kontrolü, checksum nedir, hash ve şifreleme farkı, sha256 doğrulama, crc32 nedir">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/hash-nedir-sha256-md5/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Hash Nedir? SHA-256, MD5 ve Dosya Doğrulama Rehberi">
+  <meta property="og:description" content="Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/hash-nedir-sha256-md5/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır","description":"Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/hash-nedir-sha256-md5/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1334,"keywords":"hash nedir, sha256 nedir, md5 nedir, dosya hash kontrolü, checksum nedir, hash ve şifreleme farkı, sha256 doğrulama, crc32 nedir","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Hash nedir?","acceptedAnswer":{"@type":"Answer","text":"Hash, her uzunluktaki veriden sabit uzunlukta, tek yönlü bir özet üreten matematiksel işlemdir. Aynı veri her zaman aynı özeti verir, en küçük değişiklik özeti tamamen değiştirir ve özetten orijinal veriye geri dönülemez."}},{"@type":"Question","name":"SHA-256 nedir?","acceptedAnswer":{"@type":"Answer","text":"SHA-256, NIST tarafından standartlaştırılan SHA-2 ailesinin 256 bitlik hash algoritmasıdır ve 64 onaltılık karakterlik özet üretir. Dosya doğrulama, dijital imza ve sertifikalarda güvenli kabul edilen yaygın bir standarttır."}},{"@type":"Question","name":"MD5 neden artık güvenli sayılmıyor?","acceptedAnswer":{"@type":"Answer","text":"MD5 için aynı özeti veren iki farklı veri üretmeyi sağlayan pratik çakışma saldırıları 2004'ten beri bilinmektedir. Bu nedenle kötü niyetli biri değiştirilmiş bir dosyayı aynı MD5 değeriyle sunabilir; güvenlik işlerinde SHA-256 tercih edilmelidir."}},{"@type":"Question","name":"İndirilen dosyanın hash'i nasıl kontrol edilir?","acceptedAnswer":{"@type":"Answer","text":"Dosyayı Dosya Hash Hesaplama aracına bırakın ya da komut satırında sha256sum, shasum veya certutil komutunu çalıştırın. Çıkan değeri yayıncının resmî sitesindeki SHA-256 değeriyle karakter karakter karşılaştırın; tek fark bile dosyanın farklı olduğunu gösterir."}},{"@type":"Question","name":"Checksum nedir?","acceptedAnswer":{"@type":"Answer","text":"Checksum, verinin aktarım ya da saklama sırasında bozulup bozulmadığını anlamak için hesaplanan kısa bir denetim değeridir. CRC32 gibi basit checksum'lar kazara hataları yakalar; kasıtlı değişikliklere karşı ise kriptografik hash gerekir."}},{"@type":"Question","name":"Hash ile şifreleme arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Şifreleme veriyi gizler ve doğru anahtarla geri çözülebilir. Hash ise veriyi gizlemez, sabit uzunlukta bir parmak izi üretir ve geri çevrilemez. Şifreleme gizlilik, hash bütünlük ve doğrulama için kullanılır."}},{"@type":"Question","name":"Şifreler neden hash'lenerek saklanır?","acceptedAnswer":{"@type":"Answer","text":"Veritabanı sızdırıldığında şifrelerin doğrudan okunmasını önlemek için. Doğru uygulamada her şifreye rastgele tuz eklenir ve Argon2, bcrypt gibi bilinçli olarak yavaş algoritmalar kullanılır; düz SHA-256 tek başına yeterli değildir."}},{"@type":"Question","name":"CRC32 ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"CRC32, ZIP, PNG ve Ethernet gibi biçimlerde verinin kazara bozulup bozulmadığını hızla denetleyen 32 bitlik bir sağlama toplamıdır. Kasıtlı değişiklikleri tespit etmek için tasarlanmadığından güvenlik amacıyla kullanılmamalıdır."}},{"@type":"Question","name":"İki farklı dosyanın hash'i aynı olabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Teorik olarak olabilir, çünkü sonsuz olası girdi sabit sayıda özete eşlenir. SHA-256 için böyle bir çakışma bulmak bugünkü teknolojiyle pratikte imkânsızdır; MD5 ve SHA-1 için ise çakışma üretmek mümkün hâle gelmiştir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</h1><p class="lead">Hash, bir metin ya da dosyadan <strong>sabit uzunlukta, tek yönlü bir özet (parmak izi)</strong> üreten matematiksel işlemdir: aynı veri her zaman aynı hash'i verir, verinin tek bir harfi bile değişirse hash tamamen değişir ve hash'ten asıl veriye geri dönülemez. SHA-256 her girdi için 64 karakterlik onaltılık bir özet üretir; MD5 32 karakterlik özet üretir ama artık güvenli sayılmaz. Bu sayfada hash'in nasıl çalıştığını, indirdiğiniz bir dosyayı SHA-256 ile nasıl doğrulayacağınızı ve hash ile şifreleme arasındaki farkı bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Hash fonksiyonu her boyuttaki veriyi sabit uzunlukta bir özete dönüştürür; SHA-256 çıktısı 256 bit, yani 64 onaltılık karakterdir.</li>
+        <li>Aynı girdi her zaman aynı hash'i verir; tek bir bit değişse bile özet tamamen farklı olur (çığ etkisi).</li>
+        <li>Hash tek yönlüdür: özetten orijinal veri hesaplanamaz; şifreleme ise anahtarla geri çözülebilir.</li>
+        <li>MD5 (128 bit) ve SHA-1 (160 bit) için çakışma saldırıları bulunmuştur; güvenlik gerektiren işlerde SHA-256 ve üstü kullanılır.</li>
+        <li>Dosya doğrulama: indirdiğiniz dosyanın SHA-256 değerini hesaplayıp yayıncının sitesindeki değerle karakter karakter karşılaştırırsınız.</li>
+        <li>CRC32 bir hata denetim toplamıdır; kazara bozulmayı yakalar ama kasıtlı değişikliğe karşı koruma sağlamaz.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Hash çığ etkisi: 'Merhaba' ve 'merhaba' kelimelerinin SHA-256 özetleri tamamen farklı. Altta algoritmalara göre özet uzunluğu: CRC32 8, MD5 32, SHA-1 40, SHA-256 64, SHA-512 128 onaltılık karakter." viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" class="p"/></marker></defs>
+  <text x="360" y="30" class="lg b mid">Tek harf değişince hash ne olur?</text>
+  <rect x="20" y="52" width="130" height="44" rx="8" class="ps"/><text x="85" y="80" class="b mid">Merhaba</text>
+  <line x1="150" y1="74" x2="196" y2="74" class="sp sw" fill="none" marker-end="url(#ok)"/>
+  <text x="173" y="64" class="sm mid mu">SHA-256</text>
+  <rect x="200" y="50" width="500" height="50" rx="8" class="sf sb"/>
+  <text x="212" y="70" class="sm">7fdc9f4717c5fe66df286c700fab969b</text>
+  <text x="212" y="90" class="sm">4d6209d03aa84624c5f8f58c17c9c058</text>
+  <rect x="20" y="114" width="130" height="44" rx="8" class="ps"/><text x="85" y="142" class="b mid">merhaba</text>
+  <line x1="150" y1="136" x2="196" y2="136" class="sp sw" fill="none" marker-end="url(#ok)"/>
+  <rect x="200" y="112" width="500" height="50" rx="8" class="sf sb"/>
+  <text x="212" y="132" class="sm">4c6bcdd55f3153e1939669ab1ec039e4</text>
+  <text x="212" y="152" class="sm">059174dc25abdfcb2f58868849b4d61b</text>
+  <text x="360" y="186" class="sm mid dg b">Benzerlik yok: özetten girdiyi tahmin etmek mümkün değildir</text>
+  <line x1="20" y1="204" x2="700" y2="204" class="sb dash" fill="none"/>
+  <text x="20" y="232" class="b">Özet uzunluğu (onaltılık karakter)</text>
+  <g class="sm">
+    <text x="20" y="266">CRC32</text><rect x="110" y="252" width="20" height="20" rx="3" class="sf sb"/><text x="140" y="266">8 · hata denetimi</text>
+    <text x="20" y="300">MD5</text><rect x="110" y="286" width="80" height="20" rx="3" class="dgs"/><text x="200" y="300">32 · güvenli değil</text>
+    <text x="20" y="334">SHA-1</text><rect x="110" y="320" width="100" height="20" rx="3" class="dgs"/><text x="220" y="334">40 · güvenli değil</text>
+    <text x="20" y="368">SHA-256</text><rect x="110" y="354" width="160" height="20" rx="3" class="p"/><text x="280" y="368">64 · önerilen</text>
+    <text x="20" y="402">SHA-512</text><rect x="110" y="388" width="320" height="20" rx="3" class="oks"/><text x="440" y="402">128 · güçlü</text>
+  </g>
+  <text x="700" y="430" class="sm end mu">1 onaltılık karakter = 4 bit</text>
+</svg>
+      <figcaption>Yalnızca ilk harfin büyük-küçük olması bile özetin tamamını değiştirir. Alt bölüm, özet uzunluğunun algoritmaya göre nasıl büyüdüğünü gösterir; güvenlik açısından uzunluk tek başına yeterli değildir, algoritmanın kırılmamış olması gerekir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Hash nedir, nasıl çalışır?</a></li>
+      <li><a href="#b2">SHA-256 nedir? MD5 neden artık güvenli sayılmıyor?</a></li>
+      <li><a href="#b3">Checksum nedir? CRC32 ne işe yarar?</a></li>
+      <li><a href="#b4">İndirilen dosyanın hash'i nasıl kontrol edilir?</a></li>
+      <li><a href="#b5">Hash ile şifreleme arasındaki fark nedir?</a></li>
+      <li><a href="#b6">Şifreler neden hash'lenerek saklanır?</a></li>
+      <li><a href="#b7">Metnin SHA-256 özetini hesaplamak ve sık yapılan hatalar</a></li>
+      <li><a href="#b8">Hash nerelerde kullanılır?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-hash-nedir-sha256-md5-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../dosya-hash/"><strong>Dosya Hash Hesaplama</strong><span>Dosyanın SHA-256, SHA-1, SHA-512 ve MD5 özetini hesaplayın, beklenen hash ile karşılaştırın. Büyük dosyalar parça parça işlenir, dosya yüklenmez.</span></a></li>
+          <li><a href="../../metin-sha256-hesapla/"><strong>Metin SHA-256 Özeti Hesaplama</strong><span>Metnin SHA-256 özetini onaltılık ve Base64 olarak hesaplayın; beklenen özetle karşılaştırın. Metin tarayıcıdan çıkmaz.</span></a></li>
+          <li><a href="../../crc32-hesapla/"><strong>CRC32 Hesaplama</strong><span>Metin ya da hex baytların CRC32 sağlama toplamını onaltılık, ondalık ve ikili olarak hesaplayın.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Hash nedir, nasıl çalışır?</h2>
+      <p>Hash fonksiyonu, girdi olarak verilen her türlü veriyi (bir kelime, bir belge ya da birkaç gigabaytlık bir dosya) alıp her zaman aynı uzunlukta bir çıktı üreten matematiksel bir işlemdir. Bu çıktıya <strong>hash</strong>, <strong>özet</strong> ya da <strong>digest</strong> denir. Bir insanın parmak izi gibi, verinin kısa ve benzersize çok yakın bir temsilidir.</p>
+      <p>Kriptografik hash fonksiyonlarının üç temel özelliği vardır. <strong>Belirleyicilik:</strong> aynı girdi her zaman aynı özeti verir. <strong>Tek yönlülük:</strong> özetten girdiyi hesaplamak pratikte imkânsızdır. <strong>Çakışma direnci:</strong> aynı özeti veren iki farklı girdi bulmak pratikte imkânsız olmalıdır. Bunlara ek olarak girdideki en küçük değişiklik özetin yaklaşık yarısının bitlerini değiştirir; buna <strong>çığ etkisi</strong> denir.</p>
+      <p>Örneğin &quot;abc&quot; metninin SHA-256 özeti <code>ba7816bf…20015ad</code> ile başlayıp biten 64 karakterlik bir dizidir. Boş bir metnin bile özeti vardır: <code>e3b0c442…7852b855</code>. Bu değerler dünyanın her yerinde, her bilgisayarda aynıdır.</p>
+
+      <h2 id="b2">SHA-256 nedir? MD5 neden artık güvenli sayılmıyor?</h2>
+      <p>SHA-256, ABD Ulusal Standartlar ve Teknoloji Enstitüsü (NIST) tarafından yayımlanan SHA-2 ailesinin 256 bitlik üyesidir. Yazılım dağıtımında dosya doğrulama, dijital imzalar, TLS sertifikaları, sürüm kontrol sistemleri ve blokzincir gibi pek çok alanda kullanılır. 256 bitlik bir özette olası değer sayısı 2<sup>256</sup>'dır; bu, evrendeki tahmini atom sayısıyla karşılaştırılabilecek büyüklükte bir sayıdır.</p>
+      <p>MD5 1990'ların başında yaygınlaşan, 128 bitlik özet üreten bir algoritmadır. 2004'te araştırmacılar MD5 için pratik çakışma, yani aynı özeti veren iki farklı veri üretme yöntemi gösterdi; sonraki yıllarda bu saldırılar sahte sertifika üretilebilecek düzeye ulaştı. SHA-1 için de 2017'de ilk pratik çakışma yayımlandı. Bu nedenle MD5 ve SHA-1 artık güvenlik amaçlı kullanılmamalıdır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Algoritma</th><th>Özet boyu</th><th>Onaltılık karakter</th><th>Güvenlik durumu</th><th>Uygun kullanım</th></tr></thead>
+        <tbody>
+          <tr><td>CRC32</td><td>32 bit</td><td>8</td><td>Kriptografik değil</td><td>Kazara bozulma denetimi (ZIP, PNG, Ethernet)</td></tr>
+          <tr><td>MD5</td><td>128 bit</td><td>32</td><td>Çakışma bulunmuş</td><td>Yalnızca kazara bozulma kontrolü, eski sistemler</td></tr>
+          <tr><td>SHA-1</td><td>160 bit</td><td>40</td><td>Çakışma bulunmuş</td><td>Eski sistemlerle uyumluluk</td></tr>
+          <tr><td>SHA-256</td><td>256 bit</td><td>64</td><td>Güvenli kabul edilir</td><td>Dosya doğrulama, imza, sertifika</td></tr>
+          <tr><td>SHA-512</td><td>512 bit</td><td>128</td><td>Güvenli kabul edilir</td><td>Yüksek güvenlik payı istenen işler</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">MD5'in kazara bozulmayı yakalama yeteneği hâlâ iş görür; sorun, birinin kasıtlı olarak aynı MD5'i veren zararlı bir dosya hazırlayabilmesidir.</p>
+
+      <h2 id="b3">Checksum nedir? CRC32 ne işe yarar?</h2>
+      <p>Checksum (sağlama toplamı), verinin aktarım ya da saklama sırasında bozulup bozulmadığını anlamak için hesaplanan kısa bir değerdir. Her hash bir anlamda checksum olarak kullanılabilir, ama her checksum kriptografik hash değildir. CRC32 (döngüsel artıklık denetimi) bunun en yaygın örneğidir: ZIP arşivleri, PNG görselleri ve Ethernet çerçeveleri verinin bozulmadığını CRC32 ile denetler.</p>
+      <p>CRC32 çok hızlıdır ve rastgele bit hatalarını yakalamakta başarılıdır, ancak tasarım gereği tersine çevrilebilir bir yapıya sahiptir: aynı CRC32'yi veren farklı veri üretmek kolaydır. Bu yüzden CRC32 bir dosyanın birileri tarafından değiştirilmediğini kanıtlamak için kullanılamaz. Bir metnin ya da bayt dizisinin CRC32 değerini <a href="../../crc32-hesapla/">CRC32 Hesaplama aracıyla</a> onaltılık, ondalık ve ikili olarak görebilirsiniz; yaygın test değeri olarak &quot;123456789&quot; metninin CRC32 değeri <code>CBF43926</code>'dır.</p>
+
+      <h2 id="b4">İndirilen dosyanın hash'i nasıl kontrol edilir?</h2>
+      <p>Yazılım yayıncıları, işletim sistemi kalıpları ve sürücü dağıtıcıları indirme sayfalarında dosyanın SHA-256 değerini yayımlar. Bu değeri kendi bilgisayarınızda hesapladığınız değerle karşılaştırarak dosyanın eksiksiz indiğini ve yolda değiştirilmediğini doğrularsınız. Doğrulama, özellikle aynalardan (mirror) ya da yavaş bağlantıdan inen büyük dosyalarda önemlidir.</p>
+      <ol class="ba-steps">
+        <li>Yayıncının resmî sitesinden dosyayla birlikte SHA-256 değerini kopyalayın. Değeri dosyanın indirildiği üçüncü taraf siteden değil, mümkünse yayıncının kendi sitesinden alın.</li>
+        <li><a href="../../dosya-hash/">Dosya Hash Hesaplama aracını</a> açın ve indirdiğiniz dosyayı sürükleyip bırakın; dosya bilgisayarınızdan çıkmaz, hesap tarayıcıda yapılır.</li>
+        <li>Araç SHA-256, SHA-1, SHA-512 ve MD5 değerlerini hesaplar; beklenen değeri karşılaştırma kutusuna yapıştırın.</li>
+        <li>Değerler birebir aynıysa dosya sağlamdır. Tek bir karakter bile farklıysa dosyayı kullanmayın, yeniden indirin; fark devam ediyorsa yayıncıya bildirin.</li>
+      </ol>
+      <p>Aynı işi komut satırından da yapabilirsiniz: Windows'ta <code>certutil -hashfile dosya.iso SHA256</code> ya da PowerShell'de <code>Get-FileHash dosya.iso</code>, macOS'te <code>shasum -a 256 dosya.iso</code>, Linux'ta <code>sha256sum dosya.iso</code> komutu çalışır. Karşılaştırmada büyük-küçük harf farkı önemli değildir; onaltılık değerler iki biçimde de yazılabilir.</p>
+      <p>Unutmayın: hash doğrulaması dosyanın yayıncının yayımladığı dosyayla aynı olduğunu gösterir, yayıncının güvenilir olduğunu göstermez. Hash değerini de dosyayı da aynı ele geçirilmiş siteden alıyorsanız saldırgan ikisini birden değiştirmiş olabilir. Bu yüzden büyük yazılımlar ayrıca dijital imza kullanır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-hash-nedir-sha256-md5-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">Hash ile şifreleme arasındaki fark nedir?</h2>
+      <p>İki kavram sık karıştırılır ama amaçları farklıdır. Şifreleme (encryption) veriyi gizlemek için yapılır ve doğru anahtara sahip olan kişi veriyi geri çözebilir. Hash ise veriyi gizlemek değil, ona bir parmak izi çıkarmak için kullanılır ve geri çözülmez. Base64 gibi kodlamalar ise ikisinden de farklıdır: herkesin geri çevirebileceği bir biçim dönüşümüdür, güvenlik sağlamaz.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>Hash</th><th>Şifreleme</th><th>Kodlama (Base64)</th></tr></thead>
+        <tbody>
+          <tr><td>Geri çevrilebilir mi?</td><td>Hayır</td><td>Evet, anahtarla</td><td>Evet, herkes</td></tr>
+          <tr><td>Çıktı uzunluğu</td><td>Sabit</td><td>Girdiyle orantılı</td><td>Girdiyle orantılı</td></tr>
+          <tr><td>Anahtar gerekir mi?</td><td>Hayır (HMAC'te gizli anahtar kullanılır)</td><td>Evet</td><td>Hayır</td></tr>
+          <tr><td>Amaç</td><td>Bütünlük, parmak izi</td><td>Gizlilik</td><td>Biçim uyumu</td></tr>
+          <tr><td>Örnek</td><td>SHA-256</td><td>AES-256</td><td>Base64</td></tr>
+        </tbody>
+      </table></div>
+      <p>Örneğin bir PDF'e parola koymak şifrelemedir; parolayı bilen belgeyi açar. Aynı PDF'in SHA-256 değerini yayımlamak ise belgeyi gizlemez, yalnızca alıcının elindeki kopyanın aynı olduğunu doğrulamasını sağlar. PDF şifreleme hakkında bilgi için <a href="../../rehber/pdf-sifreleme-ve-gizlilik/">PDF şifreleme ve gizlilik rehberine</a> bakabilirsiniz.</p>
+
+      <h2 id="b6">Şifreler neden hash'lenerek saklanır?</h2>
+      <p>İyi tasarlanmış bir web sitesi kullanıcı şifrelerini düz metin olarak değil, hash'leri olarak saklar. Siz giriş yaptığınızda yazdığınız şifrenin hash'i hesaplanır ve kayıtlı hash ile karşılaştırılır. Böylece veritabanı sızdırılsa bile şifrelerin kendisi doğrudan görünmez.</p>
+      <p>Ancak şifre saklamada SHA-256 gibi hızlı hash fonksiyonları tek başına yeterli değildir. Hızlı olmaları, saldırganın sızdırılan hash'ler üzerinde saniyede milyarlarca tahmin denemesine olanak verir. Bu nedenle şifreler için her kullanıcıya özel rastgele bir değer (<strong>tuz</strong>, salt) eklenir ve bilinçli olarak yavaş çalışan, şifre saklama için tasarlanmış algoritmalar (Argon2, bcrypt, scrypt, PBKDF2) kullanılır. Tuz, aynı şifreyi kullanan iki kişinin hash'inin farklı olmasını sağlar ve önceden hesaplanmış tablolarla saldırıyı engeller.</p>
+      <p>Kullanıcı tarafında yapılabilecek en iyi şey, her site için farklı ve uzun şifre kullanmaktır. Güçlü şifre oluşturmanın ayrıntıları <a href="../../rehber/sifre-guvenligi-ve-guclu-sifre/">şifre güvenliği rehberinde</a> anlatılır.</p>
+
+      <h2 id="b7">Metnin SHA-256 özetini hesaplamak ve sık yapılan hatalar</h2>
+      <p>Bir metnin SHA-256 özetini <a href="../../metin-sha256-hesapla/">Metin SHA-256 Hesaplama aracında</a> onaltılık ve Base64 biçiminde görebilirsiniz. Metin hash'lerken karşılaşılan farkların çoğu, girdinin görünmeyen biçimde farklı olmasından kaynaklanır:</p>
+      <ul>
+        <li><strong>Görünmeyen boşluk ve satır sonu:</strong> Metnin sonundaki tek bir boşluk ya da satır sonu, özeti tamamen değiştirir. Komut satırında <code>echo</code> komutu metnin sonuna satır sonu ekleyebilir.</li>
+        <li><strong>Karakter kodlaması:</strong> Hash baytlar üzerinde hesaplanır. &quot;ş&quot; harfi UTF-8'de iki bayttır, eski Türkçe kod sayfasında tek bayttır; aynı görünen metin farklı hash verir.</li>
+        <li><strong>Windows ve Linux satır sonları:</strong> CRLF ile LF farkı, metin dosyalarının hash'ini değiştirir.</li>
+        <li><strong>Büyük-küçük harf:</strong> &quot;Merhaba&quot; ile &quot;merhaba&quot; tamamen farklı özetler üretir.</li>
+        <li><strong>Yanlış algoritmayla karşılaştırma:</strong> 32 karakterlik bir değeri SHA-256 sanmak sık yapılan bir hatadır; uzunluk algoritmayı ele verir.</li>
+      </ul>
+
+      <h2 id="b8">Hash nerelerde kullanılır?</h2>
+      <ul>
+        <li><strong>Yazılım ve dosya doğrulama:</strong> İndirilen dosyanın eksiksiz ve değiştirilmemiş olduğunu kanıtlamak.</li>
+        <li><strong>Dijital imza ve e-imza:</strong> Belgenin tamamı yerine hash'i imzalanır; belgedeki tek bir değişiklik imzayı geçersiz kılar.</li>
+        <li><strong>Yedekleme ve senkronizasyon:</strong> Dosyanın değişip değişmediğini içeriğine bakmadan hızla anlamak.</li>
+        <li><strong>Yinelenen dosya tespiti:</strong> Aynı hash'e sahip dosyalar aynı içeriğe sahiptir.</li>
+        <li><strong>Sürüm kontrol sistemleri:</strong> Her kayıt (commit) ve dosya içeriği hash'iyle adreslenir.</li>
+        <li><strong>Adli bilişim:</strong> Delil olarak alınan disk kopyalarının sonradan değiştirilmediğini göstermek için hash değerleri kayda geçirilir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Hash nedir?</summary><p>Hash, her uzunluktaki veriden sabit uzunlukta, tek yönlü bir özet üreten matematiksel işlemdir. Aynı veri her zaman aynı özeti verir, en küçük değişiklik özeti tamamen değiştirir ve özetten orijinal veriye geri dönülemez.</p></details>
+      <details><summary>SHA-256 nedir?</summary><p>SHA-256, NIST tarafından standartlaştırılan SHA-2 ailesinin 256 bitlik hash algoritmasıdır ve 64 onaltılık karakterlik özet üretir. Dosya doğrulama, dijital imza ve sertifikalarda güvenli kabul edilen yaygın bir standarttır.</p></details>
+      <details><summary>MD5 neden artık güvenli sayılmıyor?</summary><p>MD5 için aynı özeti veren iki farklı veri üretmeyi sağlayan pratik çakışma saldırıları 2004'ten beri bilinmektedir. Bu nedenle kötü niyetli biri değiştirilmiş bir dosyayı aynı MD5 değeriyle sunabilir; güvenlik işlerinde SHA-256 tercih edilmelidir.</p></details>
+      <details><summary>İndirilen dosyanın hash'i nasıl kontrol edilir?</summary><p>Dosyayı Dosya Hash Hesaplama aracına bırakın ya da komut satırında sha256sum, shasum veya certutil komutunu çalıştırın. Çıkan değeri yayıncının resmî sitesindeki SHA-256 değeriyle karakter karakter karşılaştırın; tek fark bile dosyanın farklı olduğunu gösterir.</p></details>
+      <details><summary>Checksum nedir?</summary><p>Checksum, verinin aktarım ya da saklama sırasında bozulup bozulmadığını anlamak için hesaplanan kısa bir denetim değeridir. CRC32 gibi basit checksum'lar kazara hataları yakalar; kasıtlı değişikliklere karşı ise kriptografik hash gerekir.</p></details>
+      <details><summary>Hash ile şifreleme arasındaki fark nedir?</summary><p>Şifreleme veriyi gizler ve doğru anahtarla geri çözülebilir. Hash ise veriyi gizlemez, sabit uzunlukta bir parmak izi üretir ve geri çevrilemez. Şifreleme gizlilik, hash bütünlük ve doğrulama için kullanılır.</p></details>
+      <details><summary>Şifreler neden hash'lenerek saklanır?</summary><p>Veritabanı sızdırıldığında şifrelerin doğrudan okunmasını önlemek için. Doğru uygulamada her şifreye rastgele tuz eklenir ve Argon2, bcrypt gibi bilinçli olarak yavaş algoritmalar kullanılır; düz SHA-256 tek başına yeterli değildir.</p></details>
+      <details><summary>CRC32 ne işe yarar?</summary><p>CRC32, ZIP, PNG ve Ethernet gibi biçimlerde verinin kazara bozulup bozulmadığını hızla denetleyen 32 bitlik bir sağlama toplamıdır. Kasıtlı değişiklikleri tespit etmek için tasarlanmadığından güvenlik amacıyla kullanılmamalıdır.</p></details>
+      <details><summary>İki farklı dosyanın hash'i aynı olabilir mi?</summary><p>Teorik olarak olabilir, çünkü sonsuz olası girdi sabit sayıda özete eşlenir. SHA-256 için böyle bir çakışma bulmak bugünkü teknolojiyle pratikte imkânsızdır; MD5 ve SHA-1 için ise çakışma üretmek mümkün hâle gelmiştir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://csrc.nist.gov/" rel="noopener">NIST – FIPS 180-4 Secure Hash Standard</a></li>
+        <li><a href="https://www.usom.gov.tr/" rel="noopener">Ulusal Siber Olaylara Müdahale Merkezi (USOM)</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../http-durum-kodlari-404-500-nedir/"><strong>HTTP Durum Kodları Nedir? 404, 500, 301 ve 403 Hataları Ne Anlama Gelir</strong><span>HTTP durum kodu, sunucunun isteğe verdiği üç haneli cevaptır. 404 sayfa bulunamadı, 500 sunucu hatası, 301 kalıcı yönlendirme demektir. Nedenleri ve çözümleri.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+          <li><a href="../direnc-renk-kodlari-nasil-okunur/"><strong>Direnç Renk Kodları Nasıl Okunur? 4 ve 5 Bantlı Direnç Tablosu</strong><span>4 bantlı dirençte ilk iki bant rakam, üçüncü çarpan, dördüncü toleranstır: kahverengi-siyah-kırmızı-altın = 1 kΩ ±%5. Renk tablosu, 5 bantlı okuma ve SMD kodları.</span></a></li>
+          <li><a href="../gunes-paneli-kac-watt-gerekir/"><strong>Ev İçin Kaç Watt Güneş Paneli Gerekir? Panel, Akü ve İnverter Hesabı</strong><span>Gereken panel gücü = günlük tüketim ÷ (güneş saati × verim). Aylık 300 kWh için yaklaşık 2,8 kWp. Bağ evi, akü Ah ve inverter seçimi çözümlü örnekle.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-hash-nedir-sha256-md5-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
