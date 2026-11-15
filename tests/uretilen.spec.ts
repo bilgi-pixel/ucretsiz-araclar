@@ -64,6 +64,14 @@ for (const t of tools) {
       if (t.pdf && c === t.cases[0]) {
         // PDF çıktısı: önizleme görünür, indirilen dosya gerçek bir PDF
         await expect(page.locator('#onizleme')).toBeVisible();
+        // Ekranda doldurma: önizlemeye tıkla, yaz, Enter → yazı sayılır ve tarayıcıda saklanır
+        const box = (await page.locator('#onizleme').boundingBox())!;
+        await page.locator('#onizleme').click({ position: { x: box.width * 0.5, y: box.height * 0.5 } });
+        await page.locator('.ar-plan-yaz').fill('Deneme yazısı');
+        await page.keyboard.press('Enter');
+        await expect(page.locator('.ar-plan-yaz')).toHaveCount(0);
+        await expect(page.locator('#pg-info')).toContainText('1 yazı');
+        expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('ba-plan:')).length)).toBe(1);
         const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#pdf').click()]);
         expect(dl.suggestedFilename()).toMatch(/\.pdf$/);
         const bytes = readFileSync((await dl.path())!);

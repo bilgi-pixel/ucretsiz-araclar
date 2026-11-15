@@ -56,7 +56,7 @@ export function logicSource(spec) {
   return `// ${spec.title} — hesap mantığı. DOM yok, ağ yok; tarayıcıda çalışır.\n${src}\n`;
 }
 
-const RESERVED = new Set(['form', 'error', 'result', 'rows', 'out', 'note', 'calc', 'clear', 'copy', 'pdf', 'onizleme']);
+const RESERVED = new Set(['form', 'error', 'result', 'rows', 'out', 'note', 'calc', 'clear', 'copy', 'pdf', 'onizleme', 'planWrap', 'pgPrev', 'pgNext', 'pgInfo', 'pgClear']);
 const TYPES = new Set(['number', 'text', 'textarea', 'select', 'date']);
 const BANNED = /https?:\/\/|www\.|<script|<a\s|onclick|javascript:/i;
 
@@ -252,7 +252,12 @@ ${spec.inputs.map(field).join('\n')}
         <dl id="rows" class="ar-results"></dl>
         <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
         <p class="ar-note" id="note" hidden></p>
-${spec.pdf ? '        <canvas id="onizleme" class="ar-onizleme" role="img" aria-label="İlk sayfanın önizlemesi" hidden></canvas>\n' : ''}        <div class="ba-actions">${spec.pdf ? '<button id="pdf" class="ba-btn ba-btn-primary" type="button" hidden>PDF indir</button>' : ''}<button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+${spec.pdf ? `        <div id="plan-wrap" class="ar-plan" hidden>
+          <p class="ar-plan-ipucu"><strong>Ekranda doldurun:</strong> önizlemede yazmak istediğiniz yere tıklayıp yazın, Enter ile bitirin. Yazdıklarınız bu tarayıcıda saklanır ve PDF'e eklenir; boş bırakırsanız planlayıcı boş iner.</p>
+          <div class="ar-plan-nav"><button id="pg-prev" class="ba-btn" type="button">‹ Önceki sayfa</button><span id="pg-info" aria-live="polite"></span><button id="pg-next" class="ba-btn" type="button">Sonraki sayfa ›</button><button id="pg-clear" class="ba-btn" type="button" hidden>Yazıları sil</button></div>
+          <div class="ar-plan-sahne"><canvas id="onizleme" class="ar-onizleme" role="img" aria-label="Planlayıcı önizlemesi; yazmak için tıklayın" hidden></canvas></div>
+        </div>
+` : ''}        <div class="ba-actions">${spec.pdf ? '<button id="pdf" class="ba-btn ba-btn-primary" type="button" hidden>PDF indir</button>' : ''}<button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
         <p class="ar-status" id="copy-status" aria-live="polite"></p>
       </div>
     </section>
