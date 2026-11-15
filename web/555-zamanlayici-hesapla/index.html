@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>555 Zamanlayıcı Hesaplama – Astable Frekans ve Monostable Süre</title>
+  <meta name="description" content="NE555 entegresiyle kurulan kararsız (astable) devrenin frekansını ve görev döngüsünü, tek atımlı (monostable) devrenin darbe süresini direnç ve kondansatörden hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/555-zamanlayici-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"555 Zamanlayıcı Devre Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/555-zamanlayici-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"555 ile 1 Hz nasıl elde edilir?","acceptedAnswer":{"@type":"Answer","text":"Örneğin R1 = 1 kΩ, R2 = 68 kΩ ve C = 10 µF seçildiğinde frekans 1,44 ÷ (137 000 × 0,00001) ≈ 1,05 Hz olur. Tam 1 Hz için R2 yerine trimpot kullanıp ince ayar yapabilirsiniz."}},{"@type":"Question","name":"Formüldeki 0,693 ve 1,44 nereden geliyor?","acceptedAnswer":{"@type":"Answer","text":"0,693, 2'nin doğal logaritmasıdır; kondansatör geriliminin beslemenin üçte biri ile üçte ikisi arasında gidip gelme süresinden doğar. 1,44 ise bu sayının tersidir (1 ÷ 0,693)."}},{"@type":"Question","name":"Besleme gerilimi frekansı etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"İdeal durumda hayır, çünkü eşik gerilimleri beslemenin sabit oranlarıdır. Uygulamada küçük bir etki görülebilir; bu yüzden hesapta besleme gerilimi sorulmaz."}},{"@type":"Question","name":"Direnci ohm olarak nasıl girerim?","acceptedAnswer":{"@type":"Answer","text":"Alanlar kiloohm cinsindendir. 470 Ω için 0,47; 2,2 kΩ için 2,2; 1 MΩ için 1000 yazın."}},{"@type":"Question","name":"Tek atımlı modda R2 alanını doldurmam gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tek atımlı devrede yalnızca bir direnç ve bir kondansatör zamanlamayı belirler; R2 alanı dikkate alınmaz."}},{"@type":"Question","name":"Görev döngüsünü %50 yapabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Standart bağlantıda tam %50 olmaz, ancak R1'i R2'ye göre çok küçük seçerek yaklaşabilirsiniz. Tam %50 için diyotlu bağlantı ya da çıkışı ikiye bölen bir flip-flop kullanılır."}},{"@type":"Question","name":"NE555 ile CMOS 555 için formül aynı mı?","acceptedAnswer":{"@type":"Answer","text":"Evet, zamanlama formülleri aynıdır. CMOS sürümler daha az akım çeker, daha düşük gerilimde ve daha yüksek frekansta çalışabilir; ayrıntılar için ilgili veri sayfasına bakın."}},{"@type":"Question","name":"Girdiğim değerler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır, değerler hiçbir sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#elektrik" class="ba-nav-optional">Elektrik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#elektrik">Elektrik</a></li></ol>
+      <h1><span class="ba-grad">555 Zamanlayıcı Devre Hesaplama</span> – kararsız ve tek atımlı</h1>
+      <p class="lead">555 zamanlayıcı entegresiyle kuracağınız devrenin zamanlamasını direnç ve kondansatör değerlerinden hesaplayın. <strong>Kararsız (astable)</strong> modda frekans, periyot ve görev döngüsünü; <strong>tek atımlı (monostable)</strong> modda çıkış darbesinin süresini verir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-mod">Çalışma modu</label><select id="f-mod" data-field="mod"><option value="astable">Kararsız (astable) – sürekli kare dalga</option><option value="mono">Tek atımlı (monostable) – tek darbe</option></select></div>
+          <div class="ba-field"><label for="f-r1">R1 direnci (kΩ)</label><input id="f-r1" data-field="r1" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1"></div>
+          <div class="ba-field"><label for="f-r2">R2 direnci (kΩ)</label><input id="f-r2" data-field="r2" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"><div class="hint">Yalnızca kararsız modda kullanılır.</div></div>
+          <div class="ba-field"><label for="f-c">C kondansatörü</label><input id="f-c" data-field="c" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"></div>
+          <div class="ba-field"><label for="f-cb">Kondansatör birimi</label><select id="f-cb" data-field="cb"><option value="uF">µF (mikrofarad)</option><option value="nF">nF (nanofarad)</option><option value="pF">pF (pikofarad)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="555-zamanlayici-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;Çalışma modu&quot; listesinden devrenizin türünü seçin: sürekli kare dalga üreten kararsız mod ya da tetiklenince tek darbe veren tek atımlı mod.</li>
+        <li>R1 direncini kiloohm olarak yazın. 4,7 kΩ için 4,7; 470 Ω için 0,47; 1 MΩ için 1000 girin.</li>
+        <li>Kararsız modda R2 direncini de kiloohm olarak yazın. Tek atımlı modda bu alan boş bırakılabilir.</li>
+        <li>Zamanlama kondansatörünün değerini yazıp birimini (µF, nF ya da pF) seçin.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. Kararsız modda frekans, periyot, yüksek ve düşük süreler ile görev döngüsü; tek atımlı modda darbe süresi gösterilir.</li>
+      </ol>
+
+      <h2>555 entegresi ne yapar?</h2>
+      <p>555, 1970'lerin başından beri üretilen ve hâlâ en çok kullanılan zamanlayıcı entegrelerinden biridir. İçinde besleme gerilimini üçe bölen bir direnç zinciri, iki karşılaştırıcı, bir flip-flop ve bir boşaltma transistörü bulunur. Dışarıdan bağlanan kondansatörün gerilimi beslemenin üçte birinin altına indiğinde çıkış yükselir, üçte ikisinin üzerine çıktığında çıkış düşer ve boşaltma transistörü kondansatörü boşaltmaya başlar.</p>
+      <p>Eşikler besleme geriliminin sabit oranları olduğu için zamanlama, ideal durumda besleme geriliminden bağımsızdır; yalnızca direnç ve kondansatör değerleri belirleyicidir. Bu sayfadaki hesapların besleme gerilimi sormamasının nedeni budur.</p>
+
+      <h2>Kararsız (astable) mod formülleri</h2>
+      <p>Kararsız bağlantıda R1 besleme ile boşaltma ucu (7 numaralı bacak) arasına, R2 boşaltma ucu ile eşik ve tetikleme uçları (6 ve 2) arasına, C ise bu uçlarla şase arasına bağlanır. Kondansatör R1 ve R2 üzerinden dolar, yalnızca R2 üzerinden boşalır. Buna göre:</p>
+      <ul>
+        <li><strong>Yüksek süre:</strong> t<sub>H</sub> = 0,693 × (R1 + R2) × C</li>
+        <li><strong>Düşük süre:</strong> t<sub>L</sub> = 0,693 × R2 × C</li>
+        <li><strong>Periyot:</strong> T = 0,693 × (R1 + 2 × R2) × C</li>
+        <li><strong>Frekans:</strong> f = 1,44 ÷ ((R1 + 2 × R2) × C)</li>
+        <li><strong>Görev döngüsü:</strong> D = (R1 + R2) ÷ (R1 + 2 × R2)</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="555-zamanlayici-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: LED flaşör</h2>
+      <p>R1 = 1 kΩ, R2 = 10 kΩ ve C = 10 µF seçelim. Yüksek süre 0,693 × 11 000 Ω × 0,00001 F = 76,25 ms, düşük süre 0,693 × 10 000 × 0,00001 = 69,31 ms çıkar. Periyot bu ikisinin toplamı olan 145,6 ms, frekans 1 ÷ 0,1456 = <strong>6,87 Hz</strong> olur. Görev döngüsü 11 ÷ 21 = %52,38'dir. Çıkışa bağlı bir LED saniyede yaklaşık yedi kez yanıp söner.</p>
+      <p>Daha yavaş bir flaşör isterseniz kondansatörü büyütün: aynı dirençlerle C = 100 µF seçildiğinde frekans on kat düşerek 0,687 Hz'e, yani yaklaşık 1,5 saniyede bir yanıp sönmeye iner.</p>
+
+      <h2>Tek atımlı (monostable) mod</h2>
+      <p>Tek atımlı bağlantıda tetikleme ucuna kısa bir düşük darbe geldiğinde çıkış yükselir ve kondansatör R1 üzerinden beslemenin üçte ikisine dolana kadar yüksek kalır. Bu süre <strong>T = 1,1 × R1 × C</strong> formülüyle bulunur; 1,1 katsayısı 3'ün doğal logaritmasının yuvarlanmış hâlidir.</p>
+      <p>Örnek: R1 = 100 kΩ ve C = 10 µF için zaman sabiti 100 000 × 0,00001 = 1 saniye, darbe süresi 1,1 saniyedir. Bir butona basıldığında röleyi belirli bir süre çekili tutmak, merdiven otomatiği benzeri gecikmeler ya da buton sıçramasını temizlemek bu modun tipik kullanım alanlarıdır.</p>
+
+      <h2>Görev döngüsü neden %50 olmuyor?</h2>
+      <p>Standart kararsız bağlantıda kondansatör dolarken R1 + R2, boşalırken yalnızca R2 devrededir. Bu yüzden yüksek süre her zaman düşük süreden uzundur ve görev döngüsü %50'nin altına inemez. R1, R2'ye göre ne kadar küçük seçilirse oran %50'ye o kadar yaklaşır; ancak R1 çok küçültülürse boşaltma transistöründen geçen akım artar.</p>
+      <p>Tam %50 ya da daha düşük görev döngüsü gerekiyorsa R2'ye paralel bir diyot bağlanarak dolma yalnızca R1, boşalma yalnızca R2 üzerinden yaptırılır. Bu durumda formüller değişir ve bu sayfadaki hesap geçerli olmaz.</p>
+
+      <h2>Eleman seçerken pratik sınırlar</h2>
+      <ul>
+        <li>Dirençleri kabaca 1 kΩ ile 1 MΩ arasında tutun. Çok küçük direnç entegreyi zorlar, çok büyük direnç kaçak akımlar yüzünden zamanlamayı bozar.</li>
+        <li>Elektrolitik kondansatörlerin toleransı geniştir ve kaçak akımları yüksektir; uzun sürelerde hesaplanan değerden belirgin sapma beklenir.</li>
+        <li>Klasik bipolar 555 birkaç yüz kilohertzin üzerinde güvenilir çalışmaz; CMOS sürümleri daha yüksek frekanslara çıkabilir. Kesin sınır için kullandığınız entegrenin veri sayfasına bakın.</li>
+        <li>Kontrol ucu (5 numaralı bacak) kullanılmıyorsa küçük bir kondansatörle şaseye bağlanması gürültü bağışıklığını artırır.</li>
+        <li>Çok uzun gecikmeler (dakikalar, saatler) için 555 yerine sayıcılı bir çözüm ya da mikrodenetleyici daha kararlı sonuç verir.</li>
+      </ul>
+
+      <h2>Hesap ile ölçüm neden tutmayabilir?</h2>
+      <p>Formüller ideal elemanlar içindir. Gerçekte dirençlerin %1–5, seramik ve elektrolitik kondansatörlerin %10–20 ve daha fazla toleransı vardır; sıcaklık da değerleri kaydırır. Ayrıca entegrenin kendi gecikmeleri yüksek frekanslarda periyoda eklenir. Hassas frekans gerekiyorsa R2 yerine bir trimpot kullanıp osiloskop ya da frekansmetreyle ayar yapmak en sağlıklı yoldur. Bu sayfadaki sonuçlar tasarım başlangıcı için bilgilendirme amaçlıdır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>555 ile 1 Hz nasıl elde edilir?</summary><p>Örneğin R1 = 1 kΩ, R2 = 68 kΩ ve C = 10 µF seçildiğinde frekans 1,44 ÷ (137 000 × 0,00001) ≈ 1,05 Hz olur. Tam 1 Hz için R2 yerine trimpot kullanıp ince ayar yapabilirsiniz.</p></details>
+        <details><summary>Formüldeki 0,693 ve 1,44 nereden geliyor?</summary><p>0,693, 2'nin doğal logaritmasıdır; kondansatör geriliminin beslemenin üçte biri ile üçte ikisi arasında gidip gelme süresinden doğar. 1,44 ise bu sayının tersidir (1 ÷ 0,693).</p></details>
+        <details><summary>Besleme gerilimi frekansı etkiler mi?</summary><p>İdeal durumda hayır, çünkü eşik gerilimleri beslemenin sabit oranlarıdır. Uygulamada küçük bir etki görülebilir; bu yüzden hesapta besleme gerilimi sorulmaz.</p></details>
+        <details><summary>Direnci ohm olarak nasıl girerim?</summary><p>Alanlar kiloohm cinsindendir. 470 Ω için 0,47; 2,2 kΩ için 2,2; 1 MΩ için 1000 yazın.</p></details>
+        <details><summary>Tek atımlı modda R2 alanını doldurmam gerekir mi?</summary><p>Hayır. Tek atımlı devrede yalnızca bir direnç ve bir kondansatör zamanlamayı belirler; R2 alanı dikkate alınmaz.</p></details>
+        <details><summary>Görev döngüsünü %50 yapabilir miyim?</summary><p>Standart bağlantıda tam %50 olmaz, ancak R1'i R2'ye göre çok küçük seçerek yaklaşabilirsiniz. Tam %50 için diyotlu bağlantı ya da çıkışı ikiye bölen bir flip-flop kullanılır.</p></details>
+        <details><summary>NE555 ile CMOS 555 için formül aynı mı?</summary><p>Evet, zamanlama formülleri aynıdır. CMOS sürümler daha az akım çeker, daha düşük gerilimde ve daha yüksek frekansta çalışabilir; ayrıntılar için ilgili veri sayfasına bakın.</p></details>
+        <details><summary>Girdiğim değerler kaydediliyor mu?</summary><p>Hayır. Hesap tarayıcınızda yapılır, değerler hiçbir sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../rc-zaman-sabiti-hesapla/">RC Zaman Sabiti Hesaplama</a></li>
+        <li><a href="../pwm-gorev-dongusu-hesapla/">PWM Görev Döngüsü Hesaplama</a></li>
+        <li><a href="../led-direnc-hesapla/">LED Direnç Hesaplama</a></li>
+        <li><a href="../kondansator-kodu-coz/">Kondansatör Kodu Çözme</a></li>
+        <li><a href="../rc-filtre-kesim-frekansi-hesapla/">RC Filtre Kesim Frekansı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="555-zamanlayici-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

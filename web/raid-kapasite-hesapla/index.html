@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>RAID Kapasitesi Hesaplama – RAID 0, 1, 5, 6, 10 Kullanılabilir Alan</title>
+  <meta name="description" content="Disk sayısı, disk kapasitesi ve RAID seviyesini seçin; kullanılabilir alanı, yedekliğe ayrılan kapasiteyi, kaç disk arızasına dayandığını ve TiB karşılığını görün.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/raid-kapasite-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"RAID Kapasitesi Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/raid-kapasite-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"4 adet 4 TB disk RAID 5 ile kaç TB eder?","acceptedAnswer":{"@type":"Answer","text":"Kullanılabilir kapasite (4 − 1) × 4 = 12 TB'dır. İşletim sistemi bunu yaklaşık 10,91 TiB olarak gösterir; dosya sistemi payı düşüldüğünde biraz daha az boş alan kalır."}},{"@type":"Question","name":"RAID 5 için en az kaç disk gerekir?","acceptedAnswer":{"@type":"Answer","text":"En az 3 disk gerekir. İki diskiniz varsa yedeklilik için RAID 1 kullanabilirsiniz; RAID 6 ve RAID 10 için ise en az 4 disk gerekir."}},{"@type":"Question","name":"Farklı kapasitede diskler kullanırsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Standart RAID seviyelerinde her diskten en küçük diskin kapasitesi kadar alan kullanılır; büyük disklerin fazlası boşta kalır. Bu yüzden araca en küçük diskin kapasitesini yazmalısınız."}},{"@type":"Question","name":"RAID 5 mi RAID 6 mı daha güvenli?","acceptedAnswer":{"@type":"Answer","text":"RAID 6 aynı anda iki disk arızasına dayandığı için daha güvenlidir; karşılığında bir disk kapasitesi daha yedekliğe gider. Büyük kapasiteli ve çok diskli dizilerde yeniden oluşturma uzun sürdüğünden RAID 6 daha sık önerilir."}},{"@type":"Question","name":"RAID 10 ile RAID 01 aynı mı?","acceptedAnswer":{"@type":"Answer","text":"Kapasiteleri aynıdır ama yapıları farklıdır. RAID 10'da önce diskler çiftler hâlinde aynalanır, sonra bu çiftler şeritlenir; bu düzen birden fazla disk arızasına karşı daha dayanıklıdır ve günümüzde yaygın olan odur."}},{"@type":"Question","name":"RAID 1'e üçüncü disk eklemek kapasiteyi artırır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. RAID 1'de tüm diskler aynı verinin kopyasıdır; üçüncü disk yalnızca ek bir kopya sağlar ve dizinin dayanabildiği arıza sayısını ikiye çıkarır. Kapasite tek disk kadardır."}},{"@type":"Question","name":"SSD ile RAID kurulabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, kapasite hesabı diskin türünden bağımsızdır; aynı formüller SSD için de geçerlidir. Yalnızca SSD kapasiteleri çoğunlukla GB olarak verildiğinden değeri TB'a çevirip yazın: 500 GB için 0,5."}},{"@type":"Question","name":"Girdiğim bilgiler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tamamen tarayıcınızda yapılır; disk sayısı ve kapasite bilgisi sunucuya iletilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gunluk" class="ba-nav-optional">Günlük Yaşam</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gunluk">Günlük Yaşam</a></li></ol>
+      <h1><span class="ba-grad">RAID Kapasitesi Hesaplama</span> – RAID 0, 1, 5, 6 ve 10</h1>
+      <p class="lead">Bir NAS cihazı, sunucu ya da kayıt cihazı için disk alırken asıl soru &quot;toplam kaç terabayt kullanabileceğim?&quot; sorusudur. Disk sayısını, tek diskin kapasitesini ve RAID seviyesini seçin; araç <strong>kullanılabilir alanı</strong>, yedekliğe ayrılan kısmı ve dizinin kaç disk arızasına dayanabildiğini göstersin.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-adet">Disk sayısı</label><input id="f-adet" data-field="adet" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 4"></div>
+          <div class="ba-field"><label for="f-kapasite">Tek diskin kapasitesi (TB)</label><input id="f-kapasite" data-field="kapasite" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 4"><div class="hint">Diskler farklıysa en küçüğünün kapasitesini yazın</div></div>
+          <div class="ba-field"><label for="f-seviye">RAID seviyesi</label><select id="f-seviye" data-field="seviye"><option value="5">RAID 5</option><option value="0">RAID 0</option><option value="1">RAID 1</option><option value="6">RAID 6</option><option value="10">RAID 10</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="raid-kapasite-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Diziye takacağınız disk sayısını yazın.</li>
+        <li>Tek bir diskin kapasitesini terabayt olarak girin. Farklı boyutlarda diskleriniz varsa en küçüğünün kapasitesini yazın.</li>
+        <li>Kurmayı düşündüğünüz RAID seviyesini listeden seçin.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın; kullanılabilir kapasiteyi, işletim sisteminde görünecek değeri ve hata toleransını inceleyin.</li>
+        <li>Farklı seviyeleri sırayla seçerek kapasite ile güvenlik arasındaki dengeyi karşılaştırın.</li>
+      </ol>
+
+      <h2>RAID nedir?</h2>
+      <p>RAID, birden fazla diski tek bir depolama birimi gibi çalıştıran bir düzendir. Amaca göre üç şeyden biri ya da birkaçı hedeflenir: daha fazla kapasite, daha yüksek hız ve bir disk bozulduğunda verinin erişilebilir kalması. Hangi hedefin ne ölçüde karşılanacağını RAID seviyesi belirler. Seviye numaraları bir &quot;iyilik sırası&quot; değildir; her biri farklı bir yerleşim yöntemini ifade eder.</p>
+      <p>Yedeklilik sağlayan seviyelerde disklerin bir kısmının kapasitesi veri yerine kopyaya ya da eşlik (parity) bilgisine ayrılır. Bu yüzden satın aldığınız toplam kapasite ile kullanabileceğiniz kapasite aynı değildir; bu araç aradaki farkı gösterir.</p>
+
+      <h2>Seviyelere göre kapasite formülleri</h2>
+      <p>Aşağıda <em>n</em> disk sayısını, <em>C</em> tek diskin kapasitesini gösterir:</p>
+      <ul>
+        <li><strong>RAID 0 (şeritleme):</strong> kapasite = n × C. En az 2 disk. Yedeklilik yoktur; tek bir diskin arızası tüm diziyi kaybettirir.</li>
+        <li><strong>RAID 1 (aynalama):</strong> kapasite = C. En az 2 disk. Her disk aynı veriyi taşır; n − 1 disk arızasına dayanır.</li>
+        <li><strong>RAID 5 (tek eşlik):</strong> kapasite = (n − 1) × C. En az 3 disk. Bir disk arızasına dayanır.</li>
+        <li><strong>RAID 6 (çift eşlik):</strong> kapasite = (n − 2) × C. En az 4 disk. Aynı anda iki disk arızasına dayanır.</li>
+        <li><strong>RAID 10 (aynalı şeritleme):</strong> kapasite = (n ÷ 2) × C. En az 4 disk ve çift sayı. Her ayna çiftinden bir disk bozulabilir; aynı çiftin iki diski birden bozulursa veri kaybolur.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="raid-kapasite-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnekler</h2>
+      <p>Örnek 1: Dört yuvalı bir NAS cihazına 4 TB'lık dört disk takıp RAID 5 kurarsanız kullanılabilir kapasite (4 − 1) × 4 = 12 TB olur. Ham kapasite 16 TB'dır; 4 TB eşlik bilgisine gider ve kapasite verimi yüzde 75'tir. İşletim sistemi bu alanı yaklaşık 10,91 TiB olarak gösterir.</p>
+      <p>Örnek 2: 10 TB'lık altı diskle RAID 6 kurulduğunda (6 − 2) × 10 = 40 TB kullanılabilir alan elde edilir; iki diskin kapasitesi yedekliğe ayrılır, verim yüzde 66,7'dir ve dizi aynı anda iki disk arızasını kaldırır.</p>
+      <p>Örnek 3: 8 TB'lık iki diskle RAID 1 kurulursa kullanılabilir alan 8 TB'dır; ikinci disk birincinin birebir kopyasıdır. 2 TB'lık dört diskle RAID 10 ise 4 TB verir.</p>
+
+      <h2>TB ile TiB farkı: disk neden eksik görünür?</h2>
+      <p>Disk üreticileri kapasiteyi onluk sistemle verir: 1 TB = 1.000.000.000.000 bayt. Birçok işletim sistemi ise 1.024'ün katlarıyla hesap yapar ve 2<sup>40</sup> baytlık birimi kullanır; bunun doğru adı tebibayttır (TiB), ancak ekranda çoğu zaman yine &quot;TB&quot; yazar. İki birim arasındaki oran yaklaşık 0,909'dur. Dolayısıyla 4 TB'lık bir disk yaklaşık 3,64 TiB, 12 TB'lık bir dizi yaklaşık 10,91 TiB görünür. Arada kaybolan bir şey yoktur; yalnızca birim farklıdır.</p>
+      <p>Buna ek olarak dosya sistemi kendi yapıları için bir miktar alan ayırır, NAS işletim sistemleri sistem bölümü ve takas alanı oluşturur. Bu yüzden gerçekte kullanabileceğiniz boş alan araçta görünen değerden bir miktar daha az olur.</p>
+
+      <h2>Hangi seviye ne zaman tercih edilir?</h2>
+      <p>RAID 0, verinin kaybı sorun olmayan geçici çalışma alanlarında (örneğin yeniden üretilebilir ön bellek ya da kurgu sırasında geçici dosyalar) hız ve kapasite için kullanılır. RAID 1, iki diskli küçük ofis ve ev cihazlarında basit ve anlaşılır bir koruma sağlar. RAID 5, üç ile beş-altı disk arasındaki dizilerde kapasite ile koruma arasında yaygın bir dengedir. Disk sayısı ve disk boyutu büyüdükçe yeniden oluşturma (rebuild) süresi uzar ve bu sırada ikinci bir diskin bozulma olasılığı önem kazanır; bu durumda RAID 6 daha güvenli bir seçimdir. RAID 10, veritabanı gibi yoğun yazma yapan işlerde hız ve hızlı toparlanma için tercih edilir, bedeli kapasitenin yarısıdır.</p>
+      <p>Güvenlik kamerası kayıt cihazlarında ve ofis dosya sunucularında seçim yapılırken diskin kendisi kadar, bozulan diskin ne kadar sürede değiştirilebileceği de düşünülmelidir.</p>
+
+      <h2>RAID yedekleme değildir</h2>
+      <p>RAID yalnızca disk arızasına karşı sürekliliği sağlar. Yanlışlıkla silinen dosya, fidye yazılımı, yazılım hatası, hırsızlık, yangın, su baskını ya da denetleyici kartının bozulması gibi durumlarda dizideki tüm diskler aynı anda etkilenir. Önemli veriler için RAID'den bağımsız, ayrı bir cihazda ve tercihen farklı bir konumda tutulan düzenli yedek şarttır. Ayrıca aynı partiden alınmış diskler benzer zamanlarda yıpranabildiği için disk sağlık uyarılarını izlemek ve arızalı diski bekletmeden değiştirmek gerekir.</p>
+      <p>Bu araç standart RAID seviyelerinin kuramsal kapasitesini hesaplar. Üreticilere özgü karma düzenler, farklı boyutlu disklerin esnek kullanımı, sıcak yedek (hot spare) diskler ve dosya sistemi tabanlı havuzlar için sonuç farklı olabilir; sıcak yedek kullanacaksanız o diski disk sayısına katmayın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>4 adet 4 TB disk RAID 5 ile kaç TB eder?</summary><p>Kullanılabilir kapasite (4 − 1) × 4 = 12 TB'dır. İşletim sistemi bunu yaklaşık 10,91 TiB olarak gösterir; dosya sistemi payı düşüldüğünde biraz daha az boş alan kalır.</p></details>
+        <details><summary>RAID 5 için en az kaç disk gerekir?</summary><p>En az 3 disk gerekir. İki diskiniz varsa yedeklilik için RAID 1 kullanabilirsiniz; RAID 6 ve RAID 10 için ise en az 4 disk gerekir.</p></details>
+        <details><summary>Farklı kapasitede diskler kullanırsam ne olur?</summary><p>Standart RAID seviyelerinde her diskten en küçük diskin kapasitesi kadar alan kullanılır; büyük disklerin fazlası boşta kalır. Bu yüzden araca en küçük diskin kapasitesini yazmalısınız.</p></details>
+        <details><summary>RAID 5 mi RAID 6 mı daha güvenli?</summary><p>RAID 6 aynı anda iki disk arızasına dayandığı için daha güvenlidir; karşılığında bir disk kapasitesi daha yedekliğe gider. Büyük kapasiteli ve çok diskli dizilerde yeniden oluşturma uzun sürdüğünden RAID 6 daha sık önerilir.</p></details>
+        <details><summary>RAID 10 ile RAID 01 aynı mı?</summary><p>Kapasiteleri aynıdır ama yapıları farklıdır. RAID 10'da önce diskler çiftler hâlinde aynalanır, sonra bu çiftler şeritlenir; bu düzen birden fazla disk arızasına karşı daha dayanıklıdır ve günümüzde yaygın olan odur.</p></details>
+        <details><summary>RAID 1'e üçüncü disk eklemek kapasiteyi artırır mı?</summary><p>Hayır. RAID 1'de tüm diskler aynı verinin kopyasıdır; üçüncü disk yalnızca ek bir kopya sağlar ve dizinin dayanabildiği arıza sayısını ikiye çıkarır. Kapasite tek disk kadardır.</p></details>
+        <details><summary>SSD ile RAID kurulabilir mi?</summary><p>Evet, kapasite hesabı diskin türünden bağımsızdır; aynı formüller SSD için de geçerlidir. Yalnızca SSD kapasiteleri çoğunlukla GB olarak verildiğinden değeri TB'a çevirip yazın: 500 GB için 0,5.</p></details>
+        <details><summary>Girdiğim bilgiler bir yere gönderiliyor mu?</summary><p>Hayır. Hesaplama tamamen tarayıcınızda yapılır; disk sayısı ve kapasite bilgisi sunucuya iletilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../guvenlik-kamerasi-depolama-hesapla/">Güvenlik Kamerası Kayıt Depolama Hesaplama</a></li>
+        <li><a href="../bant-genisligi-hesapla/">Bant Genişliği İhtiyacı Hesaplama</a></li>
+        <li><a href="../ups-calisma-suresi-hesapla/">UPS (Kesintisiz Güç Kaynağı) Çalışma Süresi Hesaplama</a></li>
+        <li><a href="../poe-guc-butcesi-hesapla/">PoE Güç Bütçesi Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="raid-kapasite-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

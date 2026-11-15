@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>JSON XML Dönüştürücü – JSON'dan XML'e, XML'den JSON'a Çevirme</title>
+  <meta name="description" content="JSON verisini XML'e, XML belgesini JSON'a tarayıcınızda dönüştürün. Öznitelikler, diziler ve özel karakterler doğru aktarılır; veri sunucuya gönderilmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/json-xml-donustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"JSON XML Dönüştürücü – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/json-xml-donustur/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"JSON dizileri XML'de nasıl gösterilir?","acceptedAnswer":{"@type":"Answer","text":"XML'de dizi kavramı yoktur; bunun yerine aynı adlı öğe tekrarlanır. {\"urun\": [\"Kalem\", \"Defter\"]} girdisi iki ayrı urun öğesi üretir. Adı olmayan diziler için oge adlı öğeler kullanılır."}},{"@type":"Question","name":"XML özniteliklerini JSON'da nasıl tutarım?","acceptedAnswer":{"@type":"Answer","text":"Öznitelikler anahtarın başına @ işareti konarak yazılır. id=\"1\" özniteliği JSON'da \"@id\": \"1\" olur. Aynı kural ters yönde de geçerlidir: @ ile başlayan anahtarlar XML'e öznitelik olarak aktarılır."}},{"@type":"Question","name":"Sayılar XML'den JSON'a dönerken neden tırnak içinde?","acceptedAnswer":{"@type":"Answer","text":"XML'de her içerik metindir; bir değerin sayı olup olmadığını belirten bilgi yalnızca ayrı bir şemada bulunur. Araç tahmin yürütmez ve baştaki sıfırların ya da uzun numaraların bozulmaması için tüm değerleri dizgi olarak aktarır."}},{"@type":"Question","name":"Kök öğe adı neden gerekli?","acceptedAnswer":{"@type":"Answer","text":"Geçerli bir XML belgesinde tam olarak bir kök öğe olmalıdır. JSON ise birden çok anahtarla ya da doğrudan bir diziyle başlayabilir. Bu yüzden içerik sizin belirlediğiniz bir kök öğenin içine alınır."}},{"@type":"Question","name":"Türkçe karakterli anahtarlar sorun çıkarır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. XML adlarında Türkçe harfler kullanılabilir ve çıktı UTF-8 olarak bildirilir. Yalnızca boşluk ve noktalama gibi adlarda yasak olan karakterler alt çizgiye çevrilir."}},{"@type":"Question","name":"Metnin içindeki \u003c ve & işaretleri ne olur?","acceptedAnswer":{"@type":"Answer","text":"JSON'dan XML'e çeviride bu işaretler kurala uygun kaçış dizilerine dönüştürülür, böylece belge bozulmaz. XML'den JSON'a çeviride ise kaçış dizileri çözülür ve gerçek karakterler yazılır."}},{"@type":"Question","name":"SOAP ya da e-fatura gibi ad alanlı XML dosyalarını çevirebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"İçeriği JSON olarak incelemek için evet; ön ekli adlar aynen korunur. Ancak araç şema doğrulaması yapmaz ve ad alanlarını çözümlemez. Resmî belge üretmek için çıktıyı tek başına yeterli saymayın."}},{"@type":"Question","name":"Yapıştırdığım veri sunucuya gidiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Ayrıştırma ve dönüştürme tamamen tarayıcınızda çalışır; metniniz hiçbir yere gönderilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">JSON XML Dönüştürücü</span> – JSON ↔ XML</h1>
+      <p class="lead">JSON metnini XML belgesine ya da XML belgesini JSON'a çevirin. Araç öznitelikleri <code>@</code> ön ekiyle, tekrarlayan öğeleri dizi olarak eşler ve <code>&amp;</code>, <code>&lt;</code>, <code>&gt;</code> gibi özel karakterleri kurala uygun biçimde kaçırır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-girdi">JSON ya da XML</label><textarea id="f-girdi" data-field="girdi" rows="10" spellcheck="false" placeholder="{&quot;kisi&quot;: {&quot;ad&quot;: &quot;Ali&quot;, &quot;yas&quot;: 30}}"></textarea></div>
+          <div class="ba-field"><label for="f-yon">Dönüşüm yönü</label><select id="f-yon" data-field="yon"><option value="jx">JSON → XML</option><option value="xj">XML → JSON</option></select></div>
+          <div class="ba-field"><label for="f-kok">Kök öğe adı (JSON → XML)</label><input id="f-kok" data-field="kok" type="text" inputmode="text" autocomplete="off" value="kok"><div class="hint">XML tek bir kök öğe ister; JSON içeriği bu öğenin içine yazılır.</div></div>
+          <div class="ba-field"><label for="f-girinti">Girinti</label><select id="f-girinti" data-field="girinti"><option value="2">2 boşluk</option><option value="4">4 boşluk</option><option value="0">Sıkışık (tek satır)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Dönüştür</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="json-xml-donustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Dönüştürmek istediğiniz JSON ya da XML metnini &quot;JSON ya da XML&quot; alanına yapıştırın.</li>
+        <li>&quot;Dönüşüm yönü&quot; listesinden JSON'dan XML'e mi, XML'den JSON'a mı çevireceğinizi seçin.</li>
+        <li>JSON'dan XML'e çeviriyorsanız kök öğe adını yazın (varsayılan <code>kok</code>). XML'den JSON'a çeviride bu alan kullanılmaz.</li>
+        <li>Girinti biçimini seçip &quot;Dönüştür&quot; düğmesine basın. Sonuç kutusundaki metni kopyalayarak dosyanıza ya da isteğinize ekleyin.</li>
+      </ol>
+
+      <h2>JSON ve XML neden birbirine çevrilir?</h2>
+      <p>JSON ve XML aynı işi yapar: yapılandırılmış veriyi metin olarak taşır. Web uygulamaları ve mobil servisler bugün çoğunlukla JSON konuşur; buna karşılık kurumsal sistemlerde, SOAP servislerinde, e-fatura ve e-defter gibi resmî belge biçimlerinde, RSS beslemelerinde ve pek çok muhasebe ya da stok programının dışa aktarım dosyalarında XML kullanılır. İki dünyayı birbirine bağlayan her entegrasyonda bir noktada bu dönüşüme ihtiyaç duyulur.</p>
+      <p>İki biçim birebir örtüşmez. XML'de öznitelik, öğe sırası, karışık içerik ve ad alanı kavramları vardır; JSON'da ise sayı, mantıksal değer, null ve dizi gibi veri türleri bulunur. Bu yüzden dönüşüm her zaman bir eşleme kuralına dayanır. Bu araç yaygın kabul görmüş sade bir kural kümesi kullanır ve aşağıda açıkça anlatır; böylece çıktının neden o biçimde olduğunu bilirsiniz.</p>
+
+      <h2>JSON'dan XML'e eşleme kuralları</h2>
+      <ul>
+        <li><strong>Kök öğe:</strong> XML belgesinde tek bir kök bulunmak zorundadır. JSON içeriği, adını sizin verdiğiniz kök öğenin içine yazılır.</li>
+        <li><strong>Nesne anahtarı → öğe:</strong> <code>{&quot;ad&quot;: &quot;Ali&quot;}</code> girdisi <code>&lt;ad&gt;Ali&lt;/ad&gt;</code> olur.</li>
+        <li><strong>Dizi → tekrarlayan öğe:</strong> <code>{&quot;urun&quot;: [&quot;a&quot;, &quot;b&quot;]}</code> girdisi iki ayrı <code>urun</code> öğesi üretir. En dışta ya da başka bir dizinin içinde duran adsız diziler <code>oge</code> adlı öğelerle yazılır.</li>
+        <li><strong>@ ile başlayan anahtar → öznitelik:</strong> <code>{&quot;@id&quot;: &quot;1&quot;}</code> anahtarı öğenin <code>id=&quot;1&quot;</code> özniteliği olur.</li>
+        <li><strong>#text → öğe metni:</strong> hem özniteliği hem metni olan öğeler için kullanılır.</li>
+        <li><strong>null → boş öğe:</strong> <code>{&quot;bos&quot;: null}</code> girdisi <code>&lt;bos/&gt;</code> olarak yazılır.</li>
+        <li><strong>Geçersiz adlar:</strong> boşluk içeren ya da rakamla başlayan anahtarlar XML adı olamaz; boşluk ve özel karakterler alt çizgiye çevrilir, rakamla başlayan adın başına alt çizgi eklenir.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="json-xml-donustur-b" aria-label="Reklam"></div>
+
+      <h2>XML'den JSON'a eşleme kuralları</h2>
+      <ul>
+        <li>Kök öğenin adı, JSON nesnesinin tek anahtarı olur.</li>
+        <li>Yalnızca metin içeren öğe dizgiye dönüşür: <code>&lt;yas&gt;30&lt;/yas&gt;</code> çıktıda <code>&quot;yas&quot;: &quot;30&quot;</code> olur.</li>
+        <li>Aynı adlı kardeş öğeler tek bir dizide toplanır. Öğe yalnızca bir kez geçiyorsa dizi değil tek değer üretilir.</li>
+        <li>Öznitelikler <code>@</code> ön ekiyle, öğenin kendi metni <code>#text</code> anahtarıyla yazılır.</li>
+        <li>İçi boş öğeler <code>null</code> olur. Yorumlar, XML bildirimi ve işlem yönergeleri atlanır; CDATA bölümlerinin içeriği düz metin olarak alınır.</li>
+        <li>ve işareti, küçüktür, büyüktür, çift tırnak ve kesme işareti için tanımlı beş standart XML varlığı ile sayısal karakter başvuruları çözülerek gerçek karakterlere çevrilir.</li>
+      </ul>
+
+      <h2>Çözümlü örnek</h2>
+      <p><code>{&quot;kisi&quot;:{&quot;ad&quot;:&quot;Ali&quot;,&quot;yas&quot;:30}}</code> girdisini &quot;JSON → XML&quot; yönünde, kök adı <code>kok</code> ve 2 boşluk girintiyle dönüştürdüğünüzde, XML bildiriminin ardından dört öğe yazılır: en dışta <code>kok</code>, onun içinde <code>kisi</code>, onun da içinde <code>&lt;ad&gt;Ali&lt;/ad&gt;</code> ve <code>&lt;yas&gt;30&lt;/yas&gt;</code>. Sonuç kutusunun üstündeki &quot;Öğe sayısı&quot; satırında 4 görürsünüz.</p>
+      <p>Ters yönde <code>&lt;kisi&gt;&lt;ad&gt;Ali&lt;/ad&gt;&lt;yas&gt;30&lt;/yas&gt;&lt;/kisi&gt;</code> belgesini verdiğinizde üç öğe okunur ve <code>{&quot;kisi&quot;: {&quot;ad&quot;: &quot;Ali&quot;, &quot;yas&quot;: &quot;30&quot;}}</code> elde edilir. Dikkat edin: yaş değeri artık tırnak içindedir. XML metninde 30'un sayı mı yoksa yazı mı olduğunu söyleyen bir bilgi yoktur; araç tahmin yürütmek yerine her değeri dizgi olarak bırakır. Posta kodu, telefon ya da vergi numarası gibi baştaki sıfırı önemli alanların bozulmaması için bu bilinçli bir tercihtir.</p>
+
+      <h2>Gidiş dönüşte nelere dikkat etmeli?</h2>
+      <p>Bir veriyi JSON'dan XML'e, sonra tekrar JSON'a çevirdiğinizde her zaman başladığınız metni elde etmezsiniz. Üç tipik fark vardır. Birincisi, sayılar ve mantıksal değerler dönüşte dizgi olur. İkincisi, tek öğeli bir dizi XML'de tek bir öğe olarak göründüğü için dönüşte dizi olmaktan çıkar; alıcı kodunuz dizi bekliyorsa bunu ayrıca ele almanız gerekir. Üçüncüsü, dönüşte en dışa kök öğenin adı eklenir.</p>
+      <p>Ad alanı ön ekleri (<code>soap:Body</code> gibi) adın parçası olarak aynen korunur, ancak ad alanı çözümlemesi yapılmaz. Metin ile alt öğelerin iç içe geçtiği karışık içerikte metin parçaları birleştirilip tek bir <code>#text</code> değerine yazılır; parçaların öğeler arasındaki konumu korunmaz. Belge türü tanımı içeren (iç alt kümeli DOCTYPE) belgeler ve özel tanımlı varlıklar desteklenmez. Resmî bir şemaya uyması gereken belgelerde çıktıyı ilgili şema doğrulayıcısından geçirmeniz gerekir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>JSON dizileri XML'de nasıl gösterilir?</summary><p>XML'de dizi kavramı yoktur; bunun yerine aynı adlı öğe tekrarlanır. {&quot;urun&quot;: [&quot;Kalem&quot;, &quot;Defter&quot;]} girdisi iki ayrı urun öğesi üretir. Adı olmayan diziler için oge adlı öğeler kullanılır.</p></details>
+        <details><summary>XML özniteliklerini JSON'da nasıl tutarım?</summary><p>Öznitelikler anahtarın başına @ işareti konarak yazılır. id=&quot;1&quot; özniteliği JSON'da &quot;@id&quot;: &quot;1&quot; olur. Aynı kural ters yönde de geçerlidir: @ ile başlayan anahtarlar XML'e öznitelik olarak aktarılır.</p></details>
+        <details><summary>Sayılar XML'den JSON'a dönerken neden tırnak içinde?</summary><p>XML'de her içerik metindir; bir değerin sayı olup olmadığını belirten bilgi yalnızca ayrı bir şemada bulunur. Araç tahmin yürütmez ve baştaki sıfırların ya da uzun numaraların bozulmaması için tüm değerleri dizgi olarak aktarır.</p></details>
+        <details><summary>Kök öğe adı neden gerekli?</summary><p>Geçerli bir XML belgesinde tam olarak bir kök öğe olmalıdır. JSON ise birden çok anahtarla ya da doğrudan bir diziyle başlayabilir. Bu yüzden içerik sizin belirlediğiniz bir kök öğenin içine alınır.</p></details>
+        <details><summary>Türkçe karakterli anahtarlar sorun çıkarır mı?</summary><p>Hayır. XML adlarında Türkçe harfler kullanılabilir ve çıktı UTF-8 olarak bildirilir. Yalnızca boşluk ve noktalama gibi adlarda yasak olan karakterler alt çizgiye çevrilir.</p></details>
+        <details><summary>Metnin içindeki &lt; ve &amp; işaretleri ne olur?</summary><p>JSON'dan XML'e çeviride bu işaretler kurala uygun kaçış dizilerine dönüştürülür, böylece belge bozulmaz. XML'den JSON'a çeviride ise kaçış dizileri çözülür ve gerçek karakterler yazılır.</p></details>
+        <details><summary>SOAP ya da e-fatura gibi ad alanlı XML dosyalarını çevirebilir miyim?</summary><p>İçeriği JSON olarak incelemek için evet; ön ekli adlar aynen korunur. Ancak araç şema doğrulaması yapmaz ve ad alanlarını çözümlemez. Resmî belge üretmek için çıktıyı tek başına yeterli saymayın.</p></details>
+        <details><summary>Yapıştırdığım veri sunucuya gidiyor mu?</summary><p>Hayır. Ayrıştırma ve dönüştürme tamamen tarayıcınızda çalışır; metniniz hiçbir yere gönderilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../xml-bicimlendir/">XML Biçimlendirici ve Doğrulayıcı</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir ve Doğrula</a></li>
+        <li><a href="../json-yaml-donustur/">JSON YAML Dönüştürücü</a></li>
+        <li><a href="../csv-json-donustur/">CSV JSON Dönüştürücü</a></li>
+        <li><a href="../json-kucult/">JSON Küçültme (Minify)</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="json-xml-donustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

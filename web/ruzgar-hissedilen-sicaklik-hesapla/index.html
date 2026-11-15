@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Hissedilen Sıcaklık Hesaplama – Rüzgâr Soğutması (Wind Chill)</title>
+  <meta name="description" content="Hava sıcaklığı ve rüzgâr hızından hissedilen sıcaklığı hesaplayın. Rüzgâr soğutması formülüyle çalışır; km/sa, m/sn ve knot girişini, donma riskini gösterir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ruzgar-hissedilen-sicaklik-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hissedilen Sıcaklık (Rüzgâr Etkisi) Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ruzgar-hissedilen-sicaklik-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Hissedilen sıcaklık nedir?","acceptedAnswer":{"@type":"Answer","text":"Rüzgâr, nem ve benzeri etkenler yüzünden vücudun algıladığı sıcaklıktır. Soğuk havada belirleyici etken rüzgârdır; bu sayfa rüzgârın yol açtığı ek ısı kaybını durgun havadaki eşdeğer sıcaklık olarak verir."}},{"@type":"Question","name":"Rüzgâr soğutması hangi koşullarda hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Formül hava sıcaklığı 10 °C ya da daha düşük ve rüzgâr hızı en az 4,8 km/sa olduğunda geçerlidir. Daha sıcak havalarda rüzgâr serinletici etki yapsa da bu formül kullanılmaz."}},{"@type":"Question","name":"Rüzgâr soğutması suyu dondurur mu?","acceptedAnswer":{"@type":"Answer","text":"Hava sıcaklığı sıfırın üzerindeyse hayır. Hissedilen sıcaklık −3 °C görünse bile hava 2 °C ise su donmaz. Rüzgâr yalnızca nesnelerin hava sıcaklığına daha çabuk inmesini sağlar, onun altına düşürmez."}},{"@type":"Question","name":"Rüzgâr hızını nereden öğrenirim?","acceptedAnswer":{"@type":"Answer","text":"Hava tahmini uygulamaları ve meteoroloji bültenleri rüzgâr hızını genellikle km/sa olarak verir. Denizcilik tahminlerinde knot, bazı ölçüm cihazlarında m/sn kullanılır; araç üç birimi de kabul eder."}},{"@type":"Question","name":"Motosiklet sürerken hissedilen sıcaklığı nasıl bulurum?","acceptedAnswer":{"@type":"Answer","text":"Durgun havada sürüş hızınızı rüzgâr hızı olarak yazabilirsiniz. Örneğin 0 °C havada 30 km/sa hızla giderken korumasız cildiniz yaklaşık −6,5 °C hisseder. Karşıdan rüzgâr varsa etkisi daha da artar."}},{"@type":"Question","name":"Sonuç neden hava durumu uygulamasındakinden farklı çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Uygulamalar farklı formüller kullanabilir, nemi ve güneşlenmeyi hesaba katabilir ya da rüzgârı farklı yükseklikte ölçebilir. Ayrıca tahmin edilen rüzgâr ile bulunduğunuz noktadaki gerçek rüzgâr aynı olmayabilir."}},{"@type":"Question","name":"Hangi hissedilen sıcaklıkta donma tehlikesi başlar?","acceptedAnswer":{"@type":"Answer","text":"Genel kabul, hissedilen sıcaklık −28 °C'nin altına indiğinde açıktaki cildin 10-30 dakika içinde donabileceği yönündedir. Daha yüksek değerlerde de uzun süre açıkta kalmak risklidir."}},{"@type":"Question","name":"Girdiğim değerler saklanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; sıcaklık ve rüzgâr değerleri hiçbir sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gunluk" class="ba-nav-optional">Günlük Yaşam</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gunluk">Günlük Yaşam</a></li></ol>
+      <h1><span class="ba-grad">Hissedilen Sıcaklık (Rüzgâr Etkisi) Hesaplama</span> – rüzgâr soğutması</h1>
+      <p class="lead">Termometre −5 °C gösterirken dışarıda sert bir rüzgâr esiyorsa cildiniz çok daha soğuk bir havadaymış gibi ısı kaybeder. Bu araç, hava sıcaklığı ve rüzgâr hızından <strong>rüzgâr soğutması indeksini</strong>, yani soğuk havada hissedilen sıcaklığı hesaplar.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-sicaklik">Hava sıcaklığı (°C)</label><input id="f-sicaklik" data-field="sicaklik" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. -5"></div>
+          <div class="ba-field"><label for="f-ruzgar">Rüzgâr hızı</label><input id="f-ruzgar" data-field="ruzgar" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 30"></div>
+          <div class="ba-field"><label for="f-birim">Rüzgâr hızı birimi</label><select id="f-birim" data-field="birim"><option value="kmh">km/sa</option><option value="ms">m/sn</option><option value="knot">knot</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ruzgar-hissedilen-sicaklik-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;Hava sıcaklığı&quot; alanına termometrenin gösterdiği değeri santigrat derece olarak yazın; sıfırın altındaki değerlerin başına eksi işareti koyun.</li>
+        <li>&quot;Rüzgâr hızı&quot; alanına hava tahmininde ya da ölçüm cihazında gördüğünüz hızı girin ve yanındaki listeden birimini seçin: km/sa, m/sn ya da knot.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk satırda hissedilen sıcaklığı, altında termometreyle arasındaki farkı ve Fahrenhayt karşılığını görürsünüz.</li>
+        <li>&quot;Risk düzeyi&quot; satırını okuyun; giyim ve dışarıda kalma sürenizi buna göre planlayın.</li>
+      </ol>
+
+      <h2>Rüzgâr neden daha soğuk hissettirir?</h2>
+      <p>Vücudumuz cildin hemen üstünde ince bir ılık hava tabakası oluşturur; bu tabaka bir yalıtım görevi görür. Rüzgâr estiğinde bu tabaka sürekli süpürülür, yerine soğuk hava gelir ve cilt ısısını çok daha hızlı kaybeder. Termometrenin gösterdiği değer değişmez, çünkü rüzgâr havayı soğutmaz; değişen şey ısı kaybının hızıdır. Hissedilen sıcaklık, rüzgârlı havadaki ısı kaybını, aynı kaybı durgun havada yaratacak sıcaklıkla ifade eder.</p>
+      <p>Bu yüzden rüzgâr soğutması cansız nesneleri hava sıcaklığının altına düşürmez. −5 °C havada hissedilen sıcaklık −14 °C olsa bile arabanızın radyatöründeki su ya da dışarıdaki boru en fazla −5 °C'ye kadar soğur; rüzgâr yalnızca o sıcaklığa daha çabuk inmelerine yol açar.</p>
+
+      <h2>Kullanılan formül</h2>
+      <p>Araç, Kuzey Amerika meteoroloji servislerinin 2001'den beri kullandığı rüzgâr soğutması indeksini hesaplar. Formül, yüzünü rüzgâra dönmüş yürüyen bir yetişkinin ısı kaybı ölçümlerine dayanır:</p>
+      <p><code>H = 13,12 + 0,6215·T − 11,37·V<sup>0,16</sup> + 0,3965·T·V<sup>0,16</sup></code></p>
+      <p>Burada <strong>T</strong> hava sıcaklığı (°C), <strong>V</strong> yerden 10 metre yükseklikte ölçülen rüzgâr hızı (km/sa), <strong>H</strong> ise hissedilen sıcaklıktır. Formül 10 °C ve altındaki sıcaklıklar ile 4,8 km/sa ve üzerindeki rüzgârlar için tanımlıdır. Daha zayıf rüzgârda araç hissedilen sıcaklığı hava sıcaklığına eşit alır; 10 °C'nin üzerinde ise hesap yapmaz. Rüzgârı m/sn olarak girerseniz 3,6 ile, knot olarak girerseniz 1,852 ile çarpılarak km/sa'e çevrilir.</p>
+
+      <div class="ba-ad" data-slot="ruzgar-hissedilen-sicaklik-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Adım adım çözümlü örnek</h2>
+      <p>Hava −10 °C, rüzgâr 20 km/sa olsun. Önce V<sup>0,16</sup> hesaplanır: 20<sup>0,16</sup> ≈ 1,615. Sonra terimler toplanır: 13,12 + 0,6215 × (−10) = 6,905; 11,37 × 1,615 ≈ 18,362; 0,3965 × (−10) × 1,615 ≈ −6,403. Sonuç 6,905 − 18,362 − 6,403 ≈ <strong>−17,9 °C</strong> olur. Yani 20 km/sa'lik bir rüzgâr, −10 °C'lik havayı cildiniz için yaklaşık 8 derece daha soğuk yapar.</p>
+      <p>İkinci örnek: hava 0 °C, rüzgâr 30 km/sa. Sonuç −6,5 °C'dir. Üçüncü örnek: −20 °C ve 40 km/sa rüzgârda hissedilen sıcaklık −34,1 °C'ye iner; bu düzeyde açıktaki cilt dakikalar içinde donabilir.</p>
+
+      <h2>Hızlı başvuru tablosu</h2>
+      <ul>
+        <li><strong>5 °C, 10 km/sa:</strong> yaklaşık 2,7 °C</li>
+        <li><strong>0 °C, 30 km/sa:</strong> yaklaşık −6,5 °C</li>
+        <li><strong>−5 °C, 36 km/sa (10 m/sn):</strong> yaklaşık −13,7 °C</li>
+        <li><strong>−10 °C, 20 km/sa:</strong> yaklaşık −17,9 °C</li>
+        <li><strong>−20 °C, 40 km/sa:</strong> yaklaşık −34,1 °C</li>
+        <li><strong>−30 °C, 50 km/sa:</strong> yaklaşık −49 °C</li>
+      </ul>
+
+      <h2>Risk düzeyleri nasıl yorumlanır?</h2>
+      <p>Araç sonucu, Kanada meteoroloji servisinin halka yönelik sınıflamasına benzer basamaklarla yorumlar. Hissedilen sıcaklık 0 ile −9 °C arasındayken risk düşüktür ve asıl sorun rahatsızlıktır. −10 ile −27 °C arasında uzun süre açıkta kalmak hipotermi ve donma riski doğurur. −28 °C ve altında açıktaki cilt 10-30 dakika içinde donabilir; −40 °C'nin altında bu süre 5-10 dakikaya, −48 °C'nin altında birkaç dakikaya iner.</p>
+      <p>Süreler sağlıklı bir yetişkinin kuru ve açıktaki cildi için yaklaşık değerlerdir. Çocuklar, yaşlılar, dolaşım sorunu olanlar ve ıslak giysiyle dışarıda kalanlar çok daha çabuk etkilenir.</p>
+
+      <h2>Türkiye'de nerelerde işe yarar?</h2>
+      <p>Erzurum, Kars, Ardahan ve Ağrı gibi kış sıcaklıklarının −20 °C'nin altına indiği illerde rüzgâr soğutması günlük hayatın parçasıdır. Uludağ, Palandöken, Erciyes ya da Kartalkaya'da kayak yaparken telesiyejde ve zirve hatlarında rüzgâr belirgin biçimde artar; pist dibindeki termometreye güvenmek yanıltıcı olur. Motosiklet ve bisiklet sürücüleri için sürüş hızı da rüzgâr demektir: durgun havada 60 km/sa hızla gitmek, yüzünüze 60 km/sa rüzgâr esmesiyle aynı etkiyi yapar. Açık alanda çalışan inşaat, tarım ve enerji hattı ekipleri de çalışma ve mola sürelerini hissedilen sıcaklığa göre planlar.</p>
+
+      <h2>Sınırlar ve uyarı</h2>
+      <p>Formül gölgede, kuru cilt ve uygun giyinmiş bir yetişkin varsayımıyla türetilmiştir. Parlak güneş hissedilen sıcaklığı birkaç derece yükseltebilir; ıslak giysi ve yağış ise ısı kaybını ciddi biçimde artırır. Hava tahminlerindeki &quot;hissedilen sıcaklık&quot; değeri kurumdan kuruma farklı yöntemlerle hesaplanabildiği için bu sayfadaki sonuçla birebir aynı olmayabilir.</p>
+      <p>Sonuç bilgilendirme amaçlıdır; tıbbi değerlendirme yerine geçmez. Uyuşma, ciltte beyazlama ya da titremenin durması gibi belirtilerde hemen sıcak bir ortama geçin ve sağlık kuruluşuna başvurun.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Hissedilen sıcaklık nedir?</summary><p>Rüzgâr, nem ve benzeri etkenler yüzünden vücudun algıladığı sıcaklıktır. Soğuk havada belirleyici etken rüzgârdır; bu sayfa rüzgârın yol açtığı ek ısı kaybını durgun havadaki eşdeğer sıcaklık olarak verir.</p></details>
+        <details><summary>Rüzgâr soğutması hangi koşullarda hesaplanır?</summary><p>Formül hava sıcaklığı 10 °C ya da daha düşük ve rüzgâr hızı en az 4,8 km/sa olduğunda geçerlidir. Daha sıcak havalarda rüzgâr serinletici etki yapsa da bu formül kullanılmaz.</p></details>
+        <details><summary>Rüzgâr soğutması suyu dondurur mu?</summary><p>Hava sıcaklığı sıfırın üzerindeyse hayır. Hissedilen sıcaklık −3 °C görünse bile hava 2 °C ise su donmaz. Rüzgâr yalnızca nesnelerin hava sıcaklığına daha çabuk inmesini sağlar, onun altına düşürmez.</p></details>
+        <details><summary>Rüzgâr hızını nereden öğrenirim?</summary><p>Hava tahmini uygulamaları ve meteoroloji bültenleri rüzgâr hızını genellikle km/sa olarak verir. Denizcilik tahminlerinde knot, bazı ölçüm cihazlarında m/sn kullanılır; araç üç birimi de kabul eder.</p></details>
+        <details><summary>Motosiklet sürerken hissedilen sıcaklığı nasıl bulurum?</summary><p>Durgun havada sürüş hızınızı rüzgâr hızı olarak yazabilirsiniz. Örneğin 0 °C havada 30 km/sa hızla giderken korumasız cildiniz yaklaşık −6,5 °C hisseder. Karşıdan rüzgâr varsa etkisi daha da artar.</p></details>
+        <details><summary>Sonuç neden hava durumu uygulamasındakinden farklı çıkıyor?</summary><p>Uygulamalar farklı formüller kullanabilir, nemi ve güneşlenmeyi hesaba katabilir ya da rüzgârı farklı yükseklikte ölçebilir. Ayrıca tahmin edilen rüzgâr ile bulunduğunuz noktadaki gerçek rüzgâr aynı olmayabilir.</p></details>
+        <details><summary>Hangi hissedilen sıcaklıkta donma tehlikesi başlar?</summary><p>Genel kabul, hissedilen sıcaklık −28 °C'nin altına indiğinde açıktaki cildin 10-30 dakika içinde donabileceği yönündedir. Daha yüksek değerlerde de uzun süre açıkta kalmak risklidir.</p></details>
+        <details><summary>Girdiğim değerler saklanıyor mu?</summary><p>Hayır. Hesap tarayıcınızda yapılır; sıcaklık ve rüzgâr değerleri hiçbir sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../isi-indeksi-hesapla/">Isı İndeksi (Nem Etkisi) Hesaplama</a></li>
+        <li><a href="../beaufort-ruzgar-cevir/">Beaufort Rüzgâr Ölçeği Çevirici</a></li>
+        <li><a href="../ciy-noktasi-hesapla/">Çiy Noktası Hesaplama</a></li>
+        <li><a href="../celsius-fahrenheit-cevir/">Celsius Fahrenheit Çevirici</a></li>
+        <li><a href="../ms-kmh-cevir/">m/s km/h Çevirici</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ruzgar-hissedilen-sicaklik-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

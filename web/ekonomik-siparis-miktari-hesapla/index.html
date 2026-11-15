@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Ekonomik Sipariş Miktarı (EOQ) Hesaplama – Formül ve Örnek</title>
+  <meta name="description" content="Yıllık talep, sipariş maliyeti ve elde bulundurma maliyetinden ekonomik sipariş miktarını (EOQ), yıllık sipariş sayısını ve toplam stok maliyetini hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ekonomik-siparis-miktari-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Ekonomik Sipariş Miktarı (EOQ) Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ekonomik-siparis-miktari-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ekonomik sipariş miktarı formülü nedir?","acceptedAnswer":{"@type":"Answer","text":"EOQ = √(2 × yıllık talep × sipariş başına maliyet ÷ birim başına yıllık elde bulundurma maliyeti). Yıllık talep 10.000 birim, sipariş maliyeti 200 TL ve elde bulundurma maliyeti 4 TL ise sonuç 1.000 birimdir."}},{"@type":"Question","name":"Sipariş maliyetine ürünün alış fiyatı dahil mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Sipariş maliyeti yalnızca sipariş başına tekrarlanan sabit giderleri kapsar: nakliye, sipariş hazırlama, mal kabul, kontrol ve ödeme işlemleri. Ürün bedeli miktarla doğru orantılı olduğu için temel modelde sipariş büyüklüğü kararını etkilemez."}},{"@type":"Question","name":"Sipariş ve elde bulundurma maliyetleri neden eşit çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Toplam maliyet eğrisinin en düşük noktası, azalan sipariş maliyeti eğrisi ile artan stok maliyeti doğrusunun kesiştiği yerdedir. EOQ tam bu noktayı verdiği için iki kalem birbirine eşit olur."}},{"@type":"Question","name":"Talep aylık olarak belliyse ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Aylık talebi 12 ile çarparak yıllık talebi bulun ve elde bulundurma maliyetini de yıllık olarak girin. Tüm girdilerin aynı zaman dilimine ait olması yeterlidir."}},{"@type":"Question","name":"EOQ ile yeniden sipariş noktası aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. EOQ \"kaç birim sipariş vermeliyim\" sorusunu, yeniden sipariş noktası ise \"stok hangi düzeye indiğinde sipariş vermeliyim\" sorusunu yanıtlar. İkincisi tedarik süresine ve emniyet stoğuna bağlıdır."}},{"@type":"Question","name":"Tedarikçim miktar indirimi veriyorsa EOQ geçerli mi?","acceptedAnswer":{"@type":"Answer","text":"Temel model sabit birim fiyat varsayar. İndirim kademeleri varsa her kademe için satın alma bedeli dahil yıllık toplam maliyeti hesaplayıp en düşük olanı seçmek gerekir; EOQ bu karşılaştırmada başlangıç noktasıdır."}},{"@type":"Question","name":"Sonuç küsuratlı çıkarsa nasıl sipariş veririm?","acceptedAnswer":{"@type":"Answer","text":"En yakın tam sayıya ya da tedarikçinin koli ve palet adedine yuvarlayın. Toplam maliyet eğrisi dip noktası çevresinde yayvan olduğu için küçük yuvarlamalar maliyeti kayda değer biçimde değiştirmez."}},{"@type":"Question","name":"Girdiğim veriler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; talep ve maliyet bilgileriniz sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#finans" class="ba-nav-optional">Finans</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#finans">Finans</a></li></ol>
+      <h1><span class="ba-grad">Ekonomik Sipariş Miktarı (EOQ) Hesaplama</span> – en düşük stok maliyeti</h1>
+      <p class="lead">Bir stok kaleminin yıllık talebini, sipariş başına maliyetini ve birim başına yıllık elde bulundurma maliyetini yazın; araç sipariş ve stok tutma giderlerinin toplamını <strong>en aza indiren sipariş miktarını</strong> hesaplar.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-talep">Yıllık talep (birim)</label><input id="f-talep" data-field="talep" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10000"></div>
+          <div class="ba-field"><label for="f-siparis">Sipariş başına maliyet (TL)</label><input id="f-siparis" data-field="siparis" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 200"><div class="hint">Nakliye, evrak, kabul ve kontrol gibi her siparişte tekrarlanan giderler.</div></div>
+          <div class="ba-field"><label for="f-elde">Birim başına yıllık elde bulundurma maliyeti (TL)</label><input id="f-elde" data-field="elde" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 4"><div class="hint">Depolama, sigorta, finansman ve bozulma gideri.</div></div>
+          <div class="ba-field"><label for="f-gun">Yıllık çalışma günü</label><input id="f-gun" data-field="gun" type="text" inputmode="decimal" autocomplete="off" value="365"><div class="hint">Sipariş aralığını gün olarak bulmak için.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ekonomik-siparis-miktari-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Stok kaleminin bir yıllık toplam talebini (satış ya da tüketim miktarını) birim olarak yazın.</li>
+        <li>Bir sipariş vermenin miktardan bağımsız maliyetini girin: nakliye bedeli, sipariş ve ödeme işlemleri için harcanan emek, mal kabul ve kalite kontrol gibi.</li>
+        <li>Bir birim ürünü bir yıl boyunca depoda tutmanın maliyetini yazın. Bunu bilmiyorsanız birim alış fiyatını yıllık stok tutma oranınızla çarparak bulabilirsiniz.</li>
+        <li>Sipariş aralığını takvim günü yerine iş günü olarak görmek istiyorsanız yıllık çalışma günü sayısını değiştirin ve &quot;Hesapla&quot; düğmesine basın.</li>
+        <li>Çıkan miktarı tedarikçinizin koli, palet ya da asgari sipariş adedine en yakın değere yuvarlayın.</li>
+      </ol>
+
+      <h2>Ekonomik sipariş miktarı nedir?</h2>
+      <p>Ekonomik sipariş miktarı (ESM, İngilizce kısaltmasıyla EOQ), bir stok kaleminden her seferinde kaç birim sipariş verilirse yıllık sipariş verme ve stok tutma maliyetleri toplamının en düşük olacağını gösteren miktardır. Model yirminci yüzyılın başında geliştirilmiştir ve Wilson formülü adıyla da bilinir; stok yönetiminin en temel araçlarından biridir.</p>
+      <p>Arkasındaki düşünce bir dengedir. Az miktarda ve sık sipariş verirseniz depoda az mal tutarsınız ama her siparişin nakliye ve işlem giderini defalarca ödersiniz. Büyük partilerle seyrek sipariş verirseniz sipariş gideri düşer, ancak depo dolar, paranız stoka bağlanır ve bozulma, eskime riski artar. EOQ bu iki zıt maliyetin birbirine eşitlendiği noktadır.</p>
+
+      <h2>EOQ formülü</h2>
+      <p><strong>EOQ = √(2 × D × S ÷ H)</strong></p>
+      <p>Burada <strong>D</strong> yıllık talep (birim), <strong>S</strong> bir sipariş vermenin sabit maliyeti (TL), <strong>H</strong> ise bir birimi bir yıl stokta tutmanın maliyetidir (TL). Formülden türeyen diğer büyüklükler şunlardır: yıllık sipariş sayısı D ÷ EOQ, yıllık sipariş maliyeti (D ÷ EOQ) × S, ortalama stok EOQ ÷ 2 ve yıllık elde bulundurma maliyeti (EOQ ÷ 2) × H. Ortalama stokun sipariş miktarının yarısı olması, stokun sipariş geldiğinde en yüksek düzeye çıkıp düzgün biçimde sıfıra kadar tüketildiği varsayımından gelir.</p>
+
+      <div class="ba-ad" data-slot="ekonomik-siparis-miktari-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Bir yedek parça toptancısı bir filtreden yılda 10.000 adet satıyor. Her sipariş için nakliye ve işlem gideri 200 TL, bir filtreyi bir yıl depoda tutmanın maliyeti 4 TL olsun. EOQ = √(2 × 10.000 × 200 ÷ 4) = √1.000.000 = <strong>1.000 adet</strong> bulunur.</p>
+      <p>Bu miktarla yılda 10.000 ÷ 1.000 = 10 sipariş verilir; yani yaklaşık 36,5 günde bir sipariş. Yıllık sipariş maliyeti 10 × 200 = 2.000 TL, ortalama stok 500 adet ve elde bulundurma maliyeti 500 × 4 = 2.000 TL'dir. Toplam 4.000 TL eder. İki maliyet kaleminin birbirine eşit çıkması tesadüf değildir; en düşük toplam maliyet her zaman bu eşitlik noktasında oluşur.</p>
+      <p>Karşılaştırma için toptancının her seferinde 500 adet sipariş verdiğini düşünelim: 20 sipariş × 200 = 4.000 TL sipariş maliyeti, 250 × 4 = 1.000 TL stok maliyeti, toplam 5.000 TL. 2.000 adetlik siparişlerde ise 1.000 + 4.000 = 5.000 TL. Her iki durumda da maliyet, EOQ'ya göre 1.000 TL daha yüksektir.</p>
+
+      <h2>Elde bulundurma maliyeti nasıl tahmin edilir?</h2>
+      <p>Formülün en zor belirlenen girdisi H değeridir. Elde bulundurma maliyeti şu kalemlerin toplamıdır: stoka bağlanan paranın finansman maliyeti ya da alternatif getirisi, depo kirası ve işletme giderleri, sigorta, sayım ve elleçleme emeği, bozulma, kırılma, çalınma ve modası geçme kayıpları. Uygulamada çoğu işletme bunu birim alış fiyatının yıllık bir yüzdesi olarak ifade eder ve <strong>H = birim maliyet × yıllık stok tutma oranı</strong> biçiminde hesaplar. Örneğin birim maliyeti 20 TL olan bir üründe oran %20 alınırsa H = 4 TL olur. Oran, finansman maliyetinin yüksek olduğu dönemlerde belirgin biçimde artar; bu yüzden değeri kendi koşullarınıza göre belirleyin.</p>
+
+      <h2>Modelin varsayımları ve sınırları</h2>
+      <ul>
+        <li><strong>Talep sabit ve bilinir:</strong> Mevsimsel ya da dalgalı talepte tek bir EOQ yerine dönemlere göre ayrı hesap yapmak gerekir.</li>
+        <li><strong>Birim fiyat miktara bağlı değildir:</strong> Tedarikçi büyük alımlarda iskonto veriyorsa, indirimli fiyat kademelerinin toplam maliyeti ayrıca karşılaştırılmalıdır.</li>
+        <li><strong>Sipariş tek seferde ve tam teslim edilir:</strong> Parça parça teslimat ya da üretim yaparak stok oluşturma durumunda farklı bir model kullanılır.</li>
+        <li><strong>Stoksuz kalma yoktur:</strong> Tedarik süresi ve talep belirsizliği için ayrıca emniyet stoğu ve yeniden sipariş noktası hesaplanmalıdır.</li>
+        <li><strong>Depo ve nakit sınırı yoktur:</strong> Hesaplanan miktar deponuza sığmıyor ya da nakit akışınızı zorluyorsa kısıtı esas almanız gerekir.</li>
+      </ul>
+
+      <h2>Sonucu uygularken</h2>
+      <p>EOQ eğrisi dip noktası çevresinde oldukça yayvandır; yani sipariş miktarını ideal değerden biraz saptırmak toplam maliyeti çok az artırır. 189,74 gibi küsuratlı bir sonucu 190'a, hatta koli içi adede uyacak biçimde 200'e yuvarlamak rahatlıkla kabul edilebilir. Aynı nedenle girdilerinizdeki küçük tahmin hataları da sonucu dramatik biçimde bozmaz: sipariş maliyetini iki katına çıkarmak bile EOQ'yu yalnızca yaklaşık %41 artırır, çünkü formülde karekök vardır.</p>
+      <p>Raf ömrü kısa gıda ürünlerinde hesaplanan miktar, ürünün bozulmadan satılabileceği miktarı aşmamalıdır. Bu hesaplama bilgilendirme amaçlıdır; satın alma politikanızı belirlerken tedarik süreleri, asgari sipariş koşulları ve nakit durumunuzla birlikte değerlendirin.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Ekonomik sipariş miktarı formülü nedir?</summary><p>EOQ = √(2 × yıllık talep × sipariş başına maliyet ÷ birim başına yıllık elde bulundurma maliyeti). Yıllık talep 10.000 birim, sipariş maliyeti 200 TL ve elde bulundurma maliyeti 4 TL ise sonuç 1.000 birimdir.</p></details>
+        <details><summary>Sipariş maliyetine ürünün alış fiyatı dahil mi?</summary><p>Hayır. Sipariş maliyeti yalnızca sipariş başına tekrarlanan sabit giderleri kapsar: nakliye, sipariş hazırlama, mal kabul, kontrol ve ödeme işlemleri. Ürün bedeli miktarla doğru orantılı olduğu için temel modelde sipariş büyüklüğü kararını etkilemez.</p></details>
+        <details><summary>Sipariş ve elde bulundurma maliyetleri neden eşit çıkıyor?</summary><p>Toplam maliyet eğrisinin en düşük noktası, azalan sipariş maliyeti eğrisi ile artan stok maliyeti doğrusunun kesiştiği yerdedir. EOQ tam bu noktayı verdiği için iki kalem birbirine eşit olur.</p></details>
+        <details><summary>Talep aylık olarak belliyse ne yapmalıyım?</summary><p>Aylık talebi 12 ile çarparak yıllık talebi bulun ve elde bulundurma maliyetini de yıllık olarak girin. Tüm girdilerin aynı zaman dilimine ait olması yeterlidir.</p></details>
+        <details><summary>EOQ ile yeniden sipariş noktası aynı şey mi?</summary><p>Hayır. EOQ &quot;kaç birim sipariş vermeliyim&quot; sorusunu, yeniden sipariş noktası ise &quot;stok hangi düzeye indiğinde sipariş vermeliyim&quot; sorusunu yanıtlar. İkincisi tedarik süresine ve emniyet stoğuna bağlıdır.</p></details>
+        <details><summary>Tedarikçim miktar indirimi veriyorsa EOQ geçerli mi?</summary><p>Temel model sabit birim fiyat varsayar. İndirim kademeleri varsa her kademe için satın alma bedeli dahil yıllık toplam maliyeti hesaplayıp en düşük olanı seçmek gerekir; EOQ bu karşılaştırmada başlangıç noktasıdır.</p></details>
+        <details><summary>Sonuç küsuratlı çıkarsa nasıl sipariş veririm?</summary><p>En yakın tam sayıya ya da tedarikçinin koli ve palet adedine yuvarlayın. Toplam maliyet eğrisi dip noktası çevresinde yayvan olduğu için küçük yuvarlamalar maliyeti kayda değer biçimde değiştirmez.</p></details>
+        <details><summary>Girdiğim veriler kaydediliyor mu?</summary><p>Hayır. Hesap tarayıcınızda yapılır; talep ve maliyet bilgileriniz sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../emniyet-stogu-hesapla/">Emniyet Stoğu Hesaplama</a></li>
+        <li><a href="../stok-devir-hizi-hesapla/">Stok Devir Hızı Hesaplama</a></li>
+        <li><a href="../birim-maliyet-hesapla/">Birim Maliyet Hesaplama</a></li>
+        <li><a href="../nakit-donusum-suresi-hesapla/">Nakit Dönüşüm Süresi Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ekonomik-siparis-miktari-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

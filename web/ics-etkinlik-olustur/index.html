@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Takvim Etkinliği (ICS) Oluşturma – Takvime Ekle Dosyası Metni</title>
+  <meta name="description" content="Başlık, tarih, saat, konum ve hatırlatma bilgilerinden iCalendar (.ics) etkinlik metni oluşturun. Tüm gün ve saatli etkinlikleri, UTC dönüşümünü destekler.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ics-etkinlik-olustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Takvim Etkinliği (ICS) Metni Oluşturma – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ics-etkinlik-olustur/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"ICS dosyası nasıl açılır?","acceptedAnswer":{"@type":"Answer","text":"Bilgisayarda dosyaya çift tıkladığınızda varsayılan takvim uygulaması etkinliği eklemeyi önerir. Telefonda e-posta ekine ya da indirilen dosyaya dokunmanız yeterlidir. Web tabanlı takvimlerde ayarlar bölümündeki içe aktarma seçeneği kullanılır."}},{"@type":"Question","name":"Oluşan metni .ics dosyasına nasıl çeviririm?","acceptedAnswer":{"@type":"Answer","text":"Metni kopyalayın, Not Defteri gibi düz metin düzenleyiciye yapıştırın ve \"Farklı kaydet\" ile adını etkinlik.ics yapın. Kayıt türünü \"Tüm dosyalar\", kodlamayı UTF-8 seçin; aksi hâlde dosya .txt olarak kaydedilebilir."}},{"@type":"Question","name":"Bitiş saatini yazmazsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Başlangıç saati yazılıp bitiş saati boş bırakılırsa etkinlik bir saat sürecek şekilde oluşturulur. Hem başlangıç hem bitiş saati boşsa etkinlik tüm gün olarak işaretlenir."}},{"@type":"Question","name":"Gece yarısını geçen etkinlik nasıl girilir?","acceptedAnswer":{"@type":"Answer","text":"Bitiş tarihini bir sonraki gün seçin. Örneğin 28 Şubat 22:00'de başlayıp 1 Mart 06:00'da biten vardiya için bitiş tarihi 1 Mart yazılır; araç süreyi 8 saat olarak hesaplar."}},{"@type":"Question","name":"Yurt dışındaki katılımcı etkinliği doğru saatte görür mü?","acceptedAnswer":{"@type":"Answer","text":"Saat türünü \"Türkiye saati → UTC\" seçerseniz evet; takvim uygulaması saati katılımcının kendi dilimine çevirir. \"Yerel saat\" seçeneğinde herkes yazdığınız saati kendi yerel saati olarak görür, bu da farklı ülkelerde yanlış ana denk gelir."}},{"@type":"Question","name":"UID satırı ne işe yarar, neden her seferinde değişiyor?","acceptedAnswer":{"@type":"Answer","text":"UID etkinliğin benzersiz kimliğidir; takvim uygulaması aynı kimlikli etkinliği yeniden içe aktarırken ikinci bir kayıt açmak yerine var olanı günceller. Araç her oluşturmada yeni bir kimlik üretir; aynı etkinliği güncellemek istiyorsanız eski dosyadaki UID satırını yeni metne taşıyın."}},{"@type":"Question","name":"Çıktıda boşlukla başlayan satırlar hata mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. iCalendar biçiminde 75 baytı aşan satırlar bölünür ve devamı tek boşlukla başlar. Takvim uygulamaları bu satırları birleştirerek okur."}},{"@type":"Question","name":"Etkinlik bilgilerim sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. ICS metni tarayıcınızda üretilir; başlık, tarih, konum ve açıklama hiçbir sunucuya iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">Takvim Etkinliği (ICS) Metni Oluşturma</span> – takvime eklenebilir .ics içeriği</h1>
+      <p class="lead">Bir etkinliğin başlığını, tarihini, saatini ve konumunu yazın; takvim uygulamalarının tanıdığı <strong>iCalendar (.ics)</strong> metnini alın. Metni <code>.ics</code> uzantılı bir dosyaya kaydedip e-postayla gönderebilir ya da sitenize &quot;takvime ekle&quot; dosyası olarak koyabilirsiniz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-baslik">Etkinlik başlığı</label><input id="f-baslik" data-field="baslik" type="text" inputmode="text" autocomplete="off" placeholder="Örn. Proje toplantısı"></div>
+          <div class="ba-field"><label for="f-tarih">Başlangıç tarihi</label><input id="f-tarih" data-field="tarih" type="date"></div>
+          <div class="ba-field"><label for="f-saat">Başlangıç saati</label><input id="f-saat" data-field="saat" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 14:00"><div class="hint">Boş bırakırsanız tüm gün süren etkinlik olur.</div></div>
+          <div class="ba-field"><label for="f-bitisTarih">Bitiş tarihi</label><input id="f-bitisTarih" data-field="bitisTarih" type="date"></div>
+          <div class="ba-field"><label for="f-bitisSaat">Bitiş saati</label><input id="f-bitisSaat" data-field="bitisSaat" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 15:30"><div class="hint">Boşsa saatli etkinlik 1 saat sürer.</div></div>
+          <div class="ba-field"><label for="f-dilim">Saat türü</label><select id="f-dilim" data-field="dilim"><option value="yerel">Yerel saat (açan cihazın saatine göre)</option><option value="tr">Türkiye saati (UTC+3) → UTC olarak yaz</option></select></div>
+          <div class="ba-field"><label for="f-hatirlatma">Hatırlatma</label><select id="f-hatirlatma" data-field="hatirlatma"><option value="0">Yok</option><option value="10">10 dakika önce</option><option value="30">30 dakika önce</option><option value="60">1 saat önce</option><option value="1440">1 gün önce</option></select></div>
+          <div class="ba-field is-wide"><label for="f-konum">Konum</label><input id="f-konum" data-field="konum" type="text" inputmode="text" autocomplete="off" placeholder="İsteğe bağlı"></div>
+          <div class="ba-field is-wide"><label for="f-aciklama">Açıklama</label><textarea id="f-aciklama" data-field="aciklama" rows="3" spellcheck="false" placeholder="İsteğe bağlı"></textarea></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Oluştur</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ics-etkinlik-olustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Etkinlik başlığını ve başlangıç tarihini girin. Saatli bir etkinlikse başlangıç saatini 14:00 gibi yazın; tüm gün sürecekse saat alanlarını boş bırakın.</li>
+        <li>Bitiş tarihini ve saatini girin. Bitiş tarihini boş bırakırsanız etkinlik başladığı gün biter; bitiş saatini boş bırakırsanız süre bir saat kabul edilir.</li>
+        <li>Saat türünü seçin: katılımcılar farklı ülkelerdeyse Türkiye saatini UTC'ye çeviren seçeneği kullanın. İsterseniz hatırlatma, konum ve açıklama ekleyin.</li>
+        <li>&quot;Oluştur&quot; düğmesine basın, çıkan metni kopyalayın ve bir metin düzenleyicide <code>.ics</code> uzantısıyla kaydedin.</li>
+        <li>Dosyayı çift tıklayarak kendi takviminize ekleyin ya da e-posta eki olarak katılımcılara gönderin.</li>
+      </ol>
+
+      <h2>ICS dosyası nedir?</h2>
+      <p>ICS, takvim verilerini uygulamalar arasında taşımak için kullanılan iCalendar biçiminin dosya uzantısıdır. Düz metinden oluşur; her satır bir özellik adı, iki nokta ve değerden ibarettir. Telefon ve bilgisayarlardaki takvim uygulamalarının ve web tabanlı takvim hizmetlerinin büyük çoğunluğu bu biçimi içe aktarabilir. Bu sayede tek bir dosya hazırlayıp herkese gönderirsiniz, alan kişi hangi takvimi kullanırsa kullansın etkinliği birkaç dokunuşla ekler.</p>
+      <p>Bir etkinlik dosyası iç içe iki bloktan oluşur. Dıştaki <code>VCALENDAR</code> bloğu dosyanın bir takvim olduğunu ve sürümünü bildirir. İçteki <code>VEVENT</code> bloğu etkinliğin kendisidir: başlığı <code>SUMMARY</code>, başlangıcı <code>DTSTART</code>, bitişi <code>DTEND</code>, konumu <code>LOCATION</code>, açıklaması <code>DESCRIPTION</code> satırında tutulur. <code>UID</code> etkinliğin benzersiz kimliği, <code>DTSTAMP</code> ise dosyanın üretildiği andır; ikisi de standartça zorunludur ve araç bunları kendiliğinden ekler.</p>
+
+      <h2>Yerel saat mi, UTC mi?</h2>
+      <p>Saat türü seçimi, etkinliğin farklı saat dilimlerindeki kişilerde nasıl görüneceğini belirler. &quot;Yerel saat&quot; seçeneğinde saat, dilim bilgisi olmadan yazılır (<code>DTSTART:20270315T140000</code>). Dosyayı açan her cihaz bunu kendi saatine göre 14:00 olarak gösterir. Herkesin aynı şehirde olduğu toplantı, randevu ve davetlerde bu yeterlidir.</p>
+      <p>Çevrim içi seminer gibi farklı ülkelerden katılım olan etkinliklerde ise saat kesin bir ana bağlanmalıdır. İkinci seçenek, yazdığınız saati Türkiye saati (UTC+3) kabul eder, üç saat geri alarak UTC'ye çevirir ve sonuna <code>Z</code> harfi koyar. Örneğin 10 Ocak 2027 saat 01:30 için <code>DTSTART:20270109T223000Z</code> yazılır; tarih bir gün geriye kaymıştır, çünkü UTC'de o an henüz 9 Ocak akşamıdır. Takvim uygulaması bu değeri her katılımcının kendi saatine çevirerek gösterir.</p>
+
+      <div class="ba-ad" data-slot="ics-etkinlik-olustur-b" aria-label="Reklam"></div>
+
+      <h2>Tüm gün süren etkinliklerde bitiş tarihi</h2>
+      <p>Saat yazmadığınızda etkinlik tüm gün olarak işaretlenir ve tarih <code>VALUE=DATE</code> ekiyle saatsiz yazılır. Burada sık karıştırılan bir ayrıntı vardır: iCalendar biçiminde bitiş tarihi <strong>dahil değildir</strong>. 5 Temmuz'dan 9 Temmuz'a kadar süren beş günlük bir izin için bitiş satırına 9 değil 10 Temmuz yazılır (<code>DTEND;VALUE=DATE:20270710</code>). Araç bu kaydırmayı kendisi yapar; siz son günü, yani 9 Temmuz'u seçersiniz ve sonuç tablosunda süreyi 5 gün olarak görürsünüz.</p>
+
+      <h2>Özel karakterler ve uzun satırlar</h2>
+      <p>Başlık, konum ve açıklama metinlerinde virgül ve noktalı virgül ayraç anlamı taşıdığından önlerine ters eğik çizgi konur; alt satıra geçişler ise <code>\n</code> olarak yazılır. Örneğin &quot;Ofis, 3. kat&quot; konumu dosyada <code>LOCATION:Ofis\, 3. kat</code> biçiminde görünür. Takvim uygulaması bunu yeniden normal metne çevirir.</p>
+      <p>Standart, bir satırın 75 bayttan uzun olmamasını ister. Uzun açıklamalar bu yüzden bölünür ve devam satırları bir boşlukla başlar. Çıktıda boşlukla başlayan satırlar görürseniz bu bir hata değildir; &quot;katlama&quot; denen bu kural uygulamalarca geri birleştirilir. Türkçe harfler birden fazla bayt tuttuğu için bölme harf ortasına denk gelmeyecek biçimde yapılır.</p>
+
+      <h2>Hatırlatma nasıl çalışır?</h2>
+      <p>Hatırlatma seçtiğinizde etkinliğin içine bir <code>VALARM</code> bloğu eklenir. <code>TRIGGER:-PT30M</code> satırı &quot;başlangıçtan 30 dakika önce&quot; anlamına gelir; bir saat için <code>-PT1H</code>, bir gün için <code>-P1D</code> yazılır. Hatırlatmayı gösterip göstermemek takvim uygulamasının kararıdır; bazı uygulamalar dışarıdan gelen dosyalardaki hatırlatmaları yok sayıp kullanıcının kendi varsayılan ayarını uygular.</p>
+
+      <h2>Sınırlar</h2>
+      <ul>
+        <li>Araç tek bir etkinlik üretir; haftalık ya da aylık yinelenen etkinlik kuralı eklemez.</li>
+        <li>Katılımcı listesi ve yanıt isteği içeren toplantı davetleri kapsam dışındadır; üretilen dosya bilgilendirme amaçlı bir etkinliktir.</li>
+        <li>UTC dönüşümü yalnızca Türkiye saati (UTC+3) için yapılır. Başka bir dilimdeyseniz saati önce Türkiye saatine çevirin ya da yerel saat seçeneğini kullanın.</li>
+        <li>Dosyayı kaydederken kodlamanın UTF-8 olmasına dikkat edin; aksi hâlde Türkçe harfler bozuk görünebilir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>ICS dosyası nasıl açılır?</summary><p>Bilgisayarda dosyaya çift tıkladığınızda varsayılan takvim uygulaması etkinliği eklemeyi önerir. Telefonda e-posta ekine ya da indirilen dosyaya dokunmanız yeterlidir. Web tabanlı takvimlerde ayarlar bölümündeki içe aktarma seçeneği kullanılır.</p></details>
+        <details><summary>Oluşan metni .ics dosyasına nasıl çeviririm?</summary><p>Metni kopyalayın, Not Defteri gibi düz metin düzenleyiciye yapıştırın ve &quot;Farklı kaydet&quot; ile adını <code>etkinlik.ics</code> yapın. Kayıt türünü &quot;Tüm dosyalar&quot;, kodlamayı UTF-8 seçin; aksi hâlde dosya .txt olarak kaydedilebilir.</p></details>
+        <details><summary>Bitiş saatini yazmazsam ne olur?</summary><p>Başlangıç saati yazılıp bitiş saati boş bırakılırsa etkinlik bir saat sürecek şekilde oluşturulur. Hem başlangıç hem bitiş saati boşsa etkinlik tüm gün olarak işaretlenir.</p></details>
+        <details><summary>Gece yarısını geçen etkinlik nasıl girilir?</summary><p>Bitiş tarihini bir sonraki gün seçin. Örneğin 28 Şubat 22:00'de başlayıp 1 Mart 06:00'da biten vardiya için bitiş tarihi 1 Mart yazılır; araç süreyi 8 saat olarak hesaplar.</p></details>
+        <details><summary>Yurt dışındaki katılımcı etkinliği doğru saatte görür mü?</summary><p>Saat türünü &quot;Türkiye saati → UTC&quot; seçerseniz evet; takvim uygulaması saati katılımcının kendi dilimine çevirir. &quot;Yerel saat&quot; seçeneğinde herkes yazdığınız saati kendi yerel saati olarak görür, bu da farklı ülkelerde yanlış ana denk gelir.</p></details>
+        <details><summary>UID satırı ne işe yarar, neden her seferinde değişiyor?</summary><p>UID etkinliğin benzersiz kimliğidir; takvim uygulaması aynı kimlikli etkinliği yeniden içe aktarırken ikinci bir kayıt açmak yerine var olanı günceller. Araç her oluşturmada yeni bir kimlik üretir; aynı etkinliği güncellemek istiyorsanız eski dosyadaki UID satırını yeni metne taşıyın.</p></details>
+        <details><summary>Çıktıda boşlukla başlayan satırlar hata mı?</summary><p>Hayır. iCalendar biçiminde 75 baytı aşan satırlar bölünür ve devamı tek boşlukla başlar. Takvim uygulamaları bu satırları birleştirerek okur.</p></details>
+        <details><summary>Etkinlik bilgilerim sunucuya gönderiliyor mu?</summary><p>Hayır. ICS metni tarayıcınızda üretilir; başlık, tarih, konum ve açıklama hiçbir sunucuya iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../vcard-olustur/">vCard Kartvizit Metni Oluşturma</a></li>
+        <li><a href="../mailto-link-olustur/">Mailto Bağlantısı Oluşturma</a></li>
+        <li><a href="../tarih-farki/">İki Tarih Arası Gün Hesaplama</a></li>
+        <li><a href="../iso-hafta-tarihi-cevir/">ISO Hafta Tarihi Çevirici</a></li>
+        <li><a href="../qr-kod/">QR Kod Oluşturucu</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ics-etkinlik-olustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

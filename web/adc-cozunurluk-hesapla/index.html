@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>ADC Çözünürlük Hesaplama – Adım Gerilimi (LSB) ve Sayısal Kod</title>
+  <meta name="description" content="ADC bit sayısı ve referans geriliminden seviye sayısını, adım gerilimini (LSB), ideal SNR değerini ve verdiğiniz giriş geriliminin sayısal kodunu hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/adc-cozunurluk-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"ADC Çözünürlük ve Adım Gerilimi Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/adc-cozunurluk-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"10 bit ADC kaç farklı değer okur?","acceptedAnswer":{"@type":"Answer","text":"2 üzeri 10, yani 1024 farklı değer okur; kodlar 0 ile 1023 arasındadır. 5 V referansla her adım yaklaşık 4,88 mV'a karşılık gelir."}},{"@type":"Question","name":"Okuduğum ADC değerini volta nasıl çeviririm?","acceptedAnswer":{"@type":"Answer","text":"Değeri referans gerilimiyle çarpıp 2 üzeri bit sayısına bölün. 12 bit ve 3,3 V referansta 2048 değeri 2048 × 3,3 ÷ 4096 = 1,65 V eder."}},{"@type":"Question","name":"1023'e mi 1024'e mi bölmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Çevirici tanımına göre adım Vref ÷ 1024'tür ve bu araç onu kullanır. 1023'e bölmek en büyük kodu tam referans gerilimine eşitler; iki yöntem arasındaki fark binde bir düzeyindedir ve çoğu uygulamada önemsizdir."}},{"@type":"Question","name":"Daha yüksek bit her zaman daha doğru ölçüm mü demek?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bit sayısı yalnızca adımın inceliğini belirler. Referansın kararlılığı, devre gürültüsü ve çeviricinin kendi hataları doğruluğu sınırlar; bunlar iyileştirilmeden fazladan bitler gürültüyü ölçer."}},{"@type":"Question","name":"Referans gerilimini düşürürsem ne olur?","acceptedAnswer":{"@type":"Answer","text":"Adım gerilimi küçülür, yani küçük sinyaller daha ince ölçülür; ancak ölçülebilen en yüksek gerilim de referansla birlikte düşer. Referansın üzerindeki girişler en büyük kodda doyar."}},{"@type":"Question","name":"Nicemleme hatası ne kadardır?","acceptedAnswer":{"@type":"Answer","text":"İdeal bir çeviricide okunan değer ile gerçek gerilim arasındaki fark bir adımı geçmez. Aşağı yuvarlayan modelde hata 0 ile 1 LSB arasındadır; ortalama alınarak azaltılabilir."}},{"@type":"Question","name":"Negatif gerilimleri ölçebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Tek uçlu çeviriciler yalnızca 0 ile referans arasını ölçer. Negatif ya da iki yönlü sinyaller için sinyal bir ofsetle yukarı kaydırılır ya da diferansiyel girişli bir çevirici kullanılır."}},{"@type":"Question","name":"Girdiğim değerler bir sunucuya gidiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplar tarayıcınızda yapılır; yazdığınız değerler hiçbir yere gönderilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#elektrik" class="ba-nav-optional">Elektrik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#elektrik">Elektrik</a></li></ol>
+      <h1><span class="ba-grad">ADC Çözünürlük ve Adım Gerilimi Hesaplama</span> – LSB, seviye sayısı ve sayısal kod</h1>
+      <p class="lead">Analog-sayısal çeviricinin (ADC) bit sayısını ve referans gerilimini yazın. Araç <strong>seviye sayısını ve bir adımın kaç volta karşılık geldiğini</strong> hesaplar; bir giriş gerilimi verirseniz üretilecek sayısal kodu ondalık, onaltılık ve ikilik olarak gösterir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-bit">Çözünürlük (bit)</label><input id="f-bit" data-field="bit" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10" value="10"></div>
+          <div class="ba-field"><label for="f-vref">Referans gerilimi (V)</label><input id="f-vref" data-field="vref" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 5" value="5"></div>
+          <div class="ba-field"><label for="f-vin">Giriş gerilimi (V, isteğe bağlı)</label><input id="f-vin" data-field="vin" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 2,5"><div class="hint">Yazarsanız bu gerilimin sayısal kodu da hesaplanır.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="adc-cozunurluk-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Çeviricinin çözünürlüğünü bit olarak yazın. Mikrodenetleyicilerin dahili çeviricileri çoğunlukla 10 ya da 12 bittir; harici hassas çeviriciler 16 ve 24 bit olabilir.</li>
+        <li>Referans gerilimini volt olarak girin. Bu, çeviricinin en büyük kodu ürettiği tam ölçek gerilimidir; çoğu kartta besleme gerilimi (5 V ya da 3,3 V) veya dahili bir referanstır.</li>
+        <li>Belirli bir gerilimin hangi sayıya dönüşeceğini merak ediyorsanız &quot;Giriş gerilimi&quot; alanını doldurun.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. Adım gerilimi ilk satırda, seviye sayısı ve diğer değerler altında listelenir.</li>
+      </ol>
+
+      <h2>ADC çözünürlüğü ne anlama gelir?</h2>
+      <p>Analog-sayısal çevirici, sürekli değişen bir gerilimi sonlu sayıda basamaktan birine yuvarlayarak sayıya dönüştürür. Basamak sayısını bit sayısı belirler: n bitlik bir çevirici <strong>2<sup>n</sup></strong> farklı kod üretebilir. 8 bit 256, 10 bit 1024, 12 bit 4096, 16 bit 65.536 seviye demektir. Her ek bit seviye sayısını ikiye katlar ve ölçümün inceliğini iki kat artırır.</p>
+      <p>Çözünürlük ile doğruluk aynı şey değildir. Çözünürlük, çeviricinin ayırt edebildiği en küçük değişimi anlatır; doğruluk ise okunan değerin gerçeğe ne kadar yakın olduğunu. Referansı kararsız ya da gürültülü 16 bitlik bir sistem, iyi tasarlanmış 12 bitlik bir sistemden daha kötü sonuç verebilir.</p>
+
+      <h2>Adım gerilimi (LSB) formülü</h2>
+      <p>Bir adımın büyüklüğü, yani en düşük anlamlı bitin (LSB) gerilim karşılığı şu bağıntıyla bulunur: <strong>LSB = V<sub>ref</sub> ÷ 2<sup>n</sup></strong>. Giriş gerilimi bu kadar değişmeden sayısal kod değişmez; dolayısıyla LSB, ölçebileceğiniz en küçük gerilim farkıdır.</p>
+      <p>Sayısal kod ise giriş geriliminin adım gerilimine bölünüp aşağı yuvarlanmasıyla elde edilir: <strong>kod = ⌊V<sub>in</sub> ÷ LSB⌋</strong>. En büyük kod 2<sup>n</sup> − 1 olduğundan giriş referansa eşit ya da ondan büyükse kod bu değerde kalır. Bazı kaynaklar adım gerilimini V<sub>ref</sub> ÷ (2<sup>n</sup> − 1) olarak verir; aradaki fark çok küçüktür, ancak çevirici veri sayfalarında benimsenen tanım 2<sup>n</sup>'e bölmektir ve bu araç onu kullanır.</p>
+
+      <div class="ba-ad" data-slot="adc-cozunurluk-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: 10 bit, 5 V referans</h2>
+      <p>Aynı ölçümü 3,3 V referanslı 12 bitlik bir çeviriciyle yaparsanız adım 3,3 ÷ 4096 = 0,80566 mV'a iner; yani ölçüm yaklaşık altı kat daha incelir.</p>
+      <ol>
+        <li>Seviye sayısı: 2<sup>10</sup> = 1024</li>
+        <li>Adım gerilimi: 5 V ÷ 1024 = 0,0048828 V, yani yaklaşık 4,8828 mV</li>
+        <li>En büyük kod: 1024 − 1 = 1023</li>
+        <li>Girişe 2,5 V uygulanırsa: 2,5 ÷ 0,0048828 = 512; onaltılık 0x200, ikilik 1000000000</li>
+        <li>Girişe 1 V uygulanırsa: 1 ÷ 0,0048828 = 204,8; aşağı yuvarlanarak 204 elde edilir. Bu kodun karşılığı 204 × 4,8828 mV = 0,99609 V'tur; aradaki yaklaşık 3,9 mV'luk fark nicemleme hatasıdır.</li>
+      </ol>
+
+      <h2>Okunan kodu gerilime geri çevirmek</h2>
+      <p>Yazılımda çoğu zaman tersine gidilir: çeviriciden okunan sayı gerilime çevrilir. Bunun için kodu adım gerilimiyle çarpmak yeterlidir: <strong>V = kod × V<sub>ref</sub> ÷ 2<sup>n</sup></strong>. 10 bit ve 5 V referansla okunan 512 değeri 512 × 5 ÷ 1024 = 2,5 V eder.</p>
+      <p>Sensör bir gerilim bölücünün ya da yükseltecin ardındaysa bulduğunuz gerilimi o katın oranıyla düzeltmeyi unutmayın. Örneğin 12 V bir aküyü 4'e bölen bir dirençli bölücüyle ölçüyorsanız hesaplanan gerilimi 4 ile çarparsınız; bu durumda akü tarafındaki çözünürlük de 4 kat kabalaşır.</p>
+
+      <h2>Hızlı başvuru tablosu</h2>
+      <ul>
+        <li><strong>8 bit:</strong> 256 seviye; 5 V referansta 19,531 mV adım</li>
+        <li><strong>10 bit:</strong> 1024 seviye; 5 V referansta 4,8828 mV adım</li>
+        <li><strong>12 bit:</strong> 4096 seviye; 3,3 V referansta 0,80566 mV adım</li>
+        <li><strong>16 bit:</strong> 65.536 seviye; 5 V referansta 76,294 µV adım</li>
+        <li><strong>24 bit:</strong> 16.777.216 seviye; kuramsal adım mikrovoltun altındadır, ancak gürültü nedeniyle tamamı kullanılamaz</li>
+      </ul>
+
+      <h2>İdeal sinyal-gürültü oranı</h2>
+      <p>Nicemleme, sinyale kaçınılmaz bir yuvarlama gürültüsü ekler. Tam ölçekli bir sinüs sinyali için ideal bir çeviricinin sinyal-gürültü oranı yaklaşık <strong>6,02 × n + 1,76 dB</strong> bağıntısıyla verilir. 10 bit için 61,96 dB, 12 bit için 74 dB, 16 bit için 98,08 dB bulunur. Veri sayfalarındaki &quot;etkin bit sayısı&quot; (ENOB) değeri bu formülün tersinden hesaplanır ve gerçek bir çeviricinin kaç bitlik ideal çevirici kadar iyi olduğunu gösterir.</p>
+
+      <h2>Daha iyi ölçüm için ipuçları ve sınırlar</h2>
+      <p>Çözünürlüğü artırmanın tek yolu daha çok bitli bir çevirici almak değildir. Ölçülecek sinyalin aralığı referansa göre küçükse referansı düşürmek adımı inceltir: 0–1 V arasındaki bir sensörü 5 V yerine 1,1 V dolayında bir referansla okumak aynı bit sayısıyla yaklaşık dört buçuk kat ince adım verir. Sinyali bir yükselteçle tam ölçeğe yaymak da aynı işi görür.</p>
+      <p>Referans olarak besleme gerilimini kullanıyorsanız beslemedeki her dalgalanma ölçüme yansır; kararlı bir referans kaynağı ve girişte küçük bir filtre kondansatörü sonuçları belirgin biçimde iyileştirir. Art arda birkaç okumanın ortalamasını almak gürültüyü azaltır.</p>
+      <p>Giriş gerilimi hiçbir zaman çeviricinin izin verilen sınırlarını aşmamalıdır. Bu araç ideal çevirici modeline göre hesap yapar ve bilgilendirme amaçlıdır; ofset, kazanç ve doğrusallık hataları için kullandığınız entegrenin veri sayfasına bakın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>10 bit ADC kaç farklı değer okur?</summary><p>2 üzeri 10, yani 1024 farklı değer okur; kodlar 0 ile 1023 arasındadır. 5 V referansla her adım yaklaşık 4,88 mV'a karşılık gelir.</p></details>
+        <details><summary>Okuduğum ADC değerini volta nasıl çeviririm?</summary><p>Değeri referans gerilimiyle çarpıp 2 üzeri bit sayısına bölün. 12 bit ve 3,3 V referansta 2048 değeri 2048 × 3,3 ÷ 4096 = 1,65 V eder.</p></details>
+        <details><summary>1023'e mi 1024'e mi bölmeliyim?</summary><p>Çevirici tanımına göre adım Vref ÷ 1024'tür ve bu araç onu kullanır. 1023'e bölmek en büyük kodu tam referans gerilimine eşitler; iki yöntem arasındaki fark binde bir düzeyindedir ve çoğu uygulamada önemsizdir.</p></details>
+        <details><summary>Daha yüksek bit her zaman daha doğru ölçüm mü demek?</summary><p>Hayır. Bit sayısı yalnızca adımın inceliğini belirler. Referansın kararlılığı, devre gürültüsü ve çeviricinin kendi hataları doğruluğu sınırlar; bunlar iyileştirilmeden fazladan bitler gürültüyü ölçer.</p></details>
+        <details><summary>Referans gerilimini düşürürsem ne olur?</summary><p>Adım gerilimi küçülür, yani küçük sinyaller daha ince ölçülür; ancak ölçülebilen en yüksek gerilim de referansla birlikte düşer. Referansın üzerindeki girişler en büyük kodda doyar.</p></details>
+        <details><summary>Nicemleme hatası ne kadardır?</summary><p>İdeal bir çeviricide okunan değer ile gerçek gerilim arasındaki fark bir adımı geçmez. Aşağı yuvarlayan modelde hata 0 ile 1 LSB arasındadır; ortalama alınarak azaltılabilir.</p></details>
+        <details><summary>Negatif gerilimleri ölçebilir miyim?</summary><p>Tek uçlu çeviriciler yalnızca 0 ile referans arasını ölçer. Negatif ya da iki yönlü sinyaller için sinyal bir ofsetle yukarı kaydırılır ya da diferansiyel girişli bir çevirici kullanılır.</p></details>
+        <details><summary>Girdiğim değerler bir sunucuya gidiyor mu?</summary><p>Hayır. Hesaplar tarayıcınızda yapılır; yazdığınız değerler hiçbir yere gönderilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../gerilim-bolucu-hesapla/">Gerilim Bölücü Hesaplama</a></li>
+        <li><a href="../pwm-gorev-dongusu-hesapla/">PWM Görev Döngüsü Hesaplama</a></li>
+        <li><a href="../opamp-kazanc-hesapla/">Op-Amp Kazancı Hesaplama</a></li>
+        <li><a href="../rc-filtre-kesim-frekansi-hesapla/">RC Filtre Kesim Frekansı Hesaplama</a></li>
+        <li><a href="../desibel-hesapla/">Desibel (dB) Kazanç Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="adc-cozunurluk-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

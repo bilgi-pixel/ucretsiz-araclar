@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>CSV'den SQL INSERT Oluşturma – CSV SQL Dönüştürücü</title>
+  <meta name="description" content="CSV ya da Excel'den kopyaladığınız tabloyu SQL INSERT sorgularına çevirin. Tırnaklar kaçırılır, sayılar ve boş hücreler doğru yazılır; veri sunucuya gitmez.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/csv-sql-donustur/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"CSV'den SQL INSERT Oluşturma – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/csv-sql-donustur/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Excel'den kopyaladığım hücreleri doğrudan yapıştırabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Hesap tablosundan kopyalanan hücreler sekme karakteriyle ayrılır ve araç bunu otomatik algılar. İlk satırınız sütun başlıklarıysa \"Sütun adlarını içeriyor\" seçeneğini bırakın."}},{"@type":"Question","name":"Metindeki kesme işaretleri sorguyu bozar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Her kesme işareti iki kez yazılarak kaçırılır; bu SQL standardındaki yöntemdir. Örneğin O'nun değeri sorguda 'O''nun' olarak görünür ve veritabanına tek kesme işaretiyle kaydedilir."}},{"@type":"Question","name":"Telefon numarasının başındaki sıfır neden kaybolmuyor?","acceptedAnswer":{"@type":"Answer","text":"Araç baştaki sıfırı olan değerleri sayı saymaz ve tırnak içinde metin olarak yazar. Böylece 0532 gibi bir değer 532'ye dönüşmez. Sütununuzun da metin türünde olması gerekir."}},{"@type":"Question","name":"12,5 gibi virgüllü sayılar neden tırnak içinde?","acceptedAnswer":{"@type":"Answer","text":"SQL'de ondalık ayırıcı noktadır; virgül değerleri birbirinden ayırır. Yanlışlıkla iki ayrı değer üretmemek için virgüllü sayılar metin olarak bırakılır. Sayı olarak aktarmak için veride virgülü noktaya çevirin."}},{"@type":"Question","name":"NULL ile boş metin arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"NULL \"değer yok\" anlamına gelir; boş metin ise uzunluğu sıfır olan bir değerdir. Sorgularda farklı davranırlar ve NOT NULL kısıtı olan sütunlar NULL kabul etmez. Tablonuzun yapısına uygun seçeneği kullanın."}},{"@type":"Question","name":"CREATE TABLE sorgusu da üretiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır, araç yalnızca INSERT sorguları üretir. Sütun türlerini veriye bakarak doğru tahmin etmek güvenilir olmadığından tablo tanımını sizin yapmanız beklenir."}},{"@type":"Question","name":"Kaç satıra kadar dönüştürebilirim?","acceptedAnswer":{"@type":"Answer","text":"Belirli bir sınır yoktur; işlem tarayıcınızın belleğinde yapılır ve on binlerce satır rahatça işlenir. Çok büyük dosyalarda veritabanınızın kendi toplu içe aktarma aracı daha hızlı olacaktır."}},{"@type":"Question","name":"Verilerim bir sunucuya yükleniyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. CSV ayrıştırma ve sorgu üretimi tamamen tarayıcınızda çalışır; müşteri listesi gibi kişisel veri içeren tablolarınız bilgisayarınızdan çıkmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">CSV'den SQL INSERT Oluşturma</span> – tabloyu sorguya çevir</h1>
+      <p class="lead">CSV metnini yapıştırın, tablo adını yazın; araç her satır için <strong>INSERT INTO</strong> sorgusu üretir. Metinlerdeki kesme işaretleri kaçırılır, sayılar tırnaksız yazılır, boş hücreler isteğinize göre <code>NULL</code> ya da boş metin olur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-csv">CSV verisi</label><textarea id="f-csv" data-field="csv" rows="8" spellcheck="false" placeholder="ad,yas,sehir
+Ali,30,Ankara
+Ayşe,25,İzmir"></textarea></div>
+          <div class="ba-field"><label for="f-tablo">Tablo adı</label><input id="f-tablo" data-field="tablo" type="text" inputmode="text" autocomplete="off" placeholder="musteriler" value="tablo"></div>
+          <div class="ba-field"><label for="f-ayrac">Ayraç</label><select id="f-ayrac" data-field="ayrac"><option value="oto">Otomatik algıla</option><option value="virgul">Virgül (,)</option><option value="nv">Noktalı virgül (;)</option><option value="sekme">Sekme</option></select></div>
+          <div class="ba-field"><label for="f-baslik">İlk satır</label><select id="f-baslik" data-field="baslik"><option value="evet">Sütun adlarını içeriyor</option><option value="hayir">Veri satırı (sütun adı yok)</option></select></div>
+          <div class="ba-field"><label for="f-tur">Sayılar</label><select id="f-tur" data-field="tur"><option value="sayi">Tırnaksız yaz (30, 12.5)</option><option value="metin">Her şeyi metin olarak yaz</option></select></div>
+          <div class="ba-field"><label for="f-bos">Boş hücreler</label><select id="f-bos" data-field="bos"><option value="null">NULL yaz</option><option value="metin">Boş metin ('') yaz</option></select></div>
+          <div class="ba-field"><label for="f-bicim">Sorgu biçimi</label><select id="f-bicim" data-field="bicim"><option value="ayri">Her satır için ayrı INSERT</option><option value="tek">Tek INSERT, çok satırlı VALUES</option></select></div>
+          <div class="ba-field"><label for="f-tirnak">Ad tırnakları</label><select id="f-tirnak" data-field="tirnak"><option value="yok">Yok (adları sadeleştir)</option><option value="ters">`ad` (MySQL, MariaDB)</option><option value="cift">&quot;ad&quot; (PostgreSQL, SQLite, standart)</option><option value="koseli">[ad] (SQL Server)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">SQL oluştur</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="csv-sql-donustur-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Tablonuzu CSV olarak kopyalayıp &quot;CSV verisi&quot; alanına yapıştırın. Excel ya da başka bir hesap tablosundan doğrudan kopyalanan hücreler sekmeyle ayrılır; araç bunu kendiliğinden algılar.</li>
+        <li>&quot;Tablo adı&quot; alanına verinin ekleneceği tablonun adını yazın.</li>
+        <li>İlk satırın sütun adı içerip içermediğini, sayıların ve boş hücrelerin nasıl yazılacağını seçin.</li>
+        <li>Kullandığınız veritabanına göre ad tırnağını ve sorgu biçimini belirleyip &quot;SQL oluştur&quot; düğmesine basın.</li>
+        <li>Üretilen sorguları kopyalayın ve önce bir test veritabanında çalıştırarak sonucu denetleyin.</li>
+      </ol>
+
+      <h2>CSV'den INSERT sorgusu neden üretilir?</h2>
+      <p>Bir hesap tablosundaki müşteri listesini, ürün kataloğunu ya da il-ilçe tablosunu veritabanına aktarmanın birkaç yolu vardır. Veritabanı araçlarının içe aktarma sihirbazları ve toplu yükleme komutları büyük dosyalar için en hızlı seçenektir, ancak sunucuya dosya erişimi, yetki ve biçim ayarı gerektirir. Paylaşımlı barındırmada, yalnızca bir sorgu penceresine erişiminiz olduğunda ya da veriyi bir kurulum betiğine, geçiş (migration) dosyasına veya test verisi dosyasına gömmek istediğinizde düz <code>INSERT</code> sorguları en taşınabilir çözümdür.</p>
+      <p>Bu sorguları elle yazmak hem zahmetli hem hataya açıktır: bir kesme işaretini kaçırmayı unutmak sorguyu bozar. Araç bu dönüşümü kurallı biçimde yapar.</p>
+
+      <h2>Dönüşüm kuralları</h2>
+      <ul>
+        <li><strong>Metinler</strong> tek tırnak içine alınır; içlerindeki kesme işareti iki kez yazılarak kaçırılır. <code>O'nun</code> değeri sorguda <code>'O''nun'</code> olur. Bu, SQL standardındaki kaçış biçimidir ve yaygın veritabanlarının tamamında geçerlidir.</li>
+        <li><strong>Sayılar</strong> tırnaksız yazılır. Sayı sayılması için değerin yalnızca rakamlardan, isteğe bağlı eksi işaretinden ve ondalık <em>noktasından</em> oluşması gerekir: <code>30</code>, <code>-5</code>, <code>12.5</code>.</li>
+        <li><strong>Baştaki sıfır korunur:</strong> <code>0532</code> ya da <code>06100</code> gibi değerler sayı değil metin sayılır. Böylece telefon alan kodu, posta kodu ve vergi numarası gibi alanlarda sıfır kaybolmaz.</li>
+        <li><strong>Virgüllü ondalıklar</strong> (<code>12,5</code>) metin olarak yazılır, çünkü SQL'de ondalık ayırıcı noktadır. Sayı olarak aktarmak istiyorsanız veriyi önce noktalı biçime çevirin.</li>
+        <li><strong>Boş hücreler</strong> seçiminize göre <code>NULL</code> ya da boş metin olur.</li>
+        <li><strong>Hücre başı ve sonundaki boşluklar</strong> silinir; çift tırnak içine alınmış hücreler ise olduğu gibi korunur.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="csv-sql-donustur-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>İlk satırı <code>ad,yas</code>, sonraki satırları <code>Ali,30</code> ve <code>Ayşe,25</code> olan üç satırlık bir CSV'yi tablo adı <code>musteriler</code> ile dönüştürelim. İlk satır sütun adlarını verir; geriye iki veri satırı kalır. Araç şu iki sorguyu üretir: <code>INSERT INTO musteriler (ad, yas) VALUES ('Ali', 30);</code> ve <code>INSERT INTO musteriler (ad, yas) VALUES ('Ayşe', 25);</code>. Adlar tırnak içinde, yaşlar tırnaksızdır. Sonuç kutusunun üstünde satır sayısı 2, sütun sayısı 2 ve ayraç &quot;virgül&quot; olarak görünür.</p>
+      <p>Aynı veriyi &quot;Tek INSERT, çok satırlı VALUES&quot; biçiminde üretirseniz sütun listesi bir kez yazılır ve değer grupları virgülle alt alta sıralanır. Bu biçim daha kısadır ve genellikle daha hızlı çalışır.</p>
+
+      <h2>Hangi veritabanı için hangi ayar?</h2>
+      <p>Değerlerin yazımı bütün yaygın veritabanlarında aynıdır; fark tablo ve sütun adlarının tırnaklanmasındadır. MySQL ve MariaDB ters tırnak (<code>`ad`</code>), PostgreSQL ve SQLite ile SQL standardı çift tırnak (<code>&quot;ad&quot;</code>), SQL Server köşeli parantez (<code>[ad]</code>) kullanır. Tırnak, adınızda boşluk ya da Türkçe harf varsa ya da ad ayrılmış bir sözcükle (<code>order</code>, <code>group</code>, <code>not</code> gibi) çakışıyorsa gereklidir. PostgreSQL'de çift tırnaklı adların büyük-küçük harfe duyarlı hâle geldiğini unutmayın.</p>
+      <p>&quot;Yok&quot; seçeneğinde adlar tırnaksız yazılır ve güvenli hâle getirilir: Türkçe harfler Latin karşılıklarına çevrilir, boşluk ve noktalama alt çizgi olur. <code>Doğum Yılı</code> başlığı <code>Dogum_Yili</code> hâline gelir. Tablonuzdaki gerçek sütun adları farklıysa başlık satırını CSV'de ona göre düzeltin.</p>
+      <p>Çok satırlı <code>VALUES</code> biçimi güncel MySQL, PostgreSQL, SQLite ve SQL Server sürümlerinde desteklenir. Bazı sistemlerde tek sorguda eklenebilecek satır sayısı ya da sorgu boyutu sınırlıdır; çok büyük veride ayrı sorgular ya da parçalara bölme daha güvenlidir.</p>
+
+      <h2>CSV ayrıştırma ayrıntıları</h2>
+      <p>Türkçe bölge ayarlı hesap tablosu programları CSV'yi çoğunlukla noktalı virgülle kaydeder, çünkü virgül ondalık ayırıcı olarak kullanılır. Araç ilk satırdaki virgül, noktalı virgül ve sekme sayısına bakarak ayracı tahmin eder; yanlış tahmin ederse listeden elle seçebilirsiniz.</p>
+      <p>İçinde ayraç, satır sonu ya da çift tırnak bulunan hücreler çift tırnak içine alınmalıdır: <code>&quot;Demir, Ali&quot;</code> tek hücredir. Hücre içindeki çift tırnak iki kez yazılır. Boş satırlar atlanır. Bir veri satırındaki hücre sayısı sütun sayısıyla uyuşmuyorsa araç sorgu üretmez ve hatalı satırın numarasını bildirir; yanlış sütuna kayan veri sessizce aktarılmaz.</p>
+
+      <h2>Sık yapılan hatalar ve uyarılar</h2>
+      <ul>
+        <li>Tarihleri kontrol etmemek. <code>15.03.2026</code> gibi bir değer metin olarak aktarılır; tarih sütununa yazılacaksa veritabanları çoğunlukla <code>2026-03-15</code> biçimini bekler. Tarihleri önce bu biçime çevirin.</li>
+        <li>Para tutarlarını binlik ayraçla bırakmak. <code>1.250,50</code> değeri sayı sayılmaz; <code>1250.50</code> olarak düzeltin.</li>
+        <li>Sorguları doğrudan canlı veritabanında çalıştırmak. Önce yedek alın, mümkünse işlemi bir transaction içinde deneyin.</li>
+        <li>Otomatik artan kimlik sütununu CSV'de boş bırakıp <code>NULL</code> olarak göndermek. Bu sütunu CSV'den tamamen çıkarmak daha doğrudur.</li>
+        <li>Üretilen metni kullanıcı girdisiyle çalışan uygulama koduna sorgu olarak gömmek. Uygulama içinde her zaman parametreli sorgu kullanın; bu araç tek seferlik veri aktarımı içindir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Excel'den kopyaladığım hücreleri doğrudan yapıştırabilir miyim?</summary><p>Evet. Hesap tablosundan kopyalanan hücreler sekme karakteriyle ayrılır ve araç bunu otomatik algılar. İlk satırınız sütun başlıklarıysa &quot;Sütun adlarını içeriyor&quot; seçeneğini bırakın.</p></details>
+        <details><summary>Metindeki kesme işaretleri sorguyu bozar mı?</summary><p>Hayır. Her kesme işareti iki kez yazılarak kaçırılır; bu SQL standardındaki yöntemdir. Örneğin O'nun değeri sorguda 'O''nun' olarak görünür ve veritabanına tek kesme işaretiyle kaydedilir.</p></details>
+        <details><summary>Telefon numarasının başındaki sıfır neden kaybolmuyor?</summary><p>Araç baştaki sıfırı olan değerleri sayı saymaz ve tırnak içinde metin olarak yazar. Böylece 0532 gibi bir değer 532'ye dönüşmez. Sütununuzun da metin türünde olması gerekir.</p></details>
+        <details><summary>12,5 gibi virgüllü sayılar neden tırnak içinde?</summary><p>SQL'de ondalık ayırıcı noktadır; virgül değerleri birbirinden ayırır. Yanlışlıkla iki ayrı değer üretmemek için virgüllü sayılar metin olarak bırakılır. Sayı olarak aktarmak için veride virgülü noktaya çevirin.</p></details>
+        <details><summary>NULL ile boş metin arasındaki fark nedir?</summary><p>NULL &quot;değer yok&quot; anlamına gelir; boş metin ise uzunluğu sıfır olan bir değerdir. Sorgularda farklı davranırlar ve NOT NULL kısıtı olan sütunlar NULL kabul etmez. Tablonuzun yapısına uygun seçeneği kullanın.</p></details>
+        <details><summary>CREATE TABLE sorgusu da üretiyor mu?</summary><p>Hayır, araç yalnızca INSERT sorguları üretir. Sütun türlerini veriye bakarak doğru tahmin etmek güvenilir olmadığından tablo tanımını sizin yapmanız beklenir.</p></details>
+        <details><summary>Kaç satıra kadar dönüştürebilirim?</summary><p>Belirli bir sınır yoktur; işlem tarayıcınızın belleğinde yapılır ve on binlerce satır rahatça işlenir. Çok büyük dosyalarda veritabanınızın kendi toplu içe aktarma aracı daha hızlı olacaktır.</p></details>
+        <details><summary>Verilerim bir sunucuya yükleniyor mu?</summary><p>Hayır. CSV ayrıştırma ve sorgu üretimi tamamen tarayıcınızda çalışır; müşteri listesi gibi kişisel veri içeren tablolarınız bilgisayarınızdan çıkmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sql-bicimlendir/">SQL Biçimlendirici</a></li>
+        <li><a href="../csv-json-donustur/">CSV JSON Dönüştürücü</a></li>
+        <li><a href="../csv-html-tablo/">CSV'den HTML Tablo Oluşturma</a></li>
+        <li><a href="../csv-excel/">CSV ↔ Excel Dönüştürücü</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="csv-sql-donustur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

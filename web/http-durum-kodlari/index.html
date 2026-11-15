@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>HTTP Durum Kodu Sorgulama – 301, 404, 500 Ne Anlama Gelir?</title>
+  <meta name="description" content="HTTP durum kodunu yazın; adını, Türkçe karşılığını, sınıfını, ne zaman döndüğünü ve nasıl ele alınacağını öğrenin. 1xx–5xx arası tüm standart kodlar.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/http-durum-kodlari/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"HTTP Durum Kodu Sorgulama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/http-durum-kodlari/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"404 hatası ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"404 Not Found, sunucuya ulaşıldığını ama istenen adreste bir kaynak bulunmadığını gösterir. Bağlantı yanlış yazılmış, sayfa silinmiş ya da adresi değişmiş olabilir. Site sahibi taşınan sayfalar için kalıcı yönlendirme tanımlayarak bu hatayı önleyebilir."}},{"@type":"Question","name":"301 ile 302 arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"301 kalıcı, 302 geçici yönlendirmedir. Kalıcı yönlendirmede arama motorları eski adres yerine yeni adresi dizine alır; geçici yönlendirmede eski adres geçerliliğini korur. Adres kalıcı olarak değiştiyse 301 kullanılmalıdır."}},{"@type":"Question","name":"500 hatasını nasıl çözerim?","acceptedAnswer":{"@type":"Answer","text":"500 genel bir sunucu hatasıdır ve nedenini tek başına söylemez. Sunucunun hata günlüğüne bakmak gerekir; çoğu zaman uygulama kodundaki bir hata, eksik bir dosya izni ya da bozuk bir yapılandırma satırı sorumludur. Ziyaretçi tarafında yapılabilecek bir şey yoktur."}},{"@type":"Question","name":"503 hatası kalıcı mıdır?","acceptedAnswer":{"@type":"Answer","text":"Hayır, 503 geçici bir durumu bildirir: sunucu aşırı yüklüdür ya da bakımdadır. Kısa süreli bakımlarda bu kodu döndürmek, arama motorlarına sayfanın kaldırılmadığını, daha sonra yeniden gelinmesi gerektiğini anlatır."}},{"@type":"Question","name":"Durum kodunu tarayıcıda nasıl görürüm?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcının geliştirici araçlarını açıp Ağ sekmesine geçin ve sayfayı yenileyin. Listelenen her isteğin karşısında durum kodu yazar. Komut satırında ise yalnızca başlıkları isteyen bir HTTP istemcisiyle yanıtın ilk satırını görebilirsiniz."}},{"@type":"Question","name":"429 kodu aldığımda ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"429, kısa sürede çok fazla istek gönderdiğiniz anlamına gelir. Yanıtta Retry-After başlığı varsa orada belirtilen süre kadar bekleyin; yoksa istek sıklığını azaltıp aralıkları giderek uzatarak yeniden deneyin."}},{"@type":"Question","name":"Listede olmayan bir kod görürsem?","acceptedAnswer":{"@type":"Answer","text":"Bazı yazılımlar standart dışı kodlar kullanır. Araç bu kodlar için sınıfı gösterir; ilk hane yine sorunun istemcide mi sunucuda mı olduğunu anlatır. Kesin anlam için kodu döndüren sunucu, vekil ya da güvenlik hizmetinin belgelerine bakın."}},{"@type":"Question","name":"Sorguladığım kodlar kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kod tablosu sayfanın içindedir ve sorgu tarayıcınızda yapılır. Yazdığınız değer hiçbir sunucuya gönderilmez; sayfa çevrimdışıyken de çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">HTTP Durum Kodu Sorgulama</span> – 200, 301, 404, 500…</h1>
+      <p class="lead">Bir HTTP durum kodunu yazın; kodun resmî adını, Türkçe karşılığını, hangi sınıfa girdiğini ve sunucunun bu yanıtı hangi durumda verdiğini görün. Araç <strong>100–599</strong> arasındaki standart kodları tanır.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-kod">Durum kodu</label><input id="f-kod" data-field="kod" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 404"><div class="hint">100 ile 599 arasında üç haneli bir sayı yazın.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Sorgula</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="http-durum-kodlari-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Karşılaştığınız durum kodunu &quot;Durum kodu&quot; alanına yazın. Kod; tarayıcının hata sayfasında, geliştirici araçlarının Ağ sekmesinde ya da sunucu erişim günlüğünde üç haneli bir sayı olarak görünür.</li>
+        <li>&quot;Sorgula&quot; düğmesine basın. Kodun resmî İngilizce adı, Türkçe karşılığı ve ait olduğu sınıf listelenir.</li>
+        <li>&quot;Açıklama&quot; satırını okuyun; sunucunun bu kodu hangi koşulda döndürdüğü ve tipik nedenleri burada yazar.</li>
+        <li>&quot;Yeniden denenir mi?&quot; satırı, aynı isteği değiştirmeden tekrarlamanın işe yarayıp yaramayacağını söyler; hata ayıklamaya nereden başlayacağınıza karar vermenizi kolaylaştırır.</li>
+      </ol>
+
+      <h2>HTTP durum kodu nedir?</h2>
+      <p>Tarayıcınız ya da bir uygulama bir web adresine istek gönderdiğinde, sunucu yanıtın ilk satırında üç haneli bir sayı döndürür. Bu sayı isteğin akıbetini özetler: başarılı mı oldu, başka bir adrese mi gidilmeli, istek mi hatalıydı, yoksa sunucu mu sorun yaşadı. Sayfa sorunsuz açıldığında bu kodu görmezsiniz; ama arka planda her resim, betik ve stil dosyası için ayrı bir durum kodu alınır.</p>
+      <p>Kodun ilk hanesi sınıfı belirler ve tek başına çok şey anlatır. Tanımadığınız bir kodla karşılaşsanız bile ilk haneye bakarak sorunun hangi tarafta olduğunu kestirebilirsiniz. İstemciler de aynı kuralı uygular: tanımadıkları bir kodu, o sınıfın genel kodu gibi ele alırlar.</p>
+
+      <h2>Beş sınıf</h2>
+      <ul>
+        <li><strong>1xx – Bilgilendirme:</strong> istek alındı, süreç devam ediyor. Gündelik kullanımda nadiren fark edilir.</li>
+        <li><strong>2xx – Başarılı:</strong> istek kabul edildi ve işlendi. 200, 201 ve 204 en sık karşılaşılanlardır.</li>
+        <li><strong>3xx – Yönlendirme:</strong> kaynak başka bir adreste ya da önbellekteki kopya geçerli. 301, 302 ve 304 bu gruptadır.</li>
+        <li><strong>4xx – İstemci hatası:</strong> istek hatalı, yetkisiz ya da var olmayan bir kaynağa yönelik. 400, 401, 403, 404 ve 429 öne çıkar.</li>
+        <li><strong>5xx – Sunucu hatası:</strong> istek geçerli ama sunucu yerine getiremedi. 500, 502, 503 ve 504 site sahiplerinin en çok uğraştığı kodlardır.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="http-durum-kodlari-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: 404 ve 503</h2>
+      <p>Alana <strong>404</strong> yazıp sorguladığınızda araç durumu &quot;404 Not Found&quot;, Türkçe karşılığını &quot;Bulunamadı&quot;, sınıfı &quot;4xx – İstemci hatası&quot; olarak verir ve yeniden deneme satırında &quot;Hayır&quot; yazar. Bu şu demektir: aynı adresi yüz kez daha isteseniz de sonuç değişmez; ya bağlantı yanlış yazılmıştır ya da sayfa kaldırılmıştır. Çözüm bağlantıyı düzeltmek ya da taşınan sayfa için yönlendirme tanımlamaktır.</p>
+      <p><strong>503</strong> yazdığınızda ise sonuç &quot;503 Service Unavailable&quot;, sınıf &quot;5xx – Sunucu hatası&quot;, yeniden deneme satırı &quot;Evet&quot; olur. Bu kod geçici bir durumu anlatır: sunucu o an aşırı yüklüdür ya da bakımdadır. Ziyaretçi açısından yapılacak şey beklemek, site sahibi açısından ise sunucu kaynaklarını ve günlükleri incelemektir.</p>
+
+      <h2>Yönlendirme kodları ve arama motorları</h2>
+      <p>Bir sayfanın adresi değiştiğinde hangi yönlendirme kodunun kullanıldığı önem taşır. <strong>301</strong> ve <strong>308</strong> taşınmanın kalıcı olduğunu bildirir; arama motorları zamanla dizindeki eski adresi yenisiyle değiştirir. <strong>302</strong> ve <strong>307</strong> ise geçicidir; eski adres dizinde kalmaya devam eder. Alan adı değişikliği, HTTP'den HTTPS'ye geçiş ya da adres yapısının yeniden düzenlenmesi gibi kalıcı işlerde geçici kod kullanmak sık yapılan bir hatadır.</p>
+      <p>301 ile 308, 302 ile 307 arasındaki fark istek yöntemindedir. Eski kodlarda tarayıcılar POST isteğini yönlendirme sonrası GET'e çevirebilir; 307 ve 308 ise yöntemin ve gövdenin aynen korunmasını zorunlu kılar. Form gönderimi ya da API çağrısı yönlendirilecekse bu ayrım belirleyicidir.</p>
+
+      <h2>Sık karıştırılan kodlar</h2>
+      <p><strong>401 ile 403:</strong> 401 &quot;kim olduğunu bilmiyorum, kimliğini doğrula&quot; anlamına gelir; doğru kimlik bilgisiyle yinelenen istek başarılı olabilir. 403 ise &quot;kim olduğunu biliyor olsam da bu kaynağa iznin yok&quot; demektir.</p>
+      <p><strong>404 ile 410:</strong> her ikisi de kaynağın bulunmadığını söyler; 410 buna ek olarak kaldırmanın kalıcı ve bilinçli olduğunu belirtir. Kalıcı olarak silinen içerik için 410 daha açık bir işarettir.</p>
+      <p><strong>502 ile 504:</strong> ikisi de bir vekil ya da yük dengeleyicinin arkasındaki sunucuyla yaşadığı sorunu anlatır. 502'de arka sunucu geçersiz bir yanıt vermiştir; 504'te ise hiç zamanında yanıt vermemiştir.</p>
+      <p>Bir başka yaygın hata, bulunamayan sayfa için 200 koduyla &quot;sayfa bulunamadı&quot; içeriği göstermektir. Ziyaretçi hata metnini görür ama arama motoru sayfayı geçerli sayar; bu durum gereksiz sayfaların dizine girmesine yol açar.</p>
+
+      <h2>Sınırlar</h2>
+      <p>Araç yalnızca standart kayıtta bulunan kodların açıklamasını verir. Bazı sunucu yazılımları, içerik dağıtım ağları ve güvenlik duvarları kendi özel kodlarını döndürür; 100–599 aralığındaki böyle bir kodu yazdığınızda araç sınıfını gösterir ve standartta tanımlı olmadığını belirtir. Özel kodun anlamı için onu üreten yazılımın belgelerine başvurmak gerekir. Açıklamalar genel davranışı özetler; bir kodun belirli bir uygulamada tam olarak neden döndüğünü ancak o sunucunun günlükleri gösterir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>404 hatası ne anlama gelir?</summary><p>404 Not Found, sunucuya ulaşıldığını ama istenen adreste bir kaynak bulunmadığını gösterir. Bağlantı yanlış yazılmış, sayfa silinmiş ya da adresi değişmiş olabilir. Site sahibi taşınan sayfalar için kalıcı yönlendirme tanımlayarak bu hatayı önleyebilir.</p></details>
+        <details><summary>301 ile 302 arasındaki fark nedir?</summary><p>301 kalıcı, 302 geçici yönlendirmedir. Kalıcı yönlendirmede arama motorları eski adres yerine yeni adresi dizine alır; geçici yönlendirmede eski adres geçerliliğini korur. Adres kalıcı olarak değiştiyse 301 kullanılmalıdır.</p></details>
+        <details><summary>500 hatasını nasıl çözerim?</summary><p>500 genel bir sunucu hatasıdır ve nedenini tek başına söylemez. Sunucunun hata günlüğüne bakmak gerekir; çoğu zaman uygulama kodundaki bir hata, eksik bir dosya izni ya da bozuk bir yapılandırma satırı sorumludur. Ziyaretçi tarafında yapılabilecek bir şey yoktur.</p></details>
+        <details><summary>503 hatası kalıcı mıdır?</summary><p>Hayır, 503 geçici bir durumu bildirir: sunucu aşırı yüklüdür ya da bakımdadır. Kısa süreli bakımlarda bu kodu döndürmek, arama motorlarına sayfanın kaldırılmadığını, daha sonra yeniden gelinmesi gerektiğini anlatır.</p></details>
+        <details><summary>Durum kodunu tarayıcıda nasıl görürüm?</summary><p>Tarayıcının geliştirici araçlarını açıp Ağ sekmesine geçin ve sayfayı yenileyin. Listelenen her isteğin karşısında durum kodu yazar. Komut satırında ise yalnızca başlıkları isteyen bir HTTP istemcisiyle yanıtın ilk satırını görebilirsiniz.</p></details>
+        <details><summary>429 kodu aldığımda ne yapmalıyım?</summary><p>429, kısa sürede çok fazla istek gönderdiğiniz anlamına gelir. Yanıtta Retry-After başlığı varsa orada belirtilen süre kadar bekleyin; yoksa istek sıklığını azaltıp aralıkları giderek uzatarak yeniden deneyin.</p></details>
+        <details><summary>Listede olmayan bir kod görürsem?</summary><p>Bazı yazılımlar standart dışı kodlar kullanır. Araç bu kodlar için sınıfı gösterir; ilk hane yine sorunun istemcide mi sunucuda mı olduğunu anlatır. Kesin anlam için kodu döndüren sunucu, vekil ya da güvenlik hizmetinin belgelerine bakın.</p></details>
+        <details><summary>Sorguladığım kodlar kaydediliyor mu?</summary><p>Hayır. Kod tablosu sayfanın içindedir ve sorgu tarayıcınızda yapılır. Yazdığınız değer hiçbir sunucuya gönderilmez; sayfa çevrimdışıyken de çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../url-ayristir/">URL Ayrıştırma (Parçalarına Ayırma)</a></li>
+        <li><a href="../user-agent-coz/">User-Agent Çözümleme</a></li>
+        <li><a href="../mime-turu-bul/">MIME Türü Bulma</a></li>
+        <li><a href="../robots-txt-olustur/">robots.txt Oluşturma</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="http-durum-kodlari-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Standart Sapma Hesaplama – Örneklem (n−1) ve Anakütle (n) Formülü</title>
+  <meta name="description" content="Sayı dizinizin standart sapmasını örneklem (n−1) ya da anakütle (n) formülüyle hesaplayın. Ortalama, varyans, sapma kareleri toplamı ve değişim katsayısı da gösterilir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/standart-sapma-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Standart Sapma Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/standart-sapma-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Standart sapma ile varyans arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Varyans, sapma karelerinin ortalamasıdır; standart sapma ise varyansın kareköküdür. Varyansın birimi verinin biriminin karesiyken standart sapma veriyle aynı birimdedir, bu yüzden yorumlaması daha kolaydır."}},{"@type":"Question","name":"Neden n − 1'e bölünür?","acceptedAnswer":{"@type":"Answer","text":"Örneklemin kendi ortalamasına göre ölçülen sapmalar, anakütlenin gerçek ortalamasına göre olanlardan ortalamada daha küçük çıkar. n yerine n − 1'e bölmek bu eksik tahmini giderir. Bu düzeltmeye Bessel düzeltmesi denir."}},{"@type":"Question","name":"Standart sapma negatif olabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Karelerin toplamı negatif olamayacağından varyans ve onun karekökü olan standart sapma sıfır ya da pozitiftir. Sıfır sonucu bütün değerlerin eşit olduğu anlamına gelir."}},{"@type":"Question","name":"Standart sapmanın büyük ya da küçük olduğuna nasıl karar verilir?","acceptedAnswer":{"@type":"Answer","text":"Tek başına bir eşik yoktur; sonuç ortalamaya ve bağlama göre değerlendirilir. Değişim katsayısı, yani standart sapmanın ortalamaya oranı bu karşılaştırmayı kolaylaştırır."}},{"@type":"Question","name":"Hesap tablosu programlarındaki işlevlerle sonuç uyuşur mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. Hesap tablolarında örneklem ve anakütle için ayrı işlevler bulunur. Bu sayfada \"Örneklem\" seçeneği n − 1'e, \"Anakütle\" seçeneği n'ye bölen işlevle aynı sonucu verir."}},{"@type":"Question","name":"Bütün değerlere aynı sayıyı eklersem standart sapma değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Değişmez. Bütün değerler aynı miktarda kaydığında ortalama da o kadar kayar ve sapmalar aynı kalır. Bütün değerleri bir sayıyla çarparsanız standart sapma o sayının mutlak değeriyle çarpılır."}},{"@type":"Question","name":"Standart hata ile standart sapma aynı mıdır?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Standart sapma tek tek değerlerin yayılımını ölçer. Standart hata ise örneklem ortalamasının ne kadar güvenilir olduğunu gösterir ve standart sapmanın veri sayısının kareköküne bölünmesiyle bulunur."}},{"@type":"Question","name":"Girdiğim veriler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bütün hesap tarayıcınızda yapılır; sayılarınız sunucuya iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Standart Sapma Hesaplama</span> – örneklem ve anakütle</h1>
+      <p class="lead">Verilerinizi yazın ve hesap türünü seçin; araç <strong>standart sapmayı</strong>, yani değerlerin ortalamadan tipik olarak ne kadar uzaklaştığını hesaplar. Örneklem (n−1) ve anakütle (n) formüllerinin ikisi de desteklenir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-sayilar">Sayılar</label><textarea id="f-sayilar" data-field="sayilar" rows="6" spellcheck="false" placeholder="Örn. 2 4 4 4 5 5 7 9"></textarea><div class="hint">Sayıları boşluk, satır sonu ya da noktalı virgülle ayırın. Ondalık için virgül kullanın.</div></div>
+          <div class="ba-field"><label for="f-tur">Hesap türü</label><select id="f-tur" data-field="tur"><option value="orneklem">Örneklem (n − 1'e böl)</option><option value="anakutle">Anakütle (n'ye böl)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="standart-sapma-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Verilerinizi &quot;Sayılar&quot; kutusuna yazın ya da bir tablodan kopyalayıp yapıştırın; sıralı olmaları gerekmez.</li>
+        <li>&quot;Hesap türü&quot; listesinden formülü seçin. Verileriniz daha büyük bir gruptan alınmış bir örnekse &quot;Örneklem&quot;, ilgilendiğiniz grubun tamamıysa &quot;Anakütle&quot; seçeneğini kullanın.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk satır standart sapmayı; alt satırlar varyansı, ortalamayı, sapma kareleri toplamını ve kullanılan böleni gösterir.</li>
+        <li>Elle çözdüğünüz bir soruyu kontrol ediyorsanız ara değerleri karşılaştırın: önce ortalama, sonra sapma kareleri toplamı, en son bölen.</li>
+      </ol>
+
+      <h2>Standart sapma ne anlatır?</h2>
+      <p>Standart sapma, bir veri grubundaki değerlerin aritmetik ortalamanın çevresinde ne kadar dağıldığını tek bir sayıyla özetler. Küçük bir standart sapma değerlerin ortalamaya yakın toplandığını, büyük bir standart sapma ise geniş bir alana yayıldığını gösterir. Bütün değerler aynıysa yayılma yoktur ve standart sapma sıfır çıkar.</p>
+      <p>Ortalama tek başına yanıltıcı olabilir. İki şubenin not ortalaması da 70 olsun; birinde bütün öğrenciler 65 ile 75 arasında, diğerinde 30 ile 100 arasında not almış olabilir. Ortalamalar eşittir ama sınıflar birbirine hiç benzemez. Bu farkı görünür kılan ölçü standart sapmadır. Üstelik verinin kendisiyle aynı birimi taşır: notlar puan cinsindense standart sapma da puandır, boylar santimetre cinsindense santimetredir.</p>
+
+      <h2>Formül ve hesap adımları</h2>
+      <p>Anakütle standart sapması <strong>σ = √( Σ(x − μ)² ÷ n )</strong>, örneklem standart sapması <strong>s = √( Σ(x − x̄)² ÷ (n − 1) )</strong> formülüyle bulunur. İki formül yalnızca bölende ayrılır.</p>
+      <ol>
+        <li>Değerleri toplayıp veri sayısına bölerek aritmetik ortalamayı bulun.</li>
+        <li>Her değerden ortalamayı çıkarın; bu farklara sapma denir.</li>
+        <li>Her sapmanın karesini alın. Kare alma, eksi ve artı sapmaların birbirini götürmesini önler.</li>
+        <li>Kareleri toplayın; sonuç sapma kareleri toplamıdır.</li>
+        <li>Toplamı anakütle için n'ye, örneklem için n − 1'e bölün; bu değer varyanstır.</li>
+        <li>Varyansın karekökünü alın; sonuç standart sapmadır.</li>
+      </ol>
+
+      <div class="ba-ad" data-slot="standart-sapma-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Sekiz değerlik şu diziyi ele alalım: 2, 4, 4, 4, 5, 5, 7, 9. Toplam 40, ortalama 40 ÷ 8 = 5'tir. Sapmalar sırasıyla −3, −1, −1, −1, 0, 0, 2 ve 4; kareleri 9, 1, 1, 1, 0, 0, 4 ve 16 olur. Karelerin toplamı <strong>32</strong>'dir.</p>
+      <p>Bu sekiz değer ilgilendiğimiz grubun tamamıysa 32 ÷ 8 = 4 varyansı elde edilir ve standart sapma √4 = <strong>2</strong> çıkar. Aynı sekiz değer daha büyük bir gruptan alınmış bir örnekse 32 ÷ 7 ≈ 4,5714 bulunur ve standart sapma √4,5714 ≈ <strong>2,1381</strong> olur. Diziyi araca yazıp iki türü sırayla seçerek aynı sonuçları görebilirsiniz.</p>
+
+      <h2>Örneklem mi, anakütle mi?</h2>
+      <p>Elinizdeki veriler hakkında konuştuğunuz grubun tamamını kapsıyorsa anakütle formülü kullanılır. Otuz kişilik bir sınıfın hepsinin sınav notu varsa ve yalnızca o sınıfı betimliyorsanız n'ye bölersiniz.</p>
+      <p>Veriler daha büyük bir gruptan seçilmiş bir parçaysa ve o büyük grup hakkında fikir yürütmek istiyorsanız örneklem formülü gerekir. Bir fabrikada günde binlerce parça üretilirken yirmi tanesini ölçtüyseniz, anket için şehirdeki herkes yerine beş yüz kişiyle görüştüyseniz n − 1'e bölersiniz. Bunun nedeni, örneğin kendi ortalamasına göre hesaplanan sapmaların gerçek anakütle ortalamasına göre olanlardan sistematik biçimde küçük kalmasıdır; n − 1'e bölmek bu eksik tahmini düzeltir ve Bessel düzeltmesi olarak bilinir. Veri sayısı büyüdükçe iki sonuç birbirine yaklaşır. Hangi formülün istendiği belirtilmemişse laboratuvar raporlarında ve araştırma verilerinde çoğunlukla örneklem formülü beklenir.</p>
+
+      <h2>Sonucu yorumlama</h2>
+      <p>Veriler çan eğrisi biçiminde, yani normal dağılıma yakın dağılıyorsa değerlerin yaklaşık yüzde 68'i ortalamanın bir standart sapma, yüzde 95'i iki standart sapma, yüzde 99,7'si üç standart sapma çevresinde yer alır. Araç &quot;Ortalama ± 1 standart sapma&quot; satırında bu ilk aralığı verir. Notları 70, 80 ve 90 olan üç öğrenci için ortalama 80, örneklem standart sapması 10 ve aralık 70 ile 90 arasıdır. Bu oranlar çarpık ya da çok tepeli dağılımlarda geçerli değildir.</p>
+      <p>Farklı birimlerdeki ya da farklı büyüklükteki verilerin yayılımını karşılaştırmak için standart sapmayı ortalamaya bölen <strong>değişim katsayısı</strong> kullanılır. Yukarıdaki sekiz değerlik dizide anakütle standart sapması 2, ortalama 5 olduğundan değişim katsayısı yüzde 40'tır. Ortalama sıfırsa bu oran tanımsız olduğundan satır gösterilmez.</p>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p>Standart sapma uç değerlere duyarlıdır; tek bir aşırı gözlem sonucu belirgin biçimde büyütür. Sonuçlar dört ondalık basamağa yuvarlanarak gösterilir. Bu sayfa öğrenme ve hızlı kontrol amaçlıdır; araştırma, kalite kontrol ya da finansal risk kararlarında yöntemin uygunluğunu bir uzmanla değerlendirin.</p>
+      <ul>
+        <li>Sapmaların karesini almadan toplamak: sapmaların toplamı her zaman sıfırdır, bu yüzden kare alınır.</li>
+        <li>Karekök almayı unutmak: karekök alınmamış değer varyanstır ve birimi verinin biriminin karesidir.</li>
+        <li>Hesap makinesindeki iki tuşu karıştırmak: çoğu makinede biri n'ye, diğeri n − 1'e böler.</li>
+        <li>Tek bir değerle örneklem standart sapması aramak: bölen sıfır olacağından hesaplanamaz ve araç hata verir.</li>
+        <li>Binlik ayırıcı kullanmak: <code>1.250</code> yazımı 1,25 olarak okunur; büyük sayıları bitişik yazın.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Standart sapma ile varyans arasındaki fark nedir?</summary><p>Varyans, sapma karelerinin ortalamasıdır; standart sapma ise varyansın kareköküdür. Varyansın birimi verinin biriminin karesiyken standart sapma veriyle aynı birimdedir, bu yüzden yorumlaması daha kolaydır.</p></details>
+        <details><summary>Neden n − 1'e bölünür?</summary><p>Örneklemin kendi ortalamasına göre ölçülen sapmalar, anakütlenin gerçek ortalamasına göre olanlardan ortalamada daha küçük çıkar. n yerine n − 1'e bölmek bu eksik tahmini giderir. Bu düzeltmeye Bessel düzeltmesi denir.</p></details>
+        <details><summary>Standart sapma negatif olabilir mi?</summary><p>Hayır. Karelerin toplamı negatif olamayacağından varyans ve onun karekökü olan standart sapma sıfır ya da pozitiftir. Sıfır sonucu bütün değerlerin eşit olduğu anlamına gelir.</p></details>
+        <details><summary>Standart sapmanın büyük ya da küçük olduğuna nasıl karar verilir?</summary><p>Tek başına bir eşik yoktur; sonuç ortalamaya ve bağlama göre değerlendirilir. Değişim katsayısı, yani standart sapmanın ortalamaya oranı bu karşılaştırmayı kolaylaştırır.</p></details>
+        <details><summary>Hesap tablosu programlarındaki işlevlerle sonuç uyuşur mu?</summary><p>Evet. Hesap tablolarında örneklem ve anakütle için ayrı işlevler bulunur. Bu sayfada &quot;Örneklem&quot; seçeneği n − 1'e, &quot;Anakütle&quot; seçeneği n'ye bölen işlevle aynı sonucu verir.</p></details>
+        <details><summary>Bütün değerlere aynı sayıyı eklersem standart sapma değişir mi?</summary><p>Değişmez. Bütün değerler aynı miktarda kaydığında ortalama da o kadar kayar ve sapmalar aynı kalır. Bütün değerleri bir sayıyla çarparsanız standart sapma o sayının mutlak değeriyle çarpılır.</p></details>
+        <details><summary>Standart hata ile standart sapma aynı mıdır?</summary><p>Hayır. Standart sapma tek tek değerlerin yayılımını ölçer. Standart hata ise örneklem ortalamasının ne kadar güvenilir olduğunu gösterir ve standart sapmanın veri sayısının kareköküne bölünmesiyle bulunur.</p></details>
+        <details><summary>Girdiğim veriler bir yere gönderiliyor mu?</summary><p>Hayır. Bütün hesap tarayıcınızda yapılır; sayılarınız sunucuya iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../varyans-hesapla/">Varyans Hesaplama</a></li>
+        <li><a href="../ortalama-hesapla/">Ortalama Hesaplama (Aritmetik, Ağırlıklı, Geometrik)</a></li>
+        <li><a href="../istatistik-hesapla/">Ortalama, Medyan, Mod, Standart Sapma Hesaplama</a></li>
+        <li><a href="../z-skoru-hesapla/">Z Skoru Hesaplama</a></li>
+        <li><a href="../degisim-katsayisi-hesapla/">Değişim Katsayısı Hesaplama</a></li>
+        <li><a href="../medyan-hesapla/">Medyan (Ortanca) Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="standart-sapma-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

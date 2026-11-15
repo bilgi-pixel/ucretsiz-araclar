@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Müşteri Yaşam Boyu Değeri (CLV, LTV) Hesaplama – Formül ve Örnek</title>
+  <meta name="description" content="Ortalama sipariş tutarı, satın alma sıklığı, müşteri ömrü ve kâr marjından müşteri yaşam boyu değerini (CLV/LTV) ve LTV:CAC oranını hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/musteri-yasam-boyu-degeri-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Müşteri Yaşam Boyu Değeri Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/musteri-yasam-boyu-degeri-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"CLV ile LTV arasında fark var mı?","acceptedAnswer":{"@type":"Answer","text":"Uygulamada ikisi aynı kavram için kullanılır. CLV \"customer lifetime value\", LTV ise \"lifetime value\" ifadesinin kısaltmasıdır; Türkçede müşteri yaşam boyu değeri ya da müşteri ömür boyu değeri olarak karşılanır."}},{"@type":"Question","name":"Müşteri yaşam boyu değeri nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Ortalama sipariş tutarı, yıllık satın alma sayısı ve yıl olarak müşteri ömrü çarpılır; sonuç brüt kâr marjıyla çarpılarak kâr bazlı değere çevrilir. 500 TL × 4 × 3 yıl × %30 = 1.800 TL."}},{"@type":"Question","name":"Neden brüt kâr marjı kullanılıyor?","acceptedAnswer":{"@type":"Answer","text":"Ciro, işletmenin elinde kalan para değildir. Bir müşteriyi kazanmak için ne kadar harcayabileceğinizi görmek istiyorsanız, o müşterinin satışlarından ürün maliyeti düşüldükten sonra kalan tutarı bilmeniz gerekir."}},{"@type":"Question","name":"Abonelik işinde hangi değerleri girmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Sipariş tutarına aylık abonelik ücretini, yıllık satın alma sayısına 12 yazın. Müşteri ömrü için 1'i aylık kayıp oranına bölüp çıkan ay sayısını 12'ye bölerek yıla çevirin."}},{"@type":"Question","name":"İyi bir LTV:CAC oranı kaçtır?","acceptedAnswer":{"@type":"Answer","text":"Kesin bir sınır yoktur; sektöre, marja ve büyüme hedefine göre değişir. 1'in altı zarar demektir. 3 : 1 civarı sıkça sağlıklı bir düzey olarak anılır, ancak geri dönüş süresi ve nakit durumuyla birlikte değerlendirilmelidir."}},{"@type":"Question","name":"Geri dönüş süresi nasıl hesaplanıyor?","acceptedAnswer":{"@type":"Answer","text":"Müşteri edinme maliyeti, müşterinin aylık brüt kârına bölünür. Aylık brüt kâr, yıllık brüt kârın on ikide biridir. 600 TL edinme maliyeti ve ayda 50 TL brüt kâr ile süre 12 aydır."}},{"@type":"Question","name":"Yeni kurulan bir işletme bu hesabı yapabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, ancak sonuç tahmine dayanır. İlk aylardaki tekrar satın alma ve kayıp verilerinden hareketle bir müşteri ömrü varsayın, hesabı temkinli değerlerle yapın ve veri biriktikçe güncelleyin."}},{"@type":"Question","name":"Girdiğim rakamlar bir yerde saklanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tarayıcınızda gerçekleşir; satış ve maliyet bilgileriniz sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#finans" class="ba-nav-optional">Finans</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#finans">Finans</a></li></ol>
+      <h1><span class="ba-grad">Müşteri Yaşam Boyu Değeri Hesaplama</span> – CLV / LTV</h1>
+      <p class="lead">Ortalama bir müşterinin sizinle çalıştığı süre boyunca işletmenize kazandırdığı toplam brüt kârı, yani <strong>müşteri yaşam boyu değerini</strong> hesaplayın. Müşteri edinme maliyetinizi de yazarsanız LTV:CAC oranını ve geri ödeme süresini görürsünüz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-sepet">Ortalama sipariş tutarı (TL)</label><input id="f-sepet" data-field="sepet" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 500"></div>
+          <div class="ba-field"><label for="f-siklik">Yıllık satın alma sayısı</label><input id="f-siklik" data-field="siklik" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 4"><div class="hint">Bir müşterinin yılda ortalama kaç sipariş verdiği. Aylık abonelik için 12.</div></div>
+          <div class="ba-field"><label for="f-omur">Ortalama müşteri ömrü (yıl)</label><input id="f-omur" data-field="omur" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 3"></div>
+          <div class="ba-field"><label for="f-marj">Brüt kâr marjı (%)</label><input id="f-marj" data-field="marj" type="text" inputmode="decimal" autocomplete="off" value="100"><div class="hint">100 bırakırsanız sonuç ciro üzerinden hesaplanır.</div></div>
+          <div class="ba-field"><label for="f-cac">Müşteri edinme maliyeti (TL)</label><input id="f-cac" data-field="cac" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 600"><div class="hint">İsteğe bağlı; LTV:CAC oranı için.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="musteri-yasam-boyu-degeri-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Ortalama sipariş tutarını yazın: belirli bir dönemin toplam cirosunu aynı dönemdeki sipariş sayısına bölerek bulabilirsiniz.</li>
+        <li>Bir müşterinin yılda ortalama kaç kez alışveriş yaptığını girin. Aylık abonelikte 12, yılda bir yenilenen hizmette 1 yazın.</li>
+        <li>Müşterinin sizden alışveriş yapmayı sürdürdüğü ortalama süreyi yıl olarak yazın. Bilmiyorsanız 1'i yıllık müşteri kayıp oranınıza bölün (%25 kayıp için 1 ÷ 0,25 = 4 yıl).</li>
+        <li>Sonucun ciro yerine kâr üzerinden çıkması için brüt kâr marjınızı girin; isterseniz müşteri edinme maliyetinizi de ekleyin.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın ve LTV:CAC oranını pazarlama bütçenizi değerlendirmek için kullanın.</li>
+      </ol>
+
+      <h2>Müşteri yaşam boyu değeri nedir?</h2>
+      <p>Müşteri yaşam boyu değeri (İngilizce kısaltmalarıyla CLV ya da LTV), bir müşterinin ilk alışverişinden sizi bırakana kadar geçen sürede işletmenize sağlaması beklenen toplam değerdir. Tek bir satışa değil ilişkinin bütününe bakar. İlk siparişte 500 TL harcayan bir müşteri, üç yıl boyunca yılda dört kez alışveriş yapıyorsa aslında 6.000 TL'lik bir ciroyu temsil eder.</p>
+      <p>Bu bakış, pazarlama kararlarını kökten değiştirir. İlk satıştan zarar etmek bile, müşteri sonraki alışverişleriyle bu maliyeti fazlasıyla çıkarıyorsa mantıklı olabilir. Tersine, bir kez alıp bir daha uğramayan müşterilere yüksek edinme maliyeti ödemek, satış rakamları iyi görünse de işletmeyi yavaş yavaş eritir.</p>
+
+      <h2>Hesaplama formülü</h2>
+      <p>Araç en yaygın ve anlaşılır modeli kullanır:</p>
+      <p><strong>CLV = ortalama sipariş tutarı × yıllık satın alma sayısı × müşteri ömrü (yıl) × brüt kâr marjı</strong></p>
+      <p>İlk üç çarpan müşterinin yaşam boyu cirosunu verir. Brüt kâr marjı ile çarpmak, bu cironun ne kadarının ürün maliyeti düşüldükten sonra elinizde kaldığını gösterir. Marjı %100 bırakırsanız sonuç ciro bazlı yaşam boyu değerdir; ancak pazarlama bütçesi kârdan karşılandığı için karar verirken kâr bazlı değeri esas almak daha sağlıklıdır.</p>
+
+      <div class="ba-ad" data-slot="musteri-yasam-boyu-degeri-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Bir internet mağazasında ortalama sipariş tutarı 500 TL, müşteriler yılda ortalama 4 sipariş veriyor ve ortalama 3 yıl alışverişe devam ediyor. Brüt kâr marjı %30 olsun. Müşteri başına yıllık ciro 500 × 4 = 2.000 TL, yaşam boyu ciro 2.000 × 3 = 6.000 TL ve müşteri yaşam boyu değeri 6.000 × 0,30 = <strong>1.800 TL</strong> olur.</p>
+      <p>Mağaza bir müşteri kazanmak için ortalama 600 TL harcıyorsa LTV:CAC oranı 1.800 ÷ 600 = <strong>3 : 1</strong>'dir; edinme maliyeti düşüldükten sonra müşteri başına 1.200 TL kalır. Müşteri yılda 600 TL, ayda 50 TL brüt kâr bıraktığı için 600 TL'lik edinme maliyeti 12 ayda geri döner.</p>
+
+      <h2>Müşteri ömrü nasıl tahmin edilir?</h2>
+      <p>Yeni kurulan bir işletmede müşterilerin kaç yıl kalacağını gözlemlemek mümkün değildir. Bu durumda kayıp oranından (churn) yararlanılır: <strong>ortalama müşteri ömrü = 1 ÷ dönemlik kayıp oranı</strong>. Yıl başındaki müşterilerin %25'i yıl içinde alışverişi bırakıyorsa ortalama ömür 1 ÷ 0,25 = 4 yıldır. Aylık kayıp oranı %5 olan bir abonelik hizmetinde ortalama ömür 1 ÷ 0,05 = 20 ay, yani yaklaşık 1,67 yıl eder.</p>
+      <p>Bu ilişki kayıp oranındaki küçük iyileşmelerin neden bu kadar değerli olduğunu da gösterir: aylık kaybı %5'ten %4'e indirmek ortalama ömrü 20 aydan 25 aya çıkarır ve yaşam boyu değeri dörtte bir oranında artırır.</p>
+
+      <h2>LTV:CAC oranı nasıl yorumlanır?</h2>
+      <p>Oran, bir müşteriyi kazanmak için harcanan her 1 TL'nin karşılığında kaç TL brüt kâr elde edildiğini gösterir. 1'in altındaki oran, her yeni müşteride para kaybedildiği anlamına gelir. 1 ile 3 arası, edinme maliyetinin çıkarıldığını ama genel giderler ve kâr için dar bir pay kaldığını gösterir. Girişimcilik ve yazılım çevrelerinde 3 : 1 düzeyi sıklıkla sağlıklı kabul edilen bir eşik olarak anılır; ancak bu bir kural değil, kabaca bir pusuladır. Çok yüksek oranlar ise büyüme fırsatının kaçırıldığına, pazarlamaya daha fazla yatırım yapılabileceğine işaret edebilir.</p>
+      <p>Oranla birlikte geri dönüş süresine de bakın. Kâğıt üzerinde yüksek bir yaşam boyu değer, edinme maliyeti iki yılda geri dönüyorsa nakit sıkıntısı yaratabilir; çünkü harcama bugün yapılır, kazanç yıllara yayılır.</p>
+
+      <h2>Yaşam boyu değeri artırmanın yolları</h2>
+      <ul>
+        <li><strong>Sepet tutarını büyütmek:</strong> tamamlayıcı ürün önerileri, paket teklifler, ücretsiz kargo eşiği.</li>
+        <li><strong>Satın alma sıklığını artırmak:</strong> hatırlatma mesajları, yeniden sipariş kolaylığı, abonelik seçeneği, sadakat programı.</li>
+        <li><strong>Müşteri ömrünü uzatmak:</strong> satış sonrası destek, sorunların hızlı çözümü, düzenli iletişim, ayrılma sinyali veren müşterilere özel teklif.</li>
+        <li><strong>Marjı iyileştirmek:</strong> tedarik maliyetlerini düşürmek, iade oranını azaltmak, düşük marjlı ürünlerin sepetteki payını dengelemek.</li>
+      </ul>
+
+      <h2>Sınırlar ve dikkat edilecekler</h2>
+      <p>Bu basit model ortalamalarla çalışır ve her yılın birbirinin aynı olduğunu varsayar. Gerçekte müşterilerin bir bölümü ilk aylarda ayrılır, kalanların harcaması zamanla değişir. Ortalama tek bir sayı olsa da müşteri grupları arasında büyük fark olabilir; mümkünse kazanım kanalına ya da ürün grubuna göre ayrı ayrı hesaplayın. Model, gelecekte elde edilecek paranın bugünkü değerinin daha düşük olduğunu da (iskonto) hesaba katmaz; müşteri ömrü uzadıkça ve enflasyon yükseldikçe bu etki büyür.</p>
+      <p>İadeler, iptaller, ödeme komisyonları ve müşteri hizmetleri giderleri marja yansıtılmadıysa sonuç olduğundan iyimser çıkar. Hesaplama bilgilendirme amaçlıdır; yatırım ve bütçe kararlarında tek başına dayanak yapılmamalıdır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>CLV ile LTV arasında fark var mı?</summary><p>Uygulamada ikisi aynı kavram için kullanılır. CLV &quot;customer lifetime value&quot;, LTV ise &quot;lifetime value&quot; ifadesinin kısaltmasıdır; Türkçede müşteri yaşam boyu değeri ya da müşteri ömür boyu değeri olarak karşılanır.</p></details>
+        <details><summary>Müşteri yaşam boyu değeri nasıl hesaplanır?</summary><p>Ortalama sipariş tutarı, yıllık satın alma sayısı ve yıl olarak müşteri ömrü çarpılır; sonuç brüt kâr marjıyla çarpılarak kâr bazlı değere çevrilir. 500 TL × 4 × 3 yıl × %30 = 1.800 TL.</p></details>
+        <details><summary>Neden brüt kâr marjı kullanılıyor?</summary><p>Ciro, işletmenin elinde kalan para değildir. Bir müşteriyi kazanmak için ne kadar harcayabileceğinizi görmek istiyorsanız, o müşterinin satışlarından ürün maliyeti düşüldükten sonra kalan tutarı bilmeniz gerekir.</p></details>
+        <details><summary>Abonelik işinde hangi değerleri girmeliyim?</summary><p>Sipariş tutarına aylık abonelik ücretini, yıllık satın alma sayısına 12 yazın. Müşteri ömrü için 1'i aylık kayıp oranına bölüp çıkan ay sayısını 12'ye bölerek yıla çevirin.</p></details>
+        <details><summary>İyi bir LTV:CAC oranı kaçtır?</summary><p>Kesin bir sınır yoktur; sektöre, marja ve büyüme hedefine göre değişir. 1'in altı zarar demektir. 3 : 1 civarı sıkça sağlıklı bir düzey olarak anılır, ancak geri dönüş süresi ve nakit durumuyla birlikte değerlendirilmelidir.</p></details>
+        <details><summary>Geri dönüş süresi nasıl hesaplanıyor?</summary><p>Müşteri edinme maliyeti, müşterinin aylık brüt kârına bölünür. Aylık brüt kâr, yıllık brüt kârın on ikide biridir. 600 TL edinme maliyeti ve ayda 50 TL brüt kâr ile süre 12 aydır.</p></details>
+        <details><summary>Yeni kurulan bir işletme bu hesabı yapabilir mi?</summary><p>Evet, ancak sonuç tahmine dayanır. İlk aylardaki tekrar satın alma ve kayıp verilerinden hareketle bir müşteri ömrü varsayın, hesabı temkinli değerlerle yapın ve veri biriktikçe güncelleyin.</p></details>
+        <details><summary>Girdiğim rakamlar bir yerde saklanıyor mu?</summary><p>Hayır. Hesaplama tarayıcınızda gerçekleşir; satış ve maliyet bilgileriniz sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../musteri-edinme-maliyeti-hesapla/">Müşteri Edinme Maliyeti Hesaplama</a></li>
+        <li><a href="../reklam-getirisi-hesapla/">Reklam Harcaması Getirisi (ROAS) Hesaplama</a></li>
+        <li><a href="../donusum-orani-hesapla/">Dönüşüm Oranı Hesaplama</a></li>
+        <li><a href="../yatirim-getirisi-hesapla/">Yatırım Getirisi (ROI) Hesaplama</a></li>
+        <li><a href="../geri-odeme-suresi-hesapla/">Yatırımın Geri Ödeme Süresi Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="musteri-yasam-boyu-degeri-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

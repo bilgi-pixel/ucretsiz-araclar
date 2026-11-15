@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>URL Ayrıştırma – Adresi Şema, Host, Yol ve Sorguya Ayırma</title>
+  <meta name="description" content="Bir web adresini parçalarına ayırın: şema, kullanıcı bilgisi, ana makine, port, yol, sorgu parametreleri ve parça. Parametreler çözülmüş olarak listelenir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/url-ayristir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"URL Ayrıştırma (Parçalarına Ayırma) – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/url-ayristir/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"URL ile alan adı aynı şey midir?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Alan adı yalnızca ana makine bölümüdür (örneğin ornek.com). URL ise şema, yol, sorgu ve parça gibi bölümleri de içeren tam adrestir."}},{"@type":"Question","name":"Sorgu dizesi ile parça arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Sorgu dizesi soru işaretinden sonra gelir ve sunucuya gönderilir; sayfa içeriğini etkileyebilir. Parça diyez işaretinden sonra gelir, sunucuya gönderilmez ve yalnızca tarayıcıda sayfa içi konumlanma ya da istemci tarafı gezinme için kullanılır."}},{"@type":"Question","name":"Adresteki %20, %C3%A7 gibi ifadeler ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Bunlar yüzde kodlamasıdır. Adreslerde doğrudan yazılamayan boşluk ve Türkçe harfler gibi karakterler, UTF-8 baytlarının onaltılık değeriyle yazılır. %20 boşluk, %C3%A7 ise \"ç\" harfidir. Araç parametreleri ve yolu çözülmüş hâliyle de gösterir."}},{"@type":"Question","name":"Port satırında neden \"varsayılan\" yazıyor?","acceptedAnswer":{"@type":"Answer","text":"Adreste port belirtilmediğinde tarayıcı şemanın standart portunu kullanır: http için 80, https için 443. Araç bu değeri bilgi amaçlı gösterir; adresin kendisinde port yazmadığını belirtmek için notu ekler."}},{"@type":"Question","name":"Aynı parametre iki kez geçerse ne olur?","acceptedAnswer":{"@type":"Answer","text":"Araç ikisini de sırasıyla listeler. Hangisinin kullanılacağı sunucu tarafındaki yazılıma göre değişir; bazıları ilkini, bazıları sonuncuyu alır, bazıları ikisini bir dizi olarak yorumlar."}},{"@type":"Question","name":"Şema yazmadan adres girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Adres bir şemayla başlamıyorsa araç https ile başlıyormuş gibi yorumlar ve bunu sonuçta \"(varsayıldı)\" notuyla belirtir."}},{"@type":"Question","name":"Türkçe karakterli alan adı neden xn-- ile başlıyor?","acceptedAnswer":{"@type":"Answer","text":"Alan adı sistemi yalnızca sınırlı bir karakter kümesini taşır. Türkçe harf içeren adlar Punycode adlı yöntemle bu kümeye çevrilir ve xn-- önekiyle yazılır. Tarayıcı adres çubuğunda çoğunlukla özgün yazımı gösterir, arka planda bu biçimi kullanır."}},{"@type":"Question","name":"Yapıştırdığım adres bir yere gönderiliyor ya da ziyaret ediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Ayrıştırma tarayıcınızda yapılır; adres sunucuya iletilmez, açılmaz ve saklanmaz. Bu sayede içinde oturum bilgisi ya da kişisel veri bulunan adresleri de güvenle inceleyebilirsiniz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">URL Ayrıştırma (Parçalarına Ayırma)</span> – şema, host, yol, sorgu</h1>
+      <p class="lead">Uzun bir web adresini yapıştırın; araç onu <strong>şema, ana makine, port, yol, sorgu dizesi ve parça</strong> bölümlerine ayırsın. Sorgu parametreleri yüzde kodlaması çözülmüş hâlde, sırasıyla listelenir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-adres">Adres (URL)</label><textarea id="f-adres" data-field="adres" rows="3" spellcheck="false" placeholder="Örn. ornek.com:8080/urunler/ayakkabi?renk=mavi&amp;beden=42#yorumlar"></textarea><div class="hint">Şema yazmazsanız adres https ile başlıyormuş gibi yorumlanır.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Ayrıştır</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="url-ayristir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>İncelemek istediğiniz adresi tarayıcının adres çubuğundan ya da bir belgeden kopyalayıp kutuya yapıştırın.</li>
+        <li>&quot;Ayrıştır&quot; düğmesine basın. Adresin her bölümü ayrı bir satırda gösterilir; bulunmayan bölümler tire ile işaretlenir.</li>
+        <li>Sorgu parametreleri varsa alttaki metin kutusunda numaralı liste olarak, yüzde kodlaması çözülmüş hâlde görünür.</li>
+        <li>İhtiyacınız olan parçayı seçip kopyalayın ya da &quot;Sonucu kopyala&quot; ile tüm dökümü panoya alın.</li>
+      </ol>
+
+      <h2>Bir URL hangi parçalardan oluşur?</h2>
+      <p>URL, internetteki bir kaynağın adresidir ve belirli bir sırayla dizilmiş bölümlerden oluşur. Genel kalıp şöyledir: şema, iki nokta ve iki eğik çizgi, isteğe bağlı kullanıcı bilgisi, ana makine, isteğe bağlı port, yol, soru işaretiyle başlayan sorgu ve diyez işaretiyle başlayan parça. Tam bir örnek: <code>ftp://kullanici:gizli@dosya.ornek.com:21/pub/rapor.pdf</code>. Web sayfalarında şema olarak <code>http</code> ya da <code>https</code> kullanılır, yapı aynıdır.</p>
+      <ul>
+        <li><strong>Şema:</strong> kaynağa hangi protokolle ulaşılacağını söyler (http, https, ftp, mailto gibi).</li>
+        <li><strong>Kullanıcı bilgisi:</strong> ana makineden önce, @ işaretine kadar yazılan kullanıcı adı ve parola. Günümüzde web adreslerinde kullanılması önerilmez.</li>
+        <li><strong>Ana makine (host):</strong> alan adı ya da IP adresi. Büyük-küçük harfe duyarlı değildir.</li>
+        <li><strong>Port:</strong> sunucudaki kapı numarası. Yazılmazsa şemanın varsayılanı geçerlidir.</li>
+        <li><strong>Yol:</strong> sunucudaki kaynağın konumu; eğik çizgilerle bölünür ve çoğu sunucuda harf büyüklüğüne duyarlıdır.</li>
+        <li><strong>Sorgu dizesi:</strong> soru işaretinden sonra gelen <code>anahtar=değer</code> çiftleri; çiftler <code>&amp;</code> ile ayrılır.</li>
+        <li><strong>Parça (fragment):</strong> diyezden sonra gelen bölüm. Sunucuya gönderilmez; tarayıcı sayfa içinde ilgili yere gitmek için kullanır.</li>
+      </ul>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Bir alışveriş sitesinden kopyalanmış şu adresi düşünün: şema <code>https</code>, ardından <code>ornek.com:8080/urunler/ayakkabi?renk=mavi&amp;beden=42#yorumlar</code>. Araç bu adresi şöyle ayırır: ana makine <code>ornek.com</code>, port <code>8080</code>, yol <code>/urunler/ayakkabi</code>, sorgu dizesi <code>renk=mavi&amp;beden=42</code>, parça <code>yorumlar</code>. Parametre sayısı 2'dir ve liste &quot;renk = mavi&quot;, &quot;beden = 42&quot; satırlarını içerir.</p>
+      <p>Kodlanmış bir arama adresi için: <code>ornek.com/arama?q=mavi%20ayakkab%C4%B1&amp;sayfa=2</code>. Şema yazılmadığı için araç https varsayar ve portu &quot;443 (varsayılan)&quot; olarak gösterir. Sorgudaki <code>%20</code> boşluğa, <code>%C4%B1</code> ise &quot;ı&quot; harfine çevrilir; listede &quot;q = mavi ayakkabı&quot; ve &quot;sayfa = 2&quot; görürsünüz.</p>
+
+      <div class="ba-ad" data-slot="url-ayristir-b" aria-label="Reklam"></div>
+
+      <h2>Varsayılan portlar</h2>
+      <p>Adreste port yazmıyorsa tarayıcı şemaya göre standart portu kullanır. Araç bu durumda portu &quot;(varsayılan)&quot; notuyla gösterir. Sık karşılaşılan değerler:</p>
+      <ul>
+        <li><strong>http</strong> ve <strong>ws</strong>: 80</li>
+        <li><strong>https</strong> ve <strong>wss</strong>: 443</li>
+        <li><strong>ftp</strong>: 21</li>
+      </ul>
+
+      <h2>Düzgünleştirme neleri değiştirir?</h2>
+      <p>Araç adresi tarayıcıların kullandığı URL standardına göre okur ve son satırda düzgünleştirilmiş biçimini verir. Bu sırada birkaç şey olur: şema ve ana makine küçük harfe çevrilir, yoldaki <code>.</code> ve <code>..</code> parçaları sadeleştirilir (örneğin <code>/a/b/../c/./d.html</code> yolu <code>/a/c/d.html</code> olur), şemanın varsayılan portu açıkça yazılmışsa atılır ve yol boşsa tek bir eğik çizgi eklenir. Türkçe karakter içeren alan adları, alan adı sisteminin anlayacağı <code>xn--</code> ile başlayan Punycode biçimine dönüştürülür.</p>
+      <p>Sorgu dizesindeki sıra ve yinelenen anahtarlar korunur. Aynı anahtar birden fazla kez geçiyorsa hepsi ayrı satırda listelenir; hangisinin geçerli sayılacağı adresi işleyen sunucu yazılımına bağlıdır.</p>
+
+      <h2>Ne zaman işinize yarar?</h2>
+      <p>Reklam ve bülten bağlantılarındaki izleme parametrelerini ayıklarken, bir API isteğinde hangi değerlerin gönderildiğini kontrol ederken, yönlendirme kurallarını yazmadan önce yolun tam hâlini görmek isterken ya da bir hata kaydındaki adresi okunur hâle getirirken ayrıştırma büyük kolaylık sağlar. Müşteriden gelen &quot;sayfa açılmıyor&quot; bildirimlerinde adresin içindeki yanlış kodlanmış bir karakteri ya da eksik bir parametreyi bulmak da çoğu zaman adresi parçalarına ayırmakla başlar.</p>
+      <p>Güvenlik açısından da yararlıdır: şüpheli bir bağlantıda gerçek ana makinenin hangisi olduğunu görmek için @ işaretinden sonraki bölüme bakılır. Kullanıcı bilgisi alanına tanıdık bir site adı yazılıp asıl hedefin gizlenmesi bilinen bir aldatma yöntemidir; araç ana makineyi ayrı satırda gösterdiği için bu fark hemen anlaşılır.</p>
+
+      <h2>Sınırlar</h2>
+      <p>Araç adresi yalnızca metin olarak çözümler; adrese bağlanmaz, sayfanın var olup olmadığını ya da nereye yönlendirdiğini denetlemez. Alan adını &quot;alt alan adı&quot; ve &quot;kayıtlı alan adı&quot; olarak bölmez, çünkü bunun için güncel bir uzantı listesi gerekir. Şemasız girdilerde https varsayılır; göreli yollar (örneğin yalnızca <code>/urunler</code>) tam adres olmadığından anlamlı biçimde ayrıştırılamaz. Sorgudaki artı işareti, form kodlamasına uygun olarak boşluk kabul edilir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>URL ile alan adı aynı şey midir?</summary><p>Hayır. Alan adı yalnızca ana makine bölümüdür (örneğin ornek.com). URL ise şema, yol, sorgu ve parça gibi bölümleri de içeren tam adrestir.</p></details>
+        <details><summary>Sorgu dizesi ile parça arasındaki fark nedir?</summary><p>Sorgu dizesi soru işaretinden sonra gelir ve sunucuya gönderilir; sayfa içeriğini etkileyebilir. Parça diyez işaretinden sonra gelir, sunucuya gönderilmez ve yalnızca tarayıcıda sayfa içi konumlanma ya da istemci tarafı gezinme için kullanılır.</p></details>
+        <details><summary>Adresteki %20, %C3%A7 gibi ifadeler ne anlama gelir?</summary><p>Bunlar yüzde kodlamasıdır. Adreslerde doğrudan yazılamayan boşluk ve Türkçe harfler gibi karakterler, UTF-8 baytlarının onaltılık değeriyle yazılır. %20 boşluk, %C3%A7 ise &quot;ç&quot; harfidir. Araç parametreleri ve yolu çözülmüş hâliyle de gösterir.</p></details>
+        <details><summary>Port satırında neden &quot;varsayılan&quot; yazıyor?</summary><p>Adreste port belirtilmediğinde tarayıcı şemanın standart portunu kullanır: http için 80, https için 443. Araç bu değeri bilgi amaçlı gösterir; adresin kendisinde port yazmadığını belirtmek için notu ekler.</p></details>
+        <details><summary>Aynı parametre iki kez geçerse ne olur?</summary><p>Araç ikisini de sırasıyla listeler. Hangisinin kullanılacağı sunucu tarafındaki yazılıma göre değişir; bazıları ilkini, bazıları sonuncuyu alır, bazıları ikisini bir dizi olarak yorumlar.</p></details>
+        <details><summary>Şema yazmadan adres girebilir miyim?</summary><p>Evet. Adres bir şemayla başlamıyorsa araç https ile başlıyormuş gibi yorumlar ve bunu sonuçta &quot;(varsayıldı)&quot; notuyla belirtir.</p></details>
+        <details><summary>Türkçe karakterli alan adı neden xn-- ile başlıyor?</summary><p>Alan adı sistemi yalnızca sınırlı bir karakter kümesini taşır. Türkçe harf içeren adlar Punycode adlı yöntemle bu kümeye çevrilir ve xn-- önekiyle yazılır. Tarayıcı adres çubuğunda çoğunlukla özgün yazımı gösterir, arka planda bu biçimi kullanır.</p></details>
+        <details><summary>Yapıştırdığım adres bir yere gönderiliyor ya da ziyaret ediliyor mu?</summary><p>Hayır. Ayrıştırma tarayıcınızda yapılır; adres sunucuya iletilmez, açılmaz ve saklanmaz. Bu sayede içinde oturum bilgisi ya da kişisel veri bulunan adresleri de güvenle inceleyebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../sorgu-dizesi-coz/">Sorgu Dizesi (Query String) Çözme</a></li>
+        <li><a href="../url-kodla/">URL Kodla / Çöz ve Metin Kodlama Araçları</a></li>
+        <li><a href="../utm-link-olustur/">UTM Bağlantısı Oluşturma</a></li>
+        <li><a href="../punycode-cevir/">Punycode (Türkçe Alan Adı) Çevirici</a></li>
+        <li><a href="../port-numarasi-bul/">Port Numarası Sorgulama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="url-ayristir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

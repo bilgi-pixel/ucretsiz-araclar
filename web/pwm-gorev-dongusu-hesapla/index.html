@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>PWM Görev Döngüsü (Duty Cycle) Hesaplama – Süre ve Gerilim</title>
+  <meta name="description" content="PWM frekansı ve görev döngüsünden periyodu, açık ve kapalı süreleri, ortalama ve etkin (RMS) gerilimi ve sayaç karşılaştırma değerini hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/pwm-gorev-dongusu-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"PWM Görev Döngüsü Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/pwm-gorev-dongusu-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Yüzde 50 görev döngüsü ne demek?","acceptedAnswer":{"@type":"Answer","text":"Sinyal her periyodun yarısında açık, yarısında kapalıdır. Ortalama gerilim tepe gerilimin yarısı olur; 5 V bir sinyalde 2,5 V. Dirençli bir yük tam gücünün yarısını alır."}},{"@type":"Question","name":"PWM ile gerçekten analog gerilim üretilir mi?","acceptedAnswer":{"@type":"Answer","text":"Çıkış aslında hâlâ kare dalgadır. Bir direnç ve kondansatörden oluşan alçak geçiren filtre eklenirse dalgalanması azaltılmış, ortalama değere yakın bir gerilim elde edilir. Filtrenin kesim frekansı PWM frekansının epeyce altında seçilmelidir."}},{"@type":"Question","name":"8 bit PWM'de yüzde 25 için hangi değeri yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"255 × 0,25 = 63,75 olduğundan en yakın tam sayı 64'tür. Bu değer yaklaşık yüzde 25,1 görev döngüsü verir."}},{"@type":"Question","name":"Frekansı değiştirmek parlaklığı ya da hızı etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"İdeal durumda hayır; ortalama değeri yalnızca görev döngüsü belirler. Frekans titreşimi, sesi ve anahtarlama kayıplarını etkiler. Çok yüksek frekanslarda sürücünün geçiş süreleri belirginleşir ve gerçekleşen oran sapabilir."}},{"@type":"Question","name":"Servo motor için görev döngüsünü nasıl hesaplarım?","acceptedAnswer":{"@type":"Answer","text":"Darbe genişliğini periyoda bölüp 100 ile çarpın. 50 Hz'de periyot 20 ms'dir; 1 ms darbe yüzde 5, 1,5 ms darbe yüzde 7,5, 2 ms darbe yüzde 10 eder."}},{"@type":"Question","name":"Multimetre PWM çıkışında neden farklı bir değer gösteriyor?","acceptedAnswer":{"@type":"Answer","text":"Doğru akım kademesindeki multimetreler ortalama gerilimi gösterir. Yük bağlıyken gerilim düşümü, ölçü aletinin örnekleme hızı ve düşük seviyenin tam 0 V olmaması okumayı hesaplanan değerden saptırabilir."}},{"@type":"Question","name":"Görev döngüsü yüzde 0 ya da 100 olabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Yüzde 0 çıkışın sürekli kapalı, yüzde 100 sürekli açık olduğu durumdur; bu uçlarda anahtarlama yapılmaz ve sinyal doğru akıma dönüşür."}},{"@type":"Question","name":"Yazdığım değerler bir yere kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; girdiğiniz değerler sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#elektrik" class="ba-nav-optional">Elektrik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#elektrik">Elektrik</a></li></ol>
+      <h1><span class="ba-grad">PWM Görev Döngüsü Hesaplama</span> – duty cycle, süre ve ortalama gerilim</h1>
+      <p class="lead">PWM sinyalinin frekansını ve görev döngüsünü (duty cycle) yüzde olarak yazın. Araç <strong>periyodu, açık ve kapalı süreleri, ortalama ve etkin gerilimi</strong> ve seçtiğiniz bit çözünürlüğü için sayaç karşılaştırma değerini hesaplar.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-frekans">Frekans (Hz)</label><input id="f-frekans" data-field="frekans" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1000"><div class="hint">Binlik ayraç kullanmayın: 20 kHz için 20000 yazın.</div></div>
+          <div class="ba-field"><label for="f-gorev">Görev döngüsü (%)</label><input id="f-gorev" data-field="gorev" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 25"></div>
+          <div class="ba-field"><label for="f-gerilim">Tepe gerilimi (V)</label><input id="f-gerilim" data-field="gerilim" type="text" inputmode="decimal" autocomplete="off" value="5"></div>
+          <div class="ba-field"><label for="f-bit">PWM çözünürlüğü (bit)</label><input id="f-bit" data-field="bit" type="text" inputmode="decimal" autocomplete="off" value="8"></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="pwm-gorev-dongusu-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>PWM sinyalinin frekansını hertz olarak yazın. Kilohertz cinsinden biliyorsanız 1000 ile çarpın: 20 kHz için 20000.</li>
+        <li>Görev döngüsünü yüzde olarak girin; sinyalin bir periyodun yüzde kaçında yüksek seviyede kaldığını ifade eder.</li>
+        <li>Sinyalin yüksek seviyedeki gerilimini &quot;Tepe gerilimi&quot; alanına yazın (örneğin 5, 3,3 ya da motor sürücülerinde 12 ve 24).</li>
+        <li>Mikrodenetleyicide yazacağınız sayıyı da görmek için PWM çözünürlüğünü bit olarak belirtin; 8 bit 0–255, 10 bit 0–1023 aralığı demektir.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın ve süreleri, gerilimleri ve sayaç değerini sonuç kutusundan okuyun.</li>
+      </ol>
+
+      <h2>PWM ve görev döngüsü nedir?</h2>
+      <p>Darbe genişlik modülasyonu (PWM), bir çıkışı çok hızlı biçimde açıp kapatarak yüke aktarılan ortalama gücü ayarlama yöntemidir. Çıkış yalnızca iki durumda bulunur: tam açık ya da tam kapalı. Aradaki &quot;kısık&quot; durumlar, açık kalma süresinin toplam süreye oranı değiştirilerek elde edilir. Bu orana <strong>görev döngüsü</strong> (İngilizce duty cycle) denir ve yüzde olarak ifade edilir.</p>
+      <p>Yöntemin yaygınlığının nedeni verimliliğidir. Bir transistör tam iletimdeyken üzerinde çok az gerilim düşer, tam kesimdeyken üzerinden akım geçmez; iki durumda da ısıya dönüşen güç küçüktür. LED parlaklığı ayarı, doğru akım motorlarında hız denetimi, fan sürme, ısıtıcı kontrolü, anahtarlamalı güç kaynakları ve servo motor konumlama bu ilkeyle çalışır.</p>
+
+      <h2>Formüller</h2>
+      <p>Buradaki D, yüzde cinsinden görev döngüsüdür. Görev döngüsünü süreden bulmak isterseniz bağıntıyı tersine çevirin: D = t<sub>açık</sub> ÷ T × 100.</p>
+      <ul>
+        <li><strong>Periyot:</strong> T = 1 ÷ f</li>
+        <li><strong>Açık süre:</strong> t<sub>açık</sub> = T × D ÷ 100</li>
+        <li><strong>Kapalı süre:</strong> t<sub>kapalı</sub> = T − t<sub>açık</sub></li>
+        <li><strong>Ortalama gerilim:</strong> V<sub>ort</sub> = V<sub>tepe</sub> × D ÷ 100</li>
+        <li><strong>Etkin (RMS) gerilim:</strong> V<sub>rms</sub> = V<sub>tepe</sub> × √(D ÷ 100)</li>
+        <li><strong>Sayaç değeri:</strong> (2<sup>n</sup> − 1) × D ÷ 100, en yakın tam sayıya yuvarlanır</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="pwm-gorev-dongusu-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: 1 kHz, yüzde 25, 5 V</h2>
+      <ol>
+        <li>Periyot: 1 ÷ 1000 = 0,001 s = 1 ms</li>
+        <li>Açık süre: 1 ms × 0,25 = 0,25 ms = 250 µs</li>
+        <li>Kapalı süre: 1 ms − 0,25 ms = 0,75 ms = 750 µs</li>
+        <li>Ortalama gerilim: 5 V × 0,25 = 1,25 V</li>
+        <li>Etkin gerilim: 5 V × √0,25 = 5 × 0,5 = 2,5 V</li>
+        <li>8 bit sayaç değeri: 255 × 0,25 = 63,75; yuvarlanınca 64. Gerçekleşen görev döngüsü 64 ÷ 255 = yüzde 25,1 olur.</li>
+      </ol>
+
+      <h2>Ortalama gerilim ile RMS gerilim farkı</h2>
+      <p>İki değer farklı sorulara yanıt verir. <strong>Ortalama gerilim</strong>, sinyal bir alçak geçiren filtreden geçirildiğinde ya da bir voltmetrenin doğru akım kademesinde okunan değerdir; motorun ortalama hızını ve filtrelenmiş analog çıkışı bu belirler.</p>
+      <p><strong>Etkin (RMS) gerilim</strong> ise dirençli bir yükte ortaya çıkan ısıyla ilgilidir. Bir dirençte harcanan güç gerilimin karesiyle orantılı olduğundan ortalama güç, tam güçle görev döngüsünün çarpımına eşittir. Yüzde 25 görev döngüsünde bir ısıtıcı tam gücünün dörtte birini verir; ortalama gerilimin karesinden hesap yapılsaydı on altıda biri bulunurdu ki bu yanlıştır. Araçtaki &quot;dirençli yükte güç oranı&quot; satırı bu yüzden doğrudan görev döngüsüne eşittir.</p>
+
+      <h2>Frekans seçimi</h2>
+      <p>Görev döngüsü ortalamayı, frekans ise bu ortalamanın ne kadar &quot;pürüzsüz&quot; algılandığını belirler. Uygun frekans yüke bağlıdır:</p>
+      <ul>
+        <li><strong>LED parlaklık ayarı:</strong> gözün titreşimi fark etmemesi için birkaç yüz hertz ve üzeri kullanılır; kamera çekimlerinde bant oluşmaması için daha yüksek frekanslar tercih edilir.</li>
+        <li><strong>Doğru akım motorları:</strong> duyulabilir aralıktaki frekanslar motorda vınlama sesi yapar; ses istenmiyorsa yaklaşık 20 kHz ve üzeri seçilir.</li>
+        <li><strong>Hobi servo motorları:</strong> genellikle 50 Hz, yani 20 ms periyot kullanılır ve konum, yaklaşık 1–2 ms arasındaki darbe genişliğiyle belirlenir. 1,5 ms'lik darbe yüzde 7,5 görev döngüsüne karşılık gelir.</li>
+        <li><strong>Isıtıcı ve röle gibi yavaş yükler:</strong> birkaç hertz, hatta saniyeler mertebesinde periyotlar yeterlidir.</li>
+      </ul>
+
+      <h2>Çözünürlük ve sayaç değeri</h2>
+      <p>Mikrodenetleyiciler görev döngüsünü yüzde olarak değil, bir sayaç karşılaştırma değeri olarak alır. 8 bitlik PWM'de bu değer 0 ile 255, 10 bitte 0 ile 1023, 12 bitte 0 ile 4095 arasındadır. İstenen yüzde her zaman tam bir sayıya denk gelmez; bu yüzden gerçekleşen görev döngüsü istenenden biraz sapar. 8 bitte adımlar yaklaşık yüzde 0,39 büyüklüğündedir; 10 bitte yaklaşık yüzde 0,1'e iner.</p>
+      <p>Zamanlayıcı frekansı sabitken çözünürlük ile PWM frekansı arasında bir denge vardır: bir biti artırmak sayacın bir turda sayması gereken adımı ikiye katlar ve ulaşılabilen en yüksek PWM frekansını yarıya indirir. Bazı platformlarda en büyük değer 2<sup>n</sup> − 1 yerine farklı bir üst sınır olabilir; kendi kartınızın belgelerine bakın.</p>
+
+      <h2>Varsayımlar ve uyarılar</h2>
+      <p>Hesap ideal bir kare dalgaya göre yapılır. Gerçek devrede anahtarlama elemanının yükselme ve düşme süreleri, üzerindeki gerilim düşümü ve yükün endüktansı sonuçları değiştirir. Motor ve bobin gibi endüktif yüklerde akım, gerilimin aksine keskin biçimde açılıp kapanmaz; bu yüklerde ters paralel bir diyot kullanılmazsa anahtarlama anındaki gerilim sıçraması transistöre zarar verir.</p>
+      <p>Sonuçlar bilgilendirme amaçlıdır. Şebeke gerilimiyle ya da yüksek akımla çalışan sürücü devrelerinde tasarımı yetkin bir kişiye doğrulatın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Yüzde 50 görev döngüsü ne demek?</summary><p>Sinyal her periyodun yarısında açık, yarısında kapalıdır. Ortalama gerilim tepe gerilimin yarısı olur; 5 V bir sinyalde 2,5 V. Dirençli bir yük tam gücünün yarısını alır.</p></details>
+        <details><summary>PWM ile gerçekten analog gerilim üretilir mi?</summary><p>Çıkış aslında hâlâ kare dalgadır. Bir direnç ve kondansatörden oluşan alçak geçiren filtre eklenirse dalgalanması azaltılmış, ortalama değere yakın bir gerilim elde edilir. Filtrenin kesim frekansı PWM frekansının epeyce altında seçilmelidir.</p></details>
+        <details><summary>8 bit PWM'de yüzde 25 için hangi değeri yazmalıyım?</summary><p>255 × 0,25 = 63,75 olduğundan en yakın tam sayı 64'tür. Bu değer yaklaşık yüzde 25,1 görev döngüsü verir.</p></details>
+        <details><summary>Frekansı değiştirmek parlaklığı ya da hızı etkiler mi?</summary><p>İdeal durumda hayır; ortalama değeri yalnızca görev döngüsü belirler. Frekans titreşimi, sesi ve anahtarlama kayıplarını etkiler. Çok yüksek frekanslarda sürücünün geçiş süreleri belirginleşir ve gerçekleşen oran sapabilir.</p></details>
+        <details><summary>Servo motor için görev döngüsünü nasıl hesaplarım?</summary><p>Darbe genişliğini periyoda bölüp 100 ile çarpın. 50 Hz'de periyot 20 ms'dir; 1 ms darbe yüzde 5, 1,5 ms darbe yüzde 7,5, 2 ms darbe yüzde 10 eder.</p></details>
+        <details><summary>Multimetre PWM çıkışında neden farklı bir değer gösteriyor?</summary><p>Doğru akım kademesindeki multimetreler ortalama gerilimi gösterir. Yük bağlıyken gerilim düşümü, ölçü aletinin örnekleme hızı ve düşük seviyenin tam 0 V olmaması okumayı hesaplanan değerden saptırabilir.</p></details>
+        <details><summary>Görev döngüsü yüzde 0 ya da 100 olabilir mi?</summary><p>Evet. Yüzde 0 çıkışın sürekli kapalı, yüzde 100 sürekli açık olduğu durumdur; bu uçlarda anahtarlama yapılmaz ve sinyal doğru akıma dönüşür.</p></details>
+        <details><summary>Yazdığım değerler bir yere kaydediliyor mu?</summary><p>Hayır. Hesap tarayıcınızda yapılır; girdiğiniz değerler sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../adc-cozunurluk-hesapla/">ADC Çözünürlük ve Adım Gerilimi Hesaplama</a></li>
+        <li><a href="../rc-filtre-kesim-frekansi-hesapla/">RC Filtre Kesim Frekansı Hesaplama</a></li>
+        <li><a href="../555-zamanlayici-hesapla/">555 Zamanlayıcı Devre Hesaplama</a></li>
+        <li><a href="../led-direnc-hesapla/">LED Direnç Hesaplama</a></li>
+        <li><a href="../motor-guc-tork-hesapla/">Motor Güç Tork Devir Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="pwm-gorev-dongusu-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

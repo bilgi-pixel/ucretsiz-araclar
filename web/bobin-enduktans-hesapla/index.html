@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Bobin Endüktansı Hesaplama – Sarım, Çap ve Uzunluktan µH Bulma</title>
+  <meta name="description" content="Sarım sayısı, bobin çapı ve uzunluğundan tek katlı silindirik bobinin endüktansını hesaplayın. Uzun solenoid formülü ve hava nüve için Wheeler yaklaşımı birlikte.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bobin-enduktans-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Bobin Endüktansı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/bobin-enduktans-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Sarım sayısını iki katına çıkarırsam endüktans ne olur?","acceptedAnswer":{"@type":"Answer","text":"Uzunluk ve çap aynı kalırsa endüktans dört katına çıkar, çünkü endüktans sarım sayısının karesiyle orantılıdır. Ancak aynı tel ile daha fazla sarım uzunluğu da artıracağından pratikte artış dört kattan az olur."}},{"@type":"Question","name":"Hangi sonucu kullanmalıyım: solenoid mi, Wheeler mı?","acceptedAnswer":{"@type":"Answer","text":"Hava nüveli tek katlı bobinlerde Wheeler sonucu gerçeğe daha yakındır. Uzun solenoid formülü kuramsal üst sınırı gösterir ve bobin çapına göre ne kadar uzunsa iki sonuç birbirine o kadar yaklaşır."}},{"@type":"Question","name":"Belirli bir endüktans için sarım sayısını nasıl bulurum?","acceptedAnswer":{"@type":"Answer","text":"Çap ve uzunluğu sabit tutup sarım sayısını değiştirerek hedef değere yaklaşın. Kestirme olarak, mevcut sonucu hedefe bölüp karekökünü alın; sarım sayısını bu oranda değiştirmek gerekir. Örneğin endüktansı yarıya indirmek için sarımı yaklaşık 0,71 ile çarpın."}},{"@type":"Question","name":"Tel kalınlığı endüktansı etkiler mi?","acceptedAnswer":{"@type":"Answer","text":"Doğrudan formülde yer almaz, ancak dolaylı etkisi vardır: kalın tel aynı sarım sayısında daha uzun yer kaplar ve ortalama çapı büyütür. Tel kalınlığı asıl olarak bobinin direncini ve taşıyabileceği akımı belirler."}},{"@type":"Question","name":"µH, mH ve nH arasında nasıl dönüşüm yapılır?","acceptedAnswer":{"@type":"Answer","text":"1 H = 1.000 mH = 1.000.000 µH = 1.000.000.000 nH. Dolayısıyla 1 mH = 1.000 µH ve 1 µH = 1.000 nH eder. Araç sonucu okunması en kolay birimde gösterir."}},{"@type":"Question","name":"Ferrit çubuk için hangi geçirgenlik değerini yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Malzemenin katalogdaki başlangıç geçirgenliği yüzlerce ya da binlerce olabilir, ancak açık çubuk nüvede etkin değer bunun çok altındadır ve çubuğun boy/çap oranına bağlıdır. Üreticinin etkin geçirgenlik verisi yoksa en güvenilir yol ölçmektir."}},{"@type":"Question","name":"Toroid bobinler için bu araç kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Toroidlerde manyetik yol kapalıdır ve hesap üreticinin verdiği AL değeriyle ya da toroid geometrisine özgü formülle yapılır. Bu araç yalnızca düz silindirik, tek katlı bobinler içindir."}},{"@type":"Question","name":"Girdiğim ölçüler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tarayıcınızda yapılır; yazdığınız değerler herhangi bir sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#elektrik" class="ba-nav-optional">Elektrik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#elektrik">Elektrik</a></li></ol>
+      <h1><span class="ba-grad">Bobin Endüktansı Hesaplama</span> – tek katlı silindirik bobin</h1>
+      <p class="lead">Tek katlı silindirik bir bobinin (solenoidin) endüktansını sarım sayısı, çap ve sarım uzunluğundan hesaplayın. Araç ideal <strong>uzun solenoid formülünü</strong> ve hava nüveli bobinlerde daha gerçekçi sonuç veren <strong>Wheeler yaklaşımını</strong> birlikte gösterir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-sarim">Sarım sayısı (N)</label><input id="f-sarim" data-field="sarim" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 100"></div>
+          <div class="ba-field"><label for="f-cap">Bobin çapı (mm)</label><input id="f-cap" data-field="cap" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 20"><div class="hint">Telin merkezinden merkezine ölçülen ortalama çap.</div></div>
+          <div class="ba-field"><label for="f-uzunluk">Sarım uzunluğu (mm)</label><input id="f-uzunluk" data-field="uzunluk" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 50"><div class="hint">İlk sarımdan son sarıma kadar olan eksenel uzunluk.</div></div>
+          <div class="ba-field"><label for="f-mur">Nüvenin bağıl geçirgenliği (µr)</label><input id="f-mur" data-field="mur" type="text" inputmode="decimal" autocomplete="off" value="1"><div class="hint">Hava nüve için 1. Ferrit ve demir nüvelerde üretici verisini kullanın.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="bobin-enduktans-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Bobindeki toplam sarım (tur) sayısını yazın.</li>
+        <li>Bobinin çapını milimetre olarak girin. En doğru sonuç için iç çapa bir tel çapı ekleyerek telin merkezinden geçen ortalama çapı kullanın.</li>
+        <li>Sarımların kapladığı eksenel uzunluğu milimetre olarak yazın; makaranın değil, sarılı bölümün uzunluğu önemlidir.</li>
+        <li>Hava nüveli bobinlerde geçirgenliği 1 bırakın; nüveli bobinlerde üreticinin verdiği bağıl ya da etkin geçirgenlik değerini girin.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın; endüktans uygun birimde (nH, µH, mH) gösterilir.</li>
+      </ol>
+
+      <h2>Endüktans nedir?</h2>
+      <p>Endüktans, bir iletkenin içinden geçen akımdaki değişime karşı koyma özelliğidir. Bobinden akım geçtiğinde çevresinde manyetik alan oluşur; akım değişmeye çalıştığında bu alan da değişir ve bobinin uçlarında değişime karşı yönde bir gerilim indüklenir. Birimi henridir (H). Elektronikte karşılaşılan değerler çoğunlukla çok daha küçüktür: milihenri (mH, binde bir), mikrohenri (µH, milyonda bir) ve nanohenri (nH, milyarda bir).</p>
+      <p>Bobinler; filtrelerde, anahtarlamalı güç kaynaklarında, radyo frekans devrelerinde, rezonans devrelerinde ve parazit bastırmada kullanılır. Amatör telsizciler, hoparlör filtresi yapanlar ve deney devresi kuran öğrenciler bobinleri sıklıkla kendileri sarar; bu durumda sarım sayısının önceden hesaplanması gerekir.</p>
+
+      <h2>Uzun solenoid formülü</h2>
+      <p>Uzunluğu çapına göre büyük olan, sıkı ve düzgün sarılmış tek katlı bir bobin için ders kitaplarındaki bağıntı şudur: <strong>L = µ<sub>0</sub> · µ<sub>r</sub> · N² · A ÷ l</strong>. Burada µ<sub>0</sub> boşluğun manyetik geçirgenliği (4π × 10<sup>−7</sup> H/m), µ<sub>r</sub> nüvenin bağıl geçirgenliği, N sarım sayısı, A bobinin kesit alanı (m²) ve l sarım uzunluğudur (m).</p>
+      <p>Formülden üç önemli sonuç çıkar: endüktans sarım sayısının <strong>karesiyle</strong> artar, yani sarımı iki katına çıkarmak endüktansı dört katına çıkarır; kesit alanı çapın karesine bağlı olduğundan çapı büyütmek de güçlü etki yapar; aynı sarımı daha uzun bir alana yaymak ise endüktansı düşürür.</p>
+
+      <div class="ba-ad" data-slot="bobin-enduktans-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Wheeler yaklaşımı neden ayrıca veriliyor?</h2>
+      <p>Uzun solenoid formülü manyetik alanın bobinin her yerinde eşit olduğunu varsayar. Gerçek bobinlerde uçlara doğru alan zayıflar ve bobin kısaldıkça bu etki büyür; ideal formül endüktansı olduğundan yüksek gösterir. Harold Wheeler'ın tek katlı hava nüveli bobinler için verdiği pratik formül bu uç etkisini hesaba katar: <strong>L (µH) = r² · N² ÷ (9r + 10l)</strong>; burada r yarıçap, l uzunluktur ve ikisi de inç cinsindendir. Araç milimetre girdilerini kendisi inçe çevirir.</p>
+      <p>Wheeler formülü, sarım uzunluğu çapın yaklaşık 0,4 katından büyük olan bobinlerde yüzde bir dolayında doğrulukla sonuç verir. Daha kısa, yassı bobinlerde hata büyür; araç bu durumda sonuç altındaki notla uyarır. Nüveli bobinlerde Wheeler satırı gösterilmez, çünkü formül yalnızca hava nüve için geçerlidir.</p>
+
+      <h2>Çözümlü örnek</h2>
+      <p>100 sarımlı, 20 mm çapında ve 50 mm uzunluğunda hava nüveli bir bobin alalım. Yarıçap 0,01 m, kesit alanı π × 0,01² ≈ 3,1416 × 10<sup>−4</sup> m², uzunluk 0,05 m'dir. Uzun solenoid formülüyle L = 4π × 10<sup>−7</sup> × 100² × 3,1416 × 10<sup>−4</sup> ÷ 0,05 ≈ 78,96 µH bulunur.</p>
+      <p>Wheeler formülü için yarıçap 0,3937 inç, uzunluk 1,9685 inçtir: L = 0,3937² × 100² ÷ (9 × 0,3937 + 10 × 1,9685) ≈ 1.550 ÷ 23,23 ≈ 66,73 µH. İki sonuç arasındaki yaklaşık %15'lik fark, uç etkisinin bu boyutlardaki bir bobinde bile ne kadar belirgin olduğunu gösterir. Bu bobin için yaklaşık 6,28 metre tel gerekir.</p>
+
+      <h2>Nüveli bobinler</h2>
+      <p>Bobinin içine ferrit ya da demir tozu gibi manyetik bir malzeme yerleştirildiğinde manyetik akı yoğunlaşır ve endüktans artar. İdeal durumda artış bağıl geçirgenlik kadardır; örneğin 200 sarımlı, 10 mm çapında, 40 mm uzunluğunda bir bobin µ<sub>r</sub> = 100 için formüle göre 9,87 mH verir.</p>
+      <p>Uygulamada çubuk biçimli açık nüvelerde manyetik devre havadan tamamlandığı için etkin geçirgenlik, malzemenin katalog değerinin çok altında kalır. Toroid ve kapalı çekirdeklerde ise üreticiler doğrudan &quot;A<sub>L</sub>&quot; değeri verir ve endüktans L = A<sub>L</sub> × N² ile hesaplanır. Bu yüzden nüveli bobinlerde bu sayfadaki sonucu bir üst sınır ve başlangıç tahmini olarak düşünün, kesin değer için ölçüm yapın.</p>
+
+      <h2>Ölçüm ve sarım ipuçları</h2>
+      <ul>
+        <li><strong>Çap:</strong> Makaranın dış çapına bir tel çapı ekleyin; ince telde fark küçüktür, kalın telde belirginleşir.</li>
+        <li><strong>Sarım aralığı:</strong> Sarımları aralıklı sarmak uzunluğu artırır ve endüktansı düşürür; ince ayar için sarımları sıkıştırıp açmak yaygın bir yöntemdir.</li>
+        <li><strong>Çok katlı bobinler:</strong> Bu araç tek katlı bobinler içindir; üst üste katlar sarıldığında farklı formüller gerekir.</li>
+        <li><strong>Yüksek frekans:</strong> Sarımlar arası kapasite bobinin kendi rezonansını oluşturur; bu frekansa yaklaşıldıkça bobin beklenen gibi davranmaz.</li>
+        <li><strong>Doğrulama:</strong> Sardığınız bobini bir LCR metre ile ya da bilinen bir kondansatörle rezonans frekansını ölçerek kontrol edin.</li>
+      </ul>
+
+      <h2>Uyarı</h2>
+      <p>Sonuçlar kuramsal yaklaşımlardır ve bilgilendirme amaçlıdır. Tel çapı, sarım düzgünlüğü, çevredeki metal parçalar ve frekans gerçek değeri etkiler. Şebeke gerilimi ya da yüksek akım taşıyan devrelerde bobin tasarımı; doyma akımı, ısınma ve yalıtım açısından ayrıca değerlendirilmeli, gerektiğinde bir elektrik-elektronik mühendisine danışılmalıdır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Sarım sayısını iki katına çıkarırsam endüktans ne olur?</summary><p>Uzunluk ve çap aynı kalırsa endüktans dört katına çıkar, çünkü endüktans sarım sayısının karesiyle orantılıdır. Ancak aynı tel ile daha fazla sarım uzunluğu da artıracağından pratikte artış dört kattan az olur.</p></details>
+        <details><summary>Hangi sonucu kullanmalıyım: solenoid mi, Wheeler mı?</summary><p>Hava nüveli tek katlı bobinlerde Wheeler sonucu gerçeğe daha yakındır. Uzun solenoid formülü kuramsal üst sınırı gösterir ve bobin çapına göre ne kadar uzunsa iki sonuç birbirine o kadar yaklaşır.</p></details>
+        <details><summary>Belirli bir endüktans için sarım sayısını nasıl bulurum?</summary><p>Çap ve uzunluğu sabit tutup sarım sayısını değiştirerek hedef değere yaklaşın. Kestirme olarak, mevcut sonucu hedefe bölüp karekökünü alın; sarım sayısını bu oranda değiştirmek gerekir. Örneğin endüktansı yarıya indirmek için sarımı yaklaşık 0,71 ile çarpın.</p></details>
+        <details><summary>Tel kalınlığı endüktansı etkiler mi?</summary><p>Doğrudan formülde yer almaz, ancak dolaylı etkisi vardır: kalın tel aynı sarım sayısında daha uzun yer kaplar ve ortalama çapı büyütür. Tel kalınlığı asıl olarak bobinin direncini ve taşıyabileceği akımı belirler.</p></details>
+        <details><summary>µH, mH ve nH arasında nasıl dönüşüm yapılır?</summary><p>1 H = 1.000 mH = 1.000.000 µH = 1.000.000.000 nH. Dolayısıyla 1 mH = 1.000 µH ve 1 µH = 1.000 nH eder. Araç sonucu okunması en kolay birimde gösterir.</p></details>
+        <details><summary>Ferrit çubuk için hangi geçirgenlik değerini yazmalıyım?</summary><p>Malzemenin katalogdaki başlangıç geçirgenliği yüzlerce ya da binlerce olabilir, ancak açık çubuk nüvede etkin değer bunun çok altındadır ve çubuğun boy/çap oranına bağlıdır. Üreticinin etkin geçirgenlik verisi yoksa en güvenilir yol ölçmektir.</p></details>
+        <details><summary>Toroid bobinler için bu araç kullanılabilir mi?</summary><p>Hayır. Toroidlerde manyetik yol kapalıdır ve hesap üreticinin verdiği A<sub>L</sub> değeriyle ya da toroid geometrisine özgü formülle yapılır. Bu araç yalnızca düz silindirik, tek katlı bobinler içindir.</p></details>
+        <details><summary>Girdiğim ölçüler kaydediliyor mu?</summary><p>Hayır. Hesaplama tarayıcınızda yapılır; yazdığınız değerler herhangi bir sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../kapasitif-reaktans-hesapla/">Kapasitif ve Endüktif Reaktans Hesaplama</a></li>
+        <li><a href="../lc-rezonans-frekansi-hesapla/">LC Rezonans Frekansı Hesaplama</a></li>
+        <li><a href="../empedans-hesapla/">Empedans Hesaplama</a></li>
+        <li><a href="../trafo-sarim-orani-hesapla/">Trafo Sarım Oranı Hesaplama</a></li>
+        <li><a href="../anten-boyu-hesapla/">Anten Boyu ve Dalga Boyu Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="bobin-enduktans-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

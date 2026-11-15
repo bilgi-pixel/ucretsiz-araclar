@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Onaltılık Hesap Makinesi – Hex Toplama, Çıkarma, Çarpma, Bölme</title>
+  <meta name="description" content="İki onaltılık (hex) sayıyı toplayın, çıkarın, çarpın, bölün ya da AND, OR, XOR işlemine sokun. Sonuç hex, ondalık ve ikili olarak birlikte gösterilir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/onaltilik-hesap-makinesi/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Onaltılık Hesap Makinesi – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/onaltilik-hesap-makinesi/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Hex toplama nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Basamaklar sağdan sola toplanır. Bir basamaktaki toplam 16 ya da daha fazlaysa 16 çıkarılıp kalan yazılır ve sola 1 elde taşınır. 1A3 + 2F işleminin sonucu 1D2'dir."}},{"@type":"Question","name":"FF + 1 neden 100 eder?","acceptedAnswer":{"@type":"Answer","text":"F en büyük onaltılık rakamdır. F + 1 = 16 olduğunda basamağa 0 yazılıp elde taşınır; bu iki basamakta da gerçekleşir ve sonuç 100 olur. Ondalık karşılığı 255 + 1 = 256'dır."}},{"@type":"Question","name":"Onaltılık 10 ile ondalık 10 aynı mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Onaltılık 10, ondalık 16'ya eşittir. Ondalık 10'un onaltılık yazımı ise A'dır. Karışıklığı önlemek için onaltılık sayılar çoğunlukla 0x ön ekiyle yazılır."}},{"@type":"Question","name":"AND, OR ve XOR ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"İki sayının bitlerini karşılaştıran işlemlerdir. AND bitleri süzmek (maskelemek), OR bitleri açmak, XOR ise bitleri tersine çevirmek ve iki değerin hangi bitlerde farklılaştığını bulmak için kullanılır."}},{"@type":"Question","name":"Bölme sonucunda kesir çıkar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç tam sayı bölmesi yapar; bölüm ve kalan ayrı satırlarda gösterilir. FF ÷ 10 için bölüm F, kalan F'dir."}},{"@type":"Question","name":"Küçük harfle yazabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. ff ile FF aynı kabul edilir; sonuç her zaman büyük harfle yazılır. Başa eklenen 0x ön eki ve aradaki boşluklar da sorun oluşturmaz."}},{"@type":"Question","name":"Sonuç negatif olursa ne görürüm?","acceptedAnswer":{"@type":"Answer","text":"Başında eksi işareti bulunan bir onaltılık sayı görürsünüz; örneğin 1 − 2 = −1. Belirli bir bit genişliğindeki ikiye tümleyen karşılığı bu araçta hesaplanmaz."}},{"@type":"Question","name":"Girdiğim değerler bir sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bütün işlemler tarayıcınızda yapılır; yazdığınız sayılar hiçbir yere iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Onaltılık Hesap Makinesi</span> – hex dört işlem ve bit işlemleri</h1>
+      <p class="lead">İki onaltılık (hex) sayıyı yazıp işlemi seçin. Araç <strong>toplama, çıkarma, çarpma, bölme</strong> ile bit düzeyindeki <strong>AND, OR ve XOR</strong> işlemlerini yapar; sonucu onaltılık, ondalık ve ikili olarak yan yana gösterir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-birinci">Birinci hex sayı</label><input id="f-birinci" data-field="birinci" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 1A3"></div>
+          <div class="ba-field"><label for="f-islem">İşlem</label><select id="f-islem" data-field="islem"><option value="topla">Toplama (+)</option><option value="cikar">Çıkarma (−)</option><option value="carp">Çarpma (×)</option><option value="bol">Bölme (÷)</option><option value="and">AND (ve)</option><option value="or">OR (veya)</option><option value="xor">XOR (özel veya)</option></select></div>
+          <div class="ba-field"><label for="f-ikinci">İkinci hex sayı</label><input id="f-ikinci" data-field="ikinci" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 2F"></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="onaltilik-hesap-makinesi-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;Birinci hex sayı&quot; alanına ilk değeri yazın. Büyük ya da küçük harf kullanabilir, başına <code>0x</code> ön eki koyabilirsiniz.</li>
+        <li>&quot;İşlem&quot; listesinden dört işlemden birini ya da AND, OR, XOR bit işlemlerinden birini seçin.</li>
+        <li>&quot;İkinci hex sayı&quot; alanına ikinci değeri yazın. Bölmede bu sayı bölendir ve sıfır olamaz.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. Sonuç onaltılık, ondalık ve ikili olarak; işlemin ondalık sağlamasıyla birlikte görünür.</li>
+      </ol>
+
+      <h2>Onaltılık toplama nasıl yapılır?</h2>
+      <p>Onaltılık toplama, ondalık toplamayla aynı mantıkta sağdan sola yapılır; yalnızca elde 10'da değil <strong>16'da</strong> oluşur. Bir basamaktaki toplam 15'i aşarsa toplamdan 16 çıkarılır, kalan o basamağa yazılır ve sola 1 elde aktarılır. Harflerin değerlerini akılda tutmak gerekir: A = 10, B = 11, C = 12, D = 13, E = 14, F = 15.</p>
+      <p><strong>Örnek:</strong> 1A3 + 2F işlemini yapalım. En sağda 3 + F = 3 + 15 = 18 eder; 18 − 16 = 2 yazılır, elde 1. Ortada A + 2 + elde 1 = 10 + 2 + 1 = 13, yani D yazılır; elde yok. Solda 1 aynen iner. Sonuç <strong>1D2</strong>'dir. Ondalık sağlama: 419 + 47 = 466 ve 1D2 gerçekten 256 + 208 + 2 = 466 eder.</p>
+      <p>En bilinen elde örneği FF + 1'dir: F + 1 = 16 olduğundan 0 yazılır ve elde 1 taşınır; ikinci basamakta yine F + 1 = 16 oluşur. Sonuç <strong>100</strong>, yani ondalık 256'dır.</p>
+
+      <h2>Onaltılık çıkarma</h2>
+      <p>Çıkarmada üstteki basamak alttakinden küçükse soldaki basamaktan ödünç alınır ve ödünç alınan değer 16'dır. <strong>Örnek:</strong> 5C − 2F işleminde C (12) değerinden F (15) çıkarılamaz; soldan 16 ödünç alınır, 12 + 16 = 28 ve 28 − 15 = 13, yani D yazılır. Soldaki 5 ödünç verdiği için 4'e düşmüştür; 4 − 2 = 2. Sonuç <strong>2D</strong> olur; ondalıkta 92 − 47 = 45.</p>
+      <p>Küçük sayıdan büyük sayı çıkarıldığında araç sonucu eksi işaretiyle yazar. Sabit genişlikli bilgisayar yazmaçlarında aynı işlem taşarak FFFF… gibi bir değere döner; bu sayfa ise matematiksel sonucu gösterir.</p>
+
+      <div class="ba-ad" data-slot="onaltilik-hesap-makinesi-b" aria-label="Reklam"></div>
+
+      <h2>Çarpma ve bölme</h2>
+      <p>Onaltılık çarpma tablosunu ezbere bilen pek azdır; pratik yol, basamakları ondalık değerleriyle çarpıp sonucu yeniden 16'lık tabana çevirmektir. <strong>Örnek:</strong> A × B = 10 × 11 = 110. 110 ÷ 16 = 6 kalan 14 olduğundan sonuç <strong>6E</strong>'dir. Bir sayıyı 10 (onaltılık) ile, yani 16 ile çarpmak sonuna bir sıfır eklemek demektir: 2F × 10 = 2F0.</p>
+      <p>Bölme tam sayı bölmesi olarak yapılır; bölüm ve kalan ayrı satırlarda verilir. FF ÷ 10 işleminde 255 ÷ 16 = 15 kalan 15 olduğundan bölüm <strong>F</strong>, kalan da <strong>F</strong>'dir. Dikkat ederseniz 16'ya bölmek, sayının son basamağını kalan olarak ayırıp geri kalanını bölüm yapmakla aynıdır.</p>
+
+      <h2>AND, OR ve XOR bit işlemleri</h2>
+      <p>Bit işlemleri, iki sayının ikili yazımlarını basamak basamak karşılaştırır. <strong>AND</strong> yalnızca iki bit de 1 ise 1 verir; <strong>OR</strong> bitlerden en az biri 1 ise 1 verir; <strong>XOR</strong> ise bitler birbirinden farklıysa 1 verir. Onaltılık yazım bu işlemler için çok uygundur, çünkü her basamak dört biti temsil eder ve işlem basamak basamak düşünülebilir.</p>
+      <p><strong>Örnek:</strong> F0 AND 3C işleminde F0 = 11110000, 3C = 00111100'dır. Yalnızca her iki sayıda da 1 olan bitler kalır: 00110000, yani <strong>30</strong>. F0 OR 0F işleminde bütün bitler 1 olur ve sonuç <strong>FF</strong> çıkar. FF XOR 0F işleminde alt dört bit ters çevrilir, üst dört bit olduğu gibi kalır; sonuç <strong>F0</strong>'dır.</p>
+      <p>Bu işlemlerin tipik kullanımı maskelemedir. Bir değerin yalnızca alt baytını almak için FF ile AND yapılır; belirli bir biti açmak için OR, bir biti tersine çevirmek için XOR kullanılır. Altı haneli bir renk kodundan yeşil bileşeni ayırmak için kod 00FF00 ile AND işlemine sokulur.</p>
+
+      <h2>Nerelerde kullanılır?</h2>
+      <ul>
+        <li><strong>Bellek adresleri:</strong> Bir taban adrese uzaklık eklemek; örneğin 1000 + 2A0 = 12A0.</li>
+        <li><strong>Gömülü sistemler:</strong> Yazmaç değerlerinde bit maskesi hazırlamak ve kontrol etmek.</li>
+        <li><strong>Renk hesapları:</strong> İki renk kodunun bileşenlerini toplamak ya da maskeyle ayırmak.</li>
+        <li><strong>Ağ ve donanım kimlikleri:</strong> Onaltılık yazılan adres aralıklarının büyüklüğünü çıkarma ile bulmak.</li>
+        <li><strong>Dersler ve sınavlar:</strong> Sayısal mantık ve bilgisayar mimarisi alıştırmalarının sonucunu doğrulamak.</li>
+      </ul>
+
+      <h2>Sınırlar ve ipuçları</h2>
+      <p>Her sayı en fazla 32 onaltılık basamak (128 bit) olabilir. Girdiler işaretsiz tam sayıdır; eksi işaretli ya da kesirli onaltılık değer kabul edilmez. Hesap tam sayı aritmetiğiyle yapıldığından büyük çarpımlarda bile yuvarlama olmaz: FFFF × FFFF işleminin sonucu tam olarak FFFE0001'dir.</p>
+      <p>Sık yapılan bir hata, onaltılık 10 değerini on sanmaktır; onaltılık 10 on altıdır. Bir diğer hata, toplamda 9'u aşan değeri ondalıktaki gibi elde saymaktır: 7 + 5 onaltılıkta 12 değil C'dir, elde ancak toplam 16'ya ulaştığında oluşur. Emin olamadığınızda sonuç kutusundaki ondalık sağlama satırına bakın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Hex toplama nasıl yapılır?</summary><p>Basamaklar sağdan sola toplanır. Bir basamaktaki toplam 16 ya da daha fazlaysa 16 çıkarılıp kalan yazılır ve sola 1 elde taşınır. 1A3 + 2F işleminin sonucu 1D2'dir.</p></details>
+        <details><summary>FF + 1 neden 100 eder?</summary><p>F en büyük onaltılık rakamdır. F + 1 = 16 olduğunda basamağa 0 yazılıp elde taşınır; bu iki basamakta da gerçekleşir ve sonuç 100 olur. Ondalık karşılığı 255 + 1 = 256'dır.</p></details>
+        <details><summary>Onaltılık 10 ile ondalık 10 aynı mı?</summary><p>Hayır. Onaltılık 10, ondalık 16'ya eşittir. Ondalık 10'un onaltılık yazımı ise A'dır. Karışıklığı önlemek için onaltılık sayılar çoğunlukla 0x ön ekiyle yazılır.</p></details>
+        <details><summary>AND, OR ve XOR ne işe yarar?</summary><p>İki sayının bitlerini karşılaştıran işlemlerdir. AND bitleri süzmek (maskelemek), OR bitleri açmak, XOR ise bitleri tersine çevirmek ve iki değerin hangi bitlerde farklılaştığını bulmak için kullanılır.</p></details>
+        <details><summary>Bölme sonucunda kesir çıkar mı?</summary><p>Hayır. Araç tam sayı bölmesi yapar; bölüm ve kalan ayrı satırlarda gösterilir. FF ÷ 10 için bölüm F, kalan F'dir.</p></details>
+        <details><summary>Küçük harfle yazabilir miyim?</summary><p>Evet. ff ile FF aynı kabul edilir; sonuç her zaman büyük harfle yazılır. Başa eklenen 0x ön eki ve aradaki boşluklar da sorun oluşturmaz.</p></details>
+        <details><summary>Sonuç negatif olursa ne görürüm?</summary><p>Başında eksi işareti bulunan bir onaltılık sayı görürsünüz; örneğin 1 − 2 = −1. Belirli bir bit genişliğindeki ikiye tümleyen karşılığı bu araçta hesaplanmaz.</p></details>
+        <details><summary>Girdiğim değerler bir sunucuya gönderiliyor mu?</summary><p>Hayır. Bütün işlemler tarayıcınızda yapılır; yazdığınız sayılar hiçbir yere iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../onaltilik-ondalik-cevir/">Onaltılık (Hex) Ondalık Çevirici</a></li>
+        <li><a href="../ikili-sayi-islem/">İkili Sayılarla Dört İşlem</a></li>
+        <li><a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü</a></li>
+        <li><a href="../ikili-ondalik-cevir/">İkili (Binary) Ondalık Çevirici</a></li>
+        <li><a href="../hesap-makinesi/">Hesap Makinesi</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="onaltilik-hesap-makinesi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

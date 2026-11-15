@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Binom Dağılımı Hesaplama – P(X = k), En Az ve En Çok Olasılığı</title>
+  <meta name="description" content="Deneme sayısı, başarı sayısı ve başarı olasılığını girin; binom dağılımında tam k, en çok k ve en az k başarı olasılığını, beklenen değeri ve standart sapmayı bulun.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/binom-dagilimi-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Binom Dağılımı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/binom-dagilimi-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Binom dağılımının formülü nedir?","acceptedAnswer":{"@type":"Answer","text":"P(X = k) = C(n, k) × p^k × (1 − p)^(n − k). Burada n deneme sayısı, k başarı sayısı, p tek denemedeki başarı olasılığı, C(n, k) ise n'nin k'li kombinasyonudur."}},{"@type":"Question","name":"P(X ≤ k) ile P(X \u003c k) arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"P(X ≤ k), k başarının kendisini de içerir; P(X \u003c k) içermez. Aralarındaki fark tam olarak P(X = k) kadardır. Kesikli dağılımlarda bu ayrım sonucu belirgin biçimde değiştirir."}},{"@type":"Question","name":"Başarı olasılığını kesir olarak yazabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Olasılık alanına 1/6 ya da 3/8 gibi bir kesir, 0,25 gibi bir ondalık sayı ya da %25 gibi bir yüzde yazabilirsiniz; üçü de kabul edilir."}},{"@type":"Question","name":"\"Başarı\" kelimesi iyi bir sonuç anlamına mı gelir?","acceptedAnswer":{"@type":"Answer","text":"Hayır, yalnızca sayılan sonucu ifade eder. Kusurlu ürün, hastalığa yakalanma ya da yanlış yanıt da \"başarı\" olarak tanımlanabilir; önemli olan p değerinin o sonucun olasılığı olmasıdır."}},{"@type":"Question","name":"Binom dağılımı ne zaman normal dağılıma yaklaşır?","acceptedAnswer":{"@type":"Answer","text":"Deneme sayısı büyüdükçe ve p uç değerlerden uzak oldukça dağılım çan eğrisine benzer. Yaygın pratik ölçüt, n × p ve n × (1 − p) değerlerinin her ikisinin de en az 10 olmasıdır. Bu araç yaklaşım yerine tam değeri hesapladığı için böyle bir koşula gerek duymaz."}},{"@type":"Question","name":"Beklenen değer tam sayı çıkmazsa ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Beklenen değer uzun vadeli ortalamadır, tek bir deneyin sonucu değildir. 5 atışta beklenen yazı sayısının 2,5 olması, çok sayıda beş atışlık serinin ortalamasının 2,5'e yaklaşacağını söyler."}},{"@type":"Question","name":"En az bir başarı olasılığını nasıl bulurum?","acceptedAnswer":{"@type":"Answer","text":"k alanına 1 yazıp P(X ≥ 1) satırını okuyun. Bu değer 1 − (1 − p)^n formülüne eşittir; örneğin 10 denemede p = 0,1 için yaklaşık %65,13'tür."}},{"@type":"Question","name":"Girdiğim veriler saklanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bütün hesap tarayıcınızda yapılır; değerler sunucuya gönderilmez, kaydedilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Binom Dağılımı Hesaplama</span> – P(X = k) ve birikimli olasılıklar</h1>
+      <p class="lead">Her biri aynı başarı olasılığına sahip <strong>n bağımsız denemede</strong> tam k kez, en çok k kez ya da en az k kez başarı elde etme olasılığını hesaplayın. Araç ayrıca dağılımın beklenen değerini, varyansını ve standart sapmasını verir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-n">Deneme sayısı (n)</label><input id="f-n" data-field="n" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"><div class="hint">1 ile 100.000 arasında tam sayı</div></div>
+          <div class="ba-field"><label for="f-k">Başarı sayısı (k)</label><input id="f-k" data-field="k" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 3"></div>
+          <div class="ba-field"><label for="f-p">Tek denemede başarı olasılığı (p)</label><input id="f-p" data-field="p" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 0,5 ya da 1/6"><div class="hint">0 ile 1 arasında ondalık sayı, kesir (1/6) ya da yüzde (%30)</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="binom-dagilimi-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;Deneme sayısı (n)&quot; alanına deneyin kaç kez tekrarlandığını yazın: atılan para sayısı, kontrol edilen ürün adedi, sorulan soru sayısı gibi.</li>
+        <li>&quot;Başarı sayısı (k)&quot; alanına olasılığını merak ettiğiniz başarı adedini yazın; 0 ile n arasında bir tam sayı olmalıdır.</li>
+        <li>Tek bir denemedeki başarı olasılığını 0,5 gibi ondalık, 1/6 gibi kesir ya da %30 gibi yüzde biçiminde girin.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk satır tam k başarı olasılığını, sonraki dört satır birikimli olasılıkları gösterir.</li>
+        <li>Soru &quot;en az&quot;, &quot;en çok&quot;, &quot;daha fazla&quot; ya da &quot;daha az&quot; diyorsa ilgili eşitsizlik satırını okuyun; son üç satır dağılımın özet ölçüleridir.</li>
+      </ol>
+
+      <h2>Binom dağılımı nedir, ne zaman kullanılır?</h2>
+      <p>Yalnızca iki sonucu olan (başarı ya da başarısızlık) bir denemeye Bernoulli denemesi denir. Böyle bir deneme aynı koşullarda n kez tekrarlandığında elde edilen başarı sayısı X, binom dağılımına uyar. Dağılımın geçerli olması için dört koşul aranır: deneme sayısı önceden bellidir, her denemenin iki sonucu vardır, başarı olasılığı p denemeden denemeye değişmez ve denemeler birbirinden bağımsızdır.</p>
+      <p>Yazı tura atışları, çoktan seçmeli bir testte rastgele işaretlenen sorular, üretim hattından alınan parçaların kusurlu olup olmaması, bir kampanya e-postasını açan alıcıların sayısı ya da serbest atış kullanan bir basketbolcunun isabetleri bu kalıba uyan tipik örneklerdir.</p>
+
+      <h2>Binom olasılık formülü</h2>
+      <p>n denemede tam k başarı elde etme olasılığı şöyledir: <strong>P(X = k) = C(n, k) × p<sup>k</sup> × (1 − p)<sup>n − k</sup></strong>. Buradaki C(n, k), n denemenin içinden başarılı olacak k tanesinin kaç farklı biçimde seçilebileceğini gösteren kombinasyondur ve n! ÷ (k! × (n − k)!) ile hesaplanır. p<sup>k</sup> çarpanı k başarının, (1 − p)<sup>n − k</sup> çarpanı ise geri kalan başarısızlıkların olasılığıdır.</p>
+      <p>Birikimli olasılıklar bu değerlerin toplanmasıyla bulunur. P(X ≤ k), 0'dan k'ye kadar olan bütün başarı sayılarının olasılıkları toplamıdır; P(X ≥ k) ise k'den n'ye kadar olanların toplamıdır. İkisi birbirinin tümleyeni değildir, çünkü ikisi de k'yi içerir: P(X ≥ k) = 1 − P(X &lt; k) bağıntısı geçerlidir.</p>
+
+      <div class="ba-ad" data-slot="binom-dagilimi-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: 5 atışta 2 yazı</h2>
+      <p>Hilesiz bir para 5 kez atılıyor; tam 2 kez yazı gelme olasılığı nedir? Burada n = 5, k = 2, p = 0,5 alınır. C(5, 2) = 10 olduğundan P(X = 2) = 10 × 0,5<sup>2</sup> × 0,5<sup>3</sup> = 10 ÷ 32 = <strong>0,3125</strong> bulunur.</p>
+      <p>En çok 2 yazı gelmesi için 0, 1 ve 2 yazının olasılıkları toplanır: (1 + 5 + 10) ÷ 32 = 0,5. En az 2 yazı gelme olasılığı ise 1 − P(X &lt; 2) = 1 − 6/32 = 0,8125'tir. Beklenen yazı sayısı 5 × 0,5 = 2,5, varyans 1,25, standart sapma yaklaşık 1,118'dir. Bu değerleri araca girerek adım adım karşılaştırabilirsiniz.</p>
+
+      <h2>Çözümlü örnek: kalite kontrol</h2>
+      <p>Bir üretim hattında parçaların %2'sinin kusurlu çıktığı bilinsin. Rastgele alınan 50 parçalık bir numunede tam 3 kusurlu bulunma olasılığı için n = 50, k = 3, p = 0,02 yazılır. Sonuç yaklaşık 0,06067, yani %6,07'dir. Aynı numunede 3 ya da daha fazla kusurlu çıkma olasılığı yaklaşık %7,84'tür. Beklenen kusurlu sayısı 50 × 0,02 = 1 olduğundan, üç ve üzeri kusurlu görülmesi seyrek ama olağan dışı sayılmayacak bir durumdur.</p>
+
+      <h2>Beklenen değer, varyans ve standart sapma</h2>
+      <p>Binom dağılımının ortalaması <strong>μ = n × p</strong>, varyansı <strong>σ² = n × p × (1 − p)</strong>, standart sapması bunun kareköküdür. Ortalama, deney çok kez tekrarlandığında başarı sayısının yaklaşacağı değeri; standart sapma ise sonuçların bu değerin çevresinde ne kadar oynadığını anlatır. Varyans p = 0,5 iken en büyük değerini alır; olasılık 0'a ya da 1'e yaklaştıkça sonuçlar daha öngörülebilir hâle gelir.</p>
+      <p>Dört şıklı 20 soruluk bir testi tümüyle rastgele işaretleyen biri için n = 20 ve p = 0,25'tir. Beklenen doğru sayısı 5, standart sapma yaklaşık 1,94'tür. Tam 5 doğru yapma olasılığı yaklaşık %20,23, en az 5 doğru yapma olasılığı ise yaklaşık %58,52'dir.</p>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p>Araç 100.000 denemeye kadar tam hesap yapar; normal yaklaşım kullanmaz. Milyonda birden küçük olasılıklar bilimsel gösterimle yazılır. Sonuçlar eğitim ve ön değerlendirme amaçlıdır; kalite, sağlık ya da finans alanındaki kararlar için bir istatistik uzmanının değerlendirmesi gerekir.</p>
+      <ul>
+        <li><strong>&quot;En az&quot; ile &quot;daha fazla&quot;yı karıştırmak:</strong> En az 3, X ≥ 3 demektir ve 3'ü kapsar; 3'ten fazla ise X &gt; 3'tür. Araç iki satırı ayrı gösterir.</li>
+        <li><strong>Geri koymadan çekilişte kullanmak:</strong> Küçük bir topluluktan geri koymadan seçim yapılıyorsa başarı olasılığı her çekilişte değişir; bu durumda hipergeometrik dağılım gerekir.</li>
+        <li><strong>Olasılığı yüzde olarak yazıp işareti unutmak:</strong> %30 yerine yalnızca 30 yazılırsa değer 1'den büyük olduğu için hata alırsınız; 0,3 ya da %30 yazın.</li>
+        <li><strong>Bağımsızlığı sorgulamamak:</strong> Aynı kişinin art arda yanıtları ya da aynı partiden gelen ürünler birbirini etkiliyorsa model gerçeği tam yansıtmaz.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Binom dağılımının formülü nedir?</summary><p>P(X = k) = C(n, k) × p^k × (1 − p)^(n − k). Burada n deneme sayısı, k başarı sayısı, p tek denemedeki başarı olasılığı, C(n, k) ise n'nin k'li kombinasyonudur.</p></details>
+        <details><summary>P(X ≤ k) ile P(X &lt; k) arasındaki fark nedir?</summary><p>P(X ≤ k), k başarının kendisini de içerir; P(X &lt; k) içermez. Aralarındaki fark tam olarak P(X = k) kadardır. Kesikli dağılımlarda bu ayrım sonucu belirgin biçimde değiştirir.</p></details>
+        <details><summary>Başarı olasılığını kesir olarak yazabilir miyim?</summary><p>Evet. Olasılık alanına 1/6 ya da 3/8 gibi bir kesir, 0,25 gibi bir ondalık sayı ya da %25 gibi bir yüzde yazabilirsiniz; üçü de kabul edilir.</p></details>
+        <details><summary>&quot;Başarı&quot; kelimesi iyi bir sonuç anlamına mı gelir?</summary><p>Hayır, yalnızca sayılan sonucu ifade eder. Kusurlu ürün, hastalığa yakalanma ya da yanlış yanıt da &quot;başarı&quot; olarak tanımlanabilir; önemli olan p değerinin o sonucun olasılığı olmasıdır.</p></details>
+        <details><summary>Binom dağılımı ne zaman normal dağılıma yaklaşır?</summary><p>Deneme sayısı büyüdükçe ve p uç değerlerden uzak oldukça dağılım çan eğrisine benzer. Yaygın pratik ölçüt, n × p ve n × (1 − p) değerlerinin her ikisinin de en az 10 olmasıdır. Bu araç yaklaşım yerine tam değeri hesapladığı için böyle bir koşula gerek duymaz.</p></details>
+        <details><summary>Beklenen değer tam sayı çıkmazsa ne anlama gelir?</summary><p>Beklenen değer uzun vadeli ortalamadır, tek bir deneyin sonucu değildir. 5 atışta beklenen yazı sayısının 2,5 olması, çok sayıda beş atışlık serinin ortalamasının 2,5'e yaklaşacağını söyler.</p></details>
+        <details><summary>En az bir başarı olasılığını nasıl bulurum?</summary><p>k alanına 1 yazıp P(X ≥ 1) satırını okuyun. Bu değer 1 − (1 − p)^n formülüne eşittir; örneğin 10 denemede p = 0,1 için yaklaşık %65,13'tür.</p></details>
+        <details><summary>Girdiğim veriler saklanıyor mu?</summary><p>Hayır. Bütün hesap tarayıcınızda yapılır; değerler sunucuya gönderilmez, kaydedilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../olasilik-hesapla/">Olasılık Hesaplama</a></li>
+        <li><a href="../kombinasyon-permutasyon/">Kombinasyon, Permütasyon ve Faktöriyel Hesaplama</a></li>
+        <li><a href="../faktoriyel-hesapla/">Faktöriyel Hesaplama</a></li>
+        <li><a href="../standart-sapma-hesapla/">Standart Sapma Hesaplama</a></li>
+        <li><a href="../zar-olasiligi-hesapla/">Zar Olasılığı Hesaplama</a></li>
+        <li><a href="../guven-araligi-hesapla/">Güven Aralığı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="binom-dagilimi-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

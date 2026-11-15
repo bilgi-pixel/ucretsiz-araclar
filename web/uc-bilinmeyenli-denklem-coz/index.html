@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Üç Bilinmeyenli Denklem Çözme – x, y, z Bulma (Cramer Kuralı)</title>
+  <meta name="description" content="Üç bilinmeyenli üç doğrusal denklemi katsayılarını yazarak çözün. x, y, z değerleri ve D, Dx, Dy, Dz determinantları; çözümsüz ve sonsuz çözümlü sistemler de saptanır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/uc-bilinmeyenli-denklem-coz/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Üç Bilinmeyenli Denklem Çözme – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/uc-bilinmeyenli-denklem-coz/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Üç bilinmeyenli denklem nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Yok etme yöntemiyle bilinmeyenler sırayla elenebilir ya da Cramer kuralı kullanılabilir. Bu araç Cramer kuralını uygular: D, Dx, Dy, Dz determinantlarını hesaplar ve her bilinmeyeni ilgili determinantın D'ye bölümü olarak bulur."}},{"@type":"Question","name":"Katsayıları hangi sırayla yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Her satıra önce x katsayısı, sonra y katsayısı, sonra z katsayısı, en son eşitliğin sağındaki sayı yazılır. Sayılar boşlukla ayrılır; örneğin x + 2y − z = 2 için \"1 2 -1 2\" girilir."}},{"@type":"Question","name":"Bir denklemde z yoksa ne yazacağım?","acceptedAnswer":{"@type":"Answer","text":"O bilinmeyenin katsayısı yerine 0 yazın. Örneğin 3x + y = 7 denklemi \"3 1 0 7\" olur. Bir satırda üç katsayının hepsi birden 0 olamaz."}},{"@type":"Question","name":"Determinant sıfır çıkarsa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Sistemin tek çözümü yoktur. Denklemler birbiriyle çelişiyorsa çözüm hiç yoktur; bir denklem diğerlerinden türetilebiliyorsa sonsuz çözüm vardır. Araç hangisinin geçerli olduğunu ilk satırda belirtir."}},{"@type":"Question","name":"İki denklemle üç bilinmeyen bulunur mu?","acceptedAnswer":{"@type":"Answer","text":"Genel olarak hayır. İki denklem üç bilinmeyeni tek tek belirlemeye yetmez; ya sonsuz çözüm vardır ya da hiç yoktur. Tek bir çözüm için birbirinden bağımsız üç denklem gerekir."}},{"@type":"Question","name":"Ondalıklı katsayı kullanabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Ondalık ayırıcı olarak virgül ya da nokta yazabilirsiniz: \"1,5 1 0 4\" geçerli bir satırdır. Sayıları birbirinden ayırmak için virgül değil boşluk kullanın."}},{"@type":"Question","name":"Sonucun doğru olduğunu nasıl anlarım?","acceptedAnswer":{"@type":"Answer","text":"x, y ve z değerlerini üç denklemde de yerine koyun; her birinde sol taraf sağdaki sayıya eşit çıkmalıdır. Tek bir denklemi sağlaması yeterli değildir, üçü de sağlanmalıdır."}},{"@type":"Question","name":"Girdiğim denklemler saklanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tarayıcınızda yapılır; yazdığınız katsayılar sunucuya gönderilmez ve kaydedilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Üç Bilinmeyenli Denklem Çözme</span> – x, y ve z bulma</h1>
+      <p class="lead">Üç bilinmeyenli üç doğrusal denklemin katsayılarını satır satır yazın; araç <strong>x, y ve z</strong> değerlerini bulur, Cramer kuralında kullanılan dört determinantı da gösterir. Tek çözüm yoksa sistemin çözümsüz mü yoksa sonsuz çözümlü mü olduğunu bildirir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-d1">1. denklem katsayıları (a b c d)</label><input id="f-d1" data-field="d1" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 2 1 -1 8"><div class="hint">ax + by + cz = d için dört sayıyı boşlukla ayırarak yazın.</div></div>
+          <div class="ba-field is-wide"><label for="f-d2">2. denklem katsayıları (a b c d)</label><input id="f-d2" data-field="d2" type="text" inputmode="text" autocomplete="off" placeholder="Örn. -3 -1 2 -11"></div>
+          <div class="ba-field is-wide"><label for="f-d3">3. denklem katsayıları (a b c d)</label><input id="f-d3" data-field="d3" type="text" inputmode="text" autocomplete="off" placeholder="Örn. -2 1 2 -3"></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Çöz</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="uc-bilinmeyenli-denklem-coz-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Üç denklemi de <strong>ax + by + cz = d</strong> biçimine getirin: bilinmeyenler x, y, z sırasıyla solda, sabit sayı sağda olsun.</li>
+        <li>Her denklem için dört sayıyı aralarında boşluk bırakarak ilgili satıra yazın. Örneğin 2x + y − z = 8 için &quot;2 1 -1 8&quot; girilir.</li>
+        <li>Bir denklemde bulunmayan bilinmeyenin katsayısı yerine 0 yazın; görünmeyen katsayı (örneğin tek başına y) 1'dir. Ondalıklı sayılarda virgül kullanabilirsiniz.</li>
+        <li>&quot;Çöz&quot; düğmesine basın. Çözüm ilk satırda, x, y, z ayrı satırlarda, determinantlar en altta listelenir.</li>
+        <li>Bulunan değerleri üç denklemde de yerine koyarak sağlama yapın.</li>
+      </ol>
+
+      <h2>Üç bilinmeyenli sistem neyi anlatır?</h2>
+      <p>Üç bilinmeyeni tek tek belirleyebilmek için birbirinden bağımsız üç koşul gerekir. Her doğrusal denklem üç boyutlu uzayda bir düzlem tanımlar; sistemin çözümü de bu üç düzlemin ortak noktasıdır. Düzlemler bir odanın iki duvarı ve zemini gibi tek bir köşede buluşuyorsa tek çözüm vardır.</p>
+      <p>Düzlemler her zaman tek noktada buluşmaz. İki düzlem paralelse ya da üçü ikişer ikişer kesişip ortak bir nokta bırakmıyorsa sistem çözümsüzdür. Üç düzlem bir kitabın sayfaları gibi ortak bir doğru boyunca kesişiyorsa ya da bazıları üst üste biniyorsa sonsuz çözüm ortaya çıkar. Araç bu üç durumu ayırt eder.</p>
+
+      <h2>Cramer kuralı ve 3×3 determinant</h2>
+      <p>Araç önce katsayılardan oluşan 3×3 determinantı (D) hesaplar. Sonra x sütununu sağ taraf sayılarıyla değiştirerek Dx, y sütununu değiştirerek Dy, z sütununu değiştirerek Dz bulunur. D sıfır değilse çözüm <strong>x = Dx ÷ D</strong>, <strong>y = Dy ÷ D</strong>, <strong>z = Dz ÷ D</strong> olur.</p>
+      <p>Satırları (a₁ b₁ c₁), (a₂ b₂ c₂), (a₃ b₃ c₃) olan determinant birinci satıra göre şöyle açılır: <strong>D = a₁(b₂c₃ − b₃c₂) − b₁(a₂c₃ − a₃c₂) + c₁(a₂b₃ − a₃b₂)</strong>. Ortadaki terimin önündeki eksi işareti en sık unutulan ayrıntıdır. Sarrus kuralı da aynı sonucu verir: üç ana köşegen çarpımı toplanır, üç ters köşegen çarpımı çıkarılır.</p>
+
+      <div class="ba-ad" data-slot="uc-bilinmeyenli-denklem-coz-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Sistem: 2x + y − z = 8, −3x − y + 2z = −11, −2x + y + 2z = −3.</p>
+      <p>D = 2·[(−1)·2 − 1·2] − 1·[(−3)·2 − (−2)·2] + (−1)·[(−3)·1 − (−2)·(−1)] = 2·(−4) − 1·(−2) − 1·(−5) = −8 + 2 + 5 = −1.</p>
+      <p>Aynı açılımla Dx = −2, Dy = −3 ve Dz = 1 bulunur. Buradan x = −2 ÷ −1 = 2, y = −3 ÷ −1 = 3, z = 1 ÷ −1 = −1 çıkar.</p>
+      <p>Sağlama: 2·2 + 3 − (−1) = 8; −3·2 − 3 + 2·(−1) = −11; −2·2 + 3 + 2·(−1) = −3. Üç denklem de sağlanıyor.</p>
+
+      <h2>Yok etme (Gauss) yöntemiyle karşılaştırma</h2>
+      <p>Okulda en çok kullanılan yol, bilinmeyenleri sırayla yok etmektir. Önce iki denklem çifti seçilip aynı bilinmeyen (örneğin z) her ikisinden yok edilir; geriye x ve y içeren iki denklem kalır. Bu iki bilinmeyenli sistem çözülür, bulunan değerler baştaki denklemlerden birine yazılarak üçüncü bilinmeyen elde edilir.</p>
+      <p>Yukarıdaki örnekte birinci ve ikinci denklem toplanırsa −x + z = −3, birinci denklem üçüncüden çıkarılırsa −4x + 3z = −11 elde edilir. İlkinden z = x − 3 yazılıp ikincide yerine konursa −4x + 3x − 9 = −11, yani x = 2 bulunur; ardından z = −1 ve y = 3 gelir. Elle çözümde işlem sayısı azdır ama işaret hatası riski yüksektir; bu araçla sonucu doğrulamak işe yarar.</p>
+
+      <h2>Kullanım alanları</h2>
+      <ul>
+        <li><strong>Karışım ve alışveriş problemleri:</strong> Üç farklı ürünün birim fiyatı bilinmiyor, üç ayrı alışverişin toplam tutarı biliniyorsa her alışveriş bir denklem verir.</li>
+        <li><strong>Elektrik devreleri:</strong> Kirchhoff yasalarıyla yazılan çevre ve düğüm denklemleri, üç kollu devrelerde üç bilinmeyenli sisteme dönüşür.</li>
+        <li><strong>Kimya:</strong> Tepkime denkleştirmede ve üç bileşenli karışımların miktar hesabında katsayılar denklem sistemiyle bulunur.</li>
+        <li><strong>Geometri:</strong> Üç noktadan geçen parabolün y = ax² + bx + c katsayıları, noktalar yerine yazıldığında a, b, c için üç denklem oluşur.</li>
+        <li><strong>Statik:</strong> Dengedeki bir cisme etkiyen üç bilinmeyen kuvvet, denge denklemleriyle çözülür.</li>
+      </ul>
+
+      <h2>Girdi biçimi ve sık yapılan hatalar</h2>
+      <p>Her satıra tam dört sayı yazılmalıdır. Üç ya da beş sayı girilirse araç hangi satırda sorun olduğunu bildirir. Bilinmeyenlerin sırası üç denklemde de aynı olmalıdır; bir denklemde x, y, z, diğerinde y, x, z sırasıyla katsayı yazmak yanlış sonuca götürür.</p>
+      <p>Eksi işaretini sayıya bitişik yazın (&quot;- 3&quot; değil &quot;-3&quot;). Sabit terim eşitliğin solundaysa sağa geçirirken işaretini değiştirin: x + y + z − 6 = 0 denklemi &quot;1 1 1 6&quot; olarak girilir. Kesirli katsayılarda denklemin tamamını paydayla çarpıp tam sayıya çevirmek yuvarlama hatasını önler.</p>
+
+      <h2>Sınırlar</h2>
+      <p>Araç yalnızca doğrusal denklemleri çözer; bilinmeyenlerin çarpımı, karesi ya da kökü bulunan sistemler kapsam dışındadır. Sonuçlar altı ondalık basamağa yuvarlanır. Katsayıları birbirine çok yakın olan, neredeyse bağımlı sistemlerde determinant sıfıra çok yaklaşır ve küçük girdi farkları sonucu büyük ölçüde değiştirebilir; mühendislik hesaplarında böyle bir sistemle karşılaşırsanız verilerinizi ve ölçüm duyarlılığınızı gözden geçirin.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Üç bilinmeyenli denklem nasıl çözülür?</summary><p>Yok etme yöntemiyle bilinmeyenler sırayla elenebilir ya da Cramer kuralı kullanılabilir. Bu araç Cramer kuralını uygular: D, Dx, Dy, Dz determinantlarını hesaplar ve her bilinmeyeni ilgili determinantın D'ye bölümü olarak bulur.</p></details>
+        <details><summary>Katsayıları hangi sırayla yazmalıyım?</summary><p>Her satıra önce x katsayısı, sonra y katsayısı, sonra z katsayısı, en son eşitliğin sağındaki sayı yazılır. Sayılar boşlukla ayrılır; örneğin x + 2y − z = 2 için &quot;1 2 -1 2&quot; girilir.</p></details>
+        <details><summary>Bir denklemde z yoksa ne yazacağım?</summary><p>O bilinmeyenin katsayısı yerine 0 yazın. Örneğin 3x + y = 7 denklemi &quot;3 1 0 7&quot; olur. Bir satırda üç katsayının hepsi birden 0 olamaz.</p></details>
+        <details><summary>Determinant sıfır çıkarsa ne olur?</summary><p>Sistemin tek çözümü yoktur. Denklemler birbiriyle çelişiyorsa çözüm hiç yoktur; bir denklem diğerlerinden türetilebiliyorsa sonsuz çözüm vardır. Araç hangisinin geçerli olduğunu ilk satırda belirtir.</p></details>
+        <details><summary>İki denklemle üç bilinmeyen bulunur mu?</summary><p>Genel olarak hayır. İki denklem üç bilinmeyeni tek tek belirlemeye yetmez; ya sonsuz çözüm vardır ya da hiç yoktur. Tek bir çözüm için birbirinden bağımsız üç denklem gerekir.</p></details>
+        <details><summary>Ondalıklı katsayı kullanabilir miyim?</summary><p>Evet. Ondalık ayırıcı olarak virgül ya da nokta yazabilirsiniz: &quot;1,5 1 0 4&quot; geçerli bir satırdır. Sayıları birbirinden ayırmak için virgül değil boşluk kullanın.</p></details>
+        <details><summary>Sonucun doğru olduğunu nasıl anlarım?</summary><p>x, y ve z değerlerini üç denklemde de yerine koyun; her birinde sol taraf sağdaki sayıya eşit çıkmalıdır. Tek bir denklemi sağlaması yeterli değildir, üçü de sağlanmalıdır.</p></details>
+        <details><summary>Girdiğim denklemler saklanıyor mu?</summary><p>Hayır. Hesaplama tarayıcınızda yapılır; yazdığınız katsayılar sunucuya gönderilmez ve kaydedilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../iki-bilinmeyenli-denklem-coz/">İki Bilinmeyenli Denklem Çözme</a></li>
+        <li><a href="../diskriminant-hesapla/">Diskriminant ve Kök Hesaplama</a></li>
+        <li><a href="../dogru-denklemi-bul/">İki Noktadan Doğru Denklemi Bulma</a></li>
+        <li><a href="../dogrusal-interpolasyon-hesapla/">Doğrusal İnterpolasyon Hesaplama</a></li>
+        <li><a href="../dogrusal-regresyon-hesapla/">Doğrusal Regresyon Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="uc-bilinmeyenli-denklem-coz-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

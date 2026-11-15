@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Desibel (dB) Kazanç Hesaplama – Güç ve Gerilim Oranından dB</title>
+  <meta name="description" content="Giriş ve çıkış değerlerinden kazancı ya da zayıflamayı desibel (dB) olarak hesaplayın; dB değerini güç ve gerilim oranına geri çevirin. 10 log ve 20 log kuralı.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/desibel-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Desibel (dB) Kazanç Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/desibel-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"3 dB kaç kat demektir?","acceptedAnswer":{"@type":"Answer","text":"Güçte yaklaşık 2 kat (tam değer 1,995), gerilimde yaklaşık 1,41 kat demektir. −3 dB ise gücün yarıya, gerilimin yaklaşık 0,707 katına düşmesidir."}},{"@type":"Question","name":"Güç için neden 10, gerilim için neden 20 ile çarpılır?","acceptedAnswer":{"@type":"Answer","text":"Güç gerilimin karesiyle orantılıdır. Logaritmada kare almak 2 ile çarpmaya dönüştüğü için gerilim ve akım oranlarında katsayı 20 olur; böylece aynı devre için iki hesap aynı dB değerini verir."}},{"@type":"Question","name":"Negatif dB ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Çıkışın girişten küçük olduğunu, yani zayıflama ya da kayıp bulunduğunu gösterir. −10 dB gücün onda birine düştüğü anlamına gelir."}},{"@type":"Question","name":"20 dB kazanç kaç kat yükseltme eder?","acceptedAnswer":{"@type":"Answer","text":"Gerilimde 10 kat, güçte 100 kat. Araçta \"dB değerinden oran hesapla\" seçip 20 yazarak her iki oranı görebilirsiniz."}},{"@type":"Question","name":"Art arda bağlı katların toplam kazancı nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"dB değerleri toplanır. 12 dB kazançlı bir ön yükselteç, 2 dB kayıplı bir kablo ve 25 dB kazançlı bir güç katı için toplam 12 − 2 + 25 = 35 dB'dir."}},{"@type":"Question","name":"dB ile dBm aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. dB iki değer arasındaki oranı, dBm ise 1 miliwatta göre mutlak gücü gösterir. Bir dBm değerine dB eklenebilir ama dB tek başına bir güç değeri vermez."}},{"@type":"Question","name":"Ses desibeli de bu formülle mi hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Ses basıncı seviyesi 20 log formülüyle, ses gücü ve şiddeti 10 log formülüyle hesaplanır; mantık aynıdır. Ancak gürültü ölçümlerinde kullanılan ağırlıklandırma eğrileri bu aracın kapsamında değildir."}},{"@type":"Question","name":"Girdiğim değerler saklanıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tümüyle tarayıcınızda yapılır; hiçbir değer sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#elektrik" class="ba-nav-optional">Elektrik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#elektrik">Elektrik</a></li></ol>
+      <h1><span class="ba-grad">Desibel (dB) Kazanç Hesaplama</span> – güç ve gerilim oranı</h1>
+      <p class="lead">Bir yükseltecin, filtrenin, kablonun ya da antenin <strong>kazancını veya kaybını desibel (dB)</strong> olarak hesaplayın. Giriş ve çıkış değerlerinden dB'yi bulabilir ya da bildiğiniz bir dB değerinin kaç kat güç ve gerilim farkına karşılık geldiğini görebilirsiniz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-mod">İşlem</label><select id="f-mod" data-field="mod"><option value="oran">Giriş ve çıkıştan dB hesapla</option><option value="db">dB değerinden oran hesapla</option></select></div>
+          <div class="ba-field"><label for="f-tur">Büyüklük türü</label><select id="f-tur" data-field="tur"><option value="guc">Güç (W, mW) – 10 log</option><option value="gerilim">Gerilim ya da akım (V, A) – 20 log</option></select></div>
+          <div class="ba-field"><label for="f-giris">Giriş değeri</label><input id="f-giris" data-field="giris" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1"></div>
+          <div class="ba-field"><label for="f-cikis">Çıkış değeri</label><input id="f-cikis" data-field="cikis" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 2"><div class="hint">Girişle aynı birimde olmalı.</div></div>
+          <div class="ba-field"><label for="f-db">dB değeri</label><input id="f-db" data-field="db" type="text" inputmode="decimal" autocomplete="off" placeholder="Yalnızca dB'den oran hesaplanırken"></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="desibel-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;İşlem&quot; listesinden yönü seçin: giriş ve çıkış değerlerinden dB bulmak ya da bir dB değerini orana çevirmek.</li>
+        <li>Giriş ve çıkıştan hesap yapıyorsanız &quot;Büyüklük türü&quot; olarak güç ya da gerilim/akım seçin; bu seçim 10 log ya da 20 log formülünü belirler.</li>
+        <li>Giriş ve çıkış değerlerini aynı birimde yazın (ikisi de watt, ikisi de volt gibi). dB'den oran arıyorsanız yalnızca &quot;dB değeri&quot; alanını doldurun.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. Kazanç, karşılık gelen güç ve gerilim oranları ile kazanç ya da zayıflama durumu listelenir.</li>
+      </ol>
+
+      <h2>Desibel nedir?</h2>
+      <p>Desibel, iki büyüklüğün oranını logaritmik olarak ifade eden birimsiz bir ölçüdür. Adını Alexander Graham Bell'den alan &quot;bel&quot; biriminin onda biridir. Tek başına bir dB değeri mutlak bir büyüklük göstermez; her zaman &quot;neye göre&quot; sorusunun cevabı olan bir referansa ihtiyaç duyar. Bu sayfada referans giriş değeridir: sonuç, çıkışın girişe göre kaç dB yüksek ya da düşük olduğunu söyler.</p>
+      <p>Logaritmik ölçek iki nedenle tercih edilir. Birincisi, milyonda birden milyon kata kadar uzanan oranlar −60 dB ile +60 dB gibi okunaklı sayılara sığar. İkincisi, art arda bağlı katların kazançları çarpılmak yerine toplanır: 20 dB kazançlı bir yükselteçten sonra 3 dB kayıplı bir kablo gelirse toplam 17 dB'dir.</p>
+
+      <h2>10 log mu, 20 log mu?</h2>
+      <p>Desibelin tanımı güç oranı üzerinedir: <strong>dB = 10 × log<sub>10</sub>(P<sub>çıkış</sub> ÷ P<sub>giriş</sub>)</strong>. Güç, gerilimin karesiyle orantılı olduğundan (P = V² ÷ R), aynı direnç üzerindeki gerilim ya da akım oranı için katsayı ikiye katlanır: <strong>dB = 20 × log<sub>10</sub>(V<sub>çıkış</sub> ÷ V<sub>giriş</sub>)</strong>.</p>
+      <p>Bu yüzden aynı dB değeri güç ve gerilim için farklı oranlara denk gelir. 6 dB, gücün yaklaşık dört katı ama gerilimin yaklaşık iki katıdır. Araç her iki oranı birlikte gösterir; böylece hangi büyüklükle çalıştığınıza göre doğru satırı okuyabilirsiniz. 20 log formülünün güç kazancıyla aynı sonucu vermesi için giriş ve çıkış empedanslarının eşit olması gerektiğini unutmayın.</p>
+
+      <div class="ba-ad" data-slot="desibel-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnekler</h2>
+      <p><strong>Güç yükselteci:</strong> Girişine 1 W verilen bir yükselteç 2 W çıkış veriyorsa kazanç 10 × log<sub>10</sub>(2) = 10 × 0,30103 = <strong>3,01 dB</strong> olur. &quot;3 dB iki kat güçtür&quot; kuralı buradan gelir.</p>
+      <p><strong>Gerilim yükselteci:</strong> 1 V giriş 10 V çıkışa yükseltiliyorsa kazanç 20 × log<sub>10</sub>(10) = <strong>20 dB</strong> eder. Bu, gerilimde 10 kat, güçte 100 kat artış demektir.</p>
+      <p><strong>Kablo kaybı:</strong> Uzun bir koaksiyel kabloya 10 W verip ucunda 1 W ölçüyorsanız 10 × log<sub>10</sub>(0,1) = <strong>−10 dB</strong> bulunur; eksi işareti zayıflamayı gösterir.</p>
+      <p><strong>Tersine hesap:</strong> Bir zayıflatıcının değeri −6 dB olarak verilmişse gerilim 10<sup>−6 ÷ 20</sup> = 0,501 katına, güç 10<sup>−6 ÷ 10</sup> = 0,251 katına düşer.</p>
+
+      <h2>Ezberlemeye değer dB değerleri</h2>
+      <ul>
+        <li><strong>0 dB:</strong> değişim yok, oran 1.</li>
+        <li><strong>3 dB:</strong> güç yaklaşık 2 kat, gerilim yaklaşık 1,41 kat.</li>
+        <li><strong>6 dB:</strong> güç yaklaşık 4 kat, gerilim yaklaşık 2 kat.</li>
+        <li><strong>10 dB:</strong> güç 10 kat, gerilim yaklaşık 3,16 kat.</li>
+        <li><strong>20 dB:</strong> güç 100 kat, gerilim 10 kat.</li>
+        <li><strong>30 dB:</strong> güç 1000 kat, gerilim yaklaşık 31,6 kat.</li>
+        <li><strong>40 dB:</strong> güç 10 000 kat, gerilim 100 kat.</li>
+        <li>Eksi işaretli değerler aynı oranların tersidir: −3 dB güçte yarı, −20 dB gerilimde onda bir.</li>
+      </ul>
+
+      <h2>dB'nin türevleri: dBm, dBV, dBi, dB SPL</h2>
+      <p>dB'nin sonuna eklenen harfler sabit bir referansı gösterir ve değeri mutlak hâle getirir. <strong>dBm</strong> 1 miliwatta, <strong>dBW</strong> 1 watta, <strong>dBV</strong> 1 volta, <strong>dBu</strong> yaklaşık 0,775 volta göre ölçümdür. Anten kazancında kullanılan <strong>dBi</strong> her yöne eşit yayan kuramsal bir antene, <strong>dBd</strong> ise yarım dalga dipole göredir.</p>
+      <p>Ses seviyesi için kullanılan dB SPL de aynı mantıkla, insan kulağının duyma eşiği kabul edilen bir ses basıncına göre 20 log formülüyle hesaplanır. Bu sayfadaki araç referansı siz verdiğiniz için bunların hepsinde oran hesabı yapabilir; ancak gürültü ölçümlerindeki frekans ağırlıklandırmaları (dBA gibi) ayrı bir konudur ve burada hesaplanmaz.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li>Gerilim oranı için 10 log, güç oranı için 20 log kullanmak. Sonuç iki kat yanlış çıkar.</li>
+        <li>Giriş ve çıkışı farklı birimlerde yazmak. Biri miliwatt, diğeri watt ise önce aynı birime çevirin.</li>
+        <li>dB değerlerini çarpmak. Art arda katlarda dB değerleri toplanır.</li>
+        <li>&quot;İki kat ses&quot; ile &quot;iki kat güç&quot;ü karıştırmak. Gücü ikiye katlamak 3 dB'dir, ancak algılanan ses yüksekliğinin iki katına çıkması için genellikle yaklaşık 10 dB'lik artış gerektiği kabul edilir.</li>
+        <li>Empedanslar farklıyken gerilim kazancını güç kazancı sanmak.</li>
+      </ul>
+
+      <h2>Sınırlar</h2>
+      <p>Logaritma yalnızca pozitif sayılar için tanımlı olduğundan giriş ve çıkış değerleri sıfırdan büyük olmalıdır; sıfır çıkış eksi sonsuz dB'ye karşılık gelir. Sonuçlar iki ondalık basamakla, oranlar altı anlamlı basamakla gösterilir. Hesap bilgilendirme amaçlıdır; ölçüm cihazı belirsizliği ve empedans uyumsuzluğu gibi etkenler hesaba katılmaz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>3 dB kaç kat demektir?</summary><p>Güçte yaklaşık 2 kat (tam değer 1,995), gerilimde yaklaşık 1,41 kat demektir. −3 dB ise gücün yarıya, gerilimin yaklaşık 0,707 katına düşmesidir.</p></details>
+        <details><summary>Güç için neden 10, gerilim için neden 20 ile çarpılır?</summary><p>Güç gerilimin karesiyle orantılıdır. Logaritmada kare almak 2 ile çarpmaya dönüştüğü için gerilim ve akım oranlarında katsayı 20 olur; böylece aynı devre için iki hesap aynı dB değerini verir.</p></details>
+        <details><summary>Negatif dB ne anlama gelir?</summary><p>Çıkışın girişten küçük olduğunu, yani zayıflama ya da kayıp bulunduğunu gösterir. −10 dB gücün onda birine düştüğü anlamına gelir.</p></details>
+        <details><summary>20 dB kazanç kaç kat yükseltme eder?</summary><p>Gerilimde 10 kat, güçte 100 kat. Araçta &quot;dB değerinden oran hesapla&quot; seçip 20 yazarak her iki oranı görebilirsiniz.</p></details>
+        <details><summary>Art arda bağlı katların toplam kazancı nasıl bulunur?</summary><p>dB değerleri toplanır. 12 dB kazançlı bir ön yükselteç, 2 dB kayıplı bir kablo ve 25 dB kazançlı bir güç katı için toplam 12 − 2 + 25 = 35 dB'dir.</p></details>
+        <details><summary>dB ile dBm aynı şey mi?</summary><p>Hayır. dB iki değer arasındaki oranı, dBm ise 1 miliwatta göre mutlak gücü gösterir. Bir dBm değerine dB eklenebilir ama dB tek başına bir güç değeri vermez.</p></details>
+        <details><summary>Ses desibeli de bu formülle mi hesaplanır?</summary><p>Ses basıncı seviyesi 20 log formülüyle, ses gücü ve şiddeti 10 log formülüyle hesaplanır; mantık aynıdır. Ancak gürültü ölçümlerinde kullanılan ağırlıklandırma eğrileri bu aracın kapsamında değildir.</p></details>
+        <details><summary>Girdiğim değerler saklanıyor mu?</summary><p>Hayır. Hesap tümüyle tarayıcınızda yapılır; hiçbir değer sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../dbm-watt-cevir/">dBm Watt Çevirici</a></li>
+        <li><a href="../opamp-kazanc-hesapla/">Op-Amp Kazancı Hesaplama</a></li>
+        <li><a href="../rc-filtre-kesim-frekansi-hesapla/">RC Filtre Kesim Frekansı Hesaplama</a></li>
+        <li><a href="../anten-boyu-hesapla/">Anten Boyu ve Dalga Boyu Hesaplama</a></li>
+        <li><a href="../elektrik-gucu-hesapla/">Elektrik Gücü (Watt) Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="desibel-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

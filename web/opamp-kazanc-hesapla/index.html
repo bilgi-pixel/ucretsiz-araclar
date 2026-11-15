@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Op-Amp Kazancı Hesaplama – Eviren ve Evirmeyen Yükselteç</title>
+  <meta name="description" content="Eviren ve evirmeyen op-amp devresinin gerilim kazancını, desibel karşılığını ve çıkış gerilimini direnç değerlerinden hesaplayın; doyma uyarısı alın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/opamp-kazanc-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Op-Amp Kazancı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/opamp-kazanc-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Eviren yükselteçte kazanç neden negatif çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Negatif işaret bir hata değil, faz bilgisidir. Giriş yükselirken çıkış düşer; yani sinyal 180 derece çevrilir. Genlik olarak yükseltme miktarı Rf ÷ R1 oranıdır."}},{"@type":"Question","name":"Kazancı 1'den küçük yapabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Eviren devrede evet: Rf değerini R1'den küçük seçerseniz sinyal zayıflatılır. Evirmeyen devrede ise kazanç en az 1'dir; daha düşüğü için girişe gerilim bölücü eklemeniz gerekir."}},{"@type":"Question","name":"Direnç birimi sonucu değiştirir mi?","acceptedAnswer":{"@type":"Answer","text":"Kazanç yalnızca orana bağlı olduğu için iki direnci aynı birimle yazdığınız sürece değişmez. Birim seçimi yalnızca eviren devrede gösterilen giriş direnci satırını etkiler."}},{"@type":"Question","name":"Gerilim izleyici (tampon) nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Devre tipini evirmeyen seçip Rf alanına 0 yazın. Kazanç 1, yani 0 dB çıkar. R1 bu devrede genellikle hiç takılmaz; hesap için herhangi bir pozitif değer yazabilirsiniz."}},{"@type":"Question","name":"Tek beslemeli devrede bu formüller geçerli mi?","acceptedAnswer":{"@type":"Answer","text":"Kazanç formülleri aynıdır; ancak sinyalin toprağın altına inemeyeceğini unutmayın. Tek beslemede genellikle giriş, beslemenin yarısı kadar bir referans gerilimine oturtulur ve çıkış bu referansın çevresinde salınır."}},{"@type":"Question","name":"Hesaplanan kazanç ile ölçtüğüm kazanç neden farklı?","acceptedAnswer":{"@type":"Answer","text":"En sık nedenler direnç toleransı, sinyal frekansının devrenin bant genişliğine yakın olması, çıkışın doyuma girmesi ve yük direncinin çok küçük olmasıdır. Önce düşük frekanslı küçük bir sinyalle ölçüm yapın."}},{"@type":"Question","name":"20 dB kazanç kaç kat demektir?","acceptedAnswer":{"@type":"Answer","text":"Gerilim için 20 dB tam 10 kat yükseltme anlamına gelir. Her 20 dB bir onluk çarpandır: 40 dB 100 kat, 60 dB 1000 kat eder. 6 dB ise yaklaşık 2 kattır."}},{"@type":"Question","name":"Yazdığım değerler kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tümüyle tarayıcınızda yapılır; direnç ve gerilim değerleriniz hiçbir sunucuya gönderilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#elektrik" class="ba-nav-optional">Elektrik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#elektrik">Elektrik</a></li></ol>
+      <h1><span class="ba-grad">Op-Amp Kazancı Hesaplama</span> – eviren ve evirmeyen yükselteç</h1>
+      <p class="lead">Geri besleme direnci (R<sub>f</sub>) ile giriş direncini (R<sub>1</sub>) yazın; araç eviren ya da evirmeyen işlemsel yükselteç devresinin <strong>gerilim kazancını</strong>, desibel karşılığını ve isterseniz verdiğiniz giriş gerilimi için çıkış gerilimini hesaplasın.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-tip">Devre tipi</label><select id="f-tip" data-field="tip"><option value="eviren">Eviren yükselteç</option><option value="evirmeyen">Evirmeyen yükselteç</option></select></div>
+          <div class="ba-field"><label for="f-birim">Direnç birimi</label><select id="f-birim" data-field="birim"><option value="k">kΩ</option><option value="o">Ω</option><option value="m">MΩ</option></select></div>
+          <div class="ba-field"><label for="f-r1">Giriş direnci R1</label><input id="f-r1" data-field="r1" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"></div>
+          <div class="ba-field"><label for="f-rf">Geri besleme direnci Rf</label><input id="f-rf" data-field="rf" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 100"></div>
+          <div class="ba-field"><label for="f-vin">Giriş gerilimi (V, isteğe bağlı)</label><input id="f-vin" data-field="vin" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 0,5"><div class="hint">Boş bırakırsanız yalnızca kazanç hesaplanır.</div></div>
+          <div class="ba-field"><label for="f-besleme">Besleme gerilimi ± (V, isteğe bağlı)</label><input id="f-besleme" data-field="besleme" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 12"><div class="hint">Çıkışın doyuma girip girmediğini denetlemek için.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="opamp-kazanc-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;Devre tipi&quot; listesinden eviren ya da evirmeyen yükselteci seçin. Giriş sinyali eksi (−) uca bir direnç üzerinden geliyorsa eviren, doğrudan artı (+) uca geliyorsa evirmeyen devredir.</li>
+        <li>Dirençlerinizin birimini seçin ve R1 ile Rf değerlerini aynı birimle yazın. İkisi de kΩ ise 10 ve 100 yazmanız yeterlidir.</li>
+        <li>Çıkış gerilimini de görmek istiyorsanız giriş gerilimini volt olarak ekleyin; negatif değer yazabilirsiniz.</li>
+        <li>Simetrik besleme kullanıyorsanız besleme değerini (örneğin ±12 V için 12) yazın; araç çıkışın bu sınırı aşıp aşmadığını bildirir.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın ve kazancı, desibel karşılığını, faz bilgisini ve çıkış gerilimini sonuç kutusundan okuyun.</li>
+      </ol>
+
+      <h2>İşlemsel yükselteçte kazanç neden iki dirençle belirlenir?</h2>
+      <p>İşlemsel yükselteç (op-amp), iki girişi arasındaki farkı çok büyük bir katsayıyla, tipik olarak yüz bin kat ve üzeri bir açık çevrim kazancıyla yükselten bir entegredir. Bu kazanç tek başına kullanışsızdır; çünkü birkaç mikrovoltluk fark bile çıkışı besleme sınırına dayar. Devreyi kullanılabilir kılan şey <strong>negatif geri beslemedir</strong>: çıkışın bir bölümü eksi girişe geri verilir ve yükselteç, iki girişini aynı gerilimde tutacak biçimde kendini ayarlar.</p>
+      <p>Bu denge durumunda devrenin toplam kazancı, entegrenin iç özelliklerine değil neredeyse yalnızca dışarıya bağlanan iki direncin oranına bağlı olur. Dirençler ucuz, kararlı ve hassas üretilebildiği için ortaya çıkan kazanç da öngörülebilirdir. Bu sayfadaki hesap tam olarak bu oranı kullanır.</p>
+
+      <h2>Eviren yükselteç formülü</h2>
+      <p>Eviren devrede sinyal R<sub>1</sub> üzerinden eksi girişe uygulanır, artı giriş toprağa bağlanır ve R<sub>f</sub> çıkışı eksi girişe bağlar. Eksi giriş &quot;sanal toprak&quot; gibi davranır; R<sub>1</sub> üzerinden akan akımın tamamı R<sub>f</sub> üzerinden çıkışa gider. Buradan <strong>A<sub>v</sub> = −R<sub>f</sub> ÷ R<sub>1</sub></strong> bulunur. Eksi işareti çıkışın girişe göre 180 derece ters fazda olduğunu gösterir.</p>
+      <p>Çözümlü örnek: R<sub>1</sub> = 10 kΩ, R<sub>f</sub> = 100 kΩ için kazanç −100 ÷ 10 = −10'dur. Girişe 0,5 V uygularsanız çıkış −10 × 0,5 = −5 V olur. Desibel karşılığı 20 × log<sub>10</sub>(10) = 20 dB'dir. ±12 V besleme altında −5 V rahatça üretilebilir; araç da &quot;besleme sınırları içinde&quot; sonucunu verir.</p>
+      <p>Eviren devrede kaynağın gördüğü giriş direnci R<sub>1</sub> kadardır. Bu yüzden çıkış direnci yüksek bir sensörü küçük bir R<sub>1</sub> ile yüklemek sinyali zayıflatır; böyle durumlarda evirmeyen yapı ya da önüne bir tampon katı tercih edilir.</p>
+
+      <div class="ba-ad" data-slot="opamp-kazanc-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Evirmeyen yükselteç formülü</h2>
+      <p>Evirmeyen devrede sinyal doğrudan artı girişe gelir. Çıkış, R<sub>f</sub> ve R<sub>1</sub>'den oluşan bir gerilim bölücü üzerinden eksi girişe geri beslenir; R<sub>1</sub>'in öbür ucu topraktadır. Kazanç <strong>A<sub>v</sub> = 1 + R<sub>f</sub> ÷ R<sub>1</sub></strong> olur ve işaret değişmez.</p>
+      <p>Çözümlü örnek: R<sub>1</sub> = 1 kΩ, R<sub>f</sub> = 9 kΩ ise kazanç 1 + 9 = 10, yani yine 20 dB'dir. İki direnç eşit seçilirse kazanç 2 olur; bu da 6,02 dB eder. R<sub>f</sub> yerine kısa devre (0 Ω) kullanılırsa kazanç tam 1'e iner; bu devreye <em>gerilim izleyici</em> ya da tampon denir ve sinyali yükseltmeden yalnızca akım verme yeteneği kazandırır.</p>
+      <p>Evirmeyen devrenin kazancı hiçbir zaman 1'in altına düşemez. Sinyali zayıflatmanız gerekiyorsa ya eviren devreyi ya da girişte bir gerilim bölücüyü kullanmalısınız.</p>
+
+      <h2>Kazancı desibel olarak okumak</h2>
+      <p>Ses ve ölçüm devrelerinde kazanç çoğunlukla desibel ile ifade edilir. Gerilim kazancı için dönüşüm <strong>dB = 20 × log<sub>10</sub>|A<sub>v</sub>|</strong> biçimindedir. Kazancın işareti desibeli etkilemez; −10 ve +10 kazançların ikisi de 20 dB'dir.</p>
+      <ul>
+        <li>Kazanç 1 → 0 dB</li>
+        <li>Kazanç 2 → yaklaşık 6,02 dB</li>
+        <li>Kazanç 10 → 20 dB</li>
+        <li>Kazanç 100 → 40 dB</li>
+        <li>Kazanç 1000 → 60 dB</li>
+      </ul>
+
+      <h2>Direnç değeri seçerken dikkat edilecekler</h2>
+      <p>Aynı oranı sonsuz farklı direnç çiftiyle elde edebilirsiniz; ancak hepsi eşit derecede iyi değildir. Çok küçük dirençler (birkaç yüz ohm ve altı) op-amp çıkışından fazla akım çeker ve entegreyi ısıtır. Çok büyük dirençler (megaohm düzeyi) ise giriş kutuplama akımından ve kaçak kapasitelerden etkilenir, gürültüyü artırır. Genel amaçlı devrelerde 1 kΩ ile 100 kΩ arası değerler dengeli bir seçimdir.</p>
+      <p>Kazancın doğruluğu dirençlerin toleransına bağlıdır. Yüzde 5 toleranslı iki dirençle kurulan devrede kazanç en kötü durumda yaklaşık yüzde 10 sapabilir. Ölçüm devrelerinde yüzde 1 ya da daha hassas metal film dirençler kullanmak bu yüzden yaygındır.</p>
+
+      <h2>Doyma, bant genişliği ve diğer sınırlar</h2>
+      <p>Bir op-amp çıkışı besleme geriliminin dışına çıkamaz. ±15 V ile beslenen ve kazancı −10 olan bir devreye 2 V uygularsanız kâğıt üzerindeki −20 V sonucu üretilemez; çıkış besleme sınırının biraz altında kırpılır. Araç, besleme değerini yazdığınızda bu durumu &quot;doyuma girer&quot; uyarısıyla bildirir. Raydan raya (rail-to-rail) olmayan entegrelerde kullanılabilir salınım beslemeden bir iki volt daha dardır; bu payı kendiniz bırakmalısınız.</p>
+      <p>İkinci sınır frekanstır. Her op-amp'ın bir kazanç-bant genişliği çarpımı vardır; kazancı ne kadar yüksek seçerseniz devrenin düzgün yükseltebildiği en yüksek frekans o oranda düşer. Yüksek kazanç gerekiyorsa tek katta 1000 kat yerine iki katta 30'ar kat gibi bölmek daha geniş bantlı ve daha kararlı sonuç verir.</p>
+      <p>Bu sayfadaki sonuçlar ideal op-amp modeline dayanır ve bilgilendirme amaçlıdır. Giriş ofset gerilimi, yükselme hızı ve gürültü gibi etkiler hesaba katılmaz; kritik tasarımlarda kullandığınız entegrenin veri sayfasına bakın ve devreyi ölçerek doğrulayın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Eviren yükselteçte kazanç neden negatif çıkıyor?</summary><p>Negatif işaret bir hata değil, faz bilgisidir. Giriş yükselirken çıkış düşer; yani sinyal 180 derece çevrilir. Genlik olarak yükseltme miktarı Rf ÷ R1 oranıdır.</p></details>
+        <details><summary>Kazancı 1'den küçük yapabilir miyim?</summary><p>Eviren devrede evet: Rf değerini R1'den küçük seçerseniz sinyal zayıflatılır. Evirmeyen devrede ise kazanç en az 1'dir; daha düşüğü için girişe gerilim bölücü eklemeniz gerekir.</p></details>
+        <details><summary>Direnç birimi sonucu değiştirir mi?</summary><p>Kazanç yalnızca orana bağlı olduğu için iki direnci aynı birimle yazdığınız sürece değişmez. Birim seçimi yalnızca eviren devrede gösterilen giriş direnci satırını etkiler.</p></details>
+        <details><summary>Gerilim izleyici (tampon) nasıl hesaplanır?</summary><p>Devre tipini evirmeyen seçip Rf alanına 0 yazın. Kazanç 1, yani 0 dB çıkar. R1 bu devrede genellikle hiç takılmaz; hesap için herhangi bir pozitif değer yazabilirsiniz.</p></details>
+        <details><summary>Tek beslemeli devrede bu formüller geçerli mi?</summary><p>Kazanç formülleri aynıdır; ancak sinyalin toprağın altına inemeyeceğini unutmayın. Tek beslemede genellikle giriş, beslemenin yarısı kadar bir referans gerilimine oturtulur ve çıkış bu referansın çevresinde salınır.</p></details>
+        <details><summary>Hesaplanan kazanç ile ölçtüğüm kazanç neden farklı?</summary><p>En sık nedenler direnç toleransı, sinyal frekansının devrenin bant genişliğine yakın olması, çıkışın doyuma girmesi ve yük direncinin çok küçük olmasıdır. Önce düşük frekanslı küçük bir sinyalle ölçüm yapın.</p></details>
+        <details><summary>20 dB kazanç kaç kat demektir?</summary><p>Gerilim için 20 dB tam 10 kat yükseltme anlamına gelir. Her 20 dB bir onluk çarpandır: 40 dB 100 kat, 60 dB 1000 kat eder. 6 dB ise yaklaşık 2 kattır.</p></details>
+        <details><summary>Yazdığım değerler kaydediliyor mu?</summary><p>Hayır. Hesap tümüyle tarayıcınızda yapılır; direnç ve gerilim değerleriniz hiçbir sunucuya gönderilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../gerilim-bolucu-hesapla/">Gerilim Bölücü Hesaplama</a></li>
+        <li><a href="../desibel-hesapla/">Desibel (dB) Kazanç Hesaplama</a></li>
+        <li><a href="../rc-filtre-kesim-frekansi-hesapla/">RC Filtre Kesim Frekansı Hesaplama</a></li>
+        <li><a href="../ohm-kanunu-hesapla/">Ohm Kanunu Hesaplama</a></li>
+        <li><a href="../paralel-direnc-hesapla/">Paralel Direnç Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="opamp-kazanc-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

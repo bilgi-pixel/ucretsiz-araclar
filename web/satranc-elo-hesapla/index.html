@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Elo Puanı Hesaplama – Satranç Reyting (Rating) Değişimi</title>
+  <meta name="description" content="Kendi Elo puanınızı, rakibinizin puanını ve maç sonucunu girerek beklenen skoru, puan değişimini ve yeni reytinginizi K katsayısına göre hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/satranc-elo-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Elo Puanı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/satranc-elo-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Bir maçta en fazla kaç puan kazanabilirim?","acceptedAnswer":{"@type":"Answer","text":"En fazla K katsayısı kadar. K = 20 ise sizden çok güçlü bir rakibi yendiğinizde değişim 20'ye yaklaşır ama tam 20 olmaz, çünkü beklenen skorunuz hiçbir zaman tam sıfır değildir. Eşit rakibe karşı galibiyet K'nin yarısını kazandırır."}},{"@type":"Question","name":"Beraberlikte puan değişir mi?","acceptedAnswer":{"@type":"Answer","text":"Puanlar eşit değilse evet. Düşük puanlı oyuncu beraberlikle beklenenden iyi sonuç almış olur ve puan kazanır; yüksek puanlı oyuncu aynı miktarda kaybeder. Örneğin 1400 puanlı oyuncu 1600 puanlı rakibiyle berabere kalırsa K = 40 ile 10,39 puan alır."}},{"@type":"Question","name":"Beklenen skor kazanma olasılığı mıdır?","acceptedAnswer":{"@type":"Answer","text":"Tam olarak değil. Beklenen skor, galibiyet olasılığı ile beraberlik olasılığının yarısının toplamıdır. 0,76 beklenen skor, yüz maçtan ortalama 76 puan toplanacağı anlamına gelir; bunun kaçının galibiyet, kaçının beraberlik olacağını formül söylemez."}},{"@type":"Question","name":"Rakibim ne kadar puan kaybeder?","acceptedAnswer":{"@type":"Answer","text":"İki oyuncuya aynı K uygulanıyorsa sizin kazandığınız kadar kaybeder. K katsayıları farklıysa her oyuncunun değişimi kendi katsayısıyla hesaplanır; bu durumda rakibin puanını ve K değerini yer değiştirerek aracı ikinci kez çalıştırabilirsiniz."}},{"@type":"Question","name":"Puanı olmayan biriyle oynarsam ne olur?","acceptedAnswer":{"@type":"Answer","text":"Puansız oyuncuya karşı oynanan maçlar genellikle sizin puanınızı etkilemez; yeni oyuncunun ilk puanı ise ayrı bir yöntemle, belirli sayıda maçtaki performansına göre belirlenir. Bu araç iki tarafın da puanı olduğu durumu hesaplar."}},{"@type":"Question","name":"Elo ile UKD aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Elo uluslararası puanlamayı, UKD ise Türkiye Satranç Federasyonu'nun ulusal kuvvet derecesini ifade eder. İkisi de benzer mantıkla çalışır ama listeleri, katsayıları ve ayrıntı kuralları ayrıdır; bir oyuncunun iki puanı birbirinden farklı olabilir."}},{"@type":"Question","name":"Bu hesap satranç dışındaki oyunlarda kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. İki tarafın karşılaştığı ve sonucun galibiyet, beraberlik ya da mağlubiyet olduğu her oyunda aynı formül uygulanabilir. Kulüp içi masa tenisi, tavla ya da langırt sıralaması tutmak için K = 32 gibi sabit bir katsayı seçmeniz yeterlidir."}},{"@type":"Question","name":"Girdiğim puanlar kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tamamen tarayıcınızda yapılır; puanlar ve sonuç hiçbir sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gunluk" class="ba-nav-optional">Günlük Yaşam</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gunluk">Günlük Yaşam</a></li></ol>
+      <h1><span class="ba-grad">Elo Puanı Hesaplama</span> – satranç reyting değişimi</h1>
+      <p class="lead">Bir satranç maçının ardından <strong>Elo puanınızın nasıl değişeceğini</strong> hesaplayın. Araç iki oyuncunun puan farkından beklenen skoru bulur, gerçek sonuçla karşılaştırır ve seçtiğiniz K katsayısına göre yeni puanınızı gösterir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-puan">Sizin puanınız</label><input id="f-puan" data-field="puan" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1500"></div>
+          <div class="ba-field"><label for="f-rakip">Rakibin puanı</label><input id="f-rakip" data-field="rakip" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1600"></div>
+          <div class="ba-field"><label for="f-sonuc">Maç sonucu</label><select id="f-sonuc" data-field="sonuc"><option value="1">Kazandım (1)</option><option value="0.5">Berabere (½)</option><option value="0">Kaybettim (0)</option></select></div>
+          <div class="ba-field"><label for="f-k">K katsayısı</label><select id="f-k" data-field="k"><option value="20">K = 20 (2400 altı oyuncular)</option><option value="40">K = 40 (yeni oyuncular, gençler)</option><option value="10">K = 10 (2400 ve üzerine ulaşmış oyuncular)</option><option value="32">K = 32 (birçok çevrim içi sistem ve kulüp)</option><option value="16">K = 16</option><option value="24">K = 24</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="satranc-elo-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Maçtan önceki kendi puanınızı ve rakibinizin puanını ilgili alanlara yazın.</li>
+        <li>Maçın sonucunu seçin: galibiyet 1, beraberlik yarım, mağlubiyet 0 puan sayılır.</li>
+        <li>Size uygulanan K katsayısını seçin. Emin değilseniz oynadığınız federasyonun ya da platformun kurallarına bakın.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın; yeni puanınızı, kazandığınız ya da kaybettiğiniz puanı ve maç öncesi beklenen skoru görün.</li>
+        <li>Son satırdaki üçlü, aynı rakibe karşı üç olası sonucun her birinde puanınızın ne kadar değişeceğini gösterir; maça çıkmadan önce bakmak için kullanışlıdır.</li>
+      </ol>
+
+      <h2>Elo sistemi nasıl çalışır?</h2>
+      <p>Elo sistemi, adını fizikçi ve satranç ustası Arpad Elo'dan alan bir güç ölçme yöntemidir. Temel fikir basittir: her oyuncunun bir puanı vardır ve iki oyuncunun puan farkı, maçtan beklenen sonucu belirler. Oyuncu beklenenden iyi sonuç alırsa puanı artar, beklenenden kötü sonuç alırsa düşer. Bir oyuncunun kazandığı puan, aynı K katsayısı uygulanıyorsa rakibinin kaybettiği puana eşittir.</p>
+      <p>Sistemin güzelliği, sonucu rakibin gücüne göre tartmasıdır. Kendinizden çok güçlü birini yenmek büyük ödül getirir; çok zayıf birini yenmek neredeyse hiç puan kazandırmaz, ona yenilmek ise pahalıya patlar. Satranç dışında masa tenisi, e-spor, tavla ve çevrim içi oyunların eşleştirme sistemlerinde de aynı mantık kullanılır.</p>
+
+      <h2>Formül</h2>
+      <p>Beklenen skor şu eşitlikle bulunur: <strong>E = 1 ÷ (1 + 10<sup>(rakip puanı − sizin puanınız) ÷ 400</sup>)</strong>. Sonuç 0 ile 1 arasında bir sayıdır ve galibiyet olasılığı ile beraberlik olasılığının yarısının toplamı gibi okunabilir. Puanlar eşitse E = 0,5 olur. 200 puan üstün oyuncunun beklenen skoru yaklaşık 0,76, 400 puan üstün oyuncununki yaklaşık 0,91'dir.</p>
+      <p>Yeni puan ise şöyle hesaplanır: <strong>yeni puan = eski puan + K × (S − E)</strong>. Burada S gerçek sonuçtur (1, 0,5 ya da 0), K ise bir maçın puanı en fazla ne kadar oynatabileceğini belirleyen katsayıdır.</p>
+
+      <div class="ba-ad" data-slot="satranc-elo-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnekler</h2>
+      <p><strong>Eşit rakip:</strong> 1500 puanlı iki oyuncu karşılaşıyor, K = 20. Beklenen skor 0,5'tir. Kazanan 20 × (1 − 0,5) = 10 puan alır ve 1510'a çıkar; kaybeden 1490'a iner. Berabere biterse kimsenin puanı değişmez.</p>
+      <p><strong>Güçlü rakibi yenmek:</strong> 1800 puanlı oyuncu 2000 puanlı rakibini yeniyor, K = 10. Üs (2000 − 1800) ÷ 400 = 0,5; 10<sup>0,5</sup> yaklaşık 3,162 olduğundan E = 1 ÷ 4,162 = 0,240 bulunur. Değişim 10 × (1 − 0,240) = +7,6 puandır; yeni puan 1807,6 olur.</p>
+      <p><strong>Favorinin kaybı:</strong> 1600 puanlı oyuncu 1200 puanlı rakibine yeniliyor, K = 20. Beklenen skoru 10 ÷ 11 = 0,909'dur. Değişim 20 × (0 − 0,909) = −18,18 puan eder. Aynı maçı kazansaydı yalnızca 1,82 puan alacaktı.</p>
+
+      <h2>K katsayısı nasıl seçilir?</h2>
+      <p>K büyüdükçe puan daha hızlı hareket eder. Uluslararası federasyonun standart tempolu oyunlar için uyguladığı düzen genel hatlarıyla şöyledir: listeye yeni giren oyuncular belirli bir maç sayısını tamamlayana kadar ve genç oyuncular belli bir puan düzeyine kadar K = 40 ile, 2400'ün altındaki diğer oyuncular K = 20 ile, bir kez 2400'e ulaşmış oyuncular ise kalıcı olarak K = 10 ile değerlendirilir. Bunun mantığı, gerçek gücü henüz belli olmayan oyuncunun puanını hızla yerine oturtmak, üst düzeyde ise listeyi kararlı tutmaktır.</p>
+      <p>Ulusal puan sistemleri (Türkiye'de UKD gibi), okul ve kulüp turnuvaları ile çevrim içi platformlar kendi katsayılarını ve ek kurallarını kullanabilir. Çevrim içi sitelerin çoğu aslında Elo'nun geliştirilmiş türevlerini uygular; bu sistemlerde puanın belirsizliği de hesaba katıldığı için değişim burada bulduğunuzdan farklı çıkabilir. Kesin değer için ilgili kurumun güncel yönergesine bakılmalıdır.</p>
+
+      <h2>Puan farkı ve beklenen skor tablosu</h2>
+      <ul>
+        <li>Fark <strong>0</strong>: beklenen skor 0,50</li>
+        <li>Fark <strong>50</strong>: güçlü oyuncu için yaklaşık 0,57</li>
+        <li>Fark <strong>100</strong>: yaklaşık 0,64</li>
+        <li>Fark <strong>200</strong>: yaklaşık 0,76</li>
+        <li>Fark <strong>300</strong>: yaklaşık 0,85</li>
+        <li>Fark <strong>400</strong>: yaklaşık 0,91</li>
+      </ul>
+
+      <h2>Resmî hesapla arasındaki farklar</h2>
+      <p>Bu sayfa formülü tek bir maç için ve yuvarlamadan uygular. Resmî reyting hesaplarında birkaç ayrıntı vardır: beklenen skor, puan farkına karşılık gelen değerlerin yer aldığı bir tablodan okunur; çok büyük puan farkları belirli bir üst sınırla değerlendirilir; bir turnuvadaki bütün maçlar turnuva başındaki puan üzerinden hesaplanıp toplam değişim dönem sonunda işlenir. Bu yüzden turnuva içinde her maçtan sonra güncellenmiş puanla zincirleme hesap yapmak resmî sonuçla tam örtüşmez. Turnuva toplamını yaklaşık bulmak için her maçı başlangıç puanınızla ayrı ayrı hesaplayıp değişimleri toplayın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Bir maçta en fazla kaç puan kazanabilirim?</summary><p>En fazla K katsayısı kadar. K = 20 ise sizden çok güçlü bir rakibi yendiğinizde değişim 20'ye yaklaşır ama tam 20 olmaz, çünkü beklenen skorunuz hiçbir zaman tam sıfır değildir. Eşit rakibe karşı galibiyet K'nin yarısını kazandırır.</p></details>
+        <details><summary>Beraberlikte puan değişir mi?</summary><p>Puanlar eşit değilse evet. Düşük puanlı oyuncu beraberlikle beklenenden iyi sonuç almış olur ve puan kazanır; yüksek puanlı oyuncu aynı miktarda kaybeder. Örneğin 1400 puanlı oyuncu 1600 puanlı rakibiyle berabere kalırsa K = 40 ile 10,39 puan alır.</p></details>
+        <details><summary>Beklenen skor kazanma olasılığı mıdır?</summary><p>Tam olarak değil. Beklenen skor, galibiyet olasılığı ile beraberlik olasılığının yarısının toplamıdır. 0,76 beklenen skor, yüz maçtan ortalama 76 puan toplanacağı anlamına gelir; bunun kaçının galibiyet, kaçının beraberlik olacağını formül söylemez.</p></details>
+        <details><summary>Rakibim ne kadar puan kaybeder?</summary><p>İki oyuncuya aynı K uygulanıyorsa sizin kazandığınız kadar kaybeder. K katsayıları farklıysa her oyuncunun değişimi kendi katsayısıyla hesaplanır; bu durumda rakibin puanını ve K değerini yer değiştirerek aracı ikinci kez çalıştırabilirsiniz.</p></details>
+        <details><summary>Puanı olmayan biriyle oynarsam ne olur?</summary><p>Puansız oyuncuya karşı oynanan maçlar genellikle sizin puanınızı etkilemez; yeni oyuncunun ilk puanı ise ayrı bir yöntemle, belirli sayıda maçtaki performansına göre belirlenir. Bu araç iki tarafın da puanı olduğu durumu hesaplar.</p></details>
+        <details><summary>Elo ile UKD aynı şey mi?</summary><p>Hayır. Elo uluslararası puanlamayı, UKD ise Türkiye Satranç Federasyonu'nun ulusal kuvvet derecesini ifade eder. İkisi de benzer mantıkla çalışır ama listeleri, katsayıları ve ayrıntı kuralları ayrıdır; bir oyuncunun iki puanı birbirinden farklı olabilir.</p></details>
+        <details><summary>Bu hesap satranç dışındaki oyunlarda kullanılabilir mi?</summary><p>Evet. İki tarafın karşılaştığı ve sonucun galibiyet, beraberlik ya da mağlubiyet olduğu her oyunda aynı formül uygulanabilir. Kulüp içi masa tenisi, tavla ya da langırt sıralaması tutmak için K = 32 gibi sabit bir katsayı seçmeniz yeterlidir.</p></details>
+        <details><summary>Girdiğim puanlar kaydediliyor mu?</summary><p>Hayır. Hesaplama tamamen tarayıcınızda yapılır; puanlar ve sonuç hiçbir sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../oyun-puan-tablosu/">Oyun Puan Tablosu Hesaplama</a></li>
+        <li><a href="../olasilik-hesapla/">Olasılık Hesaplama</a></li>
+        <li><a href="../lig-fiksturu-olustur/">Lig Fikstürü Oluşturma</a></li>
+        <li><a href="../eleme-tablosu-olustur/">Eleme Turnuvası Tablosu Oluşturma</a></li>
+        <li><a href="../gol-averaji-hesapla/">Gol Averajı ve Puan Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="satranc-elo-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

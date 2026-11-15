@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>CIDR Aralığı Hesaplama – IP Bloğu Başlangıç ve Bitiş Adresi</title>
+  <meta name="description" content="CIDR gösterimindeki bir IPv4 bloğunun (ör. 10.0.0.0/22) ilk ve son adresini, toplam adres sayısını, maskesini ve kullanılabilir cihaz aralığını hesaplayın.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/cidr-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"CIDR Aralığı Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/cidr-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"/24 kaç IP adresi eder?","acceptedAnswer":{"@type":"Answer","text":"/24 önekli bir blok 2 üzeri 8, yani 256 adres içerir. İlki ağ adresi, sonuncusu yayın adresi olduğundan cihazlara 254 adres verilebilir. Maskesi 255.255.255.0'dır."}},{"@type":"Question","name":"CIDR ile alt ağ maskesi arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"İkisi aynı bilgiyi farklı yazar. /24 öneki \"ilk 24 bit ağa aittir\" der; 255.255.255.0 maskesi de aynı 24 biti 1 olarak gösterir. CIDR daha kısa olduğu için yapılandırma dosyalarında ve bulut panellerinde tercih edilir."}},{"@type":"Question","name":"Bloğun içindeki herhangi bir adresi yazsam olur mu?","acceptedAnswer":{"@type":"Answer","text":"Evet. 192.168.10.77/26 yazdığınızda araç bloğun 192.168.10.64/26 olduğunu bulur ve notta bunu belirtir. Aralık, yazdığınız adresin içinde bulunduğu bloğa göre hesaplanır."}},{"@type":"Question","name":"Joker maske (wildcard) ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Joker maske, alt ağ maskesinin bitlerinin tersidir; /24 için 0.0.0.255 olur. Bazı yönlendirici erişim listelerinde ve yönlendirme protokolü ayarlarında maske yerine bu biçim istenir."}},{"@type":"Question","name":"Tek bir IP adresini CIDR ile nasıl yazarım?","acceptedAnswer":{"@type":"Answer","text":"Adresin sonuna /32 ekleyin: 203.0.113.10/32 yalnızca o adresi kapsar. Güvenlik duvarı kurallarında tek bir istemciye izin vermenin standart yolu budur."}},{"@type":"Question","name":"Önek büyüdükçe blok büyür mü, küçülür mü?","acceptedAnswer":{"@type":"Answer","text":"Küçülür. Önek her bir arttığında blok yarıya iner: /24 256 adres, /25 128 adres, /26 64 adres içerir. Önek küçüldükçe blok ikiye katlanır: /23 512 adrestir."}},{"@type":"Question","name":"IPv6 bloklarını hesaplayabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Hayır, bu araç yalnızca 32 bitlik IPv4 adresleriyle çalışır. IPv6'da mantık aynıdır ancak adres 128 bittir ve gösterimi farklıdır."}},{"@type":"Question","name":"Yazdığım IP adresleri bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tümüyle tarayıcınızda yapılır; yazdığınız blok sunucuya iletilmez, kaydedilmez. Sayfa açıldıktan sonra bağlantı olmadan da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">CIDR Aralığı Hesaplama</span> – IP bloğunun ilk ve son adresi</h1>
+      <p class="lead">Bir IPv4 bloğunu <strong>adres/önek</strong> biçiminde (örneğin <code>192.168.1.0/24</code>) yazın; araç bloğun ilk ve son adresini, içerdiği toplam adres sayısını, alt ağ maskesini, joker maskesini ve cihazlara verilebilecek aralığı hesaplar.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-cidr">CIDR bloğu</label><input id="f-cidr" data-field="cidr" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 192.168.1.0/24"><div class="hint">IPv4 adresi, eğik çizgi ve 0–32 arası önek uzunluğu. Adres bloğun içindeki herhangi bir adres olabilir.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="cidr-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;CIDR bloğu&quot; alanına IPv4 adresini, ardından eğik çizgiyi ve önek uzunluğunu yazın: <code>10.20.0.0/16</code> gibi.</li>
+        <li>Bloğun ilk adresini bilmiyorsanız sorun değil; blok içindeki herhangi bir adresi yazabilirsiniz. Araç bloğu kendisi normalleştirir.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk satırda bloğun kapsadığı adres aralığı, altında toplam adres sayısı ve maskeler görünür.</li>
+        <li>Güvenlik duvarı kuralı, izin listesi ya da yönlendirme tablosu için gereken satırı &quot;Sonucu kopyala&quot; ile panoya alın.</li>
+      </ol>
+
+      <h2>CIDR gösterimi ne anlatır?</h2>
+      <p>CIDR (Classless Inter-Domain Routing, sınıfsız alanlar arası yönlendirme), bir IP bloğunu tek satırda yazmanın standart yoludur. Eğik çizgiden önceki kısım bir IPv4 adresi, sonraki sayı ise <strong>önek uzunluğudur</strong>: 32 bitlik adresin baştan kaç bitinin ağı tanımladığını söyler. Kalan bitler blok içindeki tek tek adresleri ayırt eder. <code>192.168.1.0/24</code> yazıldığında ilk 24 bit sabittir, son 8 bit serbesttir; bu da 2<sup>8</sup> = 256 adres demektir.</p>
+      <p>CIDR, 1990'ların başında eski A, B ve C sınıfı düzenin yerini almak üzere getirilmiştir. Sınıflı düzende bir kuruma ya 256 ya 65.536 ya da 16 milyonu aşkın adres verilebiliyordu; arası yoktu. CIDR ile önek istenen bit sınırına konabildiği için 512, 1.024 ya da 4.096 adreslik bloklar da tanımlanabilir hâle geldi. Bugün internet servis sağlayıcıları, bulut hizmetleri ve kurumsal ağların tamamı bu gösterimi kullanır.</p>
+
+      <h2>Aralık nasıl hesaplanır?</h2>
+      <p>Hesabın özü iki bit işlemidir. Önce önek uzunluğundan alt ağ maskesi üretilir: baştan önek kadar bit 1, kalanlar 0 yapılır. Adres bu maskeyle VE (AND) işlemine sokulunca serbest bitler sıfırlanır ve <strong>bloğun ilk adresi</strong> (ağ adresi) elde edilir. Serbest bitlerin hepsi 1 yapıldığında ise <strong>bloğun son adresi</strong> (yayın adresi) bulunur. Toplam adres sayısı 2<sup>(32 − önek)</sup> formülüyle hesaplanır.</p>
+      <p>Çözümlü örnek: <code>192.168.10.77/26</code>. Önek 26 olduğundan son oktetin ilk iki biti ağa, son altı biti cihazlara aittir; blok boyu 2<sup>6</sup> = 64 adrestir. Son oktet 64'ün katlarında bölünür: 0–63, 64–127, 128–191, 192–255. 77 sayısı 64–127 dilimine düştüğü için blok 192.168.10.64 ile başlar, 192.168.10.127 ile biter. Ağ ve yayın adresi çıkarılınca cihazlara 192.168.10.65 ile 192.168.10.126 arasındaki 62 adres kalır. Maske 255.255.255.192, joker maske 0.0.0.63 olur. Bu değerleri araca aynı girdiyi yazarak doğrulayabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="cidr-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Sık kullanılan önek uzunlukları</h2>
+      <ul>
+        <li><strong>/8</strong> – 16.777.216 adres, maske 255.0.0.0 (ör. 10.0.0.0/8 özel ağ bloğu)</li>
+        <li><strong>/12</strong> – 1.048.576 adres, maske 255.240.0.0 (172.16.0.0/12 özel ağ bloğu)</li>
+        <li><strong>/16</strong> – 65.536 adres, maske 255.255.0.0 (192.168.0.0/16 özel ağ bloğu)</li>
+        <li><strong>/20</strong> – 4.096 adres, maske 255.255.240.0</li>
+        <li><strong>/22</strong> – 1.024 adres, maske 255.255.252.0</li>
+        <li><strong>/24</strong> – 256 adres, maske 255.255.255.0 (ev ve küçük ofis ağlarının alışılmış boyu)</li>
+        <li><strong>/27</strong> – 32 adres, maske 255.255.255.224</li>
+        <li><strong>/29</strong> – 8 adres, maske 255.255.255.248 (sabit IP paketlerinde sık görülür)</li>
+        <li><strong>/30</strong> – 4 adres, 2 kullanılabilir; yönlendiriciler arası bağlantı</li>
+        <li><strong>/32</strong> – tek adres; güvenlik duvarında tek bir sunucuyu ya da istemciyi belirtir</li>
+      </ul>
+
+      <h2>Nerede işe yarar?</h2>
+      <p>Bulut sağlayıcılarında sanal ağ ve alt ağ tanımlarken, güvenlik gruplarına ya da güvenlik duvarına izin kuralı yazarken, bir sunucuda yalnızca ofis IP bloğundan gelen bağlantılara izin verirken hep CIDR bloğu istenir. Kuralı yazmadan önce bloğun gerçekte hangi adresleri kapsadığını görmek, yanlışlıkla gereğinden geniş bir aralığa kapı açmayı önler. Örneğin /16 yazmakla /24 yazmak arasında 65.280 adreslik fark vardır.</p>
+      <p>Tersine bir kullanım da yaygındır: elinizde bir IP adresi ve erişim günlüğünde gördüğünüz bir blok vardır, adresin o bloğa girip girmediğini anlamak istersiniz. Bloğu yazıp aralığın başını ve sonunu görmek bu soruyu hemen yanıtlar. Ağ planlarken de iki alt ağın çakışıp çakışmadığını, aralıklarını karşılaştırarak anlayabilirsiniz.</p>
+
+      <h2>Özel durumlar: /31, /32 ve /0</h2>
+      <p>Sıradan bir alt ağda ilk adres ağın kendisini, son adres yayın (broadcast) adresini gösterdiği için cihazlara verilmez; kullanılabilir adres sayısı toplamdan iki eksiktir. İki istisna vardır. <strong>/32</strong> tek bir adrestir ve tek cihazı işaret eder. <strong>/31</strong> ise yalnızca iki adres içerir; yönlendiriciler arasındaki noktadan noktaya hatlarda adres israfını önlemek için iki adresin de kullanılmasına izin verilir. Araç bu iki durumda kullanılabilir adres sayısını sırasıyla 1 ve 2 olarak gösterir.</p>
+      <p><strong>/0</strong> öneki hiçbir biti sabitlemez; <code>0.0.0.0/0</code> tüm IPv4 adres uzayını, yani 4.294.967.296 adresi kapsar. Yönlendirme tablolarında &quot;varsayılan rota&quot;, güvenlik duvarı kurallarında ise &quot;her yerden&quot; anlamına gelir. Bir kurala bu bloğu yazarken gerçekten herkese erişim vermek istediğinizden emin olun.</p>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p>En sık hata, bloğun başlangıcı olmayan bir adresi başlangıç sanmaktır. <code>10.0.5.0/22</code> yazıldığında blok 10.0.5.0'dan değil 10.0.4.0'dan başlar ve 10.0.7.255'te biter; çünkü /22 blokları üçüncü oktette dörder dörder ilerler. Bazı sistemler böyle bir girdiyi reddeder, bazıları sessizce düzeltir. Araç normalleştirilmiş bloğu ayrı satırda göstererek farkı görünür kılar.</p>
+      <p>Bu araç yalnızca IPv4 için çalışır; IPv6 blokları (ör. /64) desteklenmez. Sonuçlar matematiksel hesaptır: bir adresin gerçekte hangi kuruma ait olduğunu, internete açık olup olmadığını ya da ağınızda kullanılıp kullanılmadığını göstermez. Üretim ortamındaki güvenlik duvarı ve yönlendirme değişikliklerini uygulamadan önce ağ yöneticinizle doğrulayın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>/24 kaç IP adresi eder?</summary><p>/24 önekli bir blok 2 üzeri 8, yani 256 adres içerir. İlki ağ adresi, sonuncusu yayın adresi olduğundan cihazlara 254 adres verilebilir. Maskesi 255.255.255.0'dır.</p></details>
+        <details><summary>CIDR ile alt ağ maskesi arasındaki fark nedir?</summary><p>İkisi aynı bilgiyi farklı yazar. /24 öneki &quot;ilk 24 bit ağa aittir&quot; der; 255.255.255.0 maskesi de aynı 24 biti 1 olarak gösterir. CIDR daha kısa olduğu için yapılandırma dosyalarında ve bulut panellerinde tercih edilir.</p></details>
+        <details><summary>Bloğun içindeki herhangi bir adresi yazsam olur mu?</summary><p>Evet. 192.168.10.77/26 yazdığınızda araç bloğun 192.168.10.64/26 olduğunu bulur ve notta bunu belirtir. Aralık, yazdığınız adresin içinde bulunduğu bloğa göre hesaplanır.</p></details>
+        <details><summary>Joker maske (wildcard) ne işe yarar?</summary><p>Joker maske, alt ağ maskesinin bitlerinin tersidir; /24 için 0.0.0.255 olur. Bazı yönlendirici erişim listelerinde ve yönlendirme protokolü ayarlarında maske yerine bu biçim istenir.</p></details>
+        <details><summary>Tek bir IP adresini CIDR ile nasıl yazarım?</summary><p>Adresin sonuna /32 ekleyin: 203.0.113.10/32 yalnızca o adresi kapsar. Güvenlik duvarı kurallarında tek bir istemciye izin vermenin standart yolu budur.</p></details>
+        <details><summary>Önek büyüdükçe blok büyür mü, küçülür mü?</summary><p>Küçülür. Önek her bir arttığında blok yarıya iner: /24 256 adres, /25 128 adres, /26 64 adres içerir. Önek küçüldükçe blok ikiye katlanır: /23 512 adrestir.</p></details>
+        <details><summary>IPv6 bloklarını hesaplayabilir miyim?</summary><p>Hayır, bu araç yalnızca 32 bitlik IPv4 adresleriyle çalışır. IPv6'da mantık aynıdır ancak adres 128 bittir ve gösterimi farklıdır.</p></details>
+        <details><summary>Yazdığım IP adresleri bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tümüyle tarayıcınızda yapılır; yazdığınız blok sunucuya iletilmez, kaydedilmez. Sayfa açıldıktan sonra bağlantı olmadan da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../alt-ag-maskesi-cevir/">Alt Ağ Maskesi CIDR Çevirici</a></li>
+        <li><a href="../ip-ikili-cevir/">IP Adresini İkili Sayıya Çevirme</a></li>
+        <li><a href="../ikili-ondalik-cevir/">İkili (Binary) Ondalık Çevirici</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="cidr-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

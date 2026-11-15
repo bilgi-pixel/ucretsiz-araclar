@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İki Bilinmeyenli Denklem Çözme – x ve y Değerini Bulma Aracı</title>
+  <meta name="description" content="İki bilinmeyenli iki doğrusal denklemi katsayılarını yazarak çözün. x ve y değerleri, determinant, Cramer adımları; çözümsüz ve sonsuz çözümlü durumlar da belirlenir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/iki-bilinmeyenli-denklem-coz/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"İki Bilinmeyenli Denklem Çözme – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/iki-bilinmeyenli-denklem-coz/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İki bilinmeyenli denklem nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Üç yaygın yöntem vardır: yok etme, yerine koyma ve Cramer kuralı. Bu araç Cramer kuralını kullanır; D = a₁b₂ − a₂b₁ determinantını hesaplar, ardından x = Dx ÷ D ve y = Dy ÷ D değerlerini bulur."}},{"@type":"Question","name":"Araç \"çözüm yok\" diyor, ne anlama geliyor?","acceptedAnswer":{"@type":"Answer","text":"İki denklemin sol tarafları birbirinin katı, sağ tarafları ise aynı oranda değildir. Örneğin x + y = 1 ve 2x + 2y = 5 aynı anda sağlanamaz. Grafik olarak bu iki doğru paraleldir ve kesişmez."}},{"@type":"Question","name":"\"Sonsuz çözüm\" ne demek?","acceptedAnswer":{"@type":"Answer","text":"İki denklem aslında aynı denklemin farklı katlarla yazılmış hâlidir, örneğin x + y = 1 ve 2x + 2y = 2. Bu durumda doğru üzerindeki her nokta çözümdür ve x ile y tek değer olarak belirlenemez."}},{"@type":"Question","name":"Bir denklemde yalnızca x varsa nasıl girerim?","acceptedAnswer":{"@type":"Answer","text":"Olmayan bilinmeyenin katsayısına 0 yazın. Örneğin 2x = 8 denklemi için a = 2, b = 0, c = 8 girilir. Aynı denklemde iki katsayı birden 0 olamaz."}},{"@type":"Question","name":"Kesirli katsayıları nasıl yazarım?","acceptedAnswer":{"@type":"Answer","text":"Ondalık karşılığını yazabilirsiniz (1/2 yerine 0,5). Devirli kesirlerde daha doğru sonuç için denklemin iki tarafını paydaların ortak katıyla çarpıp tam sayılı katsayılarla girin; çözüm değişmez."}},{"@type":"Question","name":"Determinant neyi gösterir?","acceptedAnswer":{"@type":"Answer","text":"D sıfırdan farklıysa sistemin tek çözümü olduğunu garanti eder. D sıfıra eşitse doğrular ya paralel ya da çakışıktır. Bu yüzden determinant, çözüme başlamadan önce sistemin türünü anlamanın en kısa yoludur."}},{"@type":"Question","name":"Sonucu nasıl sağlarım?","acceptedAnswer":{"@type":"Answer","text":"Bulunan x ve y değerlerini her iki denklemde yerine yazın. Sol taraf her seferinde sağ taraftaki sayıya eşit çıkmalıdır. Yuvarlanmış ondalık sonuçlarda son basamakta küçük farklar görülebilir."}},{"@type":"Question","name":"Yazdığım denklemler bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bütün hesap tarayıcınızın içinde yapılır; katsayılar sunucuya iletilmez ve kaydedilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">İki Bilinmeyenli Denklem Çözme</span> – x ve y bulma</h1>
+      <p class="lead"><strong>a₁x + b₁y = c₁</strong> ve <strong>a₂x + b₂y = c₂</strong> biçimindeki iki denklemin katsayılarını yazın; araç x ve y değerlerini bulur. Sistemin tek çözümü yoksa doğruların paralel mi yoksa çakışık mı olduğunu da söyler.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-a1">1. denklem: x katsayısı (a₁)</label><input id="f-a1" data-field="a1" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 2"></div>
+          <div class="ba-field"><label for="f-b1">1. denklem: y katsayısı (b₁)</label><input id="f-b1" data-field="b1" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 3"></div>
+          <div class="ba-field"><label for="f-c1">1. denklem: sağ taraf (c₁)</label><input id="f-c1" data-field="c1" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 12"></div>
+          <div class="ba-field"><label for="f-a2">2. denklem: x katsayısı (a₂)</label><input id="f-a2" data-field="a2" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1"></div>
+          <div class="ba-field"><label for="f-b2">2. denklem: y katsayısı (b₂)</label><input id="f-b2" data-field="b2" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. -1"></div>
+          <div class="ba-field"><label for="f-c2">2. denklem: sağ taraf (c₂)</label><input id="f-c2" data-field="c2" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 1"></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Çöz</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="iki-bilinmeyenli-denklem-coz-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Her iki denklemi de bilinmeyenler solda, sabit sayı sağda olacak şekilde düzenleyin: <strong>a₁x + b₁y = c₁</strong> ve <strong>a₂x + b₂y = c₂</strong>.</li>
+        <li>Birinci denklemin x katsayısını, y katsayısını ve sağ taraftaki sayıyı ilk üç alana; ikinci denkleminkileri son üç alana yazın. Bir denklemde bilinmeyenlerden biri yoksa katsayısına 0 girin.</li>
+        <li>Eksi işaretli katsayıları işaretiyle birlikte yazın; &quot;x − y = 1&quot; denkleminde y katsayısı −1'dir.</li>
+        <li>&quot;Çöz&quot; düğmesine basın. İlk satırda çözüm, altında x ve y ayrı ayrı, ardından determinant değerleri görünür.</li>
+        <li>Bulduğunuz x ve y değerlerini iki denklemde de yerine koyarak sağlama yapın.</li>
+      </ol>
+
+      <h2>İki bilinmeyenli denklem sistemi nedir?</h2>
+      <p>İçinde x ve y gibi iki bilinmeyen bulunan tek bir denklemin sonsuz çözümü vardır; örneğin x + y = 10 denklemini (1, 9), (4, 6), (7,5; 2,5) gibi sayısız ikili sağlar. Bilinmeyenleri tek tek belirleyebilmek için ikinci bir koşula, yani ikinci bir denkleme ihtiyaç duyulur. Aynı x ve y değerlerinin iki denklemi birden sağlaması istendiğinde ortaya çıkan yapıya denklem sistemi denir.</p>
+      <p>Geometrik olarak her doğrusal denklem koordinat düzleminde bir doğru çizer. Sistemin çözümü bu iki doğrunun kesiştiği noktadır. Doğrular tek noktada kesişiyorsa tek çözüm vardır; paralelse hiç kesişmezler ve çözüm yoktur; üst üste biniyorlarsa bütün noktalar ortaktır ve sonsuz çözüm vardır.</p>
+
+      <h2>Araç hangi yöntemi kullanır?</h2>
+      <p>Hesap <strong>Cramer kuralı</strong> ile yapılır. Önce katsayılardan üç determinant bulunur:</p>
+      <ul>
+        <li><strong>D = a₁·b₂ − a₂·b₁</strong> (katsayılar determinantı)</li>
+        <li><strong>Dx = c₁·b₂ − c₂·b₁</strong> (x sütunu yerine sağ taraf yazılır)</li>
+        <li><strong>Dy = a₁·c₂ − a₂·c₁</strong> (y sütunu yerine sağ taraf yazılır)</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="iki-bilinmeyenli-denklem-coz-b" aria-label="Reklam"></div>
+
+      <h2>Sonucun yorumu</h2>
+      <p>D sıfırdan farklıysa çözüm tektir: <strong>x = Dx ÷ D</strong> ve <strong>y = Dy ÷ D</strong>. D sıfırsa sol taraftaki katsayılar birbirinin katıdır. Bu durumda Dx ve Dy de sıfırsa iki denklem aslında aynı denklemdir ve sonsuz çözüm vardır; Dx ya da Dy sıfır değilse denklemler birbiriyle çelişir ve çözüm yoktur.</p>
+      <p>Okulda öğretilen yok etme ve yerine koyma yöntemleri de aynı sonuca ulaşır; Cramer kuralı bu işlemlerin katsayılarla yazılmış kısa hâlidir. Sınavda elle çözdüğünüz bir sorunun cevabını burada kontrol edebilirsiniz.</p>
+
+      <h2>Çözümlü örnek: Cramer kuralı</h2>
+      <p>Sistem: 2x + 3y = 12 ve x − y = 1. Katsayılar a₁ = 2, b₁ = 3, c₁ = 12, a₂ = 1, b₂ = −1, c₂ = 1.</p>
+      <p>D = 2·(−1) − 1·3 = −5. Dx = 12·(−1) − 1·3 = −15. Dy = 2·1 − 1·12 = −10. Buradan x = −15 ÷ −5 = 3 ve y = −10 ÷ −5 = 2 bulunur.</p>
+      <p>Sağlama: 2·3 + 3·2 = 12 ve 3 − 2 = 1. İki denklem de sağlanıyor.</p>
+
+      <h2>Aynı örnek yok etme yöntemiyle</h2>
+      <p>İkinci denklemi 3 ile çarpın: 3x − 3y = 3. Birinci denklemle taraf tarafa toplayın: 2x + 3y + 3x − 3y = 12 + 3, yani 5x = 15 ve x = 3. Bu değeri x − y = 1 denkleminde yerine koyun: 3 − y = 1, y = 2. Sonuç Cramer kuralıyla aynıdır.</p>
+      <p>Yok etme yönteminde amaç, bir bilinmeyenin katsayılarını iki denklemde zıt işaretli ve eşit büyüklükte yapmaktır. Yerine koyma yönteminde ise bir denklemden bir bilinmeyen diğeri cinsinden yazılır (burada x = y + 1) ve öbür denkleme taşınır.</p>
+
+      <h2>Günlük hayattan problem örnekleri</h2>
+      <p><strong>Bilet problemi:</strong> Bir etkinlikte tam bilet ve öğrenci bileti olmak üzere toplam 3 bilet satılmış, tam bilet sayısı öğrenci biletinden 1 fazla çıkmıştır. x tam, y öğrenci bileti sayısı olsun: x + y = 3 ve x − y = 1. Çözüm x = 2, y = 1'dir.</p>
+      <p><strong>Karışım problemi:</strong> İki farklı üründen alınan toplam miktar ve ödenen toplam tutar biliniyorsa, miktarlar için bir denklem, tutar için ikinci denklem kurulur. Yaş problemleri, işçi-havuz problemlerinin bazı türleri, iki farklı tarife arasındaki başa baş noktası ve kimyada karışım oranları da aynı kalıba oturur.</p>
+      <p>Problemi denkleme dökerken en önemli adım bilinmeyenleri açıkça tanımlamaktır. &quot;x neyi, y neyi gösteriyor?&quot; sorusunu yazılı olarak yanıtlamak, sonuçta bulunan sayıların yanlış yorumlanmasını önler.</p>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <ul>
+        <li>Denklemi standart biçime getirmeden katsayı okumak. 2x = 12 − 3y denkleminde y katsayısı −3 değil, terim sola geçtiğinde +3'tür.</li>
+        <li>Görünmeyen katsayıyı 0 sanmak. &quot;x + y = 3&quot; denkleminde katsayılar 1'dir; 0 yalnızca terim hiç yoksa yazılır.</li>
+        <li>Eksi işaretini sağ tarafa taşırken çevirmeyi unutmak.</li>
+        <li>Araç yalnızca doğrusal (birinci dereceden) denklemleri çözer; x·y, x² ya da kök içeren denklemler bu kapsamda değildir.</li>
+        <li>Sonuçlar altı ondalık basamağa yuvarlanır; 1 ÷ 3 gibi devirli sonuçlar 0,333333 olarak görünür.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>İki bilinmeyenli denklem nasıl çözülür?</summary><p>Üç yaygın yöntem vardır: yok etme, yerine koyma ve Cramer kuralı. Bu araç Cramer kuralını kullanır; D = a₁b₂ − a₂b₁ determinantını hesaplar, ardından x = Dx ÷ D ve y = Dy ÷ D değerlerini bulur.</p></details>
+        <details><summary>Araç &quot;çözüm yok&quot; diyor, ne anlama geliyor?</summary><p>İki denklemin sol tarafları birbirinin katı, sağ tarafları ise aynı oranda değildir. Örneğin x + y = 1 ve 2x + 2y = 5 aynı anda sağlanamaz. Grafik olarak bu iki doğru paraleldir ve kesişmez.</p></details>
+        <details><summary>&quot;Sonsuz çözüm&quot; ne demek?</summary><p>İki denklem aslında aynı denklemin farklı katlarla yazılmış hâlidir, örneğin x + y = 1 ve 2x + 2y = 2. Bu durumda doğru üzerindeki her nokta çözümdür ve x ile y tek değer olarak belirlenemez.</p></details>
+        <details><summary>Bir denklemde yalnızca x varsa nasıl girerim?</summary><p>Olmayan bilinmeyenin katsayısına 0 yazın. Örneğin 2x = 8 denklemi için a = 2, b = 0, c = 8 girilir. Aynı denklemde iki katsayı birden 0 olamaz.</p></details>
+        <details><summary>Kesirli katsayıları nasıl yazarım?</summary><p>Ondalık karşılığını yazabilirsiniz (1/2 yerine 0,5). Devirli kesirlerde daha doğru sonuç için denklemin iki tarafını paydaların ortak katıyla çarpıp tam sayılı katsayılarla girin; çözüm değişmez.</p></details>
+        <details><summary>Determinant neyi gösterir?</summary><p>D sıfırdan farklıysa sistemin tek çözümü olduğunu garanti eder. D sıfıra eşitse doğrular ya paralel ya da çakışıktır. Bu yüzden determinant, çözüme başlamadan önce sistemin türünü anlamanın en kısa yoludur.</p></details>
+        <details><summary>Sonucu nasıl sağlarım?</summary><p>Bulunan x ve y değerlerini her iki denklemde yerine yazın. Sol taraf her seferinde sağ taraftaki sayıya eşit çıkmalıdır. Yuvarlanmış ondalık sonuçlarda son basamakta küçük farklar görülebilir.</p></details>
+        <details><summary>Yazdığım denklemler bir yere gönderiliyor mu?</summary><p>Hayır. Bütün hesap tarayıcınızın içinde yapılır; katsayılar sunucuya iletilmez ve kaydedilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../uc-bilinmeyenli-denklem-coz/">Üç Bilinmeyenli Denklem Çözme</a></li>
+        <li><a href="../diskriminant-hesapla/">Diskriminant ve Kök Hesaplama</a></li>
+        <li><a href="../dogru-denklemi-bul/">İki Noktadan Doğru Denklemi Bulma</a></li>
+        <li><a href="../egim-hesapla/">İki Noktadan Eğim Hesaplama</a></li>
+        <li><a href="../kesir-sadelestir/">Kesir Sadeleştirme</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="iki-bilinmeyenli-denklem-coz-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Luhn Algoritması Kontrolü – Mod 10 Numara Doğrulama</title>
+  <meta name="description" content="Bir numaranın Luhn (mod 10) sağlama denetiminden geçip geçmediğini kontrol edin. Katlanan haneleri, toplamı ve kalanı adım adım görün; veri tarayıcıda kalır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/luhn-kontrol/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Luhn Algoritması Kontrolü – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/luhn-kontrol/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Luhn algoritması ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Bir numaranın son hanesini diğer hanelerden türeterek yazım hatalarını yakalamaya yarar. Tek hanelik yanlışları ve komşu hanelerin yer değiştirmesini büyük oranda fark eder; bir güvenlik ya da şifreleme yöntemi değildir."}},{"@type":"Question","name":"Luhn denetimi nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Sağdan başlayarak her ikinci hane ikiye katlanır, 9'dan büyük sonuçlardan 9 çıkarılır ve bütün haneler toplanır. Toplam 10'a tam bölünüyorsa numara denetimden geçer."}},{"@type":"Question","name":"Denetimden geçen numara gerçek midir?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Denetim yalnızca hanelerin kendi içinde tutarlı olduğunu gösterir. Numaranın bir kuruma kayıtlı, etkin ya da kullanılabilir olup olmadığını yalnızca numarayı veren kurum bilebilir."}},{"@type":"Question","name":"IMEI numarası Luhn ile doğrulanır mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. 15 haneli IMEI numarasının son hanesi Luhn algoritmasıyla hesaplanan kontrol hanesidir. Telefonunuzun IMEI numarasını yazarak hanelerin tutarlı olup olmadığını denetleyebilirsiniz."}},{"@type":"Question","name":"T.C. kimlik numarası ya da IBAN bu araçla kontrol edilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. T.C. kimlik numarası kendine özgü bir kuralla, IBAN ise mod 97 yöntemiyle doğrulanır. Bu numaralarda Luhn sonucu anlam taşımaz."}},{"@type":"Question","name":"Luhn hangi hataları yakalayamaz?","acceptedAnswer":{"@type":"Answer","text":"09 ile 90'ın yer değiştirmesini ve 22-55, 33-66, 44-77 gibi bazı çift hane değişimlerini yakalayamaz. Birbirini dengeleyen birden fazla hata da gözden kaçabilir."}},{"@type":"Question","name":"Neden sağdan başlanıyor?","acceptedAnswer":{"@type":"Answer","text":"Kontrol hanesi numaranın sonundadır ve numaraların uzunluğu değişebilir. Sağdan saymak, uzunluk ne olursa olsun kontrol hanesinin her zaman katlanmayan konumda kalmasını sağlar."}},{"@type":"Question","name":"Yazdığım numara bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesap tarayıcınızda yapılır; numara sunucuya iletilmez, kaydedilmez ve hiçbir kuruma sorgu gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">Luhn Algoritması Kontrolü</span> – mod 10 sağlama denetimi</h1>
+      <p class="lead">Numarayı yazın; araç <strong>Luhn algoritmasını</strong> (mod 10 denetimi) uygular ve numaranın sağlama hanesinin tutup tutmadığını söyler. Hangi hanelerin ikiye katlandığını, toplamı ve 10'a bölümünden kalanı da göstererek hesabı elle doğrulamanıza olanak verir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-numara">Numara</label><input id="f-numara" data-field="numara" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 79927398713"><div class="hint">Boşluk ve tire kullanabilirsiniz; yalnızca rakamlar hesaba katılır. Numara tarayıcınızdan çıkmaz.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Kontrol et</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="luhn-kontrol-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Denetlemek istediğiniz numarayı &quot;Numara&quot; alanına yazın ya da yapıştırın. Dörtlü gruplar arasındaki boşluklar ve tireler sorun olmaz.</li>
+        <li>&quot;Kontrol et&quot; düğmesine basın. İlk satır numaranın Luhn denetiminden geçip geçmediğini söyler.</li>
+        <li>Hesabı elle doğrulamak isterseniz &quot;Dönüştürülmüş haneler&quot; satırına bakın: sağdan ikinci haneden başlayarak birer atlayan haneler ikiye katlanmış hâlleriyle yer alır.</li>
+        <li>Sonuç geçersizse numarayı kaynağıyla karşılaştırın; çoğu zaman tek bir hane yanlış yazılmış ya da iki komşu hane yer değiştirmiştir.</li>
+      </ol>
+
+      <h2>Luhn algoritması nedir?</h2>
+      <p>Luhn algoritması, bir numaranın sonuna eklenen tek bir <strong>kontrol hanesi</strong> sayesinde yazım hatalarını yakalamaya yarayan basit bir sağlama yöntemidir. Adını, yöntemi 1950'lerde geliştiren bilgisayar bilimci Hans Peter Luhn'dan alır. &quot;Mod 10 algoritması&quot; olarak da bilinir, çünkü denetimin son adımı toplamın 10'a tam bölünüp bölünmediğine bakmaktır.</p>
+      <p>Yöntem bir şifreleme ya da güvenlik önlemi değildir; amacı kötü niyetli kişileri durdurmak değil, numarayı elle yazarken, telefonda söylerken ya da kâğıttan aktarırken yapılan dikkatsizlik hatalarını anında fark etmektir. Bir form, numarayı sunucuya göndermeden önce Luhn denetimini yaparak &quot;bir hane yanlış olabilir&quot; uyarısını hemen verebilir.</p>
+
+      <h2>Adım adım nasıl çalışır?</h2>
+      <ol>
+        <li>Numaranın <strong>en sağındaki</strong> haneden (kontrol hanesi) başlayın ve sola doğru ilerleyin.</li>
+        <li>Sağdan ikinci, dördüncü, altıncı... sıradaki haneleri <strong>ikiye katlayın</strong>. Diğer haneler olduğu gibi kalır.</li>
+        <li>İkiye katlama sonucu 9'dan büyükse rakamlarını toplayın ya da aynı anlama gelmek üzere <strong>9 çıkarın</strong> (örneğin 8 × 2 = 16 → 1 + 6 = 7).</li>
+        <li>Elde edilen bütün haneleri toplayın.</li>
+        <li>Toplam 10'a tam bölünüyorsa numara denetimden geçer; kalan sıfırdan farklıysa geçmez.</li>
+      </ol>
+
+      <div class="ba-ad" data-slot="luhn-kontrol-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: 79927398713</h2>
+      <p>Bu numara, algoritmanın anlatımında en sık kullanılan örnektir. Haneleri sağdan sola sıralayalım: 3, 1, 7, 8, 9, 3, 7, 2, 9, 9, 7. Sağdan ikinci, dördüncü, altıncı, sekizinci ve onuncu haneler, yani 1, 8, 3, 2 ve 9 ikiye katlanır: 2, 16, 6, 4 ve 18. İki basamaklı olanlardan 9 çıkarılır: 16 → 7, 18 → 9.</p>
+      <p>Numaranın soldan sağa dönüştürülmüş hâli <code>7 9 9 4 7 6 9 7 7 2 3</code> olur. Toplam 7 + 9 + 9 + 4 + 7 + 6 + 9 + 7 + 7 + 2 + 3 = <strong>70</strong>. 70, 10'a tam bölündüğü için numara geçerlidir. Son haneyi 0 yapıp 79927398710 yazarsanız toplam 67'ye düşer, kalan 7 olur ve denetim başarısız olur.</p>
+
+      <h2>Hangi hataları yakalar, hangilerini kaçırır?</h2>
+      <p>Luhn denetimi <strong>tek bir hanenin yanlış yazıldığı</strong> bütün durumları yakalar: herhangi bir haneyi başka bir rakamla değiştirirseniz toplamın 10'a bölümünden kalan mutlaka değişir. <strong>Yan yana iki hanenin yer değiştirmesi</strong> hatalarının da neredeyse tamamını yakalar; örneğin 12 yerine 21 yazmak fark edilir.</p>
+      <p>Bunun bir istisnası vardır: 09 ile 90'ın yer değiştirmesi yakalanamaz, çünkü iki durumda da bu çiftin toplama katkısı aynıdır. Ayrıca 22 ↔ 55, 33 ↔ 66 ve 44 ↔ 77 gibi bazı çift hane hataları ile birbirini götüren birden fazla hata da gözden kaçabilir. Tek kontrol haneli her yöntem gibi Luhn da kusursuz değildir, ancak gündelik yazım hatalarının büyük bölümünü yakalamak için yeterlidir.</p>
+
+      <h2>Nerelerde kullanılır?</h2>
+      <p>Her numara Luhn kullanmaz. IBAN mod 97 tabanlı ayrı bir denetimle, ISBN ve EAN barkodları kendi ağırlıklı toplam yöntemleriyle, T.C. kimlik numarası ise kendine özgü bir kuralla doğrulanır. Bu tür numaraları Luhn'la denetlemek anlamsız sonuç verir; ilgili araçlar bölümündeki özel doğrulayıcıları kullanın.</p>
+      <ul>
+        <li><strong>Ödeme kartı numaraları:</strong> kart numarasının son hanesi Luhn kontrol hanesidir; ödeme formları numarayı göndermeden önce bu denetimi yapar.</li>
+        <li><strong>IMEI numaraları:</strong> cep telefonlarının 15 haneli kimlik numarasının son hanesi Luhn ile hesaplanır.</li>
+        <li><strong>Abone, müşteri ve üyelik numaraları:</strong> birçok kurum kendi numaralandırma sisteminde aynı yöntemi kullanır.</li>
+        <li><strong>Yazılım geliştirme ve test:</strong> form doğrulama kodu yazarken kendi uygulamanızın sonucunu bağımsız bir araçla karşılaştırmak için.</li>
+      </ul>
+
+      <h2>Geçerli çıkması ne anlama gelir?</h2>
+      <p>Denetimden geçen bir numara yalnızca <em>biçimsel olarak tutarlıdır</em>. Rastgele yazılmış her on numaradan biri tesadüfen denetimden geçer. Dolayısıyla &quot;geçerli&quot; sonucu, numaranın bir kuruma kayıtlı olduğunu, etkin olduğunu ya da size ait olduğunu göstermez; bunu yalnızca numarayı veren kurum doğrulayabilir. Tersine, &quot;geçersiz&quot; sonucu güçlü bir işarettir: numarada büyük olasılıkla bir yazım hatası vardır.</p>
+      <p>Bu araç yalnızca denetim yapar; numara üretmez, eksik haneyi tamamlamaz ve herhangi bir kuruma sorgu göndermez.</p>
+
+      <h2>Gizlilik ve güvenli kullanım</h2>
+      <p>Hesap tümüyle tarayıcınızda çalışır; yazdığınız numara hiçbir sunucuya iletilmez ve saklanmaz. Yine de genel bir alışkanlık olarak gerçek kart numaranızı gerekmedikçe hiçbir web sayfasına yazmamanızı öneririz. Algoritmayı öğrenmek ya da kendi kodunuzu sınamak için bu sayfadaki örnek numaralar ve ödeme sağlayıcılarının belgelerinde yayımlanan test numaraları yeterlidir.</p>
+
+      <h2>Geliştiriciler için notlar</h2>
+      <p>Uygulamada en sık yapılan hata, katlama sırasını soldan saymaktır. Sıra her zaman sağdan belirlenir; bu yüzden hane sayısı tek olan numaralarda (11 ya da 15 hane gibi) en soldaki hane katlanmaz, çift olanlarda (16 hane gibi) katlanır. İkinci yaygın hata, numarayı sayı türüne çevirmektir: 16 ve üzeri haneli değerler kayan noktalı sayılarda duyarlık kaybına uğrar ve baştaki sıfırlar düşer. Numarayı her zaman metin olarak tutun ve hane hane işleyin; boşluk ve tireleri denetimden önce ayıklayın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Luhn algoritması ne işe yarar?</summary><p>Bir numaranın son hanesini diğer hanelerden türeterek yazım hatalarını yakalamaya yarar. Tek hanelik yanlışları ve komşu hanelerin yer değiştirmesini büyük oranda fark eder; bir güvenlik ya da şifreleme yöntemi değildir.</p></details>
+        <details><summary>Luhn denetimi nasıl yapılır?</summary><p>Sağdan başlayarak her ikinci hane ikiye katlanır, 9'dan büyük sonuçlardan 9 çıkarılır ve bütün haneler toplanır. Toplam 10'a tam bölünüyorsa numara denetimden geçer.</p></details>
+        <details><summary>Denetimden geçen numara gerçek midir?</summary><p>Hayır. Denetim yalnızca hanelerin kendi içinde tutarlı olduğunu gösterir. Numaranın bir kuruma kayıtlı, etkin ya da kullanılabilir olup olmadığını yalnızca numarayı veren kurum bilebilir.</p></details>
+        <details><summary>IMEI numarası Luhn ile doğrulanır mı?</summary><p>Evet. 15 haneli IMEI numarasının son hanesi Luhn algoritmasıyla hesaplanan kontrol hanesidir. Telefonunuzun IMEI numarasını yazarak hanelerin tutarlı olup olmadığını denetleyebilirsiniz.</p></details>
+        <details><summary>T.C. kimlik numarası ya da IBAN bu araçla kontrol edilir mi?</summary><p>Hayır. T.C. kimlik numarası kendine özgü bir kuralla, IBAN ise mod 97 yöntemiyle doğrulanır. Bu numaralarda Luhn sonucu anlam taşımaz.</p></details>
+        <details><summary>Luhn hangi hataları yakalayamaz?</summary><p>09 ile 90'ın yer değiştirmesini ve 22-55, 33-66, 44-77 gibi bazı çift hane değişimlerini yakalayamaz. Birbirini dengeleyen birden fazla hata da gözden kaçabilir.</p></details>
+        <details><summary>Neden sağdan başlanıyor?</summary><p>Kontrol hanesi numaranın sonundadır ve numaraların uzunluğu değişebilir. Sağdan saymak, uzunluk ne olursa olsun kontrol hanesinin her zaman katlanmayan konumda kalmasını sağlar.</p></details>
+        <details><summary>Yazdığım numara bir yere gönderiliyor mu?</summary><p>Hayır. Hesap tarayıcınızda yapılır; numara sunucuya iletilmez, kaydedilmez ve hiçbir kuruma sorgu gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../isbn-dogrula/">ISBN Doğrulama</a></li>
+        <li><a href="../crc32-hesapla/">CRC32 Hesaplama</a></li>
+        <li><a href="../metin-sha256-hesapla/">Metin SHA-256 Özeti Hesaplama</a></li>
+        <li><a href="../bit-islem-hesapla/">Bit İşlemleri (AND, OR, XOR) Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="luhn-kontrol-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

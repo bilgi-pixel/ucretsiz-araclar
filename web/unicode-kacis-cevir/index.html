@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Unicode Kaçış Dizisi Çevirici – \uXXXX, U+ ve HTML Kodu Dönüştürme</title>
+  <meta name="description" content="Metni \uXXXX, \u{…}, U+XXXX, HTML sayısal karakter kodu ya da CSS kaçışına çevirin; kaçış dizilerini yeniden okunur metne dönüştürün. Türkçe harf desteği.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/unicode-kacis-cevir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Unicode Kaçış Dizisi Çevirici – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/unicode-kacis-cevir/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"\\u00E7 ne demek?","acceptedAnswer":{"@type":"Answer","text":"Küçük \"ç\" harfinin Unicode kaçışıdır. Ters eğik çizgi ve u harfinden sonra gelen dört onaltılık basamak (00E7) karakterin kod noktasını verir. Benzer biçimde \\u015F \"ş\", \\u011F \"ğ\", \\u0131 \"ı\" harfidir."}},{"@type":"Question","name":"API yanıtımda Türkçe harfler neden \\u ile geliyor?","acceptedAnswer":{"@type":"Answer","text":"Bazı JSON kitaplıkları ASCII dışı karakterleri varsayılan olarak kaçışlar. Veri bozuk değildir; standart bir JSON ayrıştırıcısı bu dizileri kendiliğinden harfe çevirir. Çıktıyı gözle okumak istiyorsanız bu araçla çözebilir ya da kitaplığın ilgili ayarını kapatabilirsiniz."}},{"@type":"Question","name":"Büyük ve küçük harfli onaltılık yazım fark eder mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. \\u00e7 ile \\u00E7 aynı karakterdir; araç iki yazımı da kabul eder. Ürettiği dizilerde okunabilirlik için büyük harf kullanır."}},{"@type":"Question","name":"HTML'de sayısal kod mu yoksa harfin kendisi mi kullanılmalı?","acceptedAnswer":{"@type":"Answer","text":"Sayfa UTF-8 olarak sunuluyorsa harfi doğrudan yazmak en temiz yoldur. Sayısal başvurular, kodlamayı denetleyemediğiniz e-posta şablonları ya da eski sistemler gibi ortamlarda işe yarar."}},{"@type":"Question","name":"U+ gösterimi kodda çalışır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır, U+00E7 yazımı bir programlama dili sözdizimi değil, belgelerde karakteri adlandırmanın standart yoludur. Kodda kullanmak için aynı sayıyı \\u00E7 ya da dilinizin kabul ettiği başka bir biçimde yazın."}},{"@type":"Question","name":"Bir emoji neden iki \\u dizisine dönüşüyor?","acceptedAnswer":{"@type":"Answer","text":"Kod noktası FFFF değerinden büyük olan karakterler UTF-16'da iki kod birimiyle saklanır. \\uXXXX biçimi kod birimi yazdığı için iki dizi çıkar. Tek parça görmek için süslü parantezli biçimi seçin."}},{"@type":"Question","name":"Karakter sayısı ile çıktı uzunluğu neden farklı?","acceptedAnswer":{"@type":"Answer","text":"\"Metindeki karakter sayısı\" kod noktalarını sayar; \"Çıktı uzunluğu\" ise kaçışlı metnin kaç ASCII karakter tuttuğunu gösterir. Tek bir ç harfi \\u00E7 olduğunda altı karakter yer kaplar."}},{"@type":"Question","name":"Yazdığım metin kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Çeviri tamamen tarayıcınızda yapılır; metin sunucuya gönderilmez ve saklanmaz. Sayfa yüklendikten sonra internet bağlantısı olmadan da çalışır."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">Unicode Kaçış Dizisi Çevirici</span> – \uXXXX ↔ metin</h1>
+      <p class="lead">Günlük dosyasında ya da API yanıtında <code>T\u00FCrk\u00E7e</code> gibi bir yazı gördüyseniz bu, &quot;Türkçe&quot; sözcüğünün Unicode kaçışlı hâlidir. Bu araç metni altı farklı kaçış biçimine çevirir ve bu biçimlerde yazılmış dizileri <strong>okunur metne</strong> geri döndürür.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-metin">Metin</label><textarea id="f-metin" data-field="metin" rows="6" spellcheck="false" placeholder="Örn. Türkçe ya da T\u00FCrk\u00E7e"></textarea></div>
+          <div class="ba-field"><label for="f-yon">İşlem</label><select id="f-yon" data-field="yon"><option value="kacis">Metin → kaçış dizisi</option><option value="geri">Kaçış dizisi → metin</option></select></div>
+          <div class="ba-field"><label for="f-bicim">Kaçış biçimi</label><select id="f-bicim" data-field="bicim"><option value="ju">\uXXXX (JavaScript, JSON, Java, C#)</option><option value="es6">\u{X} (ES2015+, kod noktası)</option><option value="uplus">U+XXXX (Unicode gösterimi)</option><option value="htmlhex">&amp;#xHHHH; (HTML onaltılık)</option><option value="htmldec">&amp;#NNNN; (HTML ondalık)</option><option value="css">\HHHH (CSS)</option></select><div class="hint">Geri çevirirken CSS dışındaki biçimler kendiliğinden tanınır; CSS kaçışları için bu listeden CSS'i seçin.</div></div>
+          <div class="ba-field"><label for="f-kapsam">Hangi karakterler kaçışlansın?</label><select id="f-kapsam" data-field="kapsam"><option value="disi">Yalnızca ASCII dışı karakterler</option><option value="hepsi">Tüm karakterler</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Çevir</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="unicode-kacis-cevir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Çevirmek istediğiniz metni ya da kaçış dizilerini &quot;Metin&quot; kutusuna yapıştırın.</li>
+        <li>&quot;İşlem&quot; listesinden yönü seçin: okunur metinden kaçış dizisi üretmek ya da kaçış dizisini metne çevirmek.</li>
+        <li>Kaçış üretirken hedef ortama uygun biçimi seçin: kaynak kod ve JSON için <code>\uXXXX</code>, belgelendirme için <code>U+XXXX</code>, HTML için sayısal karakter kodu, stil dosyaları için CSS kaçışı.</li>
+        <li>Yalnızca Türkçe harfler gibi ASCII dışı karakterlerin mi, yoksa bütün karakterlerin mi kaçışlanacağını belirleyin.</li>
+        <li>&quot;Çevir&quot; düğmesine basın. Sonuç kutusundaki metni kopyalayın; kaç karakterin dönüştürüldüğü üst satırda yazar.</li>
+      </ol>
+
+      <h2>Unicode kaçış dizisi nedir?</h2>
+      <p>Unicode, dünyadaki yazı sistemlerinin her karakterine <strong>kod noktası</strong> denen bir sayı verir. Küçük &quot;ç&quot; harfinin kod noktası onaltılık E7, &quot;ş&quot; harfininki 15F, &quot;ğ&quot; harfininki 11F'dir. Kaçış dizisi, karakterin kendisini yazmak yerine bu sayıyı yalnızca ASCII karakterlerle ifade etmenin yoludur. Böylece karakter kodlamasını bozan bir kanaldan geçse bile metin kaybolmaz; karşı taraf sayıyı okuyup doğru harfi yeniden üretir.</p>
+      <p>Türkiye'de yazılım geliştirenlerin bu dizilerle tanışması genellikle bir sorunla olur: sunucu yanıtında &quot;Türkçe&quot; yerine <code>T\u00FCrk\u00E7e</code> görünür, Java <code>.properties</code> dosyasındaki çeviriler okunmaz hâldedir ya da veritabanı dökümünde harfler sayılara dönüşmüştür. Bu yazımlar bozuk değildir; yalnızca çözülmeyi bekler.</p>
+
+      <h2>Altı biçim ve kullanıldıkları yerler</h2>
+      <ul>
+        <li><code>\uXXXX</code>: dört onaltılık basamak. JavaScript, JSON, Java, C#, Python ve pek çok dilde ortak yazım. &quot;ç&quot; için <code>\u00E7</code>.</li>
+        <li><code>\u{X}</code>: süslü parantez içinde kod noktası; basamak sayısı serbesttir. ES2015 sonrası JavaScript ve bazı dillerde. &quot;ç&quot; için <code>\u{E7}</code>.</li>
+        <li><code>U+XXXX</code>: Unicode belgelerinde ve karakter tablolarında kullanılan gösterim; en az dört basamak yazılır. &quot;ç&quot; için <code>U+00E7</code>.</li>
+        <li><code>&amp;#xHHHH;</code>: HTML ve XML'de onaltılık sayısal karakter başvurusu. &quot;ç&quot; için <code>&amp;#xE7;</code>.</li>
+        <li>HTML ondalık sayısal karakter başvurusu: ve işareti ile kare işaretinden sonra ondalık kod, sonda noktalı virgül. &quot;ç&quot; harfinin ondalık kodu 231'dir.</li>
+        <li>CSS kaçışı: ters eğik çizgi ve en çok altı onaltılık basamak, ardından ayırıcı bir boşluk. <code>content</code> özelliğinde ve seçicilerde kullanılır. &quot;ç&quot; için <code>\E7</code>.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="unicode-kacis-cevir-b" aria-label="Reklam"></div>
+
+      <h2>Türkçe harflerin kodları</h2>
+      <ul>
+        <li><strong>ç</strong> U+00E7 (231) · <strong>Ç</strong> U+00C7 (199)</li>
+        <li><strong>ğ</strong> U+011F (287) · <strong>Ğ</strong> U+011E (286)</li>
+        <li><strong>ı</strong> U+0131 (305) · <strong>İ</strong> U+0130 (304)</li>
+        <li><strong>ö</strong> U+00F6 (246) · <strong>Ö</strong> U+00D6 (214)</li>
+        <li><strong>ş</strong> U+015F (351) · <strong>Ş</strong> U+015E (350)</li>
+        <li><strong>ü</strong> U+00FC (252) · <strong>Ü</strong> U+00DC (220)</li>
+        <li><strong>â</strong> U+00E2 (226) · <strong>î</strong> U+00EE (238) · <strong>û</strong> U+00FB (251)</li>
+      </ul>
+
+      <h2>Çözümlü örnek</h2>
+      <p>&quot;Türkçe&quot; sözcüğünü <code>\uXXXX</code> biçimine çevirelim ve yalnızca ASCII dışı karakterleri kaçışlayalım. Altı harften ikisi ASCII dışındadır: ü (U+00FC) ve ç (U+00E7). T, r, k ve e olduğu gibi kalır; sonuç <code>T\u00FCrk\u00E7e</code> olur. &quot;Tüm karakterler&quot; seçilseydi T harfi de <code>\u0054</code> olarak yazılırdı.</p>
+      <p>Ters yönde araç farklı biçimleri aynı metinde bir arada tanır. <code>\u015Eehir \u0130stanbul, U+011F ve &amp;#x131;</code> girdisinde dört kaçış vardır ve sonuç &quot;Şehir İstanbul, ğ ve ı&quot; olur. Kaçış olmayan harfler, boşluklar ve noktalama değişmeden aktarılır.</p>
+
+      <h2>Vekil çiftleri: neden bazen iki dizi çıkıyor?</h2>
+      <p><code>\uXXXX</code> biçimi dört basamakla en çok FFFF değerine kadar yazabilir. Oysa Unicode 10FFFF'e kadar uzanır; müzik işaretleri, eski yazılar ve emojiler bu üst bölgededir. UTF-16 bu karakterleri &quot;vekil çifti&quot; denen iki kod birimiyle saklar ve kaçış dizisi de buna uygun olarak iki parça hâlinde yazılır. Sol anahtarı işareti (U+1D11E) bu biçimde <code>\uD834\uDD1E</code> olur.</p>
+      <p>Süslü parantezli biçim, <code>U+</code> gösterimi ve HTML başvuruları kod noktasını tek parça yazar: aynı karakter <code>\u{1D11E}</code> olarak ifade edilir. Araç geri çevirirken her iki yazımı da doğru birleştirir; ardışık iki vekil tek bir karaktere dönüşür.</p>
+
+      <h2>CSS kaçışlarında boşluk kuralı</h2>
+      <p>CSS'te kaçış dizisinin basamak sayısı sabit değildir, bu yüzden dizinin nerede bittiği belirsiz olabilir. &quot;içerik&quot; sözcüğünde ç harfini kaçışladığınızda <code>\E7</code> dizisinden sonra gelen &quot;e&quot; de geçerli bir onaltılık basamaktır; boşluk bırakılmazsa tarayıcı <code>\E7e</code> dizisini tek bir karakter (U+0E7E) sanar. Kural gereği kaçıştan sonraki tek bir boşluk ayırıcı sayılır ve metne dâhil edilmez. Araç bu yüzden her CSS kaçışının ardına bir boşluk koyar ve sonuç <code>i\E7 erik</code> olur.</p>
+      <p>Aynı belirsizlik nedeniyle CSS kaçışları geri çevirmede kendiliğinden tanınmaz: düz bir metindeki <code>\b</code> ya da <code>\f</code> hem başka dillerde kaçış hem de CSS'te geçerli bir onaltılık dizidir. CSS kaçışı çözmek için biçim listesinden CSS'i seçmeniz gerekir.</p>
+
+      <h2>Sınırlar</h2>
+      <p>Araç adlandırılmış HTML varlıklarını (telif işareti ya da kesintisiz boşluk için kullanılan ad temelli yazımlar gibi) çözmez; yalnızca sayısal başvuruları tanır. Yüzde işaretiyle yazılan URL kodlaması ve Punycode da farklı düzenlerdir ve ayrı araçlarla çözülür. Geçerli aralığın dışındaki bir kod noktası (10FFFF'ten büyük) yazıldığında araç hata verir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>\u00E7 ne demek?</summary><p>Küçük &quot;ç&quot; harfinin Unicode kaçışıdır. Ters eğik çizgi ve u harfinden sonra gelen dört onaltılık basamak (00E7) karakterin kod noktasını verir. Benzer biçimde \u015F &quot;ş&quot;, \u011F &quot;ğ&quot;, \u0131 &quot;ı&quot; harfidir.</p></details>
+        <details><summary>API yanıtımda Türkçe harfler neden \u ile geliyor?</summary><p>Bazı JSON kitaplıkları ASCII dışı karakterleri varsayılan olarak kaçışlar. Veri bozuk değildir; standart bir JSON ayrıştırıcısı bu dizileri kendiliğinden harfe çevirir. Çıktıyı gözle okumak istiyorsanız bu araçla çözebilir ya da kitaplığın ilgili ayarını kapatabilirsiniz.</p></details>
+        <details><summary>Büyük ve küçük harfli onaltılık yazım fark eder mi?</summary><p>Hayır. \u00e7 ile \u00E7 aynı karakterdir; araç iki yazımı da kabul eder. Ürettiği dizilerde okunabilirlik için büyük harf kullanır.</p></details>
+        <details><summary>HTML'de sayısal kod mu yoksa harfin kendisi mi kullanılmalı?</summary><p>Sayfa UTF-8 olarak sunuluyorsa harfi doğrudan yazmak en temiz yoldur. Sayısal başvurular, kodlamayı denetleyemediğiniz e-posta şablonları ya da eski sistemler gibi ortamlarda işe yarar.</p></details>
+        <details><summary>U+ gösterimi kodda çalışır mı?</summary><p>Hayır, U+00E7 yazımı bir programlama dili sözdizimi değil, belgelerde karakteri adlandırmanın standart yoludur. Kodda kullanmak için aynı sayıyı \u00E7 ya da dilinizin kabul ettiği başka bir biçimde yazın.</p></details>
+        <details><summary>Bir emoji neden iki \u dizisine dönüşüyor?</summary><p>Kod noktası FFFF değerinden büyük olan karakterler UTF-16'da iki kod birimiyle saklanır. \uXXXX biçimi kod birimi yazdığı için iki dizi çıkar. Tek parça görmek için süslü parantezli biçimi seçin.</p></details>
+        <details><summary>Karakter sayısı ile çıktı uzunluğu neden farklı?</summary><p>&quot;Metindeki karakter sayısı&quot; kod noktalarını sayar; &quot;Çıktı uzunluğu&quot; ise kaçışlı metnin kaç ASCII karakter tuttuğunu gösterir. Tek bir ç harfi \u00E7 olduğunda altı karakter yer kaplar.</p></details>
+        <details><summary>Yazdığım metin kaydediliyor mu?</summary><p>Hayır. Çeviri tamamen tarayıcınızda yapılır; metin sunucuya gönderilmez ve saklanmaz. Sayfa yüklendikten sonra internet bağlantısı olmadan da çalışır.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../js-kacis-karakteri/">JavaScript Dizgi Kaçış Karakteri Dönüştürme</a></li>
+        <li><a href="../json-kacis/">JSON Kaçış (Escape) ve Geri Alma</a></li>
+        <li><a href="../url-kodla/">URL Kodla / Çöz ve Metin Kodlama Araçları</a></li>
+        <li><a href="../punycode-cevir/">Punycode (Türkçe Alan Adı) Çevirici</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="unicode-kacis-cevir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

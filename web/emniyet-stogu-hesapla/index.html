@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Emniyet Stoğu Hesaplama – Güvenlik Stoku ve Yeniden Sipariş Noktası</title>
+  <meta name="description" content="Günlük satış ve tedarik süresi verilerinden emniyet stoğunu ve yeniden sipariş noktasını hesaplayın; en yüksek–ortalama ya da servis düzeyi yöntemini seçin.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/emniyet-stogu-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Emniyet Stoğu Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/emniyet-stogu-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Emniyet stoğu formülü nedir?","acceptedAnswer":{"@type":"Answer","text":"En yaygın formül şudur: (en yüksek günlük satış × en uzun tedarik süresi) − (ortalama günlük satış × ortalama tedarik süresi). İstatistiksel yöntemde ise Z katsayısı × günlük satışın standart sapması × tedarik süresinin karekökü kullanılır."}},{"@type":"Question","name":"Yeniden sipariş noktası ile emniyet stoğu arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Emniyet stoğu yedekte tutulan tampon miktardır. Yeniden sipariş noktası ise siparişin verileceği stok düzeyidir ve tedarik süresi boyunca beklenen talebe emniyet stoğunun eklenmesiyle bulunur."}},{"@type":"Question","name":"Standart sapmayı nasıl bulurum?","acceptedAnswer":{"@type":"Answer","text":"Geçmiş günlük satış miktarlarınızı bir hesap tablosuna yazıp standart sapma işlevini uygulayabilirsiniz. En az birkaç haftalık, tercihen birkaç aylık ve kampanya dönemlerinden arındırılmış veri kullanmak daha güvenilir sonuç verir."}},{"@type":"Question","name":"Hangi yöntemi seçmeliyim?","acceptedAnswer":{"@type":"Answer","text":"Düzenli satış kaydınız yoksa ya da hızlı bir tahmin istiyorsanız en yüksek – ortalama yöntemi yeterlidir. Günlük satış verisi tutuyorsanız ve stok maliyetini hedeflenen hizmet kalitesine göre ayarlamak istiyorsanız servis düzeyi yöntemi daha isabetlidir."}},{"@type":"Question","name":"%95 servis düzeyi ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Sipariş döngülerinin yaklaşık yüzde doksan beşinde, yeni mal gelene kadar stokun tükenmeyeceği anlamına gelir. Kalan yüzde beşlik bölümde talep emniyet stoğunu da aşabilir."}},{"@type":"Question","name":"Emniyet stoğu sıfır çıkabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. En yüksek ve ortalama değerler birbirine eşitse ya da standart sapma sıfırsa talep ve tedarik tamamen öngörülebilir demektir ve tampona gerek kalmaz. Gerçek hayatta bu durum nadirdir."}},{"@type":"Question","name":"Haftalık verilerle hesap yapabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Satışı haftalık, tedarik süresini de hafta olarak girerseniz sonuç yine doğru çıkar; yalnızca \"gün\" yazan satırları hafta olarak okumanız gerekir. Önemli olan bütün girdilerin aynı zaman biriminde olmasıdır."}},{"@type":"Question","name":"Satış verilerim bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tarayıcınızda yapılır; yazdığınız değerler sunucuya iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#finans" class="ba-nav-optional">Finans</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#finans">Finans</a></li></ol>
+      <h1><span class="ba-grad">Emniyet Stoğu Hesaplama</span> – ve yeniden sipariş noktası</h1>
+      <p class="lead">Talep beklenenden yüksek geldiğinde ya da tedarikçi geciktiğinde rafın boş kalmaması için tutulması gereken <strong>emniyet stoğunu</strong> ve siparişin verilmesi gereken stok düzeyini (yeniden sipariş noktası) hesaplayın.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-yontem">Hesaplama yöntemi</label><select id="f-yontem" data-field="yontem"><option value="maks">En yüksek – ortalama yöntemi</option><option value="servis">Servis düzeyi (istatistiksel) yöntemi</option></select></div>
+          <div class="ba-field"><label for="f-ortSatis">Ortalama günlük satış (birim)</label><input id="f-ortSatis" data-field="ortSatis" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 50"></div>
+          <div class="ba-field"><label for="f-ortSure">Ortalama tedarik süresi (gün)</label><input id="f-ortSure" data-field="ortSure" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"></div>
+          <div class="ba-field"><label for="f-maksSatis">En yüksek günlük satış (birim)</label><input id="f-maksSatis" data-field="maksSatis" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 70"><div class="hint">Yalnızca en yüksek – ortalama yönteminde kullanılır.</div></div>
+          <div class="ba-field"><label for="f-maksSure">En uzun tedarik süresi (gün)</label><input id="f-maksSure" data-field="maksSure" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 15"><div class="hint">Yalnızca en yüksek – ortalama yönteminde kullanılır.</div></div>
+          <div class="ba-field"><label for="f-sapma">Günlük satışın standart sapması (birim)</label><input id="f-sapma" data-field="sapma" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"><div class="hint">Yalnızca servis düzeyi yönteminde kullanılır.</div></div>
+          <div class="ba-field"><label for="f-duzey">Hedef servis düzeyi</label><select id="f-duzey" data-field="duzey"><option value="90">%90</option><option value="95" selected>%95</option><option value="97.5">%97,5</option><option value="99">%99</option><option value="99.9">%99,9</option></select><div class="hint">Yalnızca servis düzeyi yönteminde kullanılır.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="emniyet-stogu-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Yöntemi seçin. Elinizde yalnızca en yüksek ve ortalama değerler varsa ilk yöntemi, satış verilerinizin standart sapmasını biliyorsanız servis düzeyi yöntemini kullanın.</li>
+        <li>Ortalama günlük satış miktarını ve tedarikçinin siparişi teslim etmesi için geçen ortalama gün sayısını yazın.</li>
+        <li>İlk yöntemde geçmiş dönemde görülen en yüksek günlük satışı ve en uzun teslim süresini; ikinci yöntemde günlük satışın standart sapmasını ve hedeflediğiniz servis düzeyini girin.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk satır tutmanız gereken emniyet stoğunu, &quot;Yeniden sipariş noktası&quot; satırı ise stok hangi düzeye indiğinde yeni sipariş vermeniz gerektiğini gösterir.</li>
+      </ol>
+
+      <h2>Emniyet stoğu nedir?</h2>
+      <p>Emniyet stoğu (güvenlik stoku ya da tampon stok), normal koşullarda dokunulmaması planlanan, yalnızca işler beklendiği gibi gitmediğinde devreye giren yedek stoktur. Talep bir hafta boyunca ortalamanın üstünde seyredebilir, tedarikçinin aracı gümrükte bekleyebilir, üretim hattı arızalanabilir. Emniyet stoğu, bu belirsizliklerin müşteriye &quot;ürün kalmadı&quot; olarak yansımasını engelleyen sigortadır.</p>
+      <p>Sigortanın bir primi vardır: emniyet stoğu depoda yer kaplar ve sermaye bağlar. Bu yüzden amaç stoku olabildiğince yüksek tutmak değil, stoksuz kalma riski ile stok tutma maliyeti arasında bilinçli bir denge kurmaktır.</p>
+
+      <h2>En yüksek – ortalama yöntemi</h2>
+      <p>En yaygın ve en kolay yöntemdir; istatistik bilgisi gerektirmez. Formül: <strong>emniyet stoğu = (en yüksek günlük satış × en uzun tedarik süresi) − (ortalama günlük satış × ortalama tedarik süresi)</strong>. İlk çarpım olabilecek en kötü senaryodaki talebi, ikinci çarpım ise olağan durumdaki talebi verir; aradaki fark tampon olarak tutulur.</p>
+      <p>Örnek: Bir kırtasiye toptancısı bir defterden günde ortalama 50, en yoğun günde 70 adet satıyor. Tedarikçi normalde 10 günde, en geç 15 günde teslim ediyor. Emniyet stoğu = (70 × 15) − (50 × 10) = 1.050 − 500 = <strong>550 adet</strong>. Bu stok, ortalama satış hızıyla 11 günlük ihtiyacı karşılar.</p>
+      <p>Yöntemin zayıf yanı, aynı anda hem en yüksek satışın hem de en uzun gecikmenin yaşanacağını varsaymasıdır. Geçmişteki tek bir olağanüstü gün ya da bir kereye mahsus yaşanan uzun gecikme, emniyet stoğunu gereğinden fazla şişirebilir. Bu tür uç değerleri ayıklamak ya da ikinci yöntemi kullanmak daha dengeli sonuç verir.</p>
+
+      <div class="ba-ad" data-slot="emniyet-stogu-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Servis düzeyi (istatistiksel) yöntemi</h2>
+      <p>Bu yöntem, &quot;sipariş döngülerinin yüzde kaçında stoksuz kalmamayı hedefliyorum&quot; sorusundan yola çıkar. Formül: <strong>emniyet stoğu = Z × σ × √L</strong>. Burada σ günlük satışın standart sapması, L gün olarak tedarik süresi, Z ise hedeflenen servis düzeyine karşılık gelen normal dağılım katsayısıdır.</p>
+      <p>Örnek: Günlük ortalama satış 50 adet, standart sapma 10 adet, tedarik süresi 9 gün ve hedef servis düzeyi %95 olsun. Z = 1,6449 alınır. Emniyet stoğu = 1,6449 × 10 × √9 = 1,6449 × 10 × 3 = <strong>49,35 adet</strong>, yukarı yuvarlandığında 50 adet. Tedarik süresi boyunca beklenen talep 50 × 9 = 450 adet olduğundan yeniden sipariş noktası 499,35 adettir.</p>
+      <ul>
+        <li>%90 servis düzeyi → Z = 1,2816</li>
+        <li>%95 servis düzeyi → Z = 1,6449</li>
+        <li>%97,5 servis düzeyi → Z = 1,9600</li>
+        <li>%99 servis düzeyi → Z = 2,3263</li>
+        <li>%99,9 servis düzeyi → Z = 3,0902</li>
+      </ul>
+
+      <h2>Yeniden sipariş noktası</h2>
+      <p>Emniyet stoğu tek başına bir eylem tetiklemez; asıl kullanılan değer yeniden sipariş noktasıdır: <strong>yeniden sipariş noktası = (ortalama günlük satış × ortalama tedarik süresi) + emniyet stoğu</strong>. Eldeki ve yoldaki stokun toplamı bu düzeye indiğinde sipariş verilir. Kırtasiye örneğinde bu değer 500 + 550 = 1.050 adettir. Sipariş verildikten sonra işler normal giderse mal geldiği anda depoda yaklaşık emniyet stoğu kadar ürün kalmış olur.</p>
+
+      <h2>Servis düzeyi nasıl seçilir?</h2>
+      <p>Servis düzeyi yükseldikçe emniyet stoğu doğrusal değil, hızlanarak artar. %95'ten %99'a çıkmak Z katsayısını 1,6449'dan 2,3263'e, yani emniyet stoğunu yaklaşık %41 yukarı taşır; %99,9 için ise %95'e göre neredeyse iki katı stok gerekir. Bu nedenle bütün ürünlere aynı düzeyi uygulamak pahalıdır.</p>
+      <p>Yaygın uygulama, ürünleri önem derecesine göre sınıflandırmaktır: cironun büyük kısmını getiren ya da yokluğu müşteri kaybına yol açan ürünlerde yüksek, yavaş dönen ve kolay ikame edilen ürünlerde daha düşük servis düzeyi hedeflenir. Hangi oranın uygun olduğu sektöre, kâr marjına ve stoksuz kalmanın maliyetine bağlıdır.</p>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p>Sonuçlar bilgilendirme amaçlıdır; stok politikası belirlerken raf ömrü, depo kapasitesi, asgari sipariş miktarı ve nakit durumunu da hesaba katın.</p>
+      <ul>
+        <li><strong>Birim tutarsızlığı:</strong> Satış günlük, tedarik süresi hafta olarak girilirse sonuç anlamsız olur. Bütün değerler aynı zaman biriminde olmalıdır.</li>
+        <li><strong>Stoksuz günleri satış verisine dahil etmek:</strong> Rafın boş olduğu günlerde satış sıfır görünür ve ortalamayı aşağı çeker; gerçek talep daha yüksektir.</li>
+        <li><strong>Kampanya dönemlerini ayırmamak:</strong> İndirim haftasındaki satış olağan talebi temsil etmez; hem en yüksek değeri hem de standart sapmayı bozar.</li>
+        <li><strong>Değeri bir kez hesaplayıp unutmak:</strong> Talep ve tedarik süreleri değiştikçe emniyet stoğu da güncellenmelidir; mevsimsel ürünlerde dönemlik hesap yapın.</li>
+        <li><strong>Model varsayımı:</strong> Servis düzeyi yöntemi talebin normal dağıldığını ve tedarik süresinin sabit olduğunu varsayar. Çok seyrek satılan ürünlerde ya da tedarik süresi çok oynak olduğunda sonuç gerçeği tam yansıtmayabilir.</li>
+      </ul>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Emniyet stoğu formülü nedir?</summary><p>En yaygın formül şudur: (en yüksek günlük satış × en uzun tedarik süresi) − (ortalama günlük satış × ortalama tedarik süresi). İstatistiksel yöntemde ise Z katsayısı × günlük satışın standart sapması × tedarik süresinin karekökü kullanılır.</p></details>
+        <details><summary>Yeniden sipariş noktası ile emniyet stoğu arasındaki fark nedir?</summary><p>Emniyet stoğu yedekte tutulan tampon miktardır. Yeniden sipariş noktası ise siparişin verileceği stok düzeyidir ve tedarik süresi boyunca beklenen talebe emniyet stoğunun eklenmesiyle bulunur.</p></details>
+        <details><summary>Standart sapmayı nasıl bulurum?</summary><p>Geçmiş günlük satış miktarlarınızı bir hesap tablosuna yazıp standart sapma işlevini uygulayabilirsiniz. En az birkaç haftalık, tercihen birkaç aylık ve kampanya dönemlerinden arındırılmış veri kullanmak daha güvenilir sonuç verir.</p></details>
+        <details><summary>Hangi yöntemi seçmeliyim?</summary><p>Düzenli satış kaydınız yoksa ya da hızlı bir tahmin istiyorsanız en yüksek – ortalama yöntemi yeterlidir. Günlük satış verisi tutuyorsanız ve stok maliyetini hedeflenen hizmet kalitesine göre ayarlamak istiyorsanız servis düzeyi yöntemi daha isabetlidir.</p></details>
+        <details><summary>%95 servis düzeyi ne anlama gelir?</summary><p>Sipariş döngülerinin yaklaşık yüzde doksan beşinde, yeni mal gelene kadar stokun tükenmeyeceği anlamına gelir. Kalan yüzde beşlik bölümde talep emniyet stoğunu da aşabilir.</p></details>
+        <details><summary>Emniyet stoğu sıfır çıkabilir mi?</summary><p>Evet. En yüksek ve ortalama değerler birbirine eşitse ya da standart sapma sıfırsa talep ve tedarik tamamen öngörülebilir demektir ve tampona gerek kalmaz. Gerçek hayatta bu durum nadirdir.</p></details>
+        <details><summary>Haftalık verilerle hesap yapabilir miyim?</summary><p>Evet. Satışı haftalık, tedarik süresini de hafta olarak girerseniz sonuç yine doğru çıkar; yalnızca &quot;gün&quot; yazan satırları hafta olarak okumanız gerekir. Önemli olan bütün girdilerin aynı zaman biriminde olmasıdır.</p></details>
+        <details><summary>Satış verilerim bir yere gönderiliyor mu?</summary><p>Hayır. Hesaplama tarayıcınızda yapılır; yazdığınız değerler sunucuya iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../ekonomik-siparis-miktari-hesapla/">Ekonomik Sipariş Miktarı (EOQ) Hesaplama</a></li>
+        <li><a href="../stok-devir-hizi-hesapla/">Stok Devir Hızı Hesaplama</a></li>
+        <li><a href="../nakit-donusum-suresi-hesapla/">Nakit Dönüşüm Süresi Hesaplama</a></li>
+        <li><a href="../fire-orani-hesapla/">Fire Oranı Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="emniyet-stogu-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

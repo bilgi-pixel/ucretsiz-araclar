@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>JavaScript Kaçış Karakteri Dönüştürme – String Escape ve Unescape</title>
+  <meta name="description" content="Metni JavaScript dizgisine güvenle yazılacak biçime çevirin ya da kaçışlı dizgiyi düz metne geri alın. Tek, çift tırnak ve backtick desteği; \n, \t, \uXXXX.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/js-kacis-karakteri/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"JavaScript Dizgi Kaçış Karakteri Dönüştürme – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/js-kacis-karakteri/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Tek tırnak mı çift tırnak mı kullanmalıyım?","acceptedAnswer":{"@type":"Answer","text":"JavaScript açısından ikisi eşdeğerdir. Metninizde kesme işareti çoksa (Türkçe özel adlardaki ekler gibi) çift tırnak, HTML özniteliği gibi çift tırnaklı içerik çoksa tek tırnak daha az kaçış gerektirir. Projenizin biçim kuralı varsa ona uyun."}},{"@type":"Question","name":"\\n ile \\r\\n arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"\\n yalnızca satır başı (LF) karakteridir; Linux ve macOS bunu kullanır. Windows metin dosyalarında satır sonu CR ve LF çiftidir, yani \\r\\n. Araç metninizde hangisi varsa onu aynen kaçışlar, dönüştürme yapmaz."}},{"@type":"Question","name":"Çıktıyı JSON olarak kullanabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Çift tırnak seçip yalnızca yaygın kaçışlar oluşuyorsa çoğu zaman geçerli olur, ama garanti değildir. JSON için kuralları daha dar olan JSON kaçış aracını kullanmak doğrusudur."}},{"@type":"Question","name":"Türkçe karakterleri kaçışlamam şart mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Dosyanız UTF-8 ise ç, ş, ğ, ı, ö, ü doğrudan yazılabilir. \\uXXXX seçeneği yalnızca çıktının saf ASCII olması gereken durumlar içindir."}},{"@type":"Question","name":"Geri alırken baştaki tırnakları silmem gerekir mi?","acceptedAnswer":{"@type":"Answer","text":"Gerekmez. Metin aynı tür tırnakla başlayıp bitiyorsa araç bunları ve sondaki noktalı virgülü kendiliğinden atar. Tırnaksız yapıştırdığınız dizgiler de olduğu gibi çözülür."}},{"@type":"Question","name":"\"Geçersiz \\u dizisi\" hatası neden çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"\\u ardından tam dört onaltılık basamak (0–9, A–F) ya da süslü parantez içinde bir kod noktası gelmelidir. Eksik basamak ya da G gibi geçersiz harf varsa araç konumu bildirir. Düz metninizde gerçekten ters eğik çizgi ve u harfi geçiyorsa ters eğik çizgiyi ikileyin."}},{"@type":"Question","name":"Uzunluk neden beklediğimden farklı görünüyor?","acceptedAnswer":{"@type":"Answer","text":"Uzunluklar JavaScript'in length özelliği gibi UTF-16 kod birimiyle sayılır. Temel düzlem dışındaki bir karakter 2 birim tutar; kaçışlandıktan sonra tek bir satır sonu da 2 karakter (\\ ve n) olur."}},{"@type":"Question","name":"Yapıştırdığım kod ya da metin bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Dönüştürme tamamen tarayıcınızda yapılır; metniniz sunucuya iletilmez, kaydedilmez. Gizli anahtar ya da müşteri verisi içeren metinlerde de bu nedenle rahatça kullanabilirsiniz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">JavaScript Dizgi Kaçış Karakteri Dönüştürme</span> – escape / unescape</h1>
+      <p class="lead">Çok satırlı ya da tırnak içeren bir metni JavaScript koduna dizgi olarak yapıştırmak istediğinizde ters eğik çizgili <strong>kaçış dizileri</strong> gerekir. Bu araç metni seçtiğiniz tırnak türüne göre kaçışlar; tersine, <code>\n</code>, <code>\t</code>, <code>\u00E7</code> gibi diziler içeren bir dizgiyi okunur metne geri çevirir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-metin">Metin</label><textarea id="f-metin" data-field="metin" rows="6" spellcheck="false" placeholder="Dönüştürülecek metni buraya yazın ya da yapıştırın"></textarea></div>
+          <div class="ba-field"><label for="f-yon">İşlem</label><select id="f-yon" data-field="yon"><option value="kacis">Kaçışla (metin → JS dizgisi)</option><option value="geri">Geri al (JS dizgisi → metin)</option></select></div>
+          <div class="ba-field"><label for="f-tirnak">Tırnak türü</label><select id="f-tirnak" data-field="tirnak"><option value="tek">Tek tırnak ' '</option><option value="cift">Çift tırnak &quot; &quot;</option><option value="backtick">Backtick ` ` (şablon dizgisi)</option></select><div class="hint">Kaçışlarken hangi tırnağın ters eğik çizgi alacağını belirler.</div></div>
+          <div class="ba-field"><label for="f-ascii">ASCII dışı karakterler</label><select id="f-ascii" data-field="ascii"><option value="koru">Olduğu gibi bırak (ç, ş, ğ…)</option><option value="kacis">\uXXXX biçimine çevir</option></select></div>
+          <div class="ba-field"><label for="f-sarmala">Sonucu tırnak içine al</label><select id="f-sarmala" data-field="sarmala"><option value="hayir">Hayır</option><option value="evet">Evet</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Dönüştür</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="js-kacis-karakteri-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Dönüştürmek istediğiniz metni &quot;Metin&quot; kutusuna yazın ya da yapıştırın. Satır sonları ve sekmeler korunur.</li>
+        <li>&quot;İşlem&quot; listesinden yönü seçin: düz metni koda gömülecek dizgiye çevirmek için &quot;Kaçışla&quot;, kaçış dizileri içeren bir dizgiyi okumak için &quot;Geri al&quot;.</li>
+        <li>Kaçışlarken dizgiyi kodda hangi tırnakla saracağınızı belirtin. Yalnızca o tırnak ters eğik çizgi alır; diğerleri olduğu gibi kalır.</li>
+        <li>Kaynak dosyanızın yalnızca ASCII içermesi gerekiyorsa Türkçe harflerin <code>\uXXXX</code> biçimine çevrilmesini isteyin.</li>
+        <li>&quot;Dönüştür&quot; düğmesine basın ve sonucu kopyalayın. &quot;Sonucu tırnak içine al&quot; seçeneği açıksa çıktı doğrudan atama ifadesinin sağına yapıştırılabilir.</li>
+      </ol>
+
+      <h2>Kaçış karakteri neden gerekir?</h2>
+      <p>JavaScript'te bir dizgi tek tırnak, çift tırnak ya da backtick arasına yazılır. Dizginin içinde aynı tırnak geçtiğinde yorumlayıcı dizginin orada bittiğini sanar ve sözdizimi hatası verir. Tek ya da çift tırnaklı dizgilerde gerçek bir satır sonu da yasaktır. Ters eğik çizgi (<code>\</code>) bu durumlarda &quot;sıradaki karakter özel anlam taşıyor&quot; demenin yoludur: <code>\'</code> dizgiyi bitirmeyen bir tırnak, <code>\n</code> ise satır sonudur.</p>
+      <p>Sorun en çok hazır metni koda taşırken çıkar: bir hata mesajı, HTML parçası, Windows dosya yolu ya da müşteriden gelen çok satırlı açıklama. <code>C:\Users\ali</code> yolunu olduğu gibi yazarsanız <code>\U</code> ve <code>\a</code> kaçış olarak yorumlanır ve ters eğik çizgiler sessizce kaybolur. Doğrusu her ters eğik çizgiyi ikilemektir: <code>C:\\Users\\ali</code>.</p>
+
+      <h2>Desteklenen kaçış dizileri</h2>
+      <ul>
+        <li><code>\\</code> ters eğik çizginin kendisi</li>
+        <li><code>\'</code>, <code>\&quot;</code>, <code>\`</code> tırnak işaretleri</li>
+        <li><code>\n</code> satır başı (LF), <code>\r</code> satır dönüşü (CR), <code>\t</code> sekme</li>
+        <li><code>\b</code> geri silme, <code>\f</code> sayfa besleme, <code>\v</code> dikey sekme, <code>\0</code> boş (NUL) karakter</li>
+        <li><code>\xHH</code> iki onaltılık basamakla 0–255 arası kod, örneğin <code>\x41</code> = A</li>
+        <li><code>\uXXXX</code> dört onaltılık basamakla UTF-16 kod birimi, örneğin <code>\u00E7</code> = ç</li>
+        <li><code>\u{X…}</code> süslü parantezle 10FFFF değerine kadar kod noktası (ES2015 ve sonrası)</li>
+        <li>Ters eğik çizgi ardından gerçek satır sonu: satır devamı; çözülürken ikisi de atılır</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="js-kacis-karakteri-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Şu iki satırlık metni tek tırnaklı dizgiye çevirelim: birinci satır <code>Ali'nin &quot;kitabı&quot;</code>, ikinci satır <code>yeni satır</code>. Tek tırnak seçiliyken araç kesme işaretini <code>\'</code>, satır sonunu <code>\n</code> yapar; çift tırnaklara dokunmaz. Sonuç <code>Ali\'nin &quot;kitabı&quot;\nyeni satır</code> olur ve iki karakterin kaçışlandığı bildirilir.</p>
+      <p>Aynı metinde çift tırnak seçseydiniz bu kez kesme işareti olduğu gibi kalır, iki çift tırnak <code>\&quot;</code> biçimini alırdı. Hangi tırnakta daha az kaçış gerekiyorsa onu seçmek kodu okunaklı tutar.</p>
+      <p>Ters yönde <code>Merhaba\nD\u00FCnya\t\x41</code> girdisi dört kaçış dizisi içerir. Çözüldüğünde ilk satırda &quot;Merhaba&quot;, ikinci satırda &quot;Dünya&quot;, ardından bir sekme ve &quot;A&quot; harfi elde edilir.</p>
+
+      <h2>Backtick (şablon dizgisi) farkları</h2>
+      <p>Backtick ile yazılan şablon dizgilerinde gerçek satır sonları serbesttir, ama iki şeye dikkat etmek gerekir: backtick'in kendisi ve <code>${</code> ikilisi. İkincisi ifade yerleştirme başlatır; metninizde düz yazı olarak &quot;${fiyat}&quot; geçiyorsa ve değişken olarak yorumlanmasını istemiyorsanız dolar işareti kaçışlanmalıdır. Araç backtick modunda bunu kendiliğinden <code>\${</code> olarak yazar.</p>
+      <p>Bu modda da satır sonları <code>\n</code> olarak yazılır; böylece çıktı tek satırda kalır ve girintileme ya da editörün satır sonu ayarı dizginin içeriğini değiştiremez.</p>
+
+      <h2>ASCII dışı karakterler ve \uXXXX</h2>
+      <p>Güncel JavaScript dosyaları UTF-8 olarak kaydedildiği sürece ç, ğ, ı, ö, ş, ü harflerini doğrudan dizgi içinde yazabilirsiniz; kaçışlamak zorunlu değildir. Ancak dosyanın kodlamasından emin olamadığınız eski sistemlerde, kod üreticilerde ya da yalnızca ASCII kabul eden yapılandırma alanlarında <code>\uXXXX</code> biçimi güvenli seçimdir. &quot;çağ&quot; sözcüğü bu seçenekle <code>\u00E7a\u011F</code> olur.</p>
+      <p>Temel düzlemin dışındaki karakterler (bazı eski yazılar, müzik işaretleri, emojiler) UTF-16'da iki kod birimiyle saklanır. Bu yüzden böyle bir karakter kaçışlandığında art arda iki <code>\uXXXX</code> dizisi görürsünüz; bu bir hata değil, vekil çifti denen yapıdır.</p>
+      <p>Araç ayrıca U+2028 ve U+2029 satır ayırıcılarını her durumda kaçışlar. Bu iki görünmez karakter eski JavaScript motorlarında dizgi içinde satır sonu sayıldığından, kullanıcıdan gelen metinlerde beklenmedik sözdizimi hatalarına yol açabiliyordu.</p>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p>Kaçışlama, metni HTML'e güvenle yerleştirmek anlamına gelmez. Bir dizgiyi HTML sayfasındaki betik bloğuna gömüyorsanız kapanış etiketi gibi diziler ayrıca ele alınmalıdır; kullanıcı girdisini sayfaya basarken HTML kodlaması gerekir. Aynı şekilde bu çıktı JSON değildir: JSON tek tırnağı ve <code>\x</code>, <code>\v</code>, <code>\0</code> kaçışlarını kabul etmez.</p>
+      <p>Geri alma yönünde eski sekizlik kaçışlar (<code>\101</code> gibi) bilinçli olarak desteklenmez, çünkü katı kipte ve şablon dizgilerinde yasaktır; araç bu durumda hangi konumda sorun olduğunu söyler. Tanımsız bir kaçış (<code>\q</code> gibi) JavaScript'teki davranışa uygun olarak yalnızca harfin kendisine dönüşür.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Tek tırnak mı çift tırnak mı kullanmalıyım?</summary><p>JavaScript açısından ikisi eşdeğerdir. Metninizde kesme işareti çoksa (Türkçe özel adlardaki ekler gibi) çift tırnak, HTML özniteliği gibi çift tırnaklı içerik çoksa tek tırnak daha az kaçış gerektirir. Projenizin biçim kuralı varsa ona uyun.</p></details>
+        <details><summary>\n ile \r\n arasındaki fark nedir?</summary><p>\n yalnızca satır başı (LF) karakteridir; Linux ve macOS bunu kullanır. Windows metin dosyalarında satır sonu CR ve LF çiftidir, yani \r\n. Araç metninizde hangisi varsa onu aynen kaçışlar, dönüştürme yapmaz.</p></details>
+        <details><summary>Çıktıyı JSON olarak kullanabilir miyim?</summary><p>Çift tırnak seçip yalnızca yaygın kaçışlar oluşuyorsa çoğu zaman geçerli olur, ama garanti değildir. JSON için kuralları daha dar olan JSON kaçış aracını kullanmak doğrusudur.</p></details>
+        <details><summary>Türkçe karakterleri kaçışlamam şart mı?</summary><p>Hayır. Dosyanız UTF-8 ise ç, ş, ğ, ı, ö, ü doğrudan yazılabilir. \uXXXX seçeneği yalnızca çıktının saf ASCII olması gereken durumlar içindir.</p></details>
+        <details><summary>Geri alırken baştaki tırnakları silmem gerekir mi?</summary><p>Gerekmez. Metin aynı tür tırnakla başlayıp bitiyorsa araç bunları ve sondaki noktalı virgülü kendiliğinden atar. Tırnaksız yapıştırdığınız dizgiler de olduğu gibi çözülür.</p></details>
+        <details><summary>&quot;Geçersiz \u dizisi&quot; hatası neden çıkıyor?</summary><p>\u ardından tam dört onaltılık basamak (0–9, A–F) ya da süslü parantez içinde bir kod noktası gelmelidir. Eksik basamak ya da G gibi geçersiz harf varsa araç konumu bildirir. Düz metninizde gerçekten ters eğik çizgi ve u harfi geçiyorsa ters eğik çizgiyi ikileyin.</p></details>
+        <details><summary>Uzunluk neden beklediğimden farklı görünüyor?</summary><p>Uzunluklar JavaScript'in length özelliği gibi UTF-16 kod birimiyle sayılır. Temel düzlem dışındaki bir karakter 2 birim tutar; kaçışlandıktan sonra tek bir satır sonu da 2 karakter (\ ve n) olur.</p></details>
+        <details><summary>Yapıştırdığım kod ya da metin bir yere gönderiliyor mu?</summary><p>Hayır. Dönüştürme tamamen tarayıcınızda yapılır; metniniz sunucuya iletilmez, kaydedilmez. Gizli anahtar ya da müşteri verisi içeren metinlerde de bu nedenle rahatça kullanabilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../json-kacis/">JSON Kaçış (Escape) ve Geri Alma</a></li>
+        <li><a href="../unicode-kacis-cevir/">Unicode Kaçış Dizisi Çevirici</a></li>
+        <li><a href="../url-kodla/">URL Kodla / Çöz ve Metin Kodlama Araçları</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir ve Doğrula</a></li>
+        <li><a href="../regex-test/">Regex (Düzenli İfade) Test Aracı</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="js-kacis-karakteri-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

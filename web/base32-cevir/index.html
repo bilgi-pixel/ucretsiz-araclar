@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Base32 Kodlama ve Çözme – Online Base32 Encode Decode</title>
+  <meta name="description" content="Metni Base32 biçimine kodlayın ya da Base32 dizgisini metne çözün. RFC 4648 alfabesi, isteğe bağlı = dolgusu, UTF-8 Türkçe karakter desteği.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/base32-cevir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Base32 Kodlama ve Çözme – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/base32-cevir/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Base32 ile Base64 arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Base64 büyük ve küçük harfleri, rakamları ve iki simgeyi kullanarak her 3 baytı 4 karaktere çevirir. Base32 yalnızca büyük harf ve altı rakam kullanır, her 5 baytı 8 karaktere çevirir. Base32 daha uzun çıktı üretir ama harf büyüklüğüne duyarsız ortamlarda ve elle yazımda daha güvenlidir."}},{"@type":"Question","name":"Base32 çıktısının sonundaki = işaretleri gerekli mi?","acceptedAnswer":{"@type":"Answer","text":"Standart, çıktı uzunluğunu sekizin katına tamamlamak için dolgu ekler. Birçok sistem dolgusuz dizgiyi de kabul eder; iki adımlı doğrulama anahtarları çoğunlukla dolgusuz yazılır. Hedef sistemin belgelerine göre seçim yapın."}},{"@type":"Question","name":"Base32 şifreleme midir?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Base32 bir kodlamadır; anahtar ya da parola içermez ve herkes tarafından geri çevrilebilir. Gizlilik gerekiyorsa veriyi önce şifrelemeniz gerekir."}},{"@type":"Question","name":"Küçük harfle yazılmış Base32 dizgisi çözülür mü?","acceptedAnswer":{"@type":"Answer","text":"Evet. Araç çözmeden önce harfleri büyük harfe çevirir. Standart alfabe büyük harftir, ancak pek çok uygulama küçük harfli girdiyi de kabul eder."}},{"@type":"Question","name":"Neden 0, 1, 8 ve 9 rakamları yok?","acceptedAnswer":{"@type":"Answer","text":"Alfabe 32 karakterle sınırlı olduğundan on rakamın tümüne yer yoktur. Harflerle en çok karıştırılan 0 ve 1 ile birlikte 8 ve 9 dışarıda bırakılmış, 2–7 arasındaki rakamlar alınmıştır."}},{"@type":"Question","name":"Türkçe karakterler nasıl kodlanır?","acceptedAnswer":{"@type":"Answer","text":"Metin önce UTF-8 baytlarına çevrilir. ç, ğ, ı, ö, ş ve ü harfleri ikişer bayt tutar, bu yüzden karakter sayısı ile bayt sayısı farklı olabilir. Çözme sırasında baytlar yeniden UTF-8 olarak okunur ve harfler bozulmadan geri gelir."}},{"@type":"Question","name":"Kodlanmış veri ne kadar uzar?","acceptedAnswer":{"@type":"Answer","text":"Dolgu hariç her 5 bayt 8 karaktere dönüşür, yani boyut 1,6 katına çıkar. Örneğin 20 baytlık bir anahtar 32 karakterlik Base32 dizgisi olur."}},{"@type":"Question","name":"Yazdığım metin ya da anahtar sunucuya gidiyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kodlama ve çözme tarayıcınızda yapılır; girdiniz hiçbir yere gönderilmez ve saklanmaz. Yine de etkin bir hesabın doğrulama anahtarını zorunlu olmadıkça hiçbir web sayfasına yapıştırmamanız önerilir."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">Base32 Kodlama ve Çözme</span> – encode / decode</h1>
+      <p class="lead">Bir metni <strong>Base32</strong> biçimine kodlayın ya da elinizdeki Base32 dizgisini okunur metne çevirin. Araç RFC 4648'de tanımlanan A–Z ve 2–7 alfabesini kullanır, Türkçe karakterleri UTF-8 olarak işler.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-girdi">Metin ya da Base32 dizgisi</label><textarea id="f-girdi" data-field="girdi" rows="6" spellcheck="false" placeholder="Örn. Merhaba ya da JVSXE2DBMJQQ===="></textarea></div>
+          <div class="ba-field"><label for="f-yon">İşlem</label><select id="f-yon" data-field="yon"><option value="kodla">Metni Base32'ye kodla</option><option value="coz">Base32'yi metne çöz</option></select></div>
+          <div class="ba-field"><label for="f-dolgu">Dolgu (=) işareti</label><select id="f-dolgu" data-field="dolgu"><option value="var">Ekle (standart)</option><option value="yok">Ekleme</option></select><div class="hint">Yalnızca kodlamada geçerlidir. Çözmede dolgu olsa da olmasa da kabul edilir.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Çevir</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="base32-cevir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Kodlamak istediğiniz metni ya da çözmek istediğiniz Base32 dizgisini kutuya yazın.</li>
+        <li>&quot;İşlem&quot; listesinden yönü seçin: metinden Base32'ye kodlama ya da Base32'den metne çözme.</li>
+        <li>Kodlama yapıyorsanız çıktının sonuna <code>=</code> dolgu işaretlerinin eklenip eklenmeyeceğini belirleyin.</li>
+        <li>&quot;Çevir&quot; düğmesine basın. Sonuç hem satır olarak hem de kopyalamaya uygun metin kutusunda gösterilir; bayt dökümü onaltılık olarak eklenir.</li>
+      </ol>
+
+      <h2>Base32 nedir?</h2>
+      <p>Base32, ikili veriyi yalnızca 32 farklı karakter kullanarak yazıya dökme yöntemidir. RFC 4648'de tanımlanan standart alfabe 26 büyük Latin harfi ile 2'den 7'ye kadar olan altı rakamdan oluşur. Sıfır, bir, sekiz ve dokuz rakamları bilerek dışarıda bırakılmıştır; çünkü 0 ile O harfi, 1 ile I ve L harfleri kolayca karıştırılır. Böylece dizgi elle yazıldığında, telefonda okunduğunda ya da büyük-küçük harf ayrımı yapmayan bir ortamdan geçtiğinde bozulma olasılığı azalır.</p>
+      <p>Base32 bir şifreleme değildir. Veriyi gizlemez, yalnızca farklı bir alfabeyle yeniden yazar; dizgiyi gören herkes çözebilir.</p>
+
+      <h2>Kodlama nasıl çalışır?</h2>
+      <p>Veri baytları art arda dizilerek bir bit akışı oluşturulur ve bu akış beşer bitlik gruplara ayrılır. Beş bit 0 ile 31 arasında bir sayı verir; her sayı alfabedeki ilgili karakterle değiştirilir. Beş bayt (40 bit) tam olarak sekiz karaktere karşılık geldiği için kodlama beş baytlık bloklar hâlinde düşünülür. Son blok beş bayttan kısaysa eksik bitler sıfırla tamamlanır ve çıktı uzunluğu sekizin katı olana kadar <code>=</code> işaretiyle doldurulur.</p>
+      <p>Sonuç olarak Base32 çıktısı özgün veriden yüzde 60 daha uzundur: her 5 bayt 8 karakter olur. Aynı veri Base64 ile yaklaşık yüzde 33 uzar; Base32'nin bedeli daha uzun çıktı, kazancı ise yalın ve hataya dayanıklı alfabedir.</p>
+
+      <div class="ba-ad" data-slot="base32-cevir-b" aria-label="Reklam"></div>
+
+      <h2>Adım adım örnek</h2>
+      <p><code>foobar</code> sözcüğünü ele alalım. Altı ASCII baytı <code>66 6F 6F 62 61 72</code> değerleridir. İlk beş bayt sekiz karaktere dönüşür: <code>MZXW6YTB</code>. Geriye kalan tek bayt (72) sekiz bit taşır; iki beşlik grup için on bit gerektiğinden sona iki sıfır biti eklenir ve <code>OI</code> karakterleri elde edilir. Çıktı on karakterde kalır, sekizin katına tamamlamak için altı adet dolgu eklenir: <code>MZXW6YTBOI======</code>. Araca &quot;foobar&quot; yazdığınızda tam olarak bu sonucu görürsünüz.</p>
+      <p>Türkçe karakter içeren bir örnek: &quot;Merhaba Dünya&quot; 13 karakter ama UTF-8'de 14 bayttır, çünkü &quot;ü&quot; iki bayt tutar. Kodlanmış hâli <code>JVSXE2DBMJQSARGDXRXHSYI=</code> olur; bu dizgiyi çözme yönünde verdiğinizde özgün metin harfi harfine geri gelir.</p>
+
+      <h2>Dolgu kuralları</h2>
+      <p>Dolgu sayısı son bloktaki bayt sayısına bağlıdır ve yalnızca belirli değerleri alabilir:</p>
+      <ul>
+        <li>Son blokta 1 bayt varsa 2 karakter ve <strong>6 adet</strong> = yazılır.</li>
+        <li>Son blokta 2 bayt varsa 4 karakter ve <strong>4 adet</strong> = yazılır.</li>
+        <li>Son blokta 3 bayt varsa 5 karakter ve <strong>3 adet</strong> = yazılır.</li>
+        <li>Son blokta 4 bayt varsa 7 karakter ve <strong>1 adet</strong> = yazılır.</li>
+        <li>Veri uzunluğu 5'in katıysa dolgu gerekmez.</li>
+      </ul>
+
+      <h2>Base32 nerelerde karşınıza çıkar?</h2>
+      <p>En bilinen kullanım iki adımlı doğrulamadır: kimlik doğrulayıcı uygulamalara elle girilen ya da karekodun içinde taşınan gizli anahtar Base32 ile yazılır ve genellikle dolgusuz verilir. Bunun dışında büyük-küçük harf ayrımı yapmayan dosya sistemlerinde ve alan adı kayıtlarında ikili değer taşımak, bazı dağıtık ağlarda adres ve içerik kimliği yazmak, insanların sesli okuyacağı kurtarma kodları üretmek için de tercih edilir.</p>
+      <p>Dikkat: Base32'nin birden fazla çeşidi vardır. &quot;base32hex&quot; 0–9 ve A–V alfabesini, Crockford çeşidi ise I, L, O ve U harflerini dışlayan farklı bir alfabe kullanır. Bu araç yalnızca standart RFC 4648 alfabesini kodlar ve çözer; diğer çeşitlerle üretilmiş dizgiler geçersiz karakter uyarısı verebilir ya da yanlış çözülür.</p>
+
+      <h2>Çözmede sık görülen sorunlar</h2>
+      <p>Çözme sırasında araç boşlukları ve satır sonlarını atar, küçük harfleri büyüğe çevirir ve sondaki dolguyu yok sayar; bu yüzden dörderli gruplar hâlinde yazılmış anahtarları doğrudan yapıştırabilirsiniz. Dizgide 0, 1, 8 ya da 9 görürseniz büyük olasılıkla O, I ya da B harfi yanlış okunmuştur. Uzunluk sekize bölündüğünde 1, 3 ya da 6 karakter artıyorsa dizgi eksik kopyalanmıştır; bu durumda araç tahmin yürütmek yerine uyarı verir.</p>
+      <p>Çözülen baytlar her zaman metin olmayabilir. Bir doğrulama anahtarı rastgele baytlardan oluşur ve ekrana yazılabilir bir karşılığı yoktur. Bu durumda araç baytları onaltılık olarak gösterir; anlamsız karakterler üretmez.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Base32 ile Base64 arasındaki fark nedir?</summary><p>Base64 büyük ve küçük harfleri, rakamları ve iki simgeyi kullanarak her 3 baytı 4 karaktere çevirir. Base32 yalnızca büyük harf ve altı rakam kullanır, her 5 baytı 8 karaktere çevirir. Base32 daha uzun çıktı üretir ama harf büyüklüğüne duyarsız ortamlarda ve elle yazımda daha güvenlidir.</p></details>
+        <details><summary>Base32 çıktısının sonundaki = işaretleri gerekli mi?</summary><p>Standart, çıktı uzunluğunu sekizin katına tamamlamak için dolgu ekler. Birçok sistem dolgusuz dizgiyi de kabul eder; iki adımlı doğrulama anahtarları çoğunlukla dolgusuz yazılır. Hedef sistemin belgelerine göre seçim yapın.</p></details>
+        <details><summary>Base32 şifreleme midir?</summary><p>Hayır. Base32 bir kodlamadır; anahtar ya da parola içermez ve herkes tarafından geri çevrilebilir. Gizlilik gerekiyorsa veriyi önce şifrelemeniz gerekir.</p></details>
+        <details><summary>Küçük harfle yazılmış Base32 dizgisi çözülür mü?</summary><p>Evet. Araç çözmeden önce harfleri büyük harfe çevirir. Standart alfabe büyük harftir, ancak pek çok uygulama küçük harfli girdiyi de kabul eder.</p></details>
+        <details><summary>Neden 0, 1, 8 ve 9 rakamları yok?</summary><p>Alfabe 32 karakterle sınırlı olduğundan on rakamın tümüne yer yoktur. Harflerle en çok karıştırılan 0 ve 1 ile birlikte 8 ve 9 dışarıda bırakılmış, 2–7 arasındaki rakamlar alınmıştır.</p></details>
+        <details><summary>Türkçe karakterler nasıl kodlanır?</summary><p>Metin önce UTF-8 baytlarına çevrilir. ç, ğ, ı, ö, ş ve ü harfleri ikişer bayt tutar, bu yüzden karakter sayısı ile bayt sayısı farklı olabilir. Çözme sırasında baytlar yeniden UTF-8 olarak okunur ve harfler bozulmadan geri gelir.</p></details>
+        <details><summary>Kodlanmış veri ne kadar uzar?</summary><p>Dolgu hariç her 5 bayt 8 karaktere dönüşür, yani boyut 1,6 katına çıkar. Örneğin 20 baytlık bir anahtar 32 karakterlik Base32 dizgisi olur.</p></details>
+        <details><summary>Yazdığım metin ya da anahtar sunucuya gidiyor mu?</summary><p>Hayır. Kodlama ve çözme tarayıcınızda yapılır; girdiniz hiçbir yere gönderilmez ve saklanmaz. Yine de etkin bir hesabın doğrulama anahtarını zorunlu olmadıkça hiçbir web sayfasına yapıştırmamanız önerilir.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../base64-donustur/">Base64 Kodla / Çöz</a></li>
+        <li><a href="../url-kodla/">URL Kodla / Çöz ve Metin Kodlama Araçları</a></li>
+        <li><a href="../metin-sha256-hesapla/">Metin SHA-256 Özeti Hesaplama</a></li>
+        <li><a href="../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü</a></li>
+        <li><a href="../crc32-hesapla/">CRC32 Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="base32-cevir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

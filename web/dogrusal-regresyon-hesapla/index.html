@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Doğrusal Regresyon Hesaplama – En Küçük Kareler Doğrusu ve R²</title>
+  <meta name="description" content="X ve Y verilerinizden basit doğrusal regresyon denklemini bulun. Eğim, kesişim, R² ve standart hata hesaplanır; istediğiniz x için y tahmini yapılır.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/dogrusal-regresyon-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Doğrusal Regresyon Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/dogrusal-regresyon-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Regresyon denklemi nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Önce x ve y ortalamaları hesaplanır. Eğim, sapma çarpımları toplamının x sapmalarının kareleri toplamına bölünmesiyle; kesişim ise y ortalamasından eğim ile x ortalamasının çarpımının çıkarılmasıyla bulunur."}},{"@type":"Question","name":"Eğim ve kesişim ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Eğim, x bir birim arttığında y'nin ortalama ne kadar değiştiğini; kesişim ise x sıfır olduğunda doğrunun y eksenini kestiği değeri gösterir."}},{"@type":"Question","name":"R² kaç olmalı?","acceptedAnswer":{"@type":"Answer","text":"Evrensel bir eşik yoktur. Fiziksel ölçümlerde 0,99 üzeri beklenirken insan davranışına ilişkin verilerde 0,3 bile değerli olabilir. R² yalnızca uyumu ölçer; modelin doğru kurulduğunu tek başına kanıtlamaz."}},{"@type":"Question","name":"Regresyon ile korelasyon arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Korelasyon iki değişkenin birlikte hareket etme gücünü birimsiz tek bir sayıyla verir ve simetriktir. Regresyon ise bir değişkeni diğerinden tahmin etmeye yarayan denklemi üretir; hangisinin x olduğu sonucu değiştirir."}},{"@type":"Question","name":"Tahmin için aralık dışında bir x girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Girebilirsiniz, ancak bu dış kestirimdir ve ilişkinin veri aralığı dışında da aynı kaldığı varsayımına dayanır. Aralıktan uzaklaştıkça tahminin güvenilirliği hızla düşer."}},{"@type":"Question","name":"En az kaç veri noktası gerekir?","acceptedAnswer":{"@type":"Answer","text":"Hesap için iki nokta yeterlidir, fakat iki noktadan her zaman kusursuz bir doğru geçer. Uyumun kalitesini değerlendirebilmek için en az üç, güvenilir bir eğilim için çok daha fazla nokta gerekir."}},{"@type":"Question","name":"Negatif eğim hata mıdır?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Negatif eğim, x arttıkça y'nin azaldığını gösterir. Fiyat yükseldikçe satış adedinin düşmesi ya da yükseklik arttıkça sıcaklığın azalması bunun tipik örnekleridir."}},{"@type":"Question","name":"Verilerim bir sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Bütün hesap tarayıcınızda yapılır; yazdığınız değerler hiçbir yere iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Doğrusal Regresyon Hesaplama</span> – en küçük kareler doğrusu</h1>
+      <p class="lead">Veri noktalarınıza en iyi uyan doğruyu bulun. X ve Y değerlerini aynı sırayla yazın; araç en küçük kareler yöntemiyle <strong>y = bx + a</strong> regresyon denklemini, R² değerini ve isterseniz belirli bir x için y tahminini hesaplar.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-xler">X değerleri (bağımsız değişken)</label><textarea id="f-xler" data-field="xler" rows="6" spellcheck="false" placeholder="Örn. 1 2 3 4"></textarea><div class="hint">Boşluk, satır sonu ya da noktalı virgülle ayırın.</div></div>
+          <div class="ba-field is-wide"><label for="f-yler">Y değerleri (bağımlı değişken)</label><textarea id="f-yler" data-field="yler" rows="6" spellcheck="false" placeholder="Örn. 6 5 7 10"></textarea><div class="hint">X ile aynı sırada ve aynı sayıda.</div></div>
+          <div class="ba-field"><label for="f-tahminx">Tahmin için x (isteğe bağlı)</label><input id="f-tahminx" data-field="tahminx" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 5"><div class="hint">Boş bırakırsanız yalnızca denklem hesaplanır.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="dogrusal-regresyon-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;X değerleri&quot; kutusuna bağımsız değişkeni, yani açıklayan büyüklüğü yazın: ay numarası, reklam harcaması, çalışma saati gibi.</li>
+        <li>&quot;Y değerleri&quot; kutusuna bağımlı değişkeni, yani tahmin etmek istediğiniz büyüklüğü aynı sırayla yazın: satış, not, tüketim gibi.</li>
+        <li>Belirli bir x için tahmin istiyorsanız &quot;Tahmin için x&quot; alanını doldurun; istemiyorsanız boş bırakın.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk satırda regresyon denklemini, altında eğimi, kesişimi, R² değerini ve varsa tahmini görürsünüz.</li>
+        <li>Sonuç notunu okuyun: tahmin için yazdığınız x, verinizin aralığı dışındaysa araç bunu ayrıca belirtir.</li>
+      </ol>
+
+      <h2>Doğrusal regresyon nedir?</h2>
+      <p>Basit doğrusal regresyon, iki sayısal değişken arasındaki ilişkiyi bir doğruyla özetleme yöntemidir. Elinizde x ve y çiftlerinden oluşan noktalar vardır ve bu noktaların arasından geçen, onlara en iyi uyan doğru aranır. Doğru bulunduktan sonra iki iş için kullanılır: ilişkinin büyüklüğünü sayıya dökmek (x bir birim arttığında y ortalama ne kadar değişir) ve yeni bir x değeri için y tahmini yapmak.</p>
+      <p>Hesap tablolarındaki &quot;eğilim çizgisi&quot; de aynı doğrudur. Burada x'e bağımsız ya da açıklayıcı değişken, y'ye bağımlı ya da açıklanan değişken denir. Korelasyondan farklı olarak regresyonda hangi değişkenin x, hangisinin y olduğu önemlidir; yerlerini değiştirirseniz farklı bir doğru elde edersiniz.</p>
+
+      <h2>En küçük kareler yöntemi ve formüller</h2>
+      <p>Hiçbir doğru dağınık noktaların hepsinden geçemez. Her nokta ile doğru arasındaki düşey farka <strong>artık</strong> denir. En küçük kareler yöntemi, bu artıkların kareleri toplamını mümkün olan en küçük değere indiren doğruyu seçer. Çözüm kapalı formüllerle bulunur:</p>
+      <ul>
+        <li><strong>Eğim:</strong> b = Σ(x − x̄)(y − ȳ) ÷ Σ(x − x̄)²</li>
+        <li><strong>Kesişim:</strong> a = ȳ − b · x̄</li>
+        <li><strong>Denklem:</strong> y = bx + a</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="dogrusal-regresyon-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Adım adım çözümlü örnek</h2>
+      <p>Bir işletmenin dört aylık satışı (bin adet) şöyle olsun: 1. ay 6, 2. ay 5, 3. ay 7, 4. ay 10. X değerleri 1, 2, 3, 4; Y değerleri 6, 5, 7, 10'dur. X ortalaması 2,5, Y ortalaması 7'dir.</p>
+      <p>X sapmaları −1,5, −0,5, 0,5 ve 1,5; Y sapmaları −1, −2, 0 ve 3 olur. Çarpımları 1,5, 1, 0 ve 4,5; toplamları <strong>7</strong>'dir. X sapmalarının kareleri toplamı 2,25 + 0,25 + 0,25 + 2,25 = <strong>5</strong> eder. Eğim b = 7 ÷ 5 = <strong>1,4</strong>, kesişim a = 7 − 1,4 × 2,5 = <strong>3,5</strong> bulunur. Denklem <strong>y = 1,4x + 3,5</strong> olur: satışlar ayda ortalama 1,4 bin adet artmaktadır.</p>
+      <p>Beşinci ay için tahmin 1,4 × 5 + 3,5 = <strong>10,5</strong> bin adettir. Doğrunun dört ay için verdiği değerler 4,9, 6,3, 7,7 ve 9,1; artıklar 1,1, −1,3, −0,7 ve 0,9'dur. Artık kareleri toplamı 4,2, Y'nin toplam değişkenliği 14 olduğundan R² = 1 − 4,2 ÷ 14 = <strong>0,7</strong> çıkar. Tahminin standart hatası √(4,2 ÷ 2) ≈ 1,4491'dir. Aynı verileri ve tahmin için 5 değerini araca yazarak bütün bu sonuçları doğrulayabilirsiniz.</p>
+
+      <h2>Sonuçları yorumlama</h2>
+      <p><strong>Eğim (b)</strong>, x bir birim arttığında y'nin ortalama kaç birim değiştiğini gösterir; işareti ilişkinin yönünü verir. <strong>Kesişim (a)</strong>, x sıfırken doğrunun verdiği y değeridir. Verinizde x sıfıra yakın değerler almıyorsa kesişimin tek başına gerçekçi bir anlamı olmayabilir; yalnızca doğrunun konumunu belirler.</p>
+      <p><strong>R²</strong>, y'deki değişkenliğin ne kadarının doğruyla açıklandığını 0 ile 1 arasında ifade eder. 0,7 değeri, satışlardaki dalgalanmanın yüzde 70'inin zaman eğilimiyle açıklandığını, kalanının başka etkenlere ya da rastlantıya bağlı olduğunu söyler. Basit doğrusal regresyonda R², korelasyon katsayısının karesine eşittir. <strong>Tahminin standart hatası</strong> ise noktaların doğrudan tipik sapmasını y'nin biriminde verir; küçük olması tahminlerin daha isabetli olduğunu gösterir ve hesaplanabilmesi için en az üç nokta gerekir.</p>
+
+      <h2>Kullanım alanları</h2>
+      <ul>
+        <li><strong>Satış ve talep:</strong> Geçmiş ayların verisinden eğilimi çıkarıp bir sonraki dönem için kaba bir öngörü üretmek.</li>
+        <li><strong>Maliyet analizi:</strong> Üretim miktarı ile toplam gider arasındaki doğrudan sabit gideri (kesişim) ve birim değişken gideri (eğim) ayırmak.</li>
+        <li><strong>Laboratuvar:</strong> Kalibrasyon doğrusu çizmek; bilinen derişimlere karşı ölçülen sinyalden bilinmeyen numuneyi hesaplamak.</li>
+        <li><strong>Fizik deneyleri:</strong> Yaya asılan kütle ile uzama arasındaki doğrunun eğiminden yay sabitini bulmak.</li>
+        <li><strong>Birim dönüşümü:</strong> İki ölçek arasındaki doğrusal bağıntıyı iki noktadan çıkarmak. 0 ve 10 santigrat derecenin karşılığı 32 ve 50 fahrenhayttır; regresyon y = 1,8x + 32 verir.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p><strong>Dış kestirim:</strong> Doğru yalnızca verinin kapsadığı aralıkta sınanmıştır. Dört aylık veriden on ikinci ayı tahmin etmek, eğilimin hiç değişmeyeceğini varsaymaktır ve çoğu zaman yanıltır. Araç, tahmin için girdiğiniz x aralığın dışındaysa sizi uyarır.</p>
+      <p><strong>Doğrusal olmayan ilişki:</strong> Noktalar bir eğri çiziyorsa doğru kötü uyar ve R² düşük çıkar. Önce veriyi bir saçılım grafiğinde görmek en sağlıklı yoldur. <strong>Aykırı değerler:</strong> Kare alma nedeniyle tek bir uç nokta doğruyu kendine doğru belirgin biçimde çeker. <strong>Nedensellik:</strong> İyi uyan bir doğru, x'in y'ye neden olduğunu kanıtlamaz.</p>
+      <p>X değerlerinin tamamı aynıysa eğim tanımsızdır ve araç hata verir. Y değerlerinin tamamı aynıysa doğru yataydır, eğim sıfırdır ve R² tanımsız kalır. İki noktayla doğru her zaman noktalardan tam geçer; bu durumda R² 1 çıkar ama bir uyum ölçüsü olarak anlam taşımaz. Bu sayfa tek açıklayıcı değişkenli modeli hesaplar; katsayıların anlamlılık sınamalarını ve güven aralıklarını vermez. Sonuçlar bilgilendirme amaçlıdır; mali, tıbbi ya da mühendislik kararlarında bir uzmana danışın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Regresyon denklemi nasıl bulunur?</summary><p>Önce x ve y ortalamaları hesaplanır. Eğim, sapma çarpımları toplamının x sapmalarının kareleri toplamına bölünmesiyle; kesişim ise y ortalamasından eğim ile x ortalamasının çarpımının çıkarılmasıyla bulunur.</p></details>
+        <details><summary>Eğim ve kesişim ne anlama gelir?</summary><p>Eğim, x bir birim arttığında y'nin ortalama ne kadar değiştiğini; kesişim ise x sıfır olduğunda doğrunun y eksenini kestiği değeri gösterir.</p></details>
+        <details><summary>R² kaç olmalı?</summary><p>Evrensel bir eşik yoktur. Fiziksel ölçümlerde 0,99 üzeri beklenirken insan davranışına ilişkin verilerde 0,3 bile değerli olabilir. R² yalnızca uyumu ölçer; modelin doğru kurulduğunu tek başına kanıtlamaz.</p></details>
+        <details><summary>Regresyon ile korelasyon arasındaki fark nedir?</summary><p>Korelasyon iki değişkenin birlikte hareket etme gücünü birimsiz tek bir sayıyla verir ve simetriktir. Regresyon ise bir değişkeni diğerinden tahmin etmeye yarayan denklemi üretir; hangisinin x olduğu sonucu değiştirir.</p></details>
+        <details><summary>Tahmin için aralık dışında bir x girebilir miyim?</summary><p>Girebilirsiniz, ancak bu dış kestirimdir ve ilişkinin veri aralığı dışında da aynı kaldığı varsayımına dayanır. Aralıktan uzaklaştıkça tahminin güvenilirliği hızla düşer.</p></details>
+        <details><summary>En az kaç veri noktası gerekir?</summary><p>Hesap için iki nokta yeterlidir, fakat iki noktadan her zaman kusursuz bir doğru geçer. Uyumun kalitesini değerlendirebilmek için en az üç, güvenilir bir eğilim için çok daha fazla nokta gerekir.</p></details>
+        <details><summary>Negatif eğim hata mıdır?</summary><p>Hayır. Negatif eğim, x arttıkça y'nin azaldığını gösterir. Fiyat yükseldikçe satış adedinin düşmesi ya da yükseklik arttıkça sıcaklığın azalması bunun tipik örnekleridir.</p></details>
+        <details><summary>Verilerim bir sunucuya gönderiliyor mu?</summary><p>Hayır. Bütün hesap tarayıcınızda yapılır; yazdığınız değerler hiçbir yere iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../korelasyon-hesapla/">Korelasyon Katsayısı Hesaplama</a></li>
+        <li><a href="../egim-hesapla/">İki Noktadan Eğim Hesaplama</a></li>
+        <li><a href="../dogru-denklemi-bul/">İki Noktadan Doğru Denklemi Bulma</a></li>
+        <li><a href="../dogrusal-interpolasyon-hesapla/">Doğrusal İnterpolasyon Hesaplama</a></li>
+        <li><a href="../standart-sapma-hesapla/">Standart Sapma Hesaplama</a></li>
+        <li><a href="../istatistik-hesapla/">Ortalama, Medyan, Mod, Standart Sapma Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="dogrusal-regresyon-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

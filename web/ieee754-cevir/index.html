@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>IEEE 754 Kayan Nokta Çevirici – Float ve Double Bit Gösterimi</title>
+  <meta name="description" content="Ondalık sayıyı IEEE 754 tek (32 bit) ya da çift (64 bit) duyarlıklı gösterime çevirin; işaret, üs ve kesir bitlerini, onaltılık kodu ve saklanan tam değeri görün.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ieee754-cevir/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"IEEE 754 Kayan Nokta Çevirici – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ieee754-cevir/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Float ile double arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Float 32 bittir ve yaklaşık 7 anlamlı basamak taşır; double 64 bittir ve yaklaşık 15-16 anlamlı basamak taşır. Double aynı zamanda çok daha geniş bir büyüklük aralığını kapsar, ancak bellekte iki kat yer tutar."}},{"@type":"Question","name":"0,1 + 0,2 neden 0,3 etmiyor?","acceptedAnswer":{"@type":"Answer","text":"Çünkü 0,1 ve 0,2 ikilide sonsuz tekrar eden kesirlerdir ve saklanırken yuvarlanır. Yuvarlanmış iki değerin toplamı, 0,3 için saklanan değerden bir basamak farklı çıkar. Sonuç çift duyarlıkta 0,30000000000000004 olur."}},{"@type":"Question","name":"Üs yanlılığı (bias) ne demek?","acceptedAnswer":{"@type":"Answer","text":"Üs alanı işaretsiz bir tam sayıdır; negatif üsleri gösterebilmek için gerçek üsse sabit bir değer eklenir. Bu değer tek duyarlıkta 127, çift duyarlıkta 1023'tür. Gerçek üs, saklanan değerden yanlılık çıkarılarak bulunur."}},{"@type":"Question","name":"Mantis nedir?","acceptedAnswer":{"@type":"Answer","text":"Mantis ya da anlamlı kısım, sayının 1 ile 2 arasındaki ikili bilimsel gösterim katsayısıdır. Baştaki 1 her normal sayıda aynı olduğu için saklanmaz; yalnızca virgülden sonraki bitler kesir alanına yazılır."}},{"@type":"Question","name":"NaN nedir, nasıl oluşur?","acceptedAnswer":{"@type":"Answer","text":"NaN \"sayı değil\" anlamına gelir ve tanımsız işlemlerin sonucudur: sıfır bölü sıfır, sonsuz eksi sonsuz gibi. Üs alanının tümü 1 ve kesir alanı sıfırdan farklıdır. NaN kendisi dahil hiçbir değere eşit değildir."}},{"@type":"Question","name":"Negatif sıfır gerçekten var mı?","acceptedAnswer":{"@type":"Answer","text":"Evet. İşaret biti ayrı tutulduğu için +0 ve −0 iki ayrı bit dizisidir. Karşılaştırmada eşit sayılırlar, ancak 1 bölü +0 artı sonsuz, 1 bölü −0 eksi sonsuz verir."}},{"@type":"Question","name":"Onaltılık kodu hangi bayt sırasıyla yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"En anlamlı bayt başta olacak şekilde (büyük uçlu) yazın. Bellek dökümünden küçük uçlu sırayla aldıysanız baytları ters çevirin: DB 0F 49 40 yerine 40490FDB."}},{"@type":"Question","name":"Yazdığım sayılar sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Çeviri, tarayıcınızın kendi kayan nokta işlemleriyle yerel olarak yapılır. Girdiğiniz değer hiçbir yere iletilmez ve saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">IEEE 754 Kayan Nokta Çevirici</span> – float ve double bit gösterimi</h1>
+      <p class="lead">Bir ondalık sayıyı yazın; araç bu sayının bilgisayar belleğinde <strong>IEEE 754</strong> standardına göre nasıl saklandığını gösterir: işaret biti, üs alanı, kesir alanı, onaltılık kod ve gerçekte saklanan tam değer. Ters yönde, onaltılık ya da ikili bit dizisini sayıya da çevirebilirsiniz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-deger">Sayı ya da bit dizisi</label><input id="f-deger" data-field="deger" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 0,15625 ya da 0x3E200000"><div class="hint">Sayı yönünde ondalık virgül ya da nokta, 1e-3 gibi üslü yazım, sonsuz ve nan kabul edilir.</div></div>
+          <div class="ba-field"><label for="f-yon">Çeviri yönü</label><select id="f-yon" data-field="yon"><option value="sayi">Sayı → IEEE 754 bitleri</option><option value="bit">Onaltılık / ikili bitler → Sayı</option></select></div>
+          <div class="ba-field"><label for="f-duyarlik">Duyarlık</label><select id="f-duyarlik" data-field="duyarlik"><option value="32">Tek duyarlık (32 bit, float)</option><option value="64">Çift duyarlık (64 bit, double)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Çevir</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ieee754-cevir-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Sayıyı bit gösterimine çevirecekseniz &quot;Çeviri yönü&quot; listesinde &quot;Sayı → IEEE 754 bitleri&quot; seçili kalsın ve sayıyı yazın (örneğin 0,15625 ya da -2,5).</li>
+        <li>Elinizde onaltılık ya da ikili bir bit dizisi varsa yönü &quot;Onaltılık / ikili bitler → Sayı&quot; yapın ve diziyi yazın; <code>0x</code> öneki ve boşluklar göz ardı edilir.</li>
+        <li>&quot;Duyarlık&quot; listesinden tek (32 bit, float) ya da çift (64 bit, double) duyarlığı seçin.</li>
+        <li>&quot;Çevir&quot; düğmesine basın. İkili satırında bitler işaret, üs ve kesir olarak boşlukla üç parçaya ayrılmış gösterilir.</li>
+        <li>&quot;Saklanan tam değer&quot; satırını yazdığınız sayıyla karşılaştırarak yuvarlama farkını görün.</li>
+      </ol>
+
+      <h2>IEEE 754 nedir?</h2>
+      <p>IEEE 754, kesirli sayıların bilgisayarda ikili olarak nasıl saklanacağını ve bu sayılarla nasıl işlem yapılacağını tanımlayan standarttır. İşlemcilerin ve programlama dillerinin neredeyse tamamı bu standardı kullanır; C ve Java'daki <code>float</code> ve <code>double</code>, JavaScript'teki bütün sayılar, Python'daki <code>float</code> bu biçimlerdedir.</p>
+      <p>Fikir, bilimsel gösterimin ikili karşılığıdır. Ondalıkta 0,00123 sayısını 1,23 × 10<sup>−3</sup> diye yazdığımız gibi, ikilide de her sayı <strong>1,kesir × 2<sup>üs</sup></strong> biçimine getirilir. Bellekte üç alan tutulur: sayının artı mı eksi mi olduğunu söyleyen <strong>işaret biti</strong>, ikinin kuvvetini veren <strong>üs alanı</strong> ve virgülden sonraki ikili basamakları tutan <strong>kesir alanı</strong>.</p>
+
+      <h2>Tek ve çift duyarlık</h2>
+      <p>Üs alanı negatif kuvvetleri de gösterebilsin diye gerçek üsse sabit bir sayı (yanlılık) eklenerek saklanır. Tek duyarlıkta gerçek üs −3 ise alana −3 + 127 = 124 yazılır. Araç &quot;Üs alanı&quot; satırında hem saklanan ham değeri hem de yanlılık çıkarılmış gerçek üssü gösterir.</p>
+      <ul>
+        <li><strong>Tek duyarlık (32 bit):</strong> 1 işaret + 8 üs + 23 kesir biti. Üs yanlılığı 127. Yaklaşık 7 anlamlı ondalık basamak taşır.</li>
+        <li><strong>Çift duyarlık (64 bit):</strong> 1 işaret + 11 üs + 52 kesir biti. Üs yanlılığı 1023. Yaklaşık 15-16 anlamlı ondalık basamak taşır.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="ieee754-cevir-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek: 0,15625</h2>
+      <p>0,15625 sayısı ikilide <code>0,00101</code> olarak yazılır (1/8 + 1/32). Virgülü ilk 1'in sağına taşırsak <code>1,01 × 2<sup>−3</sup></code> elde ederiz. Sayı pozitif olduğundan işaret biti 0'dır. Üs −3, yanlılıkla birlikte 124, ikilide <code>01111100</code>. Kesir alanına virgülden sonraki <code>01</code> yazılır ve sağı sıfırla doldurulur.</p>
+      <p>Üç alan yan yana geldiğinde <code>0 01111100 01000000000000000000000</code> dizisi oluşur; onaltılık karşılığı <strong>0x3E200000</strong> olur. Anlamlı kısım 1,25'tir ve 1,25 × 2<sup>−3</sup> = 0,15625 eder. Bu sayı ikinin kuvvetlerinin toplamı olduğu için hatasız saklanır.</p>
+
+      <h2>0,1 neden tam saklanamaz?</h2>
+      <p>Ondalıkta 1/3 nasıl 0,333... diye sonsuza kadar sürüyorsa, ikilide de 1/10 sonsuz tekrar eden bir kesirdir: <code>0,000110011001100...</code>. Kesir alanı sınırlı olduğundan dizi bir yerde kesilir ve en yakın değere yuvarlanır. Tek duyarlıkta 0,1 yazdığınızda gerçekte saklanan sayı <strong>0,100000001490116119384765625</strong> olur; çift duyarlıkta hata çok daha küçüktür ama sıfır değildir.</p>
+      <p>Programlarda <code>0.1 + 0.2</code> işleminin <code>0.3</code> yerine <code>0.30000000000000004</code> vermesinin nedeni budur. Bu bir hata değil, biçimin doğal sonucudur. Para tutarları gibi kesin ondalık gereken yerlerde kayan nokta yerine tam sayı (kuruş) ya da ondalık veri türleri kullanılmalı; kayan noktalı sayılar eşitlikle değil küçük bir tolerans ile karşılaştırılmalıdır.</p>
+
+      <h2>Özel değerler</h2>
+      <ul>
+        <li><strong>Sıfır:</strong> üs ve kesir alanı tümüyle 0. İşaret biti ayrı olduğundan +0 ve −0 vardır; −0'ın tek duyarlık kodu 0x80000000'dir.</li>
+        <li><strong>Sonsuz:</strong> üs alanı tümüyle 1, kesir 0. Tek duyarlıkta +sonsuz 0x7F800000'dir; taşma ve sıfıra bölmede ortaya çıkar.</li>
+        <li><strong>NaN (sayı değil):</strong> üs alanı tümüyle 1, kesir sıfırdan farklı. 0/0 ya da negatif sayının karekökü gibi tanımsız işlemlerin sonucudur.</li>
+        <li><strong>Denormal (alt normal) sayılar:</strong> üs alanı 0, kesir sıfırdan farklı. Başta gizli 1 yerine 0 varsayılır; sıfıra çok yakın değerlerin yumuşak biçimde gösterilmesini sağlar.</li>
+      </ul>
+
+      <h2>Bit dizisinden sayıya</h2>
+      <p>Hata ayıklarken bellek dökümünde, ağ paketinde ya da ikili dosyada 4 ya da 8 baytlık bir değer görürsünüz ve bunun hangi sayıya karşılık geldiğini öğrenmek istersiniz. Ters yön bunun içindir. Örneğin <code>0x40490FDB</code> tek duyarlıkta π sayısının en yakın karşılığıdır: kısa gösterimi 3,1415927, saklanan tam değer ise 3,1415927410125732421875'tir.</p>
+      <p>Dikkat: bellek dökümlerinde baytlar çoğu zaman küçük uçlu (little-endian) sırayla görünür; yani <code>DB 0F 49 40</code> biçiminde. Araca yazmadan önce bayt sırasını en anlamlı bayt başta olacak şekilde çevirmeniz gerekir.</p>
+
+      <h2>Sınırlar</h2>
+      <p>Araç yalnızca ikili 32 ve 64 bit biçimlerini destekler; yarım duyarlık (16 bit), genişletilmiş 80 bit ve ondalık kayan nokta biçimleri kapsam dışıdır. Sayı yönünde girdi önce çift duyarlıklı olarak okunur, bu yüzden 17 anlamlı basamaktan uzun girdilerin fazlası etkisizdir. Tam ondalık açılımı çok uzun olan değerlerde (çok büyük ya da sıfıra çok yakın sayılar) &quot;Saklanan tam değer&quot; satırı kısa gösterimi yaklaşık olarak verir.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Float ile double arasındaki fark nedir?</summary><p>Float 32 bittir ve yaklaşık 7 anlamlı basamak taşır; double 64 bittir ve yaklaşık 15-16 anlamlı basamak taşır. Double aynı zamanda çok daha geniş bir büyüklük aralığını kapsar, ancak bellekte iki kat yer tutar.</p></details>
+        <details><summary>0,1 + 0,2 neden 0,3 etmiyor?</summary><p>Çünkü 0,1 ve 0,2 ikilide sonsuz tekrar eden kesirlerdir ve saklanırken yuvarlanır. Yuvarlanmış iki değerin toplamı, 0,3 için saklanan değerden bir basamak farklı çıkar. Sonuç çift duyarlıkta 0,30000000000000004 olur.</p></details>
+        <details><summary>Üs yanlılığı (bias) ne demek?</summary><p>Üs alanı işaretsiz bir tam sayıdır; negatif üsleri gösterebilmek için gerçek üsse sabit bir değer eklenir. Bu değer tek duyarlıkta 127, çift duyarlıkta 1023'tür. Gerçek üs, saklanan değerden yanlılık çıkarılarak bulunur.</p></details>
+        <details><summary>Mantis nedir?</summary><p>Mantis ya da anlamlı kısım, sayının 1 ile 2 arasındaki ikili bilimsel gösterim katsayısıdır. Baştaki 1 her normal sayıda aynı olduğu için saklanmaz; yalnızca virgülden sonraki bitler kesir alanına yazılır.</p></details>
+        <details><summary>NaN nedir, nasıl oluşur?</summary><p>NaN &quot;sayı değil&quot; anlamına gelir ve tanımsız işlemlerin sonucudur: sıfır bölü sıfır, sonsuz eksi sonsuz gibi. Üs alanının tümü 1 ve kesir alanı sıfırdan farklıdır. NaN kendisi dahil hiçbir değere eşit değildir.</p></details>
+        <details><summary>Negatif sıfır gerçekten var mı?</summary><p>Evet. İşaret biti ayrı tutulduğu için +0 ve −0 iki ayrı bit dizisidir. Karşılaştırmada eşit sayılırlar, ancak 1 bölü +0 artı sonsuz, 1 bölü −0 eksi sonsuz verir.</p></details>
+        <details><summary>Onaltılık kodu hangi bayt sırasıyla yazmalıyım?</summary><p>En anlamlı bayt başta olacak şekilde (büyük uçlu) yazın. Bellek dökümünden küçük uçlu sırayla aldıysanız baytları ters çevirin: DB 0F 49 40 yerine 40490FDB.</p></details>
+        <details><summary>Yazdığım sayılar sunucuya gönderiliyor mu?</summary><p>Hayır. Çeviri, tarayıcınızın kendi kayan nokta işlemleriyle yerel olarak yapılır. Girdiğiniz değer hiçbir yere iletilmez ve saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../bit-islem-hesapla/">Bit İşlemleri (AND, OR, XOR) Hesaplama</a></li>
+        <li><a href="../iki-tumleyen-hesapla/">İkiye Tümleyen Hesaplama</a></li>
+        <li><a href="../ip-ikili-cevir/">IP Adresini İkili Sayıya Çevirme</a></li>
+        <li><a href="../ascii-tablosu/">ASCII Tablosu Sorgulama</a></li>
+        <li><a href="../crc32-hesapla/">CRC32 Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ieee754-cevir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

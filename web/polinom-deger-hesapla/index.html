@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Polinom Değeri Hesaplama – P(x) Değeri, Türev ve Horner Yöntemi</title>
+  <meta name="description" content="Katsayılarını yazdığınız polinomun verilen x için değerini Horner yöntemiyle hesaplayın. P(x), türev değeri, derece ve adım adım çözüm birlikte gösterilir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/polinom-deger-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Polinom Değeri Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/polinom-deger-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Polinomun değeri nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"x yerine verilen sayı yazılır ve işlemler yapılır. P(x) = 2x³ − 3x² + 5 için P(2) = 2 · 8 − 3 · 4 + 5 = 9 eder. Horner yöntemi aynı sonucu daha az işlemle verir."}},{"@type":"Question","name":"Katsayıları hangi sırayla yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"En yüksek dereceli terimin katsayısından başlayıp sabit terime doğru yazın. Eksik dereceler için 0 koyun. Örneğin x⁴ − 2x + 7 polinomu 1 0 0 -2 7 olarak girilir."}},{"@type":"Question","name":"Horner yöntemi neden tercih edilir?","acceptedAnswer":{"@type":"Answer","text":"Kuvvet almaya gerek bırakmaz; n. dereceden polinom için yalnızca n çarpma ve n toplama yeterlidir. Elle hesapta hata olasılığını azaltır, bilgisayarda ise hem daha hızlı hem daha kararlıdır."}},{"@type":"Question","name":"P(x) değerinin sıfır çıkması ne demektir?","acceptedAnswer":{"@type":"Answer","text":"Yazdığınız x değeri polinomun köküdür; yani grafiği o noktada x eksenini keser ya da eksene teğettir. Aynı zamanda (x − a) ifadesi polinomun bir çarpanıdır."}},{"@type":"Question","name":"Polinomun (x − a) ile bölümünden kalan nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Kalan teoremine göre kalan P(a) değerine eşittir. Araca x olarak a sayısını yazmanız yeterlidir. (x + 3) ile bölümden kalan için x = −3 girilir."}},{"@type":"Question","name":"Türev değeri ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Polinomun o noktadaki anlık değişim hızını, yani grafiğe çizilen teğetin eğimini verir. Artan-azalan aralıkları belirlemede, en büyük ve en küçük değer problemlerinde ve Newton yöntemiyle kök aramada kullanılır."}},{"@type":"Question","name":"Ondalıklı ya da negatif katsayı girebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Ondalık için virgül ya da nokta kullanabilir, negatif katsayıların başına eksi işareti koyabilirsiniz. Örneğin 0,5x² − 1,25x + 3 için 0,5 -1,25 3 yazılır. Katsayıları ayırmak için virgül kullanmayın."}},{"@type":"Question","name":"Girdiğim polinom kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama tarayıcınızın içinde yapılır; katsayılar ve x değeri sunucuya gönderilmez, saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Polinom Değeri Hesaplama</span> – P(x) ve Horner yöntemi</h1>
+      <p class="lead">Polinomun katsayılarını en yüksek dereceli terimden sabit terime doğru yazın ve bir x değeri verin. Araç <strong>P(x)</strong> değerini Horner yöntemiyle hesaplar, işlem adımlarını gösterir ve aynı noktadaki türev değerini de bulur.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-katsayilar">Katsayılar (büyük dereceden küçüğe)</label><input id="f-katsayilar" data-field="katsayilar" type="text" inputmode="text" autocomplete="off" placeholder="Örn. 2 -3 0 5"><div class="hint">Boşlukla ayırın. Eksik dereceli terimler için 0 yazın: 2x³ − 3x² + 5 → 2 -3 0 5</div></div>
+          <div class="ba-field"><label for="f-x">x değeri</label><input id="f-x" data-field="x" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 2"></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="polinom-deger-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Polinomu azalan kuvvetlere göre sıralayın ve yalnızca katsayıları &quot;Katsayılar&quot; alanına boşlukla ayırarak yazın. Örneğin 2x³ − 3x² + 5 için <code>2 -3 0 5</code> girin.</li>
+        <li>Polinomda bulunmayan dereceler için mutlaka 0 yazın; yukarıdaki örnekte x'li terim olmadığı için üçüncü sıraya 0 konmuştur.</li>
+        <li>&quot;x değeri&quot; alanına polinomun değerini bulmak istediğiniz sayıyı yazın. Negatif ve ondalıklı değerler kullanılabilir.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. P(x) değeri, polinomun açık yazımı, derecesi ve türev değeri listelenir; alttaki kutuda Horner adımları yer alır.</li>
+      </ol>
+
+      <h2>Polinom ve polinomun değeri</h2>
+      <p>Bir değişkenin negatif olmayan tam sayı kuvvetlerinin sabit katsayılarla çarpılıp toplanmasıyla oluşan ifadelere <strong>polinom</strong> denir. Genel biçimi P(x) = aₙxⁿ + … + a₂x² + a₁x + a₀ şeklindedir. Burada aₙ baş katsayı, a₀ sabit terim, n ise polinomun derecesidir. x yerine belirli bir sayı yazıp işlemleri yapmaya polinomun o noktadaki değerini bulmak denir ve P(2), P(−1) gibi gösterilir.</p>
+      <p>Değer bulma işlemi basit görünse de derece büyüdükçe kuvvet alma ve işaret hataları artar. Bu araç hesabı Horner yöntemiyle yapar; böylece hem sonuç doğru çıkar hem de aynı adımları kâğıt üzerinde tekrar ederek kendi çözümünüzü denetleyebilirsiniz.</p>
+
+      <h2>Horner yöntemi nasıl çalışır?</h2>
+      <p>Horner yöntemi, polinomu iç içe parantezlere alarak kuvvet hesaplama ihtiyacını ortadan kaldırır. Örneğin 2x³ − 3x² + 0x + 5 ifadesi ((2x − 3)x + 0)x + 5 biçiminde yazılabilir. Hesap en içteki parantezden başlar: baş katsayı alınır, x ile çarpılır, sıradaki katsayı eklenir; bu işlem sabit terime kadar tekrarlanır.</p>
+      <p>n. dereceden bir polinom için yalnızca n çarpma ve n toplama yapılır. Terimleri tek tek hesaplayıp toplamaya göre hem daha az işlem gerektirir hem de yuvarlama hatalarını azaltır. Ortaokul ve lisede öğretilen &quot;sentetik bölme&quot; tablosu da aslında aynı işlemdir.</p>
+
+      <div class="ba-ad" data-slot="polinom-deger-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>P(x) = 2x³ − 3x² + 5 polinomunun x = 2 için değerini bulalım. Katsayılar sırasıyla 2, −3, 0 ve 5'tir.</p>
+      <ol>
+        <li>Baş katsayı ile başlanır: 2.</li>
+        <li>2 · 2 + (−3) = 1.</li>
+        <li>1 · 2 + 0 = 2.</li>
+        <li>2 · 2 + 5 = 9. Son bulunan sayı polinomun değeridir: <strong>P(2) = 9</strong>.</li>
+      </ol>
+
+      <h2>Sonucun sağlaması ve türev değeri</h2>
+      <p>Aynı sonuca doğrudan yerine koyarak da ulaşılır: 2 · 8 − 3 · 4 + 5 = 16 − 12 + 5 = 9. Araç bu polinom için türev değerini de verir. Türev P′(x) = 6x² − 6x olduğundan P′(2) = 24 − 12 = 12'dir; bu sayı, polinomun grafiğine x = 2 noktasında çizilen teğetin eğimidir.</p>
+      <p>Türev değeri pozitifse polinom o noktada artmakta, negatifse azalmaktadır. Sıfır çıkması ise o noktanın bir yerel en büyük, yerel en küçük ya da yatay teğetli bir büküm noktası adayı olduğunu gösterir.</p>
+
+      <h2>Kalan teoremi ve kök kontrolü</h2>
+      <p>Bir P(x) polinomunun (x − a) ile bölümünden kalan, P(a) değerine eşittir. Buna <strong>kalan teoremi</strong> denir. Dolayısıyla uzun bölme yapmadan yalnızca değer hesaplayarak kalanı bulabilirsiniz: yukarıdaki polinomun (x − 2) ile bölümünden kalan 9'dur. (x + 1) ile bölümünden kalanı bulmak için x = −1 yazmanız gerekir; işarete dikkat edin.</p>
+      <p>P(a) = 0 çıkarsa a sayısı polinomun bir köküdür ve (x − a) polinomun bir çarpanıdır; bu sonuç çarpan teoremi olarak bilinir. Örneğin x² − 1 polinomu için x = 1 değeri 0 verir, yani 1 bir köktür. Araç böyle bir durumda sonuç altındaki notta kök bulunduğunu belirtir. Tam sayı katsayılı polinomlarda olası rasyonel kökleri, sabit terimin bölenlerini baş katsayının bölenlerine oranlayıp tek tek deneyerek bulabilirsiniz.</p>
+
+      <h2>Pratik kısa yollar</h2>
+      <ul>
+        <li><strong>P(0)</strong> her zaman sabit terime eşittir; grafiğin y eksenini kestiği noktadır.</li>
+        <li><strong>P(1)</strong> katsayıların toplamına eşittir. Sınav sorularında &quot;katsayılar toplamı&quot; istendiğinde x yerine 1 yazılır.</li>
+        <li><strong>P(−1)</strong>, çift dereceli terimlerin katsayıları toplamından tek dereceli terimlerin katsayıları toplamının çıkarılmasıyla bulunur.</li>
+        <li>Çift dereceli terimlerin katsayıları toplamı [P(1) + P(−1)] ÷ 2, tek dereceli terimlerinki [P(1) − P(−1)] ÷ 2'dir.</li>
+      </ul>
+
+      <h2>Sık yapılan hatalar ve sınırlar</h2>
+      <p>En yaygın hata, polinomda bulunmayan terimler için sıfır yazmayı unutmaktır. x³ + 1 polinomu <code>1 1</code> olarak değil <code>1 0 0 1</code> olarak girilmelidir; aksi hâlde araç bunu x + 1 olarak yorumlar. Sonuç kutusundaki &quot;Polinom&quot; satırı, girdiğiniz katsayıların hangi polinoma karşılık geldiğini gösterir; hesaba güvenmeden önce bu satırı kontrol edin. İkinci hata, katsayıları artan kuvvet sırasıyla yazmaktır; sıra her zaman en yüksek dereceden sabit terime doğrudur.</p>
+      <p>Araç en fazla 30. dereceden polinomları kabul eder ve sonuçları altı ondalık basamağa yuvarlar. Çok büyük x değerlerinde ve yüksek derecelerde sonuç on beş-on altı anlamlı basamağı aşabilir; bu durumda son basamaklar kayan nokta aritmetiği nedeniyle yaklaşık olur. Alana x içeren ifade (2x^2+1 gibi) değil, yalnızca katsayılar yazılmalıdır.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Polinomun değeri nasıl bulunur?</summary><p>x yerine verilen sayı yazılır ve işlemler yapılır. P(x) = 2x³ − 3x² + 5 için P(2) = 2 · 8 − 3 · 4 + 5 = 9 eder. Horner yöntemi aynı sonucu daha az işlemle verir.</p></details>
+        <details><summary>Katsayıları hangi sırayla yazmalıyım?</summary><p>En yüksek dereceli terimin katsayısından başlayıp sabit terime doğru yazın. Eksik dereceler için 0 koyun. Örneğin x⁴ − 2x + 7 polinomu 1 0 0 -2 7 olarak girilir.</p></details>
+        <details><summary>Horner yöntemi neden tercih edilir?</summary><p>Kuvvet almaya gerek bırakmaz; n. dereceden polinom için yalnızca n çarpma ve n toplama yeterlidir. Elle hesapta hata olasılığını azaltır, bilgisayarda ise hem daha hızlı hem daha kararlıdır.</p></details>
+        <details><summary>P(x) değerinin sıfır çıkması ne demektir?</summary><p>Yazdığınız x değeri polinomun köküdür; yani grafiği o noktada x eksenini keser ya da eksene teğettir. Aynı zamanda (x − a) ifadesi polinomun bir çarpanıdır.</p></details>
+        <details><summary>Polinomun (x − a) ile bölümünden kalan nasıl bulunur?</summary><p>Kalan teoremine göre kalan P(a) değerine eşittir. Araca x olarak a sayısını yazmanız yeterlidir. (x + 3) ile bölümden kalan için x = −3 girilir.</p></details>
+        <details><summary>Türev değeri ne işe yarar?</summary><p>Polinomun o noktadaki anlık değişim hızını, yani grafiğe çizilen teğetin eğimini verir. Artan-azalan aralıkları belirlemede, en büyük ve en küçük değer problemlerinde ve Newton yöntemiyle kök aramada kullanılır.</p></details>
+        <details><summary>Ondalıklı ya da negatif katsayı girebilir miyim?</summary><p>Evet. Ondalık için virgül ya da nokta kullanabilir, negatif katsayıların başına eksi işareti koyabilirsiniz. Örneğin 0,5x² − 1,25x + 3 için 0,5 -1,25 3 yazılır. Katsayıları ayırmak için virgül kullanmayın.</p></details>
+        <details><summary>Girdiğim polinom kaydediliyor mu?</summary><p>Hayır. Hesaplama tarayıcınızın içinde yapılır; katsayılar ve x değeri sunucuya gönderilmez, saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../diskriminant-hesapla/">Diskriminant ve Kök Hesaplama</a></li>
+        <li><a href="../dogrusal-interpolasyon-hesapla/">Doğrusal İnterpolasyon Hesaplama</a></li>
+        <li><a href="../us-logaritma-hesapla/">Üslü Sayı ve Logaritma Hesaplama</a></li>
+        <li><a href="../n-dereceden-kok-hesapla/">N. Dereceden Kök Hesaplama</a></li>
+        <li><a href="../dogru-denklemi-bul/">İki Noktadan Doğru Denklemi Bulma</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="polinom-deger-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

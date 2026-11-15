@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İç Verim Oranı (IRR) Hesaplama – Nakit Akışından İç Getiri Oranı</title>
+  <meta name="description" content="İlk yatırım tutarını ve dönemlik nakit akışlarını yazın; iç verim oranını (IRR), net nakit fazlasını ve isterseniz seçtiğiniz iskonto oranındaki NBD'yi görün.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ic-verim-orani-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"İç Verim Oranı (IRR) Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ic-verim-orani-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İç verim oranı kaç olmalı?","acceptedAnswer":{"@type":"Answer","text":"Evrensel bir eşik yoktur. Oran, paranın size maliyetinden (kredi faizi, ortakların beklediği getiri ya da vazgeçtiğiniz alternatif getiri) yüksek olmalıdır. Sermaye maliyeti %25 olan bir işletme için %20'lik bir proje cazip değildir."}},{"@type":"Question","name":"IRR ile ROI aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Yatırım getirisi (ROI) toplam kazancı yatırıma oranlar ve zamanı dikkate almaz. İç verim oranı ise akışların hangi dönemde geldiğini hesaba katan, dönem başına bileşik bir orandır."}},{"@type":"Question","name":"İç verim oranı negatif çıkabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Girişlerin toplamı ilk yatırımı karşılamıyorsa oran negatiftir. Örneğin 1.000 TL yatırıp iki yıl 400'er TL alıyorsanız oran yaklaşık -%13,67 olur."}},{"@type":"Question","name":"Aylık akışlarla hesap yapabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet. Akışları ay ay yazıp dönem uzunluğunu \"Aylık\" seçin. Araç aylık oranı ve bunun yıllık bileşik karşılığını birlikte gösterir; iskonto oranını da aylık olarak yazmalısınız."}},{"@type":"Question","name":"Excel'deki sonuçla aynı mı çıkar?","acceptedAnswer":{"@type":"Answer","text":"Aynı akışlarla, ilk yatırımı eksi işaretli ilk hücre olarak verdiğinizde tablo programlarındaki iç verim oranı işleviyle aynı değeri görmeniz gerekir; her ikisi de NBD'yi sıfırlayan oranı arar. Küçük farklar yuvarlamadan kaynaklanır."}},{"@type":"Question","name":"Neden \"birden çok oran olabilir\" notu çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Nakit akışlarınız artıdan eksiye ya da eksiden artıya birden fazla kez geçiyorsa denklem birden çok kökle sağlanabilir. Böyle projelerde tek bir orana güvenmek yerine net bugünkü değere bakmak daha sağlıklıdır."}},{"@type":"Question","name":"Hurda ya da satış değerini nereye yazmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Yatırımın sonunda elde edilecek hurda, devir ya da satış bedelini son dönemin nakit akışına ekleyin. Örneğin son yıl 2.000 TL işletme nakdi ve 5.000 TL satış bedeli varsa o dönem için 7.000 yazın."}},{"@type":"Question","name":"Girdiğim tutarlar kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Hesaplama yalnızca tarayıcınızda yapılır; yazdığınız yatırım ve nakit akışı bilgileri sunucuya gönderilmez, saklanmaz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#finans" class="ba-nav-optional">Finans</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#finans">Finans</a></li></ol>
+      <h1><span class="ba-grad">İç Verim Oranı (IRR) Hesaplama</span> – nakit akışlarından</h1>
+      <p class="lead">Bir yatırımın ilk tutarını ve sonraki dönemlerde sağlayacağı nakit akışlarını yazın; araç, net bugünkü değeri sıfırlayan oranı, yani <strong>iç verim oranını (IRR)</strong> bulur. İsterseniz kendi iskonto oranınızı da girip projeyi bu eşikle karşılaştırabilirsiniz.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field"><label for="f-yatirim">İlk yatırım tutarı</label><input id="f-yatirim" data-field="yatirim" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10000"><div class="hint">Bugün yapılan harcama; artı işaretli yazın.</div></div>
+          <div class="ba-field is-wide"><label for="f-akislar">Dönemlik nakit akışları</label><textarea id="f-akislar" data-field="akislar" rows="6" spellcheck="false" placeholder="Örn. 3000 4200 6800"></textarea><div class="hint">Her dönemin net akışını sırayla, boşluk ya da satır sonuyla ayırarak yazın. Çıkış olan dönem için eksi işareti kullanın.</div></div>
+          <div class="ba-field"><label for="f-donem">Dönem uzunluğu</label><select id="f-donem" data-field="donem"><option value="yil">Yıllık</option><option value="ay">Aylık</option></select></div>
+          <div class="ba-field"><label for="f-iskonto">İskonto oranı (%, isteğe bağlı)</label><input id="f-iskonto" data-field="iskonto" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 10"><div class="hint">Dönemlik oran. Yazarsanız NBD ve karşılaştırma da gösterilir.</div></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ic-verim-orani-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;İlk yatırım tutarı&quot; alanına bugün yapacağınız harcamayı artı işaretli olarak yazın; araç bunu sıfırıncı dönemdeki nakit çıkışı kabul eder.</li>
+        <li>&quot;Dönemlik nakit akışları&quot; kutusuna birinci dönemden başlayarak her dönemin net akışını sırayla girin. Sayıları boşlukla ya da alt alta yazabilirsiniz; ek harcama gereken dönemi eksi işaretiyle belirtin, akış olmayan dönem için 0 yazın.</li>
+        <li>Akışlarınız yıllık mı aylık mı, &quot;Dönem uzunluğu&quot; listesinden seçin. Aylık seçerseniz bulunan aylık oranın yıllık bileşik karşılığı da gösterilir.</li>
+        <li>Karşılaştırma yapmak istiyorsanız &quot;İskonto oranı&quot; alanına beklediğiniz dönemlik getiriyi (sermaye maliyetinizi) yazın.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın; iç verim oranı, toplam akış, net fazla ve varsa net bugünkü değer listelenir.</li>
+      </ol>
+
+      <h2>İç verim oranı nedir?</h2>
+      <p>İç verim oranı, bir yatırımın gelecekteki nakit akışlarının bugünkü değerini ilk yatırım tutarına eşitleyen iskonto oranıdır. Başka bir deyişle net bugünkü değeri (NBD) tam sıfır yapan orandır. Türkçe kaynaklarda iç getiri oranı ya da iç kârlılık oranı adlarıyla, İngilizce kısaltmasıyla da IRR olarak geçer.</p>
+      <p>Oranın çekiciliği, projeyi tek bir yüzdeyle özetlemesidir: &quot;Bu makine yatırımı yıllık %16 kazandırıyor&quot; cümlesi, mevduat faizi ya da kredi maliyetiyle doğrudan kıyaslanabilir. İç verim oranı sermaye maliyetinizin üzerindeyse proje değer yaratır, altındaysa paranızı alternatifinde değerlendirmek daha kazançlıdır.</p>
+
+      <h2>Formül ve hesaplama yöntemi</h2>
+      <p>İlk yatırım <em>Y</em>, dönem sonlarındaki akışlar <em>A<sub>1</sub>, A<sub>2</sub>, …, A<sub>n</sub></em> olsun. İç verim oranı <em>r</em>, şu denklemi sağlayan değerdir: <strong>Y = A<sub>1</sub>/(1+r) + A<sub>2</sub>/(1+r)<sup>2</sup> + … + A<sub>n</sub>/(1+r)<sup>n</sup></strong>.</p>
+      <p>Tek dönemlik durum dışında bu denklemin cebirsel bir kapalı çözümü yoktur; oran deneme yanılmayla aranır. Araç, %-99 ile %100.000 arasındaki aralığı tarar, net bugünkü değerin işaret değiştirdiği yeri bulur ve aralığı art arda ikiye bölerek kökü çok yüksek duyarlılıkla belirler. Elle hesapta aynı mantık iki tahmini oran arasında doğrusal enterpolasyon yapılarak uygulanır.</p>
+
+      <div class="ba-ad" data-slot="ic-verim-orani-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Bir atölye 10.000 TL'lik bir tezgâh alıyor ve tezgâhın üç yıl boyunca sırasıyla 3.000, 4.200 ve 6.800 TL net nakit sağlamasını bekliyor. Toplam giriş 14.000 TL, net nakit fazlası 4.000 TL'dir; ancak bu fazla paranın zaman değerini hesaba katmaz.</p>
+      <p>%10 iskonto oranıyla akışların bugünkü değerleri 2.727,27 + 3.471,07 + 5.108,94 = 11.307,29 TL eder; NBD 1.307,29 TL'dir ve pozitiftir. Oranı %20'ye çıkardığınızda NBD negatife döner. Sıfır noktası bu ikisinin arasındadır ve araç onu <strong>%16,34</strong> olarak bulur. Atölyenin sermaye maliyeti %10 ise proje kabul edilebilir; kredi maliyeti %20 ise edilemez.</p>
+      <p>Daha basit bir denetim örneği: 1.000 TL yatırıp bir yıl sonra 1.100 TL alıyorsanız iç verim oranı tam %10'dur. Aynı 1.000 TL üç yıl hiç ödeme yapmayıp sonunda 1.331 TL veriyorsa oran yine %10'dur, çünkü 1.000 × 1,1<sup>3</sup> = 1.331 eder.</p>
+
+      <h2>İç verim oranı ile net bugünkü değer arasındaki fark</h2>
+      <p>NBD, projenin bugünkü parayla kaç lira değer kattığını söyler; iç verim oranı ise bu değerin hangi getiri yüzdesine denk geldiğini. Tek bir projeyi kabul ya da reddederken ikisi aynı kararı verir. Birbirini dışlayan iki proje arasında seçim yaparken ise çelişebilirler: küçük ama yüksek oranlı bir proje, büyük ama düşük oranlı bir projeden daha az lira kazandırabilir. Bu durumda finans kitaplarının ortak önerisi NBD'ye bakmaktır.</p>
+      <p>İç verim oranının örtük bir varsayımı da vardır: ara dönemlerde elde edilen nakdin aynı oranla yeniden değerlendirildiği kabul edilir. Çok yüksek çıkan oranlarda bu gerçekçi olmayabilir.</p>
+
+      <h2>Birden fazla ya da hiç kök olmaması</h2>
+      <p>Klasik bir yatırımda önce çıkış, sonra girişler vardır; işaret bir kez değişir ve tek bir iç verim oranı bulunur. Proje ortasında büyük bir bakım harcaması ya da sonunda söküm maliyeti varsa akışlar birden fazla kez işaret değiştirir ve denklem birden çok oranla sağlanabilir. Araç bu durumu sonuç altındaki notta bildirir ve sıfıra en yakın kökü gösterir.</p>
+      <p>Girişlerin toplamı yatırımdan küçükse oran negatif çıkar; bu, paranın bir kısmının geri dönmediği anlamına gelir. Hiç pozitif akış yoksa oran tanımsızdır ve araç hata verir.</p>
+
+      <h2>Sık yapılan hatalar</h2>
+      <ul>
+        <li>İlk yatırımı eksi işaretle yazmak: bu alana tutarı artı olarak girin, işareti araç kendisi uygular.</li>
+        <li>Aylık akışlardan çıkan oranı yıllık sanmak: aylık %1, yıllık %12 değil bileşik olarak %12,68'dir.</li>
+        <li>Akış olmayan dönemi atlamak: boş geçen yıl için 0 yazmazsanız sonraki tutarlar bir dönem öne kayar ve oran olduğundan yüksek çıkar.</li>
+        <li>Kâr rakamı kullanmak: hesap muhasebe kârıyla değil, kasaya fiilen giren ve çıkan nakitle yapılır; amortisman nakit çıkışı değildir.</li>
+        <li>Enflasyonu karıştırmak: akışlar cari fiyatlarla tahmin edildiyse bulunan oran nominaldir; reel getiri için enflasyondan arındırmanız gerekir.</li>
+      </ul>
+
+      <h2>Sınırlar ve uyarı</h2>
+      <p>Sonucun kalitesi tahmin ettiğiniz nakit akışlarının kalitesi kadardır; araç yalnızca aritmetiği yapar. Akışların dönem sonunda ve eşit aralıklarla gerçekleştiği varsayılır; düzensiz tarihli akışlar için sonuç yaklaşık olur. Burada üretilen değerler bilgilendirme amaçlıdır, yatırım tavsiyesi değildir; önemli tutarlı kararlarda bir mali müşavir ya da finans uzmanıyla çalışın.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>İç verim oranı kaç olmalı?</summary><p>Evrensel bir eşik yoktur. Oran, paranın size maliyetinden (kredi faizi, ortakların beklediği getiri ya da vazgeçtiğiniz alternatif getiri) yüksek olmalıdır. Sermaye maliyeti %25 olan bir işletme için %20'lik bir proje cazip değildir.</p></details>
+        <details><summary>IRR ile ROI aynı şey mi?</summary><p>Hayır. Yatırım getirisi (ROI) toplam kazancı yatırıma oranlar ve zamanı dikkate almaz. İç verim oranı ise akışların hangi dönemde geldiğini hesaba katan, dönem başına bileşik bir orandır.</p></details>
+        <details><summary>İç verim oranı negatif çıkabilir mi?</summary><p>Evet. Girişlerin toplamı ilk yatırımı karşılamıyorsa oran negatiftir. Örneğin 1.000 TL yatırıp iki yıl 400'er TL alıyorsanız oran yaklaşık -%13,67 olur.</p></details>
+        <details><summary>Aylık akışlarla hesap yapabilir miyim?</summary><p>Evet. Akışları ay ay yazıp dönem uzunluğunu &quot;Aylık&quot; seçin. Araç aylık oranı ve bunun yıllık bileşik karşılığını birlikte gösterir; iskonto oranını da aylık olarak yazmalısınız.</p></details>
+        <details><summary>Excel'deki sonuçla aynı mı çıkar?</summary><p>Aynı akışlarla, ilk yatırımı eksi işaretli ilk hücre olarak verdiğinizde tablo programlarındaki iç verim oranı işleviyle aynı değeri görmeniz gerekir; her ikisi de NBD'yi sıfırlayan oranı arar. Küçük farklar yuvarlamadan kaynaklanır.</p></details>
+        <details><summary>Neden &quot;birden çok oran olabilir&quot; notu çıkıyor?</summary><p>Nakit akışlarınız artıdan eksiye ya da eksiden artıya birden fazla kez geçiyorsa denklem birden çok kökle sağlanabilir. Böyle projelerde tek bir orana güvenmek yerine net bugünkü değere bakmak daha sağlıklıdır.</p></details>
+        <details><summary>Hurda ya da satış değerini nereye yazmalıyım?</summary><p>Yatırımın sonunda elde edilecek hurda, devir ya da satış bedelini son dönemin nakit akışına ekleyin. Örneğin son yıl 2.000 TL işletme nakdi ve 5.000 TL satış bedeli varsa o dönem için 7.000 yazın.</p></details>
+        <details><summary>Girdiğim tutarlar kaydediliyor mu?</summary><p>Hayır. Hesaplama yalnızca tarayıcınızda yapılır; yazdığınız yatırım ve nakit akışı bilgileri sunucuya gönderilmez, saklanmaz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../net-bugunku-deger-hesapla/">Net Bugünkü Değer (NBD) Hesaplama</a></li>
+        <li><a href="../yatirim-getirisi-hesapla/">Yatırım Getirisi (ROI) Hesaplama</a></li>
+        <li><a href="../geri-odeme-suresi-hesapla/">Yatırımın Geri Ödeme Süresi Hesaplama</a></li>
+        <li><a href="../yillik-bilesik-buyume-hesapla/">Yıllık Bileşik Büyüme Oranı (CAGR) Hesaplama</a></li>
+        <li><a href="../bugunku-deger-hesapla/">Bugünkü Değer (PV) Hesaplama</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ic-verim-orani-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

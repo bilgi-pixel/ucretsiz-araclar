@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Sorgu Dizesi Çözme – Query String Parametrelerini Listeleme</title>
+  <meta name="description" content="URL sorgu dizesini anahtar-değer çiftlerine ayırın, yüzde kodlamasını çözün. Liste ya da JSON çıktısı, yinelenen ve boş parametrelerin dökümü.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/sorgu-dizesi-coz/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Sorgu Dizesi (Query String) Çözme – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/sorgu-dizesi-coz/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Query string ile URL parametresi aynı şey midir?","acceptedAnswer":{"@type":"Answer","text":"Gündelik kullanımda evet. Sorgu dizesi soru işaretinden sonraki bölümün tamamıdır; içindeki her anahtar-değer çifti de parametre olarak adlandırılır."}},{"@type":"Question","name":"Tam adresi mi yoksa yalnızca sorguyu mu yapıştırmalıyım?","acceptedAnswer":{"@type":"Answer","text":"İkisi de olur. Tam adres yapıştırırsanız araç soru işaretinden öncesini ve diyezden sonrasını atar. Yalnızca sorguyu yapıştırırsanız baştaki soru işareti olsa da olmasa da kabul edilir."}},{"@type":"Question","name":"Artı işareti neden boşluğa dönüşüyor?","acceptedAnswer":{"@type":"Answer","text":"Web formlarının gönderim kodlamasında boşluk artı olarak yazılır. Değerinizdeki artı gerçek bir artıysa \"Artı olarak bırak\" seçeneğini kullanın. Doğru kodlanmış bir adreste gerçek artı %2B olarak yazılır."}},{"@type":"Question","name":"JSON çıktısında sayılar neden tırnak içinde?","acceptedAnswer":{"@type":"Answer","text":"Sorgu dizesinde her şey metindir; değerin sayı, tarih ya da mantıksal değer olduğu bilgisi taşınmaz. Araç değerleri değiştirmeden dizgi olarak bırakır, tür dönüşümünü ihtiyaca göre siz yaparsınız."}},{"@type":"Question","name":"Aynı anahtar birden çok kez geçerse JSON nasıl olur?","acceptedAnswer":{"@type":"Answer","text":"O anahtarın değeri bir diziye dönüştürülür ve değerler adresteki sırayla eklenir. Liste biçiminde ise her biri ayrı satırda gösterilir."}},{"@type":"Question","name":"Noktalı virgülle ayrılmış sorguları çözer mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç yaygın kullanım olan & ayırıcısını temel alır. Eski bazı sistemlerde görülen noktalı virgül ayırıcısı değer içinde de geçebildiği için otomatik bölünmez."}},{"@type":"Question","name":"Diyezden sonraki bölüm neden yok sayılıyor?","acceptedAnswer":{"@type":"Answer","text":"Diyezden sonrası parça (fragment) bölümüdür ve sorgu dizesine ait değildir; sunucuya gönderilmez. Bazı tek sayfalık uygulamalar parça içinde de parametre taşır; onları çözmek için yalnızca o bölümü kutuya yapıştırabilirsiniz."}},{"@type":"Question","name":"Yapıştırdığım adres bir yere gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Çözme işlemi tarayıcınızda yapılır; adres ve parametreler sunucuya iletilmez, saklanmaz. İçinde kişisel veri bulunan bağlantıları da bu yüzden güvenle inceleyebilirsiniz."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#gelistirici" class="ba-nav-optional">Geliştirici</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#gelistirici">Geliştirici</a></li></ol>
+      <h1><span class="ba-grad">Sorgu Dizesi (Query String) Çözme</span> – parametre listesi</h1>
+      <p class="lead">Bir adresin soru işaretinden sonraki bölümünü, yani <strong>sorgu dizesini</strong> okunur hâle getirin. Araç parametreleri tek tek ayırır, yüzde kodlamasını çözer ve sonucu liste ya da JSON olarak verir.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-sorgu">Sorgu dizesi ya da tam adres</label><textarea id="f-sorgu" data-field="sorgu" rows="4" spellcheck="false" placeholder="Örn. q=mavi+ayakkab%C4%B1&amp;sayfa=2&amp;sirala=fiyat"></textarea><div class="hint">Tam adres yapıştırırsanız yalnızca ? ile # arasındaki bölüm işlenir.</div></div>
+          <div class="ba-field"><label for="f-bicim">Çıktı biçimi</label><select id="f-bicim" data-field="bicim"><option value="liste">Liste (anahtar = değer)</option><option value="json">JSON nesnesi</option></select></div>
+          <div class="ba-field"><label for="f-sira">Sıralama</label><select id="f-sira" data-field="sira"><option value="ozgun">Adresteki sırayla</option><option value="alfabetik">Anahtara göre alfabetik</option></select></div>
+          <div class="ba-field"><label for="f-arti">Artı (+) işareti</label><select id="f-arti" data-field="arti"><option value="bosluk">Boşluk olarak çöz (form kodlaması)</option><option value="arti">Artı olarak bırak</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Çöz</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="sorgu-dizesi-coz-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>Adres çubuğundaki adresin tamamını ya da yalnızca soru işaretinden sonraki bölümü kopyalayıp kutuya yapıştırın.</li>
+        <li>Çıktıyı düz liste olarak mı yoksa JSON nesnesi olarak mı istediğinizi seçin.</li>
+        <li>Parametreleri adresteki sırayla ya da anahtar adına göre alfabetik görmek için sıralama seçeneğini ayarlayın.</li>
+        <li>Değerlerde artı işareti gerçek bir artı ise &quot;Artı olarak bırak&quot; seçeneğine geçin; aksi hâlde artılar boşluğa çevrilir.</li>
+        <li>&quot;Çöz&quot; düğmesine basın. Parametreler metin kutusunda, sayılar ve yinelenen anahtarlar üstteki satırlarda görünür.</li>
+      </ol>
+
+      <h2>Sorgu dizesi nedir?</h2>
+      <p>Sorgu dizesi (query string), bir web adresinde soru işaretinden sonra gelen ve varsa diyez işaretine kadar süren bölümdür. Sunucuya ya da sayfadaki betiğe ek bilgi taşır: arama sözcüğü, sayfa numarası, sıralama ölçütü, dil seçimi, kampanya etiketleri gibi. Yaygın biçim, <code>&amp;</code> işaretiyle ayrılmış <code>anahtar=değer</code> çiftleridir: <code>sayfa=2&amp;sirala=fiyat</code>.</p>
+      <p>Bu biçim katı bir standarttan çok, web formlarının veri gönderme yönteminden doğmuş bir gelenektir. Bu yüzden ayrıntılarda farklılıklar görülür: değeri olmayan anahtarlar, aynı anahtarın yinelenmesi ya da köşeli parantezli adlar farklı yazılımlarda farklı yorumlanabilir. Araç dizgiyi olduğu gibi ayırır ve yorumu size bırakır.</p>
+
+      <h2>Yüzde kodlaması ve artı işareti</h2>
+      <p>Adreslerde boşluk, Türkçe harfler ve <code>&amp;</code>, <code>=</code>, <code>#</code> gibi özel anlamlı işaretler doğrudan yazılamaz. Bunun yerine karakterin UTF-8 baytları yüzde işareti ve iki onaltılık haneyle yazılır. Boşluk <code>%20</code>, &quot;ç&quot; harfi <code>%C3%A7</code>, &quot;ı&quot; harfi <code>%C4%B1</code>, ve işareti <code>%26</code> olur. Araç bu kodları çözerek değerleri okunur hâle getirir.</p>
+      <p>Artı işareti özel bir durumdur. Web formları gönderilirken boşluklar <code>+</code> olarak kodlanır; bu yüzden sorgu dizesindeki artı çoğunlukla boşluk demektir. Ancak bazı adresler JavaScript ile üretilir ve orada artı gerçek bir artı işaretidir. Varsayılan ayar form kodlamasını izler; telefon numarası ya da matematik ifadesi gibi değerlerde artının korunmasını istiyorsanız ilgili seçeneği değiştirin. Gerçek artı işaretinin kodlanmış hâli <code>%2B</code>'dir ve her iki ayarda da artı olarak çözülür.</p>
+
+      <div class="ba-ad" data-slot="sorgu-dizesi-coz-b" aria-label="Reklam"></div>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Bir mağaza aramasından şu sorguyu aldığınızı düşünün: <code>q=mavi+ayakkab%C4%B1&amp;sayfa=2&amp;sirala=fiyat</code>. Araç dizgiyi <code>&amp;</code> işaretlerinden üç parçaya böler. İlk parçada eşittir işaretinin solu anahtar (<code>q</code>), sağı değerdir. Değerdeki artı boşluğa, <code>%C4%B1</code> ise &quot;ı&quot; harfine çevrilir ve &quot;mavi ayakkabı&quot; elde edilir. Sonuç listesi şöyledir: &quot;q = mavi ayakkabı&quot;, &quot;sayfa = 2&quot;, &quot;sirala = fiyat&quot;. Parametre sayısı 3, benzersiz anahtar sayısı da 3'tür.</p>
+      <p>İkinci örnekte aynı anahtar iki kez geçiyor: <code>etiket=a&amp;etiket=b&amp;bos=&amp;bayrak</code>. JSON çıktısı seçildiğinde <code>etiket</code> anahtarı iki öğeli bir diziye dönüşür, <code>bos</code> ve <code>bayrak</code> ise boş dizgi değerini alır. Üstteki satırlarda &quot;etiket (2 kez)&quot; yinelenen anahtar olarak, &quot;bos, bayrak&quot; boş değerli anahtarlar olarak belirtilir.</p>
+
+      <h2>Liste ve JSON çıktısı ne zaman kullanılır?</h2>
+      <p>Liste biçimi gözle inceleme içindir: her satırda bir parametre bulunur ve yinelenen anahtarlar ayrı ayrı görünür. Bir müşteriye &quot;adresinizde şu değerler gönderiliyor&quot; diye rapor yazarken ya da hata ayıklarken en rahat okunan biçim budur.</p>
+      <p>JSON biçimi parametreleri başka bir araca ya da koda aktarmak içindir. Bir API istemcisinde gövde olarak denemek, sınama verisi hazırlamak ya da yapılandırma dosyasına taşımak istediğinizde nesne hazır gelir. Tüm değerler dizgi olarak bırakılır; <code>2</code> gibi bir değer sayıya çevrilmez, çünkü sorgu dizesinde tür bilgisi yoktur ve tahmin yürütmek &quot;007&quot; gibi değerleri bozabilir.</p>
+
+      <h2>Sık karşılaşılan durumlar</h2>
+      <ul>
+        <li><strong>Yinelenen anahtar:</strong> <code>renk=mavi&amp;renk=siyah</code> gibi çoklu seçimlerde görülür. Sunucu yazılımına göre ilki, sonuncusu ya da hepsi dikkate alınır.</li>
+        <li><strong>Köşeli parantezli adlar:</strong> <code>filtre[marka]=x</code> biçimi bazı çatıların iç içe veri gösterimidir. Araç anahtarı parantezleriyle birlikte tek ad olarak listeler.</li>
+        <li><strong>Değersiz anahtar:</strong> <code>?onizleme</code> gibi bayraklar eşittir işareti olmadan yazılabilir; değer boş kabul edilir.</li>
+        <li><strong>Çift kodlama:</strong> çözülen değerde hâlâ <code>%20</code> ya da <code>%25</code> görüyorsanız değer iki kez kodlanmıştır; çıkan değeri yeniden çözmeniz gerekir.</li>
+        <li><strong>Bozuk kodlama:</strong> <code>%ZZ</code> gibi geçersiz bir dizi ya da yarım kalmış çok baytlı karakter çözülemez; araç o parçayı değiştirmeden bırakır ve sayısını bildirir.</li>
+      </ul>
+
+      <h2>Gizlilik açısından sorgu dizeleri</h2>
+      <p>Sorgu dizesi adresin parçası olduğundan tarayıcı geçmişine, sunucu kayıtlarına ve bağlantıyı paylaştığınız herkese görünür. Bu nedenle parola, kimlik numarası ya da kart bilgisi gibi verilerin sorgu dizesinde taşınması iyi bir uygulama değildir. Bir bağlantıyı başkasına göndermeden önce parametrelerine bakmak, içinde oturum anahtarı ya da e-posta adresi gibi kişisel bilgi kalıp kalmadığını görmenin kolay yoludur; bu araç tam da bu denetim için uygundur.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Query string ile URL parametresi aynı şey midir?</summary><p>Gündelik kullanımda evet. Sorgu dizesi soru işaretinden sonraki bölümün tamamıdır; içindeki her anahtar-değer çifti de parametre olarak adlandırılır.</p></details>
+        <details><summary>Tam adresi mi yoksa yalnızca sorguyu mu yapıştırmalıyım?</summary><p>İkisi de olur. Tam adres yapıştırırsanız araç soru işaretinden öncesini ve diyezden sonrasını atar. Yalnızca sorguyu yapıştırırsanız baştaki soru işareti olsa da olmasa da kabul edilir.</p></details>
+        <details><summary>Artı işareti neden boşluğa dönüşüyor?</summary><p>Web formlarının gönderim kodlamasında boşluk artı olarak yazılır. Değerinizdeki artı gerçek bir artıysa &quot;Artı olarak bırak&quot; seçeneğini kullanın. Doğru kodlanmış bir adreste gerçek artı %2B olarak yazılır.</p></details>
+        <details><summary>JSON çıktısında sayılar neden tırnak içinde?</summary><p>Sorgu dizesinde her şey metindir; değerin sayı, tarih ya da mantıksal değer olduğu bilgisi taşınmaz. Araç değerleri değiştirmeden dizgi olarak bırakır, tür dönüşümünü ihtiyaca göre siz yaparsınız.</p></details>
+        <details><summary>Aynı anahtar birden çok kez geçerse JSON nasıl olur?</summary><p>O anahtarın değeri bir diziye dönüştürülür ve değerler adresteki sırayla eklenir. Liste biçiminde ise her biri ayrı satırda gösterilir.</p></details>
+        <details><summary>Noktalı virgülle ayrılmış sorguları çözer mi?</summary><p>Hayır. Araç yaygın kullanım olan &amp; ayırıcısını temel alır. Eski bazı sistemlerde görülen noktalı virgül ayırıcısı değer içinde de geçebildiği için otomatik bölünmez.</p></details>
+        <details><summary>Diyezden sonraki bölüm neden yok sayılıyor?</summary><p>Diyezden sonrası parça (fragment) bölümüdür ve sorgu dizesine ait değildir; sunucuya gönderilmez. Bazı tek sayfalık uygulamalar parça içinde de parametre taşır; onları çözmek için yalnızca o bölümü kutuya yapıştırabilirsiniz.</p></details>
+        <details><summary>Yapıştırdığım adres bir yere gönderiliyor mu?</summary><p>Hayır. Çözme işlemi tarayıcınızda yapılır; adres ve parametreler sunucuya iletilmez, saklanmaz. İçinde kişisel veri bulunan bağlantıları da bu yüzden güvenle inceleyebilirsiniz.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../url-ayristir/">URL Ayrıştırma (Parçalarına Ayırma)</a></li>
+        <li><a href="../url-kodla/">URL Kodla / Çöz ve Metin Kodlama Araçları</a></li>
+        <li><a href="../utm-link-olustur/">UTM Bağlantısı Oluşturma</a></li>
+        <li><a href="../json-bicimlendir/">JSON Biçimlendir ve Doğrula</a></li>
+        <li><a href="../base64-donustur/">Base64 Kodla / Çöz</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="sorgu-dizesi-coz-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>

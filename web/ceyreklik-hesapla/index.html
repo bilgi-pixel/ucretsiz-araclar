@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Çeyreklik ve IQR Hesaplama – Q1, Q3, Çeyrekler Açıklığı</title>
+  <meta name="description" content="Veri setinizin Q1, Q2 (medyan) ve Q3 çeyrekliklerini, çeyrekler açıklığını (IQR) ve 1,5 × IQR kuralına göre aykırı değerlerini bulun. Üç farklı yöntem desteklenir.">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/ceyreklik-hesapla/">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/ba.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Çeyreklikler ve IQR Hesaplama – Bilişim Ajans","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"tr","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"url":"https://araclar.bilisimajans.com/ceyreklik-hesapla/"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Çeyrekler açıklığı (IQR) nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Üçüncü çeyreklikten birinci çeyreklik çıkarılır: IQR = Q3 − Q1. Önce veriler sıralanır, medyan bulunur, ardından alt ve üst yarıların medyanları Q1 ve Q3 olarak alınır."}},{"@type":"Question","name":"Q1, Q2 ve Q3 ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"Q1 verilerin %25'inin, Q2 %50'sinin, Q3 %75'inin altında kaldığı değerdir. Q2 aynı zamanda medyandır."}},{"@type":"Question","name":"Hesap tablosunda bulduğum çeyreklik neden farklı?","acceptedAnswer":{"@type":"Answer","text":"Hesap tabloları varsayılan olarak doğrusal ara değer yöntemini kullanır; okul yöntemi ise veriyi yarılara ayırıp medyan alır. Yöntem listesinden \"Doğrusal ara değer\" seçeneğini seçerseniz aynı sonucu görürsünüz."}},{"@type":"Question","name":"Veri sayısı tek olduğunda medyan yarılara katılır mı?","acceptedAnswer":{"@type":"Answer","text":"Yönteme bağlıdır. \"Medyan hariç\" yönteminde katılmaz, \"Medyan dahil\" yönteminde her iki yarıya da katılır. Ders kitabınızın ya da öğretmeninizin hangi yöntemi kullandığını kontrol edin."}},{"@type":"Question","name":"Aykırı değer nasıl belirlenir?","acceptedAnswer":{"@type":"Answer","text":"En yaygın kural 1,5 × IQR kuralıdır: Q1 − 1,5 × IQR değerinden küçük ya da Q3 + 1,5 × IQR değerinden büyük veriler aykırı değer adayı sayılır. Araç bu sınırları ve dışında kalan verileri otomatik gösterir."}},{"@type":"Question","name":"Çeyrek sapma nedir?","acceptedAnswer":{"@type":"Answer","text":"Çeyrekler açıklığının yarısıdır: (Q3 − Q1) ÷ 2. Yarı çeyrekler açıklığı olarak da adlandırılır ve medyanın çevresindeki tipik yayılımı gösterir."}},{"@type":"Question","name":"IQR sıfır çıkabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Verilerin en az yarısı aynı değerde toplanmışsa Q1 ile Q3 eşit olur ve IQR sıfır çıkar. Bu durumda 1,5 × IQR kuralı o değerden farklı her veriyi aykırı olarak işaretler; sonucu dikkatle yorumlamak gerekir."}},{"@type":"Question","name":"Verilerim kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Tüm işlem tarayıcınızda gerçekleşir; girdiğiniz sayılar sunucuya gönderilmez."}}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../">Tüm Araçlar</a><a href="../#matematik" class="ba-nav-optional">Matematik</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+
+  <main>
+    <section class="ba-hero ba-hero-tool"><div class="ba-container"><ol class="ba-crumb" aria-label="Konum"><li><a href="../">Araçlar</a></li><li><a href="../#matematik">Matematik</a></li></ol>
+      <h1><span class="ba-grad">Çeyreklikler ve IQR Hesaplama</span> – Q1, Q2, Q3 ve aykırı değerler</h1>
+      <p class="lead">Bir veri setini dört eşit parçaya bölen <strong>Q1, Q2 ve Q3</strong> değerlerini ve aralarındaki farkı gösteren <strong>çeyrekler açıklığını (IQR)</strong> hesaplayın. Araç ayrıca 1,5 × IQR kuralıyla alt ve üst sınırları belirleyip aykırı değerleri listeler.</p>
+      <ul class="ba-badges" aria-label="Güvence"><li>%100 ücretsiz</li><li>Kayıt yok</li><li>Dosya yüklenmez</li></ul>
+      </div></section>
+    <div class="ba-container">
+
+    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+          <div class="ba-field is-wide"><label for="f-sayilar">Veriler</label><textarea id="f-sayilar" data-field="sayilar" rows="6" spellcheck="false" placeholder="Örn. 6 7 15 36 39 40 41 42 43 47 49"></textarea><div class="hint">Sayıları boşluk, satır sonu ya da noktalı virgülle ayırın; ondalık için virgül kullanabilirsiniz.</div></div>
+          <div class="ba-field"><label for="f-yontem">Yöntem</label><select id="f-yontem" data-field="yontem"><option value="haric">Medyan hariç (okul yöntemi)</option><option value="dahil">Medyan dahil (Tukey menteşeleri)</option><option value="dogrusal">Doğrusal ara değer (hesap tablosu yöntemi)</option></select></div>
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">Hesapla</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+        <div class="ba-actions"><button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="ba-ad" data-slot="ceyreklik-hesapla-a" aria-label="Reklam"></div>
+
+    <article class="ba-content">
+      <h2>Nasıl kullanılır?</h2>
+      <ol class="ba-steps">
+        <li>&quot;Veriler&quot; kutusuna sayılarınızı yazın ya da yapıştırın; sıralamanız gerekmez.</li>
+        <li>Yöntemi seçin. Okul matematiğinde ve çoğu sınav sorusunda &quot;medyan hariç&quot; yöntemi beklenir; hesap tablosu sonuçlarıyla karşılaştırma yapacaksanız &quot;doğrusal ara değer&quot; seçeneğini kullanın.</li>
+        <li>&quot;Hesapla&quot; düğmesine basın. İlk üç satır çeyreklikleri, dördüncü satır çeyrekler açıklığını gösterir.</li>
+        <li>Alt ve üst sınır satırlarına bakın; bu sınırların dışında kalan veriler &quot;Aykırı değerler&quot; satırında listelenir.</li>
+        <li>Kutu grafiği çizecekseniz en küçük, Q1, medyan, Q3 ve en büyük değerleri sonuçtan doğrudan alabilirsiniz.</li>
+      </ol>
+
+      <h2>Çeyreklikler ve çeyrekler açıklığı nedir?</h2>
+      <p>Küçükten büyüğe sıralanmış bir veri setini dört eşit parçaya bölen üç değere çeyreklik denir. <strong>Q1</strong> (alt çeyrek) verilerin en küçük dörtte birini, <strong>Q2</strong> (medyan) yarısını, <strong>Q3</strong> (üst çeyrek) dörtte üçünü geride bırakan noktadır. Bu değerler sırasıyla 25., 50. ve 75. yüzdeliklere karşılık gelir.</p>
+      <p><strong>Çeyrekler açıklığı</strong>, İngilizce kısaltmasıyla IQR, Q3 ile Q1 arasındaki farktır: IQR = Q3 − Q1. Verilerin ortadaki yarısının ne kadar geniş bir aralığa yayıldığını gösterir. En büyük ve en küçük değer hesaba girmediği için uç değerlerden etkilenmez; bu yönüyle açıklığa (ranj) ve standart sapmaya göre daha dayanıklı bir yayılım ölçüsüdür. Çeyrek sapma ise IQR'nin yarısıdır.</p>
+
+      <h2>Çeyreklikler nasıl bulunur?</h2>
+      <ol>
+        <li>Verileri küçükten büyüğe sıralayın.</li>
+        <li>Medyanı (Q2) bulun: veri sayısı tekse ortadaki değer, çiftse ortadaki iki değerin ortalamasıdır.</li>
+        <li>Veriyi medyandan alt ve üst yarıya ayırın. Veri sayısı tekse ortadaki değerin yarılara katılıp katılmayacağı yönteme göre değişir.</li>
+        <li>Alt yarının medyanı Q1, üst yarının medyanı Q3'tür.</li>
+        <li>Q3'ten Q1'i çıkararak çeyrekler açıklığını bulun.</li>
+      </ol>
+
+      <div class="ba-ad" data-slot="ceyreklik-hesapla-b" aria-label="Reklam"></div>
+
+      <h2>Üç yöntem arasındaki fark</h2>
+      <p><strong>Medyan hariç:</strong> Veri sayısı tek olduğunda ortadaki değer iki yarıya da katılmaz. Okul matematiğinde en sık öğretilen ve pek çok hesap makinesinin kullandığı yöntem budur.</p>
+      <p><strong>Medyan dahil:</strong> Veri sayısı tek olduğunda ortadaki değer hem alt hem üst yarıya eklenir. Kutu grafiğini geliştiren John Tukey'nin &quot;menteşe&quot; tanımıdır. Veri sayısı çift olduğunda ilk yöntemle aynı sonucu verir.</p>
+      <p><strong>Doğrusal ara değer:</strong> Q1 için 1 + 0,25 × (n − 1), Q3 için 1 + 0,75 × (n − 1) sırası hesaplanır ve sıra kesirliyse komşu iki veri arasında orantılı değer alınır. Hesap tablosu programlarındaki ÇEYREK işlevinin varsayılan davranışıdır.</p>
+      <p>Veri sayısı büyüdükçe yöntemlerin sonuçları birbirine yaklaşır; fark asıl olarak 10 – 20 verili küçük setlerde göze çarpar.</p>
+
+      <h2>Çözümlü örnek</h2>
+      <p>Veriler: 6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49 (11 veri). Ortadaki, yani altıncı değer 40'tır: Q2 = 40.</p>
+      <p><strong>Medyan hariç yöntemle</strong> alt yarı 6, 7, 15, 36, 39 olur; ortadaki değer 15 olduğundan Q1 = 15'tir. Üst yarı 41, 42, 43, 47, 49'dur; Q3 = 43. Çeyrekler açıklığı 43 − 15 = <strong>28</strong> çıkar.</p>
+      <p><strong>Medyan dahil yöntemle</strong> alt yarı 6, 7, 15, 36, 39, 40 olur; ortadaki iki değerin ortalaması (15 + 36) ÷ 2 = 25,5'tir. Üst yarı 40, 41, 42, 43, 47, 49 için Q3 = (42 + 43) ÷ 2 = 42,5 bulunur. IQR = 17'dir. Doğrusal ara değer yöntemi de bu veri için aynı 25,5 ve 42,5 değerlerini verir.</p>
+      <p>Aynı verinin IQR değerinin bir yöntemde 28, diğerinde 17 çıkması, 15 ile 36 arasındaki büyük boşluktan kaynaklanır. Sonuç bildirirken yöntemi de belirtmek bu yüzden önemlidir.</p>
+
+      <h2>Aykırı değerlerin belirlenmesi: 1,5 × IQR kuralı</h2>
+      <p>Yaygın bir kurala göre <strong>Q1 − 1,5 × IQR</strong> değerinden küçük ya da <strong>Q3 + 1,5 × IQR</strong> değerinden büyük veriler aykırı değer adayı sayılır. Kutu grafiklerinde bıyıklar bu sınırların içindeki en uç verilere kadar uzatılır, dışarıda kalanlar ayrı noktalar olarak çizilir.</p>
+      <p>Örnek: 1, 2, 3, 4, 5, 6, 7, 8, 9, 100 verisinde medyan hariç yöntemle Q1 = 3, Q3 = 8 ve IQR = 5'tir. Alt sınır 3 − 7,5 = −4,5; üst sınır 8 + 7,5 = 15,5 olur. 100 değeri üst sınırı aştığı için aykırı değer olarak listelenir.</p>
+      <p>Bu kural bir işaretleme aracıdır, hüküm değildir. İşaretlenen değer bir ölçüm ya da yazım hatası olabileceği gibi, verinin gerçek ve önemli bir parçası da olabilir. Bir değeri yalnızca sınırın dışında kaldığı için silmek doğru değildir; önce nedenini araştırmak gerekir.</p>
+
+      <h2>Nerede kullanılır, sınırları nelerdir?</h2>
+      <p>Çeyreklikler; ücret ve fiyat dağılımlarının özetlenmesinde, sınav sonuçlarının değerlendirilmesinde, kalite kontrolünde ve dağılımı çarpık olan her tür veride ortalama ve standart sapmaya tercih edilir. Beş sayı özeti (en küçük, Q1, medyan, Q3, en büyük) bir veri setini tek satırda tanıtmanın en yaygın yoludur.</p>
+      <p>Çok az veriyle hesaplanan çeyreklikler kararsızdır; tek bir verinin eklenmesi sonucu belirgin biçimde değiştirebilir. Araç en az 2, en çok 100.000 sayı kabul eder ve gruplandırılmış (sınıf aralıklı) frekans tablolarından çeyreklik hesaplamaz.</p>
+
+      <h2>Neden Bilişim Ajans aracı?</h2>
+      <ul>
+        <li><strong>Veri gönderilmez.</strong> Hesap ve çeviri tarayıcınızda yapılır; yazdığınız hiçbir şey sunucuya iletilmez, saklanmaz, çerezle izlenmez.</li>
+        <li><strong>Kayıt ve ücret yok.</strong> Üyelik, deneme süresi ya da gizli sınır yoktur; sayfayı açıp hemen kullanırsınız.</li>
+        <li><strong>Çevrimdışı çalışır.</strong> Sayfa bir kez açıldıktan sonra internet olmadan da kullanılabilir; isterseniz tarayıcıdan uygulama olarak yükleyebilirsiniz.</li>
+        <li><strong>Telefonda rahat.</strong> Arayüz 360 piksel genişlikte de sığar ve klavyeyle tam kullanılabilir.</li>
+      </ul>
+
+      <h2>Sık sorulan sorular</h2>
+      <div class="ba-faq">
+        <details><summary>Çeyrekler açıklığı (IQR) nasıl hesaplanır?</summary><p>Üçüncü çeyreklikten birinci çeyreklik çıkarılır: IQR = Q3 − Q1. Önce veriler sıralanır, medyan bulunur, ardından alt ve üst yarıların medyanları Q1 ve Q3 olarak alınır.</p></details>
+        <details><summary>Q1, Q2 ve Q3 ne anlama gelir?</summary><p>Q1 verilerin %25'inin, Q2 %50'sinin, Q3 %75'inin altında kaldığı değerdir. Q2 aynı zamanda medyandır.</p></details>
+        <details><summary>Hesap tablosunda bulduğum çeyreklik neden farklı?</summary><p>Hesap tabloları varsayılan olarak doğrusal ara değer yöntemini kullanır; okul yöntemi ise veriyi yarılara ayırıp medyan alır. Yöntem listesinden &quot;Doğrusal ara değer&quot; seçeneğini seçerseniz aynı sonucu görürsünüz.</p></details>
+        <details><summary>Veri sayısı tek olduğunda medyan yarılara katılır mı?</summary><p>Yönteme bağlıdır. &quot;Medyan hariç&quot; yönteminde katılmaz, &quot;Medyan dahil&quot; yönteminde her iki yarıya da katılır. Ders kitabınızın ya da öğretmeninizin hangi yöntemi kullandığını kontrol edin.</p></details>
+        <details><summary>Aykırı değer nasıl belirlenir?</summary><p>En yaygın kural 1,5 × IQR kuralıdır: Q1 − 1,5 × IQR değerinden küçük ya da Q3 + 1,5 × IQR değerinden büyük veriler aykırı değer adayı sayılır. Araç bu sınırları ve dışında kalan verileri otomatik gösterir.</p></details>
+        <details><summary>Çeyrek sapma nedir?</summary><p>Çeyrekler açıklığının yarısıdır: (Q3 − Q1) ÷ 2. Yarı çeyrekler açıklığı olarak da adlandırılır ve medyanın çevresindeki tipik yayılımı gösterir.</p></details>
+        <details><summary>IQR sıfır çıkabilir mi?</summary><p>Evet. Verilerin en az yarısı aynı değerde toplanmışsa Q1 ile Q3 eşit olur ve IQR sıfır çıkar. Bu durumda 1,5 × IQR kuralı o değerden farklı her veriyi aykırı olarak işaretler; sonucu dikkatle yorumlamak gerekir.</p></details>
+        <details><summary>Verilerim kaydediliyor mu?</summary><p>Hayır. Tüm işlem tarayıcınızda gerçekleşir; girdiğiniz sayılar sunucuya gönderilmez.</p></details>
+      </div>
+
+      <h2>İlgili araçlar</h2>
+      <ul class="ba-related">
+        <li><a href="../yuzdelik-dilim-hesapla/">Yüzdelik Dilim (Persentil) Hesaplama</a></li>
+        <li><a href="../medyan-hesapla/">Medyan (Ortanca) Hesaplama</a></li>
+        <li><a href="../aciklik-hesapla/">Açıklık (Ranj) Hesaplama</a></li>
+        <li><a href="../standart-sapma-hesapla/">Standart Sapma Hesaplama</a></li>
+        <li><a href="../degisim-katsayisi-hesapla/">Değişim Katsayısı Hesaplama</a></li>
+        <li><a href="../ortalama-hesapla/">Ortalama Hesaplama (Aritmetik, Ağırlıklı, Geometrik)</a></li>
+      </ul>
+      <p class="ba-note"><span aria-hidden="true">💼</span><span>Size özel hesaplama aracı ya da web yazılımı ihtiyacınız varsa <a href="https://bilisimajans.com/">Bilişim Ajans</a> ekibi yardımcı olur.</span></p>
+    </article>
+
+    <div class="ba-ad" data-slot="ceyreklik-hesapla-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../pdf-bol/">PDF Böl</a></li><li><a href="../pdf-kucult/">PDF Küçült</a></li><li><a href="../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../resim-kucult/">Resim Küçült</a></li><li><a href="../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../hakkimizda/">Hakkımızda</a></li><li><a href="../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilisimajans" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+
+  <script src="../assets/js/ads.js" defer></script>
+  <script type="module" src="../assets/js/pwa.js"></script>
+  <script type="module" src="tool.js"></script>
+  <script type="module" src="../assets/js/motion.js"></script>
+</body>
+</html>
