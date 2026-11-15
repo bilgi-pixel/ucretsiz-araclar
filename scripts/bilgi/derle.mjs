@@ -3,10 +3,10 @@
 // Kullanım: node scripts/bilgi/derle.mjs
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { validate, load, loadTools, rehberler, allSlugs, renderArticle, renderHub, hubCard, ROOT, WEB, BOLUM, SITE, KATEGORI } from './lib.mjs';
+import { konular, validate, load, loadTools, rehberler, allSlugs, renderArticle, renderHub, hubCard, ROOT, WEB, BOLUM, SITE, KATEGORI } from './lib.mjs';
 
-const konular = existsSync(join(ROOT, 'scripts/bilgi/konular.json')) ? JSON.parse(readFileSync(join(ROOT, 'scripts/bilgi/konular.json'), 'utf8')) : [];
-const base = { tools: loadTools(), rehber: rehberler(), bilgi: new Set([...allSlugs(), ...konular.map((k) => k.slug)]) };
+const konuList = konular();
+const base = { tools: loadTools(), rehber: rehberler(), bilgi: new Set([...allSlugs(), ...konuList.map((k) => k.slug)]) };
 const good = []; const bad = [];
 for (const slug of allSlugs()) {
   try { const sp = await load(slug); const e = validate(sp, { ...base, file: slug }); (e.length ? bad.push({ slug, e }) : good.push(sp)); } catch (err) { bad.push({ slug, e: [err.message] }); }

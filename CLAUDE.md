@@ -98,3 +98,5 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   Resmî kaynaktan doğrulayıp araçla makaleyi uyumlu hâle getirin.
 - `web/gelir-vergisi-hesapla/parametreler.json` → `kira_istisna_tutari: 47000` 2025 gelirleri içindir; 2026 gelirleri için
   mesken kira istisnası 58.000 TL (Gelir Vergisi Genel Tebliği Seri No: 332). Araç hangi yılı hesaplıyorsa ona göre güncelleyin.
+- `web/temettu-verimi-hesapla/index.html` metnindeki ilk örnek stopajı "%10 kabul edilirse" diye hesaplıyor; temettü
+  stopajı 22.12.2024'ten beri %15 (9286 sayılı CB Kararı). İkinci örnek zaten %15; ilkini düzeltin.

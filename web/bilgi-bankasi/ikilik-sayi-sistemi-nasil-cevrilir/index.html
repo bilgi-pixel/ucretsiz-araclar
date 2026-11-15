@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İkilik Sayı Sistemi: Onluktan İkiliğe ve Onaltılığa Çevirme</title>
+  <meta name="description" content="Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.">
+  <meta name="keywords" content="ikilik sayı sistemi, binary çevirme, onluk sayıyı ikiliğe çevirme, onaltılık sayı sistemi, sayı tabanları, ikilik sistemde toplama, ikiye tümleyen, sekizlik taban">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="İkilik Sayı Sistemi: Onluktan İkiliğe ve Onaltılığa Çevirme">
+  <meta property="og:description" content="Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi","description":"Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1202,"keywords":"ikilik sayı sistemi, binary çevirme, onluk sayıyı ikiliğe çevirme, onaltılık sayı sistemi, sayı tabanları, ikilik sistemde toplama, ikiye tümleyen, sekizlik taban","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İkilik sayı sistemi nedir?","acceptedAnswer":{"@type":"Answer","text":"İkilik sayı sistemi yalnızca 0 ve 1 rakamlarını kullanan 2 tabanlı sayı sistemidir. Her basamak sağdan sola 1, 2, 4, 8, 16 diye 2'nin kuvvetlerini gösterir; bilgisayarlar tüm veriyi bu sistemde saklar ve işler."}},{"@type":"Question","name":"Onluk sayı ikiliğe nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Sayı bölüm 0 olana kadar art arda 2'ye bölünür ve her adımın kalanı yazılır. Kalanlar aşağıdan yukarı okunarak ikilik sayı elde edilir; örneğin 45 sayısı bu yöntemle 101101 bulunur."}},{"@type":"Question","name":"İkilik sayı onluğa nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Her bitin altına sağdan başlayarak 1, 2, 4, 8, 16, 32 gibi basamak değerleri yazılır ve 1 olan basamakların değerleri toplanır. 101101 için 32 + 8 + 4 + 1 = 45 bulunur."}},{"@type":"Question","name":"Onaltılık (hex) sayı sistemi nedir?","acceptedAnswer":{"@type":"Answer","text":"Onaltılık sistem 0–9 rakamları ile A–F harflerini kullanan 16 tabanlı sistemdir. Her hanesi tam 4 bite karşılık geldiği için uzun ikilik sayıları kısa yazmakta, renk kodlarında ve bellek adreslerinde kullanılır."}},{"@type":"Question","name":"Bilgisayarlar neden ikilik sistem kullanır?","acceptedAnswer":{"@type":"Answer","text":"Transistörler açık ve kapalı olmak üzere iki durumda en güvenilir çalışır ve iki gerilim seviyesini ayırt etmek gürültüye karşı çok dayanıklıdır. İkilik sistem ayrıca mantık cebiriyle birebir örtüştüğü için devre tasarımını kolaylaştırır."}},{"@type":"Question","name":"İkilik sistemde toplama nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Onluk sistemdeki eldeli toplama gibi yapılır, ancak 1 + 1 = 10 olduğu için 0 yazılıp 1 elde aktarılır. Örneğin 1011 ile 0110 toplandığında sonuç 10001, yani onlukta 11 + 6 = 17 olur."}},{"@type":"Question","name":"Sekizlik taban nerede kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Sekizlik taban her hanesi 3 bite denk geldiği için ikilik sayıları gruplamakta kullanılır. Bugün en yaygın kullanımı Linux ve Unix dosya izinleridir; 755 izni 111 101 101 bitlerine karşılık gelir."}},{"@type":"Question","name":"İkiye tümleyen nedir?","acceptedAnswer":{"@type":"Answer","text":"İkiye tümleyen, negatif sayıları bitlerle göstermenin standart yoludur. Sayının bütün bitleri ters çevrilir ve 1 eklenir; 8 bitte +5 = 00000101 iken −5 = 11111011 olur ve aralık −128 ile +127 arasıdır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</h1><p class="lead">İkilik (binary) sayı sistemi, <strong>yalnızca 0 ve 1 rakamlarını kullanan ve her basamağı 2'nin bir kuvvetini gösteren</strong> 2 tabanlı sayı sistemidir. Onluk bir sayı ikiliğe, sayı 0 olana kadar art arda 2'ye bölünüp kalanlar aşağıdan yukarı yazılarak çevrilir: 45 sayısı ikilikte 101101'dir. Tersi için her 1'in basamak değeri (1, 2, 4, 8, 16, 32…) toplanır. Bu sayfada iki yönlü çevirmeyi, onaltılık ve sekizlik tabanları, ikilik sistemde toplamayı, negatif sayıların ikiye tümleyenle gösterimini ve bilgisayarların neden ikilik sistem kullandığını çözümlü örneklerle bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>İkilik sistemde basamak değerleri sağdan sola 1, 2, 4, 8, 16, 32, 64, 128… diye ikişer kat artar.</li>
+        <li>Onluktan ikiliğe: sayıyı 2'ye böl, kalanı yaz, bölümle devam et; kalanları aşağıdan yukarı oku. 45 → 101101.</li>
+        <li>İkilikten onluğa: 1 olan basamakların değerlerini topla. 101101 = 32 + 8 + 4 + 1 = 45.</li>
+        <li>Onaltılık (hex) tabanda her hane 4 bite denk gelir: 0010 1101 = 2D; sekizlik tabanda her hane 3 bittir: 101 101 = 55.</li>
+        <li>İkilik toplamada 1 + 1 = 10'dur; 0 yazılır, 1 elde bir sonraki basamağa aktarılır.</li>
+        <li>Negatif sayılar ikiye tümleyenle gösterilir: bitleri ters çevir, 1 ekle. 8 bitte −5 = 11111011.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="45 sayısının 2'ye art arda bölünmesi: 45, 22, 11, 5, 2, 1 bölümleri ve 1, 0, 1, 1, 0, 1 kalanları; kalanlar aşağıdan yukarı okununca 101101. Sağda basamak değerleri 32, 16, 8, 4, 2, 1 ile sağlama." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">45 sayısını ikiliğe çevirmek</text>
+  <g>
+    <text x="40" y="70" class="sm b">Bölme</text><text x="200" y="70" class="sm b mid">Bölüm</text><text x="290" y="70" class="sm b mid">Kalan</text>
+    <rect x="30" y="80" width="300" height="34" rx="4" class="sf sb"/><text x="40" y="103">45 ÷ 2</text><text x="200" y="103" class="mid">22</text><text x="290" y="103" class="mid b p">1</text>
+    <rect x="30" y="118" width="300" height="34" rx="4" class="sf sb"/><text x="40" y="141">22 ÷ 2</text><text x="200" y="141" class="mid">11</text><text x="290" y="141" class="mid b p">0</text>
+    <rect x="30" y="156" width="300" height="34" rx="4" class="sf sb"/><text x="40" y="179">11 ÷ 2</text><text x="200" y="179" class="mid">5</text><text x="290" y="179" class="mid b p">1</text>
+    <rect x="30" y="194" width="300" height="34" rx="4" class="sf sb"/><text x="40" y="217">5 ÷ 2</text><text x="200" y="217" class="mid">2</text><text x="290" y="217" class="mid b p">1</text>
+    <rect x="30" y="232" width="300" height="34" rx="4" class="sf sb"/><text x="40" y="255">2 ÷ 2</text><text x="200" y="255" class="mid">1</text><text x="290" y="255" class="mid b p">0</text>
+    <rect x="30" y="270" width="300" height="34" rx="4" class="sf sb"/><text x="40" y="293">1 ÷ 2</text><text x="200" y="293" class="mid">0</text><text x="290" y="293" class="mid b p">1</text>
+  </g>
+  <line x1="345" y1="294" x2="345" y2="96" class="sp sw" fill="none"/>
+  <polygon points="337,98 353,98 345,84" class="p"/>
+  <text x="180" y="336" class="b mid">Aşağıdan yukarı oku:</text>
+  <rect x="80" y="348" width="200" height="44" rx="8" class="p"/>
+  <text x="180" y="378" class="lg b mid sf">101101</text>
+  <line x1="380" y1="60" x2="380" y2="400" class="sb dash" fill="none"/>
+  <text x="550" y="70" class="b mid">Sağlama: basamak değerleri</text>
+  <g class="mid">
+    <text x="425" y="110" class="sm t2">32</text><text x="475" y="110" class="sm t2">16</text><text x="525" y="110" class="sm t2">8</text>
+    <text x="575" y="110" class="sm t2">4</text><text x="625" y="110" class="sm t2">2</text><text x="675" y="110" class="sm t2">1</text>
+    <rect x="405" y="120" width="40" height="44" rx="6" class="ps"/><text x="425" y="149" class="lg b">1</text>
+    <rect x="455" y="120" width="40" height="44" rx="6" class="sf sb"/><text x="475" y="149" class="lg">0</text>
+    <rect x="505" y="120" width="40" height="44" rx="6" class="ps"/><text x="525" y="149" class="lg b">1</text>
+    <rect x="555" y="120" width="40" height="44" rx="6" class="ps"/><text x="575" y="149" class="lg b">1</text>
+    <rect x="605" y="120" width="40" height="44" rx="6" class="sf sb"/><text x="625" y="149" class="lg">0</text>
+    <rect x="655" y="120" width="40" height="44" rx="6" class="ps"/><text x="675" y="149" class="lg b">1</text>
+  </g>
+  <text x="550" y="198" class="b mid">32 + 8 + 4 + 1 = 45</text>
+  <rect x="405" y="230" width="290" height="160" rx="10" class="sf sb"/>
+  <text x="420" y="258" class="b">Aynı sayı diğer tabanlarda</text>
+  <text x="420" y="288">Onaltılık: 0010 1101 → 2D</text>
+  <text x="420" y="316">Sekizlik: 101 101 → 55</text>
+  <text x="420" y="344">Onluk: 45</text>
+  <text x="420" y="372" class="sm t2">Hex 4 bitlik, sekizlik 3 bitlik gruplarla okunur.</text>
+</svg>
+      <figcaption>Solda bölme merdiveni: ilk kalan en sağdaki (en düşük değerli) bittir, bu yüzden kalanlar aşağıdan yukarı okunur. Sağda aynı sonucun basamak değerleriyle sağlaması: 32 + 8 + 4 + 1 = 45.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Sayı tabanı nedir? Onluk sistemden ikilik sisteme</a></li>
+      <li><a href="#b2">Onluk sayı ikiliğe nasıl çevrilir?</a></li>
+      <li><a href="#b3">İkilik sayı onluğa nasıl çevrilir?</a></li>
+      <li><a href="#b4">Onaltılık (hex) ve sekizlik sayı sistemi nedir?</a></li>
+      <li><a href="#b5">İkilik sistemde toplama ve çıkarma nasıl yapılır?</a></li>
+      <li><a href="#b6">İkiye tümleyen nedir? Negatif sayıların gösterimi</a></li>
+      <li><a href="#b7">Bilgisayarlar neden ikilik sistem kullanır?</a></li>
+      <li><a href="#b8">Sayı tabanı çevirirken sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-ikilik-sayi-sistemi-nasil-cevrilir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../sayi-tabani-donustur/"><strong>Sayı Tabanı Dönüştürücü</strong><span>İkili, sekizli, onlu, onaltılı ve 2-36 arası özel tabanlar arasında dönüştürün; büyük sayı, negatif sayı, ondalık kesir, bit işlemleri ve ASCII/Unicode tablosu.</span></a></li>
+          <li><a href="../../ikili-ondalik-cevir/"><strong>İkili (Binary) Ondalık Çevirici</strong><span>Binary sayıyı ondalığa, ondalık sayıyı binary'ye çevirin; bit grupları, hex ve oktal karşılığıyla birlikte.</span></a></li>
+          <li><a href="../../onaltilik-ondalik-cevir/"><strong>Onaltılık (Hex) Ondalık Çevirici</strong><span>Hex sayıyı ondalığa, ondalık sayıyı hex'e çevirin; ikili karşılığını ve renk kodlarının RGB değerini görün.</span></a></li>
+          <li><a href="../../ikili-sayi-islem/"><strong>İkili Sayılarla Dört İşlem</strong><span>İki binary sayıyı toplayın, çıkarın, çarpın ya da bölün; sonucu ikili ve ondalık sağlamasıyla birlikte görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Sayı tabanı nedir? Onluk sistemden ikilik sisteme</h2>
+      <p>Günlük hayatta kullandığımız onluk sistemde 0'dan 9'a kadar on rakam vardır ve her basamak bir öncekinin 10 katı değer taşır. 345 sayısı aslında 3 × 100 + 4 × 10 + 5 × 1 demektir. Bu yapıya <strong>basamak değerli sayı sistemi</strong>, kullanılan rakam sayısına da <strong>taban</strong> denir.</p>
+      <p>İkilik sistem aynı mantığı 2 tabanıyla kurar. Yalnızca 0 ve 1 rakamları vardır ve her basamak bir öncekinin 2 katıdır. Sağdan sola basamak değerleri 1, 2, 4, 8, 16, 32, 64, 128 diye gider; bunlar 2<sup>0</sup>, 2<sup>1</sup>, 2<sup>2</sup>… şeklinde 2'nin kuvvetleridir. İkilik sistemde bir basamağa <strong>bit</strong>, sekiz bitlik gruba <strong>bayt</strong> denir.</p>
+      <p>Hangi tabanda yazıldığı karışabilecek sayılarda taban alt simgeyle belirtilir: 101<sub>2</sub> ikilik 101'dir ve onlukta 5 eder; 101<sub>10</sub> ise yüz birdir. Programlama dillerinde ikilik sayıların başına <code>0b</code>, onaltılık sayıların başına <code>0x</code> yazılır.</p>
+
+      <h2 id="b2">Onluk sayı ikiliğe nasıl çevrilir?</h2>
+      <p>En yaygın yöntem art arda 2'ye bölmedir. Sayıyı 2'ye bölün, kalanı (0 ya da 1) not edin, bölümü yeniden 2'ye bölün; bölüm 0 olana kadar devam edin. Sonra kalanları <strong>sondan başa</strong>, yani aşağıdan yukarı doğru yan yana yazın.</p>
+      <ol class="ba-steps">
+        <li>45 ÷ 2 = 22, kalan 1 (en sağdaki bit)</li>
+        <li>22 ÷ 2 = 11, kalan 0</li>
+        <li>11 ÷ 2 = 5, kalan 1</li>
+        <li>5 ÷ 2 = 2, kalan 1</li>
+        <li>2 ÷ 2 = 1, kalan 0</li>
+        <li>1 ÷ 2 = 0, kalan 1 (en soldaki bit)</li>
+        <li>Kalanlar aşağıdan yukarı: <strong>101101</strong>. Yani 45<sub>10</sub> = 101101<sub>2</sub>.</li>
+      </ol>
+      <p>İkinci yöntem çıkarma yöntemidir ve küçük sayılarda daha hızlıdır. Sayıya sığan en büyük 2 kuvvetini bulun, çıkarın ve o basamağa 1 yazın; kalanla devam edin. 45 için 32 sığar (kalan 13), 16 sığmaz (0), 8 sığar (kalan 5), 4 sığar (kalan 1), 2 sığmaz (0), 1 sığar (kalan 0): yine 101101 bulunur.</p>
+      <p>Ondalık kesirler için yöntem tersine işler: kesirli kısım 2 ile çarpılır, tam kısım bit olarak yazılır ve kesirle devam edilir. 0,625 × 2 = 1,25 → 1; 0,25 × 2 = 0,5 → 0; 0,5 × 2 = 1,0 → 1; sonuç 0,101<sub>2</sub>. 0,1 gibi bazı onluk kesirler ise ikilikte sonsuz tekrar eder; bilgisayarda 0,1 + 0,2 işleminin tam 0,3 çıkmamasının nedeni budur.</p>
+
+      <h2 id="b3">İkilik sayı onluğa nasıl çevrilir?</h2>
+      <p>Ters yön daha kolaydır: her bitin altına basamak değerini yazın ve 1 olan basamakların değerlerini toplayın. 0 olan basamaklar toplama katılmaz.</p>
+      <div class="rh-formula">Onluk değer = Σ (bit × 2^konum)   (konum sağdan 0'dan başlar)<br>101101 = 1×32 + 0×16 + 1×8 + 1×4 + 0×2 + 1×1 = 45<br>11111111 = 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Onluk</th><th>İkilik</th><th>Onluk</th><th>İkilik</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>8</td><td>1000</td></tr>
+          <tr><td>1</td><td>1</td><td>9</td><td>1001</td></tr>
+          <tr><td>2</td><td>10</td><td>10</td><td>1010</td></tr>
+          <tr><td>3</td><td>11</td><td>11</td><td>1011</td></tr>
+          <tr><td>4</td><td>100</td><td>12</td><td>1100</td></tr>
+          <tr><td>5</td><td>101</td><td>13</td><td>1101</td></tr>
+          <tr><td>6</td><td>110</td><td>14</td><td>1110</td></tr>
+          <tr><td>7</td><td>111</td><td>15</td><td>1111</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">0–15 arası sayıların ikilik karşılığı. Bu 16 satır, onaltılık sisteme geçişin de anahtarıdır.</p>
+      <p>n bitle yazılabilecek en büyük sayı 2<sup>n</sup> − 1'dir: 4 bitle 15, 8 bitle 255, 16 bitle 65.535. Bir bayt bu yüzden 256 farklı değer alır; renk kodlarında her rengin 0–255 aralığında olması da buradan gelir. Sayıları elle çevirdikten sonra <a href="../../ikili-ondalik-cevir/">İkili Ondalık Çevirici</a> ile sağlama yapabilirsiniz; araç sonucu dörtlü bit gruplarıyla gösterir.</p>
+
+      <h2 id="b4">Onaltılık (hex) ve sekizlik sayı sistemi nedir?</h2>
+      <p>Uzun ikilik sayılar insan için okunması zor dizilerdir. <strong>Onaltılık (hexadecimal) sistem</strong> bu sorunu çözer: 16 = 2<sup>4</sup> olduğu için her onaltılık hane tam olarak 4 bite karşılık gelir. 0–9'dan sonra 10 için A, 11 için B, 12 için C, 13 için D, 14 için E, 15 için F kullanılır.</p>
+      <p>Çevirmek için ikilik sayıyı sağdan başlayarak 4'erli gruplara ayırıp her grubu tek bir hex haneye dönüştürmeniz yeterlidir. 101101 sayısı soldan sıfırla tamamlanınca 0010 1101 olur; 0010 = 2, 1101 = D, sonuç 2D<sub>16</sub>'dır. Tersine, 0xFF = 1111 1111 = 255'tir.</p>
+      <p><strong>Sekizlik (oktal) sistem</strong> aynı fikri 3 bitlik gruplarla uygular, çünkü 8 = 2<sup>3</sup>'tür. 101101 → 101 101 → 55<sub>8</sub>. Sekizlik taban bugün en çok Linux ve Unix sistemlerindeki dosya izinlerinde karşınıza çıkar: 755 izni 111 101 101 bitlerine, yani sahibine okuma-yazma-çalıştırma, diğerlerine okuma-çalıştırma iznine karşılık gelir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Kullanım alanı</th><th>Taban</th><th>Örnek</th></tr></thead>
+        <tbody>
+          <tr><td>Web renk kodları</td><td>Onaltılık</td><td>#FF8800 → kırmızı 255, yeşil 136, mavi 0</td></tr>
+          <tr><td>Ağ kartı (MAC) adresi</td><td>Onaltılık</td><td>00:1A:2B:3C:4D:5E</td></tr>
+          <tr><td>IPv6 adresleri</td><td>Onaltılık</td><td>2001:db8::1</td></tr>
+          <tr><td>Bellek adresi ve hata kodları</td><td>Onaltılık</td><td>0x0000007B</td></tr>
+          <tr><td>Linux dosya izinleri</td><td>Sekizlik</td><td>chmod 755</td></tr>
+          <tr><td>Alt ağ maskesi</td><td>İkilik</td><td>255.255.255.0 = 24 adet 1 biti</td></tr>
+        </tbody>
+      </table></div>
+      <p>Renk kodlarında onaltılık sistemin nasıl kullanıldığını <a href="../../bilgi-bankasi/hex-rgb-renk-kodlari-nedir/">HEX ve RGB renk kodları</a> yazısında ayrıntılı bulabilirsiniz. Onaltılık ile onluk arasında hızlı çeviri için <a href="../../onaltilik-ondalik-cevir/">Onaltılık Ondalık Çevirici</a>, 2 ile 36 arasındaki herhangi iki taban için <a href="../../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü</a> kullanılabilir.</p>
+
+      <div class="ba-ad" data-slot="bilgi-ikilik-sayi-sistemi-nasil-cevrilir-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">İkilik sistemde toplama ve çıkarma nasıl yapılır?</h2>
+      <p>İkilik toplama, onluk sistemdeki eldeli toplamanın aynısıdır; yalnızca &quot;10 olunca elde&quot; yerine &quot;2 olunca elde&quot; kuralı geçerlidir. Dört temel kural vardır: 0 + 0 = 0, 0 + 1 = 1, 1 + 1 = 10 (0 yaz, 1 elde), 1 + 1 + 1 = 11 (1 yaz, 1 elde).</p>
+      <div class="rh-formula">    1011   (11)<br>  + 0110   ( 6)<br>  ------<br>   10001   (17)</div>
+      <ol class="ba-steps">
+        <li>En sağ basamak: 1 + 0 = 1, elde yok.</li>
+        <li>İkinci basamak: 1 + 1 = 10 → 0 yaz, 1 elde.</li>
+        <li>Üçüncü basamak: 0 + 1 + 1 (elde) = 10 → 0 yaz, 1 elde.</li>
+        <li>Dördüncü basamak: 1 + 0 + 1 (elde) = 10 → 0 yaz, 1 elde.</li>
+        <li>Kalan elde en sola yazılır: sonuç 10001 = 16 + 1 = 17. Onlukta 11 + 6 = 17, sağlama tamam.</li>
+      </ol>
+      <p>Çıkarmada ise 0 − 1 işleminde bir soldaki basamaktan &quot;2&quot; ödünç alınır. Bilgisayarlar çıkarmayı genellikle doğrudan yapmaz; çıkarılacak sayının ikiye tümleyenini alıp toplar. Toplama, çıkarma, çarpma ve bölmeyi ikilik olarak yapıp sonucu onlukla doğrulamak için <a href="../../ikili-sayi-islem/">İkili Sayı İşlem aracı</a> kullanılabilir.</p>
+
+      <h2 id="b6">İkiye tümleyen nedir? Negatif sayıların gösterimi</h2>
+      <p>Bilgisayar belleğinde eksi işareti yoktur; negatif sayıların da bitlerle gösterilmesi gerekir. Günümüzde neredeyse bütün işlemciler <strong>ikiye tümleyen</strong> yöntemini kullanır. Sabit bit sayısında (ör. 8 bit) bir sayının negatifi şöyle bulunur: sayının bütün bitleri ters çevrilir (0'lar 1, 1'ler 0 olur), sonra sonuca 1 eklenir.</p>
+      <div class="rh-formula">+5      = 0000 0101<br>Ters çevir = 1111 1010<br>+1      = 1111 1011  → −5<br>Sağlama: 0000 0101 + 1111 1011 = 1 0000 0000 → 8 bitte 0</div>
+      <p>Bu yöntemde en soldaki bit işaret biti gibi davranır: 0 ise sayı pozitif, 1 ise negatiftir. 8 bitlik işaretli bir sayı −128 ile +127 arasında değer alır; 16 bitte bu aralık −32.768 ile +32.767'dir. İkiye tümleyenin asıl avantajı, işlemcinin toplama ve çıkarmayı aynı devreyle yapabilmesidir. Aralık aşıldığında oluşan taşma (overflow), bir oyunda puanın birden eksiye dönmesi gibi tuhaf hataların klasik nedenidir.</p>
+
+      <h2 id="b7">Bilgisayarlar neden ikilik sistem kullanır?</h2>
+      <p>Bir bilgisayarın temel yapı taşı olan transistör, açık ya da kapalı olmak üzere iki durumda en güvenilir şekilde çalışır. Elektrik sinyalinde iki seviyeyi (gerilim var ya da yok) ayırt etmek, on farklı seviyeyi ayırt etmekten çok daha kolay ve gürültüye karşı çok daha dayanıklıdır. Küçük bir parazit 3 ile 4 arasındaki farkı bozabilir, ama 0 ile 1 arasındaki belirgin farkı nadiren bozar.</p>
+      <p>İkilik sistem mantık cebiriyle de birebir örtüşür: 1 doğru, 0 yanlış demektir ve VE, VEYA, DEĞİL gibi mantık kapıları ikilik aritmetiğin tüm işlemlerini kurmaya yeter. Metin, ses, görüntü ve video da sonunda bitlere çevrilerek saklanır. Bir harfin kaç bitle saklandığı ve bunun dosya boyutuna etkisi için <a href="../../bilgi-bankasi/gb-kac-mb-veri-birimleri/">veri birimleri</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="b8">Sayı tabanı çevirirken sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Kalanları yukarıdan aşağı okumak:</strong> İlk bulunan kalan en sağdaki bittir. 45'in sonucu 101101 tesadüfen simetrik olduğu için fark edilmez; ama 6 için doğru sonuç 110 iken yukarıdan okuyan 011 = 3 bulur.</li>
+        <li><strong>Hex gruplamayı soldan yapmak:</strong> 4'lü gruplar her zaman sağdan başlar; eksik kalan sol grup başına sıfır eklenerek tamamlanır.</li>
+        <li><strong>Basamak değerini 1'den değil 2'den başlatmak:</strong> En sağdaki bitin değeri 2<sup>0</sup> = 1'dir.</li>
+        <li><strong>İkiye tümleyende 1 eklemeyi unutmak:</strong> Yalnızca bitleri ters çevirmek birlere tümleyeni verir ve sonuç bir eksik çıkar.</li>
+        <li><strong>Bit sayısını belirtmemek:</strong> 11111011, 8 bit işaretli yorumda −5, işaretsiz yorumda 251'dir; bağlam belirtilmelidir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>İkilik sayı sistemi nedir?</summary><p>İkilik sayı sistemi yalnızca 0 ve 1 rakamlarını kullanan 2 tabanlı sayı sistemidir. Her basamak sağdan sola 1, 2, 4, 8, 16 diye 2'nin kuvvetlerini gösterir; bilgisayarlar tüm veriyi bu sistemde saklar ve işler.</p></details>
+      <details><summary>Onluk sayı ikiliğe nasıl çevrilir?</summary><p>Sayı bölüm 0 olana kadar art arda 2'ye bölünür ve her adımın kalanı yazılır. Kalanlar aşağıdan yukarı okunarak ikilik sayı elde edilir; örneğin 45 sayısı bu yöntemle 101101 bulunur.</p></details>
+      <details><summary>İkilik sayı onluğa nasıl çevrilir?</summary><p>Her bitin altına sağdan başlayarak 1, 2, 4, 8, 16, 32 gibi basamak değerleri yazılır ve 1 olan basamakların değerleri toplanır. 101101 için 32 + 8 + 4 + 1 = 45 bulunur.</p></details>
+      <details><summary>Onaltılık (hex) sayı sistemi nedir?</summary><p>Onaltılık sistem 0–9 rakamları ile A–F harflerini kullanan 16 tabanlı sistemdir. Her hanesi tam 4 bite karşılık geldiği için uzun ikilik sayıları kısa yazmakta, renk kodlarında ve bellek adreslerinde kullanılır.</p></details>
+      <details><summary>Bilgisayarlar neden ikilik sistem kullanır?</summary><p>Transistörler açık ve kapalı olmak üzere iki durumda en güvenilir çalışır ve iki gerilim seviyesini ayırt etmek gürültüye karşı çok dayanıklıdır. İkilik sistem ayrıca mantık cebiriyle birebir örtüştüğü için devre tasarımını kolaylaştırır.</p></details>
+      <details><summary>İkilik sistemde toplama nasıl yapılır?</summary><p>Onluk sistemdeki eldeli toplama gibi yapılır, ancak 1 + 1 = 10 olduğu için 0 yazılıp 1 elde aktarılır. Örneğin 1011 ile 0110 toplandığında sonuç 10001, yani onlukta 11 + 6 = 17 olur.</p></details>
+      <details><summary>Sekizlik taban nerede kullanılır?</summary><p>Sekizlik taban her hanesi 3 bite denk geldiği için ikilik sayıları gruplamakta kullanılır. Bugün en yaygın kullanımı Linux ve Unix dosya izinleridir; 755 izni 111 101 101 bitlerine karşılık gelir.</p></details>
+      <details><summary>İkiye tümleyen nedir?</summary><p>İkiye tümleyen, negatif sayıları bitlerle göstermenin standart yoludur. Sayının bütün bitleri ters çevrilir ve 1 eklenir; 8 bitte +5 = 00000101 iken −5 = 11111011 olur ve aralık −128 ile +127 arasıdır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://mufredat.meb.gov.tr/" rel="noopener">MEB – Ortaöğretim Matematik ve Bilgisayar Bilimi öğretim programları</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../hex-rgb-renk-kodlari-nedir/"><strong>HEX ve RGB Renk Kodları Nedir? Renk Kodu Bulma ve Dönüştürme</strong><span>HEX renk kodu, kırmızı, yeşil ve mavinin 0–255 arası değerlerinin onaltılık yazımıdır: #8B1E3F = rgb(139, 30, 63). Elle çevirme, HSL, resimden renk bulma ve palet.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../roma-rakamlari-tablosu/"><strong>Roma Rakamları: 1'den 1000'e Tablo, Kurallar ve Tarih Çevirme</strong><span>Roma rakamları yedi harfle yazılır: I=1, V=5, X=10, L=50, C=100, D=500, M=1000. 1–100 tablosu, IV ve IX kuralı, 2026 = MMXXVI ve tarihin Roma rakamıyla yazımı.</span></a></li>
+          <li><a href="../direnc-renk-kodlari-nasil-okunur/"><strong>Direnç Renk Kodları Nasıl Okunur? 4 ve 5 Bantlı Direnç Tablosu</strong><span>4 bantlı dirençte ilk iki bant rakam, üçüncü çarpan, dördüncü toleranstır: kahverengi-siyah-kırmızı-altın = 1 kΩ ±%5. Renk tablosu, 5 bantlı okuma ve SMD kodları.</span></a></li>
+          <li><a href="../internet-hizi-kac-mbps-olmali/"><strong>İnternet Hızı Kaç Mbps Olmalı? Mbps ile MB/s Farkı ve İndirme Süresi</strong><span>Ev için gereken internet hızı aynı anda yapılan işlerin toplamıdır: 4K yayın 15–25 Mbps, görüntülü görüşme 2–4 Mbps. Kişi sayısı, ping, fiber-VDSL ve hız testi.</span></a></li>
+          <li><a href="../kamera-ve-mikrofon-testi/"><strong>Kamera ve Mikrofon Testi Nasıl Yapılır? Görüntülü Görüşme Öncesi</strong><span>Kamera ve mikrofonu tarayıcıda izin verip canlı görüntü ve ses seviyesiyle test edebilirsiniz. Siyah ekran, ses gelmemesi, izin ayarları ve sınav öncesi kontrol.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-ikilik-sayi-sistemi-nasil-cevrilir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

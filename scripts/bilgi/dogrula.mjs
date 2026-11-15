@@ -1,10 +1,10 @@
 // Kullanım: node scripts/bilgi/dogrula.mjs <slug> [slug…]   (slug yoksa tümü)
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { validate, load, loadTools, rehberler, allSlugs, words, ROOT } from './lib.mjs';
+import { konular, validate, load, loadTools, rehberler, allSlugs, words, ROOT } from './lib.mjs';
 
-const konular = existsSync(join(ROOT, 'scripts/bilgi/konular.json')) ? JSON.parse(readFileSync(join(ROOT, 'scripts/bilgi/konular.json'), 'utf8')) : [];
-const ctx = { tools: loadTools(), rehber: rehberler(), bilgi: new Set([...allSlugs(), ...konular.map((k) => k.slug)]) };
+const konuList = konular();
+const ctx = { tools: loadTools(), rehber: rehberler(), bilgi: new Set([...allSlugs(), ...konuList.map((k) => k.slug)]) };
 const slugs = process.argv.slice(2).length ? process.argv.slice(2) : allSlugs();
 let fail = 0;
 for (const slug of slugs) {

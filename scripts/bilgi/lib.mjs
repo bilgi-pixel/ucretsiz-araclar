@@ -35,10 +35,18 @@ export function loadTools() {
   for (const d of readdirSync(WEB)) {
     const f = join(WEB, d, 'meta.json');
     if (existsSync(f)) { try { const m = JSON.parse(readFileSync(f, 'utf8')); set.set(d, m); } catch { /* yok */ } }
+    else if (!['rehber', 'oyunlar', 'en', 'bilgi-bankasi', 'assets', 'vendor'].includes(d) && existsSync(join(WEB, d, 'index.html'))) {
+      // meta.json'u olmayan eski, elle yazılmış araçlar: başlık ve açıklamayı sayfadan al
+      const h = readFileSync(join(WEB, d, 'index.html'), 'utf8');
+      const h1 = h.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]+>/g, '').trim();
+      const ds = h.match(/<meta name="description" content="([^"]*)"/)?.[1];
+      if (h1 && ds) set.set(d, { title: h1, description: ds.replace(/&quot;/g, '"').replace(/&amp;/g, '&') });
+    }
   }
   return set;
 }
 export const rehberler = () => new Set(readdirSync(join(WEB, 'rehber')).filter((d) => existsSync(join(WEB, 'rehber', d, 'index.html'))));
+export function konular() { const dir = join(ROOT, 'scripts', 'bilgi'); return readdirSync(dir).filter((f) => /^konular.*\.json$/.test(f)).flatMap((f) => JSON.parse(readFileSync(join(dir, f), 'utf8'))); }
 export const allSlugs = () => (existsSync(DIR) ? readdirSync(DIR).filter((f) => f.endsWith('.mjs')).map((f) => f.slice(0, -4)) : []);
 
 export async function load(slug) {
