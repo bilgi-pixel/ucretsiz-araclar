@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İkiye Tümleyen Nedir? Negatif Sayıların Binary Gösterimi</title>
+  <meta name="description" content="İkiye tümleyen: sayının bitleri ters çevrilir, 1 eklenir. 8 bitte −5 = 11111011. Bire tümleyen farkı, −128…127 aralığı, taşma, AND OR XOR ve bit kaydırma.">
+  <meta name="keywords" content="ikiye tümleyen nedir, 2'ye tümleyen, negatif sayı binary, bire tümleyen, işaretli sayılar, 8 bit en küçük sayı, taşma overflow, and or xor nedir, bit kaydırma">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/ikiye-tumleyen-negatif-sayilar-binary/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="İkiye Tümleyen Nedir? Negatif Sayıların Binary Gösterimi">
+  <meta property="og:description" content="İkiye tümleyen: sayının bitleri ters çevrilir, 1 eklenir. 8 bitte −5 = 11111011. Bire tümleyen farkı, −128…127 aralığı, taşma, AND OR XOR ve bit kaydırma.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/ikiye-tumleyen-negatif-sayilar-binary/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"İkiye Tümleyen Nedir? Negatif Sayılar İkilik Sistemde Nasıl Gösterilir","description":"İkiye tümleyen: sayının bitleri ters çevrilir, 1 eklenir. 8 bitte −5 = 11111011. Bire tümleyen farkı, −128…127 aralığı, taşma, AND OR XOR ve bit kaydırma.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/ikiye-tumleyen-negatif-sayilar-binary/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1254,"keywords":"ikiye tümleyen nedir, 2'ye tümleyen, negatif sayı binary, bire tümleyen, işaretli sayılar, 8 bit en küçük sayı, taşma overflow, and or xor nedir, bit kaydırma","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"İkiye Tümleyen Nedir? Negatif Sayılar İkilik Sistemde Nasıl Gösterilir"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İkiye tümleyen nedir?","acceptedAnswer":{"@type":"Answer","text":"İkiye tümleyen, negatif tam sayıları ikilik sistemde gösterme yöntemidir. Pozitif sayının bitleri ters çevrilir ve 1 eklenir; en soldaki bit işaret biti olur ve negatif sayılarda 1'dir."}},{"@type":"Question","name":"Negatif bir sayı ikilik sistemde nasıl yazılır?","acceptedAnswer":{"@type":"Answer","text":"Önce bit genişliği seçilir, sonra mutlak değer ikiliye çevrilir, bitler ters çevrilir ve 1 eklenir. 8 bitte −5 için 00000101 → 11111010 → 11111011 adımları izlenir."}},{"@type":"Question","name":"Bire tümleyen ile ikiye tümleyen farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Bire tümleyende yalnızca bitler ters çevrilir, ikiye tümleyende ayrıca 1 eklenir. Bire tümleyende +0 ve −0 diye iki sıfır vardır; ikiye tümleyende sıfır tektir ve toplama işlemi düzeltme gerektirmez."}},{"@type":"Question","name":"8 bitte en küçük ve en büyük sayı kaçtır?","acceptedAnswer":{"@type":"Answer","text":"8 bitlik ikiye tümleyen gösterimde en küçük sayı −128 (10000000), en büyük sayı 127 (01111111) olur. Aynı 8 bit işaretsiz kullanılırsa 0 ile 255 arası yazılabilir."}},{"@type":"Question","name":"Taşma (overflow) neden olur?","acceptedAnswer":{"@type":"Answer","text":"Sonuç bit genişliğinin aralığına sığmadığında taşma olur. 8 bitte 100 + 50 = 150 sonucu 127'yi aştığı için 10010110 dizisi −106 olarak okunur; iki pozitifin toplamı negatif çıktıysa taşma vardır."}},{"@type":"Question","name":"AND, OR ve XOR işlemleri nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Sayıların aynı konumdaki bitleri karşılaştırılır. AND ikisi de 1 ise, OR biri 1 ise, XOR bitler farklıysa 1 verir. 12 ve 10 için sonuçlar sırasıyla 8, 14 ve 6'dır."}},{"@type":"Question","name":"Bit kaydırma ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"Sola kaydırma sayıyı her adımda 2 ile çarpar, aritmetik sağa kaydırma işaret bitini koruyarak 2'ye böler. 5 sola iki kez kaydırılınca 20, −20 sağa iki kez kaydırılınca −5 olur; maskeleme ve hızlı çarpmada kullanılır."}},{"@type":"Question","name":"İkiye tümleyen neden bilgisayarlarda tercih edilir?","acceptedAnswer":{"@type":"Answer","text":"Sıfırın tek gösterimi vardır, toplama ve çıkarma aynı devreyle yapılır ve işaretsiz sayılarla aynı toplayıcı kullanılabilir. Bu da işlemci tasarımını sadeleştirir ve hızlandırır."}},{"@type":"Question","name":"11111111 hangi sayıdır?","acceptedAnswer":{"@type":"Answer","text":"8 bitlik işaretli yorumda 11111111 −1'dir, çünkü −128 + 127 = −1 eder. Aynı dizi işaretsiz yorumlanırsa 255 anlamına gelir; hangi değerin kastedildiğini veri türü belirler."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>İkiye Tümleyen Nedir? Negatif Sayılar İkilik Sistemde Nasıl Gösterilir</h1><p class="lead">İkiye tümleyen, bilgisayarların negatif tam sayıları ikilik sistemde gösterme yöntemidir: sayının pozitif hâlinin <strong>bütün bitleri ters çevrilir ve sonuca 1 eklenir</strong>. Örneğin 8 bitte 5 = 00000101, ters çevrilmiş hâli 11111010, 1 eklenince <strong>−5 = 11111011</strong> olur. Bu yöntemde en soldaki bit işareti gösterir, sıfırın tek gösterimi vardır ve çıkarma işlemi toplamayla yapılabilir. Bu sayfada bire tümleyen farkını, bit genişliğine göre sayı aralıklarını, taşmanın nedenini, AND, OR, XOR ve bit kaydırma işlemlerini çözümlü örneklerle bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Negatif sayı bulmak için pozitif değerin bitleri ters çevrilir (bire tümleyen) ve 1 eklenir (ikiye tümleyen).</li>
+        <li>En soldaki bit (en anlamlı bit) 0 ise sayı pozitif, 1 ise negatiftir.</li>
+        <li>n bitlik ikiye tümleyende aralık −2<sup>n−1</sup> ile 2<sup>n−1</sup> − 1 arasıdır; 8 bitte −128 ile 127.</li>
+        <li>İkili diziyi çözmek için en soldaki bitin ağırlığı eksi alınır: 11111011 = −128 + 123 = −5.</li>
+        <li>İki pozitif sayının toplamı negatif görünüyorsa taşma olmuştur: 8 bitte 100 + 50 = −106 çıkar.</li>
+        <li>Bilgisayarlar ikiye tümleyeni tercih eder, çünkü tek sıfır vardır ve aynı toplayıcı devre hem toplar hem çıkarır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="8 bitlik kutular üzerinde −5'in bulunuşu: 5 = 00000101, bitler ters çevrilince 11111010, 1 eklenince 11111011. Altta sayı çemberi: 0'dan 127'ye pozitif, −128'den −1'e negatif bölge." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">8 bitte −5 nasıl yazılır?</text>
+  <g class="b mid">
+    <text x="120" y="72" class="end">5 =</text>
+    <rect x="140" y="50" width="44" height="34" rx="4" class="sf sb"/><text x="162" y="73">0</text>
+    <rect x="190" y="50" width="44" height="34" rx="4" class="sf sb"/><text x="212" y="73">0</text>
+    <rect x="240" y="50" width="44" height="34" rx="4" class="sf sb"/><text x="262" y="73">0</text>
+    <rect x="290" y="50" width="44" height="34" rx="4" class="sf sb"/><text x="312" y="73">0</text>
+    <rect x="340" y="50" width="44" height="34" rx="4" class="sf sb"/><text x="362" y="73">0</text>
+    <rect x="390" y="50" width="44" height="34" rx="4" class="ps"/><text x="412" y="73">1</text>
+    <rect x="440" y="50" width="44" height="34" rx="4" class="sf sb"/><text x="462" y="73">0</text>
+    <rect x="490" y="50" width="44" height="34" rx="4" class="ps"/><text x="512" y="73">1</text>
+    <text x="120" y="126" class="end">ters çevir</text>
+    <rect x="140" y="104" width="44" height="34" rx="4" class="ps"/><text x="162" y="127">1</text>
+    <rect x="190" y="104" width="44" height="34" rx="4" class="ps"/><text x="212" y="127">1</text>
+    <rect x="240" y="104" width="44" height="34" rx="4" class="ps"/><text x="262" y="127">1</text>
+    <rect x="290" y="104" width="44" height="34" rx="4" class="ps"/><text x="312" y="127">1</text>
+    <rect x="340" y="104" width="44" height="34" rx="4" class="ps"/><text x="362" y="127">1</text>
+    <rect x="390" y="104" width="44" height="34" rx="4" class="sf sb"/><text x="412" y="127">0</text>
+    <rect x="440" y="104" width="44" height="34" rx="4" class="ps"/><text x="462" y="127">1</text>
+    <rect x="490" y="104" width="44" height="34" rx="4" class="sf sb"/><text x="512" y="127">0</text>
+    <text x="120" y="180" class="end">+1 = −5</text>
+    <rect x="140" y="158" width="44" height="34" rx="4" class="p"/><text x="162" y="181" class="sf">1</text>
+    <rect x="190" y="158" width="44" height="34" rx="4" class="p"/><text x="212" y="181" class="sf">1</text>
+    <rect x="240" y="158" width="44" height="34" rx="4" class="p"/><text x="262" y="181" class="sf">1</text>
+    <rect x="290" y="158" width="44" height="34" rx="4" class="p"/><text x="312" y="181" class="sf">1</text>
+    <rect x="340" y="158" width="44" height="34" rx="4" class="p"/><text x="362" y="181" class="sf">1</text>
+    <rect x="390" y="158" width="44" height="34" rx="4" class="sf sb"/><text x="412" y="181">0</text>
+    <rect x="440" y="158" width="44" height="34" rx="4" class="p"/><text x="462" y="181" class="sf">1</text>
+    <rect x="490" y="158" width="44" height="34" rx="4" class="p"/><text x="512" y="181" class="sf">1</text>
+  </g>
+  <g class="sm mid mu">
+    <text x="162" y="210">−128</text><text x="212" y="210">64</text><text x="262" y="210">32</text><text x="312" y="210">16</text>
+    <text x="362" y="210">8</text><text x="412" y="210">4</text><text x="462" y="210">2</text><text x="512" y="210">1</text>
+  </g>
+  <text x="560" y="130" class="b">Sağlama</text>
+  <text x="560" y="154" class="sm">−128 + 64 + 32</text>
+  <text x="560" y="172" class="sm">+ 16 + 8 + 2 + 1</text>
+  <text x="560" y="194" class="b p">= −5</text>
+  <line x1="40" y1="234" x2="680" y2="234" class="sb dash" fill="none"/>
+  <text x="360" y="262" class="b mid">8 bitlik aralık</text>
+  <rect x="60" y="280" width="300" height="44" rx="6" class="dgs"/>
+  <rect x="360" y="280" width="300" height="44" rx="6" class="oks"/>
+  <text x="70" y="307" class="b">−128</text><text x="350" y="307" class="b end">−1</text>
+  <text x="370" y="307" class="b">0</text><text x="650" y="307" class="b end">127</text>
+  <g class="sm">
+    <text x="70" y="344">10000000</text><text x="350" y="344" class="end">11111111</text>
+    <text x="370" y="344">00000000</text><text x="650" y="344" class="end">01111111</text>
+  </g>
+  <text x="360" y="380" class="sm mid t2">İşaret biti 1 olan yarı negatif, 0 olan yarı pozitiftir.</text>
+  <text x="360" y="402" class="sm mid dg">127 + 1 → 10000000 = −128 (taşma)</text>
+</svg>
+      <figcaption>Üstte üç adımda −5'in ikiye tümleyeni bulunur. Altta 8 bitlik değerlerin dizilişi: 01111111 (127) bir artırılırsa 10000000 (−128) olur; taşma bu sınırda yaşanır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">İkiye tümleyen nedir?</a></li>
+      <li><a href="#b2">Negatif bir sayı ikilik sistemde nasıl yazılır? Adım adım</a></li>
+      <li><a href="#b3">Bire tümleyen ile ikiye tümleyen farkı nedir?</a></li>
+      <li><a href="#b4">8 bitte en küçük ve en büyük sayı kaçtır? Bit genişliğine göre aralıklar</a></li>
+      <li><a href="#b5">Çıkarma toplamayla nasıl yapılır? Çözümlü örnekler</a></li>
+      <li><a href="#b6">Taşma (overflow) neden olur?</a></li>
+      <li><a href="#b7">AND, OR ve XOR işlemleri nasıl yapılır? Bit kaydırma ne işe yarar?</a></li>
+      <li><a href="#b8">İkiye tümleyen neden bilgisayarlarda tercih edilir?</a></li>
+      <li><a href="#b9">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-ikiye-tumleyen-negatif-sayilar-binary-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../iki-tumleyen-hesapla/"><strong>İkiye Tümleyen Hesaplama</strong><span>Negatif ya da pozitif tam sayının ikiye tümleyen gösterimini adım adım bulun; ikiliden işaretli ondalığa da çevirin.</span></a></li>
+          <li><a href="../../bit-islem-hesapla/"><strong>Bit İşlemleri (AND, OR, XOR) Hesaplama</strong><span>İki sayıya AND, OR, XOR, NOT ya da bit kaydırma uygulayın; sonucu ikili, onaltılık ve ondalık olarak görün.</span></a></li>
+          <li><a href="../../ikili-ondalik-cevir/"><strong>İkili (Binary) Ondalık Çevirici</strong><span>Binary sayıyı ondalığa, ondalık sayıyı binary'ye çevirin; bit grupları, hex ve oktal karşılığıyla birlikte.</span></a></li>
+          <li><a href="../../ikili-sayi-islem/"><strong>İkili Sayılarla Dört İşlem</strong><span>İki binary sayıyı toplayın, çıkarın, çarpın ya da bölün; sonucu ikili ve ondalık sağlamasıyla birlikte görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">İkiye tümleyen nedir?</h2>
+      <p>İkilik sistemde yalnızca 0 ve 1 vardır; eksi işareti için ayrı bir sembol yoktur. Bilgisayarın negatif sayıyı saklayabilmesi için bitlerden birini işarete ayırması ya da sayıyı özel bir kurala göre kodlaması gerekir. Günümüzdeki işlemcilerin neredeyse tamamı tam sayılar için <strong>ikiye tümleyen</strong> (two's complement) kodlamasını kullanır.</p>
+      <p>Bu kodlamada pozitif sayılar olağan ikili gösterimleriyle yazılır. Negatif bir sayı ise, pozitif karşılığının bütün bitleri ters çevrilip 1 eklenerek elde edilir. Sonuçta en soldaki bit kendiliğinden işaret biti olur: pozitiflerde 0, negatiflerde 1.</p>
+      <p>Bu konuya geçmeden önce ondalık sayının ikiliye nasıl çevrildiğini bilmek işinizi kolaylaştırır; temel çevrim adımlarını <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> makalesinde bulabilirsiniz.</p>
+
+      <h2 id="b2">Negatif bir sayı ikilik sistemde nasıl yazılır? Adım adım</h2>
+      <ol class="ba-steps">
+        <li>Bit genişliğini seçin. Sonuç 8, 16, 32 ya da 64 bit için farklıdır; aynı −5, 8 bitte 11111011, 16 bitte 1111111111111011 olur.</li>
+        <li>Sayının mutlak değerini bu genişlikte ikiliye çevirin ve soldan sıfırla doldurun: 5 → 00000101.</li>
+        <li>Bütün bitleri ters çevirin (0 → 1, 1 → 0): 11111010. Bu ara sonuç bire tümleyendir.</li>
+        <li>Sonuca 1 ekleyin: 11111010 + 1 = 11111011. Bu, −5'in 8 bitlik ikiye tümleyen gösterimidir.</li>
+        <li>Sağlama yapın: en soldaki bitin ağırlığını −128 alıp diğer bitleri olağan biçimde toplayın: −128 + 64 + 32 + 16 + 8 + 2 + 1 = −5.</li>
+      </ol>
+      <p>Pratik bir kısayol da vardır: sağdan başlayıp ilk 1'e kadar olan bitleri (o 1 dahil) aynen yazın, ondan sonraki tüm bitleri ters çevirin. 00000101 için sağdaki ilk 1 aynen kalır, geri kalanlar ters çevrilir ve yine 11111011 bulunur.</p>
+      <p>Kendi sayınızı farklı bit genişliklerinde denemek için <a href="../../iki-tumleyen-hesapla/">İkiye Tümleyen Hesaplama</a> aracı adımları tek tek gösterir; ikili diziyi işaretli ondalık değere çevirme yönünde de çalışır.</p>
+
+      <h2 id="b3">Bire tümleyen ile ikiye tümleyen farkı nedir?</h2>
+      <p><strong>Bire tümleyen</strong> (one's complement) yalnızca bitleri ters çevirir; 1 eklemez. Bu yöntemde −5 = 11111010 olur. Basit görünse de iki önemli sorunu vardır: sıfırın iki ayrı gösterimi oluşur (00000000 = +0 ve 11111111 = −0) ve toplama sonrasında taşan biti başa geri eklemek (end-around carry) gerekir.</p>
+      <p>İkiye tümleyende 1 eklemek bu sorunları çözer. Sıfırın tek gösterimi kalır ve kazanılan bir kod sayesinde negatif tarafta bir sayı fazla sığar. Ayrıca ilk yöntem olan <strong>işaret-büyüklük</strong> gösteriminde (en soldaki bit işaret, kalanı büyüklük) de iki sıfır vardır ve toplama için ayrı mantık gerekir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Değer</th><th>İşaret-büyüklük</th><th>Bire tümleyen</th><th>İkiye tümleyen</th></tr></thead>
+        <tbody>
+          <tr><td>+5</td><td>00000101</td><td>00000101</td><td>00000101</td></tr>
+          <tr><td>−5</td><td>10000101</td><td>11111010</td><td>11111011</td></tr>
+          <tr><td>+0</td><td>00000000</td><td>00000000</td><td>00000000</td></tr>
+          <tr><td>−0</td><td>10000000</td><td>11111111</td><td>yok (tek sıfır)</td></tr>
+          <tr><td>−1</td><td>10000001</td><td>11111110</td><td>11111111</td></tr>
+          <tr><td>En küçük (8 bit)</td><td>−127</td><td>−127</td><td>−128</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Üç yöntem pozitif sayılarda aynıdır; fark yalnızca negatiflerde ve sıfırdadır.</p>
+
+      <h2 id="b4">8 bitte en küçük ve en büyük sayı kaçtır? Bit genişliğine göre aralıklar</h2>
+      <p>n bitle 2<sup>n</sup> farklı kod yazılabilir. İkiye tümleyende bunların yarısı negatiflere, yarısı sıfır ve pozitiflere ayrılır. Sıfır pozitif tarafta yer kapladığı için pozitif tarafın üst sınırı bir eksik kalır.</p>
+      <div class="rh-formula">En küçük = −2^(n−1)<br>En büyük = 2^(n−1) − 1</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Bit sayısı</th><th>En küçük</th><th>En büyük</th><th>İşaretsiz en büyük</th></tr></thead>
+        <tbody>
+          <tr><td>8</td><td>−128</td><td>127</td><td>255</td></tr>
+          <tr><td>16</td><td>−32.768</td><td>32.767</td><td>65.535</td></tr>
+          <tr><td>32</td><td>−2.147.483.648</td><td>2.147.483.647</td><td>4.294.967.295</td></tr>
+          <tr><td>64</td><td>−9.223.372.036.854.775.808</td><td>9.223.372.036.854.775.807</td><td>18.446.744.073.709.551.615</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Aynı bit dizisi işaretsiz yorumlanırsa farklı sayı ifade eder: 11111011 işaretsiz 251, işaretli −5'tir.</p>
+      <p>Bu sınırlar programlama dillerindeki tam sayı türlerinin aralığını belirler. Ondalıklı sayılar ise ikiye tümleyenle değil, ayrı bir standartla saklanır; bunun neden 0,1 + 0,2 gibi işlemlerde küçük farklar ürettiğini <a href="../../bilgi-bankasi/ieee-754-kayan-nokta-0-1-0-2/">IEEE 754 kayan nokta</a> makalesi anlatır.</p>
+
+      <h2 id="b5">Çıkarma toplamayla nasıl yapılır? Çözümlü örnekler</h2>
+      <p>İkiye tümleyenin en büyük kazancı, çıkarmanın ayrı bir devre gerektirmemesidir. A − B işlemi, A + (−B) olarak yapılır; −B de B'nin ikiye tümleyenidir. Bit genişliğinin dışına taşan son elde atılır.</p>
+      <ul>
+        <li><strong>7 − 5:</strong> 00000111 + 11111011 = 1 00000010. Dokuzuncu bit atılır, sonuç 00000010 = 2.</li>
+        <li><strong>3 − 5:</strong> 00000011 + 11111011 = 11111110. İşaret biti 1, yani negatif. Ters çevirip 1 ekleyince 00000010 çıkar; sonuç −2.</li>
+        <li><strong>−20'nin gösterimi:</strong> 20 = 00010100 → ters 11101011 → +1 = 11101100.</li>
+        <li><strong>16 bitte −1.000:</strong> 1.000 = 0000001111101000 → sonuç 1111110000011000, onaltılık FC18.</li>
+      </ul>
+      <p>Onaltılık gösterim, uzun bit dizilerini dörtlü gruplarla kısaltmanın standart yoludur; 11111011 = FB gibi. Dönüşüm mantığı için <a href="../../bilgi-bankasi/onaltilik-hex-sayi-sistemi/">onaltılık sayı sistemi</a> makalesine göz atabilirsiniz. İkili toplama ve çıkarmayı kendi sayılarınızla denemek için <a href="../../ikili-sayi-islem/">İkili Sayı İşlemleri</a> aracını kullanın.</p>
+
+      <div class="ba-ad" data-slot="bilgi-ikiye-tumleyen-negatif-sayilar-binary-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Taşma (overflow) neden olur?</h2>
+      <p>Taşma, işlemin sonucu seçilen bit genişliğinin aralığına sığmadığında ortaya çıkar. 8 bitte 100 + 50 = 150 sonucu 127 sınırını aşar. Bit dizisi 10010110 olur; işaret biti 1 olduğu için bu dizi −106 olarak okunur (150 − 256 = −106).</p>
+      <p>Taşmayı tanımanın kuralı basittir: aynı işaretli iki sayı toplanır ve sonucun işareti farklı çıkarsa taşma olmuştur. Pozitif + pozitif = negatif ya da negatif + negatif = pozitif sonucu her zaman taşmadır. Farklı işaretli iki sayının toplamında taşma olmaz.</p>
+      <p>En dışa taşan elde biti (carry) ile taşma (overflow) aynı şey değildir. 7 − 5 örneğinde elde biti oluştu ama sonuç doğrudur. İşlemciler bu yüzden ikisi için ayrı bayrak tutar. Yazılımda sayaçların, sıcaklık değerlerinin ya da para tutarlarının beklenmedik biçimde eksiye dönmesi çoğu zaman bu taşmanın sonucudur.</p>
+
+      <h2 id="b7">AND, OR ve XOR işlemleri nasıl yapılır? Bit kaydırma ne işe yarar?</h2>
+      <p>Bit işlemleri, iki sayının aynı konumdaki bitlerini tek tek karşılaştırır. Örnekte 12 = 00001100 ve 10 = 00001010 kullanılmıştır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>İşlem</th><th>Kural</th><th>12 ve 10 için sonuç</th><th>Ondalık</th></tr></thead>
+        <tbody>
+          <tr><td>AND</td><td>İki bit de 1 ise 1</td><td>00001000</td><td>8</td></tr>
+          <tr><td>OR</td><td>Bitlerden biri 1 ise 1</td><td>00001110</td><td>14</td></tr>
+          <tr><td>XOR</td><td>Bitler farklıysa 1</td><td>00000110</td><td>6</td></tr>
+          <tr><td>NOT 5</td><td>Her biti ters çevir</td><td>11111010</td><td>−6</td></tr>
+          <tr><td>5 sola 2 kaydır</td><td>Sağa iki sıfır ekle</td><td>00010100</td><td>20</td></tr>
+          <tr><td>−20 sağa 2 kaydır (aritmetik)</td><td>Soldan işaret bitini çoğalt</td><td>11111011</td><td>−5</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li><strong>AND</strong> maskelemede kullanılır: bir sayının yalnızca belirli bitlerini okumak, örneğin alt ağ maskesiyle ağ adresini bulmak.</li>
+        <li><strong>OR</strong> belirli bitleri 1 yapmak, yani bir ayarı ya da bayrağı açmak için kullanılır.</li>
+        <li><strong>XOR</strong> bir biti tersine çevirir; aynı anahtarla iki kez XOR yapmak orijinal değeri geri verir ve basit şifreleme ile hata denetiminde kullanılır.</li>
+        <li><strong>Sola kaydırma</strong> her adımda 2 ile çarpar, <strong>aritmetik sağa kaydırma</strong> işaret bitini koruyarak 2'ye böler (aşağı yuvarlar). NOT işleminin −(x + 1) vermesi de ikiye tümleyenin doğal sonucudur.</li>
+      </ul>
+      <p>Bu işlemleri ikili, onaltılık ve işaretli ondalık sonuçlarıyla görmek için <a href="../../bit-islem-hesapla/">Bit İşlemleri Hesaplama</a> aracını kullanabilirsiniz. Alt ağ maskesinde AND kullanımına bir örnek için <a href="../../bilgi-bankasi/ip-adresi-ve-alt-ag-maskesi-nedir/">IP adresi ve alt ağ maskesi</a> makalesine bakın.</p>
+
+      <h2 id="b8">İkiye tümleyen neden bilgisayarlarda tercih edilir?</h2>
+      <ul>
+        <li><strong>Tek sıfır:</strong> +0 ve −0 karışıklığı yoktur; eşitlik karşılaştırmaları basitleşir.</li>
+        <li><strong>Tek toplayıcı devre:</strong> Toplama ve çıkarma aynı donanımla yapılır; işlemci tasarımı küçülür ve hızlanır.</li>
+        <li><strong>İşaretsiz sayılarla uyum:</strong> Toplama devresi işaretli ve işaretsiz sayılar için aynı bit sonucunu üretir; yalnızca yorum değişir.</li>
+        <li><strong>Kolay genişletme:</strong> 8 bitlik bir sayıyı 16 bite çıkarmak için işaret bitini sola doğru çoğaltmak yeter (11111011 → 1111111111111011).</li>
+        <li><strong>Doğal sıralama:</strong> −1'den bir eksiltmek ya da 127'ye bir eklemek, sayaç mantığıyla sorunsuz sarar; bu davranış öngörülebilir ve test edilebilir.</li>
+      </ul>
+
+      <h2 id="b9">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Bit genişliğini belirtmemek:</strong> &quot;−5'in ikiye tümleyeni&quot; sorusunun cevabı genişlik verilmeden tek değildir.</li>
+        <li><strong>1 eklemeyi unutmak:</strong> Yalnızca bitleri ters çevirmek bire tümleyen verir; sonuç bir eksik çıkar.</li>
+        <li><strong>Diziyi işaretsiz okumak:</strong> 11111011'i 251 olarak okumak, işaretli bağlamda yanlıştır.</li>
+        <li><strong>Taşmayı elde bitiyle karıştırmak:</strong> Elde bitinin oluşması hatayı göstermez; işaret kuralına bakın.</li>
+        <li><strong>Mantıksal ve aritmetik kaydırmayı karıştırmak:</strong> Negatif bir sayıyı mantıksal sağa kaydırmak soldan 0 ekler ve sayıyı büyük bir pozitife çevirir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>İkiye tümleyen nedir?</summary><p>İkiye tümleyen, negatif tam sayıları ikilik sistemde gösterme yöntemidir. Pozitif sayının bitleri ters çevrilir ve 1 eklenir; en soldaki bit işaret biti olur ve negatif sayılarda 1'dir.</p></details>
+      <details><summary>Negatif bir sayı ikilik sistemde nasıl yazılır?</summary><p>Önce bit genişliği seçilir, sonra mutlak değer ikiliye çevrilir, bitler ters çevrilir ve 1 eklenir. 8 bitte −5 için 00000101 → 11111010 → 11111011 adımları izlenir.</p></details>
+      <details><summary>Bire tümleyen ile ikiye tümleyen farkı nedir?</summary><p>Bire tümleyende yalnızca bitler ters çevrilir, ikiye tümleyende ayrıca 1 eklenir. Bire tümleyende +0 ve −0 diye iki sıfır vardır; ikiye tümleyende sıfır tektir ve toplama işlemi düzeltme gerektirmez.</p></details>
+      <details><summary>8 bitte en küçük ve en büyük sayı kaçtır?</summary><p>8 bitlik ikiye tümleyen gösterimde en küçük sayı −128 (10000000), en büyük sayı 127 (01111111) olur. Aynı 8 bit işaretsiz kullanılırsa 0 ile 255 arası yazılabilir.</p></details>
+      <details><summary>Taşma (overflow) neden olur?</summary><p>Sonuç bit genişliğinin aralığına sığmadığında taşma olur. 8 bitte 100 + 50 = 150 sonucu 127'yi aştığı için 10010110 dizisi −106 olarak okunur; iki pozitifin toplamı negatif çıktıysa taşma vardır.</p></details>
+      <details><summary>AND, OR ve XOR işlemleri nasıl yapılır?</summary><p>Sayıların aynı konumdaki bitleri karşılaştırılır. AND ikisi de 1 ise, OR biri 1 ise, XOR bitler farklıysa 1 verir. 12 ve 10 için sonuçlar sırasıyla 8, 14 ve 6'dır.</p></details>
+      <details><summary>Bit kaydırma ne işe yarar?</summary><p>Sola kaydırma sayıyı her adımda 2 ile çarpar, aritmetik sağa kaydırma işaret bitini koruyarak 2'ye böler. 5 sola iki kez kaydırılınca 20, −20 sağa iki kez kaydırılınca −5 olur; maskeleme ve hızlı çarpmada kullanılır.</p></details>
+      <details><summary>İkiye tümleyen neden bilgisayarlarda tercih edilir?</summary><p>Sıfırın tek gösterimi vardır, toplama ve çıkarma aynı devreyle yapılır ve işaretsiz sayılarla aynı toplayıcı kullanılabilir. Bu da işlemci tasarımını sadeleştirir ve hızlandırır.</p></details>
+      <details><summary>11111111 hangi sayıdır?</summary><p>8 bitlik işaretli yorumda 11111111 −1'dir, çünkü −128 + 127 = −1 eder. Aynı dizi işaretsiz yorumlanırsa 255 anlamına gelir; hangi değerin kastedildiğini veri türü belirler.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../onaltilik-hex-sayi-sistemi/"><strong>Onaltılık (Hex) Sayı Sistemi Nedir? Hex Ondalığa Nasıl Çevrilir</strong><span>Onaltılık sistem 0–9 rakamları ve A–F harfleriyle 16 tabanında sayar. Hex ondalık çevirme, ondalıktan hex'e bölme yöntemi, ikilik ilişkisi, renk kodları ve hex toplama.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-ikiye-tumleyen-negatif-sayilar-binary-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

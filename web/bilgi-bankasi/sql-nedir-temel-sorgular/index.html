@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>SQL Nedir? SELECT, INSERT, UPDATE ve Temel Sorgu Örnekleri</title>
+  <meta name="description" content="SQL, ilişkisel veritabanlarını sorgulamak ve yönetmek için kullanılan standart dildir. SELECT, WHERE, ORDER BY, INSERT, UPDATE, DELETE örnekleri ve CSV aktarımı.">
+  <meta name="keywords" content="sql nedir, sql sorgu örnekleri, select sorgusu, insert into örneği, update delete sql, where order by kullanımı, sql öğrenme, csv'den sql">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/sql-nedir-temel-sorgular/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="SQL Nedir? SELECT, INSERT, UPDATE ve Temel Sorgu Örnekleri">
+  <meta property="og:description" content="SQL, ilişkisel veritabanlarını sorgulamak ve yönetmek için kullanılan standart dildir. SELECT, WHERE, ORDER BY, INSERT, UPDATE, DELETE örnekleri ve CSV aktarımı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/sql-nedir-temel-sorgular/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"SQL Nedir? SELECT, INSERT, UPDATE, DELETE ve Temel Sorgu Örnekleri","description":"SQL, ilişkisel veritabanlarını sorgulamak ve yönetmek için kullanılan standart dildir. SELECT, WHERE, ORDER BY, INSERT, UPDATE, DELETE örnekleri ve CSV aktarımı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/sql-nedir-temel-sorgular/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1288,"keywords":"sql nedir, sql sorgu örnekleri, select sorgusu, insert into örneği, update delete sql, where order by kullanımı, sql öğrenme, csv'den sql","articleSection":"Dosya, PDF ve Fotoğraf","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Dosya, PDF ve Fotoğraf","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#dijital"},{"@type":"ListItem","position":4,"name":"SQL Nedir? SELECT, INSERT, UPDATE, DELETE ve Temel Sorgu Örnekleri"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"SQL nedir, ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"SQL, ilişkisel veritabanlarındaki tablolara veri eklemek, verileri sorgulamak, güncellemek ve silmek için kullanılan standart sorgu dilidir. E-ticaret, muhasebe ve raporlama gibi alanlarda verilerden istenen bilgiyi çekmek ve yönetmek için yaygın olarak kullanılır."}},{"@type":"Question","name":"SELECT sorgusu nasıl yazılır?","acceptedAnswer":{"@type":"Answer","text":"SELECT anahtar kelimesinden sonra istenen sütunlar, FROM ile tablo adı yazılır: SELECT ad, fiyat FROM urunler; Tüm sütunlar için yıldız kullanılabilir. Satırları süzmek için WHERE, sıralamak için ORDER BY eklenir ve komut noktalı virgülle bitirilir."}},{"@type":"Question","name":"INSERT, UPDATE ve DELETE ne yapar?","acceptedAnswer":{"@type":"Answer","text":"INSERT INTO tabloya yeni satır ekler, UPDATE mevcut satırlardaki değerleri değiştirir, DELETE ise satırları siler. UPDATE ve DELETE komutlarında WHERE koşulu unutulursa tablodaki tüm satırlar etkilenir; bu yüzden önce aynı koşulla SELECT çalıştırmak iyi bir alışkanlıktır."}},{"@type":"Question","name":"WHERE ve ORDER BY nasıl kullanılır?","acceptedAnswer":{"@type":"Answer","text":"WHERE hangi satırların sorguya dahil edileceğini koşullarla belirler, örneğin WHERE fiyat \u003c 500. ORDER BY sonucu bir sütuna göre sıralar; varsayılan artan sıralamadır, azalan için DESC eklenir. İkisi birlikte kullanıldığında WHERE önce, ORDER BY sonda yazılır."}},{"@type":"Question","name":"MySQL ile SQL aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. SQL bir sorgu dilidir; MySQL ise bu dili kullanan veritabanı yönetim sistemlerinden biridir. PostgreSQL, SQLite ve SQL Server da SQL kullanır. Temel komutlar hepsinde büyük ölçüde aynıdır, farklar ileri özelliklerde ve bazı sözdizimi ayrıntılarında görülür."}},{"@type":"Question","name":"Excel/CSV verisi veritabanına nasıl aktarılır?","acceptedAnswer":{"@type":"Answer","text":"Excel dosyası UTF-8 kodlamalı CSV olarak kaydedilir, ondalık virgüller noktaya çevrilir ve her satır için bir INSERT komutu üretilir ya da veritabanının içe aktarma aracı kullanılır. Komutlar önce test veritabanında çalıştırılıp satır sayısı kontrol edilmelidir."}},{"@type":"Question","name":"Karmaşık SQL sorgusu nasıl okunur hâle getirilir?","acceptedAnswer":{"@type":"Answer","text":"Her ana anahtar kelimeyi yeni satıra yazmak, anahtar kelimeleri büyük harfle yazmak, sütun listesini girintilemek ve tablolara anlamlı takma adlar vermek okunurluğu artırır. Bir SQL biçimlendirici bu düzenlemeyi otomatik yapar ve sorgunun sonucunu değiştirmez."}},{"@type":"Question","name":"SQL öğrenmek ne kadar sürer?","acceptedAnswer":{"@type":"Answer","text":"Temel okuma ve yazma komutları düzenli pratikle birkaç günde öğrenilebilir. JOIN, GROUP BY ve alt sorgular birkaç haftalık çalışma gerektirir; performans ve veritabanı tasarımı ise gerçek projelerde zamanla derinleşir. Küçük bir örnek veritabanıyla pratik yapmak en hızlı yoldur."}},{"@type":"Question","name":"SQL enjeksiyonu nedir?","acceptedAnswer":{"@type":"Answer","text":"SQL enjeksiyonu, kullanıcıdan alınan metnin doğrudan sorguya eklenmesiyle saldırganın kendi SQL kodunu çalıştırabildiği bir güvenlik açığıdır. Uygulamalarda parametreli sorgular ya da hazırlanmış ifadeler kullanmak, kullanıcı girdisini veriden ayırarak bu riski önler."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#dijital">Dosya, PDF ve Fotoğraf</a></li></ol><h1>SQL Nedir? SELECT, INSERT, UPDATE, DELETE ve Temel Sorgu Örnekleri</h1><p class="lead">SQL (Structured Query Language, yapılandırılmış sorgu dili), ilişkisel veritabanlarındaki tablolara veri eklemek, bu verileri sorgulamak, güncellemek ve silmek için kullanılan standart dildir. En temel komutlar dört tanedir: verileri okuyan <code>SELECT</code>, yeni satır ekleyen <code>INSERT</code>, mevcut satırı değiştiren <code>UPDATE</code> ve satır silen <code>DELETE</code>. Örneğin <code>SELECT ad, fiyat FROM urunler WHERE fiyat &lt; 500 ORDER BY fiyat;</code> sorgusu 500 TL'nin altındaki ürünleri ucuzdan pahalıya listeler. Bu sayfada örnek bir tablo üzerinden temel sorguları, sık yapılan hataları ve Excel ya da CSV verisini veritabanına aktarmayı bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>SQL, ilişkisel veritabanlarıyla konuşmak için kullanılan, ANSI ve ISO tarafından standartlaştırılmış bir sorgu dilidir.</li>
+        <li>SELECT veri okur, INSERT satır ekler, UPDATE satır günceller, DELETE satır siler.</li>
+        <li>WHERE hangi satırların etkileneceğini, ORDER BY sonuçların sıralamasını belirler.</li>
+        <li>UPDATE ve DELETE komutlarında WHERE unutulursa tablodaki tüm satırlar etkilenir.</li>
+        <li>MySQL, PostgreSQL, SQLite ve SQL Server SQL dilini kullanan farklı veritabanı yönetim sistemleridir.</li>
+        <li>CSV dosyası, her satır için bir INSERT komutu üretilerek veritabanına aktarılabilir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Örnek urunler tablosu ve SELECT sorgusunun işleyişi: FROM tabloyu seçer, WHERE fiyatı 500'den küçük satırları süzer, ORDER BY fiyata göre sıralar, SELECT ad ve fiyat sütunlarını döndürür; sonuçta üç satır." viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">SELECT sorgusu adım adım</text>
+  <rect x="20" y="44" width="680" height="40" rx="8" class="p"/>
+  <text x="360" y="70" class="b mid sf">SELECT ad, fiyat FROM urunler WHERE fiyat &lt; 500 ORDER BY fiyat;</text>
+  <text x="20" y="112" class="b">urunler tablosu</text>
+  <g class="sm">
+    <rect x="20" y="122" width="330" height="30" class="ps"/>
+    <text x="34" y="142" class="b">id</text><text x="74" y="142" class="b">ad</text><text x="220" y="142" class="b">fiyat</text><text x="290" y="142" class="b">stok</text>
+    <rect x="20" y="152" width="330" height="30" class="oks"/><text x="34" y="172">1</text><text x="74" y="172">Defter</text><text x="220" y="172">45</text><text x="290" y="172">120</text>
+    <rect x="20" y="182" width="330" height="30" class="sf sb"/><text x="34" y="202">2</text><text x="74" y="202">Yazıcı</text><text x="220" y="202">4.200</text><text x="290" y="202">8</text>
+    <rect x="20" y="212" width="330" height="30" class="oks"/><text x="34" y="232">3</text><text x="74" y="232">Toner</text><text x="220" y="232">450</text><text x="290" y="232">30</text>
+    <rect x="20" y="242" width="330" height="30" class="oks"/><text x="34" y="262">4</text><text x="74" y="262">Kalem</text><text x="220" y="262">20</text><text x="290" y="262">500</text>
+    <rect x="20" y="272" width="330" height="30" class="sf sb"/><text x="34" y="292">5</text><text x="74" y="292">Monitör</text><text x="220" y="292">6.500</text><text x="290" y="292">5</text>
+  </g>
+  <g class="sm">
+    <rect x="380" y="112" width="150" height="34" rx="6" class="sf sb"/><text x="455" y="134" class="mid b">1. FROM</text>
+    <rect x="380" y="154" width="150" height="34" rx="6" class="sf sb"/><text x="455" y="176" class="mid b">2. WHERE</text>
+    <rect x="380" y="196" width="150" height="34" rx="6" class="sf sb"/><text x="455" y="218" class="mid b">3. SELECT</text>
+    <rect x="380" y="238" width="150" height="34" rx="6" class="sf sb"/><text x="455" y="260" class="mid b">4. ORDER BY</text>
+    <text x="545" y="134">tabloyu al</text>
+    <text x="545" y="176">fiyat 500'den küçük</text>
+    <text x="545" y="218">ad, fiyat sütunları</text>
+    <text x="545" y="260">fiyata göre artan</text>
+  </g>
+  <text x="380" y="300" class="b">Sonuç</text>
+  <g class="sm">
+    <rect x="380" y="310" width="320" height="28" class="p"/><text x="394" y="329" class="b sf">ad</text><text x="560" y="329" class="b sf">fiyat</text>
+    <rect x="380" y="338" width="320" height="28" class="sf sb"/><text x="394" y="357">Kalem</text><text x="560" y="357">20</text>
+    <rect x="380" y="366" width="320" height="28" class="sf sb"/><text x="394" y="385">Defter</text><text x="560" y="385">45</text>
+    <rect x="380" y="394" width="320" height="28" class="sf sb"/><text x="394" y="413">Toner</text><text x="560" y="413">450</text>
+  </g>
+  <text x="20" y="330" class="sm t2">Yeşil satırlar WHERE koşulunu sağlar.</text>
+</svg>
+      <figcaption>Sorgu yazılış sırasıyla değil, mantıksal sırayla işlenir: önce FROM, sonra WHERE, ardından SELECT ve en son ORDER BY. Beş ürünlük tablodan fiyatı 500 TL'nin altındaki üç ürün ucuzdan pahalıya döner.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">SQL nedir, ne işe yarar?</a></li>
+      <li><a href="#b2">Tablo, satır ve sütun: temel kavramlar</a></li>
+      <li><a href="#b3">SELECT sorgusu nasıl yazılır?</a></li>
+      <li><a href="#b4">WHERE ve ORDER BY nasıl kullanılır?</a></li>
+      <li><a href="#b5">INSERT, UPDATE ve DELETE ne yapar?</a></li>
+      <li><a href="#b6">MySQL ile SQL aynı şey mi?</a></li>
+      <li><a href="#b7">Excel ya da CSV verisi veritabanına nasıl aktarılır?</a></li>
+      <li><a href="#b8">Karmaşık SQL sorgusu nasıl okunur hâle getirilir?</a></li>
+      <li><a href="#b9">SQL öğrenmek ne kadar sürer? Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-sql-nedir-temel-sorgular-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../sql-bicimlendir/"><strong>SQL Biçimlendirici</strong><span>SQL sorgularını okunur hâle getirin ya da yorumları atıp tek satıra küçültün; MySQL, PostgreSQL, SQL Server, Oracle, SQLite ve BigQuery lehçeleri. Sorgu çalıştırılmaz, sunucuya gitmez.</span></a></li>
+          <li><a href="../../csv-sql-donustur/"><strong>CSV'den SQL INSERT Oluşturma</strong><span>CSV verisinden MySQL, PostgreSQL, SQL Server ve SQLite için INSERT INTO sorguları üretin.</span></a></li>
+          <li><a href="../../csv-json-donustur/"><strong>CSV JSON Dönüştürücü</strong><span>CSV'yi JSON'a, JSON'u CSV'ye çevirin; Markdown tablo, HTML tablo ve SQL INSERT çıktısı alın. Ayraç otomatik algılanır, Türkçe karakterler korunur. Veri sunucuya gitmez.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">SQL nedir, ne işe yarar?</h2>
+      <p>SQL, verileri satır ve sütunlardan oluşan tablolarda saklayan <strong>ilişkisel veritabanlarıyla</strong> çalışmak için geliştirilmiş bir dildir. Bir e-ticaret sitesinin ürünleri, siparişleri ve müşterileri; bir muhasebe programının faturaları; bir okulun öğrenci notları genellikle böyle tablolarda tutulur ve SQL ile sorgulanır.</p>
+      <p>SQL'in gücü, &quot;nasıl&quot; değil &quot;ne&quot; istediğinizi söylemenizdir. &quot;Ankara'daki müşterilerin geçen ayki toplam siparişini göster&quot; demek için verilerin diskte nasıl dizildiğini bilmeniz gerekmez; veritabanı sorguyu en verimli yolla kendisi çalıştırır. Bu yüzden SQL yalnızca yazılımcıların değil, veri analistlerinin, raporlama yapan muhasebecilerin ve e-ticaret yöneticilerinin de sık kullandığı bir araçtır.</p>
+      <p>Dil 1970'lerde geliştirilmiş, 1980'lerden itibaren ANSI ve ISO tarafından standartlaştırılmıştır. Standart sayesinde temel komutlar farklı veritabanı sistemlerinde büyük ölçüde aynı şekilde çalışır.</p>
+
+      <h2 id="b2">Tablo, satır ve sütun: temel kavramlar</h2>
+      <p>Bir veritabanı birden fazla tablodan oluşur. Her <strong>tablo</strong> belirli bir konuyu (ürünler, müşteriler), her <strong>sütun</strong> bir özelliği (ad, fiyat, stok), her <strong>satır</strong> ise bir kaydı (tek bir ürün) temsil eder. Her sütunun bir veri türü vardır: metin, tam sayı, ondalıklı sayı, tarih gibi. Her satırı benzersiz biçimde tanımlayan sütuna <strong>birincil anahtar</strong> denir; örnekteki <code>id</code> sütunu böyledir.</p>
+      <div class="rh-formula">CREATE TABLE urunler (<br>  id INTEGER PRIMARY KEY,<br>  ad VARCHAR(100) NOT NULL,<br>  fiyat DECIMAL(10,2),<br>  stok INTEGER<br>);</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Kavram</th><th>Anlamı</th><th>Örnek</th></tr></thead>
+        <tbody>
+          <tr><td>Tablo</td><td>Aynı türden kayıtların bütünü</td><td>urunler</td></tr>
+          <tr><td>Sütun</td><td>Kayıtların bir özelliği</td><td>fiyat</td></tr>
+          <tr><td>Satır</td><td>Tek bir kayıt</td><td>3, Toner, 450, 30</td></tr>
+          <tr><td>Birincil anahtar</td><td>Her satırı benzersiz tanımlayan değer</td><td>id</td></tr>
+          <tr><td>Yabancı anahtar</td><td>Başka tablodaki kayda bağlantı</td><td>siparisler.urun_id</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b3">SELECT sorgusu nasıl yazılır?</h2>
+      <p>SELECT, tablodan veri okumak için kullanılır ve en sık yazılan SQL komutudur. En basit biçimi <code>SELECT * FROM urunler;</code> olup tablodaki tüm sütunları ve satırları getirir. Yıldız (*) yerine sütun adlarını yazmak, yalnızca ihtiyacınız olan veriyi almanızı sağlar ve büyük tablolarda sorguyu hızlandırır.</p>
+      <div class="rh-formula">SELECT * FROM urunler;<br>SELECT ad, fiyat FROM urunler;<br>SELECT ad, fiyat * 1.20 AS kdv_dahil FROM urunler;<br>SELECT COUNT(*) AS urun_sayisi, AVG(fiyat) AS ortalama FROM urunler;</div>
+      <p>Üçüncü örnekte hesaplanmış bir sütun oluşturulmuş ve <code>AS</code> ile ona ad verilmiştir. Dördüncü örnekteki <code>COUNT</code>, <code>AVG</code>, <code>SUM</code>, <code>MIN</code> ve <code>MAX</code> birleştirme (toplama) fonksiyonlarıdır; satırları tek bir özet değere indirir. Bunları <code>GROUP BY</code> ile birlikte kullanarak örneğin kategori başına ürün sayısını bulabilirsiniz.</p>
+
+      <h2 id="b4">WHERE ve ORDER BY nasıl kullanılır?</h2>
+      <p><code>WHERE</code>, sorgunun hangi satırları dikkate alacağını belirleyen koşuldur. Karşılaştırma işleçleri (=, &lt;, &gt;, &lt;=, &gt;=, &lt;&gt;), mantıksal bağlaçlar (AND, OR, NOT) ve özel işleçlerle (BETWEEN, IN, LIKE, IS NULL) koşullar kurulur. <code>ORDER BY</code> ise sonucu bir ya da birden fazla sütuna göre sıralar; varsayılan artan (ASC), tersi azalan (DESC) sıralamadır.</p>
+      <div class="rh-formula">SELECT ad, fiyat FROM urunler WHERE fiyat &lt; 500 ORDER BY fiyat;<br>SELECT ad FROM urunler WHERE stok &gt; 0 AND fiyat BETWEEN 100 AND 1000;<br>SELECT ad FROM urunler WHERE ad LIKE 'To%';<br>SELECT ad, stok FROM urunler ORDER BY stok DESC LIMIT 3;</div>
+      <ol class="ba-steps">
+        <li>İlk sorgu, örnek tablodaki beş üründen fiyatı 500'ün altında olan Kalem (20), Defter (45) ve Toner'i (450) ucuzdan pahalıya döndürür.</li>
+        <li>İkinci sorgu stokta olan ve fiyatı 100 ile 1.000 arasında olan ürünleri getirir: yalnızca Toner.</li>
+        <li>Üçüncü sorgu adı &quot;To&quot; ile başlayanları bulur; yüzde işareti herhangi sayıda karakter anlamına gelir.</li>
+        <li>Dördüncü sorgu stoğu en yüksek üç ürünü listeler; <code>LIMIT</code> bazı sistemlerde farklı yazılır (ör. TOP ya da FETCH FIRST).</li>
+      </ol>
+      <p>Metin karşılaştırmalarında büyük-küçük harf duyarlılığı ve Türkçe karakterlerin sıralanması veritabanının karakter seti ve harmanlama (collation) ayarına bağlıdır. Türkçe veride &quot;İ&quot; ve &quot;ı&quot; harflerinin doğru sıralanması için uygun ayarın seçilmesi gerekir; karakter kodlaması konusunu <a href="../../bilgi-bankasi/ascii-unicode-utf8-farki/">ASCII, Unicode ve UTF-8</a> yazısında bulabilirsiniz. Metin aramalarında daha esnek desenler için <a href="../../bilgi-bankasi/regex-nedir-duzenli-ifade-ornekleri/">düzenli ifadeler</a> de kullanılabilir.</p>
+
+      <h2 id="b5">INSERT, UPDATE ve DELETE ne yapar?</h2>
+      <p>Bu üç komut veriyi değiştirir ve bu yüzden dikkatle kullanılmalıdır. <code>INSERT INTO</code> tabloya yeni satır ekler; sütun adlarını açıkça yazmak, tablo yapısı değişse bile komutun doğru çalışmasını sağlar. <code>UPDATE</code> mevcut satırlardaki değerleri değiştirir, <code>DELETE</code> satırları siler.</p>
+      <div class="rh-formula">INSERT INTO urunler (id, ad, fiyat, stok) VALUES (6, 'Kâğıt', 150, 200);<br>UPDATE urunler SET fiyat = 480 WHERE id = 3;<br>UPDATE urunler SET stok = stok - 1 WHERE id = 1;<br>DELETE FROM urunler WHERE stok = 0;</div>
+      <p><strong>En önemli kural:</strong> UPDATE ve DELETE komutlarında WHERE koşulunu unutmak tablodaki <em>tüm</em> satırları etkiler. <code>UPDATE urunler SET fiyat = 480;</code> komutu bütün ürünlerin fiyatını 480 yapar. Bu yüzden değiştirme komutunu çalıştırmadan önce aynı WHERE koşuluyla bir SELECT çalıştırıp hangi satırların etkileneceğini görmek, mümkünse işlemi bir transaction içinde yapmak (BEGIN … COMMIT, gerekirse ROLLBACK) ve önemli tablolarda önce yedek almak iyi bir alışkanlıktır.</p>
+      <div class="rh-note">Değiştirme komutlarını canlı (üretim) veritabanında doğrudan denemeyin; önce bir test kopyasında çalıştırın ve yedeğinizin güncel olduğundan emin olun.</div>
+
+      <div class="ba-ad" data-slot="bilgi-sql-nedir-temel-sorgular-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">MySQL ile SQL aynı şey mi?</h2>
+      <p>Hayır. <strong>SQL bir dildir</strong>; MySQL, PostgreSQL, SQLite, MariaDB, Microsoft SQL Server ve Oracle Database ise bu dili kullanan <strong>veritabanı yönetim sistemleridir</strong>. Benzetmeyle söylersek SQL Türkçe ise bu sistemler Türkçe konuşan farklı kişilerdir: temel kelimeler ve dil bilgisi ortaktır, ama her birinin kendine özgü deyimleri vardır.</p>
+      <p>Temel SELECT, INSERT, UPDATE ve DELETE komutları sistemlerin hepsinde büyük ölçüde aynıdır. Farklar daha çok ileri özelliklerde, veri türlerinde, tarih fonksiyonlarında ve sonuç sınırlama sözdiziminde görülür. Bir sistemde öğrendiğiniz SQL bilgisi diğerine büyük ölçüde taşınır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sistem</th><th>Tipik kullanım</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>SQLite</td><td>Mobil uygulamalar, masaüstü programlar, küçük projeler</td><td>Tek dosyada çalışır, sunucu gerektirmez</td></tr>
+          <tr><td>MySQL / MariaDB</td><td>Web siteleri, içerik yönetim sistemleri</td><td>Paylaşımlı barındırmada yaygındır</td></tr>
+          <tr><td>PostgreSQL</td><td>Kurumsal uygulamalar, veri analizi</td><td>Standartlara bağlılığı ve gelişmiş özellikleriyle bilinir</td></tr>
+          <tr><td>SQL Server, Oracle</td><td>Büyük kurumsal sistemler</td><td>Ticari lisanslı sürümleri vardır</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b7">Excel ya da CSV verisi veritabanına nasıl aktarılır?</h2>
+      <p>Elinizdeki bir ürün listesi ya da müşteri tablosu genellikle Excel'de durur. Excel dosyasını önce CSV (virgülle ayrılmış değerler) olarak kaydedip ardından iki yoldan biriyle veritabanına aktarabilirsiniz: veritabanının kendi içe aktarma aracını kullanmak ya da her satır için bir INSERT komutu üretmek. İkinci yol küçük ve orta büyüklükteki listeler için pratiktir ve her sistemde çalışır.</p>
+      <ol class="ba-steps">
+        <li>Excel'de ilk satırın sütun başlıklarını içerdiğinden ve başlıkların veritabanındaki sütun adlarıyla eşleştiğinden emin olun.</li>
+        <li>Dosyayı UTF-8 kodlamalı CSV olarak kaydedin; Türkçe karakterlerin bozulmaması için kodlama önemlidir.</li>
+        <li>Ondalık ayırıcıyı kontrol edin: Türkçe Excel virgül kullanır, SQL ise ondalık için nokta bekler (450,50 yerine 450.50).</li>
+        <li>CSV'yi bir dönüştürücüyle INSERT komutlarına çevirin; metin değerlerindeki tek tırnaklar kaçış karakteriyle iki tırnağa dönüştürülmelidir.</li>
+        <li>Komutları önce test veritabanında çalıştırın, satır sayısını SELECT COUNT(*) ile kontrol edin.</li>
+      </ol>
+      <p>Bu dönüşümü <a href="../../csv-sql-donustur/">CSV'den SQL INSERT Oluşturma aracı</a> tarayıcınızda yapar; veri hiçbir sunucuya gönderilmez. Aynı veriyi bir web uygulamasında kullanacaksanız <a href="../../csv-json-donustur/">CSV JSON Dönüştürücü</a> ile JSON biçimine de çevirebilirsiniz; JSON'un yapısı <a href="../../bilgi-bankasi/json-nedir-nasil-okunur/">JSON nedir</a> yazısında anlatılıyor.</p>
+
+      <h2 id="b8">Karmaşık SQL sorgusu nasıl okunur hâle getirilir?</h2>
+      <p>Tek satıra sıkıştırılmış uzun bir sorgu, özellikle birden fazla tablo birleştirildiğinde okunması zor bir metne dönüşür. Okunabilir SQL için yaygın kurallar şunlardır: her ana anahtar kelimeyi (SELECT, FROM, JOIN, WHERE, GROUP BY, ORDER BY) yeni satıra yazmak, anahtar kelimeleri büyük harfle yazmak, sütun listesini girintilemek ve tablolara kısa ama anlamlı takma adlar vermek.</p>
+      <div class="rh-formula">SELECT<br>  m.ad,<br>  SUM(s.tutar) AS toplam<br>FROM siparisler AS s<br>JOIN musteriler AS m ON m.id = s.musteri_id<br>WHERE s.tarih &gt;= '2026-10-01'<br>GROUP BY m.ad<br>ORDER BY toplam DESC;</div>
+      <p>Bu sorgu Ekim 2026'dan itibaren sipariş veren müşterileri toplam harcamalarına göre büyükten küçüğe sıralar. Tek satırlık bir sorguyu bu düzene getirmek için <a href="../../sql-bicimlendir/">SQL Biçimlendirici</a> kullanılabilir; biçimlendirme sorgunun sonucunu değiştirmez, yalnızca okunurluğunu artırır.</p>
+
+      <h2 id="b9">SQL öğrenmek ne kadar sürer? Sık yapılan hatalar</h2>
+      <p>Temel SELECT, WHERE, ORDER BY, INSERT, UPDATE ve DELETE komutlarını düzenli pratikle birkaç günde rahatça kullanabilirsiniz. JOIN, GROUP BY ve alt sorgular gibi konular birkaç haftalık pratik gerektirir. Dizinler (index), performans ayarı ve veritabanı tasarımı ise zamanla, gerçek projelerde derinleşen konulardır. En hızlı öğrenme yolu, küçük bir örnek veritabanı kurup kendi sorularınızı SQL ile cevaplamaya çalışmaktır.</p>
+      <ul>
+        <li><strong>WHERE'siz UPDATE ve DELETE:</strong> Tüm tabloyu etkiler.</li>
+        <li><strong>Metni tırnaksız yazmak:</strong> Metin değerleri tek tırnak içinde yazılır: 'Toner'.</li>
+        <li><strong>NULL'u = ile karşılaştırmak:</strong> Boş değer kontrolü <code>IS NULL</code> ile yapılır.</li>
+        <li><strong>Ondalık virgül:</strong> SQL'de ondalık ayırıcı noktadır.</li>
+        <li><strong>Kullanıcı girdisini sorguya doğrudan eklemek:</strong> Uygulamalarda parametreli sorgu kullanılmazsa SQL enjeksiyonu güvenlik açığı oluşur.</li>
+        <li><strong>Her yerde SELECT *:</strong> Gereksiz sütunlar büyük tablolarda sorguyu yavaşlatır.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>SQL nedir, ne işe yarar?</summary><p>SQL, ilişkisel veritabanlarındaki tablolara veri eklemek, verileri sorgulamak, güncellemek ve silmek için kullanılan standart sorgu dilidir. E-ticaret, muhasebe ve raporlama gibi alanlarda verilerden istenen bilgiyi çekmek ve yönetmek için yaygın olarak kullanılır.</p></details>
+      <details><summary>SELECT sorgusu nasıl yazılır?</summary><p>SELECT anahtar kelimesinden sonra istenen sütunlar, FROM ile tablo adı yazılır: SELECT ad, fiyat FROM urunler; Tüm sütunlar için yıldız kullanılabilir. Satırları süzmek için WHERE, sıralamak için ORDER BY eklenir ve komut noktalı virgülle bitirilir.</p></details>
+      <details><summary>INSERT, UPDATE ve DELETE ne yapar?</summary><p>INSERT INTO tabloya yeni satır ekler, UPDATE mevcut satırlardaki değerleri değiştirir, DELETE ise satırları siler. UPDATE ve DELETE komutlarında WHERE koşulu unutulursa tablodaki tüm satırlar etkilenir; bu yüzden önce aynı koşulla SELECT çalıştırmak iyi bir alışkanlıktır.</p></details>
+      <details><summary>WHERE ve ORDER BY nasıl kullanılır?</summary><p>WHERE hangi satırların sorguya dahil edileceğini koşullarla belirler, örneğin WHERE fiyat &lt; 500. ORDER BY sonucu bir sütuna göre sıralar; varsayılan artan sıralamadır, azalan için DESC eklenir. İkisi birlikte kullanıldığında WHERE önce, ORDER BY sonda yazılır.</p></details>
+      <details><summary>MySQL ile SQL aynı şey mi?</summary><p>Hayır. SQL bir sorgu dilidir; MySQL ise bu dili kullanan veritabanı yönetim sistemlerinden biridir. PostgreSQL, SQLite ve SQL Server da SQL kullanır. Temel komutlar hepsinde büyük ölçüde aynıdır, farklar ileri özelliklerde ve bazı sözdizimi ayrıntılarında görülür.</p></details>
+      <details><summary>Excel/CSV verisi veritabanına nasıl aktarılır?</summary><p>Excel dosyası UTF-8 kodlamalı CSV olarak kaydedilir, ondalık virgüller noktaya çevrilir ve her satır için bir INSERT komutu üretilir ya da veritabanının içe aktarma aracı kullanılır. Komutlar önce test veritabanında çalıştırılıp satır sayısı kontrol edilmelidir.</p></details>
+      <details><summary>Karmaşık SQL sorgusu nasıl okunur hâle getirilir?</summary><p>Her ana anahtar kelimeyi yeni satıra yazmak, anahtar kelimeleri büyük harfle yazmak, sütun listesini girintilemek ve tablolara anlamlı takma adlar vermek okunurluğu artırır. Bir SQL biçimlendirici bu düzenlemeyi otomatik yapar ve sorgunun sonucunu değiştirmez.</p></details>
+      <details><summary>SQL öğrenmek ne kadar sürer?</summary><p>Temel okuma ve yazma komutları düzenli pratikle birkaç günde öğrenilebilir. JOIN, GROUP BY ve alt sorgular birkaç haftalık çalışma gerektirir; performans ve veritabanı tasarımı ise gerçek projelerde zamanla derinleşir. Küçük bir örnek veritabanıyla pratik yapmak en hızlı yoldur.</p></details>
+      <details><summary>SQL enjeksiyonu nedir?</summary><p>SQL enjeksiyonu, kullanıcıdan alınan metnin doğrudan sorguya eklenmesiyle saldırganın kendi SQL kodunu çalıştırabildiği bir güvenlik açığıdır. Uygulamalarda parametreli sorgular ya da hazırlanmış ifadeler kullanmak, kullanıcı girdisini veriden ayırarak bu riski önler.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../json-nedir-nasil-okunur/"><strong>JSON Nedir, Nasıl Okunur? JSON Formatı, Örnekleri ve Sık Yapılan Hatalar</strong><span>JSON, veriyi anahtar–değer çiftleri ve dizilerle taşıyan metin biçimidir. Nesne ve dizi farkı, 6 veri türü, Unexpected token hatası, kaçış karakterleri ve YAML/CSV.</span></a></li>
+          <li><a href="../regex-nedir-duzenli-ifade-ornekleri/"><strong>Regex (Düzenli İfade) Nedir? Türkçe Örneklerle Regex Nasıl Yazılır</strong><span>Regex, metinde kalıp aramaya yarayan düzenli ifade dilidir. . * + ? anlamları, e-posta ve Türk telefon numarası regex'i, Türkçe karakterler, gruplar ve bul-değiştir.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+          <li><a href="../uuid-guid-nedir/"><strong>UUID (GUID) Nedir? UUID v4 Nasıl Üretilir, Çakışma İhtimali Ne Kadar</strong><span>UUID, 128 bitlik ve 36 karakterlik evrensel benzersiz kimliktir. GUID ile farkı, 8-4-4-4-12 yapısı, v4 ve v7 sürümleri, çakışma olasılığı ve veritabanında kullanımı.</span></a></li>
+          <li><a href="../4k-kac-piksel-cozunurluk-turleri/"><strong>4K Kaç Piksel? HD, Full HD, 2K, 4K ve 8K Çözünürlük Farkları Tablosu</strong><span>Televizyon ve monitörlerdeki 4K (UHD) 3840 × 2160, yani yaklaşık 8,3 milyon pikseldir; Full HD'nin dört katı. HD, 2K, QHD, 8K tablosu ve izleme mesafesi.</span></a></li>
+          <li><a href="../a4-kagit-boyutu-kac-cm/"><strong>A4 Kağıt Boyutu Kaç cm, Kaç Piksel? A3, A5 ve Diğer Kağıt Ölçüleri</strong><span>A4 kağıt 21 × 29,7 cm (210 × 297 mm) ölçüsündedir; 300 DPI'da 2480 × 3508 pikseldir. A0–A8, B ve C serisi, Letter farkı, inç karşılıkları ve zarf ölçüleri.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-sql-nedir-temel-sorgular-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

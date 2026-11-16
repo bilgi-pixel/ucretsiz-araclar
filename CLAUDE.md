@@ -124,3 +124,8 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
 - `palet-yukleme-hesapla`: "İzin verilen yük yüksekliği" alanının palet (14,4 cm) dahil mi hariç mi olduğu yazmıyor; bir kat fark yaratabilir.
 - `satranc-elo-hesapla`: FIDE'nin 400 puan sınırını ve K×n ≤ 700 kuralını uygulamıyor; K=40 seçeneği "18 yaş altı ve 2300 altı" koşulunu
   belirtmiyor. `masa-kisi-sayisi-hesapla` 180 cm yuvarlak masaya 9 kişi veriyor, salonlarda bu masa "10 kişilik" diye anılır; sayfada açıklayın.
+- `harc-hesapla`: ruhsat kaleminde 1.1.2026'dan beri noterde araç satışı ve ilk tescilde alınan binde 2 harcı (en az 1.000 TL,
+  7566 sayılı Kanun) hesaplamıyor. `ogretmen-maas-hesapla`: uzman öğretmen/başöğretmen hazır ek gösterge seçenekleri (4200, 4800)
+  yaklaşık; resmî kaynakla doğrulayın.
+- `periyodik-tablo/elementler.json` yuvarlanmış atom kütleleri (H 1,01, O 16) kullanıyor; `molar-kutle-hesapla` ve
+  `kutle-yuzdesi-bilesik-hesapla` standart değerleri (1,008 / 15,999). Aynı bileşikte farklı sonuç çıkmasın diye tek kaynağa bağlayın.
