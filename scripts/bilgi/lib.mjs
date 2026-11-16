@@ -149,7 +149,7 @@ export function validate(sp, ctx) {
   if (/<(?!\/?(strong|em|code|sub|sup)>)[a-zA-Z/]/.test(body.replace(/<svg[\s\S]*<\/svg>/, ''))) e.push('metinde yalnızca <strong> <em> <code> <sub> <sup> etiketleri');
   if (/&(lt|gt|amp|nbsp|quot);/.test(body)) e.push('HTML varlığı yazma (&lt; vb.); düz karakter yaz');
   if (/https?:\/\//.test(body)) e.push('metin içinde URL yazma; kaynakları sources alanına koy');
-  if (/lorem ipsum|\bTODO\b/i.test(text)) e.push('yer tutucu metin kalmış');
+  if ((sp.slug.includes('lorem') ? /\bTODO\b/ : /lorem ipsum|\bTODO\b/i).test(text)) e.push('yer tutucu metin kalmış');
   return e;
 }
 

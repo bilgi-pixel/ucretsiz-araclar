@@ -121,3 +121,4 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   karşılamak için 15 dakikada bir içilecek miktar" satırı fazla su içmeye yönlendirebilir; hedef, kaybı vücut ağırlığının %2'sinin altında tutmaktır.
 - `cozunurluk-hesapla` kimyada çözünürlük hesaplıyor; ekran/görüntü çözünürlüğü konularına bağlanmamalı (konu dosyalarında bu eşleşme vardı).
   `pirinc-su-orani-hesapla` basmatiyi 1:1,75 alıyor; "paket oranı esas alınır" notu ekleyin.
+- `palet-yukleme-hesapla`: "İzin verilen yük yüksekliği" alanının palet (14,4 cm) dahil mi hariç mi olduğu yazmıyor; bir kat fark yaratabilir.

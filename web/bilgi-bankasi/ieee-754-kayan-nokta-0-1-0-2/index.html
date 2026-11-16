@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>0.1 + 0.2 Neden 0.3 Değil? IEEE 754 Kayan Nokta Sayılar</title>
+  <meta name="description" content="0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.">
+  <meta name="keywords" content="0.1 + 0.2 neden 0.3 değil, ieee 754 nedir, kayan nokta sayı, floating point hatası, javascript ondalık hatası, double ve float farkı, ondalık sayı ikilik gösterim, mantis üs işaret biti">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/ieee-754-kayan-nokta-0-1-0-2/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="0.1 + 0.2 Neden 0.3 Değil? IEEE 754 Kayan Nokta Sayılar">
+  <meta property="og:description" content="0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/ieee-754-kayan-nokta-0-1-0-2/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta","description":"0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/ieee-754-kayan-nokta-0-1-0-2/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1384,"keywords":"0.1 + 0.2 neden 0.3 değil, ieee 754 nedir, kayan nokta sayı, floating point hatası, javascript ondalık hatası, double ve float farkı, ondalık sayı ikilik gösterim, mantis üs işaret biti","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"0.1 + 0.2 neden tam 0.3 etmez?","acceptedAnswer":{"@type":"Answer","text":"Çünkü 0.1 ve 0.2 ikilik sistemde sonsuza kadar tekrar eden kesirlerdir ve bilgisayar onları 52 bitte keserek yuvarlar. İki yuvarlanmış değerin toplamı, 0.3'ün saklanan değerinden bir adım büyük olan 0.30000000000000004'e düşer."}},{"@type":"Question","name":"IEEE 754 standardı nedir?","acceptedAnswer":{"@type":"Answer","text":"IEEE 754, ondalıklı sayıların bilgisayarda nasıl saklanacağını ve işleneceğini belirleyen uluslararası kayan nokta standardıdır. İşlemcilerin ve programlama dillerinin neredeyse tamamı bu standardı kullandığı için sonuçlar farklı sistemlerde aynı çıkar."}},{"@type":"Question","name":"Float ile double arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Float 32 bit kullanır ve yaklaşık 7 anlamlı basamak tutar; double 64 bit kullanır ve 15 ile 17 anlamlı basamak tutar. Double ayrıca çok daha geniş bir sayı aralığını temsil edebilir ve genel programlamada varsayılan türdür."}},{"@type":"Question","name":"Ondalık sayılar ikilik sistemde nasıl saklanır?","acceptedAnswer":{"@type":"Answer","text":"Sayı önce ikilik tabana çevrilir, sonra 1,xxx × 2 üzeri n biçiminde normalleştirilir. İşaret biti, sapma eklenmiş üs ve virgülden sonraki bitler ayrı alanlara yazılır; sığmayan bitler en yakın değere yuvarlanır."}},{"@type":"Question","name":"Kayan nokta hatası nasıl önlenir?","acceptedAnswer":{"@type":"Answer","text":"Sayıları doğrudan eşitlikle karşılaştırmak yerine küçük bir tolerans kullanın, yuvarlamayı yalnızca gösterimde yapın, mümkünse tam sayı birimlerine geçin ya da onluk tabanda çalışan decimal türünü tercih edin."}},{"@type":"Question","name":"Para hesaplarında neden float kullanılmamalı?","acceptedAnswer":{"@type":"Answer","text":"Kuruş gibi onluk kesirler ikilik sistemde tam saklanamadığı için çok sayıda işlemde kuruş farkları birikir. Tutarları tam sayı kuruş ya da decimal türüyle saklamak, toplamların her zaman beklenen değeri vermesini sağlar."}},{"@type":"Question","name":"İşaret, üs ve mantis ne demek?","acceptedAnswer":{"@type":"Answer","text":"İşaret biti sayının pozitif mi negatif mi olduğunu, üs sayının 2'nin kaçıncı kuvvetiyle ölçekleneceğini, mantis ise anlamlı basamakları tutar. Değer, işaret çarpı 1,mantis çarpı 2 üzeri gerçek üs formülüyle bulunur."}},{"@type":"Question","name":"NaN ve Infinity nasıl gösterilir?","acceptedAnswer":{"@type":"Answer","text":"Üs bitlerinin tamamı 1 olduğunda özel değerler oluşur: kesir sıfırsa artı ya da eksi sonsuz, sıfır değilse NaN elde edilir. Sıfıra bölme sonsuzu, sıfırın sıfıra bölünmesi ya da negatif sayının karekökü NaN'ı verir."}},{"@type":"Question","name":"JavaScript'te 0.1 + 0.2 === 0.3 neden false döner?","acceptedAnswer":{"@type":"Answer","text":"JavaScript'teki tüm sayılar IEEE 754 double'dır ve toplam 0.30000000000000004 olarak hesaplanır. Bu değer 0.3'ün saklanan değerinden farklı bit desenine sahip olduğu için katı eşitlik false verir; fark Number.EPSILON düzeyindedir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</h1><p class="lead">0.1 + 0.2 işleminin <strong>0.30000000000000004</strong> çıkmasının nedeni, 0.1 ve 0.2'nin ikilik (binary) sistemde sonlu basamakla yazılamaması ve bilgisayarın bu sayıları IEEE 754 standardındaki en yakın değere yuvarlayarak saklamasıdır. İki küçük yuvarlama hatası toplanınca sonuç, 0.3'ün saklanan değerinden bir adım yukarıdaki sayıya düşer. Bu bir yazılım hatası değil, kayan nokta aritmetiğinin doğal sonucudur. Bu yazıda IEEE 754'ün işaret-üs-mantis yapısını, float ile double farkını, NaN ve Infinity'yi ve para hesaplarında hatadan nasıl kaçınılacağını örneklerle anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>0.1'in ikilik karşılığı 0.000110011001100… diye sonsuza kadar tekrar eder; bilgisayar bunu 52 bitlik kesirde keserek yuvarlar.</li>
+        <li>Saklanan 0.1 aslında 0.1000000000000000055511…, saklanan 0.3 ise 0.2999999999999999888977… değeridir.</li>
+        <li>IEEE 754 çift duyarlıklı (double) sayı 64 bittir: 1 işaret, 11 üs ve 52 kesir (mantis) biti.</li>
+        <li>Tek duyarlıklı (float) sayı 32 bittir: 1 işaret, 8 üs, 23 kesir biti; yaklaşık 7 anlamlı basamak tutar, double ise 15–17.</li>
+        <li>Kayan nokta sayıları eşitlikle değil, küçük bir tolerans içinde karşılaştırılmalıdır.</li>
+        <li>Para hesaplarında tutarı kuruş cinsinden tam sayı olarak ya da ondalık (decimal) türüyle saklamak gerekir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="64 bitlik IEEE 754 çift duyarlıklı sayının yapısı: 1 işaret biti, 11 üs biti ve 52 kesir biti; altında 0.1, 0.2 ve 0.3'ün saklanan gerçek değerleri ve toplamın 0.3'ten bir adım yukarıda kalması." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">IEEE 754 çift duyarlık: 64 bit</text>
+  <rect x="20" y="52" width="40" height="56" rx="6" class="dgs"/>
+  <rect x="64" y="52" width="150" height="56" rx="6" class="oks"/>
+  <rect x="218" y="52" width="482" height="56" rx="6" class="ps"/>
+  <text x="40" y="86" class="b mid">S</text>
+  <text x="139" y="80" class="b mid">Üs</text><text x="139" y="98" class="sm mid">11 bit, sapma 1023</text>
+  <text x="459" y="80" class="b mid">Kesir (mantis)</text><text x="459" y="98" class="sm mid">52 bit, başta gizli 1</text>
+  <text x="40" y="128" class="sm mid">1 bit</text>
+  <text x="360" y="150" class="sm mid t2">Değer = (−1)^S × 1,kesir × 2^(üs − 1023)</text>
+  <line x1="20" y1="170" x2="700" y2="170" class="sb dash" fill="none"/>
+  <text x="20" y="200" class="b">Gerçekte saklanan değerler</text>
+  <rect x="20" y="214" width="680" height="34" rx="6" class="sf sb"/>
+  <text x="34" y="236" class="b">0.1</text><text x="120" y="236" class="sm">0.1000000000000000055511151…</text><text x="686" y="236" class="sm end mu">3FB999999999999A</text>
+  <rect x="20" y="254" width="680" height="34" rx="6" class="sf sb"/>
+  <text x="34" y="276" class="b">0.2</text><text x="120" y="276" class="sm">0.2000000000000000111022302…</text><text x="686" y="276" class="sm end mu">3FC999999999999A</text>
+  <line x1="60" y1="350" x2="660" y2="350" class="st sw" fill="none"/>
+  <line x1="200" y1="336" x2="200" y2="364" class="sp sw" fill="none"/>
+  <line x1="520" y1="336" x2="520" y2="364" class="sdg sw" fill="none"/>
+  <circle cx="360" cy="350" r="7" class="a"/>
+  <text x="200" y="326" class="sm mid b p">saklanan 0.3</text>
+  <text x="200" y="386" class="sm mid">0.29999999999999998889…</text>
+  <text x="520" y="326" class="sm mid b dg">0.1 + 0.2 sonucu</text>
+  <text x="520" y="386" class="sm mid">0.30000000000000004441…</text>
+  <text x="360" y="326" class="sm mid">gerçek 0,3</text>
+  <text x="360" y="410" class="sm mid t2">Komşu iki double arasındaki adım: 2⁻⁵⁴ ≈ 5,55 × 10⁻¹⁷</text>
+</svg>
+      <figcaption>Çift duyarlıklı sayıda bitlerin dağılımı ve 0.1 + 0.2 örneği. Toplam, 0.3'ün saklanan değerinin değil, ondan bir sonraki temsil edilebilir sayının üzerine düşer; aradaki fark yaklaşık 5,55 × 10⁻¹⁷'dir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">0.1 + 0.2 neden tam 0.3 etmez?</a></li>
+      <li><a href="#b2">IEEE 754 standardı nedir?</a></li>
+      <li><a href="#b3">İşaret, üs ve mantis ne demek?</a></li>
+      <li><a href="#b4">Ondalık sayılar ikilik sistemde nasıl saklanır?</a></li>
+      <li><a href="#b5">Float ile double arasındaki fark nedir?</a></li>
+      <li><a href="#b6">NaN ve Infinity nasıl gösterilir?</a></li>
+      <li><a href="#b7">Kayan nokta hatası nasıl önlenir?</a></li>
+      <li><a href="#b8">Para hesaplarında neden float kullanılmamalı?</a></li>
+      <li><a href="#b9">Araçlarla kayan noktayı inceleme</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-ieee-754-kayan-nokta-0-1-0-2-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../ieee754-cevir/"><strong>IEEE 754 Kayan Nokta Çevirici</strong><span>Bir sayının 32 ya da 64 bit IEEE 754 gösterimini çıkarın ya da onaltılık bit dizisini sayıya çevirin.</span></a></li>
+          <li><a href="../../ikili-ondalik-cevir/"><strong>İkili (Binary) Ondalık Çevirici</strong><span>Binary sayıyı ondalığa, ondalık sayıyı binary'ye çevirin; bit grupları, hex ve oktal karşılığıyla birlikte.</span></a></li>
+          <li><a href="../../yuvarlama-hesapla/"><strong>Sayı Yuvarlama</strong><span>Sayıyı istediğiniz basamağa ya da en yakın kata yuvarlayın; matematiksel, yukarı, aşağı, kesme ve bankacı yuvarlamasını yan yana görün.</span></a></li>
+          <li><a href="../../sayi-tabani-donustur/"><strong>Sayı Tabanı Dönüştürücü</strong><span>İkili, sekizli, onlu, onaltılı ve 2-36 arası özel tabanlar arasında dönüştürün; büyük sayı, negatif sayı, ondalık kesir, bit işlemleri ve ASCII/Unicode tablosu.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">0.1 + 0.2 neden tam 0.3 etmez?</h2>
+      <p>Onluk sistemde 1/3'ü sonlu basamakla yazamayız: 0,3333… diye sonsuza gider. Bir yerde keserseniz küçük bir hata oluşur ve üç tane 0,333'ü topladığınızda 1 yerine 0,999 bulursunuz. Bilgisayarda aynı şey 0.1 için yaşanır, çünkü bilgisayar sayıları 2 tabanında saklar ve 2 tabanında yalnızca paydası 2'nin kuvveti olan kesirler (1/2, 1/4, 3/8 gibi) sonlu yazılabilir.</p>
+      <p>1/10'un paydası 2 × 5'tir; 5 çarpanı yüzünden 0.1 ikilik sistemde <code>0.0001100110011001100…</code> şeklinde sonsuza kadar tekrar eder. Bilgisayar bu diziyi 52 bitte keser ve en yakın değere yuvarlar. Aynı şey 0.2 için de geçerlidir. İki yuvarlanmış sayı toplanınca çıkan sonuç bir kez daha yuvarlanır ve 0.3'ün saklanabilen en yakın temsilinin değil, ondan bir adım büyük olan sayının üzerine düşer. Ekrana yazdırılırken bu sayı 0.30000000000000004 olarak görünür.</p>
+      <p>Yani hata toplamada değil, sayıların ilk saklanma anındadır. Programlama dillerinin çoğunda kod içinde ondalık ayırıcı olarak nokta kullanıldığı için bu yazıda kod örneklerini noktalı, açıklamaları virgüllü yazıyoruz.</p>
+
+      <h2 id="b2">IEEE 754 standardı nedir?</h2>
+      <p>IEEE 754, Elektrik ve Elektronik Mühendisleri Enstitüsü'nün 1985'te yayımladığı, 2008 ve 2019'da güncellediği kayan nokta aritmetiği standardıdır. Neredeyse bütün işlemciler, programlama dilleri ve veritabanları ondalıklı sayıları bu standarda göre saklar. Bu sayede bir C programında hesaplanan double değer JavaScript'te, Python'da ya da Java'da bit bit aynı çıkar.</p>
+      <p>&quot;Kayan nokta&quot; adı, sayının bilimsel gösterime benzer biçimde saklanmasından gelir: 6.25 sayısı 1,5625 × 2² diye yazılır. Ondalık noktanın yeri üs ile &quot;kaydırılır&quot;; böylece aynı bit sayısıyla hem çok küçük (10⁻³⁰⁸ düzeyi) hem çok büyük (10³⁰⁸ düzeyi) sayılar tutulabilir. Bedeli, her sayının yalnızca sınırlı sayıda anlamlı basamakla saklanmasıdır.</p>
+
+      <h2 id="b3">İşaret, üs ve mantis ne demek?</h2>
+      <p>IEEE 754 sayısı üç alandan oluşur. <strong>İşaret biti</strong> 0 ise sayı pozitif, 1 ise negatiftir. <strong>Üs</strong> alanı, sayının 2'nin kaçıncı kuvvetiyle ölçekleneceğini tutar; negatif üsleri ayrı işaretle saklamamak için sabit bir <strong>sapma (bias)</strong> eklenir: tek duyarlıkta 127, çift duyarlıkta 1023. <strong>Kesir (mantis)</strong> alanı ise virgülden sonraki ikilik basamaklardır; normal sayılarda baştaki 1 her zaman var kabul edildiği için yazılmaz ve buna &quot;gizli bit&quot; denir.</p>
+      <div class="rh-formula">Değer = (−1)^işaret × 1,kesir × 2^(üs − sapma)<br>Tek duyarlık: sapma 127 · Çift duyarlık: sapma 1023</div>
+      <ol class="ba-steps">
+        <li><strong>Çözümlü örnek, −6,25 sayısını tek duyarlıkta yazalım.</strong> Sayı negatif olduğu için işaret biti 1'dir.</li>
+        <li>6,25'i ikiliğe çevirin: 6 = 110, 0,25 = 0,01; yani 6,25 = 110,01₂.</li>
+        <li>Normalleştirin: 110,01 = 1,1001 × 2². Gerçek üs 2'dir.</li>
+        <li>Üs alanına sapmayı ekleyin: 2 + 127 = 129 = 10000001₂.</li>
+        <li>Kesir alanına virgülden sonraki bitleri yazıp 23 bite sıfırla tamamlayın: 1001 0000 0000 0000 0000 000.</li>
+        <li>Bitleri birleştirin: 1 10000001 10010000000000000000000 → onaltılık C0C80000. −6,25 ikilikte sonlu yazıldığı için hiç hata yoktur.</li>
+      </ol>
+      <p>Aynı yöntemi 0,1 için uygularsanız kesir kısmı 1001 1001 1001… diye tekrar eder; 23. bitte kesilip yuvarlanır ve tek duyarlıkta 3DCCCCCD bulunur. Bu bitlerin karşılık geldiği gerçek değer 0,100000001490116…'dır. Bit dökümünü kendiniz görmek için <a href="../../ieee754-cevir/">IEEE 754 Çevirici</a>ye bir sayı yazmanız yeterli.</p>
+
+      <h2 id="b4">Ondalık sayılar ikilik sistemde nasıl saklanır?</h2>
+      <p>Ondalık kesri ikiliğe çevirmenin yolu, kesir kısmını tekrar tekrar 2 ile çarpıp tam kısmı not etmektir. Çıkan tam kısımlar sırayla ikilik basamakları verir. Kesir sıfıra ulaşırsa sayı sonludur; aynı kesir tekrar karşınıza çıkarsa dizi devirlidir. Bu, onluk sistemdeki devirli ondalık sayıların ikilikteki karşılığıdır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Adım</th><th>İşlem</th><th>Tam kısım (bit)</th><th>Kalan kesir</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>0,1 × 2 = 0,2</td><td>0</td><td>0,2</td></tr>
+          <tr><td>2</td><td>0,2 × 2 = 0,4</td><td>0</td><td>0,4</td></tr>
+          <tr><td>3</td><td>0,4 × 2 = 0,8</td><td>0</td><td>0,8</td></tr>
+          <tr><td>4</td><td>0,8 × 2 = 1,6</td><td>1</td><td>0,6</td></tr>
+          <tr><td>5</td><td>0,6 × 2 = 1,2</td><td>1</td><td>0,2</td></tr>
+          <tr><td>6</td><td>0,2 × 2 = 0,4</td><td>0</td><td>0,4 (tekrar başladı)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">0,2 kesri 5. adımda yeniden göründüğü için 0011 bloğu sonsuza kadar tekrar eder: 0,1 = 0,0(0011)₂.</p>
+      <p>Tam sayılarda böyle bir sorun yoktur: 2⁵³ = 9.007.199.254.740.992'ye kadar bütün tam sayılar double ile hatasız tutulur. Bu sınırın üstünde ardışık tam sayılar arasında boşluklar başlar; JavaScript'te 2⁵³ + 1 yazdığınızda 9.007.199.254.740.992 görmenizin nedeni budur. İkilik çevirmenin genel kurallarını <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> yazısında bulabilirsiniz.</p>
+
+      <h2 id="b5">Float ile double arasındaki fark nedir?</h2>
+      <p>İkisi de IEEE 754 sayısıdır, fark bit sayısındadır. Float (tek duyarlık) 32 bit, double (çift duyarlık) 64 bit kullanır. Double daha geniş üs alanı sayesinde çok daha büyük ve küçük sayıları, daha uzun kesir alanı sayesinde de çok daha fazla anlamlı basamağı tutar. JavaScript'teki tüm Number değerleri, Python'daki float türü ve Excel'in hücre hesapları double'dır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>Float (tek, 32 bit)</th><th>Double (çift, 64 bit)</th></tr></thead>
+        <tbody>
+          <tr><td>İşaret / üs / kesir</td><td>1 / 8 / 23 bit</td><td>1 / 11 / 52 bit</td></tr>
+          <tr><td>Üs sapması</td><td>127</td><td>1023</td></tr>
+          <tr><td>Anlamlı basamak</td><td>yaklaşık 7</td><td>yaklaşık 15–17</td></tr>
+          <tr><td>En büyük değer</td><td>yaklaşık 3,4 × 10³⁸</td><td>yaklaşık 1,8 × 10³⁰⁸</td></tr>
+          <tr><td>Makine epsilonu</td><td>2⁻²³ ≈ 1,19 × 10⁻⁷</td><td>2⁻⁵² ≈ 2,22 × 10⁻¹⁶</td></tr>
+          <tr><td>0,1'in onaltılık kodu</td><td>3DCCCCCD</td><td>3FB999999999999A</td></tr>
+          <tr><td>Tipik kullanım</td><td>Grafik, oyun, sensör verisi</td><td>Bilimsel hesap, genel programlama</td></tr>
+        </tbody>
+      </table></div>
+      <p>Makine epsilonu, 1'den büyük ilk temsil edilebilir sayı ile 1 arasındaki farktır ve göreli hassasiyetin ölçüsüdür. Float ile yapılan uzun toplamlarda hata hızla birikir; örneğin bir milyon kez 0,1 eklediğinizde float sonucu 100.000'den belirgin biçimde sapar, double ise çok daha yakın kalır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-ieee-754-kayan-nokta-0-1-0-2-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">NaN ve Infinity nasıl gösterilir?</h2>
+      <p>IEEE 754, hesap sırasında oluşabilecek tanımsız durumlar için özel bit desenleri ayırır. Üs alanının tamamı 1 olduğunda sayı &quot;normal&quot; değildir: kesir alanı sıfırsa <strong>Infinity</strong> (sonsuz), sıfır değilse <strong>NaN</strong> (Not a Number, sayı değil) anlamına gelir. İşaret biti sonsuzun yönünü belirler.</p>
+      <p>Üs alanının tamamı 0 olduğunda ise sayı ya sıfırdır ya da <strong>alt-normal</strong> (subnormal) bir sayıdır. Alt-normal sayılarda gizli bit 0 kabul edilir ve sıfıra çok yakın değerler kademeli olarak temsil edilir. Standartta +0 ve −0 ayrı bit desenleridir ama karşılaştırmada eşit sayılır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Durum</th><th>Örnek işlem</th><th>Sonuç</th></tr></thead>
+        <tbody>
+          <tr><td>Pozitif sıfıra bölme</td><td>1 / 0</td><td>Infinity</td></tr>
+          <tr><td>Negatif sayıyı sıfıra bölme</td><td>−1 / 0</td><td>−Infinity</td></tr>
+          <tr><td>Sıfırı sıfıra bölme</td><td>0 / 0</td><td>NaN</td></tr>
+          <tr><td>Negatifin karekökü</td><td>√−1</td><td>NaN</td></tr>
+          <tr><td>Taşma</td><td>1e308 × 10</td><td>Infinity</td></tr>
+          <tr><td>NaN karşılaştırması</td><td>NaN == NaN</td><td>false</td></tr>
+        </tbody>
+      </table></div>
+      <p>NaN'ın kendisine bile eşit olmaması bilinçli bir tasarımdır; bir değerin NaN olup olmadığını anlamak için dillerdeki özel denetim işlevleri kullanılmalıdır.</p>
+
+      <h2 id="b7">Kayan nokta hatası nasıl önlenir?</h2>
+      <p>Hatanın kendisini ortadan kaldıramazsınız ama sonuçlarını yönetebilirsiniz. Doğru yöntem, ne tür bir hesap yaptığınıza bağlıdır.</p>
+      <ul>
+        <li><strong>Eşitlik yerine tolerans:</strong> <code>a == b</code> yerine iki sayının farkının mutlak değerinin küçük bir eşikten (ör. 1e-9 ya da sayıların büyüklüğüyle orantılı bir değer) küçük olup olmadığına bakın.</li>
+        <li><strong>Gösterirken yuvarlayın, hesaplarken değil:</strong> Ara sonuçları tam hassasiyetle tutun, ekrana yazarken istediğiniz basamağa yuvarlayın. 0.30000000000000004 iki basamağa yuvarlanınca 0.30 olur.</li>
+        <li><strong>Tam sayı birimine geçin:</strong> Tutarları kuruş, uzunlukları milimetre, süreleri milisaniye cinsinden tam sayı olarak saklayın; tam sayı toplamaları hatasızdır.</li>
+        <li><strong>Ondalık tür kullanın:</strong> Birçok dil ve veritabanı onluk tabanda çalışan decimal ya da numeric türü sunar; 0.1 bu türlerde tam olarak saklanır.</li>
+        <li><strong>İşlem sırasına dikkat edin:</strong> Çok büyük ve çok küçük sayıları birlikte toplarken küçükleri önce toplamak hatayı azaltır.</li>
+      </ul>
+      <p>Yuvarlama kuralının kendisi de önemlidir: 1.005 sayısı double'da 1,00499999999999989… olarak saklandığı için iki basamağa yuvarlandığında 1.01 yerine 1.00 çıkabilir. Hangi yuvarlama yöntemlerinin olduğunu görmek için <a href="../../yuvarlama-hesapla/">Yuvarlama Hesaplama</a> aracını deneyebilirsiniz.</p>
+
+      <h2 id="b8">Para hesaplarında neden float kullanılmamalı?</h2>
+      <p>Para, onluk sistemde tanımlıdır ve kuruşa kadar tam olmalıdır. 0,10 TL'lik bir indirimin ikilik sistemde tam saklanamaması, binlerce satırlık bir faturada ya da faiz hesabında kuruş farklarına yol açar. Muhasebe kayıtları ile banka ekstresi arasında 1 kuruşluk fark bile mutabakat sorununa dönüşür.</p>
+      <p>Örneğin iki ürünün fiyatı 1,10 TL ve 2,20 TL olsun. Double ile toplandığında 1.1 + 2.2 işlemi 3.3000000000000003 verir; 0.1 + 0.7 ise 0.7999999999999999 çıkar. Bu sonuçlar karşılaştırmaya girerse &quot;toplam 3,30 TL'ye eşit mi?&quot; sorusu yanlış cevaplanır. Aynı hesabı kuruş cinsinden yaparsanız 110 + 220 = 330 kuruş, yani tam 3,30 TL bulursunuz. Bu nedenle e-ticaret ve muhasebe yazılımları tutarları ya tam sayı kuruş ya da decimal türüyle tutar; KDV gibi oranlı hesaplarda da yuvarlama, mevzuatın öngördüğü noktada ve açık bir kuralla yapılır.</p>
+
+      <h2 id="b9">Araçlarla kayan noktayı inceleme</h2>
+      <ol class="ba-steps">
+        <li><a href="../../ieee754-cevir/">IEEE 754 Çevirici</a>ye 0.1 yazın; işaret, üs ve kesir bitlerini, onaltılık kodu ve saklanan tam değeri görün.</li>
+        <li>Tek duyarlık ile çift duyarlık arasında geçiş yaparak hassasiyet farkını karşılaştırın.</li>
+        <li>Tam sayıların ikilik karşılığını <a href="../../ikili-ondalik-cevir/">İkili Ondalık Çevirici</a> ile, onaltılık ve diğer tabanları <a href="../../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü</a> ile kontrol edin.</li>
+        <li>Sonucu belirli bir basamağa yuvarlamanız gerekiyorsa yuvarlama aracında farklı yöntemleri deneyin.</li>
+      </ol>
+      <p>Bu araçlar tamamen tarayıcınızda çalışır; yazdığınız sayılar ya da kodlar hiçbir yere gönderilmez. Onaltılık gösterimin mantığını tazelemek için <a href="../../bilgi-bankasi/onaltilik-hex-sayi-sistemi/">onaltılık sayı sistemi</a> yazısına da göz atabilirsiniz.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>0.1 + 0.2 neden tam 0.3 etmez?</summary><p>Çünkü 0.1 ve 0.2 ikilik sistemde sonsuza kadar tekrar eden kesirlerdir ve bilgisayar onları 52 bitte keserek yuvarlar. İki yuvarlanmış değerin toplamı, 0.3'ün saklanan değerinden bir adım büyük olan 0.30000000000000004'e düşer.</p></details>
+      <details><summary>IEEE 754 standardı nedir?</summary><p>IEEE 754, ondalıklı sayıların bilgisayarda nasıl saklanacağını ve işleneceğini belirleyen uluslararası kayan nokta standardıdır. İşlemcilerin ve programlama dillerinin neredeyse tamamı bu standardı kullandığı için sonuçlar farklı sistemlerde aynı çıkar.</p></details>
+      <details><summary>Float ile double arasındaki fark nedir?</summary><p>Float 32 bit kullanır ve yaklaşık 7 anlamlı basamak tutar; double 64 bit kullanır ve 15 ile 17 anlamlı basamak tutar. Double ayrıca çok daha geniş bir sayı aralığını temsil edebilir ve genel programlamada varsayılan türdür.</p></details>
+      <details><summary>Ondalık sayılar ikilik sistemde nasıl saklanır?</summary><p>Sayı önce ikilik tabana çevrilir, sonra 1,xxx × 2 üzeri n biçiminde normalleştirilir. İşaret biti, sapma eklenmiş üs ve virgülden sonraki bitler ayrı alanlara yazılır; sığmayan bitler en yakın değere yuvarlanır.</p></details>
+      <details><summary>Kayan nokta hatası nasıl önlenir?</summary><p>Sayıları doğrudan eşitlikle karşılaştırmak yerine küçük bir tolerans kullanın, yuvarlamayı yalnızca gösterimde yapın, mümkünse tam sayı birimlerine geçin ya da onluk tabanda çalışan decimal türünü tercih edin.</p></details>
+      <details><summary>Para hesaplarında neden float kullanılmamalı?</summary><p>Kuruş gibi onluk kesirler ikilik sistemde tam saklanamadığı için çok sayıda işlemde kuruş farkları birikir. Tutarları tam sayı kuruş ya da decimal türüyle saklamak, toplamların her zaman beklenen değeri vermesini sağlar.</p></details>
+      <details><summary>İşaret, üs ve mantis ne demek?</summary><p>İşaret biti sayının pozitif mi negatif mi olduğunu, üs sayının 2'nin kaçıncı kuvvetiyle ölçekleneceğini, mantis ise anlamlı basamakları tutar. Değer, işaret çarpı 1,mantis çarpı 2 üzeri gerçek üs formülüyle bulunur.</p></details>
+      <details><summary>NaN ve Infinity nasıl gösterilir?</summary><p>Üs bitlerinin tamamı 1 olduğunda özel değerler oluşur: kesir sıfırsa artı ya da eksi sonsuz, sıfır değilse NaN elde edilir. Sıfıra bölme sonsuzu, sıfırın sıfıra bölünmesi ya da negatif sayının karekökü NaN'ı verir.</p></details>
+      <details><summary>JavaScript'te 0.1 + 0.2 === 0.3 neden false döner?</summary><p>JavaScript'teki tüm sayılar IEEE 754 double'dır ve toplam 0.30000000000000004 olarak hesaplanır. Bu değer 0.3'ün saklanan değerinden farklı bit desenine sahip olduğu için katı eşitlik false verir; fark Number.EPSILON düzeyindedir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://standards.ieee.org/ieee/754/6210/" rel="noopener">IEEE – 754-2019 Kayan Nokta Aritmetiği Standardı</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../onaltilik-hex-sayi-sistemi/"><strong>Onaltılık (Hex) Sayı Sistemi Nedir? Hex Ondalığa Nasıl Çevrilir</strong><span>Onaltılık sistem 0–9 rakamları ve A–F harfleriyle 16 tabanında sayar. Hex ondalık çevirme, ondalıktan hex'e bölme yöntemi, ikilik ilişkisi, renk kodları ve hex toplama.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+          <li><a href="../beygir-gucu-ve-tork-farki/"><strong>Beygir Gücü ve Tork Farkı Nedir? HP, kW ve Nm Değerleri Nasıl Okunur</strong><span>Tork motorun döndürme kuvvetidir (Nm), beygir gücü bu kuvvetin ne hızla iş yaptığıdır. P = T × n ÷ 9549 formülü, kW–PS çevirisi, lb-ft ve dizel tork farkı örneklerle.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-ieee-754-kayan-nokta-0-1-0-2-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
