@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Sezar Şifrelemesi Nedir? Vigenère, ROT13 ve Atbaş Örnekleri</title>
+  <meta name="description" content="Sezar şifrelemesi her harfi alfabede sabit sayıda kaydıran tarihî bir yöntemdir. Türkçe alfabede örnekler, Vigenère, ROT13, Atbaş ve neden artık güvenli olmadığı.">
+  <meta name="keywords" content="sezar şifreleme nedir, sezar şifresi çözme, vigenere şifreleme, rot13 nedir, atbaş şifreleme, klasik şifreleme yöntemleri, şifreli mesaj yazma, frekans analizi">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/sezar-sifreleme-nedir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Sezar Şifrelemesi Nedir? Vigenère, ROT13 ve Atbaş Örnekleri">
+  <meta property="og:description" content="Sezar şifrelemesi her harfi alfabede sabit sayıda kaydıran tarihî bir yöntemdir. Türkçe alfabede örnekler, Vigenère, ROT13, Atbaş ve neden artık güvenli olmadığı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/sezar-sifreleme-nedir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Sezar Şifrelemesi Nedir? Sezar, Vigenère ve ROT13 Nasıl Çözülür","description":"Sezar şifrelemesi her harfi alfabede sabit sayıda kaydıran tarihî bir yöntemdir. Türkçe alfabede örnekler, Vigenère, ROT13, Atbaş ve neden artık güvenli olmadığı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/sezar-sifreleme-nedir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1605,"keywords":"sezar şifreleme nedir, sezar şifresi çözme, vigenere şifreleme, rot13 nedir, atbaş şifreleme, klasik şifreleme yöntemleri, şifreli mesaj yazma, frekans analizi","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"Sezar Şifrelemesi Nedir? Sezar, Vigenère ve ROT13 Nasıl Çözülür"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Sezar şifrelemesi nedir?","acceptedAnswer":{"@type":"Answer","text":"Sezar şifrelemesi, her harfi alfabede sabit sayıda ileri kaydırarak başka bir harfle değiştiren klasik bir yer değiştirme şifresidir. Adını, yazışmalarında 3 harf kaydırma kullandığı aktarılan Jül Sezar'dan alır ve bugün eğitsel amaçla kullanılır."}},{"@type":"Question","name":"Sezar şifresi nasıl çözülür?","acceptedAnswer":{"@type":"Answer","text":"Anahtar biliniyorsa her harf aynı sayıda geri kaydırılır. Anahtar bilinmiyorsa Türkçede 28 olası kaydırmanın hepsi denenir ya da şifreli metindeki en sık harf bulunarak frekans analiziyle kaydırma miktarı tahmin edilir."}},{"@type":"Question","name":"Türkçe alfabede kaydırma nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Ç, Ğ, I, İ, Ö, Ş ve Ü dahil 29 harf sırayla numaralandırılır ve kaydırma bu sıraya göre yapılır. Z harfinden sonra A'ya dönülür; örneğin 3 kaydırmada Z harfi C olur, MERHABA da ÖĞTJÇDÇ'ye dönüşür."}},{"@type":"Question","name":"Vigenère şifresi Sezar'dan nasıl farklıdır?","acceptedAnswer":{"@type":"Answer","text":"Sezar'da tüm harfler aynı miktarda kayarken Vigenère'de her harf anahtar kelimedeki sıradaki harfe göre farklı miktarda kayar. Bu yüzden aynı harf metinde farklı şekillerde görünür ve basit frekans analizi tek başına yetmez."}},{"@type":"Question","name":"ROT13 ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"ROT13, İngiliz alfabesinde 13 harf kaydırmadır ve iki kez uygulanınca metni geri getirir. Gizlilik için değil, film sonları ya da bulmaca cevapları gibi metinlerin kazara okunmasını önlemek için kullanılır."}},{"@type":"Question","name":"Atbaş şifrelemesi nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Atbaş alfabeyi ters çevirir; ilk harf son harfle, ikinci harf sondan ikinci harfle eşleşir. Türk alfabesinde A ile Z, B ile Y yer değiştirir; anahtarı olmadığı için yöntemi bilen herkes metni hemen çözer."}},{"@type":"Question","name":"Frekans analizi ile şifre nasıl kırılır?","acceptedAnswer":{"@type":"Answer","text":"Her dilde bazı harfler daha sık geçer; Türkçede a, e, i, n gibi. Şifreli metinde harflerin kaç kez geçtiği sayılır ve en sık harflerin hangi açık harflere karşılık geldiği tahmin edilerek şifrenin anahtarı bulunur."}},{"@type":"Question","name":"Klasik şifreler bugün güvenli mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır, Sezar, ROT13, Atbaş ve Vigenère gibi klasik şifreler bilgisayarla saniyeler içinde çözülür. Parola, kişisel veri ve gizli yazışmalar için yalnızca modern, standartlaşmış ve denetlenmiş şifreleme yöntemleri kullanılmalıdır."}},{"@type":"Question","name":"Sezar şifresinde kaç farklı anahtar vardır?","acceptedAnswer":{"@type":"Answer","text":"Alfabedeki harf sayısının bir eksiği kadar anlamlı anahtar vardır; 29 harfli Türk alfabesinde 28, 26 harfli İngiliz alfabesinde 25. Sıfır kaydırma metni değiştirmediği ve alfabe uzunluğu kadar kaydırma başa döndüğü için sayılmaz."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>Sezar Şifrelemesi Nedir? Sezar, Vigenère ve ROT13 Nasıl Çözülür</h1><p class="lead">Sezar şifrelemesi, bir metindeki her harfi alfabede <strong>sabit sayıda ileri kaydırarak</strong> başka bir harfle değiştiren, Roma döneminden kalma bir yer değiştirme şifresidir; Jül Sezar'ın 3 harf kaydırma kullandığı aktarılır. Bugün yalnızca tarihî ve eğitsel değeri vardır: Türkçe alfabede yalnızca 28 farklı anahtar olduğu için her şifreli metin birkaç saniyede çözülür. Bu sayfada Sezar, Vigenère, ROT13 ve Atbaş yöntemlerinin nasıl çalıştığını, Türkçe harflerle nasıl uygulandığını, frekans analiziyle nasıl kırıldıklarını ve gerçek gizlilik için neden modern şifreleme gerektiğini örneklerle anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 8 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Sezar şifresinde her harf alfabede k adım ileri kaydırılır; çözmek için aynı sayıda geri kaydırılır.</li>
+        <li>29 harfli Türk alfabesinde 3 kaydırmayla MERHABA, ÖĞTJÇDÇ olur.</li>
+        <li>Vigenère her harf için anahtar kelimedeki farklı bir kaydırmayı kullanır; bu yüzden Sezar'dan çok daha zor kırılır.</li>
+        <li>ROT13, 26 harfli İngiliz alfabesinde 13 kaydırmadır; iki kez uygulanınca metin eski hâline döner.</li>
+        <li>Atbaş alfabeyi ters çevirir: ilk harf son harfle, ikinci harf sondan ikinciyle yer değiştirir.</li>
+        <li>Bu yöntemlerin hiçbiri bugün güvenli değildir; parola, kişisel veri ve gizli yazışma için modern, standartlaşmış şifreleme kullanılmalıdır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Türk alfabesinde Sezar şifresi: üst sırada A'dan Z'ye 29 harf, alt sırada 3 adım kaydırılmış harfler; örnek MERHABA kelimesinin ÖĞTJÇDÇ'ye dönüşmesi ve 28 anahtarın tamamının denenebilmesi." viewBox="0 0 740 400" xmlns="http://www.w3.org/2000/svg">
+  <text x="370" y="30" class="lg b mid">Sezar şifresi, kaydırma = 3 (Türk alfabesi)</text>
+  <g class="sm mid b">
+    <text x="30" y="70">A</text><text x="54" y="70">B</text><text x="78" y="70">C</text><text x="102" y="70">Ç</text><text x="126" y="70">D</text><text x="150" y="70">E</text><text x="174" y="70">F</text><text x="198" y="70">G</text><text x="222" y="70">Ğ</text><text x="246" y="70">H</text><text x="270" y="70">I</text><text x="294" y="70">İ</text><text x="318" y="70">J</text><text x="342" y="70">K</text><text x="366" y="70">L</text><text x="390" y="70" class="p">M</text><text x="414" y="70">N</text><text x="438" y="70">O</text><text x="462" y="70">Ö</text><text x="486" y="70">P</text><text x="510" y="70">R</text><text x="534" y="70">S</text><text x="558" y="70">Ş</text><text x="582" y="70">T</text><text x="606" y="70">U</text><text x="630" y="70">Ü</text><text x="654" y="70">V</text><text x="678" y="70">Y</text><text x="702" y="70">Z</text>
+  </g>
+  <rect x="18" y="84" width="700" height="34" rx="6" class="ps"/>
+  <g class="sm mid b">
+    <text x="30" y="106">Ç</text><text x="54" y="106">D</text><text x="78" y="106">E</text><text x="102" y="106">F</text><text x="126" y="106">G</text><text x="150" y="106">Ğ</text><text x="174" y="106">H</text><text x="198" y="106">I</text><text x="222" y="106">İ</text><text x="246" y="106">J</text><text x="270" y="106">K</text><text x="294" y="106">L</text><text x="318" y="106">M</text><text x="342" y="106">N</text><text x="366" y="106">O</text><text x="390" y="106" class="p">Ö</text><text x="414" y="106">P</text><text x="438" y="106">R</text><text x="462" y="106">S</text><text x="486" y="106">Ş</text><text x="510" y="106">T</text><text x="534" y="106">U</text><text x="558" y="106">Ü</text><text x="582" y="106">V</text><text x="606" y="106">Y</text><text x="630" y="106">Z</text><text x="654" y="106">A</text><text x="678" y="106">B</text><text x="702" y="106">C</text>
+  </g>
+  <text x="18" y="140" class="sm mu">üst sıra: açık metin · alt sıra: şifreli metin · Z'den sonra A'ya sarar</text>
+  <rect x="18" y="160" width="330" height="96" rx="10" class="sf sb"/>
+  <text x="34" y="186" class="sm mu">Açık metin</text>
+  <text x="34" y="222" class="xl">MERHABA</text>
+  <text x="34" y="244" class="sm t2">M+3 = Ö · E+3 = Ğ · R+3 = T</text>
+  <polygon points="362,200 392,208 362,216" class="p"/>
+  <line x1="352" y1="208" x2="366" y2="208" class="sp sw" fill="none"/>
+  <rect x="404" y="160" width="314" height="96" rx="10" class="p"/>
+  <text x="420" y="186" class="sm sf">Şifreli metin</text>
+  <text x="420" y="222" class="xl sf">ÖĞTJÇDÇ</text>
+  <text x="420" y="244" class="sm sf">çözmek için her harfi 3 geri al</text>
+  <text x="18" y="292" class="b">Kaba kuvvet: kaç anahtar denemek gerekir?</text>
+  <rect x="18" y="306" width="62" height="28" rx="4" class="dgs"/><text x="88" y="326" class="sm">Sezar (Türkçe): 28 anahtar, saniyeler</text>
+  <rect x="18" y="344" width="230" height="28" rx="4" class="oks"/><text x="256" y="364" class="sm">Vigenère, 4 harfli anahtar: 29⁴ = 707.281 olasılık</text>
+  <text x="18" y="392" class="sm t2">Modern şifrelemede anahtar uzayı 2¹²⁸ ve üzeridir; bu ölçekte çizilemez.</text>
+</svg>
+      <figcaption>Kaydırma 3 olduğunda A→Ç, M→Ö, Z→C olur; alfabenin sonu başa sarar. Saldırgan için yalnızca 28 olasılık vardır, bu yüzden Sezar şifresi bugün bir bilmece olarak değerlidir, güvenlik aracı olarak değil.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Sezar şifrelemesi nedir, nereden gelir?</a></li>
+      <li><a href="#b2">Sezar şifresi nasıl çalışır? Formül</a></li>
+      <li><a href="#b3">Türkçe alfabede kaydırma nasıl yapılır?</a></li>
+      <li><a href="#b4">Sezar şifresi nasıl çözülür? Kaba kuvvet ve frekans analizi</a></li>
+      <li><a href="#b5">Vigenère şifresi Sezar'dan nasıl farklıdır?</a></li>
+      <li><a href="#b6">ROT13 ne işe yarar?</a></li>
+      <li><a href="#b7">Atbaş şifrelemesi nasıl çalışır?</a></li>
+      <li><a href="#b8">Klasik şifreler karşılaştırması</a></li>
+      <li><a href="#b9">Klasik şifreler bugün güvenli mi?</a></li>
+      <li><a href="#b10">Sık yapılan hatalar ve pratik ipuçları</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-sezar-sifreleme-nedir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../sezar-sifreleme/"><strong>Sezar Şifreleme</strong><span>Metni Sezar şifresiyle şifreleyin ya da çözün; Türkçe 29 harfli alfabe desteği ve anahtarı bilinmeyen metin için tüm kaydırmaları deneme.</span></a></li>
+          <li><a href="../../vigenere-sifreleme/"><strong>Vigenère Şifreleme</strong><span>Metni bir anahtar kelimeyle Vigenère yöntemine göre şifreleyin ya da çözün; Türkçe 29 harfli ve İngilizce 26 harfli alfabe seçeneğiyle.</span></a></li>
+          <li><a href="../../rot13-cevir/"><strong>ROT13 Çevirici</strong><span>Metni ROT13 ile kodlayın ya da çözün; rakamlar için ROT5, ikisi birden ROT18 ve tüm yazdırılabilir ASCII için ROT47.</span></a></li>
+          <li><a href="../../atbash-sifreleme/"><strong>Atbash Şifreleme</strong><span>Atbash ile her harfi alfabenin diğer ucundaki karşılığıyla değiştirin; aynı işlem hem şifreler hem çözer. Türkçe ve İngilizce alfabe.</span></a></li>
+          <li><a href="../../harf-frekansi/"><strong>Harf Frekansı Analizi</strong><span>Metindeki her harfin kaç kez geçtiğini ve yüzdesini bulun; Türkçe ı-i ayrımına uygun, sıklık ya da alfabe sırasıyla.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Sezar şifrelemesi nedir, nereden gelir?</h2>
+      <p>Sezar şifrelemesi, bilinen en eski <strong>yer değiştirme şifrelerinden</strong> biridir. Her harf, alfabede kendisinden belirli sayıda sonra gelen harfle değiştirilir. Romalı tarihçi Suetonius, Jül Sezar'ın askerî yazışmalarında harfleri 3 adım kaydırdığını, Augustus'un ise 1 adım kaydırmayı tercih ettiğini yazar. Yöntemin adı buradan gelir.</p>
+      <p>O dönemde okuma yazma bilenlerin azlığı ve şifre kavramının yaygın olmaması, bu basit yöntemi bile işe yarar kılıyordu. Bugün ise Sezar şifresi bilişim teknolojileri derslerinde, kriptografiye giriş kitaplarında, kaçış odası bulmacalarında ve çocuklara mantık öğretmede kullanılır. Kriptografinin temel kavramlarını, yani açık metin, şifreli metin, anahtar ve algoritma ayrımını göstermek için mükemmel bir başlangıç örneğidir.</p>
+
+      <h2 id="b2">Sezar şifresi nasıl çalışır? Formül</h2>
+      <p>Alfabedeki harflere sırayla numara verilir. Türk alfabesinde A = 0, B = 1, C = 2, Ç = 3 diye başlar ve Z = 28 ile biter. Şifrelemek için harfin numarasına anahtar (k) eklenir; sonuç alfabe uzunluğunu aşarsa başa sarılır. Bu &quot;başa sarma&quot; işlemi matematikte mod alma ile yapılır; konuyu <a href="../../bilgi-bankasi/bolunebilme-kurallari/">bölünebilme ve kalan</a> yazısında da bulabilirsiniz.</p>
+      <div class="rh-formula">Şifreleme: C = (P + k) mod n<br>Çözme: P = (C − k) mod n<br>n = alfabedeki harf sayısı (Türkçe 29, İngilizce 26)</div>
+      <ol class="ba-steps">
+        <li>Anahtarı belirleyin: k = 3.</li>
+        <li>&quot;MERHABA&quot; kelimesinin ilk harfi M'nin numarası 15'tir; 15 + 3 = 18, 18 numara Ö'dür.</li>
+        <li>E (5) + 3 = 8 → Ğ; R (20) + 3 = 23 → T; H (9) + 3 = 12 → J; A (0) + 3 = 3 → Ç; B (1) + 3 = 4 → D.</li>
+        <li>Sonuç: MERHABA → <strong>ÖĞTJÇDÇ</strong>. Boşluk ve noktalama işaretleri genellikle olduğu gibi bırakılır.</li>
+        <li>Başa sarma örneği: Z (28) + 3 = 31; 31 mod 29 = 2, yani Z → C olur.</li>
+      </ol>
+      <p>Çözmek için aynı işlemi tersine yaparsınız: Ö (18) − 3 = 15 → M. Bu işlemi elle yapmak yerine <a href="../../sezar-sifreleme/">Sezar Şifreleme</a> aracında metni yazıp kaydırma değerini seçmeniz yeterlidir; araç hem 29 harfli Türk hem 26 harfli İngiliz alfabesini destekler.</p>
+
+      <h2 id="b3">Türkçe alfabede kaydırma nasıl yapılır?</h2>
+      <p>Türkçe metni İngiliz alfabesiyle şifrelemeye çalışmak en sık yapılan hatadır. İngiliz alfabesinde Ç, Ğ, I (noktasız), Ö, Ş, Ü harfleri yoktur; Q, W, X ise Türk alfabesinde bulunmaz. Bu yüzden aynı anahtarla aynı kelime iki alfabede farklı sonuç verir. &quot;ÇAY&quot; kelimesi Türk alfabesinde 3 kaydırmayla <strong>FÇB</strong> olur; İngiliz alfabesinde ise Ç harfi tanınmadığı için şifrelenmeden kalır.</p>
+      <p>Bir diğer incelik büyük-küçük harf dönüşümüdür. Türkçede küçük i'nin büyüğü İ, küçük ı'nın büyüğü I'dır. Pek çok yazılım bu ayrımı bilmediği için &quot;ışık&quot; kelimesini büyütürken yanlış harf üretebilir. Şifreleme yaparken metni önce doğru biçimde büyük harfe çevirmek ve hangi alfabeyi kullandığınızı karşı tarafa söylemek gerekir. Türk alfabesinin harf sırası ve sayısıyla ilgili ayrıntılar <a href="../../bilgi-bankasi/turk-alfabesi-kac-harf/">Türk alfabesi kaç harf</a> yazısındadır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Açık metin</th><th>Alfabe</th><th>Anahtar</th><th>Şifreli metin</th></tr></thead>
+        <tbody>
+          <tr><td>MERHABA DÜNYA</td><td>Türkçe (29)</td><td>3</td><td>ÖĞTJÇDÇ GZPBÇ</td></tr>
+          <tr><td>ŞİFRE</td><td>Türkçe (29)</td><td>3</td><td>ÜLHTĞ</td></tr>
+          <tr><td>ÇAY</td><td>Türkçe (29)</td><td>3</td><td>FÇB</td></tr>
+          <tr><td>HELLO WORLD</td><td>İngilizce (26)</td><td>3</td><td>KHOOR ZRUOG</td></tr>
+          <tr><td>HELLO</td><td>İngilizce (26)</td><td>13 (ROT13)</td><td>URYYB</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b4">Sezar şifresi nasıl çözülür? Kaba kuvvet ve frekans analizi</h2>
+      <p>Anahtarı bilmeseniz de Sezar şifresini çözmek çok kolaydır, çünkü yalnızca alfabe uzunluğunun bir eksiği kadar olası anahtar vardır: Türkçede 28, İngilizcede 25. Bütün kaydırmaları sırayla deneyip anlamlı metni veren satırı seçmek, yani <strong>kaba kuvvet</strong> saldırısı, kalemle kâğıtla bile birkaç dakika sürer. Sezar aracındaki &quot;tüm kaydırmaları dene&quot; seçeneği bunu tek tıkla gösterir.</p>
+      <p>İkinci yöntem <strong>frekans analizidir</strong>. Her dilde bazı harfler diğerlerinden çok daha sık kullanılır. Türkçede a, e, i, n, r ve l harfleri metinlerde en sık görülenlerdir; İngilizcede ise e, t ve a öne çıkar. Sezar şifresinde her harf aynı miktarda kaydığı için bu sıklık deseni bozulmaz, yalnızca yer değiştirir. Şifreli metinde en sık geçen harf Ç ise, büyük olasılıkla A'nın 3 kaydırılmış hâlidir.</p>
+      <p>Frekans analizini ilk kez sistemli biçimde anlatan kişi, 9. yüzyılda yaşamış Arap bilgin el-Kindî'dir. Bu yöntem yalnızca Sezar'ı değil, harflerin rastgele karıştırıldığı tek alfabeli yer değiştirme şifrelerini de kırar. Uzun metinlerde sonuç neredeyse kesindir; çok kısa metinlerde ise istatistik yanıltabilir.</p>
+      <p>Bir metindeki harf sıklıklarını görmek için <a href="../../harf-frekansi/">Harf Frekansı Analizi</a> aracına şifreli metni yapıştırın. Araç Türkçedeki I-ı ve İ-i ayrımına uygun sayar ve en sık geçen harfleri yüzdeleriyle listeler.</p>
+
+      <h2 id="b5">Vigenère şifresi Sezar'dan nasıl farklıdır?</h2>
+      <p>Vigenère şifresi, 16. yüzyılda geliştirilen ve uzun süre &quot;kırılamaz şifre&quot; olarak anılan <strong>çok alfabeli</strong> bir yöntemdir. Tek bir kaydırma yerine bir anahtar kelime kullanılır; anahtar kelimenin her harfi bir kaydırma miktarını gösterir ve metin boyunca tekrar edilir. Böylece aynı harf metnin farklı yerlerinde farklı harflere dönüşür ve basit frekans analizi işe yaramaz.</p>
+      <div class="rh-formula">Cᵢ = (Pᵢ + Kᵢ) mod n<br>Kᵢ = anahtar kelimenin (i mod anahtar uzunluğu). harfinin numarası</div>
+      <ol class="ba-steps">
+        <li>Açık metin: SALDIRI SABAHTA. Anahtar: KALE (K = 13, A = 0, L = 14, E = 5).</li>
+        <li>Anahtarı harflerin altına tekrar ederek yazın: KALEKAL EKALEKA (boşluklar atlanır).</li>
+        <li>İlk harf: S (21) + K (13) = 34; 34 mod 29 = 5 → E.</li>
+        <li>İkinci harf: A (0) + A (0) = 0 → A. Üçüncü harf: L (14) + L (14) = 28 → Z. Dördüncü harf: D (4) + E (5) = 9 → H.</li>
+        <li>Tamamı: SALDIRI SABAHTA → <strong>EAZHTRU VKBLLGA</strong>. Açık metindeki üç A harfinin şifrede A, U ve B gibi farklı harflere dönüştüğüne dikkat edin.</li>
+      </ol>
+      <p>Vigenère de bugün güvenli değildir. 19. yüzyılda Charles Babbage ve Friedrich Kasiski, şifreli metindeki tekrar eden harf gruplarının arasındaki mesafeden anahtar uzunluğunu bulmanın yolunu gösterdi. Anahtar uzunluğu bilinince metin, her biri ayrı bir Sezar şifresi olan sütunlara bölünür ve her sütun frekans analiziyle çözülür. Denemek için <a href="../../vigenere-sifreleme/">Vigenère Şifreleme</a> aracını kullanabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="bilgi-sezar-sifreleme-nedir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">ROT13 ne işe yarar?</h2>
+      <p>ROT13 (&quot;13 döndür&quot;), 26 harfli İngiliz alfabesinde kaydırmanın 13 olduğu Sezar şifresidir. 13, alfabenin tam yarısı olduğu için aynı işlemi iki kez uygulamak metni eski hâline getirir: HELLO → URYYB → HELLO. Ayrı bir çözme işlemine gerek kalmaz.</p>
+      <p>ROT13'ün amacı hiçbir zaman gizlilik olmamıştır. İnternetin ilk tartışma gruplarında film ve kitap sonlarını, bulmaca cevaplarını ya da rahatsız edici olabilecek şakaları &quot;göz ucuyla okunmasın&quot; diye gizlemek için kullanıldı. Okumak isteyen kişi bilerek ROT13'ü uygular. Bugün de bazı forumlarda ve programlama örneklerinde aynı amaçla görülür.</p>
+      <p>Türkçe metinde ROT13 kullanırsanız Ç, Ğ, İ gibi harfler değişmeden kalır ve metnin bir kısmı okunur durumda kalır. 29 harfli alfabede tam yarı olmadığı için iki kez uygulanınca kendini geri çeviren bir Türkçe ROT karşılığı yoktur. <a href="../../rot13-cevir/">ROT13 Çevirici</a> bu yüzden İngiliz alfabesiyle çalışır.</p>
+
+      <h2 id="b7">Atbaş şifrelemesi nasıl çalışır?</h2>
+      <p>Atbaş (Atbash), alfabeyi ters çevirerek uygulanan bir yer değiştirme şifresidir: ilk harf son harfle, ikinci harf sondan ikinci harfle eşleşir. Adı, İbrani alfabesinin ilk ve son harfleri olan Alef-Tav ile ikinci ve sondan ikinci harfleri Bet-Şin'den gelir. Bazı eski metinlerde kullanıldığı bilinen çok eski bir yöntemdir.</p>
+      <p>Türk alfabesinde A ↔ Z, B ↔ Y, C ↔ V, Ç ↔ Ü eşleşir; ortadaki harf olan L ise kendisine dönüşür. Bu kuralla MERHABA → <strong>KTĞPZYZ</strong> olur. İngiliz alfabesinde ise A ↔ Z, B ↔ Y eşleşir ve HELLO → SVOOL olur. Atbaş'ın anahtarı yoktur; yöntemi bilen herkes metni anında çözer ve ROT13 gibi iki kez uygulanınca metin eski hâline döner. <a href="../../atbash-sifreleme/">Atbaş Şifreleme</a> aracı iki alfabeyle de çalışır.</p>
+
+      <h2 id="b8">Klasik şifreler karşılaştırması</h2>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Yöntem</th><th>Anahtar</th><th>Olası anahtar sayısı</th><th>Nasıl kırılır</th></tr></thead>
+        <tbody>
+          <tr><td>Sezar</td><td>Tek sayı (kaydırma)</td><td>Türkçe 28, İngilizce 25</td><td>Tüm kaydırmaları denemek, frekans analizi</td></tr>
+          <tr><td>ROT13</td><td>Sabit 13</td><td>1 (anahtar yok)</td><td>Yöntemi bilmek yeterli</td></tr>
+          <tr><td>Atbaş</td><td>Yok</td><td>1 (anahtar yok)</td><td>Yöntemi bilmek yeterli</td></tr>
+          <tr><td>Karışık alfabe</td><td>Harflerin rastgele sırası</td><td>Çok büyük</td><td>Frekans analizi, sık kelimeler</td></tr>
+          <tr><td>Vigenère</td><td>Anahtar kelime</td><td>Anahtar uzunluğuna göre katlanır</td><td>Kasiski yöntemi, sütun sütun frekans analizi</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Olası anahtar sayısının çok büyük olması tek başına güvenlik sağlamaz: karışık alfabede anahtar sayısı astronomiktir ama dilin istatistiği metni yine ele verir.</p>
+
+      <h2 id="b9">Klasik şifreler bugün güvenli mi?</h2>
+      <p>Hayır. Sezar, ROT13, Atbaş ve Vigenère dahil bütün klasik kalem-kâğıt şifreleri bugün <strong>güvenli kabul edilmez</strong>; parola, banka bilgisi, kişisel veri ya da gizli yazışma için asla kullanılmamalıdır. Sıradan bir bilgisayar Sezar'ın bütün anahtarlarını bir saniyeden kısa sürede dener, Vigenère'i de birkaç saniyede çözer.</p>
+      <p>Günümüzde gizlilik, matematiksel olarak incelenmiş ve uluslararası standart hâline gelmiş algoritmalarla sağlanır. Örneğin yaygın simetrik şifreleme standardı AES, 128 bit ve üzeri anahtar kullanır; 2¹²⁸ olasılığı tek tek denemek bugünkü bütün bilgisayarlarla bile pratikte mümkün değildir. Mesajlaşma uygulamalarında, internet bankacılığında ve HTTPS bağlantılarında bu tür modern yöntemler kullanılır. Kendi şifreleme yönteminizi icat etmek yerine güvenilir, denetlenmiş kütüphanelere ve işletim sisteminin sunduğu araçlara güvenmek gerekir.</p>
+      <p>Şifreleme ile kodlama ve özetleme de karıştırılmamalıdır. Base64 bir kodlamadır ve anahtar olmadan herkes geri çevirebilir; <a href="../../bilgi-bankasi/base64-nedir-ne-ise-yarar/">Base64 nedir</a> yazısında farkı görebilirsiniz. Özet (hash) işlevleri ise tek yönlüdür; parolaların saklanmasında kullanılırlar ve ayrıntısı <a href="../../bilgi-bankasi/hash-nedir-sha256-md5/">hash nedir</a> yazısındadır.</p>
+      <div class="rh-note">Bu sayfadaki yöntemler tarihî ve eğitsel amaçla anlatılmıştır. Gerçek bilgileri korumak için kullanmayın; başkasına ait şifreli verileri izinsiz çözmeye çalışmak da hukuka aykırı olabilir.</div>
+
+      <h2 id="b10">Sık yapılan hatalar ve pratik ipuçları</h2>
+      <ul>
+        <li><strong>Alfabeyi belirtmemek:</strong> Türkçe ve İngilizce alfabelerle aynı anahtar farklı sonuç verir; mesajı alana hangi alfabeyi kullandığınızı söyleyin.</li>
+        <li><strong>Büyük-küçük harf dönüşümü:</strong> i ve ı harflerinin büyük hâllerini yanlış çevirmek, çözülen metinde anlamsız harflere yol açar.</li>
+        <li><strong>Boşlukları şifrelemek ya da atlamak konusunda anlaşmamak:</strong> Vigenère'de anahtarın boşluklarda ilerleyip ilerlemediği sonucu değiştirir.</li>
+        <li><strong>Kısa anahtar seçmek:</strong> Vigenère'de tek harfli anahtar, yöntemi Sezar'a indirger.</li>
+        <li><strong>Gizlilik beklemek:</strong> Bu yöntemleri bulmaca, oyun ve eğitim için kullanın; gerçek sırları korumak için değil.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Sezar şifrelemesi nedir?</summary><p>Sezar şifrelemesi, her harfi alfabede sabit sayıda ileri kaydırarak başka bir harfle değiştiren klasik bir yer değiştirme şifresidir. Adını, yazışmalarında 3 harf kaydırma kullandığı aktarılan Jül Sezar'dan alır ve bugün eğitsel amaçla kullanılır.</p></details>
+      <details><summary>Sezar şifresi nasıl çözülür?</summary><p>Anahtar biliniyorsa her harf aynı sayıda geri kaydırılır. Anahtar bilinmiyorsa Türkçede 28 olası kaydırmanın hepsi denenir ya da şifreli metindeki en sık harf bulunarak frekans analiziyle kaydırma miktarı tahmin edilir.</p></details>
+      <details><summary>Türkçe alfabede kaydırma nasıl yapılır?</summary><p>Ç, Ğ, I, İ, Ö, Ş ve Ü dahil 29 harf sırayla numaralandırılır ve kaydırma bu sıraya göre yapılır. Z harfinden sonra A'ya dönülür; örneğin 3 kaydırmada Z harfi C olur, MERHABA da ÖĞTJÇDÇ'ye dönüşür.</p></details>
+      <details><summary>Vigenère şifresi Sezar'dan nasıl farklıdır?</summary><p>Sezar'da tüm harfler aynı miktarda kayarken Vigenère'de her harf anahtar kelimedeki sıradaki harfe göre farklı miktarda kayar. Bu yüzden aynı harf metinde farklı şekillerde görünür ve basit frekans analizi tek başına yetmez.</p></details>
+      <details><summary>ROT13 ne işe yarar?</summary><p>ROT13, İngiliz alfabesinde 13 harf kaydırmadır ve iki kez uygulanınca metni geri getirir. Gizlilik için değil, film sonları ya da bulmaca cevapları gibi metinlerin kazara okunmasını önlemek için kullanılır.</p></details>
+      <details><summary>Atbaş şifrelemesi nasıl çalışır?</summary><p>Atbaş alfabeyi ters çevirir; ilk harf son harfle, ikinci harf sondan ikinci harfle eşleşir. Türk alfabesinde A ile Z, B ile Y yer değiştirir; anahtarı olmadığı için yöntemi bilen herkes metni hemen çözer.</p></details>
+      <details><summary>Frekans analizi ile şifre nasıl kırılır?</summary><p>Her dilde bazı harfler daha sık geçer; Türkçede a, e, i, n gibi. Şifreli metinde harflerin kaç kez geçtiği sayılır ve en sık harflerin hangi açık harflere karşılık geldiği tahmin edilerek şifrenin anahtarı bulunur.</p></details>
+      <details><summary>Klasik şifreler bugün güvenli mi?</summary><p>Hayır, Sezar, ROT13, Atbaş ve Vigenère gibi klasik şifreler bilgisayarla saniyeler içinde çözülür. Parola, kişisel veri ve gizli yazışmalar için yalnızca modern, standartlaşmış ve denetlenmiş şifreleme yöntemleri kullanılmalıdır.</p></details>
+      <details><summary>Sezar şifresinde kaç farklı anahtar vardır?</summary><p>Alfabedeki harf sayısının bir eksiği kadar anlamlı anahtar vardır; 29 harfli Türk alfabesinde 28, 26 harfli İngiliz alfabesinde 25. Sıfır kaydırma metni değiştirmediği ve alfabe uzunluğu kadar kaydırma başa döndüğü için sayılmaz.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://csrc.nist.gov/projects/cryptographic-standards-and-guidelines" rel="noopener">NIST – Kriptografi standartları ve kılavuzları</a></li>
+        <li><a href="https://tdk.gov.tr/" rel="noopener">TDK – Türk alfabesi</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../hash-nedir-sha256-md5/"><strong>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</strong><span>Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+          <li><a href="../turk-alfabesi-kac-harf/"><strong>Türk Alfabesi Kaç Harften Oluşur? Sesli, Sessiz Harfler ve Alfabe Sırası</strong><span>Türk alfabesi 29 harftir: 8 sesli, 21 sessiz. Harflerin sıra numaraları, alfabenin 10. ve 15. harfi, Q W X, Ğ kuralı, alfabetik sıralama ve 1928 Harf Devrimi.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-sezar-sifreleme-nedir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
