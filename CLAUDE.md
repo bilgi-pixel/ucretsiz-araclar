@@ -132,3 +132,7 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
 - `vucut-su-orani-hesapla/logic.js`: erkek Watson formülünde yaş katsayısı 0,09156 yazılmış; standart değer 0,09516.
 - `morse-alfabesi-cevir` ı ile İ'yi aynı koda eşliyor; Mors'tan metne çeviride ı/i ayrımı kayboluyor. `akort-aleti` bozuk (La–Re–Sol)
   ve bağlama (La–Re–Mi) düzen ön ayarlarını bir müzik kaynağıyla doğrulayın.
+- `trafik-cezasi-hesapla/parametreler.json` hız ihlallerinin hepsinde ceza puanını 0 veriyor; Karayolları Trafik Yönetmeliği'nin puan
+  cetveliyle doğrulayın. `wordden-pdfe` PDF/A çıktısı vermiyor; sayfa metni bunu ima etmemeli.
+- `pdf-n-up` kitapçık modu 4'ün katına tamamlarken boş sayfaları en sona ekliyor; son sayfa arka kapaksa içe kayıyor.
+  "Son sayfayı arka kapak olarak koru" seçeneği ekleyin.

@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Kalan Teoremi ve Horner Yöntemi: P(x) Değeri Nasıl Bulunur?</title>
+  <meta name="description" content="Kalan teoremi: P(x)'in x − a ile bölümünden kalan P(a)'dır. Polinom derecesi, P(1) katsayılar toplamı, P(0) sabit terim, Horner tablosu ve çözümlü örnekler.">
+  <meta name="keywords" content="kalan teoremi, polinom değeri bulma, horner yöntemi, polinom bölmesi kalan, p(x) hesaplama, polinomun derecesi, katsayılar toplamı p(1), sabit terim p(0)">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/polinomlarda-kalan-teoremi-ve-p-x-degeri/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Kalan Teoremi ve Horner Yöntemi: P(x) Değeri Nasıl Bulunur?">
+  <meta property="og:description" content="Kalan teoremi: P(x)'in x − a ile bölümünden kalan P(a)'dır. Polinom derecesi, P(1) katsayılar toplamı, P(0) sabit terim, Horner tablosu ve çözümlü örnekler.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/polinomlarda-kalan-teoremi-ve-p-x-degeri/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Polinomlarda Kalan Teoremi: P(x) Değeri ve Horner Yöntemi Nasıl Uygulanır","description":"Kalan teoremi: P(x)'in x − a ile bölümünden kalan P(a)'dır. Polinom derecesi, P(1) katsayılar toplamı, P(0) sabit terim, Horner tablosu ve çözümlü örnekler.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/polinomlarda-kalan-teoremi-ve-p-x-degeri/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1296,"keywords":"kalan teoremi, polinom değeri bulma, horner yöntemi, polinom bölmesi kalan, p(x) hesaplama, polinomun derecesi, katsayılar toplamı p(1), sabit terim p(0)","articleSection":"Eğitim ve Sınavlar","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Eğitim ve Sınavlar","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#egitim"},{"@type":"ListItem","position":4,"name":"Polinomlarda Kalan Teoremi: P(x) Değeri ve Horner Yöntemi Nasıl Uygulanır"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Polinom nedir, derecesi nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Polinom, değişkenin yalnızca doğal sayı üslerini içeren ve katsayılı terimlerin toplamından oluşan ifadedir. Derecesi, katsayısı sıfırdan farklı olan en büyük üstür; 2x³ − 3x² + 4x − 5 polinomunun derecesi üçtür."}},{"@type":"Question","name":"P(2) gibi bir polinom değeri nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Polinomda x görülen her yere 2 yazılıp işlem yapılır. 2x³ − 3x² + 4x − 5 için 16 − 12 + 8 − 5 = 7 bulunur. Yüksek derecelerde Horner yöntemi daha az işlemle aynı sonuca ulaştırır."}},{"@type":"Question","name":"Kalan teoremi nedir?","acceptedAnswer":{"@type":"Answer","text":"Kalan teoremine göre P(x) polinomunun x − a ile bölümünden kalan P(a) değerine eşittir. Böylece bölme yapmadan kalan bulunur. Kalan sıfır çıkarsa x − a polinomun bir çarpanı, a da bir köküdür."}},{"@type":"Question","name":"Polinomun x − a ile bölümünden kalan nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Böleni sıfır yapan x değeri, yani a bulunur ve polinomda yerine yazılır. Bölen ax − b biçimindeyse x yerine b bölü a yazılır. Örneğin 2x − 1 ile bölümde kalan P(1/2) olur."}},{"@type":"Question","name":"Horner yöntemi nasıl uygulanır?","acceptedAnswer":{"@type":"Answer","text":"Katsayılar sırayla yazılır, eksik dereceler için sıfır konur. İlk katsayı aşağı indirilir, her sonuç a ile çarpılıp sonraki katsayıya eklenir. Alt satırdaki son sayı kalanı, öncekiler bölüm polinomunun katsayılarını verir."}},{"@type":"Question","name":"Katsayılar toplamı neden P(1)'e eşittir?","acceptedAnswer":{"@type":"Answer","text":"x yerine 1 yazıldığında her x üssü terimi 1 olur ve geriye yalnızca katsayılar kalır. Bu yüzden P(1) tüm katsayıların toplamını verir. 2x³ − 3x² + 4x − 5 için P(1) = −2'dir."}},{"@type":"Question","name":"Sabit terim neden P(0)'dır?","acceptedAnswer":{"@type":"Answer","text":"x yerine sıfır yazıldığında x içeren bütün terimler sıfırlanır ve yalnızca sabit terim kalır. Bu nedenle P(0) her zaman polinomun sabit terimine eşittir; örnekteki polinom için P(0) = −5'tir."}},{"@type":"Question","name":"Çarpanlara ayırmada kök denemesi nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Sabit terimin bölenleri baş katsayının bölenlerine bölünerek rasyonel kök adayları listelenir. Adaylar polinomda yerine konur; sıfır verenler köktür. Her kök için Horner ile bölünüp derece düşürülür ve kalan polinom çarpanlarına ayrılır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#egitim">Eğitim ve Sınavlar</a></li></ol><h1>Polinomlarda Kalan Teoremi: P(x) Değeri ve Horner Yöntemi Nasıl Uygulanır</h1><p class="lead">Kalan teoremine göre bir P(x) polinomunun <strong>x − a ile bölümünden kalan, P(a) değerine eşittir</strong>; yani bölme yapmadan, x yerine a yazarak kalanı bulursunuz. Örneğin P(x) = 2x³ − 3x² + 4x − 5 polinomunun x − 2 ile bölümünden kalan P(2) = 7'dir. Horner yöntemi bu değeri az işlemle hesaplar ve aynı anda bölüm polinomunu da verir. Bu yazıda polinom ve derece kavramını, P(1) ile P(0)'ın anlamını, Horner tablosunu, kök denemesiyle çarpanlara ayırmayı ve 10-11. sınıf düzeyinde çözümlü örnekleri bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Kalan teoremi: P(x) ÷ (x − a) işleminde kalan P(a)'dır; kalan sıfırsa x − a bir çarpandır.</li>
+        <li>Bölen ax − b ise kalan P(b ÷ a)'dır: 2x − 1 ile bölümde x = 1/2 yazılır.</li>
+        <li>P(1) tüm katsayıların toplamını, P(0) sabit terimi, P(−1) çift dereceli terimlerin katsayıları toplamından tek dereceliler toplamının farkını verir.</li>
+        <li>Derece, sıfırdan farklı katsayılı en büyük üstür: 2x³ − 3x² + 4x − 5 üçüncü derecedendir.</li>
+        <li>Horner yönteminde katsayılar sırayla yazılır; her adımda önceki sonuç a ile çarpılıp sonraki katsayıya eklenir; son sayı kalandır.</li>
+        <li>Örnek: 2x³ − 3x² + 4x − 5 için x = 2 Horner satırı 2, 1, 6, 7'dir; bölüm 2x² + x + 6, kalan 7.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Horner tablosu: P(x) = 2x³ − 3x² + 4x − 5 katsayıları 2, −3, 4, −5; x = 2 için ara çarpımlar 4, 2, 12; alt satır 2, 1, 6, 7. Bölüm 2x² + x + 6, kalan 7." viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="hk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="a"/></marker></defs>
+  <text x="360" y="30" class="lg b mid">Horner yöntemi: P(2) = ?</text>
+  <text x="360" y="54" class="mid">P(x) = 2x³ − 3x² + 4x − 5</text>
+  <rect x="40" y="78" width="70" height="200" rx="8" class="ps"/>
+  <text x="75" y="118" class="lg b mid p">a = 2</text>
+  <g class="mid">
+    <text x="190" y="118" class="lg b">2</text>
+    <text x="320" y="118" class="lg b">−3</text>
+    <text x="450" y="118" class="lg b">4</text>
+    <text x="580" y="118" class="lg b">−5</text>
+    <text x="320" y="178" class="lg">+4</text>
+    <text x="450" y="178" class="lg">+2</text>
+    <text x="580" y="178" class="lg">+12</text>
+  </g>
+  <line x1="130" y1="200" x2="660" y2="200" class="st sw" fill="none"/>
+  <g class="mid">
+    <rect x="160" y="214" width="60" height="44" rx="6" class="sf sb"/><text x="190" y="243" class="lg b">2</text>
+    <rect x="290" y="214" width="60" height="44" rx="6" class="sf sb"/><text x="320" y="243" class="lg b">1</text>
+    <rect x="420" y="214" width="60" height="44" rx="6" class="sf sb"/><text x="450" y="243" class="lg b">6</text>
+    <rect x="550" y="214" width="60" height="44" rx="6" class="p"/><text x="580" y="243" class="lg b sf">7</text>
+  </g>
+  <line x1="215" y1="222" x2="300" y2="168" class="sa" fill="none" marker-end="url(#hk)"/>
+  <line x1="345" y1="222" x2="430" y2="168" class="sa" fill="none" marker-end="url(#hk)"/>
+  <line x1="475" y1="222" x2="560" y2="168" class="sa" fill="none" marker-end="url(#hk)"/>
+  <text x="258" y="186" class="sm mid t2">×2</text><text x="388" y="186" class="sm mid t2">×2</text><text x="518" y="186" class="sm mid t2">×2</text>
+  <rect x="40" y="296" width="430" height="84" rx="10" class="sf sb"/>
+  <text x="60" y="324" class="b">Bölüm: 2x² + x + 6</text>
+  <text x="60" y="352" class="sm t2">Kontrol: (x − 2)(2x² + x + 6) + 7 = P(x)</text>
+  <rect x="490" y="296" width="190" height="84" rx="10" class="ps"/>
+  <text x="585" y="328" class="b mid">Kalan = P(2)</text>
+  <text x="585" y="362" class="xl mid p">7</text>
+</svg>
+      <figcaption>Horner tablosunda ilk katsayı aşağı indirilir; her sonuç 2 ile çarpılıp sağdaki katsayının altına yazılır ve toplanır. Son kutu kalanı, öncekiler bölüm polinomunun katsayılarını verir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Polinom nedir, derecesi nasıl bulunur?</a></li>
+      <li><a href="#b2">P(a) değeri nasıl hesaplanır?</a></li>
+      <li><a href="#b3">Kalan teoremi nedir?</a></li>
+      <li><a href="#b4">Horner yöntemi adım adım nasıl uygulanır?</a></li>
+      <li><a href="#b5">Katsayılar toplamı neden P(1)'e, sabit terim neden P(0)'a eşittir?</a></li>
+      <li><a href="#b6">Kalan teoremiyle çözülen tipik sınav soruları</a></li>
+      <li><a href="#b7">Çarpanlara ayırmada kök denemesi nasıl yapılır?</a></li>
+      <li><a href="#b8">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-polinomlarda-kalan-teoremi-ve-p-x-degeri-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../polinom-deger-hesapla/"><strong>Polinom Değeri Hesaplama</strong><span>Katsayıları girilen polinomun P(x) değerini Horner yöntemiyle adım adım hesaplayın; türev değerini de görün.</span></a></li>
+          <li><a href="../../denklem-cozucu/"><strong>Denklem Çözücü (1. ve 2. Derece, İki Bilinmeyenli)</strong><span>Birinci ve ikinci derece denklemleri ve iki bilinmeyenli sistemleri adım adım çözün; diskriminant, karmaşık kökler, köklerin toplamı/çarpımı, parabol tepe noktası ve grafik dahil.</span></a></li>
+          <li><a href="../../asal-carpan-hesapla/"><strong>Asal Çarpanlara Ayırma</strong><span>Sayının asal olup olmadığını öğrenin, asal çarpanlarına ayırın; bölenleri, bölen sayısını, Euler φ değerini ve aralıktaki asal sayıları listeleyin.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Polinom nedir, derecesi nasıl bulunur?</h2>
+      <p>Polinom, değişkenin yalnızca doğal sayı (0, 1, 2, 3…) üslerini içeren ve bu terimlerin katsayılarla çarpılıp toplandığı ifadedir. Genel biçimi P(x) = a<sub>n</sub>x<sup>n</sup> + a<sub>n−1</sub>x<sup>n−1</sup> + … + a<sub>1</sub>x + a<sub>0</sub> şeklindedir. Burada a<sub>n</sub>, a<sub>n−1</sub>, … katsayılar, a<sub>0</sub> ise sabit terimdir.</p>
+      <p>Bir ifadenin polinom olması için değişkenin üssü negatif ya da kesirli olmamalı, değişken paydada ya da kök içinde bulunmamalıdır. Örneğin 3x² − x + 7 bir polinomdur; 2/x + 1 ya da √x + 3 polinom değildir. Polinomun <strong>derecesi</strong>, katsayısı sıfırdan farklı olan en büyük üstür ve der[P(x)] biçiminde gösterilir. En büyük dereceli terimin katsayısına <strong>baş katsayı</strong> denir.</p>
+      <p>Örnek: P(x) = 2x³ − 3x² + 4x − 5 polinomunun derecesi 3, baş katsayısı 2, sabit terimi −5'tir. Sabit polinomun (örneğin P(x) = 7) derecesi 0'dır; sıfır polinomunun derecesi tanımsız kabul edilir.</p>
+
+      <h2 id="b2">P(a) değeri nasıl hesaplanır?</h2>
+      <p>P(a), polinomda x gördüğünüz her yere a yazıp işlemi yapmak demektir. Örneğin P(x) = 2x³ − 3x² + 4x − 5 için P(2) = 2·8 − 3·4 + 4·2 − 5 = 16 − 12 + 8 − 5 = 7 olur. Negatif sayılarda parantez kullanmak hataları önler: P(−1) = 2·(−1)³ − 3·(−1)² + 4·(−1) − 5 = −2 − 3 − 4 − 5 = −14.</p>
+      <p>Derece büyüdükçe doğrudan yerine koyma uzar ve üs hesaplarında hata yapma ihtimali artar. Bu yüzden özellikle büyük sayılarda ya da yüksek derecelerde Horner yöntemi tercih edilir. Katsayılarını yazdığınız bir polinomun değerini adım adım görmek için <a href="../../polinom-deger-hesapla/">Polinom Değeri Hesaplama</a> aracı Horner yöntemiyle P(x), türev değeri ve dereceyi birlikte gösterir.</p>
+
+      <h2 id="b3">Kalan teoremi nedir?</h2>
+      <p>Bölme algoritmasına göre her P(x) polinomu, bir bölen polinomla şöyle yazılabilir: P(x) = B(x) · Q(x) + K(x). Burada B(x) bölen, Q(x) bölüm, K(x) kalandır ve kalanın derecesi bölenin derecesinden küçüktür. Bölen x − a gibi birinci dereceden olduğunda kalan sabit bir sayıdır.</p>
+      <p>Bu eşitlikte x yerine a yazılırsa bölen sıfır olur: P(a) = (a − a) · Q(a) + K = K. Demek ki kalan, polinomun a noktasındaki değerinden başka bir şey değildir. Teoremin en önemli sonucu <strong>çarpan teoremi</strong>dir: P(a) = 0 ise kalan sıfırdır ve x − a, P(x)'in bir çarpanıdır; a da polinomun bir köküdür.</p>
+      <div class="rh-formula">P(x) = (x − a) · Q(x) + K  →  K = P(a)<br>Bölen ax − b ise: kalan = P(b ÷ a)<br>P(a) = 0  ⇔  (x − a), P(x)'in çarpanıdır</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Bölen</th><th>Sıfır yapan x</th><th>Kalan</th><th>P(x) = 2x³ − 3x² + 4x − 5 için</th></tr></thead>
+        <tbody>
+          <tr><td>x − 2</td><td>x = 2</td><td>P(2)</td><td>7</td></tr>
+          <tr><td>x + 1</td><td>x = −1</td><td>P(−1)</td><td>−14</td></tr>
+          <tr><td>x − 1</td><td>x = 1</td><td>P(1)</td><td>−2</td></tr>
+          <tr><td>x</td><td>x = 0</td><td>P(0)</td><td>−5</td></tr>
+          <tr><td>2x − 1</td><td>x = 1/2</td><td>P(1/2)</td><td>−3,5</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b4">Horner yöntemi adım adım nasıl uygulanır?</h2>
+      <p>Horner yöntemi, polinomu iç içe çarpımlar biçiminde yazarak değer hesaplamayı ve x − a ile bölmeyi aynı anda yapan pratik bir tablodur. P(x) = 2x³ − 3x² + 4x − 5 polinomu iç içe yazıldığında ((2x − 3)x + 4)x − 5 olur; tablo bu işlemi sırayla yapar.</p>
+      <ol class="ba-steps">
+        <li>Katsayıları en yüksek dereceden sabit terime doğru sırayla yazın: 2, −3, 4, −5. Eksik derece varsa yerine 0 koyun (x³ + 1 için 1, 0, 0, 1).</li>
+        <li>Sol tarafa a değerini yazın: a = 2.</li>
+        <li>İlk katsayıyı olduğu gibi aşağı indirin: 2.</li>
+        <li>İndirilen sayıyı a ile çarpın ve bir sonraki katsayının altına yazın: 2 × 2 = 4; −3 + 4 = 1.</li>
+        <li>Aynı işlemi tekrarlayın: 1 × 2 = 2; 4 + 2 = 6. Sonra 6 × 2 = 12; −5 + 12 = 7.</li>
+        <li>Alt satırdaki son sayı kalan ve P(a) değeridir: 7. Önceki sayılar (2, 1, 6) bölüm polinomunun katsayılarıdır: Q(x) = 2x² + x + 6.</li>
+      </ol>
+      <p>Sonucu kontrol etmek için çarpımı geri açın: (x − 2)(2x² + x + 6) + 7 = 2x³ + x² + 6x − 4x² − 2x − 12 + 7 = 2x³ − 3x² + 4x − 5. Eksik derece koymayı unutmak Horner'da en sık yapılan hatadır; sıfır katsayıyı atlarsanız tüm satır kayar.</p>
+
+      <div class="ba-ad" data-slot="bilgi-polinomlarda-kalan-teoremi-ve-p-x-degeri-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">Katsayılar toplamı neden P(1)'e, sabit terim neden P(0)'a eşittir?</h2>
+      <p>x = 1 yazıldığında her x<sup>k</sup> terimi 1 olur ve geriye yalnızca katsayılar kalır. Bu yüzden P(1), tüm katsayıların toplamıdır. Örnekte P(1) = 2 − 3 + 4 − 5 = −2'dir. Aynı mantıkla x = 0 yazıldığında x içeren tüm terimler sıfırlanır ve yalnızca sabit terim kalır: P(0) = −5.</p>
+      <p>x = −1 yazıldığında ise çift dereceli terimler pozitif, tek dereceli terimler negatif işaret alır. Böylece P(−1), çift dereceli terimlerin katsayıları toplamından tek dereceli terimlerin katsayıları toplamının çıkarılmasıyla elde edilir. Bu iki değeri kullanarak sınavlarda sık sorulan &quot;çift dereceli terimlerin katsayıları toplamı&quot; sorusu çözülür.</p>
+      <div class="rh-formula">Katsayılar toplamı = P(1)<br>Sabit terim = P(0)<br>Çift dereceli katsayılar toplamı = (P(1) + P(−1)) ÷ 2<br>Tek dereceli katsayılar toplamı = (P(1) − P(−1)) ÷ 2</div>
+      <p>Örnek: P(1) = −2 ve P(−1) = −14 ise çift dereceli katsayılar toplamı (−2 − 14) ÷ 2 = −8'dir. Gerçekten de çift dereceli terimler −3x² ve −5'tir; −3 + (−5) = −8. Tek dereceliler toplamı (−2 + 14) ÷ 2 = 6'dır: 2 + 4 = 6.</p>
+
+      <h2 id="b6">Kalan teoremiyle çözülen tipik sınav soruları</h2>
+      <ol class="ba-steps">
+        <li><strong>Bilinmeyen katsayı bulma:</strong> P(x) = x³ + ax² − 4x + 3 polinomunun x − 1 ile bölümünden kalan 5 ise a kaçtır? Kalan P(1) = 1 + a − 4 + 3 = a olur; a = 5'tir.</li>
+        <li><strong>Birinci dereceden olmayan bölen:</strong> P(x) = 2x³ − 3x² + 4x − 5 polinomunun 2x − 1 ile bölümünden kalan P(1/2) = 0,25 − 0,75 + 2 − 5 = −3,5'tir.</li>
+        <li><strong>Çarpan kontrolü:</strong> x − 3, Q(x) = x³ − 6x² + 11x − 6 polinomunun çarpanı mıdır? Q(3) = 27 − 54 + 33 − 6 = 0 olduğu için evet.</li>
+        <li><strong>Bileşik ifade:</strong> P(x + 1) polinomunun x − 2 ile bölümünden kalan P(3)'tür, çünkü x = 2 yazıldığında içerideki ifade 3 olur.</li>
+      </ol>
+      <p>Bu tür sorularda ilk adım her zaman böleni sıfır yapan değeri bulmaktır. Bilinmeyen katsayılı sorularda oluşan denklemi çözmek için <a href="../../denklem-cozucu/">Denklem Çözücü</a> aracı birinci ve ikinci dereceden denklemleri adım adım gösterir. İki bilinmeyenli katsayı sorularında <a href="../../bilgi-bankasi/iki-bilinmeyenli-denklem-nasil-cozulur/">iki bilinmeyenli denklem</a> yöntemleri kullanılır.</p>
+
+      <h2 id="b7">Çarpanlara ayırmada kök denemesi nasıl yapılır?</h2>
+      <p>Tam sayı katsayılı bir polinomun rasyonel kökleri, sabit terimin bölenlerinin baş katsayının bölenlerine bölünmesiyle elde edilen sayılar arasından çıkar. Baş katsayı 1 ise kök adayları doğrudan sabit terimin bölenleridir. Bu adayları tek tek polinomda yerine koyarak P(a) = 0 yapanlar bulunur; her bulunan kök için Horner ile bölünerek polinomun derecesi düşürülür.</p>
+      <p>Örnek: Q(x) = x³ − 6x² + 11x − 6 için sabit terim −6'nın bölenleri ±1, ±2, ±3, ±6'dır. Q(1) = 1 − 6 + 11 − 6 = 0, demek ki x − 1 bir çarpandır. Horner ile bölünce x² − 5x + 6 kalır; bu da (x − 2)(x − 3) biçiminde çarpanlarına ayrılır. Sonuç: Q(x) = (x − 1)(x − 2)(x − 3).</p>
+      <p>Sabit terimin bölenlerini hızlıca listelemek için <a href="../../asal-carpan-hesapla/">Asal Çarpan Hesaplama</a> aracı bir sayının tüm bölenlerini verir. İkinci dereceden kalan çarpan doğrudan çarpanlarına ayrılamıyorsa kökleri diskriminantla bulabilirsiniz; yöntem <a href="../../bilgi-bankasi/diskriminant-ikinci-derece-denklem/">diskriminant ve ikinci derece denklem</a> yazısında anlatılır.</p>
+
+      <h2 id="b8">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Eksik dereceyi atlamak:</strong> Horner tablosunda x² terimi yoksa yerine 0 yazılmalıdır.</li>
+        <li><strong>İşareti karıştırmak:</strong> x + 3 ile bölümde a = −3'tür; x − (−3) olarak düşünün.</li>
+        <li><strong>ax − b bölenini x − b sanmak:</strong> 2x − 1 ile bölümde x = 1/2 yazılır, x = 1 değil.</li>
+        <li><strong>Bölüm ile kalanı karıştırmak:</strong> Horner'ın son kutusu kalandır; önceki kutular bölümün katsayılarıdır ve bir derece düşüktür.</li>
+        <li><strong>Negatif sayıların üssünü yanlış almak:</strong> (−1)² = 1, (−1)³ = −1; parantezsiz −1² yazmak hata kaynağıdır.</li>
+      </ul>
+      <p>Kendinizi sınamak için şu soruyu deneyin: P(x) = x⁴ − 2x² + x + 1 polinomunun x + 2 ile bölümünden kalan kaçtır? Katsayıları 1, 0, −2, 1, 1 olarak yazıp a = −2 ile Horner uygulayın: 1, −2, 2, −3, 7. Kalan 7'dir; doğrudan yerine koyma da 16 − 8 − 2 + 1 = 7 sonucunu verir.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Polinom nedir, derecesi nasıl bulunur?</summary><p>Polinom, değişkenin yalnızca doğal sayı üslerini içeren ve katsayılı terimlerin toplamından oluşan ifadedir. Derecesi, katsayısı sıfırdan farklı olan en büyük üstür; 2x³ − 3x² + 4x − 5 polinomunun derecesi üçtür.</p></details>
+      <details><summary>P(2) gibi bir polinom değeri nasıl hesaplanır?</summary><p>Polinomda x görülen her yere 2 yazılıp işlem yapılır. 2x³ − 3x² + 4x − 5 için 16 − 12 + 8 − 5 = 7 bulunur. Yüksek derecelerde Horner yöntemi daha az işlemle aynı sonuca ulaştırır.</p></details>
+      <details><summary>Kalan teoremi nedir?</summary><p>Kalan teoremine göre P(x) polinomunun x − a ile bölümünden kalan P(a) değerine eşittir. Böylece bölme yapmadan kalan bulunur. Kalan sıfır çıkarsa x − a polinomun bir çarpanı, a da bir köküdür.</p></details>
+      <details><summary>Polinomun x − a ile bölümünden kalan nasıl bulunur?</summary><p>Böleni sıfır yapan x değeri, yani a bulunur ve polinomda yerine yazılır. Bölen ax − b biçimindeyse x yerine b bölü a yazılır. Örneğin 2x − 1 ile bölümde kalan P(1/2) olur.</p></details>
+      <details><summary>Horner yöntemi nasıl uygulanır?</summary><p>Katsayılar sırayla yazılır, eksik dereceler için sıfır konur. İlk katsayı aşağı indirilir, her sonuç a ile çarpılıp sonraki katsayıya eklenir. Alt satırdaki son sayı kalanı, öncekiler bölüm polinomunun katsayılarını verir.</p></details>
+      <details><summary>Katsayılar toplamı neden P(1)'e eşittir?</summary><p>x yerine 1 yazıldığında her x üssü terimi 1 olur ve geriye yalnızca katsayılar kalır. Bu yüzden P(1) tüm katsayıların toplamını verir. 2x³ − 3x² + 4x − 5 için P(1) = −2'dir.</p></details>
+      <details><summary>Sabit terim neden P(0)'dır?</summary><p>x yerine sıfır yazıldığında x içeren bütün terimler sıfırlanır ve yalnızca sabit terim kalır. Bu nedenle P(0) her zaman polinomun sabit terimine eşittir; örnekteki polinom için P(0) = −5'tir.</p></details>
+      <details><summary>Çarpanlara ayırmada kök denemesi nasıl yapılır?</summary><p>Sabit terimin bölenleri baş katsayının bölenlerine bölünerek rasyonel kök adayları listelenir. Adaylar polinomda yerine konur; sıfır verenler köktür. Her kök için Horner ile bölünüp derece düşürülür ve kalan polinom çarpanlarına ayrılır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://mufredat.meb.gov.tr/" rel="noopener">Milli Eğitim Bakanlığı – Ortaöğretim matematik öğretim programı</a></li>
+        <li><a href="https://www.eba.gov.tr/" rel="noopener">MEB Eğitim Bilişim Ağı (EBA)</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../diskriminant-ikinci-derece-denklem/"><strong>Diskriminant Nedir? İkinci Dereceden Denklemin Kökleri Nasıl Bulunur</strong><span>Diskriminant Δ = b² − 4ac, ax² + bx + c = 0 denkleminin kaç gerçek kökü olduğunu gösterir. Kök formülü, kökler toplamı ve çarpımı, karmaşık kökler ve örnekler.</span></a></li>
+          <li><a href="../iki-bilinmeyenli-denklem-nasil-cozulur/"><strong>İki Bilinmeyenli Denklem Nasıl Çözülür? Yok Etme, Yerine Koyma ve Grafik</strong><span>İki bilinmeyenli denklem sistemi yok etme, yerine koyma, grafik ya da Cramer kuralıyla çözülür. Çözümsüz ve sonsuz çözüm durumu, üç bilinmeyenli ve matris örneği.</span></a></li>
+          <li><a href="../akrep-yelkovan-arasindaki-aci/"><strong>Akrep ile Yelkovan Arasındaki Açı Nasıl Bulunur? Formül ve Çözümlü Örnekler</strong><span>Akrep ile yelkovan arasındaki açı |30·saat − 5,5·dakika| formülüyle bulunur. Saat 3:40'ta açı 130°. Çakışma, dik açı ve sınav soruları çözümlü.</span></a></li>
+          <li><a href="../alan-birimleri-m2-cm2-km2-hektar-donusumu/"><strong>Alan Birimleri Dönüşümü: 1 m² Kaç cm², 1 km² Kaç Hektar, ft² Kaç m²</strong><span>1 m² = 10.000 cm², 1 hektar = 10.000 m², 1 km² = 100 hektar = 1.000 dönüm, 1 ft² = 0,0929 m². Alan birimleri neden 100'er büyür, virgül kaydırma ve örnekler.</span></a></li>
+          <li><a href="../altin-oran-nedir/"><strong>Altın Oran Nedir? 1,618 Sayısı, Fibonacci Dizisi ve Tasarımda Kullanımı</strong><span>Altın oran φ ≈ 1,618'dir: bütün büyük parçaya, büyük parça küçüğe aynı oranda. Formülü, hesaplanışı, Fibonacci ilişkisi, altın dikdörtgen, doğa ve tasarım örnekleri.</span></a></li>
+          <li><a href="../aralikli-tekrar-yontemi-nedir/"><strong>Aralıklı Tekrar Yöntemi Nedir? Unutma Eğrisine Göre Tekrar Planı Nasıl Yapılır</strong><span>Aralıklı tekrar, bilgiyi giderek uzayan aralıklarla (1, 3, 7, 14, 30. gün) tekrar etmektir. Unutma eğrisi, ezber kartları, kelime ezberi ve sınav tekrar planı.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-polinomlarda-kalan-teoremi-ve-p-x-degeri-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

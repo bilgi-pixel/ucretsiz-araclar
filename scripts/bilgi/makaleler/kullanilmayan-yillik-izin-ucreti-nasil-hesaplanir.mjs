@@ -160,7 +160,7 @@ export default {
         "<strong>Kıdem tazminatıyla karıştırmak:</strong> Kıdem tazminatı alamayan işçi de izin ücretini alabilir; iki alacak ayrı hesaplanır."
       ],
       after: [
-        "Kıdem, ihbar ve diğer çıkış alacaklarını birlikte görmek için [[rehber:maas-ve-tazminat-hesaplari-2026|maaş ve tazminat hesapları rehberi]] ile [[rehber:kidem-tazminati-nasil-hesaplanir|kıdem tazminatı rehberi]] iyi bir başlangıçtır. Gelir vergisinin dilimlere göre nasıl hesaplandığını [[arac:gelir-vergisi-hesapla|Gelir Vergisi Hesaplama]], damga vergisini [[arac:damga-vergisi-hesapla|Damga Vergisi Hesaplama]] aracıyla kontrol edebilirsiniz."
+        "Kıdem, ihbar ve diğer çıkış alacaklarını birlikte görmek için [[rehber:maas-ve-tazminat-hesaplari-2026|maaş ve tazminat hesapları rehberi]] ile [[rehber:kidem-tazminati-nasil-hesaplanir|kıdem tazminatı rehberi]] iyi bir başlangıçtır. Gelir vergisinin dilimlere göre nasıl hesaplandığını [[arac:gelir-vergisi-hesapla|Gelir Vergisi Hesaplama]], damga vergisini Damga Vergisi Hesaplama aracıyla kontrol edebilirsiniz."
       ]
     }
   ],

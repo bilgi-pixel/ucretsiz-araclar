@@ -142,7 +142,7 @@ export default {
       h: "Hafta tatili ücreti bordroda nasıl görünür?",
       p: [
         "Aylık ücretli çalışanların bordrosunda hafta tatili genellikle ayrı satır olarak yer almaz; çünkü 30 günlük ücret tatil günlerini de kapsar. Bordroda \"çalışılan gün 30\" yazıyorsa hafta tatilleri ödenmiştir. Hafta tatilinde çalışıldıysa \"hafta tatili mesaisi\" ya da benzer adla ayrı bir kazanç satırı eklenir.",
-        "Saatlik veya günlük ücretle çalışanlarda ise bordroda çalışılan günler ile hafta tatili günleri ayrı gösterilebilir. Haftalık çalışma saatlerinizi kendiniz takip etmek isterseniz [[arac:calisma-suresi-hesapla|Çalışma Süresi Hesaplama]] aracı giriş-çıkış saatlerinden net süreyi verir. Bordrodaki satırları yorumlamak için [[bilgi:maas-bordrosu-nasil-okunur|maaş bordrosu nasıl okunur]] yazısı yol gösterir."
+        "Saatlik veya günlük ücretle çalışanlarda ise bordroda çalışılan günler ile hafta tatili günleri ayrı gösterilebilir. Haftalık çalışma saatlerinizi kendiniz takip etmek isterseniz Çalışma Süresi Hesaplama aracı giriş-çıkış saatlerinden net süreyi verir. Bordrodaki satırları yorumlamak için [[bilgi:maas-bordrosu-nasil-okunur|maaş bordrosu nasıl okunur]] yazısı yol gösterir."
       ]
     }
   ],
