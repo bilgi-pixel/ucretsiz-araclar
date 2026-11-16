@@ -163,3 +163,8 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   aşımdan başlıyor. `trafik-cezasi-hesapla` madde listesini buna göre güncelleyin. `beaufort-ruzgar-cevir` 0,836×B^1,5 formülüyle 7 bofor alt
   sınırını 27 knot veriyor; WMO tablosu 28 knot. `pdf-sayfa-numarasi` Roma rakamı desteklemiyor. `tarih-ekle-cikar` iş günü modunun
   cumartesiyi nasıl saydığını sayfada belirtin (6502 sayılı Kanun'da yalnızca pazar ve tatiller hariç).
+- ÖSYM'nin 11.03.2025 tarihli yabancı dil eşdeğerlik dokümanında IELTS yok; IELTS için YDS karşılığı vermeyin.
+  `gazbeton-hesapla/logic.js` yorumunda marka adı geçiyor. `wilks-puani-hesapla` yalnızca klasik Wilks'i kullanıyor (DOTS/IPF GL yok);
+  sayfada belirtin. `tirmanis-suresi-hesapla` inişi hesaba katmıyor. `briket-hesapla` harç miktarını vermiyor.
+- `smd-direnc-kodu-coz`: EIA-96 çarpanlarında R harfi ondalık kod sayılıyor; "68R" gibi kodlar yanlış okunabilir. `tarih-ekle-cikar`: tebliğ
+  gününün dahil olup olmadığını sayfada yazın. `elektrikli-arac-menzil-hesapla`: kış için ek tüketim ön ayarı ekleyin.

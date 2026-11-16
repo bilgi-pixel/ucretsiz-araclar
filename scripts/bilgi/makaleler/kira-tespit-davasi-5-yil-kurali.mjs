@@ -118,7 +118,7 @@ export default {
         "Karşılaştırın: yeni kira mevcut kiraya göre %70 artmıştır; bu oranı [[arac:yuzde-degisim-hesapla|Yüzde Değişim aracıyla]] doğrulayabilirsiniz."
       ],
       after: [
-        "Bu örnekte tüm sayılar örnek amaçlıdır. Gerçek davada TÜFE oranı, emsal tutarı ve indirim oranı somut dosyaya göre belirlenir. Kira artışının paranın değeriyle ilişkisini anlamak için [[bilgi:enflasyona-gore-paranin-degeri|enflasyona göre paranın değeri]] yazısı da yardımcı olur."
+        "Bu örnekte tüm sayılar örnek amaçlıdır. Gerçek davada TÜFE oranı, emsal tutarı ve indirim oranı somut dosyaya göre belirlenir. Kira artışını genel fiyat artışıyla karşılaştırmak isterseniz Enflasyon Hesaplama aracını da kullanabilirsiniz."
       ]
     },
     {

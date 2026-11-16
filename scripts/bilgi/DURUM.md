@@ -23,7 +23,7 @@ Aynı anda en fazla 3 ajan (kullanım limiti). Her parti: konu dosyası → 2 ya
 | 16 | `konular-16.json` | Yayında |
 | 17 | `konular-17.json` | Yayında |
 | 18 | `konular-18.json` | Yayında |
-| 19 | `konular-19.json` | Yazılıyor |
+| 19 | `konular-19.json` | Yayında |
 | 20+ | — | Araştırılacak: her seferinde 120 konu, tüm `konular*.json` + `rehberler.tsv` ile çakışmasız; az bağlanan araçlara öncelik |
 
 ## Bir partiyi yayına almak

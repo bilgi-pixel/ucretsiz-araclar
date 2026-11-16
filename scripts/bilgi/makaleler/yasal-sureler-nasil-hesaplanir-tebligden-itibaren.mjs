@@ -99,7 +99,7 @@ export default {
       p: [
         "HMK md. 93'e göre resmî tatil günleri süreye dahildir; yani aradaki cumartesi, pazar ve bayram günleri sayılır, süre bu günler kadar uzamaz. Ancak sürenin son günü resmî tatile rastlarsa süre, tatili izleyen ilk iş gününün çalışma saati bitiminde sona erer. Hafta sonu da bu kural bakımından tatil sayılır.",
         "Örneğin son günü 29 Ekim Cumhuriyet Bayramı'na denk gelen bir süre ertesi iş günü olan 30 Ekim'de biter. Uzun bayram tatillerinde son gün tatilin ortasına denk gelirse süre bayramın bittiği günden sonraki ilk iş gününe kadar uzar. Yarım günlük arife tatillerinde uygulamada farklı yorumlar görülebildiği için işlemi son güne bırakmamak en güvenli yoldur.",
-        "Belirli bir aralıktaki hafta sonu sayısını görmek için [[arac:hafta-sonu-sayisi-hesapla|Hafta Sonu Sayısı aracını]] kullanabilirsiniz."
+        "Belirli bir aralıktaki hafta sonu sayısını görmek için Hafta Sonu Sayısı aracını kullanabilirsiniz."
       ]
     },
     {
@@ -120,7 +120,7 @@ export default {
     {
       h: "İş günü olarak verilen süreler ve sık karşılaşılan süreler",
       p: [
-        "Bazı düzenlemeler süreyi açıkça \"iş günü\" olarak verir. Bu durumda cumartesi, pazar ve resmî tatiller sayılmaz; yalnızca çalışma günleri sayılır. İş günü ile takvim günü arasındaki fark özellikle bayram dönemlerinde büyür. İş günü eklemek için [[arac:gun-sayisi-ekle-is-gunu|İş Günü Ekleme aracını]] kullanabilirsiniz; bir aydaki iş günü sayısının nasıl değiştiğini [[bilgi:bir-ayda-kac-is-gunu-var|bir ayda kaç iş günü var]] yazısı anlatır."
+        "Bazı düzenlemeler süreyi açıkça \"iş günü\" olarak verir. Bu durumda genellikle cumartesi, pazar ve resmî tatiller sayılmaz; ancak bazı kanunlar iş gününü kendisi tanımlar ve cumartesiyi iş günü sayabilir. Bu yüzden ilgili kanunun tanım maddesine bakın. İş günü ile takvim günü arasındaki fark özellikle bayram dönemlerinde büyür. İş günü eklemek için [[arac:gun-sayisi-ekle-is-gunu|İş Günü Ekleme aracını]] kullanabilirsiniz; bir aydaki iş günü sayısının nasıl değiştiğini [[bilgi:bir-ayda-kac-is-gunu-var|bir ayda kaç iş günü var]] yazısı anlatır."
       ],
       table: {
         head: ["İşlem", "Süre", "Dayanak"],
