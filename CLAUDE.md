@@ -155,3 +155,7 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   (şifre kırıcı yasağı) açısından `policy-reviewer` ile inceleyin; gerekirse sahip parolası istensin.
 - `avize-boyutu-hesapla`: gövde yüksekliği önerisi (2,7 m tavanda 56–68 cm) aynı sonuçtaki "en fazla 60 cm sarkma" satırıyla çelişebiliyor; uyarı ekleyin.
 - `et-cozdurme-suresi-hesapla`: çözülen kıyma ve tavuğun buzdolabında 1–2 gün içinde pişirilmesi gerektiği uyarısını belirginleştirin.
+- `harc-hesapla` yurt dışı çıkış harcını hesaplamıyor (2026: 1.250 TL). `emlak-vergisi-hesapla/parametreler.json`'da `degerli_konut_esik: null`;
+  2026 eşiği 17.711.000 TL, dilimler 26.567.000 / 35.425.000 TL, oranlar binde 3/6/10 (Emlak Vergisi Kanunu Genel Tebliği Seri No: 88).
+  `harc-hesapla` IMEI/cep telefonu kayıt harcını da hesaplamıyor (2026: 54.258 TL; bazı kaynaklardaki 57.241 TL yanlış).
+- `fayans-yapistirici-hesapla`: 0,5 kg/m²/mm kuralı temkinli/yüksek; büyük karoda çift taraflı sürme seçeneği ekleyin.

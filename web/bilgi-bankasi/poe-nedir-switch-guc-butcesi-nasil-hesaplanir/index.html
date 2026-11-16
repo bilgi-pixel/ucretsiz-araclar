@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>PoE Nedir? PoE Switch Güç Bütçesi Nasıl Hesaplanır?</title>
+  <meta name="description" content="PoE, ağ kablosundan elektrik taşır. 802.3af/at/bt farkı, port başına watt, switch güç bütçesi hesabı, 100 metre sınırı, pasif PoE riski ve kamera örneği.">
+  <meta name="keywords" content="poe nedir, poe switch, poe güç bütçesi, 802.3af at bt, poe kamera kaç watt, poe kablo mesafesi, poe injector, pasif poe aktif poe farkı">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/poe-nedir-switch-guc-butcesi-nasil-hesaplanir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="PoE Nedir? PoE Switch Güç Bütçesi Nasıl Hesaplanır?">
+  <meta property="og:description" content="PoE, ağ kablosundan elektrik taşır. 802.3af/at/bt farkı, port başına watt, switch güç bütçesi hesabı, 100 metre sınırı, pasif PoE riski ve kamera örneği.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/poe-nedir-switch-guc-butcesi-nasil-hesaplanir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"PoE Nedir? Switch Güç Bütçesi ve Kamera Başına Watt Nasıl Hesaplanır?","description":"PoE, ağ kablosundan elektrik taşır. 802.3af/at/bt farkı, port başına watt, switch güç bütçesi hesabı, 100 metre sınırı, pasif PoE riski ve kamera örneği.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/poe-nedir-switch-guc-butcesi-nasil-hesaplanir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1254,"keywords":"poe nedir, poe switch, poe güç bütçesi, 802.3af at bt, poe kamera kaç watt, poe kablo mesafesi, poe injector, pasif poe aktif poe farkı","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"PoE Nedir? Switch Güç Bütçesi ve Kamera Başına Watt Nasıl Hesaplanır?"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"PoE (Power over Ethernet) nedir?","acceptedAnswer":{"@type":"Answer","text":"PoE, ağ kablosu üzerinden veriyle birlikte elektrik taşıyan bir teknolojidir. IP kamera, erişim noktası ve IP telefon gibi cihazlar ayrı bir priz ya da adaptöre gerek kalmadan switch'ten beslenir."}},{"@type":"Question","name":"802.3af, 802.3at ve 802.3bt standartları arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Fark port başına verilen güçtedir: 802.3af 15,4 W, 802.3at 30 W, 802.3bt Tip 3 60 W ve Tip 4 90 W verir. Cihaza ulaşan güç sırasıyla 12,95; 25,5; 51 ve 71,3 W'tır."}},{"@type":"Question","name":"Bir PoE switch kaç kamerayı besleyebilir?","acceptedAnswer":{"@type":"Answer","text":"Switch'in toplam PoE bütçesini kamera başına en yüksek tüketime ve pay katsayısına bölerek bulunur. 120 W bütçeli switch, 6,5 W'lık kameralardan %20 payla yaklaşık 15 tanesini besleyebilir; port sayısı da yeterli olmalıdır."}},{"@type":"Question","name":"Güç bütçesi hesaplanırken pay neden bırakılır?","acceptedAnswer":{"@type":"Answer","text":"Kameraların tüketimi gece kızılötesi, kışın ısıtıcı ve hareket sırasında artar. Pay bırakılmazsa en yüksek yük anında cihazlar yeniden başlayabilir; ayrıca ileride eklenecek cihazlar için yer kalmaz."}},{"@type":"Question","name":"PoE kablosu en fazla kaç metre olabilir?","acceptedAnswer":{"@type":"Answer","text":"Ethernet standardına göre switch ile cihaz arasındaki bakır kablo en fazla 100 metre olabilir. Daha uzun mesafede PoE uzatıcı, ara switch ya da fiber hat ile ayrı güç kaynağı kullanılır."}},{"@type":"Question","name":"IP kameraların bant genişliği switch seçimini nasıl etkiler?","acceptedAnswer":{"@type":"Answer","text":"Kayıt cihazına giden trafik tüm kameraların bit hızlarının toplamıdır. 8 kamera 4'er Mbps ile 32 Mbps üretir; canlı izleme ve kaydın birlikte yapıldığı sistemlerde ana bağlantının gigabit olması önerilir."}},{"@type":"Question","name":"PoE injector ne zaman kullanılır?","acceptedAnswer":{"@type":"Answer","text":"PoE desteği olmayan bir switch'e tek tük PoE cihazı eklemek gerektiğinde kullanılır. Injector prizden aldığı gücü veriyle birleştirip kablo üzerinden cihaza iletir; switch'i değiştirmeye gerek kalmaz."}},{"@type":"Question","name":"Pasif PoE ile aktif PoE farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Aktif PoE güç vermeden önce cihazın uyumlu olup olmadığını kontrol eder; pasif PoE ise kontrol yapmadan sabit gerilim verir. Pasif PoE'nin yanlış cihaza bağlanması ağ kartına zarar verebilir."}},{"@type":"Question","name":"Kayıt cihazı depolama ihtiyacı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Kamera bit hızı, saniye sayısı ve kamera adediyle çarpılıp 8'e bölünerek bayt bulunur. 4 Mbps'lik 8 kamera günde yaklaşık 346 GB, 30 günde yaklaşık 10,4 TB depolama gerektirir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>PoE Nedir? Switch Güç Bütçesi ve Kamera Başına Watt Nasıl Hesaplanır?</h1><p class="lead">PoE (Power over Ethernet), IP kamera, kablosuz erişim noktası ve IP telefon gibi cihazlara <strong>veriyi ve elektriği aynı ağ kablosundan</strong> ileten teknolojidir. Bir PoE switch'in kaç cihazı besleyebileceği, cihazların toplam watt değerine en az %20 pay eklenip switch'in toplam PoE bütçesiyle karşılaştırılarak bulunur. Örneğin 8 kamera, 1 hareketli kamera ve 2 erişim noktası toplam 101 W çekiyorsa paylı ihtiyaç 121 W eder; 120 W bütçeli switch yetmez. Bu sayfada standartları, hesap adımlarını ve kablo sınırlarını anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>802.3af (PoE): port başına 15,4 W verilir, cihaza 12,95 W ulaşır.</li>
+        <li>802.3at (PoE+): port başına 30 W, cihaza 25,5 W; 802.3bt Tip 3: 60 W / 51 W; Tip 4: 90 W / 71,3 W.</li>
+        <li>Güç bütçesi = cihazların en yüksek tüketimlerinin toplamı × (1 + yedek pay); pay genellikle %20–30 alınır.</li>
+        <li>Switch'in hem toplam bütçesi hem port başına sınırı yeterli olmalıdır; ikisinden biri yetmezse cihaz kapanır.</li>
+        <li>Ethernet kablosuyla PoE mesafesi standart olarak en fazla 100 metredir.</li>
+        <li>Pasif PoE el sıkışma yapmaz; uyumsuz cihaza sabit voltaj vererek zarar verebilir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="PoE switch güç bütçesi hesabı: 8 kamera 6,5 watt, 1 hareketli kamera 25 watt ve 2 erişim noktası 12 watt toplamı 101 watt; yüzde 20 payla 121 watt; 120 watt bütçe yetersiz, 150 watt yeterli." viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">PoE güç bütçesi örneği</text>
+  <rect x="20" y="56" width="220" height="70" rx="8" class="sf sb"/>
+  <text x="130" y="84" class="b mid">8 × IP kamera</text>
+  <text x="130" y="110" class="mid">8 × 6,5 W = 52 W</text>
+  <rect x="250" y="56" width="220" height="70" rx="8" class="sf sb"/>
+  <text x="360" y="84" class="b mid">1 × hareketli kamera</text>
+  <text x="360" y="110" class="mid">25 W (PoE+)</text>
+  <rect x="480" y="56" width="220" height="70" rx="8" class="sf sb"/>
+  <text x="590" y="84" class="b mid">2 × erişim noktası</text>
+  <text x="590" y="110" class="mid">2 × 12 W = 24 W</text>
+  <text x="360" y="160" class="b mid">Toplam 101 W × 1,20 pay = 121,2 W gerekli</text>
+  <line x1="60" y1="190" x2="60" y2="340" class="st" fill="none"/>
+  <rect x="60" y="200" width="485" height="34" rx="4" class="p"/>
+  <text x="70" y="223" class="b sf">Gerekli: 121,2 W</text>
+  <rect x="60" y="248" width="480" height="34" rx="4" class="dgs"/>
+  <text x="70" y="271" class="b">120 W switch</text>
+  <text x="550" y="271" class="b dg">Yetersiz (−1,2 W)</text>
+  <rect x="60" y="296" width="600" height="34" rx="4" class="oks"/>
+  <text x="70" y="319" class="b">150 W switch</text>
+  <text x="670" y="319" class="b ok end">+28,8 W</text>
+  <text x="360" y="372" class="sm mid t2">Hareketli kamera için o portun PoE+ (30 W) desteklemesi de şarttır.</text>
+</svg>
+      <figcaption>Örnek kurulumda cihazların toplamı 101 W, %20 payla gereken bütçe 121,2 W'tır. 120 W'lık switch sınırda kalıp yetersizdir; 150 W'lık switch yaklaşık 29 W boşluk bırakır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">PoE (Power over Ethernet) nedir?</a></li>
+      <li><a href="#b2">802.3af, 802.3at ve 802.3bt standartları arasındaki fark nedir?</a></li>
+      <li><a href="#b3">Güç bütçesi nasıl hesaplanır? Formül ve pay</a></li>
+      <li><a href="#b4">Güç bütçesinde pay neden bırakılır?</a></li>
+      <li><a href="#b5">PoE kablosu en fazla kaç metre olabilir?</a></li>
+      <li><a href="#b6">PoE injector ne zaman kullanılır? Pasif ve aktif PoE farkı</a></li>
+      <li><a href="#b7">IP kameraların bant genişliği switch seçimini nasıl etkiler?</a></li>
+      <li><a href="#b8">Kayıt cihazı depolama ihtiyacı nasıl hesaplanır?</a></li>
+      <li><a href="#b9">PoE kurulumunda sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-poe-nedir-switch-guc-butcesi-nasil-hesaplanir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../poe-guc-butcesi-hesapla/"><strong>PoE Güç Bütçesi Hesaplama</strong><span>PoE switch bütçesini cihazların toplam watt değeriyle karşılaştırın; kalan gücü ve gereken PoE standardını görün.</span></a></li>
+          <li><a href="../../ip-kamera-bant-genisligi-hesapla/"><strong>IP Kamera Bant Genişliği Hesaplama</strong><span>Çözünürlük, kare hızı ve codec'e göre IP kameranın tahmini bit hızını ve toplam ağ bant genişliğini bulun.</span></a></li>
+          <li><a href="../../guvenlik-kamerasi-depolama-hesapla/"><strong>Güvenlik Kamerası Kayıt Depolama Hesaplama</strong><span>Kamera sayısı, bit hızı ve saklama süresinden kayıt cihazı için gereken disk kapasitesini TB olarak hesaplayın.</span></a></li>
+          <li><a href="../../amper-watt-cevir/"><strong>Amper Watt Çevirici</strong><span>Amperi watta ya da wattı ampere çevirin; DC, tek faz ve üç faz devrelerde gerilim ve cos φ ile birlikte.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">PoE (Power over Ethernet) nedir?</h2>
+      <p>PoE, standart bir ağ kablosunun içindeki tellerden veriyle birlikte doğru akım taşınmasını sağlayan bir yöntemdir. Gücü veren tarafa PSE (güç kaynağı ekipmanı; çoğu zaman switch ya da injector), gücü alan tarafa PD (güç alan cihaz; kamera, erişim noktası, telefon) denir. Böylece tavandaki bir kamera ya da duvardaki bir erişim noktası için ayrıca priz çekmek gerekmez.</p>
+      <p>Standart PoE'de güç vermeden önce bir el sıkışma yapılır: switch, kabloya bağlanan cihazın PoE uyumlu olup olmadığını ve hangi güç sınıfında olduğunu düşük bir gerilimle kontrol eder. Uyumlu değilse güç vermez. Bu sayede PoE switch'e PoE desteği olmayan bir bilgisayar bağlamak güvenlidir.</p>
+
+      <h2 id="b2">802.3af, 802.3at ve 802.3bt standartları arasındaki fark nedir?</h2>
+      <p>Standartlar arasındaki temel fark, port başına verilebilecek güçtür. Switch tarafında verilen güç ile cihaza ulaşan güç arasındaki fark kablodaki kayıptır; standart, 100 metrelik kabloda bile cihaza belirtilen değerin ulaşmasını hedefler.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Standart</th><th>Yaygın adı</th><th>Port çıkışı (PSE)</th><th>Cihaza ulaşan (PD)</th><th>Kullanılan çift</th></tr></thead>
+        <tbody>
+          <tr><td>IEEE 802.3af</td><td>PoE</td><td>15,4 W</td><td>12,95 W</td><td>2 çift</td></tr>
+          <tr><td>IEEE 802.3at</td><td>PoE+</td><td>30 W</td><td>25,5 W</td><td>2 çift</td></tr>
+          <tr><td>IEEE 802.3bt Tip 3</td><td>PoE++ / 4PPoE</td><td>60 W</td><td>51 W</td><td>4 çift</td></tr>
+          <tr><td>IEEE 802.3bt Tip 4</td><td>PoE++ / 4PPoE</td><td>90 W</td><td>71,3 W</td><td>4 çift</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Yeni standartlar eskileriyle geriye uyumludur: PoE+ switch, 802.3af cihazı besleyebilir.</p>
+      <p>Sabit bir IP kamera genellikle 802.3af sınırında kalır; kızılötesi ışıklar açıldığında tüketimi artar. Isıtıcılı dış mekân kameraları, hareketli (PTZ) kameralar ve yeni nesil erişim noktaları çoğu zaman PoE+ ister. Cihazın etiketinde ya da teknik belgesinde yazan &quot;en yüksek tüketim&quot; değeri, hesapta kullanılması gereken değerdir.</p>
+
+      <h2 id="b3">Güç bütçesi nasıl hesaplanır? Formül ve pay</h2>
+      <p>PoE switch'lerin iki sınırı vardır: her portun verebileceği en yüksek güç ve tüm portların toplamda verebileceği güç (PoE bütçesi). 24 portlu bir switch'in her portu PoE+ olabilir ama toplam bütçesi 190 W ise 24 portun hepsine 30 W veremez. Hesap bu yüzden iki aşamalıdır.</p>
+      <div class="rh-formula">Toplam güç = Σ (cihaz adedi × cihazın en yüksek tüketimi)<br>Gereken bütçe = toplam güç × (1 + pay)   · pay genellikle 0,20–0,30<br>Koşul 1: gereken bütçe ≤ switch PoE bütçesi<br>Koşul 2: her cihazın gücü ≤ bağlandığı portun sınırı</div>
+      <ol class="ba-steps">
+        <li>Her cihaz türünün en yüksek tüketimini teknik belgeden yazın: kamera 6,5 W, hareketli kamera 25 W, erişim noktası 12 W.</li>
+        <li>Adetle çarpıp toplayın: 8 × 6,5 + 1 × 25 + 2 × 12 = 52 + 25 + 24 = 101 W.</li>
+        <li>%20 pay ekleyin: 101 × 1,20 = 121,2 W.</li>
+        <li>Switch'in bütçesiyle karşılaştırın: 120 W yetersiz, 150 W yeterli (28,8 W boşluk).</li>
+        <li>Port kontrolü: 25 W'lık hareketli kamera, PoE+ (30 W) destekleyen bir porta bağlanmalı.</li>
+      </ol>
+      <p>Bu hesabı cihaz gruplarını girerek <a href="../../poe-guc-butcesi-hesapla/">PoE Güç Bütçesi Hesaplama</a> aracıyla yapabilirsiniz; araç kalan gücü ve gereken PoE standardını da gösterir.</p>
+
+      <h2 id="b4">Güç bütçesinde pay neden bırakılır?</h2>
+      <p>Cihazların tüketimi sabit değildir. Bir kamera gündüz 4 W çekerken gece kızılötesi aydınlatma açıldığında 6–7 W'a çıkabilir; dış mekânda kışın ısıtıcı devreye girerse tüketim iki katına yaklaşır. Hareketli kameralar motor çalışırken anlık olarak daha fazla güç çeker. Bütçe tam sınırda hesaplanırsa en kötü anda bazı cihazlar yeniden başlar ya da switch düşük öncelikli portlardaki gücü keser.</p>
+      <p>Pay ayrıca ileride eklenecek cihazlar içindir. Bugün 8 kameralık bir sistem kuran işyeri, bir yıl sonra iki kamera daha eklemek istediğinde switch değiştirmek zorunda kalmamalıdır. Switch'in sürekli tam yükte çalışması ısınmayı artırır; dolapta havalandırması zayıf bir switch için bu ayrıca önemlidir.</p>
+
+      <h2 id="b5">PoE kablosu en fazla kaç metre olabilir?</h2>
+      <p>Ethernet standardı bakır kabloda bir bağlantı için en fazla 100 metre tanımlar; PoE de bu sınırla çalışır. 100 metre, switch portundan cihaza kadar olan toplam uzunluktur ve ara bağlantı kablolarını da içerir. Daha uzak noktalar için PoE uzatıcı, ara bir PoE switch ya da fiber hat ve uçta ayrı güç kaynağı kullanılır.</p>
+      <p>Kablo kalitesi mesafe kadar önemlidir. Kablodaki direnç güç kaybına dönüşür; ince ya da bakır kaplı alüminyum (CCA) kablolarda kayıp ve ısınma artar, uzun hatlarda cihaz yeterli gerilimi alamayabilir. PoE için en az Cat5e, yüksek güçlü 802.3bt uygulamalarında Cat6 ve üzeri, saf bakır iletkenli kablo tercih edilir. Kablo kesitinin genel mantığı <a href="../../bilgi-bankasi/kablo-kesiti-nasil-secilir/">kablo kesiti nasıl seçilir</a> yazısında anlatılıyor.</p>
+
+      <div class="ba-ad" data-slot="bilgi-poe-nedir-switch-guc-butcesi-nasil-hesaplanir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">PoE injector ne zaman kullanılır? Pasif ve aktif PoE farkı</h2>
+      <p>PoE injector, PoE desteği olmayan bir switch ile PoE cihazı arasına takılan küçük bir güç adaptörüdür: bir ucu switch'ten veriyi alır, prizden aldığı gücü ekler ve diğer ucundan cihaza verir. Tek bir kamera ya da erişim noktası eklemek için tüm switch'i değiştirmek yerine kullanılır. Tersi işi yapan PoE splitter ise PoE'li kablodan gücü ayırıp PoE desteği olmayan bir cihaza ayrı fiş olarak verir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>Aktif (standart) PoE</th><th>Pasif PoE</th></tr></thead>
+        <tbody>
+          <tr><td>El sıkışma</td><td>Var; uyumsuz cihaza güç verilmez</td><td>Yok; kablo takılınca güç verilir</td></tr>
+          <tr><td>Gerilim</td><td>Standartta tanımlı (yaklaşık 44–57 V)</td><td>Üreticiye göre sabit (ör. 24 V ya da 48 V)</td></tr>
+          <tr><td>Uyumluluk</td><td>Farklı üreticiler arasında çalışır</td><td>Yalnızca aynı gerilimli cihazlarla</td></tr>
+          <tr><td>Risk</td><td>Düşük</td><td>Yanlış cihaza takılırsa ağ kartı zarar görebilir</td></tr>
+        </tbody>
+      </table></div>
+      <p>Pasif PoE kullanan bir cihazınız varsa ona ayrılmış portu ve kabloyu etiketleyin. Aynı porta bir bilgisayar ya da yazıcı takılırsa kalıcı arıza oluşabilir.</p>
+
+      <h2 id="b7">IP kameraların bant genişliği switch seçimini nasıl etkiler?</h2>
+      <p>PoE switch seçerken güç kadar veri trafiği de hesaplanmalıdır. Bir IP kamera çözünürlüğüne, kare hızına ve sıkıştırma türüne göre birkaç Mbps veri üretir. Kayıt cihazına giden toplam trafik, bütün kameraların toplamıdır ve switch'in kayıt cihazına bağlanan portundan geçer.</p>
+      <div class="rh-formula">Toplam trafik = kamera sayısı × kamera başına bit hızı<br>Örnek: 8 × 4 Mbps = 32 Mbps (kayıt cihazına giden)</div>
+      <p>Bu örnekte 100 megabitlik bir bağlantı teknik olarak yeterlidir, ama canlı izleme ve kayıt aynı anda yapıldığında trafik artar. Bu yüzden kayıt cihazına giden port ve switch'in ana bağlantısı için gigabit tercih edilir. Kamera başına bit hızını tahmin etmek için <a href="../../ip-kamera-bant-genisligi-hesapla/">IP Kamera Bant Genişliği Hesaplama</a> aracını kullanabilirsiniz.</p>
+
+      <h2 id="b8">Kayıt cihazı depolama ihtiyacı nasıl hesaplanır?</h2>
+      <p>Depolama, bit hızı ile süreden bulunur: 4 Mbps'lik bir kamera saniyede 0,5 MB, günde 4 × 86.400 ÷ 8 = 43.200 MB, yani yaklaşık 43,2 GB veri üretir. 8 kamera günde yaklaşık 346 GB, 30 günde yaklaşık 10,4 TB eder. Hareket algılamalı kayıt bu değeri sahneye göre belirgin biçimde düşürebilir.</p>
+      <p>Kaç günlük kayıt tutulacağı ve disk seçimi için <a href="../../guvenlik-kamerasi-depolama-hesapla/">Güvenlik Kamerası Depolama Hesaplama</a> aracı ile <a href="../../bilgi-bankasi/guvenlik-kamerasi-kac-gun-kayit-yapar/">güvenlik kamerası kaç gün kayıt yapar</a> yazısı ayrıntılı yol gösterir. Watt, amper ve volt arasındaki dönüşümlere ihtiyaç duyarsanız <a href="../../amper-watt-cevir/">Amper Watt çevirici</a> kullanılabilir.</p>
+
+      <h2 id="b9">PoE kurulumunda sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Yalnızca port sayısına bakmak:</strong> 16 PoE portlu switch'in bütçesi 16 cihazı tam güçte beslemeye yetmeyebilir.</li>
+        <li><strong>Etiketteki tipik değeri kullanmak:</strong> Hesapta en yüksek tüketim (kızılötesi, ısıtıcı, motor açık) değeri kullanılmalıdır.</li>
+        <li><strong>100 metreyi aşmak:</strong> Bağlantı kopmaları ve gece yeniden başlayan kameralar çoğu zaman uzun hattan kaynaklanır.</li>
+        <li><strong>Düşük kaliteli kablo:</strong> CCA ve ince kablolarda kayıp ve ısınma artar.</li>
+        <li><strong>Pasif ve aktif PoE'yi karıştırmak:</strong> Pasif PoE adaptörü standart cihaza ya da bilgisayara zarar verebilir.</li>
+        <li><strong>Kesintisiz güç kaynağını unutmak:</strong> Switch elektrik kesintisinde kapanırsa tüm kameralar da kapanır; UPS hesabı switch'in PoE yükünü de içermelidir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>PoE (Power over Ethernet) nedir?</summary><p>PoE, ağ kablosu üzerinden veriyle birlikte elektrik taşıyan bir teknolojidir. IP kamera, erişim noktası ve IP telefon gibi cihazlar ayrı bir priz ya da adaptöre gerek kalmadan switch'ten beslenir.</p></details>
+      <details><summary>802.3af, 802.3at ve 802.3bt standartları arasındaki fark nedir?</summary><p>Fark port başına verilen güçtedir: 802.3af 15,4 W, 802.3at 30 W, 802.3bt Tip 3 60 W ve Tip 4 90 W verir. Cihaza ulaşan güç sırasıyla 12,95; 25,5; 51 ve 71,3 W'tır.</p></details>
+      <details><summary>Bir PoE switch kaç kamerayı besleyebilir?</summary><p>Switch'in toplam PoE bütçesini kamera başına en yüksek tüketime ve pay katsayısına bölerek bulunur. 120 W bütçeli switch, 6,5 W'lık kameralardan %20 payla yaklaşık 15 tanesini besleyebilir; port sayısı da yeterli olmalıdır.</p></details>
+      <details><summary>Güç bütçesi hesaplanırken pay neden bırakılır?</summary><p>Kameraların tüketimi gece kızılötesi, kışın ısıtıcı ve hareket sırasında artar. Pay bırakılmazsa en yüksek yük anında cihazlar yeniden başlayabilir; ayrıca ileride eklenecek cihazlar için yer kalmaz.</p></details>
+      <details><summary>PoE kablosu en fazla kaç metre olabilir?</summary><p>Ethernet standardına göre switch ile cihaz arasındaki bakır kablo en fazla 100 metre olabilir. Daha uzun mesafede PoE uzatıcı, ara switch ya da fiber hat ile ayrı güç kaynağı kullanılır.</p></details>
+      <details><summary>IP kameraların bant genişliği switch seçimini nasıl etkiler?</summary><p>Kayıt cihazına giden trafik tüm kameraların bit hızlarının toplamıdır. 8 kamera 4'er Mbps ile 32 Mbps üretir; canlı izleme ve kaydın birlikte yapıldığı sistemlerde ana bağlantının gigabit olması önerilir.</p></details>
+      <details><summary>PoE injector ne zaman kullanılır?</summary><p>PoE desteği olmayan bir switch'e tek tük PoE cihazı eklemek gerektiğinde kullanılır. Injector prizden aldığı gücü veriyle birleştirip kablo üzerinden cihaza iletir; switch'i değiştirmeye gerek kalmaz.</p></details>
+      <details><summary>Pasif PoE ile aktif PoE farkı nedir?</summary><p>Aktif PoE güç vermeden önce cihazın uyumlu olup olmadığını kontrol eder; pasif PoE ise kontrol yapmadan sabit gerilim verir. Pasif PoE'nin yanlış cihaza bağlanması ağ kartına zarar verebilir.</p></details>
+      <details><summary>Kayıt cihazı depolama ihtiyacı nasıl hesaplanır?</summary><p>Kamera bit hızı, saniye sayısı ve kamera adediyle çarpılıp 8'e bölünerek bayt bulunur. 4 Mbps'lik 8 kamera günde yaklaşık 346 GB, 30 günde yaklaşık 10,4 TB depolama gerektirir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.ieee802.org/3/" rel="noopener">IEEE – 802.3 Ethernet Çalışma Grubu</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../guvenlik-kamerasi-kac-gun-kayit-yapar/"><strong>Güvenlik Kamerası Kaç Gün Kayıt Yapar? Disk Kapasitesi ve Bant Genişliği</strong><span>Kayıt süresi = disk kapasitesi ÷ (kamera sayısı × bit hızı × 10,8 GB). 1 TB disk 4 kamerada kaç gün tutar, H.265 farkı, hareket algılama ve PoE güç hesabı.</span></a></li>
+          <li><a href="../watt-amper-volt-iliskisi/"><strong>Watt, Amper ve Volt İlişkisi: Kaç Watt Kaç Amper Çeker? Hesaplama</strong><span>Güç (W) = gerilim (V) × akım (A). 230 V'ta 2000 W cihaz yaklaşık 8,7 A çeker, 16 A sigorta yaklaşık 3.680 W taşır. Üç faz, uzatma kablosu ve 5V 2A örnekleri.</span></a></li>
+          <li><a href="../ip-adresi-ve-alt-ag-maskesi-nedir/"><strong>IP Adresi ve Alt Ağ Maskesi Nedir? Subnet, CIDR ve /24 Hesaplama</strong><span>Alt ağ maskesi, IP adresinin hangi bitlerinin ağı, hangilerinin cihazı gösterdiğini belirler. 255.255.255.0 = /24 = 254 cihaz. Ağ ve yayın adresi bulma örnekli.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-poe-nedir-switch-guc-butcesi-nasil-hesaplanir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="../../cerez-politikasi/">Çerez Politikası</a></li><li><a href="../../kullanim-kosullari/">Kullanım Koşulları</a></li><li><a href="../../iletisim/">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

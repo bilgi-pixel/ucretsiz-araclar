@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>chmod 755 Ne Demek? Linux Dosya İzinleri, 644 ve 777 Farkı</title>
+  <meta name="description" content="chmod 755 sahibine okuma-yazma-çalıştırma, gruba ve diğerlerine okuma-çalıştırma verir. rwx, sekizlik izin hesabı, 644, 600, 777 riski, umask ve sunucu örnekleri.">
+  <meta name="keywords" content="chmod 755 ne demek, chmod 644, linux dosya izinleri, rwx nedir, chmod 777 tehlikeli mi, sekizlik izin, wordpress dosya izinleri, umask nedir">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/chmod-755-ne-demek-linux-dosya-izinleri/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="chmod 755 Ne Demek? Linux Dosya İzinleri, 644 ve 777 Farkı">
+  <meta property="og:description" content="chmod 755 sahibine okuma-yazma-çalıştırma, gruba ve diğerlerine okuma-çalıştırma verir. rwx, sekizlik izin hesabı, 644, 600, 777 riski, umask ve sunucu örnekleri.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/chmod-755-ne-demek-linux-dosya-izinleri/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"chmod 755 Ne Demek? Linux Dosya İzinleri ve Sekizlik Gösterim","description":"chmod 755 sahibine okuma-yazma-çalıştırma, gruba ve diğerlerine okuma-çalıştırma verir. rwx, sekizlik izin hesabı, 644, 600, 777 riski, umask ve sunucu örnekleri.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/chmod-755-ne-demek-linux-dosya-izinleri/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1071,"keywords":"chmod 755 ne demek, chmod 644, linux dosya izinleri, rwx nedir, chmod 777 tehlikeli mi, sekizlik izin, wordpress dosya izinleri, umask nedir","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"chmod 755 Ne Demek? Linux Dosya İzinleri ve Sekizlik Gösterim"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"chmod komutu ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"chmod, Linux ve Unix benzeri sistemlerde bir dosya ya da klasörün okuma, yazma ve çalıştırma izinlerini sahip, grup ve diğer kullanıcılar için ayrı ayrı değiştiren komuttur. Barındırma panellerindeki izin ayarı da aynı işi yapar."}},{"@type":"Question","name":"rwx harfleri ne anlama gelir?","acceptedAnswer":{"@type":"Answer","text":"r okuma, w yazma, x çalıştırma iznidir ve sayısal değerleri sırasıyla 4, 2 ve 1'dir. Klasörde r listelemeyi, w dosya eklemeyi ve silmeyi, x ise klasöre girmeyi sağlar."}},{"@type":"Question","name":"755, 644 ve 777 izinleri nasıl okunur?","acceptedAnswer":{"@type":"Answer","text":"Rakamlar soldan sağa sahip, grup ve diğerleri içindir. 755 rwxr-xr-x, 644 rw-r--r--, 777 ise rwxrwxrwx demektir; 777 herkese yazma izni verdiği için önerilmez."}},{"@type":"Question","name":"Sekizlik sayı izinleri nasıl temsil eder?","acceptedAnswer":{"@type":"Answer","text":"Her kullanıcı sınıfının üç izni üç bitlik bir ikilik sayı oluşturur ve bu sayı 0 ile 7 arasında tek bir sekizlik rakamla yazılır. Örneğin r-x ikilik olarak 101, sekizlik olarak 5'tir."}},{"@type":"Question","name":"Sahip, grup ve diğerleri ayrımı nedir?","acceptedAnswer":{"@type":"Answer","text":"Sahip dosyanın sahibi olan kullanıcı, grup dosyanın bağlı olduğu kullanıcı grubu, diğerleri ise bu iki sınıfa girmeyen herkestir. İzinler bu üç sınıf için ayrı ayrı belirlenir."}},{"@type":"Question","name":"WordPress dosya ve klasörleri için önerilen izinler nelerdir?","acceptedAnswer":{"@type":"Answer","text":"Genel öneri klasörler için 755, dosyalar için 644'tür. Veritabanı parolasını içeren yapılandırma dosyası için 640, 600 ya da barındırmaya göre 440 gibi daha dar bir izin önerilir; 777 hiçbir dosya için gerekmez."}},{"@type":"Question","name":"chmod 777 neden güvenlik riski taşır?","acceptedAnswer":{"@type":"Answer","text":"777 sistemdeki her kullanıcıya ve sürece dosyayı değiştirme yetkisi verir. Bir eklentideki açık ya da paylaşımlı sunucudaki başka bir hesap, bu dosya ve klasörlere zararlı kod yazabilir."}},{"@type":"Question","name":"Sembolik gösterim (u+x) ile sayısal gösterim farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Sayısal gösterim izinlerin tamamını yeniden yazar, sembolik gösterim ise mevcut izinlere ekleme ya da çıkarma yapar. Tek bir izni değiştirmek için u+x veya g-w gibi sembolik ifadeler daha güvenlidir."}},{"@type":"Question","name":"umask izinleri nasıl etkiler?","acceptedAnswer":{"@type":"Answer","text":"umask, yeni dosya ve klasörlerden kaldırılacak izinleri belirleyen maskedir. Yaygın değer olan 022 ile yeni dosyalar 644, yeni klasörler 755 izinle oluşturulur; 027 ile bu değerler 640 ve 750 olur."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>chmod 755 Ne Demek? Linux Dosya İzinleri ve Sekizlik Gösterim</h1><p class="lead"><code>chmod 755</code>, bir dosya ya da klasöre <strong>sahibi için okuma, yazma ve çalıştırma</strong>, <strong>grup ve diğer kullanıcılar için yalnızca okuma ve çalıştırma</strong> izni verir; harfli gösterimi <code>rwxr-xr-x</code>'tir. Her rakam bir kullanıcı sınıfını temsil eder ve okuma 4, yazma 2, çalıştırma 1 değerinin toplamıdır: 7 = 4 + 2 + 1, 5 = 4 + 1. Bu sayfada izinlerin nasıl okunduğunu, web sunucularında hangi değerlerin kullanıldığını ve 777'nin neden ciddi bir güvenlik riski olduğunu anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 5 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Okuma (r) = 4, yazma (w) = 2, çalıştırma (x) = 1; her rakam bu değerlerin toplamıdır.</li>
+        <li>Üç rakam sırasıyla sahip (user), grup (group) ve diğerleri (others) içindir.</li>
+        <li>755 = rwxr-xr-x: klasörler ve çalıştırılabilir betikler için yaygındır.</li>
+        <li>644 = rw-r--r--: web sitesi dosyaları ve yapılandırma dışındaki belgeler için yaygındır.</li>
+        <li>777 = rwxrwxrwx: sunucudaki herkesin dosyayı değiştirmesine izin verir; sorun çözmek için kullanılmamalıdır.</li>
+        <li>umask yeni dosyaların varsayılan iznini belirler; 022 değeri dosyaları 644, klasörleri 755 yapar.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="chmod 755 izninin çözümlemesi: sahip için 7 yani okuma, yazma, çalıştırma; grup ve diğerleri için 5 yani okuma ve çalıştırma; rakamların 4, 2 ve 1 toplamı olarak gösterimi." viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="32" class="lg b mid">chmod 755 = rwxr-xr-x</text>
+  <text x="140" y="74" class="b mid">Sahip (u)</text>
+  <text x="360" y="74" class="b mid">Grup (g)</text>
+  <text x="580" y="74" class="b mid">Diğerleri (o)</text>
+  <g class="b mid">
+    <rect x="65" y="90" width="46" height="46" rx="6" class="oks"/><text x="88" y="120">r</text>
+    <rect x="117" y="90" width="46" height="46" rx="6" class="oks"/><text x="140" y="120">w</text>
+    <rect x="169" y="90" width="46" height="46" rx="6" class="oks"/><text x="192" y="120">x</text>
+    <rect x="285" y="90" width="46" height="46" rx="6" class="oks"/><text x="308" y="120">r</text>
+    <rect x="337" y="90" width="46" height="46" rx="6" class="dgs"/><text x="360" y="120">−</text>
+    <rect x="389" y="90" width="46" height="46" rx="6" class="oks"/><text x="412" y="120">x</text>
+    <rect x="505" y="90" width="46" height="46" rx="6" class="oks"/><text x="528" y="120">r</text>
+    <rect x="557" y="90" width="46" height="46" rx="6" class="dgs"/><text x="580" y="120">−</text>
+    <rect x="609" y="90" width="46" height="46" rx="6" class="oks"/><text x="632" y="120">x</text>
+  </g>
+  <g class="sm mid t2">
+    <text x="88" y="156">4</text><text x="140" y="156">2</text><text x="192" y="156">1</text>
+    <text x="308" y="156">4</text><text x="360" y="156">0</text><text x="412" y="156">1</text>
+    <text x="528" y="156">4</text><text x="580" y="156">0</text><text x="632" y="156">1</text>
+  </g>
+  <rect x="85" y="176" width="110" height="60" rx="8" class="p"/><text x="140" y="216" class="xl mid sf">7</text>
+  <rect x="305" y="176" width="110" height="60" rx="8" class="p"/><text x="360" y="216" class="xl mid sf">5</text>
+  <rect x="525" y="176" width="110" height="60" rx="8" class="p"/><text x="580" y="216" class="xl mid sf">5</text>
+  <text x="140" y="258" class="sm mid">4 + 2 + 1</text>
+  <text x="360" y="258" class="sm mid">4 + 0 + 1</text>
+  <text x="580" y="258" class="sm mid">4 + 0 + 1</text>
+  <rect x="20" y="282" width="680" height="84" rx="8" class="sf sb"/>
+  <text x="40" y="310" class="b">644 = rw-r--r--   (dosya: herkes okur, yalnızca sahip yazar)</text>
+  <text x="40" y="336" class="b">600 = rw-------   (gizli dosya: yalnızca sahip)</text>
+  <text x="40" y="358" class="b dg">777 = rwxrwxrwx   (herkes yazar: güvenlik riski)</text>
+</svg>
+      <figcaption>755'in her rakamı bir kullanıcı sınıfıdır. Rakam, açık olan izinlerin değerleri toplanarak bulunur: r = 4, w = 2, x = 1. Kırmızı kutular kapalı izni gösterir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">chmod komutu ne işe yarar?</a></li>
+      <li><a href="#b2">rwx harfleri ne anlama gelir? Dosya ve klasörde fark</a></li>
+      <li><a href="#b3">Sekizlik sayı izinleri nasıl temsil eder?</a></li>
+      <li><a href="#b4">755, 644, 600 ve 777 izinleri nasıl okunur?</a></li>
+      <li><a href="#b5">chmod 777 neden güvenlik riski taşır?</a></li>
+      <li><a href="#b6">Sahip, grup ve diğerleri ayrımı nedir?</a></li>
+      <li><a href="#b7">Sembolik gösterim (u+x) ile sayısal gösterim farkı nedir?</a></li>
+      <li><a href="#b8">WordPress dosya ve klasörleri için önerilen izinler nelerdir?</a></li>
+      <li><a href="#b9">umask izinleri nasıl etkiler?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-chmod-755-ne-demek-linux-dosya-izinleri-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../sekizlik-ondalik-cevir/"><strong>Sekizlik (Oktal) Ondalık Çevirici</strong><span>Oktal sayıyı ondalığa, ondalık sayıyı oktale çevirin; ikili karşılığını ve 755 gibi izin kodlarının açılımını görün.</span></a></li>
+          <li><a href="../../ikili-ondalik-cevir/"><strong>İkili (Binary) Ondalık Çevirici</strong><span>Binary sayıyı ondalığa, ondalık sayıyı binary'ye çevirin; bit grupları, hex ve oktal karşılığıyla birlikte.</span></a></li>
+          <li><a href="../../sayi-tabani-donustur/"><strong>Sayı Tabanı Dönüştürücü</strong><span>İkili, sekizli, onlu, onaltılı ve 2-36 arası özel tabanlar arasında dönüştürün; büyük sayı, negatif sayı, ondalık kesir, bit işlemleri ve ASCII/Unicode tablosu.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">chmod komutu ne işe yarar?</h2>
+      <p>Linux ve diğer Unix benzeri sistemlerde her dosya ve klasörün bir sahibi, bir grubu ve bir izin takımı vardır. <code>chmod</code> (change mode) komutu bu izinleri değiştirir: kimin dosyayı okuyabileceğini, değiştirebileceğini ve program olarak çalıştırabileceğini belirler. Web barındırma panellerindeki &quot;dosya izinleri&quot; kutusu da arka planda aynı işi yapar.</p>
+      <p>İzinler güvenliğin temel katmanıdır. Bir web sitesinin dosyaları yanlış izinlerle bırakılırsa sunucudaki başka bir kullanıcı ya da ele geçirilmiş bir eklenti dosyalara kötü amaçlı kod yazabilir. Tersine, izinler gereğinden dar olursa site dosyaları okunamaz ve sayfa hata verir. Doğru değer, &quot;çalışması için gereken en az izin&quot; ilkesiyle seçilir.</p>
+
+      <h2 id="b2">rwx harfleri ne anlama gelir? Dosya ve klasörde fark</h2>
+      <p>Üç izin harfi dosyada ve klasörde farklı anlamlar taşır. Bu fark, klasörlerin neden çoğu zaman 755, dosyaların ise 644 olduğunu açıklar.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Harf</th><th>Değer</th><th>Dosyada anlamı</th><th>Klasörde anlamı</th></tr></thead>
+        <tbody>
+          <tr><td>r (read)</td><td>4</td><td>İçeriği okumak</td><td>Klasördeki dosya adlarını listelemek</td></tr>
+          <tr><td>w (write)</td><td>2</td><td>İçeriği değiştirmek</td><td>Klasöre dosya eklemek, silmek, yeniden adlandırmak</td></tr>
+          <tr><td>x (execute)</td><td>1</td><td>Program ya da betik olarak çalıştırmak</td><td>Klasöre girmek ve içindeki dosyalara erişmek</td></tr>
+          <tr><td>- (tire)</td><td>0</td><td>İzin yok</td><td>İzin yok</td></tr>
+        </tbody>
+      </table></div>
+      <p>Bir klasörde x izni yoksa, içindeki dosyanın kendi izni ne olursa olsun o dosyaya ulaşılamaz. Bu yüzden web sunucusunun okuması gereken klasörlerde diğerleri için en az r ve x açık olmalıdır. Terminalde <code>ls -l</code> komutu izinleri, başında dosya türünü gösteren bir harfle birlikte (ör. klasör için d) on karakter olarak listeler: <code>drwxr-xr-x</code> gibi.</p>
+
+      <h2 id="b3">Sekizlik sayı izinleri nasıl temsil eder?</h2>
+      <p>Her kullanıcı sınıfı için üç izin vardır ve her izin açık ya da kapalıdır; bu üç bit 0 ile 7 arasında tek bir sekizlik (oktal) rakamla yazılabilir. Okuma en soldaki bit (4), yazma ortadaki (2), çalıştırma en sağdaki (1) bittir. Örneğin r-x, ikilik olarak 101, sekizlik olarak 5'tir.</p>
+      <div class="rh-formula">İzin rakamı = 4 × r + 2 × w + 1 × x   (açıksa 1, kapalıysa 0)<br>rwx = 111₂ = 7 · rw- = 110₂ = 6 · r-x = 101₂ = 5 · r-- = 100₂ = 4<br>Üç rakam: sahip, grup, diğerleri → 755, 644, 600 …</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Rakam</th><th>İkilik</th><th>Harfler</th><th>Anlamı</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>000</td><td>---</td><td>Hiç izin yok</td></tr>
+          <tr><td>4</td><td>100</td><td>r--</td><td>Yalnızca okuma</td></tr>
+          <tr><td>5</td><td>101</td><td>r-x</td><td>Okuma ve çalıştırma</td></tr>
+          <tr><td>6</td><td>110</td><td>rw-</td><td>Okuma ve yazma</td></tr>
+          <tr><td>7</td><td>111</td><td>rwx</td><td>Tüm izinler</td></tr>
+        </tbody>
+      </table></div>
+      <p>Sekizlik sistemin neden kullanıldığını ve ikilik sistemle ilişkisini <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> yazısında bulabilirsiniz. Bir izin kodunun açılımını ve ondalık karşılığını görmek için <a href="../../sekizlik-ondalik-cevir/">Sekizlik Ondalık Çevirici</a>, bitleri tek tek görmek için <a href="../../ikili-ondalik-cevir/">İkili Ondalık Çevirici</a> kullanılabilir.</p>
+
+      <h2 id="b4">755, 644, 600 ve 777 izinleri nasıl okunur?</h2>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Kod</th><th>Harfli</th><th>Tipik kullanım</th><th>Değerlendirme</th></tr></thead>
+        <tbody>
+          <tr><td>755</td><td>rwxr-xr-x</td><td>Klasörler, çalıştırılabilir betikler</td><td>Yaygın ve güvenli varsayılan</td></tr>
+          <tr><td>644</td><td>rw-r--r--</td><td>HTML, CSS, görsel ve PHP dosyaları</td><td>Yaygın ve güvenli varsayılan</td></tr>
+          <tr><td>600</td><td>rw-------</td><td>Gizli anahtar, parola içeren yapılandırma</td><td>Yalnızca sahip erişir</td></tr>
+          <tr><td>640</td><td>rw-r-----</td><td>Grubun okuması gereken yapılandırma</td><td>Diğerleri hiç erişemez</td></tr>
+          <tr><td>700</td><td>rwx------</td><td>Kişisel betik ve klasörler</td><td>Yalnızca sahip</td></tr>
+          <tr><td>777</td><td>rwxrwxrwx</td><td>Önerilmez</td><td>Herkes yazabilir, ciddi risk</td></tr>
+        </tbody>
+      </table></div>
+      <p>Okuma alışkanlığı kazanmak için kodu soldan sağa üçe ayırın: 640'ta sahip 6 (okur, yazar), grup 4 (yalnızca okur), diğerleri 0 (hiçbir şey yapamaz). Dört basamaklı kodlarda (ör. 1777) ilk rakam özel bitleri gösterir: 4 setuid, 2 setgid, 1 yapışkan bit. Yapışkan bit, herkesin yazabildiği ortak klasörlerde kullanıcıların yalnızca kendi dosyalarını silebilmesini sağlar.</p>
+
+      <h2 id="b5">chmod 777 neden güvenlik riski taşır?</h2>
+      <p>777, sistemdeki her kullanıcıya dosya üzerinde tam yetki verir. Paylaşımlı bir barındırmada &quot;diğerleri&quot; sınıfı, aynı sunucudaki başka hesapları ve web sunucusu sürecini de kapsayabilir. Bir sitenin eklentisinde açık bulunduğunda saldırgan, 777 izinli bir klasöre zararlı bir betik yazıp çalıştırabilir ya da mevcut dosyaya gizli kod ekleyebilir. Bu, sitelerin &quot;hacklendi&quot; diye fark edildiği vakaların sık rastlanan bir başlangıç noktasıdır.</p>
+      <p>777 genellikle bir hata mesajını hızlıca susturmak için verilir: &quot;Dosya yazılamıyor&quot; uyarısı görülünce izin sonuna kadar açılır. Doğru çözüm, dosyanın sahibini ve grubunu düzeltmek ya da yalnızca yazılması gereken klasöre (ör. yükleme klasörü) dar bir izin vermektir. Kural basittir: bir şey 777 ile çalışıp 755 ile çalışmıyorsa sorun çoğu zaman izin değil, sahipliktir ve kalıcı çözüm de oradadır.</p>
+      <ul>
+        <li>777 verdiyseniz geri alın: klasörleri 755, dosyaları 644 yapın.</li>
+        <li>Web sunucusunun yazması gereken klasörün sahibini sunucu kullanıcısına ayarlayın ya da grubu ortaklaştırın.</li>
+        <li>Hiçbir zaman yapılandırma ve parola dosyalarına 666 ya da 777 vermeyin.</li>
+        <li>Bir site saldırıya uğradıktan sonra izinleri düzeltmek yetmez; değiştirilmiş dosyaları temiz yedekle karşılaştırın ve tüm parolaları yenileyin.</li>
+      </ul>
+
+      <div class="ba-ad" data-slot="bilgi-chmod-755-ne-demek-linux-dosya-izinleri-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Sahip, grup ve diğerleri ayrımı nedir?</h2>
+      <p>Sahip (user), dosyayı oluşturan ya da sahipliği kendisine atanan kullanıcıdır. Grup (group), dosyanın bağlı olduğu kullanıcı grubudur; aynı projede çalışan birkaç kişiye ya da web sunucusu ile site kullanıcısına ortak erişim vermek için kullanılır. Diğerleri (others) ise bu iki sınıfa girmeyen herkestir.</p>
+      <p>Sahiplik <code>chown</code>, grup <code>chgrp</code> ya da <code>chown kullanici:grup</code> ile değiştirilir; bu komutlar genellikle yönetici yetkisi ister. Bir sorunun izinden mi sahiplikten mi kaynaklandığını anlamak için önce <code>ls -l</code> çıktısında sahip ve grup sütunlarına bakmak gerekir.</p>
+
+      <h2 id="b7">Sembolik gösterim (u+x) ile sayısal gösterim farkı nedir?</h2>
+      <p>Sayısal gösterim izinlerin tamamını tek seferde ayarlar: <code>chmod 644 dosya</code> önceki durum ne olursa olsun sonucu rw-r--r-- yapar. Sembolik gösterim ise mevcut izinlerin üzerine ekleme ya da çıkarma yapar ve tek bir izni değiştirmek istediğinizde daha güvenlidir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Komut</th><th>Etkisi</th></tr></thead>
+        <tbody>
+          <tr><td>chmod u+x betik.sh</td><td>Yalnızca sahibe çalıştırma izni ekler</td></tr>
+          <tr><td>chmod g-w rapor.txt</td><td>Gruptan yazma iznini kaldırır</td></tr>
+          <tr><td>chmod o= gizli.conf</td><td>Diğerlerinin tüm izinlerini kaldırır</td></tr>
+          <tr><td>chmod a+r ilan.html</td><td>Herkese okuma izni ekler (a = all)</td></tr>
+          <tr><td>chmod u=rwx,go=rx klasor</td><td>755 ile aynı sonucu verir</td></tr>
+        </tbody>
+      </table></div>
+      <p><code>-R</code> seçeneği izni alt klasörlere de uygular ama dosya ile klasörü ayırmaz. Tüm ağaca <code>chmod -R 755</code> vermek dosyaları da çalıştırılabilir yapar. Klasörleri ve dosyaları ayrı ayarlamak için türüne göre filtreleyen bir arama komutuyla iki ayrı işlem yapmak daha doğrudur.</p>
+
+      <h2 id="b8">WordPress dosya ve klasörleri için önerilen izinler nelerdir?</h2>
+      <p>WordPress'in kendi güvenlik belgelerinde önerilen genel düzen, klasörler için 755, dosyalar için 644'tür. Veritabanı parolasını içeren yapılandırma dosyası için daha dar bir izin (ör. 640 ya da 600; bazı barındırmalarda 440 veya 400) önerilir; hangi değerin çalışacağı sunucunun hangi kullanıcıyla çalıştığına bağlıdır. Yükleme klasörü web sunucusu tarafından yazılabilmelidir ama bu, 777 gerektirmez; doğru sahiplikle 755 yeterlidir.</p>
+      <p>Barındırma panellerinin çoğu dosya yöneticisinde izni üç rakamla gösterir. Bir eklenti ya da tema güncellemesi &quot;yazılamıyor&quot; hatası verirse önce sahipliği kontrol edin; sorun devam ediyorsa barındırma desteğinden sahiplik düzeltmesi isteyin.</p>
+
+      <h2 id="b9">umask izinleri nasıl etkiler?</h2>
+      <p>umask, yeni oluşturulan dosya ve klasörlerden hangi izinlerin <em>kaldırılacağını</em> söyleyen bir maskedir. Sistem dosyaları 666, klasörleri 777 tabanıyla oluşturur ve umask'taki bitleri çıkarır. En yaygın umask değeri 022'dir.</p>
+      <div class="rh-formula">Yeni dosya = 666 − umask → 666 − 022 = 644<br>Yeni klasör = 777 − umask → 777 − 022 = 755<br>umask 027 ile: dosya 640, klasör 750</div>
+      <p>Burada &quot;çıkarma&quot; aslında bit düzeyinde maskeleme işlemidir; 022 gibi değerlerde sonuç basit çıkarmayla aynı çıkar. Daha kapalı bir varsayılan isteyen sunucularda 027 kullanılır; böylece yeni dosyaları diğer kullanıcılar hiç göremez. Farklı tabanlar arasında çeviri yapmak için <a href="../../sayi-tabani-donustur/">Sayı Tabanı Dönüştürücü</a> işinizi görür.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>chmod komutu ne işe yarar?</summary><p>chmod, Linux ve Unix benzeri sistemlerde bir dosya ya da klasörün okuma, yazma ve çalıştırma izinlerini sahip, grup ve diğer kullanıcılar için ayrı ayrı değiştiren komuttur. Barındırma panellerindeki izin ayarı da aynı işi yapar.</p></details>
+      <details><summary>rwx harfleri ne anlama gelir?</summary><p>r okuma, w yazma, x çalıştırma iznidir ve sayısal değerleri sırasıyla 4, 2 ve 1'dir. Klasörde r listelemeyi, w dosya eklemeyi ve silmeyi, x ise klasöre girmeyi sağlar.</p></details>
+      <details><summary>755, 644 ve 777 izinleri nasıl okunur?</summary><p>Rakamlar soldan sağa sahip, grup ve diğerleri içindir. 755 rwxr-xr-x, 644 rw-r--r--, 777 ise rwxrwxrwx demektir; 777 herkese yazma izni verdiği için önerilmez.</p></details>
+      <details><summary>Sekizlik sayı izinleri nasıl temsil eder?</summary><p>Her kullanıcı sınıfının üç izni üç bitlik bir ikilik sayı oluşturur ve bu sayı 0 ile 7 arasında tek bir sekizlik rakamla yazılır. Örneğin r-x ikilik olarak 101, sekizlik olarak 5'tir.</p></details>
+      <details><summary>Sahip, grup ve diğerleri ayrımı nedir?</summary><p>Sahip dosyanın sahibi olan kullanıcı, grup dosyanın bağlı olduğu kullanıcı grubu, diğerleri ise bu iki sınıfa girmeyen herkestir. İzinler bu üç sınıf için ayrı ayrı belirlenir.</p></details>
+      <details><summary>WordPress dosya ve klasörleri için önerilen izinler nelerdir?</summary><p>Genel öneri klasörler için 755, dosyalar için 644'tür. Veritabanı parolasını içeren yapılandırma dosyası için 640, 600 ya da barındırmaya göre 440 gibi daha dar bir izin önerilir; 777 hiçbir dosya için gerekmez.</p></details>
+      <details><summary>chmod 777 neden güvenlik riski taşır?</summary><p>777 sistemdeki her kullanıcıya ve sürece dosyayı değiştirme yetkisi verir. Bir eklentideki açık ya da paylaşımlı sunucudaki başka bir hesap, bu dosya ve klasörlere zararlı kod yazabilir.</p></details>
+      <details><summary>Sembolik gösterim (u+x) ile sayısal gösterim farkı nedir?</summary><p>Sayısal gösterim izinlerin tamamını yeniden yazar, sembolik gösterim ise mevcut izinlere ekleme ya da çıkarma yapar. Tek bir izni değiştirmek için u+x veya g-w gibi sembolik ifadeler daha güvenlidir.</p></details>
+      <details><summary>umask izinleri nasıl etkiler?</summary><p>umask, yeni dosya ve klasörlerden kaldırılacak izinleri belirleyen maskedir. Yaygın değer olan 022 ile yeni dosyalar 644, yeni klasörler 755 izinle oluşturulur; 027 ile bu değerler 640 ve 750 olur.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../hash-nedir-sha256-md5/"><strong>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</strong><span>Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-chmod-755-ne-demek-linux-dosya-izinleri-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="../../cerez-politikasi/">Çerez Politikası</a></li><li><a href="../../kullanim-kosullari/">Kullanım Koşulları</a></li><li><a href="../../iletisim/">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
