@@ -13,7 +13,7 @@ export default {
     { id: 'puan', label: 'Sizin puanınız', type: 'number', placeholder: 'Örn. 1500' },
     { id: 'rakip', label: 'Rakibin puanı', type: 'number', placeholder: 'Örn. 1600' },
     { id: 'sonuc', label: 'Maç sonucu', type: 'select', options: [['1', 'Kazandım (1)'], ['0.5', 'Berabere (½)'], ['0', 'Kaybettim (0)']] },
-    { id: 'k', label: 'K katsayısı', type: 'select', options: [['20', 'K = 20 (2400 altı oyuncular)'], ['40', 'K = 40 (yeni oyuncular, gençler)'], ['10', 'K = 10 (2400 ve üzerine ulaşmış oyuncular)'], ['32', 'K = 32 (birçok çevrim içi sistem ve kulüp)'], ['16', 'K = 16'], ['24', 'K = 24']] },
+    { id: 'k', label: 'K katsayısı', type: 'select', options: [['20', 'K = 20 (2400 altı oyuncular)'], ['40', 'K = 40 (yeni oyuncular; 18 yaş altı ve 2300 altı)'], ['10', 'K = 10 (2400 ve üzerine ulaşmış oyuncular)'], ['32', 'K = 32 (birçok çevrim içi sistem ve kulüp)'], ['16', 'K = 16'], ['24', 'K = 24']] },
   ],
   compute(v, h) {
     const ra = h.nonneg(v.puan, 'Sizin puanınız');
@@ -38,7 +38,7 @@ export default {
         ['Puan farkı', isaretli(ra - rb, 0)],
         ['Kazanırsanız / berabere / kaybederseniz', isaretli(k * (1 - beklenen), 2) + ' / ' + isaretli(k * (0.5 - beklenen), 2) + ' / ' + isaretli(k * (0 - beklenen), 2)],
       ],
-      note: 'Araç lojistik Elo formülünü yuvarlamadan uygular. Resmî listelerde beklenen skor tablodan okunur, büyük puan farkları sınırlandırılır ve değişimler dönem sonunda yuvarlanır; bu yüzden küçük farklar olabilir.',
+      note: 'Araç lojistik Elo formülünü yuvarlamadan uygular. Resmî listelerde beklenen skor tablodan okunur, büyük puan farkları sınırlandırılır ve değişimler dönem sonunda yuvarlanır; bu yüzden küçük farklar olabilir. Uluslararası federasyon kurallarında 400 puandan büyük farklar 400 sayılır ve bir dönemdeki oyun sayısı çok olduğunda K düşürülür; araç bu iki sınırı uygulamaz.',
     };
   },
   cases: [

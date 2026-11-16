@@ -25,7 +25,7 @@ export default {
     if (erkek) {
       const yas = h.pos(v.yas, 'Yaş');
       if (yas < 18 || yas > 100) h.err('Formül erişkinler içindir; "Yaş" 18 ile 100 arasında olmalı.');
-      su = 2.447 - 0.09156 * yas + 0.1074 * boy + 0.3362 * kilo;
+      su = 2.447 - 0.09516 * yas + 0.1074 * boy + 0.3362 * kilo;
     } else {
       if (String(v.yas ?? '').trim() !== '') {
         const yas = h.pos(v.yas, 'Yaş');
@@ -46,12 +46,12 @@ export default {
     };
   },
   cases: [
-    { in: { cinsiyet: 'erkek', yas: '30', boy: '175', kilo: '70' }, out: { 'Toplam vücut suyu': '42 litre', 'Vücut ağırlığına oranı': '%60', 'Hücre içi sıvı (yaklaşık 2/3)': '28 litre', 'Hücre dışı sıvı (yaklaşık 1/3)': '14 litre', 'Su dışındaki kütle': '28 kg' } },
+    { in: { cinsiyet: 'erkek', yas: '30', boy: '175', kilo: '70' }, out: { 'Toplam vücut suyu': '41,9 litre', 'Vücut ağırlığına oranı': '%59,9', 'Hücre içi sıvı (yaklaşık 2/3)': '27,9 litre', 'Hücre dışı sıvı (yaklaşık 1/3)': '14 litre', 'Su dışındaki kütle': '28,1 kg' } },
     { in: { cinsiyet: 'kadin', yas: '30', boy: '165', kilo: '60' }, out: { 'Toplam vücut suyu': '30,3 litre', 'Vücut ağırlığına oranı': '%50,6', 'Hücre içi sıvı (yaklaşık 2/3)': '20,2 litre', 'Hücre dışı sıvı (yaklaşık 1/3)': '10,1 litre' } },
-    { in: { cinsiyet: 'erkek', yas: '50', boy: '180', kilo: '85' }, out: { 'Toplam vücut suyu': '45,8 litre', 'Vücut ağırlığına oranı': '%53,9', 'Hücre içi sıvı (yaklaşık 2/3)': '30,5 litre', 'Hücre dışı sıvı (yaklaşık 1/3)': '15,3 litre' } },
+    { in: { cinsiyet: 'erkek', yas: '50', boy: '180', kilo: '85' }, out: { 'Toplam vücut suyu': '45,6 litre', 'Vücut ağırlığına oranı': '%53,6', 'Hücre içi sıvı (yaklaşık 2/3)': '30,4 litre', 'Hücre dışı sıvı (yaklaşık 1/3)': '15,2 litre' } },
     { in: { cinsiyet: 'kadin', yas: '', boy: '170', kilo: '75' }, out: { 'Toplam vücut suyu': '34,6 litre', 'Vücut ağırlığına oranı': '%46,1' } },
-    { in: { cinsiyet: 'erkek', yas: '25', boy: '170', kilo: '65' }, out: { 'Toplam vücut suyu': '40,3 litre', 'Vücut ağırlığına oranı': '%62' } },
-    { in: { cinsiyet: 'erkek', yas: '70', boy: '168', kilo: '72' }, out: { 'Toplam vücut suyu': '38,3 litre', 'Vücut ağırlığına oranı': '%53,2' } },
+    { in: { cinsiyet: 'erkek', yas: '25', boy: '170', kilo: '65' }, out: { 'Toplam vücut suyu': '40,2 litre', 'Vücut ağırlığına oranı': '%61,8' } },
+    { in: { cinsiyet: 'erkek', yas: '70', boy: '168', kilo: '72' }, out: { 'Toplam vücut suyu': '38 litre', 'Vücut ağırlığına oranı': '%52,8' } },
     { in: { cinsiyet: 'erkek', yas: '', boy: '175', kilo: '70' }, error: true },
     { in: { cinsiyet: 'kadin', yas: '30', boy: '1,65', kilo: '60' }, error: true },
     { in: { cinsiyet: 'erkek', yas: '10', boy: '140', kilo: '35' }, error: true },
@@ -70,11 +70,11 @@ export default {
     { h: 'Watson formülü', p: [
       'Bu araç, 1980 yılında yayımlanan ve erişkinlerde toplam vücut suyunu basit vücut ölçülerinden tahmin eden Watson formülünü kullanır. Formül, vücut suyu izotop seyreltme yöntemiyle ölçülmüş yüzlerce erişkinin verisinden türetilmiştir ve klinikte, özellikle böbrek hastalıklarında ilaç ve diyaliz hesaplarında hâlâ sık kullanılır.',
     ], ul: [
-      '<strong>Erkek:</strong> su (litre) = 2,447 − 0,09156 × yaş + 0,1074 × boy (cm) + 0,3362 × kilo (kg)',
+      '<strong>Erkek:</strong> su (litre) = 2,447 − 0,09516 × yaş + 0,1074 × boy (cm) + 0,3362 × kilo (kg)',
       '<strong>Kadın:</strong> su (litre) = −2,097 + 0,1069 × boy (cm) + 0,2466 × kilo (kg)',
     ] },
     { h: 'Çözümlü örnek', p: [
-      '30 yaşında, 175 cm boyunda ve 70 kg ağırlığında bir erkek için: 0,09156 × 30 = 2,747; 0,1074 × 175 = 18,795; 0,3362 × 70 = 23,534. Toplam 2,447 − 2,747 + 18,795 + 23,534 = 42,03, yani yaklaşık <strong>42 litre</strong>. Bu, 70 kilonun yaklaşık yüzde 60\'ıdır.',
+      '30 yaşında, 175 cm boyunda ve 70 kg ağırlığında bir erkek için: 0,09516 × 30 = 2,855; 0,1074 × 175 = 18,795; 0,3362 × 70 = 23,534. Toplam 2,447 − 2,855 + 18,795 + 23,534 = 41,92, yani yaklaşık <strong>41,9 litre</strong>. Bu, 70 kilonun yaklaşık yüzde 60\'ıdır.',
       '165 cm boyunda, 60 kg ağırlığında bir kadın için: 0,1069 × 165 = 17,639; 0,2466 × 60 = 14,796. Toplam −2,097 + 17,639 + 14,796 = 30,34, yani yaklaşık <strong>30,3 litre</strong>; vücut ağırlığının yaklaşık yüzde 50,6\'sı.',
     ] },
     { h: 'Hücre içi ve hücre dışı sıvı', p: [

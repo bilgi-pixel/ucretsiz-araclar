@@ -22,6 +22,6 @@ export function compute(v, h) {
         ['Puan farkı', isaretli(ra - rb, 0)],
         ['Kazanırsanız / berabere / kaybederseniz', isaretli(k * (1 - beklenen), 2) + ' / ' + isaretli(k * (0.5 - beklenen), 2) + ' / ' + isaretli(k * (0 - beklenen), 2)],
       ],
-      note: 'Araç lojistik Elo formülünü yuvarlamadan uygular. Resmî listelerde beklenen skor tablodan okunur, büyük puan farkları sınırlandırılır ve değişimler dönem sonunda yuvarlanır; bu yüzden küçük farklar olabilir.',
+      note: 'Araç lojistik Elo formülünü yuvarlamadan uygular. Resmî listelerde beklenen skor tablodan okunur, büyük puan farkları sınırlandırılır ve değişimler dönem sonunda yuvarlanır; bu yüzden küçük farklar olabilir. Uluslararası federasyon kurallarında 400 puandan büyük farklar 400 sayılır ve bir dönemdeki oyun sayısı çok olduğunda K düşürülür; araç bu iki sınırı uygulamaz.',
     };
   }

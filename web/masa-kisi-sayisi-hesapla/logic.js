@@ -20,7 +20,7 @@ export function compute(v, h) {
           ['Masa alanı', h.fmt(Math.PI * cap * cap / 40000, 2) + ' m²'],
           ['Sandalyelerle gereken alan', `${m(cap + 180)} × ${m(cap + 180)} m`],
         ],
-        note: 'Yuvarlak masada kişi sayısı çevrenin kişi başı paya bölünmesiyle bulunur. Gereken alan, masanın her yanında sandalye ve geçiş için 90 cm bırakılarak hesaplanmıştır.',
+        note: 'Yuvarlak masada kişi sayısı çevrenin kişi başı paya bölünmesiyle bulunur. Davet salonlarında masalar daha sıkışık oturumla anılır (örneğin 180 cm masa çoğu yerde "10 kişilik" sayılır); rahat oturum için buradaki sayı esas alınabilir, daha sıkışık düzen için kişi başı payı küçültün. Gereken alan, masanın her yanında sandalye ve geçiş için 90 cm bırakılarak hesaplanmıştır.',
       };
     }
     let L = h.pos(v.uzunluk, 'Uzunluk');

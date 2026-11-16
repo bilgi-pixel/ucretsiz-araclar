@@ -9,7 +9,7 @@ export function compute(v, h) {
     if (erkek) {
       const yas = h.pos(v.yas, 'Yaş');
       if (yas < 18 || yas > 100) h.err('Formül erişkinler içindir; "Yaş" 18 ile 100 arasında olmalı.');
-      su = 2.447 - 0.09156 * yas + 0.1074 * boy + 0.3362 * kilo;
+      su = 2.447 - 0.09516 * yas + 0.1074 * boy + 0.3362 * kilo;
     } else {
       if (String(v.yas ?? '').trim() !== '') {
         const yas = h.pos(v.yas, 'Yaş');

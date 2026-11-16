@@ -34,8 +34,11 @@ export function mount(compute) {
       outWrap.hidden = !hasText;
       out.value = hasText ? r.text : '';
       if (hasText) out.rows = Math.max(4, Math.min(16, r.text.split('\n').length + 1));
-      note.textContent = r.note || '';
-      note.hidden = !r.note;
+      // "1.500" gibi tek noktalı ve üç haneli girdiler ondalık okunur (1,5). Kullanıcı bin beş yüz demek istemiş olabilir; açıkça bildir.
+      const supheli = fields.filter((f) => f.getAttribute('inputmode') === 'decimal' && /^\d{1,3}\.\d{3}$/.test(f.value.trim())).map((f) => f.value.trim());
+      const uyari = supheli.length ? `Dikkat: "${supheli[0]}" değeri ondalık sayı olarak (${supheli[0].replace('.', ',')}) okundu. Binlik ayraç olarak yazdıysanız noktasız (${supheli[0].replace('.', '')}) ya da ${supheli[0]},00 biçiminde girin.` : '';
+      note.textContent = [r.note, uyari].filter(Boolean).join(' ');
+      note.hidden = !(r.note || uyari);
       status.textContent = '';
       pdfSpec = r.pdf || null;
       if (pdfBtn) pdfBtn.hidden = !pdfSpec;
