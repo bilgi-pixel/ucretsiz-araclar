@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İki Adımlı Doğrulama (2FA) Nedir? TOTP, SMS ve Yedek Kodlar</title>
+  <meta name="description" content="2FA, girişte şifreye ek olarak ikinci bir kanıt ister: SMS kodu, doğrulama uygulaması ya da güvenlik anahtarı. TOTP'nin çalışması, yedek kodlar ve telefon kaybı.">
+  <meta name="keywords" content="iki adımlı doğrulama nedir, 2fa nedir, doğrulama uygulaması, totp nedir, sms doğrulama güvenli mi, yedek kodlar, hesap güvenliği, güvenlik anahtarı nedir">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/iki-adimli-dogrulama-nedir-2fa/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="İki Adımlı Doğrulama (2FA) Nedir? TOTP, SMS ve Yedek Kodlar">
+  <meta property="og:description" content="2FA, girişte şifreye ek olarak ikinci bir kanıt ister: SMS kodu, doğrulama uygulaması ya da güvenlik anahtarı. TOTP'nin çalışması, yedek kodlar ve telefon kaybı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/iki-adimli-dogrulama-nedir-2fa/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"İki Adımlı Doğrulama (2FA) Nedir? Doğrulama Uygulaması ve Yedek Kodlar","description":"2FA, girişte şifreye ek olarak ikinci bir kanıt ister: SMS kodu, doğrulama uygulaması ya da güvenlik anahtarı. TOTP'nin çalışması, yedek kodlar ve telefon kaybı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/iki-adimli-dogrulama-nedir-2fa/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1402,"keywords":"iki adımlı doğrulama nedir, 2fa nedir, doğrulama uygulaması, totp nedir, sms doğrulama güvenli mi, yedek kodlar, hesap güvenliği, güvenlik anahtarı nedir","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"İki Adımlı Doğrulama (2FA) Nedir? Doğrulama Uygulaması ve Yedek Kodlar"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İki adımlı doğrulama nedir?","acceptedAnswer":{"@type":"Answer","text":"İki adımlı doğrulama, hesaba girerken şifreye ek olarak telefon kodu, doğrulama uygulaması ya da güvenlik anahtarı gibi ikinci bir kanıt istenmesidir. Şifre çalınsa bile ikinci adım olmadan giriş yapılamaz."}},{"@type":"Question","name":"SMS kodu ile doğrulama uygulaması arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"SMS kodu şebeke üzerinden gönderilir ve numaranızın başka bir SIM karta taşınmasıyla ele geçirilebilir. Doğrulama uygulaması kodu telefonun içinde, bağlantı olmadan üretir ve numara taşıma saldırısından etkilenmez."}},{"@type":"Question","name":"TOTP kodları neden 30 saniyede değişir?","acceptedAnswer":{"@type":"Answer","text":"Telefon ve sunucu aynı gizli anahtarla, geçerli zamanın 30 saniyelik dilim numarasından kod üretir. Bu süre kodu yazmaya yetecek kadar uzun, ele geçirilen bir kodun kısa sürede işe yaramaz hale gelmesi için yeterince kısadır."}},{"@type":"Question","name":"2FA kurulurken taranan QR kod ne içerir?","acceptedAnswer":{"@type":"Answer","text":"QR kod hizmet adını, hesap adını ve en önemlisi gizli anahtarı içerir. Bu görüntüyü tarayan herkes aynı kodları üretebileceği için kurulum ekranının görüntüsünü kimseyle paylaşmamak ve saklamamak gerekir."}},{"@type":"Question","name":"Telefon kaybolursa hesaba nasıl girilir?","acceptedAnswer":{"@type":"Answer","text":"Önce kayıtlı yedek kodlardan biri ya da önceden tanımladığınız ikinci yöntem kullanılır. Giriş yaptıktan sonra kayıp telefonun oturumları kapatılır ve doğrulama yeni cihaza kurulur; hiçbir yedek yoksa resmî kurtarma süreci gerekir."}},{"@type":"Question","name":"Yedek kodlar nasıl saklanmalı?","acceptedAnswer":{"@type":"Answer","text":"Yedek kodları yazdırıp çevrim dışı ve güvenli bir yerde saklayın, hangi hesaba ait olduklarını not edin. Telefonun içinde tutmak kayıp durumunda işe yaramaz; kodlar azaldığında yeni set oluşturun."}},{"@type":"Question","name":"Donanım güvenlik anahtarı nedir?","acceptedAnswer":{"@type":"Answer","text":"USB'ye takılan ya da telefona yaklaştırılan küçük bir cihazdır ve yalnızca kayıtlı sitenin gerçek adresi için imza üretir. Sahte sayfada çalışmadığı için oltalamaya karşı en dayanıklı 2FA yöntemidir."}},{"@type":"Question","name":"2FA güçlü şifrenin yerine geçer mi?","acceptedAnswer":{"@type":"Answer","text":"Geçmez. 2FA şifre ele geçirildiğinde devreye giren ek bir katmandır; zayıf ya da tekrar kullanılan şifre saldırgana birinci kapıyı açar. Her hesapta benzersiz uzun şifre ile 2FA birlikte kullanılmalıdır."}},{"@type":"Question","name":"Biri telefonda doğrulama kodumu isterse ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Kodu kesinlikle paylaşmayın ve görüşmeyi sonlandırın. Bankalar ve kurumlar doğrulama kodunu telefonda, mesajda ya da e-postada istemez; kurumu kendiniz bilinen resmî numarasından arayarak durumu bildirin."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>İki Adımlı Doğrulama (2FA) Nedir? Doğrulama Uygulaması ve Yedek Kodlar</h1><p class="lead">İki adımlı doğrulama (2FA), bir hesaba girerken şifreye ek olarak ikinci bir kanıt istenmesidir: telefonunuza gelen SMS kodu, doğrulama uygulamasında 30 saniyede bir değişen kod ya da fiziksel bir güvenlik anahtarı. Şifreniz çalınsa bile saldırgan bu ikinci adımı geçemediği için hesap ele geçirme riski büyük ölçüde azalır. Bu sayfada yöntemlerin farkını, TOTP kodlarının nasıl üretildiğini, kurulumdaki QR kodun ne içerdiğini, yedek kodları ve telefon kaybolduğunda ne yapacağınızı anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>2FA iki farklı türden kanıt ister: bildiğiniz bir şey (şifre) ve sahip olduğunuz bir şey (telefon, anahtar).</li>
+        <li>Doğrulama uygulamaları TOTP kullanır: paylaşılan gizli anahtar ve geçerli zaman diliminden 30 saniyede bir yeni 6 haneli kod üretilir.</li>
+        <li>SMS kodu hiç yoktan iyidir, ama SIM kart değiştirme dolandırıcılığına ve oltalamaya karşı uygulama ya da anahtardan zayıftır.</li>
+        <li>Kurulumda taranan QR kod gizli anahtarı içerir; ekran görüntüsünü kimseyle paylaşmayın.</li>
+        <li>Yedek kodları çevrim dışı ve güvenli bir yerde saklayın; telefon kaybolduğunda hesaba dönüşün anahtarı onlardır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="TOTP kodunun üretimi: telefonda ve sunucuda aynı gizli anahtar ve aynı 30 saniyelik zaman dilimi birleşir, iki taraf da aynı 6 haneli kodu bulur. Altta yöntemlerin güvenlik sıralaması: SMS, uygulama, güvenlik anahtarı." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="t2"/></marker></defs>
+  <text x="360" y="30" class="lg b mid">Doğrulama kodu nasıl üretilir? (TOTP)</text>
+  <rect x="20" y="52" width="200" height="56" rx="8" class="p"/>
+  <text x="120" y="76" class="b mid sf">Gizli anahtar</text>
+  <text x="120" y="96" class="sm mid sf">kurulumda QR ile paylaşılır</text>
+  <rect x="20" y="124" width="200" height="56" rx="8" class="ps"/>
+  <text x="120" y="148" class="b mid">Zaman dilimi</text>
+  <text x="120" y="168" class="sm mid">saat ÷ 30 saniye</text>
+  <line x1="220" y1="80" x2="286" y2="112" class="st" fill="none" marker-end="url(#ok)"/>
+  <line x1="220" y1="152" x2="286" y2="124" class="st" fill="none" marker-end="url(#ok)"/>
+  <rect x="290" y="88" width="150" height="56" rx="8" class="sf sb"/>
+  <text x="365" y="112" class="b mid">Özet fonksiyonu</text>
+  <text x="365" y="132" class="sm mid t2">HMAC → 6 hane</text>
+  <line x1="440" y1="116" x2="486" y2="116" class="st" fill="none" marker-end="url(#ok)"/>
+  <rect x="490" y="72" width="210" height="88" rx="10" class="oks"/>
+  <text x="595" y="110" class="xl mid">482 913</text>
+  <text x="595" y="140" class="sm mid">30 saniye geçerli</text>
+  <text x="360" y="204" class="sm mid t2">Telefon ve sunucu aynı hesabı ayrı ayrı yapar; kodlar eşleşirse giriş onaylanır.</text>
+  <text x="20" y="246" class="b">Oltalamaya dayanıklılık</text>
+  <rect x="20" y="262" width="680" height="18" rx="9" class="sf sb"/>
+  <rect x="20" y="262" width="220" height="18" rx="9" class="dgs"/>
+  <rect x="240" y="262" width="230" height="18" class="ps"/>
+  <rect x="470" y="262" width="230" height="18" rx="9" class="oks"/>
+  <rect x="20" y="294" width="210" height="104" rx="8" class="sf sb"/>
+  <text x="125" y="320" class="b mid">SMS kodu</text>
+  <text x="125" y="344" class="sm mid">Kolay ama SIM değiştirme</text>
+  <text x="125" y="362" class="sm mid">ve sahte sayfaya açık</text>
+  <text x="125" y="386" class="sm mid dg b">temel koruma</text>
+  <rect x="255" y="294" width="210" height="104" rx="8" class="sf sb"/>
+  <text x="360" y="320" class="b mid">Doğrulama uygulaması</text>
+  <text x="360" y="344" class="sm mid">Çevrim dışı çalışır,</text>
+  <text x="360" y="362" class="sm mid">SIM'e bağlı değildir</text>
+  <text x="360" y="386" class="sm mid p b">iyi koruma</text>
+  <rect x="490" y="294" width="210" height="104" rx="8" class="sf sb"/>
+  <text x="595" y="320" class="b mid">Güvenlik anahtarı</text>
+  <text x="595" y="344" class="sm mid">Sitenin adresini doğrular,</text>
+  <text x="595" y="362" class="sm mid">sahte sayfada çalışmaz</text>
+  <text x="595" y="386" class="sm mid ok b">güçlü koruma</text>
+</svg>
+      <figcaption>Doğrulama uygulaması internete bağlanmadan kod üretir; çünkü telefon ve sunucu aynı gizli anahtarı ve aynı saati bilir. Alt kısım, yöntemlerin oltalamaya dayanıklılığını karşılaştırır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">İki adımlı doğrulama nedir?</a></li>
+      <li><a href="#b2">2FA yöntemleri: SMS, doğrulama uygulaması, onay bildirimi ve güvenlik anahtarı</a></li>
+      <li><a href="#b3">SMS kodu ile doğrulama uygulaması arasındaki fark nedir?</a></li>
+      <li><a href="#b4">TOTP kodları neden 30 saniyede değişir?</a></li>
+      <li><a href="#b5">2FA kurulurken taranan QR kod ne içerir?</a></li>
+      <li><a href="#b6">Yedek kodlar nasıl saklanmalı?</a></li>
+      <li><a href="#b7">Telefon kaybolursa hesaba nasıl girilir?</a></li>
+      <li><a href="#b8">Donanım güvenlik anahtarı ve geçiş anahtarı nedir?</a></li>
+      <li><a href="#b9">2FA güçlü şifrenin yerine geçer mi?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-iki-adimli-dogrulama-nedir-2fa-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../sifre-uret/"><strong>Güçlü Şifre Üretici</strong><span>Rastgele karakter, Türkçe kelime parolası veya PIN üretin. Entropi ve kırılma süresi tahmini. Tamamen tarayıcıda çalışır, hiçbir şey sunucuya gitmez.</span></a></li>
+          <li><a href="../../sifre-guc-test/"><strong>Şifre Güvenlik Testi</strong><span>Şifrenizin entropisini, yaygın Türkçe kalıp ve kelimelerini, tahmini kırılma süresini görün; iyileştirme önerileri alın. Şifre ağa gitmez.</span></a></li>
+          <li><a href="../../qr-kod-oku/"><strong>QR Kod Okuyucu</strong><span>Resim dosyası, ekran görüntüsü (yapıştır) ya da kameradan QR kod okuyun. Wi-Fi şifresi, kartvizit (.vcf), URL ve metin çözülür; bağlantı otomatik açılmaz. Resim yüklenmez.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">İki adımlı doğrulama nedir?</h2>
+      <p>Bir hesaba girerken kim olduğunuzu kanıtlamanın üç temel yolu vardır: <strong>bildiğiniz</strong> bir şey (şifre, PIN), <strong>sahip olduğunuz</strong> bir şey (telefon, güvenlik anahtarı) ve <strong>kendiniz olan</strong> bir şey (parmak izi, yüz). İki adımlı doğrulama, bu türlerden ikisinin birlikte istenmesidir. Çoğu sistemde birinci adım şifre, ikinci adım ise telefonunuza ya da anahtarınıza bağlı bir koddur.</p>
+      <p>Yöntemin gücü, iki farklı türden kanıtı aynı anda ele geçirmenin çok daha zor olmasından gelir. Şifreniz bir veri sızıntısında ortaya çıksa, tahmin edilse ya da sahte bir sayfaya yazılsa bile, saldırgan telefonunuz ya da anahtarınız olmadan giriş yapamaz. Bu yüzden 2FA, e-posta, bankacılık, sosyal medya ve iş hesapları için bugün en etkili temel güvenlik önlemlerinden biri kabul edilir.</p>
+      <p>Türkçede &quot;iki adımlı doğrulama&quot;, &quot;iki faktörlü kimlik doğrulama&quot; ve &quot;çok faktörlü doğrulama&quot; terimleri birbirinin yerine kullanılır. Teknik olarak çok faktörlü doğrulama ikiden fazla adımı da kapsar, ama günlük kullanımda hepsi aynı fikri anlatır.</p>
+
+      <h2 id="b2">2FA yöntemleri: SMS, doğrulama uygulaması, onay bildirimi ve güvenlik anahtarı</h2>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Yöntem</th><th>Nasıl çalışır</th><th>Güçlü yanı</th><th>Zayıf yanı</th></tr></thead>
+        <tbody>
+          <tr><td>SMS kodu</td><td>Telefon numarasına tek kullanımlık kod gönderilir</td><td>Kurulumu kolay, her telefonda çalışır</td><td>SIM değiştirme dolandırıcılığı ve sahte sayfaya kod yazdırma</td></tr>
+          <tr><td>E-posta kodu</td><td>E-posta adresine kod gönderilir</td><td>Ek cihaz gerekmez</td><td>E-posta hesabı ele geçirilirse işe yaramaz</td></tr>
+          <tr><td>Doğrulama uygulaması (TOTP)</td><td>Telefon 30 saniyede bir kod üretir</td><td>Çevrim dışı çalışır, numaraya bağlı değil</td><td>Telefon kaybında yedek gerekir; sahte sayfaya kod yazılabilir</td></tr>
+          <tr><td>Onay bildirimi</td><td>Telefona &quot;giriş sizseniz onaylayın&quot; bildirimi gelir</td><td>Kod yazmadan hızlı onay</td><td>Art arda gelen bildirimlere dikkatsiz onay verme riski</td></tr>
+          <tr><td>Güvenlik anahtarı / geçiş anahtarı</td><td>Cihaz, sitenin adresini doğrulayarak kriptografik imza üretir</td><td>Oltalamaya dayanıklı</td><td>Anahtar kaybına karşı ikinci anahtar gerekir</td></tr>
+        </tbody>
+      </table></div>
+      <p>Hangisini seçeceğiniz, hesabın önemine ve sunulan seçeneklere bağlıdır. Genel bir sıralama yapmak gerekirse: hiç 2FA olmamasındansa SMS, SMS'tense doğrulama uygulaması, doğrulama uygulamasındansa güvenlik anahtarı ya da geçiş anahtarı daha güçlüdür. Birçok hizmet aynı hesapta birden fazla yöntemi birlikte tanımlamanıza izin verir; bu da kayıp durumunda yedek yol sağlar.</p>
+
+      <h2 id="b3">SMS kodu ile doğrulama uygulaması arasındaki fark nedir?</h2>
+      <p>SMS kodu, hizmet tarafından üretilip mobil şebeke üzerinden size gönderilir. Bu yüzden güvenliği telefon numaranızın güvenliğine bağlıdır. Bir dolandırıcı kimliğinize bürünerek numaranızı yeni bir SIM karta taşıtmayı başarırsa kodlar artık ona gider. Ayrıca SMS kodları, sahte bir giriş sayfasına sizin elinizle yazdırılarak da ele geçirilebilir.</p>
+      <p>Doğrulama uygulaması ise kodu telefonunuzun içinde, hiçbir mesaj almadan üretir. Kurulum sırasında hizmetle telefonunuz arasında bir gizli anahtar paylaşılır; sonrasında kod üretmek için internet ya da şebeke bağlantısı gerekmez. Numara taşıma saldırısı bu yöntemi etkilemez. Ancak doğrulama uygulamasının kodu da sahte bir sayfaya yazılabilir; bu yüzden kodu girmeden önce adres çubuğundaki alan adını kontrol etmek her yöntemde önemlidir. Sahte bağlantıları tanımanın yollarını <a href="../../bilgi-bankasi/oltalama-sahte-link-nasil-anlasilir/">oltalama bağlantısı nasıl anlaşılır</a> yazısında bulabilirsiniz.</p>
+      <div class="rh-note">Bankanızdan ya da bir kurumdan aradığını söyleyen biri size gelen doğrulama kodunu istiyorsa bu bir dolandırıcılık girişimidir. Gerçek kurumlar bu kodu telefonda, mesajda ya da e-postada sormaz.</div>
+
+      <h2 id="b4">TOTP kodları neden 30 saniyede değişir?</h2>
+      <p>Doğrulama uygulamalarının çoğu TOTP (zamana dayalı tek kullanımlık parola) adlı açık bir standart kullanır. Mantık şöyledir: telefonunuz ve hizmetin sunucusu kurulumda aynı gizli anahtarı öğrenir. Her ikisi de geçerli zamanı 30 saniyelik dilimlere böler ve o dilimin sıra numarasını gizli anahtarla birlikte bir özet fonksiyonundan geçirir. Sonuç kısaltılarak 6 haneli bir sayıya dönüştürülür.</p>
+      <p>İki taraf aynı anahtarı ve aynı saati kullandığı için aynı kodu bulur; siz kodu yazdığınızda sunucu kendi hesapladığıyla karşılaştırır. 30 saniyelik süre bir dengedir: kodu okuyup yazmanıza yetecek kadar uzun, ele geçirilen bir kodun işe yaramaması için yeterince kısadır. Telefonun saati birkaç dakika kaymışsa kodlar tutmayabilir; bu yüzden telefon saatinin otomatik ayarda olması önerilir.</p>
+      <div class="rh-formula">Zaman dilimi = Unix zamanı ÷ 30 (tam kısım)<br>Kod = özet(gizli anahtar, zaman dilimi) → son 6 hane<br>Örnek: 08:00:00 ile 08:00:29 arasında aynı kod, 08:00:30'da yeni kod</div>
+      <p>Kullanılan özet fonksiyonunun mantığını <a href="../../bilgi-bankasi/hash-nedir-sha256-md5/">hash (özet) nedir</a> yazısında, Unix zamanının ne olduğunu ise <a href="../../bilgi-bankasi/unix-zaman-damgasi-nedir/">Unix zaman damgası</a> yazısında anlatıyoruz.</p>
+
+      <h2 id="b5">2FA kurulurken taranan QR kod ne içerir?</h2>
+      <p>Bir hesapta doğrulama uygulamasını etkinleştirdiğinizde ekranda bir QR kod belirir. Bu kod, uygulamanın okuyacağı bir metni içerir: hizmetin adı, hesap adınız, kod uzunluğu, süre ve en önemlisi <strong>gizli anahtar</strong>. Metin genellikle <code>otpauth://totp/</code> ile başlar ve gizli anahtar &quot;secret&quot; parametresinde Base32 biçiminde yazılıdır.</p>
+      <p>Bu QR kodun ekran görüntüsü, hesabınızın ikinci anahtarının kopyası demektir. Kodu tarayan herkes sizinle aynı doğrulama kodlarını üretebilir. Bu yüzden kurulum ekranını kimseyle paylaşmayın, ekran görüntüsünü bulut klasörlerinde ya da sohbet uygulamalarında saklamayın. Kurulum ekranındaki QR kodun içeriğini kendi bilgisayarınızda görmek isterseniz <a href="../../qr-kod-oku/">QR Kod Oku</a> aracı görüntüyü tarayıcıda çözer ve hiçbir yere göndermez.</p>
+
+      <div class="ba-ad" data-slot="bilgi-iki-adimli-dogrulama-nedir-2fa-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Yedek kodlar nasıl saklanmalı?</h2>
+      <p>2FA'yı açtığınızda hizmetlerin çoğu size 8–10 adet tek kullanımlık <strong>yedek kod</strong> verir. Bu kodlar, telefonunuz ya da anahtarınız yanınızda değilken hesaba girmenin yoludur. Her biri bir kez kullanılır ve kullanıldıktan sonra geçersiz olur.</p>
+      <ul>
+        <li><strong>Çevrim dışı saklayın:</strong> kodları yazdırıp ya da elle yazıp evde güvenli bir yerde tutun. Telefonunuzun içinde saklamak, telefon kaybolduğunda işe yaramaz.</li>
+        <li><strong>Parola yöneticisi kullanıyorsanız:</strong> kodları ilgili hesabın kaydına not olarak ekleyebilirsiniz; parola yöneticisinin kendi ana parolası ve 2FA'sı güçlü olmalıdır.</li>
+        <li><strong>Etiketleyin:</strong> hangi kodun hangi hesaba ait olduğunu ve oluşturulma tarihini yazın.</li>
+        <li><strong>Kullandıkça yenileyin:</strong> son birkaç kod kaldığında hesap ayarlarından yeni bir yedek kod seti oluşturun; eski set otomatik geçersiz olur.</li>
+        <li><strong>Paylaşmayın:</strong> yedek kodlar şifre kadar değerlidir; kimseyle, destek hattı dahil, paylaşılmamalıdır.</li>
+      </ul>
+
+      <h2 id="b7">Telefon kaybolursa hesaba nasıl girilir?</h2>
+      <ol class="ba-steps">
+        <li><strong>Yedek kodlardan birini kullanın.</strong> Giriş ekranında &quot;başka bir yöntem dene&quot; seçeneğini bulun ve kayıtlı yedek kodlardan birini girin.</li>
+        <li><strong>İkinci yöntemi deneyin.</strong> Hesaba önceden ikinci bir telefon, güvenlik anahtarı ya da yedek e-posta tanımladıysanız onunla giriş yapın.</li>
+        <li><strong>Girişten sonra eski cihazı kaldırın.</strong> Güvenlik ayarlarında kayıp telefonun oturumlarını kapatın ve doğrulama uygulamasını yeni telefona yeniden kurun.</li>
+        <li><strong>Hattınızı koruyun.</strong> SMS doğrulaması kullanıyorsanız operatörünüzden hattınızı geçici olarak kapattırın ve aynı numarayla yeni SIM kart alın.</li>
+        <li><strong>Hesap kurtarma sürecine başvurun.</strong> Hiçbir yedek yönteminiz yoksa hizmetin resmî kurtarma formunu kullanın; bu süreç kimlik doğrulaması gerektirir ve günler sürebilir.</li>
+      </ol>
+      <p>Bu adımların sorunsuz işlemesi, 2FA'yı açarken birden fazla yöntem tanımlamanıza ve yedek kodları saklamanıza bağlıdır. Yeni telefona geçerken doğrulama uygulamanızın hesapları aktarma özelliği varsa eski telefonu sıfırlamadan önce aktarımı tamamlayın. Telefonunuzdaki fotoğraf ve belgeleri korumak için düzenli yedek almanın yollarını <a href="../../bilgi-bankasi/yedekleme-3-2-1-kurali-nedir/">3-2-1 yedekleme kuralı</a> yazısında bulabilirsiniz.</p>
+
+      <h2 id="b8">Donanım güvenlik anahtarı ve geçiş anahtarı nedir?</h2>
+      <p>Donanım güvenlik anahtarı, USB'ye takılan ya da telefona yaklaştırılan küçük bir cihazdır. Girişte anahtara dokunduğunuzda cihaz, yalnızca kayıtlı olduğu sitenin gerçek adresine özel bir kriptografik imza üretir. Sahte bir sitede bu imza üretilmez; dolayısıyla kullanıcı fark etmese bile oltalama girişimi başarısız olur. Bu özellik, anahtarları en güçlü 2FA yöntemi yapar.</p>
+      <p>Geçiş anahtarı (passkey) aynı teknolojinin telefon ya da bilgisayara yerleşik halidir. Şifre yerine cihazınızın kilidini (PIN, parmak izi, yüz) kullanarak giriş yaparsınız; gizli anahtar cihazdan çıkmaz. Hem anahtarlar hem geçiş anahtarları için en az iki tane tanımlamak, birinin kaybolması durumunda hesabın kilitlenmesini önler.</p>
+
+      <h2 id="b9">2FA güçlü şifrenin yerine geçer mi?</h2>
+      <p>Hayır, ikisi birbirini tamamlar. 2FA şifreniz ele geçirildiğinde devreye giren bir emniyet kemeridir; ama zayıf ya da başka sitelerde de kullandığınız bir şifre, saldırganın birinci kapıdan kolayca geçmesine izin verir. Bu durumda tek engel ikinci adım kalır ve oltalama ya da SIM değiştirme gibi yöntemlerle o engel de aşılabilir.</p>
+      <p>En iyi uygulama, her hesap için uzun ve benzersiz bir şifre ile 2FA'yı birlikte kullanmaktır. Rastgele şifre ya da kelimelerden oluşan uzun bir parola üretmek için <a href="../../sifre-uret/">Şifre Üretici</a>, mevcut şifrenizin dayanıklılığını görmek için <a href="../../sifre-guc-test/">Şifre Gücü Testi</a> tarayıcıda çalışır; yazdığınız şifre hiçbir sunucuya gönderilmez.</p>
+      <ul>
+        <li>Önce e-posta hesabınızda 2FA'yı açın; diğer hesapların şifre sıfırlama bağlantıları oraya gider.</li>
+        <li>Ardından bankacılık, iş hesapları, bulut depolama ve sosyal medya hesaplarını sırayla koruyun.</li>
+        <li>Kullanmadığınız eski hesapları kapatın; korumasız kalan bir hesap tüm zincirin zayıf halkası olabilir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>İki adımlı doğrulama nedir?</summary><p>İki adımlı doğrulama, hesaba girerken şifreye ek olarak telefon kodu, doğrulama uygulaması ya da güvenlik anahtarı gibi ikinci bir kanıt istenmesidir. Şifre çalınsa bile ikinci adım olmadan giriş yapılamaz.</p></details>
+      <details><summary>SMS kodu ile doğrulama uygulaması arasındaki fark nedir?</summary><p>SMS kodu şebeke üzerinden gönderilir ve numaranızın başka bir SIM karta taşınmasıyla ele geçirilebilir. Doğrulama uygulaması kodu telefonun içinde, bağlantı olmadan üretir ve numara taşıma saldırısından etkilenmez.</p></details>
+      <details><summary>TOTP kodları neden 30 saniyede değişir?</summary><p>Telefon ve sunucu aynı gizli anahtarla, geçerli zamanın 30 saniyelik dilim numarasından kod üretir. Bu süre kodu yazmaya yetecek kadar uzun, ele geçirilen bir kodun kısa sürede işe yaramaz hale gelmesi için yeterince kısadır.</p></details>
+      <details><summary>2FA kurulurken taranan QR kod ne içerir?</summary><p>QR kod hizmet adını, hesap adını ve en önemlisi gizli anahtarı içerir. Bu görüntüyü tarayan herkes aynı kodları üretebileceği için kurulum ekranının görüntüsünü kimseyle paylaşmamak ve saklamamak gerekir.</p></details>
+      <details><summary>Telefon kaybolursa hesaba nasıl girilir?</summary><p>Önce kayıtlı yedek kodlardan biri ya da önceden tanımladığınız ikinci yöntem kullanılır. Giriş yaptıktan sonra kayıp telefonun oturumları kapatılır ve doğrulama yeni cihaza kurulur; hiçbir yedek yoksa resmî kurtarma süreci gerekir.</p></details>
+      <details><summary>Yedek kodlar nasıl saklanmalı?</summary><p>Yedek kodları yazdırıp çevrim dışı ve güvenli bir yerde saklayın, hangi hesaba ait olduklarını not edin. Telefonun içinde tutmak kayıp durumunda işe yaramaz; kodlar azaldığında yeni set oluşturun.</p></details>
+      <details><summary>Donanım güvenlik anahtarı nedir?</summary><p>USB'ye takılan ya da telefona yaklaştırılan küçük bir cihazdır ve yalnızca kayıtlı sitenin gerçek adresi için imza üretir. Sahte sayfada çalışmadığı için oltalamaya karşı en dayanıklı 2FA yöntemidir.</p></details>
+      <details><summary>2FA güçlü şifrenin yerine geçer mi?</summary><p>Geçmez. 2FA şifre ele geçirildiğinde devreye giren ek bir katmandır; zayıf ya da tekrar kullanılan şifre saldırgana birinci kapıyı açar. Her hesapta benzersiz uzun şifre ile 2FA birlikte kullanılmalıdır.</p></details>
+      <details><summary>Biri telefonda doğrulama kodumu isterse ne yapmalıyım?</summary><p>Kodu kesinlikle paylaşmayın ve görüşmeyi sonlandırın. Bankalar ve kurumlar doğrulama kodunu telefonda, mesajda ya da e-postada istemez; kurumu kendiniz bilinen resmî numarasından arayarak durumu bildirin.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../oltalama-sahte-link-nasil-anlasilir/"><strong>Sahte Link Nasıl Anlaşılır? Oltalama (Phishing) SMS ve E-posta İşaretleri</strong><span>Oltalama nedir, sahte link nasıl anlaşılır? Alan adını sağdan okuma, punycode tuzağı, kargo ve banka SMS'leri, QR oltalaması, tıkladıysanız yapılacaklar ve USOM ihbarı.</span></a></li>
+          <li><a href="../hash-nedir-sha256-md5/"><strong>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</strong><span>Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.</span></a></li>
+          <li><a href="../yedekleme-3-2-1-kurali-nedir/"><strong>Yedekleme Nasıl Yapılır? 3-2-1 Kuralı, Bulut ve Harici Disk Kapasitesi</strong><span>3-2-1 kuralı: verinin 3 kopyası, 2 farklı ortam, 1 kopya başka yerde. Kaç TB disk gerektiği, bulut yüklemesinin süresi, RAID farkı ve yedek testi örnekli.</span></a></li>
+          <li><a href="../https-ve-ssl-sertifikasi-nedir/"><strong>HTTPS ve SSL Sertifikası Nedir? Kilit Simgesi Siteyi Güvenli Yapar mı</strong><span>HTTPS, tarayıcı ile site arasındaki trafiği TLS ile şifreler; sertifika sitenin kimliğini doğrular. Kilit simgesinin anlamı, güvenli değil uyarısı ve 443 portu.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-iki-adimli-dogrulama-nedir-2fa-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="../../cerez-politikasi/">Çerez Politikası</a></li><li><a href="../../kullanim-kosullari/">Kullanım Koşulları</a></li><li><a href="../../iletisim/">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

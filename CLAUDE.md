@@ -148,3 +148,9 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   nominal empedansla hesaplıyor; gerçek empedansın daha düşük olabileceği uyarısı ekleyin.
 - Ba-Bs formları 565 Sıra No.lu VUK Tebliği ile Eylül 2024 döneminden itibaren kaldırıldı. `vergi-no-dogrula` metni "Ba-Bs bildirimlerinde
   düzeltme gerektirebilir" diyor; güncelleyin. Yeni metinlerde Ba-Bs'yi yürürlükteymiş gibi anmayın.
+- `indirim-orani-hesapla` sahte indirim kontrolünü "son 30 günün en düşük fiyatı"na göre yapıyor; Fiyat Etiketi Yönetmeliği değişikliğiyle
+  (yürürlük 1.8.2026) referans fiyat indirimden önceki son 10 günün en düşük fiyatı. Araç ve metni güncelleyin.
+- **Politika incelemesi:** `pdf-sifre-kaldir` kendini "bilinmeyen parolayı kırmaz" diye tanıtıyor, ama SSS'ye göre yalnızca sahip parolası olan
+  belgede alan boş bırakılınca yazdırma/kopyalama kısıtları kaldırılıyor; bu, sahip parolası bilinmeden kısıtın aşılması demek. Kural 8
+  (şifre kırıcı yasağı) açısından `policy-reviewer` ile inceleyin; gerekirse sahip parolası istensin.
+- `avize-boyutu-hesapla`: gövde yüksekliği önerisi (2,7 m tavanda 56–68 cm) aynı sonuçtaki "en fazla 60 cm sarkma" satırıyla çelişebiliyor; uyarı ekleyin.

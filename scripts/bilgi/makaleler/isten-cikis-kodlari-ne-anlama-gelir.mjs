@@ -156,7 +156,7 @@ export default {
       h: "Emeklilik için ayrılışta hangi kod kullanılır?",
       p: [
         "Yaşlılık aylığı bağlanması ya da toptan ödeme için ayrılan işçi için kod 08, malulen emeklilik için kod 09 kullanılır. Emeklilik için gereken prim günü ve sigortalılık süresini tamamlayıp yalnızca yaşı bekleyen işçi ise kod 14 ile ayrılabilir; bunun için SGK'dan \"kıdem tazminatı alabilir\" yazısı alınır ve işverene sunulur.",
-        "Bu üç kod kıdem tazminatı hakkını korur ama işsizlik ödeneği vermez. Emeklilik planlarken prim gününüzü ve yaş şartınızı önceden hesaplamak, işten ayrılma zamanını doğru seçmenize yardımcı olur; [[rehber:emeklilik-yasi-nasil-hesaplanir|emeklilik yaşı rehberi]] bu konuda başlangıç noktasıdır."
+        "Bu üç kod kıdem tazminatı hakkını korur ama işsizlik ödeneği vermez. Emeklilik planlarken prim gününüzü ve yaş şartınızı önceden hesaplamak, işten ayrılma zamanını doğru seçmenize yardımcı olur; SGK'nın e-Devlet hizmetlerindeki emeklilik hesaplama ekranı bu konuda başlangıç noktasıdır."
       ]
     }
   ],
