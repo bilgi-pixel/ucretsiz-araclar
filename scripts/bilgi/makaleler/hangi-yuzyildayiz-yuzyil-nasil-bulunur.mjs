@@ -134,7 +134,7 @@ export default {
     {
       h: "Binyıl (milenyum) nedir?",
       p: [
-        "Binyıl ya da milenyum, 1.000 yıllık dönemdir. Hesap yüzyılla aynı mantıkla yapılır: yıl 1.000'e bölünür ve yukarı yuvarlanır. 1. binyıl 1–1000, 2. binyıl 1001–2000, 3. binyıl 2001–3000 yıllarını kapsar. 2026 yılı 3. binyılın 26. yılıdır.",
+        "Binyıl ya da milenyum, 1.000 yıllık dönemdir. Hesap yüzyılla aynı mantıkla yapılır: yıl 1.000'e bölünür ve yukarı yuvarlanır. 1. binyıl 1–1000, 2. binyıl 1001–2000, 3. binyıl 2001–3000 yıllarını kapsar. 2026 yılı 3. binyılın 26. yılıdır. Aynı mantık on yıllar için de geçerlidir: takvim hesabına göre bir on yıl 1 ile biten yılda başlar ve 0 ile biten yılda biter, ama günlük dilde \"2020'ler\" çoğunlukla 2020–2029 yıllarını anlatır.",
         "\"Milenyum kuşağı\" gibi sosyolojik kavramlar ise takvimden değil, belirli bir dönemde doğan insanların ortak deneyimlerinden adını alır. Kuşakların hangi yıllara karşılık geldiğini [[bilgi:kusaklar-hangi-yillar-z-kusagi|kuşaklar makalesinde]] bulabilirsiniz."
       ]
     },

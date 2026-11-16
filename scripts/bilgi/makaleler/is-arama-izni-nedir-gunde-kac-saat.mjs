@@ -76,7 +76,8 @@ export default {
       h: "İş arama izni saatlerini kim belirler?",
       p: [
         "Kanun izin saatlerinin hangi saatlerde kullanılacağını açıkça düzenlemez; yalnızca iznin iş saatleri içinde verileceğini söyler. Uygulamada saatler işçi ile işveren arasında kararlaştırılır. Amaç işçinin iş görüşmelerine gidebilmesi olduğu için saatlerin işçinin ihtiyacına uygun olması, işverenin de işin aksamamasını gözetmesi beklenir.",
-        "İşverenin izni yalnızca işçinin hiçbir görüşmeye yetişemeyeceği saatlere sıkıştırması, örneğin her gün 06.00 – 08.00 arasına koyması, iznin amacına aykırıdır. En sağlıklı yol, ihbar bildirimiyle birlikte izin saatlerinin yazılı olarak belirlenmesidir. Belirli bir gün için görüşme saati değişirse işçinin bunu önceden haber vermesi iki tarafın da işini kolaylaştırır."
+        "İşverenin izni yalnızca işçinin hiçbir görüşmeye yetişemeyeceği saatlere sıkıştırması, örneğin her gün 06.00 – 08.00 arasına koyması, iznin amacına aykırıdır. En sağlıklı yol, ihbar bildirimiyle birlikte izin saatlerinin yazılı olarak belirlenmesidir. Belirli bir gün için görüşme saati değişirse işçinin bunu önceden haber vermesi iki tarafın da işini kolaylaştırır.",
+        "Vardiyalı çalışan işyerlerinde izin, işçinin kendi vardiyasının içinde kullanılır; gece vardiyasında çalışan bir işçiye iznin gündüz, yani kendi dinlenme saatinde \"verilmiş\" sayılması doğru değildir. Kısmi süreli çalışanlarda ise kanun ayrı bir oran öngörmediği için uygulamada günde 2 saatlik süre çalışılan günler esas alınarak uygulanır; tereddüt varsa sözleşmede açıkça yazılması tartışmayı önler."
       ]
     },
     {

@@ -9,7 +9,7 @@ export default {
   lead: "ÖSYM sınavlarında geçerlilik süresi sınava göre değişir: <strong>ALES sonuçları 5 yıl</strong>, <strong>KPSS sonuçları 2 yıl</strong>, <strong>YÖKDİL sonuçları sınav tarihinden itibaren 5 yıl</strong> geçerlidir; <strong>DGS</strong> puanı ise yalnızca o yılın yerleştirmesinde kullanılır. <strong>YDS</strong> ve e-YDS'de süreyi sonucu kullanan kurumun mevzuatı belirler; yabancı dil tazminatı, TUS ve lisansüstü gibi yaygın kullanımlarda 5 yıldır. Bu sayfada her sınavın süresini, sürenin hangi tarihten başladığını ve süresi dolan puanla neler yapılabileceğini anlatıyoruz.",
   kisaCevap: [
     "ALES: 2017 sonbaharından itibaren sonuçlar 5 yıl geçerlidir (önceden 3 yıldı).",
-    "KPSS: ÖSYM kılavuzuna göre sonuçlar sınav tarihinden itibaren 2 yıl geçerlidir.",
+    "KPSS: ÖSYM kılavuzuna göre sonuçlar, sonuçların açıklandığı tarihten itibaren 2 yıl geçerlidir; bu sürede yeni sınav yapılamazsa bir sonraki sınavın sonuçları açıklanana kadar geçerliliğini korur.",
     "DGS: Puan yalnızca sınavın yapıldığı yılın yerleştirmesi için kullanılır, sonraki yıla taşınmaz.",
     "YÖKDİL ve e-YÖKDİL: Kılavuza göre sonuçlar sınavın yapıldığı tarihten itibaren 5 yıl geçerlidir.",
     "YDS ve e-YDS: Geçerlilik süresini sonucu kullanan kurum belirler; yabancı dil tazminatı ve uzmanlık sınavlarında 5 yıldır.",
@@ -51,7 +51,8 @@ export default {
       h: "Geçerlilik süresi ne demek, neden önemli?",
       p: [
         "Bir sınav sonucunun geçerlilik süresi, o puanı başvurularda belge olarak kullanabileceğiniz zaman aralığıdır. Süre dolduğunda puanınız ÖSYM sisteminde görünmeye devam edebilir, ama başvurduğunuz kurum onu kabul etmez. Lisansüstü başvurusu, akademik kadro ilanı, kamu ataması ya da yabancı dil tazminatı gibi işlemlerde başvurudan önce bu süreyi kontrol etmek gerekir.",
-        "Geçerlilik süresinin iki kaynağı vardır: ÖSYM'nin sınav kılavuzu ve sonucu kullanan kurumun kendi mevzuatı. Bazı sınavlarda süre doğrudan kılavuzda yazar; bazılarında ise kılavuz, süreyi kullanacak kuruma bırakır. Bu yüzden aynı puan bir kurumda geçerli, başka bir kurumda geçersiz olabilir."
+        "Geçerlilik süresinin iki kaynağı vardır: ÖSYM'nin sınav kılavuzu ve sonucu kullanan kurumun kendi mevzuatı. Bazı sınavlarda süre doğrudan kılavuzda yazar; bazılarında ise kılavuz, süreyi kullanacak kuruma bırakır. Bu yüzden aynı puan bir kurumda geçerli, başka bir kurumda geçersiz olabilir.",
+        "Sonuç belgenizi ÖSYM'nin sonuç sisteminden ya da e-Devlet üzerinden alabilirsiniz; belgede sınavın adı ve tarihi, puan türleri ve doğrulama kodu yer alır. Kurumlar çoğu zaman bu kodla belgenin gerçekliğini ÖSYM sistemi üzerinden kontrol eder, bazı başvuru sistemleri ise geçerli puanlarınızı T.C. kimlik numaranızla doğrudan ÖSYM'den çeker. Bu durumda süresi dolmuş bir sonuç listede hiç görünmez. Başvuru yapmadan önce belgenizi indirip tarihlerini kontrol etmek, son günde yaşanabilecek sürprizleri önler."
       ]
     },
     {
@@ -68,7 +69,7 @@ export default {
         caption: "Süreler ÖSYM kılavuzlarına ve yaygın kurum mevzuatına göredir. Kılavuzlar her sınav döneminde yenilenir; başvurudan önce güncel kılavuzu ve başvuracağınız kurumun ilanını kontrol edin."
       },
       after: [
-        "Tablodaki süreler genel kuraldır. Özellikle YDS gibi kullanım yeri çok olan sınavlarda, başvuru ilanındaki \"son beş yıl içinde alınmış\" ya da \"süresi dolmamış\" gibi ifadeler belirleyicidir. İlanda farklı bir süre yazıyorsa ilanın şartı uygulanır."
+        "Tablodaki süreler genel kuraldır. Kılavuzlarda yapılan değişiklikler genellikle yeni sınav döneminden itibaren uygulanır; daha önce alınmış bir sonucun süresi, aksi açıkça belirtilmedikçe, alındığı dönemdeki kurala göre değerlendirilir. Özellikle YDS gibi kullanım yeri çok olan sınavlarda, başvuru ilanındaki \"son beş yıl içinde alınmış\" ya da \"süresi dolmamış\" gibi ifadeler belirleyicidir. İlanda farklı bir süre yazıyorsa ilanın şartı uygulanır."
       ]
     },
     {
@@ -82,7 +83,7 @@ export default {
     {
       h: "KPSS puanı ne kadar süre kullanılabilir?",
       p: [
-        "ÖSYM'nin KPSS kılavuzlarına göre sınav sonuçları <strong>sınav tarihinden itibaren iki yıl</strong> geçerlidir. Lisans düzeyindeki Genel Yetenek–Genel Kültür oturumları da iki yılda bir yapıldığı için pratikte bir KPSS puanı, bir sonraki KPSS'nin sonuçları açıklanıp yeni tercih dönemleri başlayana kadar kullanılır.",
+        "ÖSYM'nin KPSS kılavuzlarına göre sınav sonuçları <strong>sonuçların açıklandığı tarihten itibaren iki yıl</strong> geçerlidir; bu sürede yeni sınav yapılamazsa sonuçlar bir sonraki sınavın sonuçları açıklanana kadar geçerli kalır. Lisans düzeyindeki Genel Yetenek–Genel Kültür oturumları da iki yılda bir yapıldığı için pratikte bir KPSS puanı, bir sonraki KPSS'nin sonuçları açıklanıp yeni tercih dönemleri başlayana kadar kullanılır.",
         "Bu süre içinde açılan merkezi atama tercihlerinde ve KPSS puanıyla alım yapan kurumların ilanlarında bu puanla başvurabilirsiniz. A Grubu kadrolarda kurumlar kendi sınavlarına çağırırken genellikle belirli bir yıla ait KPSS'yi şart koşar; ilan metni hangi yılın puanını kabul ettiğini açıkça yazar.",
         "P1, P2, P3 gibi puan türlerinin hangi oturumlardan hesaplandığını ve yaklaşık değerini [[arac:kpss-puan-hesapla|KPSS Puan Hesaplama]] aracında görebilirsiniz."
       ]
@@ -133,7 +134,7 @@ export default {
   ],
   faq: [
     ["ALES puanı kaç yıl geçerlidir?", "ALES sonuçları beş yıl geçerlidir. Süre 2017 sonbaharındaki düzenlemeyle üç yıldan beş yıla çıkarılmıştır ve sonuçların açıklandığı tarihten itibaren işler; Mayıs 2026'da açıklanan sonuç Mayıs 2031'e kadar kullanılabilir."],
-    ["KPSS puanı ne kadar süre kullanılabilir?", "ÖSYM kılavuzuna göre KPSS sonuçları sınav tarihinden itibaren iki yıl geçerlidir. Bu süre içinde merkezi atama tercihlerinde ve KPSS puanıyla alım yapan kurumların ilanlarında kullanılabilir; ilanda belirli bir yılın puanı istenebilir."],
+    ["KPSS puanı ne kadar süre kullanılabilir?", "ÖSYM kılavuzuna göre KPSS sonuçları, sonuçların açıklandığı tarihten itibaren iki yıl geçerlidir. Bu süre içinde merkezi atama tercihlerinde ve KPSS puanıyla alım yapan kurumların ilanlarında kullanılabilir; ilanda belirli bir yılın puanı istenebilir."],
     ["YDS ve YÖKDİL sonucu kaç yıl geçerli?", "YÖKDİL sonuçları sınav tarihinden itibaren beş yıl geçerlidir. YDS'de süreyi sonucu kullanan kurum belirler; yabancı dil tazminatı, TUS, DUS, EUS ve çoğu lisansüstü ilanında bu süre beş yıldır."],
     ["DGS puanı yalnızca o yıl mı geçerli?", "Evet, DGS puanı yalnızca sınavın yapıldığı yılın tercih ve yerleştirmesinde kullanılır. Sonraki yıl dikey geçiş yapmak isteyen aday sınava yeniden girmek zorundadır."],
     ["Geçerliliği dolan puanla başvuru yapılabilir mi?", "Hayır, süresi dolan puanlar başvuru sistemlerince kabul edilmez. Belirleyici olan ilanda yazan tarihtir; başvuru sırasında geçerli olan bir puanın sonraki aşamalarda dolması genellikle sorun yaratmaz."],

@@ -140,3 +140,7 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   hızlarda uyarı gösterin. `pdf-gri-tonlama` sayfaları görüntüye çevirdiği için metin seçilemiyor; sayfada belirtin.
   `ihbar-tazminati-hesapla` asgari ücret istisnası uygulayıp uygulamadığını açıkça göstermiyor.
 - `fersah-km-cevir`: "metrik fersah 6 km" seçeneğinin kaynağını doğrulayın.
+- `kredi-karti-asgari-odeme-hesapla`: varsayılan %3,25 akdi faiz vergiler (KKDF+BSMV) hariç; vergiler dahil karşılığı ~%4,225. Varsayılan oran
+  borç tutarına göre kademelenmiyor (TCMB: 30.000 TL altı %3,25 / 30.000–180.000 %3,75 / üstü %4,25). Kademe seçimi ve vergi dahil gösterim ekleyin.
+- `kwh-kcal-cevir` 4,184 J'lük termokimyasal kaloriyle, `btu-kcal-cevir` 4,1868 J'lük IT kaloriyle hesaplıyor; tek tanıma bağlayın ya da
+  sayfalarda hangisi olduğunu belirtin.

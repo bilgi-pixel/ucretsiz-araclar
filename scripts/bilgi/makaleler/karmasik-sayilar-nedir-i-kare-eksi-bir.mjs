@@ -64,7 +64,8 @@ export default {
       p: [
         "Gerçel sayılarda hiçbir sayının karesi negatif olamaz; bu yüzden x² + 1 = 0 gibi basit bir denklemin gerçel çözümü yoktur. Matematikçiler bu boşluğu kapatmak için karesi −1 olan yeni bir sayı tanımladı: <strong>sanal birim i</strong>. Bu tanımla birlikte her negatif sayının karekökü yazılabilir hale geldi: √(−9) = 3i, √(−16) = 4i, √(−2) = i√2.",
         "Bir gerçel sayı ile bir sanal sayının toplamına <strong>karmaşık sayı</strong> denir ve z = a + bi biçiminde yazılır. Burada a ve b gerçel sayılardır; a'ya gerçel kısım Re(z), b'ye sanal kısım Im(z) denir. b = 0 ise sayı gerçeldir, a = 0 ve b ≠ 0 ise sayı saf sanaldır. Dolayısıyla gerçel sayılar, karmaşık sayıların özel bir alt kümesidir.",
-        "İki karmaşık sayı ancak gerçel kısımları ve sanal kısımları ayrı ayrı eşitse eşittir: a + bi = c + di ise a = c ve b = d'dir. Bu özellik, bilinmeyen içeren karmaşık sayı denklemlerini iki ayrı gerçel denkleme dönüştürmeyi sağlar."
+        "İki karmaşık sayı ancak gerçel kısımları ve sanal kısımları ayrı ayrı eşitse eşittir: a + bi = c + di ise a = c ve b = d'dir. Bu özellik, bilinmeyen içeren karmaşık sayı denklemlerini iki ayrı gerçel denkleme dönüştürmeyi sağlar. Örneğin (x + 2) + (y − 1)i = 5 + 3i ise x + 2 = 5 ve y − 1 = 3, yani x = 3 ve y = 4 bulunur.",
+        "Sayı kümeleri iç içe genişler: doğal sayılar tam sayıların, tam sayılar rasyonel sayıların, rasyonel sayılar gerçel sayıların, gerçel sayılar da karmaşık sayıların alt kümesidir (ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ). Gerçel sayılardan farklı olarak karmaşık sayılar arasında \"büyüktür\" ya da \"küçüktür\" sıralaması tanımlanmaz; 3 + 4i ile 1 − 2i'den hangisinin büyük olduğu sorusu anlamsızdır. Karşılaştırma ancak modüller üzerinden yapılabilir: |3 + 4i| = 5, |1 − 2i| ≈ 2,24."
       ]
     },
     {
