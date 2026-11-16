@@ -159,3 +159,7 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   2026 eşiği 17.711.000 TL, dilimler 26.567.000 / 35.425.000 TL, oranlar binde 3/6/10 (Emlak Vergisi Kanunu Genel Tebliği Seri No: 88).
   `harc-hesapla` IMEI/cep telefonu kayıt harcını da hesaplamıyor (2026: 54.258 TL; bazı kaynaklardaki 57.241 TL yanlış).
 - `fayans-yapistirici-hesapla`: 0,5 kg/m²/mm kuralı temkinli/yüksek; büyük karoda çift taraflı sürme seçeneği ekleyin.
+- 7574 sayılı Kanun (RG 27.02.2026) KTK md. 51'deki yüzdelik hız kademelerini kaldırdı; ceza yerleşim yeri içinde 6, dışında 11 km/sa
+  aşımdan başlıyor. `trafik-cezasi-hesapla` madde listesini buna göre güncelleyin. `beaufort-ruzgar-cevir` 0,836×B^1,5 formülüyle 7 bofor alt
+  sınırını 27 knot veriyor; WMO tablosu 28 knot. `pdf-sayfa-numarasi` Roma rakamı desteklemiyor. `tarih-ekle-cikar` iş günü modunun
+  cumartesiyi nasıl saydığını sayfada belirtin (6502 sayılı Kanun'da yalnızca pazar ve tatiller hariç).

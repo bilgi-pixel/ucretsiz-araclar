@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>FIFO ve Ağırlıklı Ortalama Maliyet: Stok Maliyeti Hesabı</title>
+  <meta name="description" content="FIFO'da ilk alınan mal ilk satılmış sayılır; ağırlıklı ortalamada toplam maliyet toplam miktara bölünür. Aynı alış-satış verisiyle üç yöntemin karşılaştırması.">
+  <meta name="keywords" content="fifo nedir, ilk giren ilk çıkar, ağırlıklı ortalama maliyet, stok maliyet yöntemleri, satılan malın maliyeti, stok değerleme, lifo türkiye, hareketli ortalama">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/fifo-ve-agirlikli-ortalama-stok-maliyeti/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="FIFO ve Ağırlıklı Ortalama Maliyet: Stok Maliyeti Hesabı">
+  <meta property="og:description" content="FIFO'da ilk alınan mal ilk satılmış sayılır; ağırlıklı ortalamada toplam maliyet toplam miktara bölünür. Aynı alış-satış verisiyle üç yöntemin karşılaştırması.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/fifo-ve-agirlikli-ortalama-stok-maliyeti/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"FIFO ve Ağırlıklı Ortalama Maliyet: Stok Maliyeti Nasıl Hesaplanır?","description":"FIFO'da ilk alınan mal ilk satılmış sayılır; ağırlıklı ortalamada toplam maliyet toplam miktara bölünür. Aynı alış-satış verisiyle üç yöntemin karşılaştırması.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/fifo-ve-agirlikli-ortalama-stok-maliyeti/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1373,"keywords":"fifo nedir, ilk giren ilk çıkar, ağırlıklı ortalama maliyet, stok maliyet yöntemleri, satılan malın maliyeti, stok değerleme, lifo türkiye, hareketli ortalama","articleSection":"İşletme ve E-ticaret","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İşletme ve E-ticaret","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#isletme"},{"@type":"ListItem","position":4,"name":"FIFO ve Ağırlıklı Ortalama Maliyet: Stok Maliyeti Nasıl Hesaplanır?"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"FIFO (ilk giren ilk çıkar) yöntemi nedir?","acceptedAnswer":{"@type":"Answer","text":"FIFO'da satılan birimler önce en eski alış partisinden düşülür, o parti bitince bir sonrakine geçilir. Dönem sonunda elde kalan stok en son alınan partilerden oluşur ve güncel fiyatlara yakın bir değerle görünür."}},{"@type":"Question","name":"Ağırlıklı ortalama maliyet nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Devir ve alışların toplam tutarı toplam miktara bölünerek birim maliyet bulunur. Örnekte 24.000 TL ÷ 400 adet = 60 TL'dir; satılan 330 adedin maliyeti 19.800 TL, kalan 70 adedin değeri 4.200 TL olur."}},{"@type":"Question","name":"Fiyatlar artarken hangi yöntem daha yüksek kâr gösterir?","acceptedAnswer":{"@type":"Answer","text":"Fiyatlar artarken FIFO, satışlara eski ve ucuz maliyetleri yüklediği için en düşük satılan malın maliyetini ve en yüksek brüt kârı gösterir. Ortalama yöntemler bu etkiyi yumuşatır; fiyatlar düşerken sıralama tersine döner."}},{"@type":"Question","name":"Türkiye'de vergi açısından hangi yöntemler kabul edilir?","acceptedAnswer":{"@type":"Answer","text":"Vergi Usul Kanunu emtianın maliyet bedeliyle değerlenmesini öngörür; uygulamada ağırlıklı ortalama ve FIFO yöntemleri kullanılır, LIFO kabul edilmez. TMS 2 de LIFO'yu yasaklar. Seçiminizi mali müşavirinizle yapın."}},{"@type":"Question","name":"Satılan malın maliyeti nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"Dönem başı stok ile dönem içi alışların toplamından dönem sonu stok düşülür. Örnekte 5.000 + 19.000 − 4.900 = 19.100 TL FIFO'ya göre satılan malın maliyetidir; dönem sonu stok seçilen yönteme göre değişir."}},{"@type":"Question","name":"Hareketli ortalama ile dönem sonu ortalaması farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Hareketli ortalamada birim maliyet her alıştan sonra yeniden hesaplanır ve satış o günkü ortalamayla maliyetlenir. Dönem sonu ortalamasında ise tüm dönemin alışları tek bir ortalamada birleştirilir ve hesap dönem sonunda bir kez yapılır."}},{"@type":"Question","name":"Stok devir hızı maliyet yönteminden etkilenir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, çünkü yöntem hem satılan malın maliyetini hem de ortalama stoku değiştirir. Örnekte FIFO ile devir hızı yaklaşık 3,86, dönem sonu ağırlıklı ortalama ile yaklaşık 4,30 çıkar."}},{"@type":"Question","name":"Küçük işletme stok maliyetini Excel'de nasıl takip eder?","acceptedAnswer":{"@type":"Answer","text":"Her ürün için tarih, giriş, çıkış, kalan miktar, kalan tutar ve ortalama sütunları olan bir tablo tutulur. Alışlarda ortalama yeniden hesaplanır, satışlarda çıkış o anki ortalamayla maliyetlenir ve dönem sonunda fiziki sayımla karşılaştırılır."}},{"@type":"Question","name":"Yöntem değişikliği yapılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Yapılabilir ama keyfî olamaz. Değişiklik ancak daha güvenilir bilgi sağlıyorsa ya da bir standart gerektiriyorsa yapılır, etkisi açıklanır ve vergi sonuçları planlanır. Her dönem tutarlı yöntem kullanmak esastır; mali müşavirinize danışın."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#isletme">İşletme ve E-ticaret</a></li></ol><h1>FIFO ve Ağırlıklı Ortalama Maliyet: Stok Maliyeti Nasıl Hesaplanır?</h1><p class="lead">FIFO (ilk giren ilk çıkar) yönteminde satılan mallar en eski alışlardan karşılanmış sayılır ve dönem sonu stok en yeni fiyatlarla değerlenir; ağırlıklı ortalama yönteminde ise toplam alış maliyeti toplam miktara bölünür ve her satış bu ortalama birim maliyetle hesaplanır. Fiyatların arttığı dönemlerde FIFO daha düşük satılan malın maliyeti ve daha yüksek kâr gösterir. Bu yazıda aynı alış-satış hareketleriyle FIFO, dönem sonu ağırlıklı ortalama ve hareketli ortalama hesaplarını adım adım yapıyor, sonuçları karşılaştırıyor ve Türkiye'deki uygulamayı özetliyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Satılan malın maliyeti (SMM) = dönem başı stok + dönem içi alışlar − dönem sonu stok.</li>
+        <li>FIFO: satılan birimler en eski alış partisinden düşülür; kalan stok en yeni alış fiyatlarını taşır.</li>
+        <li>Dönem sonu ağırlıklı ortalama: birim maliyet = (devir tutarı + alış tutarları) ÷ (devir miktarı + alış miktarları).</li>
+        <li>Hareketli ortalama: her alıştan sonra ortalama yeniden hesaplanır ve sonraki satışlar bu güncel ortalamayla maliyetlenir.</li>
+        <li>Fiyatlar artarken FIFO en düşük SMM'yi ve en yüksek brüt kârı, LIFO ise en yüksek SMM'yi verir.</li>
+        <li>Türkiye Muhasebe Standartları (TMS 2) LIFO'yu kabul etmez; FIFO ve ağırlıklı ortalama yöntemleri kullanılır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Mart ayı stok hareketleri: devir 100 adet × 50 TL, 5 Mart 200 × 60 TL alış, 20 Mart 100 × 70 TL alış, toplam 330 adet satış. FIFO'da satılan malın maliyeti 19.100 TL ve kalan stok 4.900 TL; ağırlıklı ortalamada 19.800 ve 4.200 TL; hareketli ortalamada 19.660 ve 4.340 TL." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">24.000 TL'lik maliyet nasıl bölünür?</text>
+  <rect x="30" y="50" width="660" height="90" rx="10" class="sf sb"/>
+  <text x="46" y="76" class="b">Mart hareketleri</text>
+  <g class="sm">
+    <text x="46" y="102">1 Mart devir: 100 × 50 TL</text>
+    <text x="46" y="124">5 Mart alış: 200 × 60 TL</text>
+    <text x="290" y="102">10 Mart satış: 150 adet</text>
+    <text x="290" y="124">20 Mart alış: 100 × 70 TL</text>
+    <text x="510" y="102">25 Mart satış: 180 adet</text>
+    <text x="510" y="124" class="b">Kalan: 70 adet</text>
+  </g>
+  <text x="30" y="178" class="b">FIFO</text>
+  <rect x="190" y="160" width="398" height="32" class="p"/>
+  <rect x="588" y="160" width="102" height="32" class="oks"/>
+  <text x="389" y="181" class="mid sm b sf">SMM 19.100 TL</text>
+  <text x="639" y="181" class="mid sm b">4.900</text>
+  <text x="30" y="238" class="b">Hareketli ortalama</text>
+  <rect x="190" y="220" width="410" height="32" class="p"/>
+  <rect x="600" y="220" width="90" height="32" class="oks"/>
+  <text x="395" y="241" class="mid sm b sf">SMM 19.660 TL</text>
+  <text x="645" y="241" class="mid sm b">4.340</text>
+  <text x="30" y="298" class="b">Dönem sonu ortalama</text>
+  <rect x="190" y="280" width="412" height="32" class="p"/>
+  <rect x="602" y="280" width="88" height="32" class="oks"/>
+  <text x="396" y="301" class="mid sm b sf">SMM 19.800 TL</text>
+  <text x="646" y="301" class="mid sm b">4.200</text>
+  <text x="30" y="358" class="b mu">LIFO (TMS'de yok)</text>
+  <rect x="190" y="340" width="427" height="32" class="dgs"/>
+  <rect x="617" y="340" width="73" height="32" class="oks"/>
+  <text x="403" y="361" class="mid sm b">SMM 20.500 TL</text>
+  <text x="653" y="361" class="mid sm b">3.500</text>
+  <text x="190" y="400" class="sm t2">Koyu: satılan malın maliyeti · Yeşil: dönem sonu stok değeri</text>
+</svg>
+      <figcaption>Aynı 24.000 TL'lik maliyet havuzu üç yöntemde satılan mal ile kalan stok arasında farklı bölünür. Toplam her zaman aynıdır; değişen, maliyetin hangi döneme yazıldığıdır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Stok maliyet yöntemi neden önemlidir?</a></li>
+      <li><a href="#b2">FIFO (ilk giren ilk çıkar) yöntemi nedir?</a></li>
+      <li><a href="#b3">Ağırlıklı ortalama maliyet nasıl hesaplanır?</a></li>
+      <li><a href="#b4">Hareketli ortalama ile dönem sonu ortalaması farkı</a></li>
+      <li><a href="#b5">Fiyatlar artarken hangi yöntem daha yüksek kâr gösterir?</a></li>
+      <li><a href="#b6">Türkiye'de vergi ve muhasebe açısından hangi yöntemler kabul edilir?</a></li>
+      <li><a href="#b7">Stok devir hızı maliyet yönteminden etkilenir mi?</a></li>
+      <li><a href="#b8">Küçük işletme stok maliyetini tabloda nasıl takip eder?</a></li>
+      <li><a href="#b9">Yöntem değişikliği yapılabilir mi?</a></li>
+      <li><a href="#b10">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-fifo-ve-agirlikli-ortalama-stok-maliyeti-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../agirlikli-ortalama-hesapla/"><strong>Ağırlıklı Ortalama Hesaplama</strong><span>Değerleri ağırlıklarıyla birlikte girin; kredili not, yüzdeli sınav ve ortalama maliyet için ağırlıklı ortalamayı bulun.</span></a></li>
+          <li><a href="../../birim-maliyet-hesapla/"><strong>Birim Maliyet Hesaplama</strong><span>Hammadde, işçilik ve genel giderlerden ürün başına maliyeti bulun; fire ve kâr oranıyla satış fiyatını hesaplayın.</span></a></li>
+          <li><a href="../../stok-devir-hizi-hesapla/"><strong>Stok Devir Hızı Hesaplama</strong><span>Satılan malın maliyeti ve stok tutarlarından stok devir hızını ve stokta kalma süresini (gün) hesaplayın.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Stok maliyet yöntemi neden önemlidir?</h2>
+      <p>Bir işletme aynı ürünü dönem içinde farklı fiyatlarla birkaç kez satın alır. Ürün satıldığında hangi fiyatlı partinin satıldığını tek tek izlemek çoğu zaman mümkün değildir; özdeş ürünler aynı rafta karışır. Stok maliyet yöntemi, satılan birimlere hangi maliyetin yükleneceğini ve elde kalan stokun hangi değerle görüneceğini belirleyen kuraldır.</p>
+      <p>Yöntem seçimi toplam maliyeti değiştirmez, yalnızca onu dönemler arasında farklı dağıtır. Ancak bu dağılım satılan malın maliyetini, brüt kârı, bilançodaki stok değerini, stok devir hızı gibi oranları ve dönemin vergi matrahını etkiler. Bu yüzden yöntemin bilinçli seçilmesi ve her dönem tutarlı uygulanması gerekir.</p>
+      <div class="rh-formula">Satılan malın maliyeti (SMM) = dönem başı stok + dönem içi alışlar − dönem sonu stok<br>Brüt satış kârı = net satışlar − SMM</div>
+
+      <h2 id="b2">FIFO (ilk giren ilk çıkar) yöntemi nedir?</h2>
+      <p>FIFO, İngilizce &quot;first in, first out&quot; ifadesinin kısaltmasıdır. Bu yöntemde satılan birimler önce en eski alış partisinden düşülür; o parti bitince bir sonrakine geçilir. Böylece dönem sonunda elde kalan stok en son alınan partilerden oluşur ve güncel fiyatlara yakın bir değerle görünür.</p>
+      <p>FIFO çoğu zaman malların fiziksel akışıyla da uyumludur: gıda, ilaç, kozmetik ve son kullanma tarihi olan ürünlerde eski ürünün önce satılması zaten bir zorunluluktur. Yöntemin mantığı kolay anlaşılır ve dönem sonu stok değeri gerçeğe yakındır.</p>
+      <ol class="ba-steps">
+        <li>Mart ayı hareketleri: 1 Mart devir 100 adet × 50 TL; 5 Mart alış 200 adet × 60 TL; 10 Mart satış 150 adet; 20 Mart alış 100 adet × 70 TL; 25 Mart satış 180 adet.</li>
+        <li>10 Mart satışı (150 adet): önce devirdeki 100 adet × 50 = 5.000 TL, sonra 5 Mart partisinden 50 adet × 60 = 3.000 TL. Maliyet 8.000 TL.</li>
+        <li>25 Mart satışı (180 adet): 5 Mart partisinde kalan 150 adet × 60 = 9.000 TL, sonra 20 Mart partisinden 30 adet × 70 = 2.100 TL. Maliyet 11.100 TL.</li>
+        <li>Toplam SMM: 8.000 + 11.100 = 19.100 TL.</li>
+        <li>Kalan stok: 20 Mart partisinden 70 adet × 70 = 4.900 TL.</li>
+        <li>Kontrol: 19.100 + 4.900 = 24.000 TL, yani devir ve alışların toplamı.</li>
+      </ol>
+
+      <h2 id="b3">Ağırlıklı ortalama maliyet nasıl hesaplanır?</h2>
+      <p>Dönem sonu ağırlıklı ortalama yönteminde dönemin tüm maliyet havuzu, yani devir ve alışların toplam tutarı, toplam miktara bölünür. Bulunan birim maliyet hem satılan birimlere hem de kalan stoka uygulanır. Hesap dönem sonunda bir kez yapıldığı için uygulaması kolaydır.</p>
+      <div class="rh-formula">Ağırlıklı ortalama birim maliyet = Σ(miktar × birim fiyat) ÷ Σ(miktar)<br>= (100 × 50 + 200 × 60 + 100 × 70) ÷ (100 + 200 + 100)<br>= 24.000 ÷ 400 = 60 TL<br>SMM = 330 × 60 = 19.800 TL · Kalan stok = 70 × 60 = 4.200 TL</div>
+      <p>Ortalamanın &quot;ağırlıklı&quot; olması, her alış fiyatının miktarı kadar etki etmesi demektir. Basit ortalama (50 + 60 + 70) ÷ 3 = 60 bu örnekte tesadüfen aynı çıkıyor; miktarlar farklı olsaydı sonuç değişirdi. Hesabı <a href="../../agirlikli-ortalama-hesapla/">Ağırlıklı Ortalama Hesaplama</a> aracında değerleri fiyat, ağırlıkları miktar olarak girerek yapabilirsiniz.</p>
+
+      <h2 id="b4">Hareketli ortalama ile dönem sonu ortalaması farkı</h2>
+      <p>Hareketli (sürekli) ortalama yönteminde ortalama birim maliyet her alıştan sonra yeniden hesaplanır. Satışlar, o tarihteki güncel ortalamayla maliyetlenir. Sürekli envanter tutan, yani her hareketi anında stok kartına işleyen işletmeler ve muhasebe yazılımları çoğunlukla bu yöntemi kullanır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Tarih</th><th>Hareket</th><th>Miktar</th><th>Tutar</th><th>Stok miktarı</th><th>Stok tutarı</th><th>Ortalama</th></tr></thead>
+        <tbody>
+          <tr><td>1 Mart</td><td>Devir</td><td>100</td><td>5.000</td><td>100</td><td>5.000</td><td>50,00</td></tr>
+          <tr><td>5 Mart</td><td>Alış</td><td>200</td><td>12.000</td><td>300</td><td>17.000</td><td>56,67</td></tr>
+          <tr><td>10 Mart</td><td>Satış</td><td>−150</td><td>−8.500</td><td>150</td><td>8.500</td><td>56,67</td></tr>
+          <tr><td>20 Mart</td><td>Alış</td><td>100</td><td>7.000</td><td>250</td><td>15.500</td><td>62,00</td></tr>
+          <tr><td>25 Mart</td><td>Satış</td><td>−180</td><td>−11.160</td><td>70</td><td>4.340</td><td>62,00</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Hareketli ortalamada SMM = 8.500 + 11.160 = 19.660 TL, kalan stok 4.340 TL. Ortalama her alıştan sonra stok tutarı ÷ stok miktarı ile güncellenir.</p>
+      <p>Dönem sonu ortalaması bütün ayın alışlarını tek ortalamada birleştirir; 10 Mart'taki satış, henüz yapılmamış 20 Mart alışının fiyatından da etkilenir. Hareketli ortalama ise satışı yalnızca o güne kadarki alışlarla maliyetlendirir. Bu nedenle hareketli ortalamanın sonucu FIFO ile dönem sonu ortalaması arasında çıkmıştır.</p>
+
+      <h2 id="b5">Fiyatlar artarken hangi yöntem daha yüksek kâr gösterir?</h2>
+      <p>Örnekte alış fiyatları 50'den 70 TL'ye yükseliyor. Satışların ilkinin 90, ikincisinin 95 TL'den yapıldığını varsayalım: hasılat 150 × 90 + 180 × 95 = 30.600 TL. Aşağıdaki tablo dört yöntemi karşılaştırır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Yöntem</th><th>SMM</th><th>Brüt kâr</th><th>Dönem sonu stok</th></tr></thead>
+        <tbody>
+          <tr><td>FIFO</td><td>19.100 TL</td><td>11.500 TL</td><td>4.900 TL</td></tr>
+          <tr><td>Hareketli ortalama</td><td>19.660 TL</td><td>10.940 TL</td><td>4.340 TL</td></tr>
+          <tr><td>Dönem sonu ağırlıklı ortalama</td><td>19.800 TL</td><td>10.800 TL</td><td>4.200 TL</td></tr>
+          <tr><td>LIFO (karşılaştırma için)</td><td>20.500 TL</td><td>10.100 TL</td><td>3.500 TL</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">LIFO'da (son giren ilk çıkar) 10 Mart satışı 5 Mart partisinden (9.000 TL), 25 Mart satışı 100 × 70 + 50 × 60 + 30 × 50 = 11.500 TL olarak hesaplanmıştır.</p>
+      <p>Fiyatların arttığı dönemde FIFO, satışlara eski ve ucuz maliyetleri yüklediği için en düşük SMM'yi ve en yüksek kârı gösterir; stok ise güncel fiyatlara yakın değerlenir. Ortalama yöntemler fiyat dalgalanmalarını yumuşatır. Fiyatlar düşerken tablo tersine döner. Hiçbir yöntem toplam kârı değiştirmez; stok tamamen satıldığında bütün yöntemlerde toplam kâr aynı olur, yalnızca dönemler arasındaki dağılım farklıdır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-fifo-ve-agirlikli-ortalama-stok-maliyeti-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Türkiye'de vergi ve muhasebe açısından hangi yöntemler kabul edilir?</h2>
+      <p>Vergi Usul Kanunu md. 274'e göre emtia maliyet bedeliyle değerlenir. Türkiye'deki vergi uygulamasında maliyet bedelinin tespitinde ağırlıklı ortalama ve FIFO yöntemlerinin kullanılabildiği kabul edilir; LIFO yöntemi ise kabul görmez. Türkiye Muhasebe Standartları'ndaki TMS 2 Stoklar standardı da FIFO ve ağırlıklı ortalama yöntemlerine izin verir, LIFO'yu açıkça yasaklar.</p>
+      <p>Seçilen yöntem her dönem tutarlı uygulanmalıdır; muhasebenin süreklilik ve tutarlılık ilkeleri yöntemin keyfî değiştirilmesine izin vermez. Enflasyon düzeltmesi, değer düşüklüğü ve emsal bedel gibi özel durumlar da stok değerlemesini etkiler. İşletmeniz için uygun yöntemi ve yöntem değişikliğinin sonuçlarını mutlaka mali müşavirinizle değerlendirin.</p>
+
+      <h2 id="b7">Stok devir hızı maliyet yönteminden etkilenir mi?</h2>
+      <p>Evet. Stok devir hızı satılan malın maliyetinin ortalama stoka bölünmesiyle hesaplandığı için, yöntem hem payı hem paydayı değiştirir. Örnekte dönem başı stok 5.000 TL'dir.</p>
+      <ul>
+        <li>FIFO: ortalama stok (5.000 + 4.900) ÷ 2 = 4.950 TL → devir hızı 19.100 ÷ 4.950 ≈ 3,86.</li>
+        <li>Dönem sonu ağırlıklı ortalama: ortalama stok (5.000 + 4.200) ÷ 2 = 4.600 TL → devir hızı 19.800 ÷ 4.600 ≈ 4,30.</li>
+        <li>Aynı fiziksel hareketlere rağmen oran yaklaşık %11 farklı çıkar; farklı yöntem kullanan işletmeleri karşılaştırırken bu fark dikkate alınmalıdır.</li>
+      </ul>
+      <p>Devir hızının yorumu ve sektör karşılaştırması <a href="../../bilgi-bankasi/stok-devir-hizi-nasil-hesaplanir/">stok devir hızı nasıl hesaplanır</a> yazısında, hesabı <a href="../../stok-devir-hizi-hesapla/">Stok Devir Hızı Hesaplama</a> aracında bulabilirsiniz.</p>
+
+      <h2 id="b8">Küçük işletme stok maliyetini tabloda nasıl takip eder?</h2>
+      <p>Muhasebe programı kullanmayan küçük bir işletme bile basit bir tabloyla hareketli ortalamayı ya da FIFO'yu izleyebilir. Önemli olan her hareketin tarih sırasıyla ve eksiksiz girilmesidir.</p>
+      <ol class="ba-steps">
+        <li>Her ürün için ayrı bir sayfa açın; sütunlar: tarih, açıklama, giriş miktarı, giriş birim fiyatı, çıkış miktarı, kalan miktar, kalan tutar, ortalama birim maliyet.</li>
+        <li>Alışlarda giriş tutarını (miktar × fiyat) kalan tutara ekleyin, kalan miktarı artırın ve ortalamayı kalan tutar ÷ kalan miktar olarak yeniden hesaplayın.</li>
+        <li>Satışlarda çıkış maliyetini o anki ortalama × çıkış miktarı olarak hesaplayın ve kalan tutardan düşün.</li>
+        <li>Nakliye, gümrük gibi alışa doğrudan bağlı giderleri alış maliyetine ekleyin; iade ve iskontoları düşün.</li>
+        <li>Dönem sonunda tablodaki kalan miktarı fiziki sayımla karşılaştırın; farkları fire ya da sayım farkı olarak ayrıca kaydedin.</li>
+      </ol>
+      <p>Her ürünü takip etmek için düzenli bir stok kodu sistemi işinizi kolaylaştırır; <a href="../../bilgi-bankasi/sku-stok-kodu-nasil-olusturulur/">SKU stok kodu</a> yazısı bunun nasıl kurulacağını anlatır. Sayım günü yapılacaklar ise <a href="../../bilgi-bankasi/yil-sonu-stok-sayimi-nasil-yapilir/">yıl sonu stok sayımı</a> yazısında. Üretim yapan işletmelerde birim maliyete hammadde dışındaki giderleri de eklemek için <a href="../../birim-maliyet-hesapla/">Birim Maliyet Hesaplama</a> aracı kullanılabilir.</p>
+
+      <h2 id="b9">Yöntem değişikliği yapılabilir mi?</h2>
+      <p>Muhasebede yöntem değişikliği mümkündür ama keyfî olamaz. TMS 8 standardına göre bir muhasebe politikası ancak bir standart gerektiriyorsa ya da değişiklik finansal tabloların daha güvenilir ve anlamlı bilgi sunmasını sağlıyorsa değiştirilir ve değişikliğin etkisi açıklanır. Vergi açısından da yöntemin değiştirilmesi, geçiş dönemi stok değerinin nasıl belirleneceği gibi konular nedeniyle dikkatle planlanmalıdır.</p>
+      <p>Pratik açıdan en önemli kural tutarlılıktır: bir dönem FIFO, sonraki dönem ortalama kullanmak kârı yapay olarak bir dönemden diğerine kaydırır ve hem yöneticileri hem de denetimi yanıltır. Değişiklik düşünüyorsanız önceden mali müşavirinizle görüşün ve gerekçeyi yazılı hâle getirin.</p>
+
+      <h2 id="b10">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Basit ortalama kullanmak:</strong> fiyatların miktarla ağırlıklandırılmaması farklı büyüklükteki alışlarda yanlış maliyet verir.</li>
+        <li><strong>Hareketleri tarih sırasına koymamak:</strong> FIFO ve hareketli ortalama sıraya bağlıdır; geç girilen bir alış tüm sonraki satışları bozar.</li>
+        <li><strong>Alışa bağlı giderleri unutmak:</strong> nakliye ve gümrük gibi giderler maliyete eklenmezse kâr olduğundan yüksek görünür.</li>
+        <li><strong>Yöntemleri dönemden döneme değiştirmek:</strong> kârın dönemler arasında yapay olarak kaymasına yol açar.</li>
+        <li><strong>Fiziki sayım yapmamak:</strong> kayıttaki stokla raftaki stok arasındaki fark (fire, kayıp) maliyet hesabını yanıltır.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>FIFO (ilk giren ilk çıkar) yöntemi nedir?</summary><p>FIFO'da satılan birimler önce en eski alış partisinden düşülür, o parti bitince bir sonrakine geçilir. Dönem sonunda elde kalan stok en son alınan partilerden oluşur ve güncel fiyatlara yakın bir değerle görünür.</p></details>
+      <details><summary>Ağırlıklı ortalama maliyet nasıl hesaplanır?</summary><p>Devir ve alışların toplam tutarı toplam miktara bölünerek birim maliyet bulunur. Örnekte 24.000 TL ÷ 400 adet = 60 TL'dir; satılan 330 adedin maliyeti 19.800 TL, kalan 70 adedin değeri 4.200 TL olur.</p></details>
+      <details><summary>Fiyatlar artarken hangi yöntem daha yüksek kâr gösterir?</summary><p>Fiyatlar artarken FIFO, satışlara eski ve ucuz maliyetleri yüklediği için en düşük satılan malın maliyetini ve en yüksek brüt kârı gösterir. Ortalama yöntemler bu etkiyi yumuşatır; fiyatlar düşerken sıralama tersine döner.</p></details>
+      <details><summary>Türkiye'de vergi açısından hangi yöntemler kabul edilir?</summary><p>Vergi Usul Kanunu emtianın maliyet bedeliyle değerlenmesini öngörür; uygulamada ağırlıklı ortalama ve FIFO yöntemleri kullanılır, LIFO kabul edilmez. TMS 2 de LIFO'yu yasaklar. Seçiminizi mali müşavirinizle yapın.</p></details>
+      <details><summary>Satılan malın maliyeti nasıl bulunur?</summary><p>Dönem başı stok ile dönem içi alışların toplamından dönem sonu stok düşülür. Örnekte 5.000 + 19.000 − 4.900 = 19.100 TL FIFO'ya göre satılan malın maliyetidir; dönem sonu stok seçilen yönteme göre değişir.</p></details>
+      <details><summary>Hareketli ortalama ile dönem sonu ortalaması farkı nedir?</summary><p>Hareketli ortalamada birim maliyet her alıştan sonra yeniden hesaplanır ve satış o günkü ortalamayla maliyetlenir. Dönem sonu ortalamasında ise tüm dönemin alışları tek bir ortalamada birleştirilir ve hesap dönem sonunda bir kez yapılır.</p></details>
+      <details><summary>Stok devir hızı maliyet yönteminden etkilenir mi?</summary><p>Evet, çünkü yöntem hem satılan malın maliyetini hem de ortalama stoku değiştirir. Örnekte FIFO ile devir hızı yaklaşık 3,86, dönem sonu ağırlıklı ortalama ile yaklaşık 4,30 çıkar.</p></details>
+      <details><summary>Küçük işletme stok maliyetini Excel'de nasıl takip eder?</summary><p>Her ürün için tarih, giriş, çıkış, kalan miktar, kalan tutar ve ortalama sütunları olan bir tablo tutulur. Alışlarda ortalama yeniden hesaplanır, satışlarda çıkış o anki ortalamayla maliyetlenir ve dönem sonunda fiziki sayımla karşılaştırılır.</p></details>
+      <details><summary>Yöntem değişikliği yapılabilir mi?</summary><p>Yapılabilir ama keyfî olamaz. Değişiklik ancak daha güvenilir bilgi sağlıyorsa ya da bir standart gerektiriyorsa yapılır, etkisi açıklanır ve vergi sonuçları planlanır. Her dönem tutarlı yöntem kullanmak esastır; mali müşavirinize danışın.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; vergi ve muhasebe danışmanlığı değildir; işletmenize uygun yöntem için mali müşavirinize danışın. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.gib.gov.tr/" rel="noopener">Gelir İdaresi Başkanlığı – Vergi Usul Kanunu</a></li>
+        <li><a href="https://www.kgk.gov.tr/" rel="noopener">Kamu Gözetimi Kurumu – TMS 2 Stoklar</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../stok-devir-hizi-nasil-hesaplanir/"><strong>Stok Devir Hızı Nasıl Hesaplanır? Emniyet Stoku ve Sipariş Miktarı</strong><span>Stok devir hızı = satılan malın maliyeti ÷ ortalama stok; stokta kalma süresi = 365 ÷ devir hızı. Emniyet stoku, yeniden sipariş noktası ve EOQ örnekleriyle.</span></a></li>
+          <li><a href="../yil-sonu-stok-sayimi-nasil-yapilir/"><strong>Yıl Sonu Stok Sayımı Nasıl Yapılır? Sayım Tutanağı, Fire ve Değerleme</strong><span>Yıl sonu stok sayımı adım adım: hazırlık ve ekipler, sayım tutanağı, sayım fazlası ve eksiği, fire ile farkı, maliyet bedeliyle değerleme ve stok devir hızı yorumu.</span></a></li>
+          <li><a href="../sku-stok-kodu-nasil-olusturulur/"><strong>SKU Nedir? Stok Kodu Nasıl Oluşturulur, Barkoddan Farkı Nedir</strong><span>SKU, işletmenin her ürün ve varyantına verdiği kendi stok kodudur; barkod (EAN) ise ürünün evrensel numarasıdır. Kod yapısı, varyant kodlama ve yasak karakterler.</span></a></li>
+          <li><a href="../gelir-tablosu-nasil-okunur-brut-faaliyet-net-kar/"><strong>Gelir Tablosu Nasıl Okunur? Brüt Kâr, Faaliyet Kârı ve Net Kâr Farkı</strong><span>Gelir tablosu net satıştan başlayıp maliyet, faaliyet giderleri, finansman ve vergi düşülerek net kâra iner. Kalemler, marjlar, FAVÖK farkı ve çözümlü örnek tablo.</span></a></li>
+          <li><a href="../3-al-2-ode-yuzde-kac-indirim/"><strong>3 Al 2 Öde Yüzde Kaç İndirim? Kampanya Türlerinin Gerçek İndirim Oranı</strong><span>3 al 2 öde %33,3, ikincisi %50 indirimli kampanya %25, 2 al 1 öde %50 indirime denk gelir. Farklı fiyatlı ürünler, birim fiyat, kâr marjına etki ve doğru seçim.</span></a></li>
+          <li><a href="../alacak-devir-hizi-nedir-tahsil-suresi/"><strong>Alacak Devir Hızı Nedir? Ortalama Tahsil Süresi Nasıl Hesaplanır?</strong><span>Alacak devir hızı = kredili net satışlar ÷ ortalama ticari alacak; tahsil süresi = 365 ÷ devir hızı. KDV tutarlılığı, vade politikası, nakit dönüşüm süresi ve örnek.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-fifo-ve-agirlikli-ortalama-stok-maliyeti-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="../../cerez-politikasi/">Çerez Politikası</a></li><li><a href="../../kullanim-kosullari/">Kullanım Koşulları</a></li><li><a href="../../iletisim/">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

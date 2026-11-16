@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Gerilim Bölücü Hesaplama: Formül, Direnç Seçimi, Örnek</title>
+  <meta name="description" content="Gerilim bölücüde çıkış Vout = Vin × R2 ÷ (R1 + R2) ile bulunur. 5 V'u 3,3 V'a indirme, yük etkisi, harcanan güç ve pil voltajı ölçme örnekleri.">
+  <meta name="keywords" content="gerilim bölücü, gerilim bölücü formülü, voltaj bölücü, 5v'u 3.3v'a düşürme, direnç ile voltaj düşürme, arduino gerilim bölücü, pil voltajı ölçme, yük etkisi">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/gerilim-bolucu-devre-nasil-hesaplanir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Gerilim Bölücü Hesaplama: Formül, Direnç Seçimi, Örnek">
+  <meta property="og:description" content="Gerilim bölücüde çıkış Vout = Vin × R2 ÷ (R1 + R2) ile bulunur. 5 V'u 3,3 V'a indirme, yük etkisi, harcanan güç ve pil voltajı ölçme örnekleri.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/gerilim-bolucu-devre-nasil-hesaplanir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Gerilim Bölücü Devre Nasıl Hesaplanır? Formül, Direnç Seçimi ve Örnek","description":"Gerilim bölücüde çıkış Vout = Vin × R2 ÷ (R1 + R2) ile bulunur. 5 V'u 3,3 V'a indirme, yük etkisi, harcanan güç ve pil voltajı ölçme örnekleri.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/gerilim-bolucu-devre-nasil-hesaplanir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1339,"keywords":"gerilim bölücü, gerilim bölücü formülü, voltaj bölücü, 5v'u 3.3v'a düşürme, direnç ile voltaj düşürme, arduino gerilim bölücü, pil voltajı ölçme, yük etkisi","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"Gerilim Bölücü Devre Nasıl Hesaplanır? Formül, Direnç Seçimi ve Örnek"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Gerilim bölücü nedir?","acceptedAnswer":{"@type":"Answer","text":"Gerilim bölücü, seri bağlı iki direncin birleşim noktasından giriş geriliminin belirli bir oranını alan devredir. Sensör okuma, gerilim ölçme ve referans gerilimi üretme gibi akım çekmeyen ya da çok az akım çeken işlerde kullanılır."}},{"@type":"Question","name":"Vout = Vin × R2/(R1+R2) formülü nasıl uygulanır?","acceptedAnswer":{"@type":"Answer","text":"Giriş gerilimini toprağa bağlı direnç R2 ile çarpıp iki direncin toplamına bölersiniz. 12 V girişte R1 = 10 kΩ ve R2 = 4,7 kΩ için çıkış 12 × 4,7 ÷ 14,7 = 3,84 V olur."}},{"@type":"Question","name":"5 V'u 3,3 V'a düşürmek için hangi dirençler seçilir?","acceptedAnswer":{"@type":"Answer","text":"R2'yi R1'in iki katı seçmek çıkışı 3,33 V yapar; örneğin 1 kΩ ve 2 kΩ ya da 10 kΩ ve 20 kΩ. Yaygın değerlerle 1,8 kΩ ve 3,3 kΩ 3,24 V verir. Bu yöntem yalnızca sinyal hattı içindir, besleme için değildir."}},{"@type":"Question","name":"Yük bağlanınca çıkış gerilimi neden değişir?","acceptedAnswer":{"@type":"Answer","text":"Yük R2'ye paralel bağlanır ve alt kolun eşdeğer direncini küçültür. 10 kΩ / 20 kΩ bölücüye 20 kΩ yük bağlanırsa çıkış 3,33 V'tan 2,5 V'a düşer. Yük direnci R2'nin en az 10 katı olmalıdır."}},{"@type":"Question","name":"Gerilim bölücü güç kaynağı olarak kullanılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Yük akımı değiştikçe çıkış gerilimi değişir ve yeterli akım için küçük dirençler seçmek büyük güç kaybına yol açar. Devre beslemek için doğrusal regülatör ya da anahtarlamalı dönüştürücü kullanılmalıdır."}},{"@type":"Question","name":"Arduino ile pil voltajı ölçmek için nasıl kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Pil gerilimini analog girişin sınırının altına indirecek oranda iki direnç seçin. 12,6 V'luk paket için 20 kΩ ve 10 kΩ girişe en fazla 4,2 V verir; okunan değeri 3 ile çarparak pil gerilimini bulursunuz."}},{"@type":"Question","name":"Direnç değerleri büyük mü küçük mü seçilmeli?","acceptedAnswer":{"@type":"Answer","text":"Oranı belirleyen direnç oranıdır. Küçük dirençler yük ve gürültüden az etkilenir ama fazla akım harcar; büyük dirençler pil dostudur ama yükten kolay etkilenir. Analog girişler için toplam 10–100 kΩ iyi bir başlangıçtır."}},{"@type":"Question","name":"Dirençlerde harcanan güç nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Önce akımı I = Vin ÷ (R1 + R2) ile bulun, sonra her direnç için P = I² × R hesaplayın. Seçtiğiniz direncin güç değeri hesaplanan gücün en az iki katı olmalıdır."}},{"@type":"Question","name":"Standart direnç değerleri ve renk kodları nasıl okunur?","acceptedAnswer":{"@type":"Answer","text":"Dirençler E12 ve E24 gibi standart serilerden üretilir; hesapladığınız değere en yakın seri değeri seçip sonucu yeniden hesaplayın. Değer gövdedeki renk bantlarından okunur: 10 kΩ kahverengi–siyah–turuncu, 4,7 kΩ sarı–mor–kırmızıdır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>Gerilim Bölücü Devre Nasıl Hesaplanır? Formül, Direnç Seçimi ve Örnek</h1><p class="lead">Gerilim bölücü, seri bağlı iki direnç arasındaki noktadan giriş geriliminin belirli bir oranını alan devredir; çıkış gerilimi Vout = Vin × R2 ÷ (R1 + R2) formülüyle hesaplanır. Örneğin 5 V girişte R1 = 1 kΩ ve R2 = 2 kΩ seçilirse çıkış 3,33 V olur. Devre sensör okumak ve gerilim ölçmek için idealdir, ama çıkışa akım çeken bir yük bağlandığında gerilim düşer; bu yüzden güç kaynağı yerine kullanılmamalıdır. Bu yazıda formülü, direnç seçimini, yük etkisini ve güç hesabını çözümlü örneklerle anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Çıkış gerilimi: Vout = Vin × R2 ÷ (R1 + R2); R1 girişe, R2 toprağa bağlı dirençtir.</li>
+        <li>Bölme oranı yalnızca dirençlerin oranına bağlıdır: R2 = 2 × R1 seçilirse çıkış girişin üçte ikisi olur.</li>
+        <li>Dirençlerden geçen akım I = Vin ÷ (R1 + R2), her direncin harcadığı güç P = I² × R'dir.</li>
+        <li>Çıkışa yük bağlanınca yük R2'ye paralel olur ve çıkış gerilimi düşer; yük direnci R2'nin en az 10 katı olmalıdır.</li>
+        <li>Gerilim bölücü motor, LED şeridi ya da mikrodenetleyici beslemek için güç kaynağı olarak kullanılmaz; bunun için regülatör gerekir.</li>
+        <li>12,6 V'luk bir pili 5 V'luk bir analog girişle ölçmek için R1 = 20 kΩ, R2 = 10 kΩ seçilirse giriş 4,2 V olur.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Gerilim bölücü devre şeması: 5 V kaynak, üstte R1 = 10 kΩ, altta R2 = 20 kΩ, ortadaki çıkış 3,33 V. Sağda yük bağlanınca çıkışın 20 kΩ yükte 2,5 V'a, 1 MΩ yükte 3,31 V'a düştüğünü gösteren karşılaştırma." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">Gerilim bölücü ve yük etkisi</text>
+  <line x1="80" y1="70" x2="200" y2="70" class="st sw" fill="none"/>
+  <line x1="200" y1="70" x2="200" y2="100" class="st sw" fill="none"/>
+  <rect x="180" y="100" width="40" height="80" rx="4" class="ps"/>
+  <text x="200" y="146" class="mid b sm">R1</text>
+  <text x="236" y="136" class="b">10 kΩ</text>
+  <line x1="200" y1="180" x2="200" y2="230" class="st sw" fill="none"/>
+  <circle cx="200" cy="205" r="5" class="p"/>
+  <line x1="200" y1="205" x2="300" y2="205" class="sp sw" fill="none"/>
+  <text x="306" y="200" class="b p">Vout</text>
+  <text x="306" y="222" class="b p lg">3,33 V</text>
+  <rect x="180" y="230" width="40" height="80" rx="4" class="ps"/>
+  <text x="200" y="276" class="mid b sm">R2</text>
+  <text x="236" y="266" class="b">20 kΩ</text>
+  <line x1="200" y1="310" x2="200" y2="340" class="st sw" fill="none"/>
+  <line x1="80" y1="340" x2="200" y2="340" class="st sw" fill="none"/>
+  <line x1="80" y1="70" x2="80" y2="170" class="st sw" fill="none"/>
+  <line x1="80" y1="240" x2="80" y2="340" class="st sw" fill="none"/>
+  <circle cx="80" cy="205" r="34" class="sf sb"/>
+  <text x="80" y="200" class="mid b">Vin</text>
+  <text x="80" y="220" class="mid b">5 V</text>
+  <line x1="170" y1="352" x2="230" y2="352" class="st sw" fill="none"/>
+  <line x1="182" y1="362" x2="218" y2="362" class="st sw" fill="none"/>
+  <text x="200" y="386" class="mid sm mu">toprak</text>
+  <rect x="420" y="60" width="280" height="96" rx="10" class="p"/>
+  <text x="560" y="90" class="mid sf b">Vout = Vin × R2 ÷ (R1 + R2)</text>
+  <text x="560" y="118" class="mid sf">5 × 20 ÷ (10 + 20)</text>
+  <text x="560" y="142" class="mid sf b">= 3,33 V</text>
+  <text x="420" y="190" class="b">Çıkışa bağlanan yük</text>
+  <text x="420" y="224" class="sm">Yük yok</text>
+  <rect x="520" y="210" width="167" height="20" rx="3" class="ok"/>
+  <text x="680" y="225" class="end sm b sf">3,33 V</text>
+  <text x="420" y="260" class="sm">1 MΩ yük</text>
+  <rect x="520" y="246" width="165" height="20" rx="3" class="ok"/>
+  <text x="678" y="261" class="end sm b sf">3,31 V</text>
+  <text x="420" y="296" class="sm">20 kΩ yük</text>
+  <rect x="520" y="282" width="125" height="20" rx="3" class="dg"/>
+  <text x="638" y="297" class="end sm b sf">2,50 V</text>
+  <text x="420" y="336" class="sm t2">20 kΩ yük, R2 ile paralel: 10 kΩ</text>
+  <text x="420" y="358" class="sm t2">5 × 10 ÷ (10 + 10) = 2,50 V</text>
+</svg>
+      <figcaption>Yüksüz durumda çıkış yalnızca direnç oranına bağlıdır. Yük, R2'ye paralel bağlandığı için eşdeğer alt direnci küçültür ve çıkışı düşürür; yük direnci büyüdükçe etki azalır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Gerilim bölücü nedir?</a></li>
+      <li><a href="#b2">Formül: Vout = Vin × R2 ÷ (R1 + R2)</a></li>
+      <li><a href="#b3">Çözümlü örnek 1: 12 V'tan bölme oranı, akım ve güç</a></li>
+      <li><a href="#b4">5 V'u 3,3 V'a düşürmek için hangi dirençler seçilir?</a></li>
+      <li><a href="#b5">Yük bağlanınca çıkış gerilimi neden değişir?</a></li>
+      <li><a href="#b6">Gerilim bölücü güç kaynağı olarak kullanılabilir mi?</a></li>
+      <li><a href="#b7">Çözümlü örnek 2: pil voltajını mikrodenetleyiciyle ölçmek</a></li>
+      <li><a href="#b8">Direnç değerleri büyük mü küçük mü seçilmeli?</a></li>
+      <li><a href="#b9">Dirençlerde harcanan güç nasıl hesaplanır?</a></li>
+      <li><a href="#b10">Standart direnç değerleri ve renk kodları</a></li>
+      <li><a href="#b11">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-gerilim-bolucu-devre-nasil-hesaplanir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../gerilim-bolucu-hesapla/"><strong>Gerilim Bölücü Hesaplama</strong><span>Giriş gerilimi, R1 ve R2 değerlerinden çıkış gerilimini bulun; yük direncinin etkisini de hesaplayın.</span></a></li>
+          <li><a href="../../seri-direnc-hesapla/"><strong>Seri Direnç Hesaplama</strong><span>Seri bağlı dirençlerin toplam direncini, devre akımını ve her dirençteki gerilim düşümünü hesaplayın.</span></a></li>
+          <li><a href="../../paralel-direnc-hesapla/"><strong>Paralel Direnç Hesaplama</strong><span>Paralel bağlı dirençlerin eşdeğerini bulun; gerilim girerek kol akımlarını ve toplam gücü de hesaplayın.</span></a></li>
+          <li><a href="../../ohm-kanunu-hesapla/"><strong>Ohm Kanunu Hesaplama</strong><span>Gerilim, akım, direnç ve güçten ikisini yazın; Ohm kanunuyla kalan iki değeri anında bulun.</span></a></li>
+          <li><a href="../../direnc-renk-kodu-hesapla/"><strong>Direnç Renk Kodu Hesaplama</strong><span>4, 5 ve 6 bantlı dirençlerin renk kodundan değerini, toleransını ve aralığını bulun; ya da istediğiniz direnç değerinin renklerini öğrenin.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Gerilim bölücü nedir?</h2>
+      <p>Gerilim bölücü, bir gerilim kaynağına seri bağlanmış iki dirençten oluşan en temel elektronik devrelerden biridir. Kaynağın gerilimi iki direncin üzerinde, dirençlerin büyüklüğüyle orantılı olarak paylaşılır. İki direncin birleştiği noktadan toprağa göre ölçülen gerilim, giriş geriliminin belirli bir kesridir ve bu noktaya çıkış denir.</p>
+      <p>Devre çok basit olduğu için her yerde karşınıza çıkar: potansiyometrelerin orta ucu bir gerilim bölücüdür; ışığa duyarlı direnç ya da termistör gibi sensörler sabit bir dirençle bölücü kurularak okunur; bir mikrodenetleyicinin ölçebileceğinden yüksek gerilimler bölücüyle güvenli aralığa indirilir; işlemsel yükselteçlerde referans gerilimi üretilir.</p>
+
+      <h2 id="b2">Formül: Vout = Vin × R2 ÷ (R1 + R2)</h2>
+      <p>Seri devrede iki direnç üzerinden aynı akım geçer. Bu akım Ohm kanununa göre I = Vin ÷ (R1 + R2)'dir. R2 üzerindeki gerilim ise bu akımın R2 ile çarpımıdır. İki adımı birleştirince gerilim bölücü formülü elde edilir.</p>
+      <div class="rh-formula">I = Vin ÷ (R1 + R2)<br>Vout = I × R2 = Vin × R2 ÷ (R1 + R2)<br>Bölme oranı k = R2 ÷ (R1 + R2)<br>R2 bilinmiyorsa: R2 = R1 × Vout ÷ (Vin − Vout)</div>
+      <p>Formüldeki dirençlerin sırası önemlidir: R1 girişle çıkış arasında, R2 çıkışla toprak arasındadır. Yerleri değiştirilirse çıkış, R1 üzerindeki gerilim yani Vin − Vout olur. Formülün dayandığı Ohm kanununu hatırlamak isterseniz <a href="../../bilgi-bankasi/ohm-kanunu-nedir/">Ohm kanunu nedir</a> yazısına, seri dirençlerin toplanmasına dair ayrıntılar için <a href="../../bilgi-bankasi/seri-ve-paralel-direnc-hesaplama/">seri ve paralel direnç hesaplama</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="b3">Çözümlü örnek 1: 12 V'tan bölme oranı, akım ve güç</h2>
+      <p>12 V'luk bir kaynağa R1 = 10 kΩ ve R2 = 4,7 kΩ bağlanmış olsun. Çıkış gerilimini, devreden geçen akımı ve her direncin harcadığı gücü bulalım.</p>
+      <ol class="ba-steps">
+        <li>Toplam direnç: 10 + 4,7 = 14,7 kΩ.</li>
+        <li>Akım: 12 V ÷ 14.700 Ω = 0,000816 A ≈ 0,816 mA.</li>
+        <li>Çıkış: 12 × 4,7 ÷ 14,7 = 3,837 V ≈ 3,84 V.</li>
+        <li>R1 üzerindeki gerilim: 12 − 3,84 = 8,16 V.</li>
+        <li>R1'in gücü: (0,000816)² × 10.000 ≈ 0,00666 W = 6,66 mW.</li>
+        <li>R2'nin gücü: (0,000816)² × 4.700 ≈ 0,00313 W = 3,13 mW.</li>
+      </ol>
+      <p>Her iki direnç de miliwatt düzeyinde güç harcadığı için standart 1/4 W'lık dirençler fazlasıyla yeterlidir. Bu hesabı <a href="../../gerilim-bolucu-hesapla/">Gerilim Bölücü Hesaplama</a> aracına giriş gerilimi ve iki direnci yazarak anında doğrulayabilirsiniz.</p>
+
+      <h2 id="b4">5 V'u 3,3 V'a düşürmek için hangi dirençler seçilir?</h2>
+      <p>3,3 V ile çalışan bir modülün giriş pinine 5 V'luk bir sinyal bağlanacaksa, sinyal hattında gerilim bölücü kullanılabilir. Hedef oran 3,3 ÷ 5 = 0,66'dır. Bu oran R2 = 2 × R1 seçildiğinde 2 ÷ 3 = 0,667'ye çok yakın çıkar.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>R1</th><th>R2</th><th>Çıkış (5 V girişte)</th><th>Akım</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>1 kΩ</td><td>2 kΩ</td><td>3,33 V</td><td>1,67 mA</td><td>Hızlı sinyaller için uygun, akım biraz yüksek</td></tr>
+          <tr><td>1,8 kΩ</td><td>3,3 kΩ</td><td>3,24 V</td><td>0,98 mA</td><td>Yaygın E12 değerleri</td></tr>
+          <tr><td>10 kΩ</td><td>20 kΩ</td><td>3,33 V</td><td>0,167 mA</td><td>Düşük tüketim, yavaş sinyaller için</td></tr>
+          <tr><td>4,7 kΩ</td><td>10 kΩ</td><td>3,40 V</td><td>0,34 mA</td><td>Hedefin biraz üzerinde</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Çıkış değerleri yük bağlı değilken hesaplanmıştır. Direnç toleransı (%1 ya da %5) gerçek değeri birkaç onda bir volt değiştirebilir.</p>
+      <p>Bu çözüm yalnızca tek yönlü ve düşük hızlı sinyaller (örneğin bir seri haberleşme hattının alıcı ucu) için uygundur. Modülü beslemek, yani 3,3 V güç sağlamak için gerilim bölücü kullanılmaz; bunun için bir gerilim regülatörü gerekir. Çift yönlü ya da hızlı veri hatlarında ise seviye dönüştürücü devreler tercih edilir.</p>
+
+      <h2 id="b5">Yük bağlanınca çıkış gerilimi neden değişir?</h2>
+      <p>Gerilim bölücü formülü, çıkıştan hiç akım çekilmediğini varsayar. Çıkışa bir yük (ölçü aleti, mikrodenetleyici girişi, sensör) bağlandığında bu yük R2'ye paralel bağlanmış olur. Paralel bağlantının eşdeğer direnci her zaman küçük olandan da küçüktür; bu yüzden alt kolun direnci azalır ve çıkış gerilimi düşer.</p>
+      <div class="rh-formula">R2' = R2 × RL ÷ (R2 + RL)<br>Vout(yüklü) = Vin × R2' ÷ (R1 + R2')<br>Örnek: R1 = 10 kΩ, R2 = 20 kΩ, RL = 20 kΩ → R2' = 10 kΩ → Vout = 5 × 10 ÷ 20 = 2,50 V</div>
+      <p>Aynı devreye 1 MΩ'luk bir yük bağlanınca R2' = 19,61 kΩ olur ve çıkış 3,31 V'a iner; fark yalnızca 0,02 V'tur. Pratik kural, yük direncinin R2'nin en az 10 katı, tercihen 100 katı olmasıdır. Bölücünün çıkışı, kaynak direnci R1 ∥ R2 olan bir kaynak gibi davranır: 10 kΩ ve 20 kΩ için bu değer 6,67 kΩ'dur. Yük bu iç dirence göre ne kadar büyükse çıkış o kadar az etkilenir.</p>
+
+      <h2 id="b6">Gerilim bölücü güç kaynağı olarak kullanılabilir mi?</h2>
+      <p>Hayır, akım çeken yükler için güç kaynağı olarak kullanılmamalıdır. Yük akımı değiştikçe çıkış gerilimi de değişir; motor, röle, LED şeridi ya da bir devre kartı gibi akımı sürekli değişen yükler kararsız çalışır. Ayrıca yükü taşıyacak kadar akım geçirmek için dirençleri küçük seçmek gerekir ve bu durumda dirençler boşa büyük güç harcar, ısınır.</p>
+      <p>Bir devreyi daha düşük gerilimle beslemek gerekiyorsa doğrusal regülatör ya da anahtarlamalı dönüştürücü kullanılır. LED'in akımını sınırlamak ise ayrı bir konudur; tek bir seri dirençle yapılır ve <a href="../../bilgi-bankasi/led-direnci-nasil-hesaplanir/">LED direnci nasıl hesaplanır</a> yazısında anlatılır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-gerilim-bolucu-devre-nasil-hesaplanir-b" aria-label="Reklam"></div>
+
+      <h2 id="b7">Çözümlü örnek 2: pil voltajını mikrodenetleyiciyle ölçmek</h2>
+      <p>Üç hücreli bir lityum iyon pil paketi tam doluyken 12,6 V verir. Mikrodenetleyicinin analog girişi en fazla 5 V ölçebiliyor. Gerilimi güvenli aralığa indirmek için R1 = 20 kΩ ve R2 = 10 kΩ seçelim.</p>
+      <ol class="ba-steps">
+        <li>Bölme oranı: 10 ÷ (20 + 10) = 1/3.</li>
+        <li>En yüksek giriş: 12,6 × 1/3 = 4,2 V; 5 V sınırının altında kalır.</li>
+        <li>Bölücüden sürekli geçen akım: 12,6 ÷ 30.000 = 0,42 mA, yani 420 µA.</li>
+        <li>Ölçülen değeri gerçek pil gerilimine çevirmek için 3 ile çarpın: analog giriş 3,70 V okuyorsa pil 11,1 V'tur.</li>
+        <li>Pilin sürekli boşalmasını azaltmak için dirençler 10 kat büyütülebilir (200 kΩ / 100 kΩ), ama bu durumda girişe paralel küçük bir kondansatör eklemek okumayı kararlı kılar.</li>
+      </ol>
+      <p>Ölçüm doğruluğu direnç toleransına bağlıdır. %1 toleranslı dirençler kullanmak ve sonucu bir multimetreyle bir kez kalibre etmek önerilir. Pil paketlerinin seri bağlanmasıyla ilgili bilgiler için <a href="../../bilgi-bankasi/pil-seri-paralel-baglama-18650/">pil seri paralel bağlama</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="b8">Direnç değerleri büyük mü küçük mü seçilmeli?</h2>
+      <p>Oranı belirleyen iki direncin büyüklüğü değil birbirine oranıdır; aynı oranı 1 kΩ / 2 kΩ ile de, 100 kΩ / 200 kΩ ile de elde edebilirsiniz. Seçim iki zıt ihtiyacın dengesidir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Seçim</th><th>Avantaj</th><th>Dezavantaj</th></tr></thead>
+        <tbody>
+          <tr><td>Küçük dirençler (1–10 kΩ)</td><td>Yük etkisi az, gürültüye dayanıklı, hızlı sinyaller</td><td>Daha fazla akım ve güç harcar, pili boşaltır</td></tr>
+          <tr><td>Büyük dirençler (100 kΩ–1 MΩ)</td><td>Çok düşük akım, pil dostu</td><td>Yükten ve gürültüden kolay etkilenir, ölçüm girişinin iç direnciyle hata yapar</td></tr>
+        </tbody>
+      </table></div>
+      <p>Pratikte mikrodenetleyici analog girişleri için toplamı 10–100 kΩ arasında kalan dirençler iyi bir başlangıç noktasıdır. Pil ile çalışan ve sürekli açık kalan ölçüm devrelerinde daha büyük değerler, kısa süreli ve hızlı sinyallerde daha küçük değerler tercih edilir.</p>
+
+      <h2 id="b9">Dirençlerde harcanan güç nasıl hesaplanır?</h2>
+      <p>Her direncin harcadığı güç P = I² × R ya da P = V² ÷ R ile bulunur. Direncin gövdesinde yazan güç değeri (örneğin 1/4 W) bunun en az iki katı olmalıdır ki direnç ısınmadan çalışsın. Düşük gerilimli sinyal devrelerinde güç genellikle miliwatt düzeyindedir; ancak 230 V gibi yüksek gerilimlerde ya da küçük dirençlerde hesap mutlaka yapılmalıdır.</p>
+      <ul>
+        <li>12 V, 1 kΩ + 1 kΩ: I = 6 mA, her direnç 36 mW harcar; 1/4 W yeterli.</li>
+        <li>24 V, 100 Ω + 100 Ω: I = 120 mA, her direnç 1,44 W harcar; en az 3 W'lık direnç gerekir ve böyle bir tasarım verimsizdir.</li>
+        <li>Şebeke gerilimiyle çalışan devrelerde gerilim bölücü tasarımı ve deneyi yalnızca bu işte yetkin kişilerce, uygun yalıtım ve korumayla yapılmalıdır.</li>
+      </ul>
+
+      <h2 id="b10">Standart direnç değerleri ve renk kodları</h2>
+      <p>Dirençler her değerde üretilmez; E12 ve E24 gibi standart serilerden seçilir. E12 serisi her onluk için 1,0 – 1,2 – 1,5 – 1,8 – 2,2 – 2,7 – 3,3 – 3,9 – 4,7 – 5,6 – 6,8 – 8,2 değerlerini içerir. Hesapladığınız değer seride yoksa en yakın değeri seçip çıkışı yeniden hesaplayın ya da iki direnci seri bağlayarak hedefe yaklaşın.</p>
+      <p>Direncin değeri gövdesindeki renk bantlarıyla okunur. 10 kΩ'luk 4 bantlı bir direnç kahverengi–siyah–turuncu–altın, 4,7 kΩ'luk bir direnç sarı–mor–kırmızı–altın renklerini taşır. Renk okumayı <a href="../../direnc-renk-kodu-hesapla/">Direnç Renk Kodu Hesaplama</a> aracı ve <a href="../../bilgi-bankasi/direnc-renk-kodlari-nasil-okunur/">direnç renk kodları</a> yazısıyla kolayca yapabilirsiniz.</p>
+
+      <h2 id="b11">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>R1 ile R2'yi karıştırmak:</strong> formülde paydaki direnç toprağa bağlı olandır; yer değişirse sonuç Vin − Vout olur.</li>
+        <li><strong>Yükü hesaba katmamak:</strong> çıkışa bağlanan cihazın giriş direnci bölücüyü bozabilir.</li>
+        <li><strong>Bölücüyle devre beslemeye çalışmak:</strong> akım çeken yüklerde gerilim düşer; regülatör kullanın.</li>
+        <li><strong>Güç değerini kontrol etmemek:</strong> küçük dirençler ve yüksek gerilimde dirençler aşırı ısınabilir.</li>
+        <li><strong>Toleransı unutmak:</strong> %5'lik dirençlerle hesaplanan 3,33 V gerçekte 3,2–3,45 V arasında çıkabilir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Gerilim bölücü nedir?</summary><p>Gerilim bölücü, seri bağlı iki direncin birleşim noktasından giriş geriliminin belirli bir oranını alan devredir. Sensör okuma, gerilim ölçme ve referans gerilimi üretme gibi akım çekmeyen ya da çok az akım çeken işlerde kullanılır.</p></details>
+      <details><summary>Vout = Vin × R2/(R1+R2) formülü nasıl uygulanır?</summary><p>Giriş gerilimini toprağa bağlı direnç R2 ile çarpıp iki direncin toplamına bölersiniz. 12 V girişte R1 = 10 kΩ ve R2 = 4,7 kΩ için çıkış 12 × 4,7 ÷ 14,7 = 3,84 V olur.</p></details>
+      <details><summary>5 V'u 3,3 V'a düşürmek için hangi dirençler seçilir?</summary><p>R2'yi R1'in iki katı seçmek çıkışı 3,33 V yapar; örneğin 1 kΩ ve 2 kΩ ya da 10 kΩ ve 20 kΩ. Yaygın değerlerle 1,8 kΩ ve 3,3 kΩ 3,24 V verir. Bu yöntem yalnızca sinyal hattı içindir, besleme için değildir.</p></details>
+      <details><summary>Yük bağlanınca çıkış gerilimi neden değişir?</summary><p>Yük R2'ye paralel bağlanır ve alt kolun eşdeğer direncini küçültür. 10 kΩ / 20 kΩ bölücüye 20 kΩ yük bağlanırsa çıkış 3,33 V'tan 2,5 V'a düşer. Yük direnci R2'nin en az 10 katı olmalıdır.</p></details>
+      <details><summary>Gerilim bölücü güç kaynağı olarak kullanılabilir mi?</summary><p>Hayır. Yük akımı değiştikçe çıkış gerilimi değişir ve yeterli akım için küçük dirençler seçmek büyük güç kaybına yol açar. Devre beslemek için doğrusal regülatör ya da anahtarlamalı dönüştürücü kullanılmalıdır.</p></details>
+      <details><summary>Arduino ile pil voltajı ölçmek için nasıl kullanılır?</summary><p>Pil gerilimini analog girişin sınırının altına indirecek oranda iki direnç seçin. 12,6 V'luk paket için 20 kΩ ve 10 kΩ girişe en fazla 4,2 V verir; okunan değeri 3 ile çarparak pil gerilimini bulursunuz.</p></details>
+      <details><summary>Direnç değerleri büyük mü küçük mü seçilmeli?</summary><p>Oranı belirleyen direnç oranıdır. Küçük dirençler yük ve gürültüden az etkilenir ama fazla akım harcar; büyük dirençler pil dostudur ama yükten kolay etkilenir. Analog girişler için toplam 10–100 kΩ iyi bir başlangıçtır.</p></details>
+      <details><summary>Dirençlerde harcanan güç nasıl hesaplanır?</summary><p>Önce akımı I = Vin ÷ (R1 + R2) ile bulun, sonra her direnç için P = I² × R hesaplayın. Seçtiğiniz direncin güç değeri hesaplanan gücün en az iki katı olmalıdır.</p></details>
+      <details><summary>Standart direnç değerleri ve renk kodları nasıl okunur?</summary><p>Dirençler E12 ve E24 gibi standart serilerden üretilir; hesapladığınız değere en yakın seri değeri seçip sonucu yeniden hesaplayın. Değer gövdedeki renk bantlarından okunur: 10 kΩ kahverengi–siyah–turuncu, 4,7 kΩ sarı–mor–kırmızıdır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; şebeke gerilimi ve yüksek akımlı devrelerde çalışmayı yetkin bir elektrikçiye bırakın; bu yazı düşük gerilimli devreler için genel bilgi verir. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../ohm-kanunu-nedir/"><strong>Ohm Kanunu Nedir? V=I·R Formülü, Akım-Gerilim-Direnç Örnekleri</strong><span>Ohm kanunu: gerilim = akım × direnç (V = I · R). Ohm üçgeni, birimler, seri ve paralel devre, elektriksel güç ve 8. sınıf ile 10. sınıf düzeyinde çözümlü örnekler.</span></a></li>
+          <li><a href="../seri-ve-paralel-direnc-hesaplama/"><strong>Seri ve Paralel Direnç Nasıl Hesaplanır? Eşdeğer Direnç ve Gerilim Bölücü</strong><span>Seri dirençler toplanır (R = R1 + R2), paralel dirençlerde terslerin toplamı alınır (1/R = 1/R1 + 1/R2). Karışık devre, gerilim bölücü ve E12 serisi çözümlü örneklerle.</span></a></li>
+          <li><a href="../direnc-renk-kodlari-nasil-okunur/"><strong>Direnç Renk Kodları Nasıl Okunur? 4 ve 5 Bantlı Direnç Tablosu</strong><span>4 bantlı dirençte ilk iki bant rakam, üçüncü çarpan, dördüncü toleranstır: kahverengi-siyah-kırmızı-altın = 1 kΩ ±%5. Renk tablosu, 5 bantlı okuma ve SMD kodları.</span></a></li>
+          <li><a href="../led-direnci-nasil-hesaplanir/"><strong>LED Direnci Nasıl Hesaplanır? 5V ve 12V İçin Kaç Ohm Direnç Gerekir</strong><span>LED direnci R = (kaynak gerilimi − LED gerilimi) ÷ akım formülüyle bulunur. 5V kırmızı LED için 150 Ω, 12V beyaz LED için 470 Ω; güç hesabı ve seri-paralel bağlantı.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-gerilim-bolucu-devre-nasil-hesaplanir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="../../cerez-politikasi/">Çerez Politikası</a></li><li><a href="../../kullanim-kosullari/">Kullanım Koşulları</a></li><li><a href="../../iletisim/">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
