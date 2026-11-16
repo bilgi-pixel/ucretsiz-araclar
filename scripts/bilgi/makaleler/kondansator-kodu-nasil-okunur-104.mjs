@@ -200,7 +200,7 @@ export default {
     {
       h: "Araçlarla adım adım kondansatör hesabı",
       ol: [
-        "Kondansatörün üzerindeki kodu (ör. 473J) [[arac:kondansator-kodu-coz|Kondansatör Kodu Çözücü]]ye yazın; 47 nF ve ±%5 tolerans aralığı görünür.",
+        "Kondansatörün üzerindeki kodu (ör. 473J) Kondansatör Kodu Çözücüye yazın; 47 nF ve ±%5 tolerans aralığı görünür.",
         "Şemadaki değer farklı birimdeyse [[arac:farad-mikrofarad-cevir|Farad Mikrofarad Çevirici]] ile karşılaştırın.",
         "Elinizdeki parçaları birleştirip hedef değere ulaşmak istiyorsanız seri-paralel aracına değerleri girin.",
         "Yüksek gerilimli bir uygulamada depolanan enerjiyi kontrol edip güvenlik önlemlerinizi buna göre alın."

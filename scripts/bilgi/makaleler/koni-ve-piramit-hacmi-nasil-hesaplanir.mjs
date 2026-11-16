@@ -158,7 +158,7 @@ export default {
         "<strong>Külah:</strong> Ağız çapı 5 cm (r = 2,5 cm), derinliği 10 cm olan bir külahın iç hacmi (1/3) × π × 6,25 × 10 ≈ 65,45 cm³, yani yaklaşık <strong>65 ml</strong>'dir. Üstüne konan top dondurma bu hesaba dahil değildir; yarım küre biçimindeki tepe ayrıca hesaplanır.",
         "<strong>Külah kâğıdı:</strong> Aynı külahın ana doğrusu √(6,25 + 100) ≈ 10,31 cm, yanal alanı π × 2,5 × 10,31 ≈ 80,96 cm²'dir; yapıştırma payı için biraz fazla kâğıt gerekir.",
         "<strong>Kum ya da mıcır yığını:</strong> Taban çapı 4 m (r = 2 m), yüksekliği 1,5 m olan koni biçimli yığının hacmi (1/3) × π × 4 × 1,5 ≈ 6,28 m³'tür.",
-        "<strong>Piramit çatı:</strong> 10 × 10 m tabanlı, 6 m yüksekliğindeki piramit çatı altında kalan hacim (1/3) × 100 × 6 = 200 m³'tür; havalandırma ve ısıtma hesabında bu değer kullanılır."
+        "<strong>Piramit çatı:</strong> 10 × 10 m tabanlı, 6 m yüksekliğindeki piramit çatı altında kalan hacim (1/3) × 100 × 6 = 200 m³'tür; havalandırma ve ısıtma hesabında bu değer kullanılır. Metreküpü litreye çevirme ve depo hacmi örnekleri için [[bilgi:su-deposu-kac-litre-havuz-kac-ton|su deposu kaç litre]] yazısına bakabilirsiniz."
       ]
     },
     {

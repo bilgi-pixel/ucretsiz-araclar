@@ -65,7 +65,7 @@ export default {
       h: "Bölünebilme kuralları nedir, ne işe yarar?",
       p: [
         "Bir doğal sayı başka bir doğal sayıya kalansız bölünüyorsa \"bölünebilir\" deriz. Örneğin 36 sayısı 4'e bölünür, çünkü 36 = 4 × 9 ve kalan 0'dır. Bölünebilme kuralları, bu sonuca uzun bölme yapmadan, yalnızca sayının basamaklarına bakarak ulaşmanın kısa yollarıdır.",
-        "Bu kurallar ortaokul matematiğinin, özellikle 6. sınıfın çarpanlar ve katlar konusunun temelidir; KPSS, ALES, DGS ve YKS'de de sık soru çıkan konulardandır. Günlük hayatta da işe yarar: 144 çikolatayı 6 kişiye eşit bölüp bölemeyeceğinizi ya da bir toplantı salonundaki 252 sandalyeyi 9'lu sıralara dizip dizemeyeceğinizi saniyeler içinde anlarsınız. Kesir sadeleştirme, [[bilgi:ebob-ekok-nasil-bulunur|EBOB-EKOK bulma]] ve [[bilgi:asal-sayilar-nedir|asal sayıları]] ayıklama da bu kurallara dayanır."
+        "Bu kurallar ortaokul matematiğinin, özellikle 6. sınıfın çarpanlar ve katlar konusunun temelidir; KPSS, ALES, DGS ve YKS'de de sık soru çıkan konulardandır. Günlük hayatta da işe yarar: 144 çikolatayı 6 kişiye eşit bölüp bölemeyeceğinizi ya da bir toplantı salonundaki 252 sandalyeyi 9'lu sıralara dizip dizemeyeceğinizi saniyeler içinde anlarsınız. Kesir sadeleştirme ([[bilgi:kesirlerle-islemler|kesirlerle işlemler]]), [[bilgi:ebob-ekok-nasil-bulunur|EBOB-EKOK bulma]] ve [[bilgi:asal-sayilar-nedir|asal sayıları]] ayıklama da bu kurallara dayanır."
       ]
     },
     {

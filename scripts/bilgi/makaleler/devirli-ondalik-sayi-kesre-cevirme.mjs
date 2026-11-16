@@ -180,7 +180,7 @@ export default {
         "Kontrol için sade kesri bölme işlemiyle yeniden ondalığa çevirin; aynı devri görmelisiniz."
       ],
       after: [
-        "Büyük sayılarda [[arac:kesir-sadelestir|Kesir Sadeleştirme]] aracı EBOB'u ve sade kesri birlikte gösterir. Kesirlerle toplama, çıkarma ve bölme için [[bilgi:kesirlerle-islemler|kesirlerle işlemler]] yazısına bakabilirsiniz."
+        "Büyük sayılarda Kesir Sadeleştirme aracı EBOB'u ve sade kesri birlikte gösterir. Kesirlerle toplama, çıkarma ve bölme için [[bilgi:kesirlerle-islemler|kesirlerle işlemler]] yazısına bakabilirsiniz."
       ]
     },
     {

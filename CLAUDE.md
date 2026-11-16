@@ -122,3 +122,5 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
 - `cozunurluk-hesapla` kimyada çözünürlük hesaplıyor; ekran/görüntü çözünürlüğü konularına bağlanmamalı (konu dosyalarında bu eşleşme vardı).
   `pirinc-su-orani-hesapla` basmatiyi 1:1,75 alıyor; "paket oranı esas alınır" notu ekleyin.
 - `palet-yukleme-hesapla`: "İzin verilen yük yüksekliği" alanının palet (14,4 cm) dahil mi hariç mi olduğu yazmıyor; bir kat fark yaratabilir.
+- `satranc-elo-hesapla`: FIDE'nin 400 puan sınırını ve K×n ≤ 700 kuralını uygulamıyor; K=40 seçeneği "18 yaş altı ve 2300 altı" koşulunu
+  belirtmiyor. `masa-kisi-sayisi-hesapla` 180 cm yuvarlak masaya 9 kişi veriyor, salonlarda bu masa "10 kişilik" diye anılır; sayfada açıklayın.

@@ -66,7 +66,7 @@ export default {
         "Başa sarma örneği: Z (28) + 3 = 31; 31 mod 29 = 2, yani Z → C olur."
       ],
       after: [
-        "Çözmek için aynı işlemi tersine yaparsınız: Ö (18) − 3 = 15 → M. Bu işlemi elle yapmak yerine [[arac:sezar-sifreleme|Sezar Şifreleme]] aracında metni yazıp kaydırma değerini seçmeniz yeterlidir; araç hem 29 harfli Türk hem 26 harfli İngiliz alfabesini destekler."
+        "Çözmek için aynı işlemi tersine yaparsınız: Ö (18) − 3 = 15 → M. Bu işlemi elle yapmak yerine Sezar Şifreleme aracında metni yazıp kaydırma değerini seçmeniz yeterlidir; araç hem 29 harfli Türk hem 26 harfli İngiliz alfabesini destekler."
       ]
     },
     {
