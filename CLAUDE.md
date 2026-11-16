@@ -116,3 +116,8 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
 - `et-pisirme-suresi-hesapla`: dana "az pişmiş" 52–55 °C hedefi, gıda güvenliği sınırının (bütün parça 63 °C + 3 dk) altında olduğu
   belirtilmeden gösteriliyor; uyarı ekleyin. `renk-kontrast-hesapla` hazır örneklerinde üçüncü taraf marka adları geçiyor.
   `kopek-mama-miktari-hesapla` varsayılan çarpanı 1,6 (kısırlaştırılmış); "normal" 1,8 olduğu sayfada açık değil.
+- `harc-hesapla/parametreler.json`: 6 aylık pasaport 2806, 2 yıllık 6698 yazıyor; 2026 tutarları 2.806,50 ve 6.698,50 TL (kuruşlar eksik).
+  `ses-donustur` MP3 çıktısı vermiyor (yalnızca WAV ve Opus); sayfa metni buna uygun olmalı. `terleme-orani-hesapla`daki "kaybı tam
+  karşılamak için 15 dakikada bir içilecek miktar" satırı fazla su içmeye yönlendirebilir; hedef, kaybı vücut ağırlığının %2'sinin altında tutmaktır.
+- `cozunurluk-hesapla` kimyada çözünürlük hesaplıyor; ekran/görüntü çözünürlüğü konularına bağlanmamalı (konu dosyalarında bu eşleşme vardı).
+  `pirinc-su-orani-hesapla` basmatiyi 1:1,75 alıyor; "paket oranı esas alınır" notu ekleyin.

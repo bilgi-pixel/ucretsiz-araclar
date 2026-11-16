@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>TC Kimlik Numarası Algoritması: Son İki Hane Kontrolü</title>
+  <meta name="description" content="TC kimlik numarası 11 hanelidir; 10. ve 11. haneler ilk dokuz haneden hesaplanan kontrol haneleridir. Doğrulama kuralları, mod 10, vergi no farkı.">
+  <meta name="keywords" content="tc kimlik algoritması, tc kimlik no nasıl oluşur, tc kimlik son iki hane, tc kimlik doğrulama, tc kimlik neden çift biter, vergi kimlik numarası farkı, 10 haneli vergi no, mod 10 nedir">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/tc-kimlik-numarasi-algoritmasi/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="TC Kimlik Numarası Algoritması: Son İki Hane Kontrolü">
+  <meta property="og:description" content="TC kimlik numarası 11 hanelidir; 10. ve 11. haneler ilk dokuz haneden hesaplanan kontrol haneleridir. Doğrulama kuralları, mod 10, vergi no farkı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/tc-kimlik-numarasi-algoritmasi/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"TC Kimlik Numarası Nasıl Oluşur? 11 Haneli Doğrulama Algoritması ve Vergi No Farkı","description":"TC kimlik numarası 11 hanelidir; 10. ve 11. haneler ilk dokuz haneden hesaplanan kontrol haneleridir. Doğrulama kuralları, mod 10, vergi no farkı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/tc-kimlik-numarasi-algoritmasi/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1502,"keywords":"tc kimlik algoritması, tc kimlik no nasıl oluşur, tc kimlik son iki hane, tc kimlik doğrulama, tc kimlik neden çift biter, vergi kimlik numarası farkı, 10 haneli vergi no, mod 10 nedir","articleSection":"Vergi ve e-Devlet","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Vergi ve e-Devlet","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#vergi"},{"@type":"ListItem","position":4,"name":"TC Kimlik Numarası Nasıl Oluşur? 11 Haneli Doğrulama Algoritması ve Vergi No Farkı"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TC kimlik numarası nasıl oluşur?","acceptedAnswer":{"@type":"Answer","text":"Numara 11 haneden oluşur. İlk dokuz hane kişiyi ayırt eden kısımdır ve NVİ tarafından verilir; 10. ve 11. haneler ise bu dokuz haneden belirli bir kuralla hesaplanan kontrol haneleridir. İlk hane hiçbir zaman sıfır olamaz."}},{"@type":"Question","name":"Son iki hane nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"10. hane için tek sıralı hanelerin toplamı 7 ile çarpılır, çift sıralı hanelerin toplamı çıkarılır ve sonucun mod 10 değeri alınır. 11. hane ise ilk on hanenin toplamının mod 10 değeridir. Bu hesap yazım hatasını yakalamak için kullanılır."}},{"@type":"Question","name":"TC kimlik numarası neden çift sayıyla biter?","acceptedAnswer":{"@type":"Answer","text":"11. hane, matematiksel olarak tek sıralı haneler toplamının 8 katının mod 10 değerine eşit çıkar. Sekizin herhangi bir katı çift olduğu için son hane de her zaman 0, 2, 4, 6 ya da 8 olur; tek rakamla biten numara mutlaka hatalıdır."}},{"@type":"Question","name":"Vergi kimlik numarası ile TC kimlik farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"TC kimlik numarası 11 hanelidir ve gerçek kişilere NVİ tarafından verilir. Vergi kimlik numarası 10 hanelidir, Gelir İdaresi Başkanlığı tarafından verilir ve şirketler gibi tüzel kişilerde kullanılır. İki numaranın kontrol hanesi algoritmaları da birbirinden farklıdır."}},{"@type":"Question","name":"Şahıslar vergi numarası yerine TC kimlik kullanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Gerçek kişilerde T.C. kimlik numarası vergi kimlik numarası yerine geçer; şahıs şirketi sahipleri, serbest meslek erbabı ve kira geliri beyan edenler vergi işlemlerini kimlik numarasıyla yürütür. Faturalarda da bu numara yazılır."}},{"@type":"Question","name":"Algoritma kontrolü kişinin varlığını doğrular mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Kontrol yalnızca rakamların kendi aralarındaki matematiksel ilişkiye bakar ve çok sayıda dizi bu kurallara uyar. Numaranın kime ait olduğunu ya da kişinin var olup olmadığını göstermez; bu bir NVİ sorgusu değildir."}},{"@type":"Question","name":"Formlarda numara doğrulaması nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Karakterler temizlenir, 11 rakam ve sıfır olmayan ilk hane aranır, son hanenin çift olduğu ve iki kontrol hanesinin hesapla tuttuğu denetlenir. Kimlik doğrulaması gereken işlerde ise yetkili kurumların resmî doğrulama hizmeti kullanılmalıdır."}},{"@type":"Question","name":"Mod 10 işlemi nedir?","acceptedAnswer":{"@type":"Answer","text":"Mod 10, bir sayının 10'a bölümünden kalan değerdir ve pozitif sayılarda son basamağa eşittir; örneğin 155 mod 10 sonucu 5'tir. Negatif sayılarda matematiksel kalan 0 ile 9 arasında olacak şekilde 10 eklenerek bulunur."}},{"@type":"Question","name":"TC kimlik doğrulama aracına yazdığım numara kaydediliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Araç tamamen tarayıcınızda çalışır, numarayı hiçbir sunucuya göndermez ve saklamaz. Yalnızca yazım hatası olup olmadığını gösterir; kişi sorgulamaz, numara üretmez ve resmî bir doğrulama yerine geçmez."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#vergi">Vergi ve e-Devlet</a></li></ol><h1>TC Kimlik Numarası Nasıl Oluşur? 11 Haneli Doğrulama Algoritması ve Vergi No Farkı</h1><p class="lead">TC kimlik numarası 11 hanelidir; ilk hane sıfır olamaz, 10. ve 11. haneler ise ilk dokuz haneden belirli bir kuralla hesaplanan <strong>kontrol haneleridir</strong>. Bu kontrol haneleri, numara bir forma yazılırken yapılan yazım ve rakam yer değiştirme hatalarını yakalamak için vardır. Algoritmaya uyan bir numaranın gerçekten birine ait olduğu ya da o kişiye ait olduğu bu kontrolle anlaşılamaz; bu, Nüfus ve Vatandaşlık İşleri (NVİ) sorgusu değildir. Bu sayfada kontrol kurallarını, son hanenin neden hep çift olduğunu ve vergi numarasıyla farkını bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 8 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>TC kimlik numarası 11 haneden oluşur ve ilk hanesi hiçbir zaman 0 değildir.</li>
+        <li>10. hane kontrolü: (1, 3, 5, 7 ve 9. hanelerin toplamı × 7 − 2, 4, 6 ve 8. hanelerin toplamı) mod 10 işleminin sonucu 10. haneye eşit olmalıdır.</li>
+        <li>11. hane kontrolü: ilk 10 hanenin toplamının mod 10 değeri 11. haneye eşit olmalıdır.</li>
+        <li>Bu kurallar nedeniyle 11. hane her zaman çift sayıdır (0, 2, 4, 6 ya da 8).</li>
+        <li>Algoritma kontrolü yalnızca biçimi denetler; numaranın kime ait olduğunu, geçerli olup olmadığını ya da kişinin varlığını göstermez.</li>
+        <li>Gerçek kişilerde TC kimlik numarası vergi kimlik numarası yerine kullanılır; şirketlerin vergi numarası ise 10 hanelidir ve farklı bir algoritmayla denetlenir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="TC kimlik numarasının 11 hanesi kutularda gösteriliyor; tek sıralı haneler bordo, çift sıralı haneler yeşil, 10. ve 11. haneler kontrol hanesi olarak işaretli. Altında 1-2-3-4-5-6-7-8-9 dizisiyle kontrol hesabı." viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">11 hane: 9 veri hanesi + 2 kontrol hanesi</text>
+  <g class="mid">
+    <rect x="22" y="52" width="56" height="56" rx="8" class="ps"/><text x="50" y="88" class="lg b">1</text>
+    <rect x="86" y="52" width="56" height="56" rx="8" class="oks"/><text x="114" y="88" class="lg b">2</text>
+    <rect x="150" y="52" width="56" height="56" rx="8" class="ps"/><text x="178" y="88" class="lg b">3</text>
+    <rect x="214" y="52" width="56" height="56" rx="8" class="oks"/><text x="242" y="88" class="lg b">4</text>
+    <rect x="278" y="52" width="56" height="56" rx="8" class="ps"/><text x="306" y="88" class="lg b">5</text>
+    <rect x="342" y="52" width="56" height="56" rx="8" class="oks"/><text x="370" y="88" class="lg b">6</text>
+    <rect x="406" y="52" width="56" height="56" rx="8" class="ps"/><text x="434" y="88" class="lg b">7</text>
+    <rect x="470" y="52" width="56" height="56" rx="8" class="oks"/><text x="498" y="88" class="lg b">8</text>
+    <rect x="534" y="52" width="56" height="56" rx="8" class="ps"/><text x="562" y="88" class="lg b">9</text>
+    <rect x="598" y="52" width="48" height="56" rx="8" class="p"/><text x="622" y="88" class="lg b sf">5</text>
+    <rect x="652" y="52" width="48" height="56" rx="8" class="p"/><text x="676" y="88" class="lg b sf">0</text>
+  </g>
+  <g class="sm mid mu">
+    <text x="50" y="126">1.</text><text x="114" y="126">2.</text><text x="178" y="126">3.</text><text x="242" y="126">4.</text><text x="306" y="126">5.</text>
+    <text x="370" y="126">6.</text><text x="434" y="126">7.</text><text x="498" y="126">8.</text><text x="562" y="126">9.</text>
+    <text x="622" y="126" class="p b">10.</text><text x="676" y="126" class="p b">11.</text>
+  </g>
+  <rect x="22" y="148" width="330" height="124" rx="10" class="sf sb"/>
+  <text x="38" y="174" class="b">10. hane kontrolü</text>
+  <text x="38" y="200" class="sm">Tek sıralar: 1+3+5+7+9 = 25</text>
+  <text x="38" y="220" class="sm">Çift sıralar: 2+4+6+8 = 20</text>
+  <text x="38" y="242" class="sm">(25 × 7 − 20) = 155 → mod 10 = <tspan class="b p">5</tspan></text>
+  <text x="38" y="262" class="sm ok b">10. hane 5 mi? Evet</text>
+  <rect x="368" y="148" width="332" height="124" rx="10" class="sf sb"/>
+  <text x="384" y="174" class="b">11. hane kontrolü</text>
+  <text x="384" y="200" class="sm">İlk 10 hanenin toplamı:</text>
+  <text x="384" y="220" class="sm">1+2+…+9 + 5 = 50</text>
+  <text x="384" y="242" class="sm">50 mod 10 = <tspan class="b p">0</tspan></text>
+  <text x="384" y="262" class="sm ok b">11. hane 0 mı? Evet</text>
+  <rect x="22" y="290" width="678" height="62" rx="10" class="dgs"/>
+  <text x="38" y="316" class="b">Yazım hatası yakalanır: 7 ile 8 yer değiştirse</text>
+  <text x="38" y="338" class="sm">1234568<tspan class="b">7</tspan>950 → tek sıralar 26, çift 19 → (182 − 19) mod 10 = 3 ≠ 5</text>
+  <rect x="22" y="368" width="678" height="56" rx="10" class="sf sb"/>
+  <rect x="22" y="368" width="8" height="56" class="dg"/>
+  <text x="44" y="392" class="b">Kontrol yalnızca biçimi denetler</text>
+  <text x="44" y="412" class="sm t2">Kime ait olduğunu söylemez · NVİ sorgusu değildir · örnek dizi kurgusaldır</text>
+</svg>
+      <figcaption>Kontrol hesabı, kurgusal 123456789 dizisi üzerinde gösterilmiştir. Bu dizi yalnızca öğretim amaçlıdır; algoritmaya uyması herhangi bir kişiye ait olduğu anlamına gelmez ve hiçbir başvuruda kullanılamaz.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">TC kimlik numarası nedir, nasıl bir yapısı vardır?</a></li>
+      <li><a href="#b2">Doğrulama kuralları: üç basit koşul</a></li>
+      <li><a href="#b3">Mod 10 işlemi nedir?</a></li>
+      <li><a href="#b4">Adım adım kontrol örneği (kurgusal dizi)</a></li>
+      <li><a href="#b5">TC kimlik numarası neden çift sayıyla biter?</a></li>
+      <li><a href="#b6">Algoritma kontrolü kişinin varlığını doğrular mı?</a></li>
+      <li><a href="#b7">Vergi kimlik numarası ile TC kimlik numarası farkı</a></li>
+      <li><a href="#b8">Formlarda numara doğrulaması nasıl yapılmalı?</a></li>
+      <li><a href="#b9">TC Kimlik Doğrula aracı ne yapar, ne yapmaz?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-tc-kimlik-numarasi-algoritmasi-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../tc-kimlik-dogrula/"><strong>TC Kimlik No Algoritma Kontrolü</strong><span>11 haneli TC kimlik numarasının algoritma kurallarına uyup uymadığını kontrol edin; yazım hatasını yakalar. MERNİS/NVİ sorgusu değildir, numaranın kime ait olduğunu söylemez; girdi sayfada kalır.</span></a></li>
+          <li><a href="../../vergi-no-dogrula/"><strong>Vergi Kimlik No Algoritma Kontrolü</strong><span>10 haneli vergi kimlik numarasının (VKN) algoritma kuralına uyup uymadığını tek tek ya da toplu kontrol edin, sonucu CSV indirin. Mükellef sorgusu değildir; girdi sayfada kalır.</span></a></li>
+          <li><a href="../../mod-alma-hesapla/"><strong>Mod Alma (Kalan Bulma) Hesaplama</strong><span>a mod b işlemini yapın: kalan, bölüm ve sağlama; negatif sayılarda yazılım dillerindeki farklı sonuçlarla birlikte.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">TC kimlik numarası nedir, nasıl bir yapısı vardır?</h2>
+      <p>T.C. kimlik numarası, Türkiye Cumhuriyeti vatandaşlarına nüfus kaydıyla birlikte verilen, kişiye özgü ve değişmeyen 11 haneli bir numaradır. Nüfus, sağlık, eğitim, vergi, sosyal güvenlik ve bankacılık işlemlerinin büyük kısmında kişiyi tanımlayan ortak anahtar olarak kullanılır. Numara Merkezi Nüfus İdaresi Sistemi (MERNİS) üzerinden Nüfus ve Vatandaşlık İşleri Genel Müdürlüğü tarafından verilir.</p>
+      <p>Numaranın ilk dokuz hanesi kişiyi ayırt eden kısımdır; bu hanelerin hangi kurala göre dağıtıldığı kamuya açık bir yöntem olarak sunulmaz ve kişinin doğum yeri, yaşı ya da cinsiyeti gibi bilgileri doğrudan taşımaz. Son iki hane ise ilk dokuz haneden hesaplanan <strong>kontrol haneleridir</strong>. Kontrol hanesi fikri, banka hesap numaralarında, IBAN'da ve barkodlarda da kullanılan yaygın bir hata yakalama yöntemidir.</p>
+      <p>Kontrol hanelerinin tek amacı, numara elle yazılırken ya da okunurken yapılan hataları anında fark etmektir. Bir kişinin kimliğini kanıtlamak, numaranın kime ait olduğunu bulmak ya da &quot;gerçek&quot; bir numara elde etmek bu kuralların konusu değildir.</p>
+
+      <h2 id="b2">Doğrulama kuralları: üç basit koşul</h2>
+      <p>Bir numaranın biçim olarak doğru yazılıp yazılmadığını anlamak için üç koşula bakılır. Hepsi sağlanıyorsa numara &quot;algoritmaya uygundur&quot;; biri bile sağlanmıyorsa numarada kesin olarak bir yazım hatası vardır. Haneleri soldan sağa 1'den 11'e kadar numaralandırdığımızı varsayalım.</p>
+      <div class="rh-formula">Koşul 0: numara 11 rakamdan oluşur ve 1. hane 0 değildir<br>Koşul 1: 10. hane = (7 × (h1 + h3 + h5 + h7 + h9) − (h2 + h4 + h6 + h8)) mod 10<br>Koşul 2: 11. hane = (h1 + h2 + … + h10) mod 10</div>
+      <p>Birinci koşulda tek sıralı haneler 7 ile çarpılır, çift sıralı haneler çıkarılır. Bu farklı ağırlıklandırma sayesinde yan yana iki rakamın yer değiştirmesi gibi sık görülen hatalar çoğu zaman yakalanır. İkinci koşul ise ilk on hanenin toplamına dayanan basit bir sağlama işlemidir ve tek bir rakamın yanlış yazılmasını yakalar.</p>
+      <p>Çıkarma işleminin sonucu negatif çıkabileceği için programlamada mod alırken dikkatli olmak gerekir: matematikte −3 mod 10 = 7'dir, ama bazı programlama dillerinde % işleci −3 sonucunu verir. Bu farkı <a href="../../mod-alma-hesapla/">Mod Alma Hesaplama aracı</a> iki sonucu yan yana göstererek açıklar.</p>
+
+      <h2 id="b3">Mod 10 işlemi nedir?</h2>
+      <p>Mod 10, bir sayının 10'a bölümünden kalan demektir; pratikte sayının <strong>son basamağına</strong> eşittir. 155 mod 10 = 5, 50 mod 10 = 0, 182 mod 10 = 2 sonucunu verir. Kontrol haneleri tek basamaklı olmak zorunda olduğu için hesap sonucu her zaman mod 10 ile 0–9 aralığına indirilir.</p>
+      <p>Negatif sonuçlarda matematiksel kalan her zaman 0 ile 9 arasındadır. Örneğin 7 × 10 − 75 = −5 çıksaydı, −5 mod 10 = 5 olurdu, çünkü −5 = 10 × (−1) + 5'tir. Form doğrulama kodu yazanların en sık takıldığı yer burasıdır: dilin % işleci negatif kalan döndürüyorsa sonuca 10 ekleyip yeniden mod almak gerekir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>İşlem</th><th>Matematiksel sonuç</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>155 mod 10</td><td>5</td><td>Son basamak</td></tr>
+          <tr><td>50 mod 10</td><td>0</td><td>Tam bölünür</td></tr>
+          <tr><td>163 mod 10</td><td>3</td><td>Son basamak</td></tr>
+          <tr><td>−5 mod 10</td><td>5</td><td>Negatifte 10 eklenir</td></tr>
+          <tr><td>−23 mod 10</td><td>7</td><td>−23 + 30 = 7</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b4">Adım adım kontrol örneği (kurgusal dizi)</h2>
+      <p>Algoritmanın nasıl çalıştığını göstermek için gerçek kişilerle hiçbir ilgisi olmayan, öğretim amaçlı <strong>1 2 3 4 5 6 7 8 9</strong> dizisini kullanalım. Bu dizi kurgusaldır; aşağıda yalnızca kontrolün hangi adımlarla yapıldığı gösterilmektedir. Bir numaranın algoritmaya uyması, onun bir kişiye ait olduğu ya da herhangi bir işlemde kullanılabileceği anlamına gelmez.</p>
+      <ol class="ba-steps">
+        <li>Tek sıralı haneleri (1, 3, 5, 7, 9. sıradakiler) toplayın: 1 + 3 + 5 + 7 + 9 = 25.</li>
+        <li>Çift sıralı haneleri (2, 4, 6, 8. sıradakiler) toplayın: 2 + 4 + 6 + 8 = 20.</li>
+        <li>Birinci toplamı 7 ile çarpıp ikinci toplamı çıkarın: 25 × 7 − 20 = 155. Sonucun mod 10 değeri 5'tir; demek ki 10. hane 5 olmalıdır.</li>
+        <li>İlk on hanenin toplamını bulun: 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 5 = 50. Mod 10 değeri 0'dır; demek ki 11. hane 0 olmalıdır.</li>
+        <li>Formdaki numaranın 10. ve 11. haneleri bu değerlerle aynıysa numara biçim olarak doğru yazılmıştır; değilse kullanıcıdan numarayı yeniden kontrol etmesini isteyin.</li>
+      </ol>
+      <p>Aynı dizide 7. ve 8. haneler yer değiştirseydi, yani numara 12345687950 diye yanlış yazılsaydı, tek sıralar toplamı 26, çift sıralar toplamı 19 olurdu. 26 × 7 − 19 = 163 ve 163 mod 10 = 3 çıkar; 10. hanede ise 5 yazdığı için kontrol hemen başarısız olur. Kontrol hanelerinin değeri tam olarak budur: dikkatsizlikle yapılan hatayı başvuru gönderilmeden önce yakalamak.</p>
+
+      <h2 id="b5">TC kimlik numarası neden çift sayıyla biter?</h2>
+      <p>Son hanenin her zaman 0, 2, 4, 6 ya da 8 olması tesadüf değildir, iki kuralın birleşiminden matematiksel olarak çıkar. Tek sıralı hanelerin toplamına T, çift sıralı hanelerin toplamına Ç diyelim. 10. hane, mod 10'da 7T − Ç değerine eşittir. 11. hane ise ilk on hanenin toplamıdır: T + Ç + (7T − Ç).</p>
+      <div class="rh-formula">11. hane ≡ T + Ç + (7T − Ç) ≡ 8T (mod 10)</div>
+      <p>8T her zaman çift bir sayıdır ve çift bir sayının 10'a bölümünden kalan da çifttir. Dolayısıyla tek bir rakamla biten bir numara görürseniz, başka hiçbir hesap yapmadan yanlış yazıldığını söyleyebilirsiniz. Bu özellik, kullanıcıya &quot;son hane çift olmalı&quot; gibi hızlı bir ipucu vermek için de kullanılabilir.</p>
+
+      <div class="ba-ad" data-slot="bilgi-tc-kimlik-numarasi-algoritmasi-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Algoritma kontrolü kişinin varlığını doğrular mı?</h2>
+      <p>Hayır. Algoritma kontrolü yalnızca rakamların kendi aralarındaki ilişkiye bakar. On milyonlarca farklı dizi bu kurallara uyar ve bunların hangisinin bir kişiye verildiği, kime ait olduğu ya da kişinin hayatta olup olmadığı bu hesapla bilinemez. Bu yüzden kontrolden geçen bir numara için &quot;geçerli kimlik&quot; değil, en fazla &quot;biçimi doğru&quot; denebilir.</p>
+      <p>Bir kurumun gerçekten kimlik doğrulaması yapması gerekiyorsa, NVİ'nin yetkili kurumlara sunduğu kimlik paylaşım ve doğrulama hizmetlerini kullanması gerekir; bu hizmetlerde numara ad, soyad ve doğum yılı gibi bilgilerle birlikte sorgulanır ve erişim mevzuatla sınırlandırılmıştır. Bireyler kendi kimlik bilgilerini e-Devlet üzerinden görebilir.</p>
+      <div class="rh-note">Uyarı: Başkasına ait kimlik numarasını izinsiz kullanmak, sahte kimlik ya da belge düzenlemek ve kimlik bilgileriyle dolandırıcılık yapmak Türk Ceza Kanunu kapsamında suçtur. Kimlik numarası 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında kişisel veridir; toplanması, saklanması ve paylaşılması hukuki dayanak gerektirir. Bu sayfa ve ilgili araç yalnızca yazım hatalarını yakalamaya yöneliktir; numara üretmez ve sorgulamaz.</div>
+
+      <h2 id="b7">Vergi kimlik numarası ile TC kimlik numarası farkı</h2>
+      <p>Vergi kimlik numarası (VKN), vergi idaresinin mükellefleri tanımlamak için kullandığı numaradır ve <strong>10 hanelidir</strong>. Şirketler, dernekler, vakıflar ve diğer tüzel kişiler 10 haneli VKN kullanır. Gerçek kişiler için ise T.C. kimlik numarası vergi kimlik numarası yerine geçer; şahıs şirketi sahibi, serbest meslek erbabı ya da kira geliri beyan eden biri işlemlerini kimlik numarasıyla yürütür.</p>
+      <p>VKN'nin son hanesi de bir kontrol hanesidir, ancak hesap TC kimlik numarasından farklıdır: ilk dokuz hanenin her birine sıra numarasına bağlı bir ekleme, ikinin kuvvetleriyle çarpma ve mod 9 işlemleri uygulanır, sonuç mod 10 ile tek haneye indirilir. Bu nedenle bir numarayı denetlerken önce hane sayısına bakıp hangi kuralın uygulanacağını seçmek gerekir. Kendi vergi numaranızı nereden öğreneceğinizi <a href="../../bilgi-bankasi/vergi-numarasi-nasil-ogrenilir/">vergi numarası nasıl öğrenilir</a> yazısında bulabilirsiniz.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>T.C. kimlik numarası</th><th>Vergi kimlik numarası (VKN)</th></tr></thead>
+        <tbody>
+          <tr><td>Hane sayısı</td><td>11</td><td>10</td></tr>
+          <tr><td>Kime verilir?</td><td>T.C. vatandaşı gerçek kişiler</td><td>Tüzel kişiler ve bazı gerçek kişiler</td></tr>
+          <tr><td>Veren kurum</td><td>Nüfus ve Vatandaşlık İşleri</td><td>Gelir İdaresi Başkanlığı</td></tr>
+          <tr><td>Kontrol hanesi</td><td>Son iki hane</td><td>Son hane</td></tr>
+          <tr><td>Son hane özelliği</td><td>Her zaman çift</td><td>0–9 arası herhangi bir rakam</td></tr>
+          <tr><td>Faturada kullanım</td><td>Şahıs mükelleflerde VKN yerine</td><td>Şirket faturalarında</td></tr>
+        </tbody>
+      </table></div>
+      <p>Yabancı uyruklu kişilere verilen ve 99 ile başlayan yabancı kimlik numaraları da 11 hanelidir ve aynı kontrol yapısını kullanır. Bu nedenle 99 ile başlayan bir numara algoritma kontrolünden geçebilir; bu da kontrolün kişinin uyruğu ya da durumu hakkında bilgi vermediğini bir kez daha gösterir.</p>
+
+      <h2 id="b8">Formlarda numara doğrulaması nasıl yapılmalı?</h2>
+      <p>Bir başvuru formu, fatura ekranı ya da müşteri kayıt sistemi tasarlıyorsanız kontrol hanesi denetimi kullanıcı deneyimini belirgin biçimde iyileştirir. Yanlış yazılan numarayı form gönderilmeden yakalamak, sonradan yapılacak düzeltmelerden çok daha ucuzdur.</p>
+      <ul>
+        <li>Önce boşluk, tire ve nokta gibi karakterleri temizleyin; ardından tam 11 rakam olup olmadığına bakın.</li>
+        <li>İlk hanenin 0 olmadığını, son hanenin çift olduğunu kontrol edin; bu iki hızlı test birçok hatayı tek başına yakalar.</li>
+        <li>Ardından iki kontrol hanesini hesaplayın ve yazılanla karşılaştırın; negatif sonuçlarda matematiksel mod alın.</li>
+        <li>Hata mesajında &quot;numara geçersiz&quot; yerine &quot;numarayı yazarken bir rakam hatalı olabilir, lütfen kontrol edin&quot; gibi yönlendirici bir ifade kullanın.</li>
+        <li>Kontrolü yalnızca istemci tarafında yapmakla yetinmeyin; sunucuda da tekrarlayın, ama kimlik doğrulaması gerekiyorsa yetkili resmî hizmeti kullanın.</li>
+        <li>Kimlik numarasını gereğinden fazla saklamayın, kayıtlarda maskeleyin ve kişisel veri mevzuatına uygun aydınlatma metni sunun.</li>
+      </ul>
+
+      <h2 id="b9">TC Kimlik Doğrula aracı ne yapar, ne yapmaz?</h2>
+      <p><a href="../../tc-kimlik-dogrula/">TC Kimlik Doğrula aracı</a> yazdığınız 11 haneli numaranın yukarıdaki kurallara uyup uymadığını tarayıcınızda denetler ve hangi koşulun sağlanmadığını tek tek gösterir. Numara hiçbir sunucuya gönderilmez, kaydedilmez ve kimseyle paylaşılmaz.</p>
+      <p>Araç numaranın kime ait olduğunu söylemez, NVİ ya da MERNİS sorgusu yapmaz ve numara üretmez. Amacı, kendi numaranızı ya da müşterinizin size verdiği numarayı bir forma girmeden önce yazım hatası açısından kontrol etmenizdir. 10 haneli şirket vergi numaraları için <a href="../../vergi-no-dogrula/">Vergi No Doğrula aracı</a> aynı mantıkla biçimsel kontrol yapar. Banka hesap numaralarındaki benzer kontrol hanesi mantığı için <a href="../../bilgi-bankasi/iban-nedir-kac-haneli/">IBAN kaç haneli</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>TC kimlik numarası nasıl oluşur?</summary><p>Numara 11 haneden oluşur. İlk dokuz hane kişiyi ayırt eden kısımdır ve NVİ tarafından verilir; 10. ve 11. haneler ise bu dokuz haneden belirli bir kuralla hesaplanan kontrol haneleridir. İlk hane hiçbir zaman sıfır olamaz.</p></details>
+      <details><summary>Son iki hane nasıl hesaplanır?</summary><p>10. hane için tek sıralı hanelerin toplamı 7 ile çarpılır, çift sıralı hanelerin toplamı çıkarılır ve sonucun mod 10 değeri alınır. 11. hane ise ilk on hanenin toplamının mod 10 değeridir. Bu hesap yazım hatasını yakalamak için kullanılır.</p></details>
+      <details><summary>TC kimlik numarası neden çift sayıyla biter?</summary><p>11. hane, matematiksel olarak tek sıralı haneler toplamının 8 katının mod 10 değerine eşit çıkar. Sekizin herhangi bir katı çift olduğu için son hane de her zaman 0, 2, 4, 6 ya da 8 olur; tek rakamla biten numara mutlaka hatalıdır.</p></details>
+      <details><summary>Vergi kimlik numarası ile TC kimlik farkı nedir?</summary><p>TC kimlik numarası 11 hanelidir ve gerçek kişilere NVİ tarafından verilir. Vergi kimlik numarası 10 hanelidir, Gelir İdaresi Başkanlığı tarafından verilir ve şirketler gibi tüzel kişilerde kullanılır. İki numaranın kontrol hanesi algoritmaları da birbirinden farklıdır.</p></details>
+      <details><summary>Şahıslar vergi numarası yerine TC kimlik kullanabilir mi?</summary><p>Evet. Gerçek kişilerde T.C. kimlik numarası vergi kimlik numarası yerine geçer; şahıs şirketi sahipleri, serbest meslek erbabı ve kira geliri beyan edenler vergi işlemlerini kimlik numarasıyla yürütür. Faturalarda da bu numara yazılır.</p></details>
+      <details><summary>Algoritma kontrolü kişinin varlığını doğrular mı?</summary><p>Hayır. Kontrol yalnızca rakamların kendi aralarındaki matematiksel ilişkiye bakar ve çok sayıda dizi bu kurallara uyar. Numaranın kime ait olduğunu ya da kişinin var olup olmadığını göstermez; bu bir NVİ sorgusu değildir.</p></details>
+      <details><summary>Formlarda numara doğrulaması nasıl yapılır?</summary><p>Karakterler temizlenir, 11 rakam ve sıfır olmayan ilk hane aranır, son hanenin çift olduğu ve iki kontrol hanesinin hesapla tuttuğu denetlenir. Kimlik doğrulaması gereken işlerde ise yetkili kurumların resmî doğrulama hizmeti kullanılmalıdır.</p></details>
+      <details><summary>Mod 10 işlemi nedir?</summary><p>Mod 10, bir sayının 10'a bölümünden kalan değerdir ve pozitif sayılarda son basamağa eşittir; örneğin 155 mod 10 sonucu 5'tir. Negatif sayılarda matematiksel kalan 0 ile 9 arasında olacak şekilde 10 eklenerek bulunur.</p></details>
+      <details><summary>TC kimlik doğrulama aracına yazdığım numara kaydediliyor mu?</summary><p>Hayır. Araç tamamen tarayıcınızda çalışır, numarayı hiçbir sunucuya göndermez ve saklamaz. Yalnızca yazım hatası olup olmadığını gösterir; kişi sorgulamaz, numara üretmez ve resmî bir doğrulama yerine geçmez.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; algoritma kontrolü kimlik doğrulaması ya da NVİ sorgusu değildir; başkasına ait kimlik bilgisini izinsiz kullanmak suçtur. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.nvi.gov.tr/" rel="noopener">Nüfus ve Vatandaşlık İşleri Genel Müdürlüğü</a></li>
+        <li><a href="https://www.gib.gov.tr/" rel="noopener">Gelir İdaresi Başkanlığı</a></li>
+        <li><a href="https://www.kvkk.gov.tr/" rel="noopener">Kişisel Verileri Koruma Kurumu</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../vergi-numarasi-nasil-ogrenilir/"><strong>Vergi Numarası Nasıl Öğrenilir? TC Kimlik ile Vergi No ve Doğrulama</strong><span>Şahıslarda TC kimlik numarası vergi numarası yerine geçer. 10 haneli VKN'yi GİB İnteraktif Vergi Dairesi ve e-Devlet'ten öğrenme, şirket sorgulama ve doğrulama.</span></a></li>
+          <li><a href="../iban-nedir-kac-haneli/"><strong>IBAN Nedir, Kaç Haneli? IBAN Nasıl Okunur ve Doğruluğu Nasıl Kontrol Edilir</strong><span>Türkiye'de IBAN 26 karakterdir: TR, 2 kontrol hanesi, 5 haneli banka kodu, 1 rezerv hane ve 16 haneli hesap numarası. IBAN nasıl okunur, mod 97 kontrolü nasıl işler?</span></a></li>
+          <li><a href="../damga-vergisi-nasil-hesaplanir/"><strong>Damga Vergisi Nedir, Nasıl Hesaplanır? Kira, Sözleşme ve Maaş</strong><span>Damga vergisi kâğıttaki tutar × oranla hesaplanır: sözleşmede binde 9,48, kira sözleşmesinde binde 1,89, maaşta binde 7,59. 2026 üst sınırı ve örnekler.</span></a></li>
+          <li><a href="../emlak-vergisi-nasil-hesaplanir/"><strong>Emlak Vergisi Nasıl Hesaplanır? 2026 Oranları ve Ödeme Tarihleri</strong><span>Emlak vergisi = vergi değeri × oran. Konutta binde 1, büyükşehirde binde 2; işyeri, arsa ve arazi oranları, Mayıs ve Kasım taksitleri, emekli muafiyeti ve örnek.</span></a></li>
+          <li><a href="../ev-satisi-deger-artis-kazanci-vergisi/"><strong>Ev Satarken Vergi Ödenir mi? Değer Artış Kazancı Vergisi ve 5 Yıl Kuralı</strong><span>Satın aldığınız evi 5 yıl dolmadan satarsanız kazanç değer artış kazancı sayılır. Yİ-ÜFE endekslemesi, 2026 istisnası 150.000 TL, beyan ve örnek hesap.</span></a></li>
+          <li><a href="../gelir-vergisi-dilimleri-2026/"><strong>Gelir Vergisi Dilimleri 2026: Vergi Dilimi Nasıl Hesaplanır?</strong><span>2026 gelir vergisi dilimleri %15, %20, %27, %35 ve %40'tır; ilk dilim 190.000 TL. Ücret ve ücret dışı tarife, kümülatif matrah ve maaş örneğiyle hesap.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-tc-kimlik-numarasi-algoritmasi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

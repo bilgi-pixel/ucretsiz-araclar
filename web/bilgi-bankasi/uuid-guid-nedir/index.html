@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>UUID (GUID) Nedir? v4 ve v7 Farkı, Çakışma İhtimali</title>
+  <meta name="description" content="UUID, 128 bitlik ve 36 karakterlik evrensel benzersiz kimliktir. GUID ile farkı, 8-4-4-4-12 yapısı, v4 ve v7 sürümleri, çakışma olasılığı ve veritabanında kullanımı.">
+  <meta name="keywords" content="uuid nedir, guid nedir, uuid v4, uuid v7, uuid oluşturma, uuid çakışır mı, uuid kaç karakter, uuid ile id farkı">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/uuid-guid-nedir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="UUID (GUID) Nedir? v4 ve v7 Farkı, Çakışma İhtimali">
+  <meta property="og:description" content="UUID, 128 bitlik ve 36 karakterlik evrensel benzersiz kimliktir. GUID ile farkı, 8-4-4-4-12 yapısı, v4 ve v7 sürümleri, çakışma olasılığı ve veritabanında kullanımı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/uuid-guid-nedir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"UUID (GUID) Nedir? UUID v4 Nasıl Üretilir, Çakışma İhtimali Ne Kadar","description":"UUID, 128 bitlik ve 36 karakterlik evrensel benzersiz kimliktir. GUID ile farkı, 8-4-4-4-12 yapısı, v4 ve v7 sürümleri, çakışma olasılığı ve veritabanında kullanımı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/uuid-guid-nedir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1259,"keywords":"uuid nedir, guid nedir, uuid v4, uuid v7, uuid oluşturma, uuid çakışır mı, uuid kaç karakter, uuid ile id farkı","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"UUID (GUID) Nedir? UUID v4 Nasıl Üretilir, Çakışma İhtimali Ne Kadar"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"UUID nedir?","acceptedAnswer":{"@type":"Answer","text":"UUID, evrensel benzersiz kimlik anlamına gelen 128 bitlik bir tanımlayıcıdır. Merkezî bir sayaca ihtiyaç duymadan her cihazda üretilebilir ve 8-4-4-4-12 düzeninde 36 karakterlik onaltılık bir dizgi olarak yazılır."}},{"@type":"Question","name":"GUID ile UUID aynı şey mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. GUID, aynı 128 bitlik biçimin Windows ve .NET ortamındaki adıdır. Genellikle büyük harfle ve süslü parantez içinde gösterilir ama içerdiği değer standart bir UUID ile birebir aynıdır."}},{"@type":"Question","name":"UUID v4 ve v7 arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"v4'te sürüm ve varyant dışındaki 122 bitin tamamı rastgeledir ve değer hiçbir bilgi taşımaz. v7'nin ilk 48 biti milisaniye cinsinden zaman damgasıdır; bu nedenle v7 kimlikleri üretim sırasına göre sıralanır ve veritabanı dizinlerinde daha verimlidir."}},{"@type":"Question","name":"İki UUID'nin çakışma ihtimali ne kadardır?","acceptedAnswer":{"@type":"Answer","text":"UUID v4 için yüzde 50 çakışma olasılığına ulaşmak yaklaşık 2,7 × 10^18 kimlik üretmeyi gerektirir. Bir trilyon UUID üretildiğinde bile olasılık yaklaşık 10^−13 düzeyindedir. Gerçek çakışmalar genellikle hatalı rastgele sayı üretecinden kaynaklanır."}},{"@type":"Question","name":"UUID kaç karakterdir?","acceptedAnswer":{"@type":"Answer","text":"Standart gösterimde UUID 36 karakterdir: 32 onaltılık rakam ve 4 tire. Tiresiz yazıldığında 32, süslü parantezli GUID biçiminde 38 karakter olur. İkili olarak saklandığında 16 bayt yer kaplar."}},{"@type":"Question","name":"Veritabanında UUID mi otomatik artan ID mi kullanılmalı?","acceptedAnswer":{"@type":"Answer","text":"Tek sunuculu küçük sistemlerde otomatik artan ID daha küçük ve hızlıdır. Birden çok sunucu, çevrimdışı kayıt ya da veritabanı birleştirme söz konusuysa UUID gerekir; bu durumda dizin performansı için v7 tercih edilir."}},{"@type":"Question","name":"UUID nasıl üretilir?","acceptedAnswer":{"@type":"Answer","text":"Programlama dillerinin standart kütüphaneleri ve tarayıcılar UUID üretebilir. Kod yazmadan üretmek için bir UUID oluşturucu aracında sürümü (v4 ya da v7), adedi ve biçimi seçip değerleri kopyalamanız yeterlidir."}},{"@type":"Question","name":"UUID ile hash arasındaki fark nedir?","acceptedAnswer":{"@type":"Answer","text":"Hash, aynı veriden her zaman aynı sonucu üreten bir parmak izidir ve bütünlük kontrolüne yarar. UUID v4 ise girdiden bağımsız, her seferinde yeni üretilen bir kimliktir. Yalnızca v3 ve v5 sürümleri bir adın özetinden UUID üretir."}},{"@type":"Question","name":"UUID'nin sürümü nasıl anlaşılır?","acceptedAnswer":{"@type":"Answer","text":"Üçüncü grubun ilk rakamı sürümü gösterir. Örneğin 9a4d-4c7b biçiminde üçüncü grup 4 ile başlıyorsa UUID v4, 7 ile başlıyorsa v7'dir. Dördüncü grubun ilk rakamı standart UUID'lerde 8, 9, a ya da b olur."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>UUID (GUID) Nedir? UUID v4 Nasıl Üretilir, Çakışma İhtimali Ne Kadar</h1><p class="lead">UUID (Universally Unique Identifier, evrensel benzersiz kimlik), merkezî bir kayıt yetkilisine sormadan her bilgisayarın kendi başına üretebildiği <strong>128 bitlik bir kimlik numarasıdır</strong>; 32 onaltılık rakam ve 4 tireyle 36 karakter olarak yazılır. GUID, aynı şeyin Windows dünyasındaki adıdır. En yaygın sürüm olan UUID v4'te 122 bit rastgeledir; iki tanesinin çakışması pratikte imkânsıza yakındır. Bu sayfada UUID'nin yapısını, sürümlerini, çakışma hesabını ve veritabanında ne zaman tercih edilmesi gerektiğini bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>UUID 128 bittir; 8-4-4-4-12 düzeninde 32 onaltılık rakam ve 4 tire ile toplam 36 karakter yazılır.</li>
+        <li>GUID ile UUID aynı biçimdir; GUID adı Windows ve bazı yazılım ortamlarında kullanılır.</li>
+        <li>Sürüm, üçüncü grubun ilk rakamındadır: ...-4xxx-... v4 (rastgele), ...-7xxx-... v7 (zaman sıralı) demektir.</li>
+        <li>UUID v4'te 122 bit rastgeledir; 2<sup>122</sup> ≈ 5,3 × 10<sup>36</sup> farklı değer olabilir.</li>
+        <li>Yüzde 50 çakışma olasılığı için yaklaşık 2,7 × 10<sup>18</sup> adet v4 UUID üretmek gerekir.</li>
+        <li>Güncel standart RFC 9562'dir (2024); eski RFC 4122'nin yerini almış ve v6, v7, v8 sürümlerini eklemiştir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Bir UUID'nin 8-4-4-4-12 karakterlik beş gruba ayrılmış şeması; üçüncü grubun ilk rakamı sürümü (4), dördüncü grubun ilk rakamı varyantı gösteriyor. Altta v4 ile v7'nin bit dağılımı karşılaştırılıyor." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">UUID'nin yapısı: 8-4-4-4-12</text>
+  <g class="mid">
+    <rect x="20" y="52" width="196" height="50" rx="6" class="sf sb"/><text x="118" y="84" class="lg b">3f2b8c1e</text>
+    <rect x="226" y="52" width="104" height="50" rx="6" class="sf sb"/><text x="278" y="84" class="lg b">9a4d</text>
+    <rect x="340" y="52" width="104" height="50" rx="6" class="ps"/><text x="392" y="84" class="lg b"><tspan class="p">4</tspan>c7b</text>
+    <rect x="454" y="52" width="104" height="50" rx="6" class="oks"/><text x="506" y="84" class="lg b"><tspan class="ok">b</tspan>2e1</text>
+    <rect x="568" y="52" width="132" height="50" rx="6" class="sf sb"/><text x="634" y="84" class="b">5d6f7a8b9c0d</text>
+  </g>
+  <g class="sm mid t2">
+    <text x="118" y="122">8 karakter</text><text x="278" y="122">4</text><text x="392" y="122">4</text><text x="506" y="122">4</text><text x="634" y="122">12 karakter</text>
+  </g>
+  <text x="392" y="150" class="sm mid p b">sürüm = 4</text>
+  <text x="506" y="150" class="sm mid ok b">varyant: 8, 9, a, b</text>
+  <text x="360" y="182" class="mid">32 onaltılık rakam × 4 bit = 128 bit · 4 tireyle 36 karakter</text>
+  <line x1="20" y1="200" x2="700" y2="200" class="sb dash" fill="none"/>
+  <text x="20" y="232" class="b">v4: rastgele</text>
+  <rect x="20" y="244" width="680" height="40" rx="6" class="ps"/>
+  <rect x="340" y="244" width="22" height="40" class="p"/><rect x="454" y="244" width="12" height="40" class="ok"/>
+  <text x="180" y="270" class="sm mid">rastgele bitler</text><text x="580" y="270" class="sm mid">rastgele bitler</text>
+  <text x="700" y="304" class="sm end mu">122 bit rastgele + 4 bit sürüm + 2 bit varyant</text>
+  <text x="20" y="336" class="b">v7: zaman + rastgele</text>
+  <rect x="20" y="348" width="680" height="40" rx="6" class="ps"/>
+  <rect x="20" y="348" width="306" height="40" rx="6" class="a"/>
+  <rect x="340" y="348" width="22" height="40" class="p"/><rect x="454" y="348" width="12" height="40" class="ok"/>
+  <text x="173" y="374" class="sm mid b">48 bit Unix zamanı (ms)</text><text x="580" y="374" class="sm mid">74 bit rastgele</text>
+  <text x="700" y="408" class="sm end mu">Ardışık üretilen v7 kimlikleri alfabetik olarak da sıralıdır</text>
+</svg>
+      <figcaption>UUID'nin 128 bitinin 6'sı sabittir: 4 bit sürüm, 2 bit varyant. v4'te kalan 122 bitin tamamı rastgeledir; v7'de ilk 48 bit milisaniye cinsinden zaman damgası olduğu için kimlikler üretim sırasına göre dizilir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">UUID nedir, neden ihtiyaç duyulur?</a></li>
+      <li><a href="#b2">GUID ile UUID aynı şey mi?</a></li>
+      <li><a href="#b3">UUID sürümleri: v1, v4, v7 ve diğerleri</a></li>
+      <li><a href="#b4">UUID v4 ile v7 arasındaki fark nedir?</a></li>
+      <li><a href="#b5">İki UUID'nin çakışma ihtimali ne kadar?</a></li>
+      <li><a href="#b6">UUID kaç karakterdir, nasıl doğrulanır?</a></li>
+      <li><a href="#b7">Veritabanında UUID mi, otomatik artan ID mi?</a></li>
+      <li><a href="#b8">UUID ile hash arasındaki fark nedir?</a></li>
+      <li><a href="#b9">UUID nasıl üretilir? Adım adım</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-uuid-guid-nedir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../uuid-uret/"><strong>UUID Oluşturucu (GUID)</strong><span>Sürüm 4 ve sürüm 7 UUID / GUID’leri tek tek ya da 1000 adede kadar toplu üretin; büyük harf, tiresiz, süslü parantez biçimleri ve doğrulama.</span></a></li>
+          <li><a href="../../sifre-uret/"><strong>Güçlü Şifre Üretici</strong><span>Rastgele karakter, Türkçe kelime parolası veya PIN üretin. Entropi ve kırılma süresi tahmini. Tamamen tarayıcıda çalışır, hiçbir şey sunucuya gitmez.</span></a></li>
+          <li><a href="../../metin-sha256-hesapla/"><strong>Metin SHA-256 Özeti Hesaplama</strong><span>Metnin SHA-256 özetini onaltılık ve Base64 olarak hesaplayın; beklenen özetle karşılaştırın. Metin tarayıcıdan çıkmaz.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">UUID nedir, neden ihtiyaç duyulur?</h2>
+      <p>Bir kaydı tanımlamanın en bilinen yolu sıra numarasıdır: 1, 2, 3… Ancak sıra numarası tek bir merkezin sayıyı tutmasını gerektirir. Aynı anda çalışan on sunucu, çevrimdışı kayıt alan bir mobil uygulama ya da birleştirilecek iki ayrı veritabanı varsa &quot;sıradaki numara kaç?&quot; sorusu sorun olur; iki taraf aynı numarayı verebilir.</p>
+      <p>UUID bu sorunu ortadan kaldırmak için tasarlanmıştır. Her cihaz, kimseye sormadan kendi kimliğini üretir ve üretilen değerin dünyadaki başka bir kimlikle çakışmayacağı olasılık hesabıyla güvence altındadır. Sipariş numaraları, dosya adları, oturum kimlikleri, mesaj kuyruğundaki iletiler, veritabanı birincil anahtarları ve cihaz kimlikleri UUID'nin tipik kullanım alanlarıdır.</p>
+      <p>Standart, ilk olarak 2005'te RFC 4122 olarak yayımlandı. Mayıs 2024'te yayımlanan <strong>RFC 9562</strong> bu belgenin yerini aldı; eski sürümleri korurken zaman sıralı yeni sürümler (v6 ve v7) ile serbest biçimli v8'i ekledi.</p>
+
+      <h2 id="b2">GUID ile UUID aynı şey mi?</h2>
+      <p>Evet, pratikte aynıdır. GUID (Globally Unique Identifier) adı Windows, kayıt defteri, COM bileşenleri ve .NET ortamında kullanılır; biçim ve uzunluk UUID ile birebir aynıdır. Kayıt defterinde ya da bir hata iletisinde gördüğünüz <code>{3F2B8C1E-9A4D-4C7B-B2E1-5D6F7A8B9C0D}</code> gibi süslü parantezli, büyük harfli değer bir UUID'dir.</p>
+      <p>Görünüşteki farklar yalnızca yazım tercihidir. Standart küçük harfle yazmayı önerir ama okurken büyük ve küçük harf eşit kabul edilir. Bazı sistemler tireleri kaldırır (32 karakter), bazıları süslü parantez ekler (38 karakter). Bu biçimler birbirine dönüştürülebilir; içerdikleri 128 bitlik değer değişmez.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Biçim</th><th>Örnek</th><th>Uzunluk</th></tr></thead>
+        <tbody>
+          <tr><td>Standart</td><td><code>3f2b8c1e-9a4d-4c7b-b2e1-5d6f7a8b9c0d</code></td><td>36 karakter</td></tr>
+          <tr><td>Tiresiz</td><td><code>3f2b8c1e9a4d4c7bb2e15d6f7a8b9c0d</code></td><td>32 karakter</td></tr>
+          <tr><td>Süslü parantezli (GUID)</td><td><code>{3F2B8C1E-9A4D-4C7B-B2E1-5D6F7A8B9C0D}</code></td><td>38 karakter</td></tr>
+          <tr><td>URN</td><td><code>urn:uuid:3f2b8c1e-9a4d-...</code></td><td>45 karakter</td></tr>
+          <tr><td>İkili (veritabanı)</td><td>16 bayt</td><td>16 bayt</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Metin olarak saklanan UUID 36 bayt yer kaplar; ikili sütunda 16 bayta iner. Büyük tablolarda bu fark dizin boyutunu belirgin biçimde etkiler.</p>
+
+      <h2 id="b3">UUID sürümleri: v1, v4, v7 ve diğerleri</h2>
+      <p>Bir UUID'nin hangi yöntemle üretildiğini anlamak için üçüncü grubun ilk rakamına bakmanız yeterlidir. Dördüncü grubun ilk rakamı ise varyantı gösterir; standart UUID'lerde bu rakam 8, 9, a ya da b'dir. Sürümler birbirinin yerine geçen nesiller değil, farklı ihtiyaçlar için tanımlanmış yöntemlerdir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sürüm</th><th>Nasıl üretilir</th><th>Tipik kullanım</th></tr></thead>
+        <tbody>
+          <tr><td>v1</td><td>Zaman damgası + cihazın ağ (MAC) adresi</td><td>Eski sistemler; cihaz adresini açığa çıkarabilir</td></tr>
+          <tr><td>v3</td><td>Ad alanı + ad, MD5 özeti</td><td>Aynı addan hep aynı UUID'yi üretmek</td></tr>
+          <tr><td>v4</td><td>122 bit rastgele sayı</td><td>Genel amaçlı kimlik; en yaygın sürüm</td></tr>
+          <tr><td>v5</td><td>Ad alanı + ad, SHA-1 özeti</td><td>v3'ün önerilen yerine geçeni</td></tr>
+          <tr><td>v6</td><td>v1'in sıralanabilir düzene sokulmuş hâli</td><td>v1 kullanan sistemlerin geçişi</td></tr>
+          <tr><td>v7</td><td>48 bit Unix zamanı (ms) + rastgele bitler</td><td>Veritabanı birincil anahtarı, olay kayıtları</td></tr>
+          <tr><td>v8</td><td>Üreticiye özel düzen</td><td>Deneysel ya da kuruma özgü kimlikler</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Ayrıca tüm bitleri sıfır olan &quot;nil&quot; UUID (00000000-0000-0000-0000-000000000000) ve RFC 9562 ile tanımlanan, tüm bitleri bir olan &quot;max&quot; UUID (ffffffff-ffff-ffff-ffff-ffffffffffff) özel değerlerdir.</p>
+
+      <h2 id="b4">UUID v4 ile v7 arasındaki fark nedir?</h2>
+      <p><strong>v4</strong> tamamen rastgeledir. 128 bitin 6'sı sürüm ve varyant için ayrılır, kalan 122 bit güvenli bir rastgele sayı üretecinden gelir. Değer hiçbir bilgi taşımaz: ne zaman, nerede ya da hangi cihazda üretildiği anlaşılmaz. Bu, gizlilik açısından avantajdır.</p>
+      <p><strong>v7</strong> ise ilk 48 bitine Unix zamanını (1 Ocak 1970'ten bu yana geçen milisaniye) yazar, kalan 74 biti rastgele doldurur. Sonuç olarak sonradan üretilen kimlik, öncekinden alfabetik olarak da büyüktür. Örneğin <code>01a1de6f-5280-7c3a-9f31-6c2e8b1a0f47</code> değerinin ilk 12 onaltılık rakamı (<code>01a1de6f5280</code>) 15 Kasım 2026 saat 09.00'u (UTC) gösterir.</p>
+      <p>Bu sıralanabilirlik veritabanları için önemlidir. Rastgele v4 anahtarlar dizinin her yerine dağılarak yazma performansını düşürür ve dizini parçalar; v7 anahtarlar ise hep sona eklendiği için sıra numarasına yakın bir verim sağlar. Buna karşılık v7, kaydın oluşturulma zamanını açığa vurur. Zamanın bilinmesinin sakıncalı olduğu durumlarda (örneğin bir müşteri kimliğinin herkese açık bağlantıda görünmesi) v4 daha uygundur.</p>
+
+      <h2 id="b5">İki UUID'nin çakışma ihtimali ne kadar?</h2>
+      <p>Çakışma olasılığı &quot;doğum günü problemi&quot; ile hesaplanır: 23 kişilik bir sınıfta iki kişinin aynı gün doğmuş olma ihtimalinin yüzde 50'yi geçmesi gibi, kimlik sayısı arttıkça herhangi iki tanesinin eşleşme ihtimali hızla büyür. Ancak UUID v4'te olası değer sayısı N = 2<sup>122</sup> olduğu için bu büyüme astronomik sayılara kadar önemsiz kalır.</p>
+      <div class="rh-formula">Çakışma olasılığı p ≈ 1 − e^(−n² ÷ 2N)<br>N = 2^122 ≈ 5,32 × 10^36 (v4 için olası değer sayısı)<br>p = %50 için n ≈ √(2N × ln 2) ≈ 2,71 × 10^18 UUID</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Üretilen UUID v4 sayısı</th><th>En az bir çakışma olasılığı</th></tr></thead>
+        <tbody>
+          <tr><td>1 milyar (10<sup>9</sup>)</td><td>yaklaşık 10<sup>−19</sup>, pratikte sıfır</td></tr>
+          <tr><td>1 trilyon (10<sup>12</sup>)</td><td>yaklaşık 9,4 × 10<sup>−14</sup></td></tr>
+          <tr><td>1 katrilyon (10<sup>15</sup>)</td><td>yaklaşık 9,4 × 10<sup>−8</sup> (on milyonda bir)</td></tr>
+          <tr><td>2,71 × 10<sup>18</sup></td><td>yaklaşık %50</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Örnek: Saniyede 1 milyar UUID üretseniz yüzde 50 çakışma olasılığına ulaşmanız yaklaşık 86 yıl sürer.</p>
+      <p>Bu hesap, rastgele sayıların gerçekten rastgele olmasına dayanır. Gerçek hayatta görülen çakışmaların neredeyse tamamı matematikten değil hatalı yazılımdan kaynaklanır: aynı başlangıç değeriyle çalışan zayıf bir rastgele sayı üreteci, kopyalanan sanal makineler ya da test için elle yazılmış sabit bir UUID gibi. Bu yüzden UUID'yi her zaman işletim sisteminin ya da tarayıcının kriptografik üretecini kullanan bir araçla üretin. Veritabanında yine de benzersizlik kısıtı (unique) tanımlamak, olası bir yazılım hatasını sessiz veri bozulması yerine anlaşılır bir hataya dönüştürür.</p>
+
+      <div class="ba-ad" data-slot="bilgi-uuid-guid-nedir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">UUID kaç karakterdir, nasıl doğrulanır?</h2>
+      <p>Standart metin gösteriminde UUID tam <strong>36 karakterdir</strong>: 32 onaltılık rakam (0–9 ve a–f) ve 8., 13., 18. ve 23. karakterlerden sonra gelen dört tire. Her onaltılık rakam 4 bit taşıdığı için 32 × 4 = 128 bit eder; ikili olarak saklandığında 16 bayt yer kaplar.</p>
+      <p>Bir değerin geçerli UUID olup olmadığını anlamak için şu kontrolleri yapın: uzunluk 36 mı, tireler doğru yerde mi, karakterlerin hepsi onaltılık mı, üçüncü grubun ilk rakamı 1–8 arasında bir sürüm mü ve dördüncü grubun ilk rakamı 8, 9, a, b'den biri mi? Bu kuralları geçen bir değer biçim olarak geçerlidir; ancak gerçekten benzersiz üretilip üretilmediğini biçim söyleyemez.</p>
+
+      <h2 id="b7">Veritabanında UUID mi, otomatik artan ID mi?</h2>
+      <p>İkisinin de yeri vardır. Karar verirken sisteminizin nasıl büyüyeceğini ve kimliklerin dışarıya görünüp görünmeyeceğini düşünün.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Ölçüt</th><th>Otomatik artan ID</th><th>UUID v4</th><th>UUID v7</th></tr></thead>
+        <tbody>
+          <tr><td>Boyut</td><td>4–8 bayt</td><td>16 bayt</td><td>16 bayt</td></tr>
+          <tr><td>Merkezî sayaç gerekir mi?</td><td>Evet</td><td>Hayır</td><td>Hayır</td></tr>
+          <tr><td>Tahmin edilebilir mi?</td><td>Evet (1, 2, 3…)</td><td>Hayır</td><td>Zamanı tahmin edilebilir</td></tr>
+          <tr><td>Dizin performansı</td><td>Çok iyi</td><td>Büyük tablolarda zayıf</td><td>İyi</td></tr>
+          <tr><td>Sistem birleştirme</td><td>Çakışma riski</td><td>Sorunsuz</td><td>Sorunsuz</td></tr>
+          <tr><td>Okunabilirlik</td><td>Kolay (&quot;sipariş 1042&quot;)</td><td>Zor</td><td>Zor</td></tr>
+        </tbody>
+      </table></div>
+      <p>Tek sunuculu, küçük bir uygulamada otomatik artan sayı yeterli ve verimlidir. Kimlik bir bağlantıda görünecekse (örneğin bir fatura görüntüleme adresi) sıralı sayı başkalarının kayıtlarını tahmin etmeyi kolaylaştırır; UUID bu tahmini engeller ama tek başına bir güvenlik önlemi değildir, yetki kontrolünün yerini tutmaz. Dağıtık sistemlerde ve çevrimdışı çalışan uygulamalarda v7, sıralanabilirlik avantajıyla birlikte en dengeli seçenektir.</p>
+
+      <h2 id="b8">UUID ile hash arasındaki fark nedir?</h2>
+      <p>UUID ve hash (özet) ikisi de onaltılık rakamlardan oluşan uzun dizgiler olarak görünür ama amaçları farklıdır. Hash, bir verinin parmak izidir: aynı girdi her zaman aynı çıktıyı verir ve verinin değişip değişmediğini anlamaya yarar. UUID v4 ise girdiden bağımsızdır; her üretimde yeni bir değer çıkar.</p>
+      <p>Kesişim noktası v3 ve v5 sürümleridir. Bunlar bir ad alanı ile bir adı (örneğin bir alan adını) MD5 ya da SHA-1 ile özetleyip sonucu UUID biçimine sokar; böylece aynı ad her seferinde aynı UUID'yi verir. Bir dosyanın bütünlüğünü doğrulamak istiyorsanız UUID değil hash kullanmalısınız; bu konunun ayrıntısı <a href="../../bilgi-bankasi/hash-nedir-sha256-md5/">SHA-256 ve MD5 rehberinde</a> anlatılıyor. Metnin SHA-256 özetini görmek için <a href="../../metin-sha256-hesapla/">Metin SHA-256 Özeti Hesaplama</a> aracını kullanabilirsiniz.</p>
+
+      <h2 id="b9">UUID nasıl üretilir? Adım adım</h2>
+      <ol class="ba-steps">
+        <li><a href="../../uuid-uret/">UUID Oluşturucu</a> sayfasını açın ve sürümü seçin: genel kullanım için v4, veritabanı anahtarı için v7.</li>
+        <li>Kaç adet gerektiğini yazın; test verisi için toplu üretim (1.000 adede kadar) yapabilirsiniz.</li>
+        <li>Hedef sistemin beklediği biçimi seçin: küçük harf standart, büyük harf ve süslü parantez GUID biçimi, tiresiz 32 karakter.</li>
+        <li>Elinizdeki bir değerin geçerliliğini sınamak için doğrulama alanına yapıştırın; sürüm ve varyant bilgisini görün.</li>
+        <li>Üretilen değerleri kopyalayın; araç tarayıcının kriptografik rastgele sayı üretecini kullanır, değerler bir sunucuya gönderilmez.</li>
+      </ol>
+      <p>UUID bir parola değildir; tahmin edilmesi zor olsa da gizli tutulmak üzere tasarlanmamıştır ve kayıtlarda, adres çubuğunda görünür. Gizli bir anahtar ya da güçlü parola gerekiyorsa <a href="../../sifre-uret/">Güçlü Şifre Üretici</a> daha uygundur. Onaltılık rakamların ikili karşılığını merak ediyorsanız <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> yazısı her rakamın neden 4 bit taşıdığını gösterir.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>UUID nedir?</summary><p>UUID, evrensel benzersiz kimlik anlamına gelen 128 bitlik bir tanımlayıcıdır. Merkezî bir sayaca ihtiyaç duymadan her cihazda üretilebilir ve 8-4-4-4-12 düzeninde 36 karakterlik onaltılık bir dizgi olarak yazılır.</p></details>
+      <details><summary>GUID ile UUID aynı şey mi?</summary><p>Evet. GUID, aynı 128 bitlik biçimin Windows ve .NET ortamındaki adıdır. Genellikle büyük harfle ve süslü parantez içinde gösterilir ama içerdiği değer standart bir UUID ile birebir aynıdır.</p></details>
+      <details><summary>UUID v4 ve v7 arasındaki fark nedir?</summary><p>v4'te sürüm ve varyant dışındaki 122 bitin tamamı rastgeledir ve değer hiçbir bilgi taşımaz. v7'nin ilk 48 biti milisaniye cinsinden zaman damgasıdır; bu nedenle v7 kimlikleri üretim sırasına göre sıralanır ve veritabanı dizinlerinde daha verimlidir.</p></details>
+      <details><summary>İki UUID'nin çakışma ihtimali ne kadardır?</summary><p>UUID v4 için yüzde 50 çakışma olasılığına ulaşmak yaklaşık 2,7 × 10^18 kimlik üretmeyi gerektirir. Bir trilyon UUID üretildiğinde bile olasılık yaklaşık 10^−13 düzeyindedir. Gerçek çakışmalar genellikle hatalı rastgele sayı üretecinden kaynaklanır.</p></details>
+      <details><summary>UUID kaç karakterdir?</summary><p>Standart gösterimde UUID 36 karakterdir: 32 onaltılık rakam ve 4 tire. Tiresiz yazıldığında 32, süslü parantezli GUID biçiminde 38 karakter olur. İkili olarak saklandığında 16 bayt yer kaplar.</p></details>
+      <details><summary>Veritabanında UUID mi otomatik artan ID mi kullanılmalı?</summary><p>Tek sunuculu küçük sistemlerde otomatik artan ID daha küçük ve hızlıdır. Birden çok sunucu, çevrimdışı kayıt ya da veritabanı birleştirme söz konusuysa UUID gerekir; bu durumda dizin performansı için v7 tercih edilir.</p></details>
+      <details><summary>UUID nasıl üretilir?</summary><p>Programlama dillerinin standart kütüphaneleri ve tarayıcılar UUID üretebilir. Kod yazmadan üretmek için bir UUID oluşturucu aracında sürümü (v4 ya da v7), adedi ve biçimi seçip değerleri kopyalamanız yeterlidir.</p></details>
+      <details><summary>UUID ile hash arasındaki fark nedir?</summary><p>Hash, aynı veriden her zaman aynı sonucu üreten bir parmak izidir ve bütünlük kontrolüne yarar. UUID v4 ise girdiden bağımsız, her seferinde yeni üretilen bir kimliktir. Yalnızca v3 ve v5 sürümleri bir adın özetinden UUID üretir.</p></details>
+      <details><summary>UUID'nin sürümü nasıl anlaşılır?</summary><p>Üçüncü grubun ilk rakamı sürümü gösterir. Örneğin 9a4d-4c7b biçiminde üçüncü grup 4 ile başlıyorsa UUID v4, 7 ile başlıyorsa v7'dir. Dördüncü grubun ilk rakamı standart UUID'lerde 8, 9, a ya da b olur.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.rfc-editor.org/rfc/rfc9562" rel="noopener">IETF – RFC 9562: Universally Unique IDentifiers (UUIDs)</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc4122" rel="noopener">IETF – RFC 4122 (önceki UUID standardı)</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../hash-nedir-sha256-md5/"><strong>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</strong><span>Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.</span></a></li>
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../base64-nedir-ne-ise-yarar/"><strong>Base64 Nedir, Ne İşe Yarar? Base64 Kodlama ve Çözme Nasıl Yapılır</strong><span>Base64, ikili veriyi 64 güvenli karakterle metne çeviren kodlamadır; şifreleme değildir. Nasıl çalıştığı, %33 boyut artışı, resim ve e-postada kullanımı.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+          <li><a href="../beygir-gucu-ve-tork-farki/"><strong>Beygir Gücü ve Tork Farkı Nedir? HP, kW ve Nm Değerleri Nasıl Okunur</strong><span>Tork motorun döndürme kuvvetidir (Nm), beygir gücü bu kuvvetin ne hızla iş yaptığıdır. P = T × n ÷ 9549 formülü, kW–PS çevirisi, lb-ft ve dizel tork farkı örneklerle.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-uuid-guid-nedir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

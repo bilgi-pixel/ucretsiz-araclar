@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Unix Zaman Damgası (Epoch) Nedir? Timestamp Tarihe Çevirme</title>
+  <meta name="description" content="Unix zaman damgası, 1 Ocak 1970 00:00 UTC'den bu yana geçen saniyedir. Timestamp tarihe çevirme, milisaniye farkı, Türkiye saati, Excel formülü ve 2038 problemi.">
+  <meta name="keywords" content="unix zaman damgası nedir, epoch nedir, timestamp nedir, timestamp tarihe çevirme, milisaniye timestamp, 2038 problemi, unix time excel, epoch time türkiye saati">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/unix-zaman-damgasi-nedir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Unix Zaman Damgası (Epoch) Nedir? Timestamp Tarihe Çevirme">
+  <meta property="og:description" content="Unix zaman damgası, 1 Ocak 1970 00:00 UTC'den bu yana geçen saniyedir. Timestamp tarihe çevirme, milisaniye farkı, Türkiye saati, Excel formülü ve 2038 problemi.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/unix-zaman-damgasi-nedir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Unix Zaman Damgası (Epoch) Nedir? Timestamp Tarihe Nasıl Çevrilir","description":"Unix zaman damgası, 1 Ocak 1970 00:00 UTC'den bu yana geçen saniyedir. Timestamp tarihe çevirme, milisaniye farkı, Türkiye saati, Excel formülü ve 2038 problemi.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/unix-zaman-damgasi-nedir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1396,"keywords":"unix zaman damgası nedir, epoch nedir, timestamp nedir, timestamp tarihe çevirme, milisaniye timestamp, 2038 problemi, unix time excel, epoch time türkiye saati","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"Unix Zaman Damgası (Epoch) Nedir? Timestamp Tarihe Nasıl Çevrilir"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Unix zaman damgası nedir?","acceptedAnswer":{"@type":"Answer","text":"Unix zaman damgası, 1 Ocak 1970 saat 00:00:00 UTC'den bu yana geçen saniye sayısıdır. Saat dilimi ya da tarih biçimi taşımayan bu tek sayı, bilgisayarların zamanı saklamasını, sıralamasını ve iki an arasındaki süreyi kolayca hesaplamasını sağlar."}},{"@type":"Question","name":"Epoch neden 1 Ocak 1970'ten başlar?","acceptedAnswer":{"@type":"Answer","text":"Bu tarih, Unix işletim sisteminin geliştirildiği döneme yakın, yuvarlak ve akılda kalıcı olduğu için seçilmiş pratik bir başlangıç noktasıdır. Özel bir bilimsel anlamı yoktur; daha sonra POSIX standardıyla kalıcı hâle gelmiştir."}},{"@type":"Question","name":"Timestamp tarihe nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Değeri 86.400'e bölerek 1 Ocak 1970'ten bu yana geçen gün sayısını, kalanı da saat, dakika ve saniyeye ayırarak günün saatini bulursunuz. Sonuç UTC'dir; Türkiye saati için 3 saat eklersiniz. Çevirici araç bu işlemi anında yapar."}},{"@type":"Question","name":"Saniye ve milisaniye timestamp farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Saniye cinsinden zaman damgası bugün 10 hanelidir, milisaniye cinsinden olanı ise 13 hanelidir ve bin kat büyüktür. Milisaniye değerini saniyeye çevirmek için 1.000'e bölmeniz gerekir; aksi hâlde anlamsız bir tarih elde edersiniz."}},{"@type":"Question","name":"Timestamp saat dilimine bağlı mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır, zaman damgası dünyanın her yerinde aynı andaki aynı değerdir. Saat dilimi yalnızca sayıyı okunur tarihe çevirirken uygulanır. Türkiye yıl boyu UTC+3 kullandığı için güncel tarihlerde UTC sonucuna 3 saat eklemek yeterlidir."}},{"@type":"Question","name":"Excel'de Unix zamanı nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"A1 hücresindeki saniye değeri için =A1/86400+TARİH(1970;1;1) formülünü yazıp hücreyi tarih-saat biçiminde gösterin. Türkiye saati için formülün sonuna +3/24 ekleyin; milisaniye değerlerinde 86400 yerine 86400000 ile bölün."}},{"@type":"Question","name":"2038 problemi nedir?","acceptedAnswer":{"@type":"Answer","text":"Zamanı işaretli 32 bit tamsayı olarak tutan sistemlerde değer 19 Ocak 2038 03:14:07 UTC'de en büyük sınıra ulaşır ve bir saniye sonra taşarak 1901 tarihine döner. Modern 64 bit sistemler bu sorundan etkilenmez; risk eski ve gömülü sistemlerdedir."}},{"@type":"Question","name":"Şu anki Unix zamanı nasıl öğrenilir?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcıdaki zaman damgası aracı şu anki değeri canlı gösterir. Ayrıca JavaScript konsolunda Math.floor(Date.now()/1000), Linux ve macOS terminalinde date +%s komutu ile saniye cinsinden güncel değeri öğrenebilirsiniz."}},{"@type":"Question","name":"Unix zamanı artık saniyeleri sayar mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır, Unix zamanı her günü tam 86.400 saniye kabul eder ve artık saniyeleri saymaz. Bu yüzden atom saatiyle tutulan uluslararası zamandan saniyeler düzeyinde farklıdır; günlük kullanımda ve tarih hesaplarında bu fark önemsizdir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>Unix Zaman Damgası (Epoch) Nedir? Timestamp Tarihe Nasıl Çevrilir</h1><p class="lead">Unix zaman damgası (Unix timestamp, epoch time), <strong>1 Ocak 1970 saat 00:00:00 UTC'den bu yana geçen saniye sayısıdır</strong>. Örneğin 1767225600 değeri 1 Ocak 2026 00:00 UTC anını, Türkiye saatiyle 03:00'ü gösterir. Saat dilimi, yaz saati ya da tarih biçimi taşımadığı için bilgisayarlar zamanı saklamak ve karşılaştırmak için bu tek sayıyı kullanır. Aşağıda sayının nasıl tarihe çevrildiğini, saniye ile milisaniye farkını, Excel formülünü ve 2038 problemini örneklerle anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Unix zamanı = 1970-01-01 00:00:00 UTC anından bu yana geçen saniye; bu başlangıç anına epoch denir.</li>
+        <li>1 gün = 86.400 saniye; tarihe çevirmek için sayıyı 86.400'e bölüp 1 Ocak 1970'e gün olarak eklersiniz.</li>
+        <li>10 haneli değer saniye, 13 haneli değer milisaniyedir; milisaniyeyi 1.000'e bölerek saniyeye çevirirsiniz.</li>
+        <li>Zaman damgası saat diliminden bağımsızdır; Türkiye saati (UTC+3) için gösterimde 10.800 saniye eklenir.</li>
+        <li>Excel'de A1 hücresindeki saniye için: =A1/86400+TARİH(1970;1;1), Türkiye saati için ayrıca +3/24.</li>
+        <li>İşaretli 32 bit tamsayı 2147483647'de dolar; bu 19 Ocak 2038 03:14:07 UTC anıdır (2038 problemi).</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="1970'ten 2038'e uzanan zaman çizgisi: 0 değeri 1 Ocak 1970, 1 milyar değeri 9 Eylül 2001, 1,7 milyar değeri 14 Kasım 2023, 1.767.225.600 değeri 1 Ocak 2026 ve 2.147.483.647 değeri 19 Ocak 2038 olarak işaretli; altında saniyenin tarihe çevrilme adımları." viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">Epoch'tan 2038'e zaman çizgisi</text>
+  <line x1="40" y1="120" x2="680" y2="120" class="sp sw" fill="none"/>
+  <g class="sm mid">
+    <circle cx="40" cy="120" r="8" class="p"/>
+    <text x="40" y="96" class="b">0</text><text x="40" y="150">1 Oca 1970</text>
+    <circle cx="403" cy="120" r="7" class="a"/>
+    <text x="403" y="96" class="b">1.000.000.000</text><text x="403" y="150">9 Eyl 2001</text>
+    <circle cx="540" cy="120" r="7" class="a"/>
+    <text x="540" y="70" class="b">1.700.000.000</text><text x="540" y="168">14 Kas 2023</text>
+    <circle cx="584" cy="120" r="8" class="ok"/>
+    <text x="584" y="96" class="b ok">1.767.225.600</text><text x="584" y="150">1 Oca 2026</text>
+    <circle cx="680" cy="120" r="8" class="dg"/>
+    <text x="672" y="70" class="b dg end">2.147.483.647</text><text x="680" y="168" class="dg">19 Oca 2038</text>
+  </g>
+  <text x="40" y="214" class="b">Örnek çeviri: 1767225600</text>
+  <g class="mid">
+    <rect x="40" y="230" width="196" height="76" rx="8" class="sf sb"/>
+    <text x="138" y="256" class="sm mu">1) Güne böl</text>
+    <text x="138" y="280" class="b">÷ 86.400</text>
+    <text x="138" y="298" class="sm">= 20.454 gün</text>
+    <rect x="262" y="230" width="196" height="76" rx="8" class="ps"/>
+    <text x="360" y="256" class="sm">2) 1970'e ekle</text>
+    <text x="360" y="280" class="b">1 Oca 1970 + 20.454 gün</text>
+    <text x="360" y="298" class="sm">= 1 Oca 2026 00:00 UTC</text>
+    <rect x="484" y="230" width="196" height="76" rx="8" class="p"/>
+    <text x="582" y="256" class="sm sf">3) Türkiye saati</text>
+    <text x="582" y="280" class="b sf">UTC + 3 saat</text>
+    <text x="582" y="298" class="sm sf">= 1 Oca 2026 03:00</text>
+  </g>
+  <rect x="40" y="328" width="640" height="54" rx="8" class="oks"/>
+  <text x="360" y="351" class="sm mid b">10 hane = saniye · 13 hane = milisaniye</text>
+  <text x="360" y="371" class="sm mid">1767225600 s = 1767225600000 ms</text>
+</svg>
+      <figcaption>Zaman damgası tek yönde, saniyede bir artan bir sayaçtır. Çizgi üzerindeki tüm tarihler UTC'dir; Türkiye saati için 3 saat ekleyin. Sağ uçtaki değer, işaretli 32 bit tamsayının taşabileceği son andır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Unix zaman damgası nedir?</a></li>
+      <li><a href="#b2">Epoch neden 1 Ocak 1970'ten başlar?</a></li>
+      <li><a href="#b3">Timestamp tarihe nasıl çevrilir? Formül ve çözümlü örnek</a></li>
+      <li><a href="#b4">Saniye, milisaniye ve mikrosaniye zaman damgası farkı</a></li>
+      <li><a href="#b5">Timestamp saat dilimine bağlı mı? Türkiye saati</a></li>
+      <li><a href="#b6">Excel ve tablolama programlarında Unix zamanı nasıl çevrilir?</a></li>
+      <li><a href="#b7">2038 problemi nedir?</a></li>
+      <li><a href="#b8">Şu anki Unix zamanı nasıl öğrenilir?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-unix-zaman-damgasi-nedir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../unix-zaman-damgasi/"><strong>Unix Zaman Damgası Çevirici</strong><span>Unix zaman damgasını (epoch) tarihe, tarihi saniye ve milisaniye cinsinden zaman damgasına çevirin; UTC, Türkiye saati ve cihaz saatini görün.</span></a></li>
+          <li><a href="../../milisaniye-saniye-cevir/"><strong>Milisaniye Saniye Çevirici</strong><span>Milisaniyeyi saniyeye, saniyeyi milisaniyeye çevirin; mikrosaniye, dakika ve Hz karşılığıyla birlikte.</span></a></li>
+          <li><a href="../../zaman-dilimi-cevirici/"><strong>Saat Dilimi Çevirici</strong><span>Türkiye saatini New York, Londra, Dubai, Tokyo ve 60'tan fazla şehrin saatine çevirin; toplantı planlayıcı ve canlı dünya saatiyle yaz saati ve UTC farkını görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Unix zaman damgası nedir?</h2>
+      <p>Unix zaman damgası, bir anı &quot;yıl, ay, gün, saat&quot; gibi parçalara bölmeden <strong>tek bir tamsayı</strong> ile ifade etme yöntemidir. Sayı, 1 Ocak 1970 Perşembe günü saat 00:00:00 UTC'de sıfırdan başlamış ve o günden beri her saniye bir artmaktadır. Bu başlangıç anına <strong>epoch</strong> (dönem başlangıcı) denir; bu yüzden zaman damgası &quot;epoch time&quot; ya da &quot;Unix time&quot; adlarıyla da anılır.</p>
+      <p>Bu yöntemin en büyük avantajı sadeliktir. İki zaman damgasını birbirinden çıkardığınızda aradaki süreyi doğrudan saniye cinsinden bulursunuz; ay uzunlukları, artık yıllar ya da yaz saati geçişleri hesaba katılmaz. Veritabanları, sunucu kayıt dosyaları, programlama dilleri, dosya sistemleri ve web servisleri bu nedenle zamanı çoğunlukla zaman damgası olarak saklar ve yalnızca ekranda gösterirken okunur tarihe çevirir.</p>
+      <p>Zaman damgası 1970 öncesi tarihler için negatif değer alır. Örneğin −86.400 değeri 31 Aralık 1969 00:00 UTC anıdır. Çoğu modern sistem negatif değerleri de destekler.</p>
+
+      <h2 id="b2">Epoch neden 1 Ocak 1970'ten başlar?</h2>
+      <p>Bu tarihin bilimsel ya da takvimsel özel bir anlamı yoktur; pratik bir mühendislik tercihidir. Unix işletim sistemi 1960'ların sonu ve 1970'lerin başında geliştirildi. Geliştiriciler, sistemin yapıldığı döneme yakın, akılda kalan ve yuvarlak bir başlangıç noktası seçtiler. İlk sürümlerde farklı başlangıç tarihleri ve farklı sayma hızları denendi; sonunda saniye birimi ve 1970'in ilk anı standart hâline geldi.</p>
+      <p>Bu seçim daha sonra POSIX standardıyla kalıcılaştı ve Unix'ten türeyen sistemlerin yanı sıra pek çok programlama dili ve veri biçimi tarafından benimsendi. Farklı sistemlerin farklı başlangıç noktaları da vardır: Excel tarihleri 1900 başını, bazı dosya sistemleri 1601'i temel alır. Bu nedenle iki sistem arasında tarih aktarırken hangi epoch'un kullanıldığını bilmek önemlidir.</p>
+      <p>Günlük hayatta zaman damgasıyla en çok şu yerlerde karşılaşırsınız: bir web servisinden dönen yanıttaki <code>created_at</code> ya da <code>exp</code> alanları, sunucu ve uygulama kayıt dosyaları, fotoğraf ve dosyaların değiştirilme bilgisi, oturum çerezlerinin geçerlilik süresi ve dışa aktarılan veritabanı tabloları. Bu alanlarda gördüğünüz 10 ya da 13 haneli sayıların neredeyse tamamı Unix zamanıdır ve aynı yöntemle okunur.</p>
+
+      <h2 id="b3">Timestamp tarihe nasıl çevrilir? Formül ve çözümlü örnek</h2>
+      <p>Elle çevirmenin mantığı, sayıyı önce güne, sonra kalan saniyeyi saat-dakika-saniyeye ayırmaktır. Bir günde 24 × 60 × 60 = 86.400 saniye vardır. Unix zamanı artık saniyeleri saymadığı için her gün tam 86.400 saniye kabul edilir; bu da hesabı kolaylaştırır.</p>
+      <div class="rh-formula">gün sayısı = tam kısım(zaman damgası ÷ 86.400)<br>kalan saniye = zaman damgası − gün sayısı × 86.400<br>saat = kalan ÷ 3.600 · dakika = (kalan mod 3.600) ÷ 60 · saniye = kalan mod 60</div>
+      <ol class="ba-steps">
+        <li>Örnek değer: <strong>1700000000</strong>. 86.400'e bölün: 1.700.000.000 ÷ 86.400 = 19.675,925… Tam kısım 19.675 gündür.</li>
+        <li>Kalan saniyeyi bulun: 1.700.000.000 − 19.675 × 86.400 = 1.700.000.000 − 1.699.920.000 = 80.000 saniye.</li>
+        <li>Saate çevirin: 80.000 ÷ 3.600 = 22 saat, kalan 800 saniye; 800 ÷ 60 = 13 dakika, kalan 20 saniye. Saat 22:13:20 UTC.</li>
+        <li>Günü takvime yerleştirin: 1 Ocak 1970'e 19.675 gün eklendiğinde 14 Kasım 2023 bulunur. Sonuç: 14 Kasım 2023, 22:13:20 UTC.</li>
+        <li>Türkiye saatine geçin: 3 saat ekleyince 15 Kasım 2023, 01:13:20 olur. Saat dilimi farkının tarihi de bir gün ileri attığına dikkat edin.</li>
+      </ol>
+      <p>Dördüncü adım, ay uzunlukları ve artık yıllar nedeniyle elle en çok hata yapılan kısımdır. Pratikte bu işi <a href="../../unix-zaman-damgasi/">Unix Zaman Damgası Çevirici</a> ile tek adımda yaparsınız; araç sonucu UTC, Türkiye saati ve cihazınızın saatiyle aynı anda gösterir. Artık yılların takvime etkisini <a href="../../bilgi-bankasi/artik-yil-nedir-subat-kac-gun/">artık yıl nedir</a> yazısında bulabilirsiniz.</p>
+
+      <h2 id="b4">Saniye, milisaniye ve mikrosaniye zaman damgası farkı</h2>
+      <p>Klasik Unix zamanı saniye cinsindendir ve günümüzde 10 hanelidir. JavaScript, Java ve birçok web servisi ise zamanı <strong>milisaniye</strong> cinsinden tutar; bu değerler 13 hanelidir. Bazı veritabanları ve ölçüm sistemleri mikrosaniye (16 hane) ya da nanosaniye (19 hane) kullanır. Hane sayısına bakmak, elinizdeki değerin birimini anlamanın en hızlı yoludur.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Birim</th><th>Hane sayısı (bugün)</th><th>Örnek (1 Ocak 2026 00:00 UTC)</th><th>Saniyeye çevirme</th></tr></thead>
+        <tbody>
+          <tr><td>Saniye</td><td>10</td><td>1767225600</td><td>Olduğu gibi</td></tr>
+          <tr><td>Milisaniye</td><td>13</td><td>1767225600000</td><td>÷ 1.000</td></tr>
+          <tr><td>Mikrosaniye</td><td>16</td><td>1767225600000000</td><td>÷ 1.000.000</td></tr>
+          <tr><td>Nanosaniye</td><td>19</td><td>1767225600000000000</td><td>÷ 1.000.000.000</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Hane sayısı 2286 yılına kadar saniye cinsinden 10 hane olarak kalır.</p>
+      <p>Milisaniyelik bir değeri saniye sanıp çevirirseniz binlerce yıl sonrasına ait anlamsız bir tarih bulursunuz; tersinde ise 1970'in ilk günlerine düşersiniz. &quot;Tarih 1970 çıktı&quot; şikâyetlerinin büyük kısmı bu birim karışıklığından kaynaklanır. Birimler arası çeviri için <a href="../../milisaniye-saniye-cevir/">milisaniye saniye çevirici</a>yi kullanabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="bilgi-unix-zaman-damgasi-nedir-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">Timestamp saat dilimine bağlı mı? Türkiye saati</h2>
+      <p>Hayır. Zaman damgası dünyanın her yerinde aynı anda aynı değeri gösterir; İstanbul'da, Londra'da ve Tokyo'da şu anki Unix zamanı aynıdır. Saat dilimi yalnızca bu sayıyı okunur tarihe çevirirken devreye girer. Bu özellik, farklı ülkelerdeki sunucuların ve kullanıcıların kayıtlarını karışıklık olmadan sıralamayı sağlar.</p>
+      <p>Türkiye 2016'dan bu yana yıl boyunca UTC+3 saatini kullanır ve yaz saati uygulamasına geçmez. Bu nedenle bugünkü tarihleri Türkiye saatine çevirmek için UTC sonucuna 3 saat (10.800 saniye) eklemek yeterlidir. Ancak 2016 öncesine ait kayıtlarda kış aylarında UTC+2, yaz aylarında UTC+3 geçerliydi; eski tarihleri çevirirken tarih kütüphanesinin saat dilimi veritabanını kullanmak gerekir.</p>
+      <p>Sık yapılan bir hata, yerel saati zaman damgası gibi saklamaktır. Örneğin Türkiye saatiyle 12:00'yi UTC gibi kaydederseniz değer 3 saat ileri kayar ve yurt dışındaki kullanıcılar yanlış saati görür. Kural basittir: daima UTC sakla, yalnızca gösterirken yerel saate çevir. Farklı şehirlerin saatlerini karşılaştırmak için <a href="../../zaman-dilimi-cevirici/">saat dilimi çevirici</a> yardımcı olur.</p>
+
+      <h2 id="b6">Excel ve tablolama programlarında Unix zamanı nasıl çevrilir?</h2>
+      <p>Excel tarihleri, 1900 başından bu yana geçen <strong>gün sayısı</strong> olarak saklar; saat ise günün kesirli kısmıdır. Unix zamanı saniye olduğu için önce 86.400'e bölüp güne çevirir, sonra 1 Ocak 1970'in Excel'deki gün sayısını eklersiniz. Sonuç hücresini tarih-saat biçiminde görüntülemeyi unutmayın; aksi hâlde 46023,125 gibi bir sayı görürsünüz.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>İşlem</th><th>Türkçe Excel formülü</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>Saniyeyi UTC tarihe çevirme</td><td>=A1/86400+TARİH(1970;1;1)</td><td>A1'de 10 haneli değer</td></tr>
+          <tr><td>Saniyeyi Türkiye saatine çevirme</td><td>=A1/86400+TARİH(1970;1;1)+3/24</td><td>UTC+3 için 3/24 gün eklenir</td></tr>
+          <tr><td>Milisaniyeyi tarihe çevirme</td><td>=A1/86400000+TARİH(1970;1;1)</td><td>13 haneli değer</td></tr>
+          <tr><td>Tarihi zaman damgasına çevirme</td><td>=(B1-TARİH(1970;1;1))*86400</td><td>B1'deki tarih UTC kabul edilir</td></tr>
+          <tr><td>Türkiye saatindeki tarihi damgaya çevirme</td><td>=(B1-3/24-TARİH(1970;1;1))*86400</td><td>Önce 3 saat geri alınır</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">İngilizce Excel'de TARİH yerine DATE, noktalı virgül yerine bölgesel ayara göre virgül kullanılır. Hücre biçimini &quot;gg.aa.yyyy ss:dd:nn&quot; yapın.</p>
+
+      <h2 id="b7">2038 problemi nedir?</h2>
+      <p>Eski sistemlerin çoğu Unix zamanını <strong>işaretli 32 bitlik tamsayı</strong> olarak tutar. Bu veri türünün alabileceği en büyük değer 2<sup>31</sup> − 1 = 2.147.483.647'dir. Zaman damgası bu değere 19 Ocak 2038 saat 03:14:07 UTC'de ulaşır. Bir saniye sonra sayı taşar ve en küçük negatif değere, yani 13 Aralık 1901 tarihine geri döner. Bu taşmaya <strong>2038 problemi</strong> ya da Y2K38 denir.</p>
+      <p>Sorun, 2000 yılı geçişinde konuşulan Y2K sorununa benzer ama kaynağı farklıdır: burada mesele yılın iki haneyle yazılması değil, sayının saklandığı kutunun küçük olmasıdır. Modern masaüstü ve sunucu işletim sistemleri, veritabanları ve programlama dilleri artık 64 bitlik zaman damgası kullanır. 64 bitlik işaretli tamsayının taşması yaklaşık 292 milyar yıl sonraya denk geldiği için pratikte sınırsızdır.</p>
+      <p>Risk daha çok uzun yıllar güncellenmeden çalışan gömülü cihazlarda, eski dosya biçimlerinde ve veritabanı tablolarında 32 bit olarak tanımlanmış zaman alanlarında bulunur. 2038 sonrasına uzanan tarihlerle çalışan uygulamalar (30 yıllık kredi planları gibi) bu sınırla bugünden karşılaşabilir; bu yüzden yeni sistemlerde zaman alanlarını 64 bit tanımlamak iyi bir uygulamadır.</p>
+
+      <h2 id="b8">Şu anki Unix zamanı nasıl öğrenilir?</h2>
+      <ul>
+        <li><strong>Tarayıcıda:</strong> <a href="../../unix-zaman-damgasi/">Unix Zaman Damgası</a> sayfası şu anki değeri saniye ve milisaniye olarak canlı gösterir.</li>
+        <li><strong>JavaScript konsolunda:</strong> <code>Math.floor(Date.now() / 1000)</code> saniye, <code>Date.now()</code> milisaniye verir.</li>
+        <li><strong>Linux ve macOS terminalinde:</strong> <code>date +%s</code> komutu saniye cinsinden değeri yazar.</li>
+        <li><strong>Python'da:</strong> <code>import time; int(time.time())</code> aynı sonucu verir.</li>
+        <li><strong>Excel'de:</strong> <code>=(ŞİMDİ()-3/24-TARİH(1970;1;1))*86400</code> formülü, bilgisayarınız Türkiye saatindeyse yaklaşık değeri hesaplar.</li>
+      </ul>
+      <p>Zaman damgaları yalnızca tarih saklamak için kullanılmaz; benzersiz kimlik üretiminde de işe yarar. Bazı kimlik türleri içinde oluşturulma zamanını taşır; bu konuyu <a href="../../bilgi-bankasi/uuid-guid-nedir/">UUID ve GUID nedir</a> yazısında, zaman damgasının sık geçtiği veri biçimini ise <a href="../../bilgi-bankasi/json-nedir-nasil-okunur/">JSON nedir</a> yazısında bulabilirsiniz.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Unix zaman damgası nedir?</summary><p>Unix zaman damgası, 1 Ocak 1970 saat 00:00:00 UTC'den bu yana geçen saniye sayısıdır. Saat dilimi ya da tarih biçimi taşımayan bu tek sayı, bilgisayarların zamanı saklamasını, sıralamasını ve iki an arasındaki süreyi kolayca hesaplamasını sağlar.</p></details>
+      <details><summary>Epoch neden 1 Ocak 1970'ten başlar?</summary><p>Bu tarih, Unix işletim sisteminin geliştirildiği döneme yakın, yuvarlak ve akılda kalıcı olduğu için seçilmiş pratik bir başlangıç noktasıdır. Özel bir bilimsel anlamı yoktur; daha sonra POSIX standardıyla kalıcı hâle gelmiştir.</p></details>
+      <details><summary>Timestamp tarihe nasıl çevrilir?</summary><p>Değeri 86.400'e bölerek 1 Ocak 1970'ten bu yana geçen gün sayısını, kalanı da saat, dakika ve saniyeye ayırarak günün saatini bulursunuz. Sonuç UTC'dir; Türkiye saati için 3 saat eklersiniz. Çevirici araç bu işlemi anında yapar.</p></details>
+      <details><summary>Saniye ve milisaniye timestamp farkı nedir?</summary><p>Saniye cinsinden zaman damgası bugün 10 hanelidir, milisaniye cinsinden olanı ise 13 hanelidir ve bin kat büyüktür. Milisaniye değerini saniyeye çevirmek için 1.000'e bölmeniz gerekir; aksi hâlde anlamsız bir tarih elde edersiniz.</p></details>
+      <details><summary>Timestamp saat dilimine bağlı mı?</summary><p>Hayır, zaman damgası dünyanın her yerinde aynı andaki aynı değerdir. Saat dilimi yalnızca sayıyı okunur tarihe çevirirken uygulanır. Türkiye yıl boyu UTC+3 kullandığı için güncel tarihlerde UTC sonucuna 3 saat eklemek yeterlidir.</p></details>
+      <details><summary>Excel'de Unix zamanı nasıl çevrilir?</summary><p>A1 hücresindeki saniye değeri için =A1/86400+TARİH(1970;1;1) formülünü yazıp hücreyi tarih-saat biçiminde gösterin. Türkiye saati için formülün sonuna +3/24 ekleyin; milisaniye değerlerinde 86400 yerine 86400000 ile bölün.</p></details>
+      <details><summary>2038 problemi nedir?</summary><p>Zamanı işaretli 32 bit tamsayı olarak tutan sistemlerde değer 19 Ocak 2038 03:14:07 UTC'de en büyük sınıra ulaşır ve bir saniye sonra taşarak 1901 tarihine döner. Modern 64 bit sistemler bu sorundan etkilenmez; risk eski ve gömülü sistemlerdedir.</p></details>
+      <details><summary>Şu anki Unix zamanı nasıl öğrenilir?</summary><p>Tarayıcıdaki zaman damgası aracı şu anki değeri canlı gösterir. Ayrıca JavaScript konsolunda Math.floor(Date.now()/1000), Linux ve macOS terminalinde date +%s komutu ile saniye cinsinden güncel değeri öğrenebilirsiniz.</p></details>
+      <details><summary>Unix zamanı artık saniyeleri sayar mı?</summary><p>Hayır, Unix zamanı her günü tam 86.400 saniye kabul eder ve artık saniyeleri saymaz. Bu yüzden atom saatiyle tutulan uluslararası zamandan saniyeler düzeyinde farklıdır; günlük kullanımda ve tarih hesaplarında bu fark önemsizdir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://pubs.opengroup.org/onlinepubs/9699919799/" rel="noopener">The Open Group – POSIX: Seconds Since the Epoch tanımı</a></li>
+        <li><a href="https://www.iana.org/time-zones" rel="noopener">IANA – Saat Dilimi Veritabanı</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../artik-yil-nedir-subat-kac-gun/"><strong>Artık Yıl Nedir? Şubat Kaç Gün, Hangi Yıllar Artık Yıl ve Nasıl Bulunur</strong><span>Artık yıl 366 gündür ve Şubat 29 çeker. 4'e bölünen yıllar artıktır; 100'e bölünenler değildir, ama 400'e bölünenler yine artıktır. 2028 artık yıl, 2026 değil.</span></a></li>
+          <li><a href="../uuid-guid-nedir/"><strong>UUID (GUID) Nedir? UUID v4 Nasıl Üretilir, Çakışma İhtimali Ne Kadar</strong><span>UUID, 128 bitlik ve 36 karakterlik evrensel benzersiz kimliktir. GUID ile farkı, 8-4-4-4-12 yapısı, v4 ve v7 sürümleri, çakışma olasılığı ve veritabanında kullanımı.</span></a></li>
+          <li><a href="../json-nedir-nasil-okunur/"><strong>JSON Nedir, Nasıl Okunur? JSON Formatı, Örnekleri ve Sık Yapılan Hatalar</strong><span>JSON, veriyi anahtar–değer çiftleri ve dizilerle taşıyan metin biçimidir. Nesne ve dizi farkı, 6 veri türü, Unexpected token hatası, kaçış karakterleri ve YAML/CSV.</span></a></li>
+          <li><a href="../bu-hafta-yilin-kacinci-haftasi/"><strong>Bu Hafta Yılın Kaçıncı Haftası? ISO Hafta Numarası Nasıl Hesaplanır</strong><span>ISO 8601'e göre hafta pazartesi başlar, yılın ilk haftası ilk perşembeyi içeren haftadır. 2026 yılı 53 haftalıktır; 16–22 Kasım 2026 47. haftadır. Hesap ve örnekler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-unix-zaman-damgasi-nedir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

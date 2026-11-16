@@ -162,7 +162,7 @@ export default {
         "Başlık ya da ad listelerinde her kelimenin ilk harfini büyütmek için [[arac:ilk-harf-buyut|Her Kelimenin İlk Harfini Büyütme]] aracı \"ve, ile\" gibi bağlaçları isteğe bağlı olarak küçük bırakır.",
         "Metnin tamamını büyük ya da küçük harfe çevirmek gerekiyorsa [[arac:buyuk-kucuk-harf-donustur|Büyük Küçük Harf Dönüştürme]] aracı Türkçe kurallarına göre çalışır.",
         "Otomatik dönüştürmeden sonra özel adları, kurum adlarını ve belirli tarihleri bu sayfadaki kurallara göre elle kontrol edin; araçlar bir kelimenin özel ad olup olmadığını her zaman bilemez.",
-        "Son olarak [[arac:yazim-kontrol|Yazım Kontrolü]] aracıyla sık karıştırılan kelimeleri gözden geçirin."
+        "Son olarak [[arac:yazim-kontrol|Türkçe Yazım Denetimi]] aracıyla sık karıştırılan kelimeleri gözden geçirin."
       ],
       after: [
         "Bu araçların hepsi tarayıcınızda çalışır; yapıştırdığınız metin hiçbir sunucuya gönderilmez, bu yüzden resmî yazışmalarınızı ve kişisel belgelerinizi güvenle düzenleyebilirsiniz."

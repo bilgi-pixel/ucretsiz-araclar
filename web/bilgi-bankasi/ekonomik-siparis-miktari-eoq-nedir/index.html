@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Ekonomik Sipariş Miktarı (EOQ) Nedir? Formül ve Örnek</title>
+  <meta name="description" content="EOQ, sipariş ve stok tutma maliyetlerinin toplamını en aza indiren miktardır: Q = √(2DS ÷ H). Emniyet stoğu, yeniden sipariş noktası ve çözümlü örnek burada.">
+  <meta name="keywords" content="ekonomik sipariş miktarı, eoq formülü, emniyet stoğu nedir, yeniden sipariş noktası, stok maliyeti, stok yönetimi, eoq hesaplama örneği">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/ekonomik-siparis-miktari-eoq-nedir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Ekonomik Sipariş Miktarı (EOQ) Nedir? Formül ve Örnek">
+  <meta property="og:description" content="EOQ, sipariş ve stok tutma maliyetlerinin toplamını en aza indiren miktardır: Q = √(2DS ÷ H). Emniyet stoğu, yeniden sipariş noktası ve çözümlü örnek burada.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/ekonomik-siparis-miktari-eoq-nedir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Ekonomik Sipariş Miktarı (EOQ) Nedir? Emniyet Stoğu ve Sipariş Noktası","description":"EOQ, sipariş ve stok tutma maliyetlerinin toplamını en aza indiren miktardır: Q = √(2DS ÷ H). Emniyet stoğu, yeniden sipariş noktası ve çözümlü örnek burada.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/ekonomik-siparis-miktari-eoq-nedir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1494,"keywords":"ekonomik sipariş miktarı, eoq formülü, emniyet stoğu nedir, yeniden sipariş noktası, stok maliyeti, stok yönetimi, eoq hesaplama örneği","articleSection":"İşletme ve E-ticaret","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İşletme ve E-ticaret","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#isletme"},{"@type":"ListItem","position":4,"name":"Ekonomik Sipariş Miktarı (EOQ) Nedir? Emniyet Stoğu ve Sipariş Noktası"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ekonomik sipariş miktarı (EOQ) nedir?","acceptedAnswer":{"@type":"Answer","text":"Ekonomik sipariş miktarı, yıllık sipariş verme maliyeti ile stok tutma maliyetinin toplamını en aza indiren sipariş büyüklüğüdür. Q = √(2 × yıllık talep × sipariş maliyeti ÷ birim stok tutma maliyeti) formülüyle hesaplanır ve bu noktada iki maliyet birbirine eşittir."}},{"@type":"Question","name":"EOQ formülü nasıl uygulanır?","acceptedAnswer":{"@type":"Answer","text":"Yıllık talep, sipariş başına sabit maliyet ve birim başına yıllık stok tutma maliyeti belirlenir ve formüle konur. Örneğin 12.000 adet talep, 400 TL sipariş maliyeti ve 12 TL stok tutma maliyetiyle EOQ yaklaşık 894 adet çıkar; yılda yaklaşık 13 sipariş verilir."}},{"@type":"Question","name":"Emniyet stoğu nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"İstatistiksel yöntemde emniyet stoğu, hizmet düzeyine karşılık gelen Z katsayısı ile günlük talebin standart sapmasının ve tedarik süresinin karekökünün çarpımıdır. Yüzde 95 hizmet düzeyi için Z yaklaşık 1,645'tir. Daha temkinli bir yol en kötü durum yöntemidir."}},{"@type":"Question","name":"Yeniden sipariş noktası nedir?","acceptedAnswer":{"@type":"Answer","text":"Yeniden sipariş noktası, stok bu seviyeye indiğinde yeni sipariş verilmesi gereken eşiktir. Günlük ortalama talep ile tedarik süresinin çarpımına emniyet stoğu eklenerek bulunur. Günde 40 adet satış, 9 gün tedarik ve 40 adet emniyet stoğuyla nokta 400 adettir."}},{"@type":"Question","name":"Stok tutma maliyeti neleri içerir?","acceptedAnswer":{"@type":"Answer","text":"Stok tutma maliyeti; stoğa bağlanan paranın sermaye maliyetini, depo kirası ve enerjisini, depo personelini, sigortayı, fire ve kayıpları ve eskime nedeniyle oluşan değer kaybını içerir. Genellikle birim maliyetin yıllık yüzdesi olarak tahmin edilir."}},{"@type":"Question","name":"Küçük işletmeler EOQ kullanabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Küçük işletmeler en çok satan ve en yüksek stok değerine sahip ürünlerden başlayarak EOQ'yu kullanabilir. Model girdilerdeki küçük hatalara duyarsız olduğu için tahmini maliyetlerle bile sezgisel kararlardan daha iyi sonuç verir; tedarikçinin koli ve minimum sipariş kısıtları ayrıca dikkate alınmalıdır."}},{"@type":"Question","name":"Stok devir hızı ile EOQ ilişkisi nedir?","acceptedAnswer":{"@type":"Answer","text":"EOQ ve emniyet stoğu ortalama stok seviyesini belirler; ortalama stok da stok devir hızının paydasıdır. Sipariş miktarı büyüdükçe ortalama stok artar ve devir hızı düşer. EOQ'ya yakın sipariş vermek, maliyet ile devir hızı arasında dengeli bir sonuç sağlar."}},{"@type":"Question","name":"Tedarik süresi belirsizse ne yapılmalı?","acceptedAnswer":{"@type":"Answer","text":"Geçmiş siparişlerin gerçekleşen teslim süreleri kaydedilerek ortalama ve en uzun süre bulunmalı, emniyet stoğu hem talep hem süre belirsizliğini içeren bir yöntemle hesaplanmalıdır. İkinci tedarikçi bulmak ve sabit teslim günleri üzerinde anlaşmak belirsizliği azaltır."}},{"@type":"Question","name":"EOQ'dan biraz sapmak maliyeti çok artırır mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Toplam maliyet eğrisi EOQ çevresinde yayvandır. Örnekte EOQ'dan yüzde 34 fazla sipariş vermek toplam stok maliyetini yalnızca yüzde 4,3 artırıyor. Bu nedenle sipariş miktarını koli, palet ya da tedarikçinin minimum miktarına yuvarlamak güvenlidir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#isletme">İşletme ve E-ticaret</a></li></ol><h1>Ekonomik Sipariş Miktarı (EOQ) Nedir? Emniyet Stoğu ve Sipariş Noktası</h1><p class="lead">Ekonomik sipariş miktarı (EOQ, Economic Order Quantity), <strong>sipariş verme maliyeti ile stok tutma maliyetinin toplamını en düşük yapan</strong> sipariş büyüklüğüdür ve <strong>Q* = √(2 × D × S ÷ H)</strong> formülüyle bulunur: D yıllık talep, S sipariş başına sabit maliyet, H bir birimi bir yıl stokta tutmanın maliyetidir. Yıllık 12.000 adet satılan, sipariş başı maliyeti 400 TL ve birim stok tutma maliyeti yılda 12 TL olan bir ürün için EOQ yaklaşık 894 adettir. Bu sayfada formülün mantığını, emniyet stoğunu, yeniden sipariş noktasını ve modelin küçük işletmelerde nasıl uyarlanacağını örneklerle bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>EOQ = √(2 × yıllık talep × sipariş başına maliyet ÷ birim başına yıllık stok tutma maliyeti).</li>
+        <li>EOQ noktasında yıllık sipariş maliyeti ile yıllık stok tutma maliyeti birbirine eşittir.</li>
+        <li>Stok tutma maliyeti genellikle birim maliyetin yıllık yüzdesi olarak hesaplanır; sermaye, depo, sigorta, fire ve eskime maliyetlerini içerir.</li>
+        <li>Emniyet stoğu (istatistiksel yöntem) = Z × günlük talebin standart sapması × √tedarik süresi; %95 hizmet düzeyi için Z ≈ 1,645.</li>
+        <li>Yeniden sipariş noktası = günlük ortalama talep × tedarik süresi + emniyet stoğu.</li>
+        <li>Model sabit talep ve fiyat varsayar; mevsimsellik, toplu alım indirimi ve hızlı fiyat artışlarında sonuç bir başlangıç noktası olarak kullanılmalıdır.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Sipariş miktarına göre yıllık maliyet eğrileri: stok tutma maliyeti miktarla doğrusal artıyor, sipariş maliyeti miktar arttıkça azalıyor, toplam maliyet eğrisi 894 adette en düşük değere, yaklaşık 10.733 TL'ye iniyor. Bu noktada iki maliyet de 5.367 TL." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">EOQ: iki maliyetin dengelendiği nokta</text>
+  <line x1="80" y1="60" x2="80" y2="340" class="st" fill="none"/>
+  <line x1="80" y1="340" x2="690" y2="340" class="st" fill="none"/>
+  <g class="sb dash"><line x1="80" y1="275" x2="680" y2="275" fill="none"/><line x1="80" y1="210" x2="680" y2="210" fill="none"/><line x1="80" y1="145" x2="680" y2="145" fill="none"/><line x1="80" y1="80" x2="680" y2="80" fill="none"/></g>
+  <g class="sm end t2"><text x="72" y="344">0</text><text x="72" y="279">4.000</text><text x="72" y="214">8.000</text><text x="72" y="149">12.000</text><text x="72" y="84">16.000</text></g>
+  <g class="sm mid t2"><text x="80" y="358">0</text><text x="230" y="358">500</text><text x="380" y="358">1.000</text><text x="530" y="358">1.500</text><text x="680" y="358">2.000</text></g>
+  <text x="385" y="380" class="sm mid">Sipariş miktarı Q (adet)</text>
+  <text x="20" y="54" class="sm b">TL/yıl</text>
+  <line x1="80" y1="340" x2="680" y2="145" class="sok sw" fill="none"/>
+  <polyline points="170,80 200,145 230,184 290,228.6 320,242.5 348.3,252.8 380,262 440,275 530,288 680,301" class="sa sw" fill="none"/>
+  <polyline points="200,106 230,135.3 290,160.3 320,164.5 348.3,165.6 380,164.5 440,158 530,141.8 680,106" class="sp sw" fill="none"/>
+  <line x1="348.3" y1="165.6" x2="348.3" y2="340" class="st dash" fill="none"/>
+  <circle cx="348.3" cy="165.6" r="6" class="p"/><circle cx="348.3" cy="252.8" r="6" class="ok"/>
+  <text x="598" y="138" class="sm b ok">stok tutma = H × Q ÷ 2</text>
+  <text x="520" y="312" class="sm b">sipariş = S × D ÷ Q</text>
+  <text x="580" y="98" class="sm b p">toplam maliyet</text>
+  <rect x="356" y="64" width="190" height="62" rx="8" class="sf sb"/>
+  <text x="368" y="86" class="sm b">Q* = √(2 × 12.000 × 400 ÷ 12)</text>
+  <text x="368" y="110" class="sm">= 894 adet · toplam 10.733 TL</text>
+  <text x="356" y="400" class="sm mid b p">EOQ ≈ 894</text>
+</svg>
+      <figcaption>Yıllık talep 12.000 adet, sipariş başı maliyet 400 TL, birim stok tutma maliyeti yılda 12 TL için çizilmiştir. Toplam maliyet eğrisi en altta yayvandır: EOQ'dan yüzde 30 sapmak toplam maliyeti yalnızca birkaç yüzde artırır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Ekonomik sipariş miktarı (EOQ) nedir?</a></li>
+      <li><a href="#b2">EOQ formülü ve terimleri</a></li>
+      <li><a href="#b3">EOQ formülü nasıl uygulanır? Çözümlü örnek</a></li>
+      <li><a href="#b4">Stok tutma maliyeti neleri içerir?</a></li>
+      <li><a href="#b5">Emniyet stoğu nasıl hesaplanır?</a></li>
+      <li><a href="#b6">Yeniden sipariş noktası nedir?</a></li>
+      <li><a href="#b7">Stok devir hızı ile EOQ ilişkisi nedir?</a></li>
+      <li><a href="#b8">Küçük işletmeler EOQ kullanabilir mi?</a></li>
+      <li><a href="#b9">Tedarik süresi belirsizse ne yapılmalı?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-ekonomik-siparis-miktari-eoq-nedir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../ekonomik-siparis-miktari-hesapla/"><strong>Ekonomik Sipariş Miktarı (EOQ) Hesaplama</strong><span>Yıllık talep, sipariş ve stok tutma maliyetinden en ekonomik sipariş miktarını, sipariş sıklığını ve toplam maliyeti bulun.</span></a></li>
+          <li><a href="../../emniyet-stogu-hesapla/"><strong>Emniyet Stoğu Hesaplama</strong><span>Günlük satış ve tedarik süresinden emniyet stoğunu ve yeniden sipariş noktasını iki farklı yöntemle hesaplayın.</span></a></li>
+          <li><a href="../../stok-devir-hizi-hesapla/"><strong>Stok Devir Hızı Hesaplama</strong><span>Satılan malın maliyeti ve stok tutarlarından stok devir hızını ve stokta kalma süresini (gün) hesaplayın.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Ekonomik sipariş miktarı (EOQ) nedir?</h2>
+      <p>Bir ürünü stokta tutan her işletme aynı ikilemle karşılaşır: az ve sık sipariş verirseniz her siparişin sabit maliyetini (satın alma personelinin zamanı, nakliye, kabul ve kontrol, fatura işlemleri) tekrar tekrar ödersiniz; çok ve seyrek sipariş verirseniz depoda büyük stok birikir, paranız rafta bağlanır, depolama ve sigorta maliyeti artar, ürün eskime ya da bozulma riski taşır.</p>
+      <p>Ekonomik sipariş miktarı modeli bu iki zıt maliyeti dengeler. 1913'te geliştirilen ve bugün hâlâ üretim, lojistik ve tedarik zinciri derslerinin temel konusu olan bu model, bir siparişte kaç birim alınması gerektiğini tek bir formülle verir. Basitliği nedeniyle gerçek hayatın tüm karmaşasını yansıtmaz; ama sipariş politikasını sezgiden çıkarıp hesaba dayandırmak için çok güçlü bir başlangıç noktasıdır.</p>
+
+      <h2 id="b2">EOQ formülü ve terimleri</h2>
+      <p>Formülün arkasındaki mantık şöyledir: talep yıl boyunca düzenli ise stok, sipariş geldiğinde Q'ya çıkar ve sıfıra kadar doğrusal azalır; ortalama stok Q ÷ 2 olur. Yıllık stok tutma maliyeti (Q ÷ 2) × H, yıllık sipariş maliyeti (D ÷ Q) × S'dir. Birincisi Q ile artar, ikincisi Q ile azalır; toplamın en düşük olduğu nokta, ikisinin eşitlendiği yerdir. Bu eşitlikten Q çekildiğinde EOQ formülü elde edilir.</p>
+      <div class="rh-formula">Q* = √(2 × D × S ÷ H)<br>D: yıllık talep (adet) · S: sipariş başına sabit maliyet (TL) · H: birim başına yıllık stok tutma maliyeti (TL)<br>Yıllık sipariş sayısı = D ÷ Q* · Sipariş aralığı = çalışma günü ÷ sipariş sayısı<br>Yıllık toplam stok maliyeti = (D ÷ Q) × S + (Q ÷ 2) × H</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Terim</th><th>İçerdiği kalemler</th><th>Dikkat edilecek nokta</th></tr></thead>
+        <tbody>
+          <tr><td>D – yıllık talep</td><td>Satış ya da üretim tüketimi (adet)</td><td>Geçmiş satışlar ve beklenen büyüme birlikte düşünülmeli</td></tr>
+          <tr><td>S – sipariş maliyeti</td><td>Nakliye sabit kısmı, satın alma ve kabul işçiliği, kontrol, evrak</td><td>Ürün bedeli dahil değildir; yalnızca sipariş başına sabit kısım</td></tr>
+          <tr><td>H – stok tutma maliyeti</td><td>Sermaye maliyeti, depo kirası ve enerji, sigorta, fire, eskime</td><td>Genellikle birim maliyetin yıllık yüzdesi olarak hesaplanır</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b3">EOQ formülü nasıl uygulanır? Çözümlü örnek</h2>
+      <p>Bir toptancının yıllık 12.000 adet sattığı bir ürünü düşünelim. Her siparişte nakliye, satın alma ve kabul için ortalama 400 TL sabit maliyet oluşuyor. Ürünün birim maliyeti 60 TL ve işletme stok tutma maliyetini yıllık %20 olarak hesaplıyor; buna göre H = 60 × 0,20 = 12 TL. İşletme yılda 300 gün çalışıyor. Tüm tutarlar örnektir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sipariş miktarı</th><th>Sipariş sayısı/yıl</th><th>Sipariş maliyeti</th><th>Stok tutma maliyeti</th><th>Toplam</th></tr></thead>
+        <tbody>
+          <tr><td>500</td><td>24</td><td>9.600 TL</td><td>3.000 TL</td><td>12.600 TL</td></tr>
+          <tr><td>894 (EOQ)</td><td>13,4</td><td>5.367 TL</td><td>5.367 TL</td><td>10.733 TL</td></tr>
+          <tr><td>1.200</td><td>10</td><td>4.000 TL</td><td>7.200 TL</td><td>11.200 TL</td></tr>
+          <tr><td>1.500</td><td>8</td><td>3.200 TL</td><td>9.000 TL</td><td>12.200 TL</td></tr>
+          <tr><td>2.000</td><td>6</td><td>2.400 TL</td><td>12.000 TL</td><td>14.400 TL</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">EOQ'dan %34 fazla (1.200 adet) sipariş vermek toplam maliyeti yalnızca %4,3 artırıyor. Bu duyarsızlık, koli ya da palet katına yuvarlamanın güvenle yapılabileceğini gösterir.</p>
+      <ol class="ba-steps">
+        <li><strong>EOQ:</strong> Q* = √(2 × 12.000 × 400 ÷ 12) = √800.000 = 894,4 adet. Pratikte 900 adet ya da koli katına yuvarlanabilir.</li>
+        <li><strong>Yıllık sipariş sayısı:</strong> 12.000 ÷ 894,4 = 13,4 sipariş.</li>
+        <li><strong>Sipariş aralığı:</strong> 300 ÷ 13,4 = 22,4 çalışma günü; yaklaşık her dört haftada bir sipariş.</li>
+        <li><strong>Yıllık sipariş maliyeti:</strong> 13,42 × 400 = 5.367 TL.</li>
+        <li><strong>Yıllık stok tutma maliyeti:</strong> (894,4 ÷ 2) × 12 = 5.367 TL. İki maliyetin eşit olduğuna dikkat edin.</li>
+        <li><strong>Toplam:</strong> 5.367 + 5.367 = 10.733 TL. Ürün bedeli (12.000 × 60 = 720.000 TL) her senaryoda aynı olduğu için bu karşılaştırmaya girmez.</li>
+      </ol>
+      <p>Bu hesabı <a href="../../ekonomik-siparis-miktari-hesapla/">Ekonomik Sipariş Miktarı (EOQ) Hesaplama</a> aracı yapar: yıllık talep, sipariş maliyeti, stok tutma maliyeti ve çalışma günü girildiğinde EOQ'yu, sipariş sıklığını, iki maliyet kalemini ve ortalama stoğu verir.</p>
+
+      <h2 id="b4">Stok tutma maliyeti neleri içerir?</h2>
+      <p>Stok tutma maliyeti, çoğu işletmenin hafife aldığı kalemdir. Yalnızca depo kirasından ibaret değildir; rafta duran malın her gün işletmeye bir maliyeti vardır. Bu maliyeti birim başına TL olarak hesaplamak zorsa, birim maliyetin yıllık yüzdesi olarak tahmin etmek pratik bir yoldur.</p>
+      <ul>
+        <li><strong>Sermaye maliyeti:</strong> Stoğa bağlanan paranın alternatif getirisi ya da kredi faizi. Yüksek enflasyon ve faiz dönemlerinde en büyük kalem budur.</li>
+        <li><strong>Depolama:</strong> Kira ya da amortisman, enerji, raf ve forklift giderleri, depo personeli.</li>
+        <li><strong>Sigorta ve vergiler:</strong> Stok değerine bağlı sigorta primleri.</li>
+        <li><strong>Fire ve kayıp:</strong> Kırılma, bozulma, hırsızlık, sayım farkları.</li>
+        <li><strong>Eskime:</strong> Modası geçen, son kullanma tarihi yaklaşan ya da yeni modeli çıkan ürünlerde değer kaybı.</li>
+      </ul>
+      <p>Bu kalemlerin toplamı sektöre göre çok değişir; birçok kaynakta birim maliyetin yıllık %15–30'u gibi aralıklar örnek olarak verilir. Kendi işletmeniz için bir yılın gerçek giderlerini ortalama stok değerine bölerek daha isabetli bir oran bulabilirsiniz. Faiz ve enflasyonun paranın değerine etkisini <a href="../../bilgi-bankasi/reel-faiz-nedir-nasil-hesaplanir/">reel faiz</a> yazısı açıklıyor.</p>
+
+      <h2 id="b5">Emniyet stoğu nasıl hesaplanır?</h2>
+      <p>EOQ &quot;ne kadar&quot; sorusunu cevaplar; &quot;ne zaman&quot; sorusu için emniyet stoğu ve yeniden sipariş noktası gerekir. Talep ve tedarik süresi hiçbir zaman tam sabit olmadığı için, sipariş verdikten sonra mal gelene kadar geçen sürede stok bitebilir. Emniyet stoğu bu belirsizliğe karşı tutulan tampondur. İki yaygın yöntem vardır.</p>
+      <div class="rh-formula">İstatistiksel yöntem: SS = Z × σ_günlük × √L<br>En kötü durum yöntemi: SS = (en yüksek günlük satış × en uzun tedarik süresi) − (ortalama günlük satış × ortalama tedarik süresi)<br>Z: %90 → 1,28 · %95 → 1,645 · %97,5 → 1,96 · %99 → 2,33</div>
+      <ol class="ba-steps">
+        <li><strong>Veriler:</strong> Günlük ortalama satış 40 adet (12.000 ÷ 300), günlük satışın standart sapması 8 adet, tedarik süresi 9 gün, hedef hizmet düzeyi %95.</li>
+        <li><strong>İstatistiksel emniyet stoğu:</strong> SS = 1,645 × 8 × √9 = 1,645 × 8 × 3 = 39,5 → 40 adet.</li>
+        <li><strong>En kötü durum yöntemi:</strong> En yüksek günlük satış 55, en uzun tedarik süresi 12 gün olsun. SS = 55 × 12 − 40 × 9 = 660 − 360 = 300 adet.</li>
+        <li><strong>Karşılaştırma:</strong> İkinci yöntem çok daha temkinlidir ve yedi kat fazla stok önerir. Bu, her iki olumsuzluğun aynı anda yaşanacağını varsayar; stok bitmesinin maliyeti çok yüksek olan kritik ürünler için anlamlı, sıradan ürünler için pahalı bir güvencedir.</li>
+      </ol>
+      <p>Tedarik süresi de değişkense (örneğin ithal ürünlerde) istatistiksel formül hem talep hem süre belirsizliğini içerecek şekilde genişletilir. <a href="../../emniyet-stogu-hesapla/">Emniyet Stoğu Hesaplama</a> aracı iki yöntemi de sunar ve yeniden sipariş noktasını birlikte verir. Standart sapmanın nasıl hesaplandığını <a href="../../bilgi-bankasi/standart-sapma-nasil-hesaplanir/">standart sapma</a> yazısında bulabilirsiniz.</p>
+
+      <div class="ba-ad" data-slot="bilgi-ekonomik-siparis-miktari-eoq-nedir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Yeniden sipariş noktası nedir?</h2>
+      <p>Yeniden sipariş noktası (ROP), stok seviyesi bu değere indiğinde yeni siparişin verilmesi gereken eşiktir. Tedarik süresi boyunca beklenen talep ile emniyet stoğunun toplamıdır. Stok bu noktaya düştüğünde sipariş verilirse, mal geldiğinde ortalama olarak geriye emniyet stoğu kadar ürün kalır.</p>
+      <div class="rh-formula">ROP = günlük ortalama talep × tedarik süresi (gün) + emniyet stoğu<br>Örnek: 40 × 9 + 39,5 = 399,5 → 400 adet</div>
+      <p>Örnekteki işletme için politika artık nettir: stok 400 adede indiğinde 894 (ya da 900) adetlik sipariş verilir. Ortalama stok yaklaşık Q ÷ 2 + SS = 447 + 40 = 487 adet olur. Bu politika, muhasebe ya da stok programınızda &quot;minimum stok&quot; ve &quot;sipariş miktarı&quot; alanlarına girilerek otomatik uyarıya dönüştürülebilir. Çoklu kanalda (kendi siteniz ve pazaryerleri) satış yapıyorsanız tüm kanalların toplam talebini tek stokta izlemek, ROP hesabının doğru çalışması için şarttır.</p>
+
+      <h2 id="b7">Stok devir hızı ile EOQ ilişkisi nedir?</h2>
+      <p>Stok devir hızı, bir dönemde satılan malın maliyetinin ortalama stoğa bölünmesiyle bulunur ve stoğun yılda kaç kez yenilendiğini gösterir. EOQ ve emniyet stoğu ortalama stoğu belirlediği için devir hızını doğrudan etkiler. Örneğimizde ortalama stok 487 adet, yıllık satış 12.000 adettir; adet bazında devir hızı 12.000 ÷ 487 = 24,6, yani stok yılda yaklaşık 25 kez yenilenir ve ortalama 300 ÷ 24,6 = 12 çalışma günü stokta kalır.</p>
+      <p>Sipariş miktarını EOQ'nun üzerine çıkarmak devir hızını düşürür, stokta kalma süresini uzatır. Daha küçük ve sık siparişler devir hızını artırır ama sipariş maliyetini yükseltir. Devir hızının yorumlanması ve sektör karşılaştırmaları için <a href="../../bilgi-bankasi/stok-devir-hizi-nasil-hesaplanir/">stok devir hızı nasıl hesaplanır</a> yazısına, hesap için <a href="../../stok-devir-hizi-hesapla/">Stok Devir Hızı Hesaplama</a> aracına bakabilirsiniz.</p>
+
+      <h2 id="b8">Küçük işletmeler EOQ kullanabilir mi?</h2>
+      <p>Kullanabilir ve çoğu zaman en çok fayda sağlayanlar küçük işletmelerdir, çünkü sınırlı nakitleri rafta bağlandığında işletmenin nefes alanı daralır. Tüm ürünler için ayrıntılı hesap yapmak gerekmez; satış hacmi ve tutar olarak en büyük paya sahip ürünlerle (ABC analizindeki A grubu) başlamak en verimli yoldur. Bu ürünler genellikle stok değerinin büyük kısmını oluşturur.</p>
+      <ul>
+        <li><strong>Tahmini verilerle başlayın:</strong> S ve H için kaba tahminler bile sezgiyle verilen sipariş miktarından genellikle daha iyi sonuç verir; model bu girdilerdeki hatalara karşı duyarsızdır.</li>
+        <li><strong>Tedarikçi kısıtlarını ekleyin:</strong> Minimum sipariş miktarı, koli ve palet katları EOQ'nun üstünde ya da altında olabilir; en yakın uygulanabilir miktarı seçin.</li>
+        <li><strong>Toplu alım indirimlerini karşılaştırın:</strong> İndirimli miktardaki toplam maliyeti (ürün bedeli dahil) EOQ'daki toplam maliyetle karşılaştırın.</li>
+        <li><strong>Fiyat artışı dönemlerini ayrı değerlendirin:</strong> Hızlı fiyat artışı beklenen dönemlerde erken ve fazla alım cazip görünebilir; bu bir EOQ kararı değil, nakit ve risk kararıdır.</li>
+        <li><strong>Mevsimsel ürünlerde dönem bazlı hesap yapın:</strong> Yıllık ortalama yerine sezon içindeki talebi kullanın.</li>
+      </ul>
+
+      <h2 id="b9">Tedarik süresi belirsizse ne yapılmalı?</h2>
+      <p>İthal ürünler, yoğun dönemlerde kargo gecikmeleri ya da tek tedarikçiye bağımlılık tedarik süresini belirsiz hâle getirir. Bu durumda geçmiş siparişlerin gerçekleşen teslim sürelerini kaydedip ortalama ve en uzun değerleri çıkarmak ilk adımdır. Ardından emniyet stoğu hesabında hem talep hem süre belirsizliğini içeren yöntemi ya da en kötü durum yöntemini kullanabilirsiniz.</p>
+      <p>Pratik önlemler de en az formüller kadar etkilidir: kritik ürünler için ikinci bir tedarikçi belirlemek, tedarikçiyle sabit teslim günleri üzerinde anlaşmak, sipariş durumunu düzenli takip etmek ve stok seviyelerini her gün güncel tutmak. Belirsizlik azaldıkça gereken emniyet stoğu da azalır ve rafta bağlanan para serbest kalır.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Ekonomik sipariş miktarı (EOQ) nedir?</summary><p>Ekonomik sipariş miktarı, yıllık sipariş verme maliyeti ile stok tutma maliyetinin toplamını en aza indiren sipariş büyüklüğüdür. Q = √(2 × yıllık talep × sipariş maliyeti ÷ birim stok tutma maliyeti) formülüyle hesaplanır ve bu noktada iki maliyet birbirine eşittir.</p></details>
+      <details><summary>EOQ formülü nasıl uygulanır?</summary><p>Yıllık talep, sipariş başına sabit maliyet ve birim başına yıllık stok tutma maliyeti belirlenir ve formüle konur. Örneğin 12.000 adet talep, 400 TL sipariş maliyeti ve 12 TL stok tutma maliyetiyle EOQ yaklaşık 894 adet çıkar; yılda yaklaşık 13 sipariş verilir.</p></details>
+      <details><summary>Emniyet stoğu nasıl hesaplanır?</summary><p>İstatistiksel yöntemde emniyet stoğu, hizmet düzeyine karşılık gelen Z katsayısı ile günlük talebin standart sapmasının ve tedarik süresinin karekökünün çarpımıdır. Yüzde 95 hizmet düzeyi için Z yaklaşık 1,645'tir. Daha temkinli bir yol en kötü durum yöntemidir.</p></details>
+      <details><summary>Yeniden sipariş noktası nedir?</summary><p>Yeniden sipariş noktası, stok bu seviyeye indiğinde yeni sipariş verilmesi gereken eşiktir. Günlük ortalama talep ile tedarik süresinin çarpımına emniyet stoğu eklenerek bulunur. Günde 40 adet satış, 9 gün tedarik ve 40 adet emniyet stoğuyla nokta 400 adettir.</p></details>
+      <details><summary>Stok tutma maliyeti neleri içerir?</summary><p>Stok tutma maliyeti; stoğa bağlanan paranın sermaye maliyetini, depo kirası ve enerjisini, depo personelini, sigortayı, fire ve kayıpları ve eskime nedeniyle oluşan değer kaybını içerir. Genellikle birim maliyetin yıllık yüzdesi olarak tahmin edilir.</p></details>
+      <details><summary>Küçük işletmeler EOQ kullanabilir mi?</summary><p>Evet. Küçük işletmeler en çok satan ve en yüksek stok değerine sahip ürünlerden başlayarak EOQ'yu kullanabilir. Model girdilerdeki küçük hatalara duyarsız olduğu için tahmini maliyetlerle bile sezgisel kararlardan daha iyi sonuç verir; tedarikçinin koli ve minimum sipariş kısıtları ayrıca dikkate alınmalıdır.</p></details>
+      <details><summary>Stok devir hızı ile EOQ ilişkisi nedir?</summary><p>EOQ ve emniyet stoğu ortalama stok seviyesini belirler; ortalama stok da stok devir hızının paydasıdır. Sipariş miktarı büyüdükçe ortalama stok artar ve devir hızı düşer. EOQ'ya yakın sipariş vermek, maliyet ile devir hızı arasında dengeli bir sonuç sağlar.</p></details>
+      <details><summary>Tedarik süresi belirsizse ne yapılmalı?</summary><p>Geçmiş siparişlerin gerçekleşen teslim süreleri kaydedilerek ortalama ve en uzun süre bulunmalı, emniyet stoğu hem talep hem süre belirsizliğini içeren bir yöntemle hesaplanmalıdır. İkinci tedarikçi bulmak ve sabit teslim günleri üzerinde anlaşmak belirsizliği azaltır.</p></details>
+      <details><summary>EOQ'dan biraz sapmak maliyeti çok artırır mı?</summary><p>Hayır. Toplam maliyet eğrisi EOQ çevresinde yayvandır. Örnekte EOQ'dan yüzde 34 fazla sipariş vermek toplam stok maliyetini yalnızca yüzde 4,3 artırıyor. Bu nedenle sipariş miktarını koli, palet ya da tedarikçinin minimum miktarına yuvarlamak güvenlidir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.kosgeb.gov.tr/" rel="noopener">KOSGEB – işletme yönetimi ve girişimcilik destekleri</a></li>
+        <li><a href="https://ticaret.gov.tr/" rel="noopener">Ticaret Bakanlığı – işletmeler için bilgi</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../stok-devir-hizi-nasil-hesaplanir/"><strong>Stok Devir Hızı Nasıl Hesaplanır? Emniyet Stoku ve Sipariş Miktarı</strong><span>Stok devir hızı = satılan malın maliyeti ÷ ortalama stok; stokta kalma süresi = 365 ÷ devir hızı. Emniyet stoku, yeniden sipariş noktası ve EOQ örnekleriyle.</span></a></li>
+          <li><a href="../standart-sapma-nasil-hesaplanir/"><strong>Standart Sapma Nasıl Hesaplanır? Varyans Formülü ve Adım Adım Örnek</strong><span>Standart sapma, varyansın kareköküdür: sapmaların karelerinin ortalaması alınıp kökü bulunur. n ve n-1 farkı, adım adım örnek, değişim katsayısı ve Excel formülü.</span></a></li>
+          <li><a href="../basabas-noktasi-nedir/"><strong>Başabaş Noktası Nedir, Nasıl Hesaplanır? Formül ve İşletme Örneği</strong><span>Başabaş noktası, gelirlerin tüm giderleri tam karşıladığı satış miktarıdır: sabit giderler ÷ (birim fiyat − birim değişken maliyet). Katkı payı, grafik ve kafe örneği.</span></a></li>
+          <li><a href="../kar-marji-nasil-hesaplanir/"><strong>Kâr Marjı ve Kâr Oranı Nasıl Hesaplanır? Farkları ve Örnekler</strong><span>Kâr marjı kârın satış fiyatına, kâr oranı (markup) maliyete oranıdır. 100 TL'ye alınıp 150 TL'ye satılan üründe marj %33,3, kâr oranı %50'dir. Formüller ve örnekler.</span></a></li>
+          <li><a href="../amortisman-nasil-hesaplanir/"><strong>Amortisman Nedir, Nasıl Hesaplanır? Normal ve Azalan Bakiyeler Yöntemi</strong><span>Normal amortisman = maliyet × (1 ÷ faydalı ömür). Azalan bakiyelerde oran iki katıdır, %50'yi geçemez. Faydalı ömür tablosu, 2026 gider sınırı, binek araç ve kıst.</span></a></li>
+          <li><a href="../bagkur-primi-ne-kadar/"><strong>Bağ-Kur Primi Ne Kadar, Nasıl Hesaplanır? 2026 Esnaf Rehberi</strong><span>Bağ-Kur primi, prime esas kazancın %35,75'idir; 2026'da alt sınırdan aylık 11.808,23 TL, 5 puan indirimle 10.156,73 TL ödenir. Hesaplama, ödeme günü ve emeklilik.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-ekonomik-siparis-miktari-eoq-nedir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
