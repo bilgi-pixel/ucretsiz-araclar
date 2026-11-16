@@ -154,3 +154,4 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   belgede alan boş bırakılınca yazdırma/kopyalama kısıtları kaldırılıyor; bu, sahip parolası bilinmeden kısıtın aşılması demek. Kural 8
   (şifre kırıcı yasağı) açısından `policy-reviewer` ile inceleyin; gerekirse sahip parolası istensin.
 - `avize-boyutu-hesapla`: gövde yüksekliği önerisi (2,7 m tavanda 56–68 cm) aynı sonuçtaki "en fazla 60 cm sarkma" satırıyla çelişebiliyor; uyarı ekleyin.
+- `et-cozdurme-suresi-hesapla`: çözülen kıyma ve tavuğun buzdolabında 1–2 gün içinde pişirilmesi gerektiği uyarısını belirginleştirin.
