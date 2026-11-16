@@ -110,3 +110,9 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
 - Kablo kesiti aracı yalnızca gerilim düşümüne bakıyor (kısa hatta 25 A için 1,5 mm² çıkabiliyor); akım taşıma kapasitesi kontrolü ekleyin.
 - Evcil hayvan yaşı aracı 1 yaş altını doğrusal hesaplıyor (6 aylık kedi → 7,5; yaygın tablolar ~10) ve dev ırk köpeklerin ilk iki yılını
   küçük ırkla aynı sayıyor. UPS aracındaki "Aküden çekilen akım" satırı aküleri seri bağlı varsayıyor; sayfada belirtin.
+- `vardiya-cizelgesi`: molayı düşmüyor; 24–08 gece vardiyası (30 dk mola, net 7,5 sa) 7,5 saat sınırını aşıyor sayılabiliyor, haftalık 45 saat
+  brüt saatle sayılıyor. `merdiven-hesapla` yalnızca 2h+b kuralına bakıyor; İmar Yönetmeliği md. 31 sınırları (rıht ≤16/18 cm, basış ≥27 cm) için uyarı ekleyin.
+  `yagmur-suyu-hasadi-hesapla` izdüşüm alanı, `cati-alani-hesapla` eğik yüzey alanı veriyor; farkı sayfalarda belirtin.
+- `et-pisirme-suresi-hesapla`: dana "az pişmiş" 52–55 °C hedefi, gıda güvenliği sınırının (bütün parça 63 °C + 3 dk) altında olduğu
+  belirtilmeden gösteriliyor; uyarı ekleyin. `renk-kontrast-hesapla` hazır örneklerinde üçüncü taraf marka adları geçiyor.
+  `kopek-mama-miktari-hesapla` varsayılan çarpanı 1,6 (kısırlaştırılmış); "normal" 1,8 olduğu sayfada açık değil.
