@@ -38,6 +38,6 @@ export function compute(v, h) {
     }
     return {
       rows,
-      note: `${t.ad} için önceden ısıtılmış 180 °C (fanlı fırında 160 °C) varsayılmıştır. Süre tahmindir; pişmeyi et termometresiyle iç sıcaklıktan doğrulayın.`,
+      note: `${t.ad} için önceden ısıtılmış 180 °C (fanlı fırında 160 °C) varsayılmıştır. Süre tahmindir; pişmeyi et termometresiyle iç sıcaklıktan doğrulayın.${v.tur === 'danaAz' ? ' Az pişmiş hedef sıcaklığı (52–55 °C), bütün parça et için yaygın gıda güvenliği önerisi olan 63 °C ve birkaç dakika dinlendirmenin altındadır; çocuklar, hamileler, yaşlılar ve bağışıklığı zayıf kişiler için önerilmez.' : ''}`,
     };
   }

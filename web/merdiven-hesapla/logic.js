@@ -27,6 +27,6 @@ export function compute(v, h) {
         ['Limon (eğik) uzunluk', h.fmt(limon, 2) + ' cm'],
         ['2h + b değeri', h.fmt(konfor, 2) + ' cm'],
       ],
-      note: durum + ' Son basış üst kat döşemesi sayıldığından basış sayısı rıht sayısından bir eksiktir.',
+      note: durum + ' Son basış üst kat döşemesi sayıldığından basış sayısı rıht sayısından bir eksiktir. Rıht yüksekliği ve basış genişliği için yürürlükteki imar yönetmeliğinin sınırlarını ayrıca kontrol edin.',
     };
   }

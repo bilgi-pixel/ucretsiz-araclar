@@ -29,8 +29,8 @@ export function compute(v, h) {
         ['Değerlendirme', durum],
         ['Karşılanan kayıp', '%' + h.fmt(Math.min(100, icilen / 1000 / ter * 100), 0)],
         ['Antrenman sonrası telafi', acik > 0 ? `${h.fmt(acik * 1.25, 2)}–${h.fmt(acik * 1.5, 2)} L` : 'Ek telafi gerekmiyor'],
-        ['15 dakikada bir içilecek miktar (kaybı tam karşılamak için)', h.fmt(oran * 250, 0) + ' ml'],
+        ['Ter kaybının 15 dakikalık karşılığı', h.fmt(oran * 250, 0) + ' ml'],
       ],
-      note: '1 kg ağırlık kaybı yaklaşık 1 litre sıvı sayılır. Solunumla ve enerji kullanımıyla oluşan küçük kütle kayıpları ihmal edilmiştir. Telafi aralığı, kaybedilen her kilogram için 1,25–1,5 litre sıvı varsayımına dayanır.',
+      note: '1 kg ağırlık kaybı yaklaşık 1 litre sıvı sayılır. Solunumla ve enerji kullanımıyla oluşan küçük kütle kayıpları ihmal edilmiştir. Telafi aralığı, kaybedilen her kilogram için 1,25–1,5 litre sıvı varsayımına dayanır. Amaç ter kaybının tamamını içmek değil, ağırlık kaybını vücut ağırlığının yaklaşık %2\'sinin altında tutmaktır; susuzluğunuza göre için, gereğinden fazla su içmek de sakıncalıdır.',
     };
   }

@@ -30,6 +30,6 @@ export function compute(v, h) {
         ['Mahya yüksekliği', h.fmt(yuk, 2) + ' m'],
         ['Alan çarpanı', h.fmt(carpan, 4)],
       ],
-      note: 'Mahya yüksekliği saçak ucu hizasından ölçülür. Kırma çatıda dört yüzeyin de aynı eğimde olduğu varsayılır. Bindirme ve fire payı dahil değildir.',
+      note: 'Mahya yüksekliği saçak ucu hizasından ölçülür. Kırma çatıda dört yüzeyin de aynı eğimde olduğu varsayılır. Bindirme ve fire payı dahil değildir. Sonuç eğik yüzey alanıdır; yağmur suyu toplama hesabında izdüşüm (plan) alanı kullanılır.',
     };
   }

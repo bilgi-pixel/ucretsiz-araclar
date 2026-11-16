@@ -38,28 +38,41 @@ export default {
     const standartlar = sistem === 'dc'
       ? [0.5, 0.75, 1, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240]
       : [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240];
-    const secilen = standartlar.find((s) => s >= kesit * (1 - 1e-9));
-    if (!secilen) h.err(`Hesaplanan kesit ${h.fmt(kesit, 1)} mm² olup 240 mm²'den büyük. Hattı paralel kablolarla kurmayı, gerilimi yükseltmeyi ya da mesafeyi kısaltmayı değerlendirin.`);
+    const dusumKesit = standartlar.find((s) => s >= kesit * (1 - 1e-9));
+    if (!dusumKesit) h.err(`Hesaplanan kesit ${h.fmt(kesit, 1)} mm² olup 240 mm²'den büyük. Hattı paralel kablolarla kurmayı, gerilimi yükseltmeyi ya da mesafeyi kısaltmayı değerlendirin.`);
+    // Akım taşıma için yaklaşık en küçük kesit: koruma elemanı anma akımına göre yaygın tesisat uygulaması (bakır, PVC yalıtım).
+    // Alüminyumda bir üst standart kesit alınır. 10 A'e kadar DC devrelerde bu sınır uygulanmaz (ince kablolu düşük gerilim işleri).
+    const AKIM = [[10, 1.5], [16, 2.5], [25, 4], [32, 6], [40, 10], [63, 16], [80, 25], [100, 35], [125, 50], [160, 70], [200, 95], [250, 120]];
+    let akimKesit = null, tabloDisi = false;
+    if (!(sistem === 'dc' && i <= 10)) {
+      const satir = AKIM.find(([a]) => i <= a * (1 + 1e-9));
+      if (!satir) tabloDisi = true;
+      else { akimKesit = satir[1]; if (v.malzeme === 'al') akimKesit = standartlar[Math.min(standartlar.length - 1, standartlar.indexOf(akimKesit) + 1)]; }
+    }
+    const secilen = Math.max(dusumKesit, akimKesit || 0);
     const gercek = pay / (iletkenlik * secilen);
     return {
       rows: [
         ['Önerilen standart kesit', h.fmt(secilen, 2) + ' mm²'],
-        ['Hesaplanan en küçük kesit', h.fmt(kesit, 3) + ' mm²'],
+        ['Gerilim düşümü için en küçük kesit', h.fmt(kesit, 3) + ' mm²'],
+        ['Akım için en küçük kesit (yaklaşık)', tabloDisi ? '250 A üzeri: tablo dışı, projeye göre belirlenir' : akimKesit ? h.fmt(akimKesit, 2) + ' mm²' : 'Uygulanmadı (10 A\'e kadar DC)'],
+        ['Belirleyici ölçüt', akimKesit && akimKesit > dusumKesit ? 'Akım taşıma' : 'Gerilim düşümü'],
         ['İzin verilen gerilim düşümü', h.fmt(izinli, 3) + ' V'],
         ['Seçilen kesitte gerilim düşümü', `${h.fmt(gercek, 3)} V (%${h.fmt((gercek / u) * 100, 2)})`],
         ['Hat sonundaki gerilim', h.fmt(u - gercek, 2) + ' V'],
         ['Akım yoğunluğu', h.fmt(i / secilen, 2) + ' A/mm²'],
       ],
-      note: 'Bu sonuç yalnızca gerilim düşümü ölçütüne göredir. Seçilen kesitin akım taşıma kapasitesi (döşeme şekli, ortam sıcaklığı, kablo tipi) ve koruma elemanıyla uyumu ayrıca kontrol edilmelidir; iki ölçütten büyük olan kesit kullanılır.',
+      note: 'Önerilen kesit, gerilim düşümü ile akım taşıma ölçütlerinden büyük olanıdır. Akım ölçütü yaygın tesisat uygulamasına dayanan yaklaşık bir alt sınırdır; gerçek akım taşıma kapasitesi döşeme şekline, ortam sıcaklığına, kablo tipine ve yan yana kablo sayısına göre düşebilir. Kesin seçim ve koruma elemanı uyumu için yetkili elektrik mühendisine ya da elektrikçiye danışın.',
     };
   },
   cases: [
-    { in: { sistem: 'tek', gerilim: '230', akim: '16', uzunluk: '30', dusum: '3', malzeme: 'cu', cosfi: '1' }, out: { 'Önerilen standart kesit': '2,5 mm²', 'Hesaplanan en küçük kesit': '2,484 mm²', 'İzin verilen gerilim düşümü': '6,9 V', 'Seçilen kesitte gerilim düşümü': '6,857 V (%2,98)', 'Hat sonundaki gerilim': '223,14 V', 'Akım yoğunluğu': '6,4 A/mm²' } },
-    { in: { sistem: 'dc', gerilim: '12', akim: '10', uzunluk: '5', dusum: '3', malzeme: 'cu' }, out: { 'Önerilen standart kesit': '6 mm²', 'Hesaplanan en küçük kesit': '4,96 mm²', 'Seçilen kesitte gerilim düşümü': '0,298 V (%2,48)' } },
-    { in: { sistem: 'uc', gerilim: '400', akim: '32', uzunluk: '50', dusum: '3', malzeme: 'cu', cosfi: '0,8' }, out: { 'Önerilen standart kesit': '4 mm²', 'Hesaplanan en küçük kesit': '3,299 mm²', 'İzin verilen gerilim düşümü': '12 V', 'Seçilen kesitte gerilim düşümü': '9,897 V (%2,47)' } },
-    { in: { sistem: 'tek', gerilim: '230', akim: '40', uzunluk: '100', dusum: '5', malzeme: 'al', cosfi: '1' }, out: { 'Önerilen standart kesit': '25 mm²', 'Hesaplanan en küçük kesit': '19,876 mm²', 'Seçilen kesitte gerilim düşümü': '9,143 V (%3,98)' } },
-    { in: { sistem: 'tek', gerilim: '230', akim: '10', uzunluk: '10', dusum: '3', malzeme: 'cu', cosfi: '1' }, out: { 'Önerilen standart kesit': '1,5 mm²', 'Hesaplanan en küçük kesit': '0,518 mm²', 'Seçilen kesitte gerilim düşümü': '2,381 V (%1,04)' } },
-    { in: { sistem: 'dc', gerilim: '24', akim: '5', uzunluk: '2', dusum: '3', malzeme: 'cu' }, out: { 'Önerilen standart kesit': '0,5 mm²', 'Hesaplanan en küçük kesit': '0,496 mm²', 'Seçilen kesitte gerilim düşümü': '0,714 V (%2,98)' } },
+    { in: { sistem: 'tek', gerilim: '230', akim: '16', uzunluk: '30', dusum: '3', malzeme: 'cu', cosfi: '1' }, out: { 'Önerilen standart kesit': '2,5 mm²', 'Gerilim düşümü için en küçük kesit': '2,484 mm²', 'İzin verilen gerilim düşümü': '6,9 V', 'Seçilen kesitte gerilim düşümü': '6,857 V (%2,98)', 'Hat sonundaki gerilim': '223,14 V', 'Akım yoğunluğu': '6,4 A/mm²' } },
+    { in: { sistem: 'dc', gerilim: '12', akim: '10', uzunluk: '5', dusum: '3', malzeme: 'cu' }, out: { 'Önerilen standart kesit': '6 mm²', 'Gerilim düşümü için en küçük kesit': '4,96 mm²', 'Seçilen kesitte gerilim düşümü': '0,298 V (%2,48)' } },
+    { in: { sistem: 'uc', gerilim: '400', akim: '32', uzunluk: '50', dusum: '3', malzeme: 'cu', cosfi: '0,8' }, out: { 'Önerilen standart kesit': '6 mm²', 'Gerilim düşümü için en küçük kesit': '3,299 mm²', 'Akım için en küçük kesit (yaklaşık)': '6 mm²', 'Belirleyici ölçüt': 'Akım taşıma', 'İzin verilen gerilim düşümü': '12 V' } },
+    { in: { sistem: 'tek', gerilim: '230', akim: '25', uzunluk: '5', dusum: '3', malzeme: 'cu', cosfi: '1' }, out: { 'Önerilen standart kesit': '4 mm²', 'Akım için en küçük kesit (yaklaşık)': '4 mm²', 'Belirleyici ölçüt': 'Akım taşıma' } },
+    { in: { sistem: 'tek', gerilim: '230', akim: '40', uzunluk: '100', dusum: '5', malzeme: 'al', cosfi: '1' }, out: { 'Önerilen standart kesit': '25 mm²', 'Gerilim düşümü için en küçük kesit': '19,876 mm²', 'Seçilen kesitte gerilim düşümü': '9,143 V (%3,98)' } },
+    { in: { sistem: 'tek', gerilim: '230', akim: '10', uzunluk: '10', dusum: '3', malzeme: 'cu', cosfi: '1' }, out: { 'Önerilen standart kesit': '1,5 mm²', 'Gerilim düşümü için en küçük kesit': '0,518 mm²', 'Seçilen kesitte gerilim düşümü': '2,381 V (%1,04)' } },
+    { in: { sistem: 'dc', gerilim: '24', akim: '5', uzunluk: '2', dusum: '3', malzeme: 'cu' }, out: { 'Önerilen standart kesit': '0,5 mm²', 'Gerilim düşümü için en küçük kesit': '0,496 mm²', 'Seçilen kesitte gerilim düşümü': '0,714 V (%2,98)' } },
     { in: { sistem: 'tek', gerilim: '230', akim: '', uzunluk: '30', dusum: '3', malzeme: 'cu', cosfi: '1' }, error: true },
     { in: { sistem: 'dc', gerilim: '12', akim: '200', uzunluk: '100', dusum: '1', malzeme: 'cu' }, error: true },
     { in: { sistem: 'uc', gerilim: '400', akim: '32', uzunluk: '50', dusum: '3', malzeme: 'cu', cosfi: '1,2' }, error: true },
@@ -71,12 +84,12 @@ export default {
     'Hattan geçecek akımı amper olarak, hattın tek yön uzunluğunu metre olarak girin. Gidiş-dönüş iletkeni araç tarafından hesaba katılır; uzunluğu ikiyle çarpmayın.',
     'Kabul ettiğiniz en yüksek gerilim düşümünü yüzde olarak, iletken malzemesini ve alternatif akımda güç faktörünü belirtin.',
     '"Hesapla" düğmesine basın. İlk satır önerilen standart kesiti, sonraki satırlar hesaplanan kesin değeri ve seçilen kesitte oluşacak gerilim düşümünü verir.',
-    'Sonucu, kablonun akım taşıma kapasitesi tablosuyla karşılaştırın; iki ölçütten büyük olan kesiti kullanın.',
+    'Sonuçta iki ölçüt de görünür: gerilim düşümü için en küçük kesit ve akım için yaklaşık en küçük kesit. Araç büyük olanı önerir; kesin seçim için döşeme koşullarınıza uygun akım taşıma tablosuna da bakın.',
   ],
   sections: [
     { h: 'Kablo kesiti neye göre belirlenir?', p: [
       'Bir hattın kablo kesiti iki ayrı ölçüte göre seçilir ve ikisinden <strong>büyük olan</strong> uygulanır. Birincisi <strong>akım taşıma kapasitesidir</strong>: kablo, üzerinden geçen akımla ısınır ve yalıtkanının dayanabileceği sıcaklığı aşmamalıdır. Bu kapasite yalnızca kesite değil; kablonun tipine, boru içinde mi, sıva altında mı, kablo tavasında mı döşendiğine, ortam sıcaklığına ve yan yana kaç kablo bulunduğuna bağlıdır. Bu yüzden tek bir sayıyla verilemez, üretici ve standart tablolarından okunur.',
-      'İkincisi <strong>gerilim düşümüdür</strong>: kablo ne kadar uzun ve ince olursa direnci o kadar büyür ve hattın sonundaki cihaza o kadar düşük gerilim ulaşır. Kısa hatlarda genellikle akım taşıma kapasitesi, uzun hatlarda ise gerilim düşümü belirleyici olur. Bu araç ikinci ölçütü, yani gerilim düşümüne göre kesiti hesaplar.',
+      'İkincisi <strong>gerilim düşümüdür</strong>: kablo ne kadar uzun ve ince olursa direnci o kadar büyür ve hattın sonundaki cihaza o kadar düşük gerilim ulaşır. Kısa hatlarda genellikle akım taşıma kapasitesi, uzun hatlarda ise gerilim düşümü belirleyici olur. Bu araç gerilim düşümüne göre kesiti hesaplar, ayrıca akım için yaygın tesisat uygulamasına dayanan yaklaşık bir alt sınırı (örneğin 16 A için 2,5 mm², 25 A için 4 mm², 32 A için 6 mm² bakır) uygular ve ikisinden büyük olanı önerir.',
     ] },
     { h: 'Hesapta kullanılan formül', p: [
       'Tek fazlı alternatif akım ve doğru akım hatlarında akım hem gidiş hem dönüş iletkeninden geçtiği için uzunluk iki kez sayılır: <strong>S = 2 × L × I × cos φ ÷ (κ × ΔU)</strong>. Üç fazlı dengeli hatlarda ikinin yerini kök üç (yaklaşık 1,732) alır: <strong>S = √3 × L × I × cos φ ÷ (κ × ΔU)</strong>.',
@@ -86,7 +99,7 @@ export default {
     { h: 'Çözümlü örnekler', p: [
       '<strong>Tek faz:</strong> 230 V, 16 A çeken bir yük 30 metre uzakta, sınır yüzde 3, iletken bakır. ΔU = 6,9 V. S = 2 × 30 × 16 ÷ (56 × 6,9) = 960 ÷ 386,4 = 2,484 mm². Bir üst standart kesit 2,5 mm²\'dir. Bu kesitle düşüm 960 ÷ (56 × 2,5) = 6,857 V, yani yüzde 2,98 olur.',
       '<strong>12 V doğru akım:</strong> 10 A çeken bir cihaz aküden 5 metre uzakta. ΔU = 0,36 V. S = 2 × 5 × 10 ÷ (56 × 0,36) = 100 ÷ 20,16 = 4,96 mm²; standart kesit 6 mm². Aynı akım 230 V\'ta 1,5 mm² ile rahatça taşınırken 12 V\'ta 6 mm² gerekmesi, düşük gerilimli sistemlerde kabloların neden kalın olduğunu açıklar.',
-      '<strong>Üç faz:</strong> 400 V, 32 A, cos φ 0,8, 50 metre, yüzde 3. ΔU = 12 V. S = 1,732 × 50 × 32 × 0,8 ÷ (56 × 12) = 2.217 ÷ 672 = 3,299 mm²; standart kesit 4 mm², düşüm 9,897 V (yüzde 2,47). Ancak 32 A için 4 mm² kablonun akım taşıma kapasitesi döşeme koşuluna göre yetersiz kalabilir; bu örnek, gerilim düşümü hesabının tek başına neden yeterli olmadığını gösterir.',
+      '<strong>Üç faz:</strong> 400 V, 32 A, cos φ 0,8, 50 metre, yüzde 3. ΔU = 12 V. S = 1,732 × 50 × 32 × 0,8 ÷ (56 × 12) = 2.217 ÷ 672 = 3,299 mm²; gerilim düşümü tek başına 4 mm² ile sağlanır. Ancak 32 A için akım ölçütü 6 mm² gerektirir; araç bu yüzden 6 mm² önerir ve belirleyici ölçütü "Akım taşıma" olarak gösterir. Bu örnek, gerilim düşümü hesabının tek başına neden yeterli olmadığını gösterir.',
     ] },
     { h: 'Standart kesitler', p: [
       'Kablolar belirli kesitlerde üretilir; hesap sonucu her zaman bir üst standart değere yuvarlanır. Sabit tesisatta kullanılan başlıca kesitler şunlardır:',

@@ -22,6 +22,6 @@ export function compute(v, h) {
         ['Hacimce oran', '1 ölçü pirince ' + h.fmt(oran, 2) + ' ölçü su'],
         ['Yaklaşık porsiyon', h.fmt(gram / PORSIYON_G, 1) + ' kişilik'],
       ],
-      note: 'Varsayımlar: 1 su bardağı 200 ml, 1 su bardağı pirinç yaklaşık 180 g, kişi başı 75 g çiğ pirinç (garnitür porsiyonu). Oranlar kapağı kapalı tencerede, suyunu çekerek pişirme yöntemi içindir.',
+      note: 'Varsayımlar: 1 su bardağı 200 ml, 1 su bardağı pirinç yaklaşık 180 g, kişi başı 75 g çiğ pirinç (garnitür porsiyonu). Oranlar kapağı kapalı tencerede, suyunu çekerek pişirme yöntemi içindir. Paketin üzerinde su oranı yazıyorsa onu esas alın.',
     };
   }

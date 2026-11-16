@@ -19,6 +19,6 @@ export function compute(v, h) {
         ['Dinlenme enerji ihtiyacı (RER)', h.fmt(rer, 0) + ' kcal'],
         ['Kullanılan çarpan', '× ' + h.fmt(k, 1)],
       ],
-      note: 'Sonuç ortalama bir tahmindir; ırk, yaş ve hareketliliğe göre gerçek ihtiyaç belirgin biçimde değişebilir. Köpeğinizi düzenli tartıp miktarı ayarlayın. Hastalık, gebelik ve emzirme dönemlerinde veteriner hekime danışın.',
+      note: 'Sonuç ortalama bir tahmindir; ırk, yaş ve hareketliliğe göre gerçek ihtiyaç belirgin biçimde değişebilir. Köpeğinizi düzenli tartıp miktarı ayarlayın. Hastalık, gebelik ve emzirme dönemlerinde veteriner hekime danışın. Listede ilk seçenek kısırlaştırılmış yetişkindir (çarpan 1,6); kısırlaştırılmamış yetişkin köpek için ilgili seçeneği (çarpan 1,8) seçin.',
     };
   }

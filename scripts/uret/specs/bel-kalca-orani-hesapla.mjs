@@ -31,13 +31,14 @@ export default {
       rows: [
         ['Bel kalça oranı', h.fix(oran, 2)],
         ['Değerlendirme', durum],
+        ['Dünya Sağlık Örgütü eşiği', `${erkek ? '0,90' : '0,85'} – ${o >= (erkek ? 0.90 : 0.85) ? 'eşikte ya da üzerinde' : 'eşiğin altında'}`],
         ['Düşük risk sınırı', `${h.fix(orta, 2)} altı`],
         ['Bu kalça ölçüsünde sınır bel çevresi', h.fmt(sinir, 1) + ' cm'],
         ['Vücut tipi eğilimi', o >= yuksek ? 'Elma tipi (karın bölgesinde toplanma)' : o >= orta ? 'Ara tip' : 'Armut tipi ya da dengeli dağılım'],
       ],
       note: erkek
-        ? 'Erkeklerde 0,90 altı düşük, 0,90–0,99 orta, 1,00 ve üzeri yüksek risk olarak sınıflandı. Sonuç tanı değildir.'
-        : 'Kadınlarda 0,80 altı düşük, 0,80–0,84 orta, 0,85 ve üzeri yüksek risk olarak sınıflandı. Sonuç tanı değildir.',
+        ? 'Değerlendirme satırı üç kademeli yaygın sınıflamayı kullanır (0,90 altı düşük, 0,90–0,99 orta, 1,00 ve üzeri yüksek). Dünya Sağlık Örgütü ise erkeklerde 0,90 ve üzerini artmış risk eşiği sayar. Sonuç tanı değildir.'
+        : 'Değerlendirme satırı üç kademeli yaygın sınıflamayı kullanır (0,80 altı düşük, 0,80–0,84 orta, 0,85 ve üzeri yüksek). Dünya Sağlık Örgütü kadınlarda 0,85 ve üzerini artmış risk eşiği sayar. Sonuç tanı değildir.',
     };
   },
   cases: [

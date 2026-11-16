@@ -74,7 +74,7 @@ export default {
     rows.push(['Toplam koli hacmi', h.fmt(toplam * a * b * y / 1e6, 3) + ' m³']);
     return {
       rows,
-      note: 'Koliler dik konumda (yüksekliği sabit) ve palet dışına taşmadan dizilir. Palet tahtasının kendi yüksekliği ve ağırlığı hesaba dahil değildir.',
+      note: 'Koliler dik konumda (yüksekliği sabit) ve palet dışına taşmadan dizilir. Palet tahtasının kendi yüksekliği ve ağırlığı hesaba dahil değildir; izin verilen yük yüksekliğini palet hariç, yalnızca koli yığını için girin.',
     };
   },
   cases: [

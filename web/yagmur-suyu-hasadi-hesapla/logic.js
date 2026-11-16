@@ -21,6 +21,6 @@ export function compute(v, h) {
     }
     return {
       rows,
-      note: 'Sonuç yıllık toplam üzerinden bir ortalamadır; yağış aylara eşit dağılmaz. Depo boyutunu belirlerken yağışlı ve kurak ayları ayrı ayrı değerlendirin.',
+      note: 'Sonuç yıllık toplam üzerinden bir ortalamadır; yağış aylara eşit dağılmaz. Depo boyutunu belirlerken yağışlı ve kurak ayları ayrı ayrı değerlendirin. Çatı alanı olarak eğik yüzeyi değil, çatının yere izdüşüm (plan) alanını girin.',
     };
   }

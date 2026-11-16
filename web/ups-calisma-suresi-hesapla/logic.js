@@ -32,5 +32,5 @@ export function compute(v, h) {
       rows.push(['UPS\'in verebileceği güç', h.fmt(oran[0], 0) + ' W']);
       rows.push(['UPS yük oranı', '%' + h.fmt(oran[1], 1)]);
     }
-    return { rows, note: 'Sonuç yaklaşık bir tahmindir. Akü yaşı, sıcaklık ve boşalma hızı süreyi belirgin biçimde değiştirir; kritik sistemlerde üreticinin süre tablolarını ve gerçek testi esas alın.' };
+    return { rows, note: 'Sonuç yaklaşık bir tahmindir. Akü yaşı, sıcaklık ve boşalma hızı süreyi belirgin biçimde değiştirir; kritik sistemlerde üreticinin süre tablolarını ve gerçek testi esas alın. Aküden çekilen akım, aküler seri bağlıymış gibi toplam grup gerilimi üzerinden hesaplanır.' };
   }

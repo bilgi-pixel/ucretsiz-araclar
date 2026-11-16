@@ -46,15 +46,15 @@ export default {
         ['Değerlendirme', durum],
         ['Karşılanan kayıp', '%' + h.fmt(Math.min(100, icilen / 1000 / ter * 100), 0)],
         ['Antrenman sonrası telafi', acik > 0 ? `${h.fmt(acik * 1.25, 2)}–${h.fmt(acik * 1.5, 2)} L` : 'Ek telafi gerekmiyor'],
-        ['15 dakikada bir içilecek miktar (kaybı tam karşılamak için)', h.fmt(oran * 250, 0) + ' ml'],
+        ['Ter kaybının 15 dakikalık karşılığı', h.fmt(oran * 250, 0) + ' ml'],
       ],
-      note: '1 kg ağırlık kaybı yaklaşık 1 litre sıvı sayılır. Solunumla ve enerji kullanımıyla oluşan küçük kütle kayıpları ihmal edilmiştir. Telafi aralığı, kaybedilen her kilogram için 1,25–1,5 litre sıvı varsayımına dayanır.',
+      note: '1 kg ağırlık kaybı yaklaşık 1 litre sıvı sayılır. Solunumla ve enerji kullanımıyla oluşan küçük kütle kayıpları ihmal edilmiştir. Telafi aralığı, kaybedilen her kilogram için 1,25–1,5 litre sıvı varsayımına dayanır. Amaç ter kaybının tamamını içmek değil, ağırlık kaybını vücut ağırlığının yaklaşık %2\'sinin altında tutmaktır; susuzluğunuza göre için, gereğinden fazla su içmek de sakıncalıdır.',
     };
   },
   cases: [
     { in: { once: '70', sonra: '69,2', icilen: '500', idrar: '0', sure: '60' }, out: { 'Terleme oranı': '1,3 L/saat', 'Toplam ter kaybı': '1,3 L (1.300 ml)', 'Vücut ağırlığı değişimi': '−0,8 kg (%1,14)', 'Değerlendirme': 'Hafif sıvı açığı (%1–2)', 'Antrenman sonrası telafi': '1–1,2 L' } },
     { in: { once: '80', sonra: '78,5', icilen: '750', idrar: '250', sure: '90' }, out: { 'Terleme oranı': '1,33 L/saat', 'Toplam ter kaybı': '2 L (2.000 ml)', 'Vücut ağırlığı değişimi': '−1,5 kg (%1,88)', 'Karşılanan kayıp': '%38' } },
-    { in: { once: '60', sonra: '59,7', icilen: '0', idrar: '0', sure: '30' }, out: { 'Terleme oranı': '0,6 L/saat', 'Toplam ter kaybı': '0,3 L (300 ml)', 'Değerlendirme': 'Sıvı dengesi iyi korunmuş (%1\'in altında kayıp)', '15 dakikada bir içilecek miktar (kaybı tam karşılamak için)': '150 ml' } },
+    { in: { once: '60', sonra: '59,7', icilen: '0', idrar: '0', sure: '30' }, out: { 'Terleme oranı': '0,6 L/saat', 'Toplam ter kaybı': '0,3 L (300 ml)', 'Değerlendirme': 'Sıvı dengesi iyi korunmuş (%1\'in altında kayıp)', 'Ter kaybının 15 dakikalık karşılığı': '150 ml' } },
     { in: { once: '75', sonra: '72,5', icilen: '1000', idrar: '0', sure: '120' }, out: { 'Terleme oranı': '1,75 L/saat', 'Toplam ter kaybı': '3,5 L (3.500 ml)', 'Vücut ağırlığı değişimi': '−2,5 kg (%3,33)', 'Değerlendirme': 'Yüksek sıvı açığı (%3 ve üzeri); antrenmanda daha çok sıvı alın', 'Antrenman sonrası telafi': '3,13–3,75 L' } },
     { in: { once: '70', sonra: '70,2', icilen: '1000', idrar: '0', sure: '60' }, out: { 'Terleme oranı': '0,8 L/saat', 'Vücut ağırlığı değişimi': '+0,2 kg (%0,29)', 'Değerlendirme': 'Antrenmanda kaybettiğinizden fazla sıvı aldınız', 'Antrenman sonrası telafi': 'Ek telafi gerekmiyor', 'Karşılanan kayıp': '%100' } },
     { in: { once: '65', sonra: '64', icilen: '600', idrar: '0', sure: '45' }, out: { 'Terleme oranı': '2,13 L/saat', 'Toplam ter kaybı': '1,6 L (1.600 ml)', 'Vücut ağırlığı değişimi': '−1 kg (%1,54)' } },
@@ -76,7 +76,7 @@ export default {
     ] },
     { h: 'Çözümlü örnek', p: [
       'Koşuya 70,0 kg ile başlayan biri 60 dakika sonunda 69,2 kg tartılsın ve koşu boyunca 500 ml su içmiş olsun. Tartı farkı 0,8 kg\'dır. Ter kaybı 0,8 + 0,5 − 0 = <strong>1,3 litre</strong>, süre bir saat olduğundan terleme oranı <strong>1,3 L/saat</strong> çıkar. Vücut ağırlığı kaybı 0,8 ÷ 70 × 100 = %1,14\'tür; yani içilen yarım litre, kaybın yaklaşık %38\'ini karşılamıştır.',
-      'Bu kişi aynı koşulda kaybını tam karşılamak isteseydi 15 dakikada bir yaklaşık 325 ml içmesi gerekirdi. Antrenman sonrasında ise tartıdaki 0,8 kg açığı kapatmak için 1 ila 1,2 litre sıvıyı birkaç saate yayarak alması önerilen aralıktır.',
+      'Bu kişinin ter kaybı 15 dakikada yaklaşık 325 ml\'ye karşılık gelir; hedef bunun tamamını içmek değil, ağırlık kaybını %2\'nin altında tutacak kadarını almaktır. Antrenman sonrasında ise tartıdaki 0,8 kg açığı kapatmak için 1 ila 1,2 litre sıvıyı birkaç saate yayarak alması önerilen aralıktır.',
     ] },
     { h: 'Sonuç nasıl yorumlanır?', p: [
       'Terleme oranı kişiden kişiye ve koşuldan koşula büyük ölçüde değişir. Serin havada hafif tempoda saatte yarım litrenin altında kalabilir; sıcak ve nemli havada yoğun egzersizde saatte 2 litreyi aşabilir. Bu yüzden tek bir ölçüm yerine farklı hava ve tempolarda birkaç ölçüm yapıp kendi aralığınızı çıkarmak daha yararlıdır.',
