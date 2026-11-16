@@ -129,3 +129,6 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   yaklaşık; resmî kaynakla doğrulayın.
 - `periyodik-tablo/elementler.json` yuvarlanmış atom kütleleri (H 1,01, O 16) kullanıyor; `molar-kutle-hesapla` ve
   `kutle-yuzdesi-bilesik-hesapla` standart değerleri (1,008 / 15,999). Aynı bileşikte farklı sonuç çıkmasın diye tek kaynağa bağlayın.
+- `vucut-su-orani-hesapla/logic.js`: erkek Watson formülünde yaş katsayısı 0,09156 yazılmış; standart değer 0,09516.
+- `morse-alfabesi-cevir` ı ile İ'yi aynı koda eşliyor; Mors'tan metne çeviride ı/i ayrımı kayboluyor. `akort-aleti` bozuk (La–Re–Sol)
+  ve bağlama (La–Re–Mi) düzen ön ayarlarını bir müzik kaynağıyla doğrulayın.

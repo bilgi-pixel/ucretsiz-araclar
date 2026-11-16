@@ -156,7 +156,7 @@ export default {
       h: "Ücretsiz araçlarla sunum planlama",
       p: [
         "Hesabı elle yapmak yerine üç adımda tamamlayabilirsiniz. Önce [[arac:sunum-suresi-hesapla|Sunum Süresi Hesaplama]] aracına toplam süreyi, soru-cevap payını, slayt başına süreyi ve konuşma hızınızı girin; önerilen slayt sayısını, metin uzunluğunu ve yarı noktadaki slaytı görün. Ardından yazdığınız metni [[arac:konusma-suresi-hesapla|Konuşma Süresi Hesaplama]] aracına yapıştırarak kaç dakika süreceğini ve hedef süreye göre kaç kelime fazla ya da eksik olduğunu öğrenin.",
-        "Araçlar tarayıcınızda çalışır; metniniz hiçbir sunucuya gönderilmez, kayıt gerekmez. Sunum sonrası toplantı kaydı tutmanız gerekiyorsa [[bilgi:toplanti-notu-nasil-tutulur|toplantı notu nasıl tutulur]] yazısı da işinize yarayabilir."
+        "Araçlar tarayıcınızda çalışır; metniniz hiçbir sunucuya gönderilmez, kayıt gerekmez. Sunum sonrasında alınan kararları ve soruları not etmek, bir sonraki sunumunuzu daha iyi planlamanıza da yardımcı olur."
       ]
     }
   ],

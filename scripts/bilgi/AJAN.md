@@ -18,4 +18,6 @@ evcil hayvan, gıda, elektrik, kimyasal konularında teşhis/tedavi/doz önerisi
 Marka/model adı verme. Uzunluk: `after` dahil her makale en az 1.500 kelime. Her SVG konuya özel, bilgi taşıyan ve metindeki
 örnekle tutarlı olsun; şablon tekrarı yok.
 
+Geçici yardımcı betik gerekiyorsa kendine özel klasör aç (`mktemp -d`); paylaşılan /tmp klasörlerini kullanma.
+
 Bitince yalnızca döndür: ✓ geçen slug sayısı, bitiremediklerin (nedeniyle) ve sitedeki araçlarda fark ettiğin olası hatalar (tek satır).

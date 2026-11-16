@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>İki Belge Arasındaki Fark Nasıl Bulunur? PDF ve Metin Karşılaştırma</title>
+  <meta name="description" content="İki PDF ya da metin sürümü arasındaki farklar diff yöntemiyle bulunur. Satır ve kelime bazlı karşılaştırma, taranmış PDF, biçim farkı ve gizli belge önerileri.">
+  <meta name="keywords" content="iki pdf karşılaştırma, iki metin arasındaki fark, sözleşme farkı bulma, belge karşılaştırma, word belge karşılaştırma, değişiklik bulma, diff nedir, metin karşılaştırma">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/iki-belge-arasindaki-fark-nasil-bulunur/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="İki Belge Arasındaki Fark Nasıl Bulunur? PDF ve Metin Karşılaştırma">
+  <meta property="og:description" content="İki PDF ya da metin sürümü arasındaki farklar diff yöntemiyle bulunur. Satır ve kelime bazlı karşılaştırma, taranmış PDF, biçim farkı ve gizli belge önerileri.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/iki-belge-arasindaki-fark-nasil-bulunur/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"İki Belge Arasındaki Fark Nasıl Bulunur? PDF ve Metin Karşılaştırma","description":"İki PDF ya da metin sürümü arasındaki farklar diff yöntemiyle bulunur. Satır ve kelime bazlı karşılaştırma, taranmış PDF, biçim farkı ve gizli belge önerileri.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/iki-belge-arasindaki-fark-nasil-bulunur/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1402,"keywords":"iki pdf karşılaştırma, iki metin arasındaki fark, sözleşme farkı bulma, belge karşılaştırma, word belge karşılaştırma, değişiklik bulma, diff nedir, metin karşılaştırma","articleSection":"Dosya, PDF ve Fotoğraf","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Dosya, PDF ve Fotoğraf","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#dijital"},{"@type":"ListItem","position":4,"name":"İki Belge Arasındaki Fark Nasıl Bulunur? PDF ve Metin Karşılaştırma"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"İki PDF arasındaki farklar nasıl bulunur?","acceptedAnswer":{"@type":"Answer","text":"İki PDF'i karşılaştırma aracına yükleyin; araç metin katmanını okuyup satır ve kelime düzeyinde farkları renkli gösterir. Taranmış PDF'lerde önce OCR uygulamanız, ardından çıkan metni karşılaştırmanız gerekir."}},{"@type":"Question","name":"Sözleşmenin iki sürümünde neyin değiştiği nasıl görülür?","acceptedAnswer":{"@type":"Answer","text":"Onayladığınız sürüm ile size gönderilen son sürümü kelime bazlı karşılaştırın. Tutar, süre, oran, tarih ve olumsuzluk ifadelerini ayrıca karakter düzeyinde kontrol edin; farkları rapor olarak kaydedip danışmanınızla paylaşın."}},{"@type":"Question","name":"Metin karşılaştırma (diff) nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Diff, iki metinde aynı sırayla geçen en uzun ortak parçayı bulur. Bu ortak dizide olmayan parçalar ilk metinde varsa silinen, ikinci metinde varsa eklenen olarak işaretlenir; böylece araya eklenen satırlar geri kalanı kaydırmaz."}},{"@type":"Question","name":"Taranmış PDF'ler karşılaştırılabilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, ancak önce OCR ile metin katmanı oluşturulması gerekir. OCR tanıma hataları yapabileceği için bulunan farkları, özellikle rakam ve tutarları, taranmış görüntünün kendisiyle karşılaştırarak doğrulamak gerekir."}},{"@type":"Question","name":"Satır bazlı ve kelime bazlı karşılaştırma farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Satır bazlı karşılaştırma değişen satırın tamamını işaretler ve belgenin hangi bölümünün değiştiğini gösterir. Kelime bazlı karşılaştırma ise satırın içinde yalnızca değişen kelimeleri vurgular; sözleşme ve dilekçe gibi metinlerde daha kullanışlıdır."}},{"@type":"Question","name":"Biçim değişiklikleri karşılaştırmada görünür mü?","acceptedAnswer":{"@type":"Answer","text":"Metin karşılaştırmasında görünmez; kalın yazı, renk, yazı tipi ya da sayfa düzeni farkları karakterleri değiştirmez. Bu tür farkları görmek için iki sayfayı resim olarak üst üste koyan görsel karşılaştırmayı kullanmanız gerekir."}},{"@type":"Question","name":"Gizli belgeler yüklemeden nasıl karşılaştırılır?","acceptedAnswer":{"@type":"Answer","text":"Dosyayı sunucuya göndermeyen, tarayıcıda çalışan araçlar kullanın. Bilişim Ajans araçları işlemi bilgisayarınızda yapar; sayfa açıldıktan sonra interneti kesseniz bile çalışmaya devam eder, böylece belge hiçbir yere gitmez."}},{"@type":"Question","name":"Word'de değişiklikleri izle ile karşılaştırma farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"Değişiklikleri izle, düzenleme sırasında kimin neyi değiştirdiğini kaydeder ama özellik kapatılırsa kayıt tutulmaz. Karşılaştırma ise iki dosyanın son hâline bakar, geçmişe ihtiyaç duymaz ve PDF'lerde de çalışır."}},{"@type":"Question","name":"İki dosyanın birebir aynı olduğu nasıl anlaşılır?","acceptedAnswer":{"@type":"Answer","text":"En hızlı yol iki dosyanın SHA-256 özetini karşılaştırmaktır; özetler aynıysa dosyalar bayt bayt aynıdır. Özetler farklıysa farkın nerede olduğunu görmek için metin ya da PDF karşılaştırması yapmanız gerekir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#dijital">Dosya, PDF ve Fotoğraf</a></li></ol><h1>İki Belge Arasındaki Fark Nasıl Bulunur? PDF ve Metin Karşılaştırma</h1><p class="lead">İki belge arasındaki fark, her iki sürümün metnini çıkarıp bir <strong>karşılaştırma (diff) algoritmasıyla</strong> satır, kelime ya da karakter düzeyinde hizalayarak bulunur; eklenen kısımlar yeşil, silinenler kırmızı gösterilir. PDF'lerde önce metin katmanı okunur, taranmış PDF'lerde ise önce OCR ile metin üretilir. Bu sayfada diff'in nasıl çalıştığını, sözleşme sürümlerini karşılaştırırken izlenecek yolu, satır ve kelime bazlı yöntemin farkını, biçim değişikliklerinin neden çoğu zaman görünmediğini ve gizli belgeleri hiçbir yere yüklemeden nasıl karşılaştırabileceğinizi bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Karşılaştırma araçları iki metnin en uzun ortak alt dizisini (LCS) bulur; ortakta olmayan parçalar eklenen ya da silinen olarak işaretlenir.</li>
+        <li>Satır bazlı karşılaştırma değişen satırın tamamını, kelime bazlı karşılaştırma yalnızca değişen kelimeyi gösterir.</li>
+        <li>Metin katmanı olan PDF'ler doğrudan karşılaştırılır; taranmış PDF'ler önce OCR'dan geçirilmelidir.</li>
+        <li>Kalın, renk, yazı tipi gibi biçim farkları metin karşılaştırmasında görünmez; bunun için görsel (piksel) karşılaştırma gerekir.</li>
+        <li>Sözleşmede sayı, tarih, tutar ve olumsuzluk ekleri (&quot;-maz&quot;, &quot;-mez&quot;) en kritik farklardır; kelime ya da karakter düzeyinde kontrol edilmelidir.</li>
+        <li>Tarayıcıda çalışan araçlarla belge bilgisayarınızdan çıkmadan karşılaştırılabilir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="İki sözleşme sürümünün karşılaştırılması: üstte satır bazlı görünümde değişen satırın tamamı kırmızı ve yeşil, altta kelime bazlı görünümde yalnızca 30 yerine 45 ve yüzde 2 yerine yüzde 3 işaretli." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">Sözleşme v1 ile v2 karşılaştırması</text>
+  <text x="30" y="66" class="b">1) Satır bazlı görünüm</text>
+  <rect x="30" y="80" width="660" height="34" rx="4" class="dgs"/>
+  <text x="44" y="102" class="sm"><tspan class="dg b">− </tspan>Teslim süresi 30 gündür; gecikmede günlük %2 ceza uygulanır.</text>
+  <rect x="30" y="118" width="660" height="34" rx="4" class="oks"/>
+  <text x="44" y="140" class="sm"><tspan class="ok b">+ </tspan>Teslim süresi 45 gündür; gecikmede günlük %3 ceza uygulanır.</text>
+  <rect x="30" y="156" width="660" height="34" rx="4" class="sf sb"/>
+  <text x="44" y="178" class="sm mu">  Ödeme, teslimden sonra 15 gün içinde yapılır. (değişmedi)</text>
+  <text x="30" y="226" class="b">2) Kelime bazlı görünüm</text>
+  <rect x="30" y="240" width="660" height="44" rx="4" class="sf sb"/>
+  <text x="44" y="268" class="sm">Teslim süresi</text>
+  <rect x="146" y="252" width="30" height="22" rx="3" class="dgs"/><text x="161" y="268" class="sm mid dg b">30</text>
+  <rect x="180" y="252" width="30" height="22" rx="3" class="oks"/><text x="195" y="268" class="sm mid ok b">45</text>
+  <text x="216" y="268" class="sm">gündür; gecikmede günlük</text>
+  <rect x="404" y="252" width="34" height="22" rx="3" class="dgs"/><text x="421" y="268" class="sm mid dg b">%2</text>
+  <rect x="442" y="252" width="34" height="22" rx="3" class="oks"/><text x="459" y="268" class="sm mid ok b">%3</text>
+  <text x="482" y="268" class="sm">ceza uygulanır.</text>
+  <rect x="30" y="312" width="210" height="84" rx="8" class="ps"/>
+  <text x="135" y="342" class="b mid">Değişen satır</text><text x="135" y="372" class="xl mid p">1 / 3</text>
+  <rect x="255" y="312" width="210" height="84" rx="8" class="ps"/>
+  <text x="360" y="342" class="b mid">Değişen kelime</text><text x="360" y="372" class="xl mid p">2</text>
+  <rect x="480" y="312" width="210" height="84" rx="8" class="sf sb"/>
+  <text x="585" y="342" class="b mid">Biçim farkı</text><text x="585" y="370" class="sm mid mu">metin diff'inde</text><text x="585" y="386" class="sm mid mu">görünmez</text>
+</svg>
+      <figcaption>Aynı değişiklik iki farklı ayrıntı düzeyinde: satır bazlı görünüm hangi satırın değiştiğini, kelime bazlı görünüm satırın içinde tam olarak neyin değiştiğini gösterir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Belge karşılaştırma (diff) nedir, nasıl çalışır?</a></li>
+      <li><a href="#b2">Satır, kelime ve karakter bazlı karşılaştırma farkı</a></li>
+      <li><a href="#b3">Sözleşmenin iki sürümünde neyin değiştiğini bulmak: adım adım</a></li>
+      <li><a href="#b4">Taranmış PDF'ler karşılaştırılabilir mi?</a></li>
+      <li><a href="#b5">Biçim değişiklikleri karşılaştırmada görünür mü?</a></li>
+      <li><a href="#b6">Word'deki &quot;Değişiklikleri İzle&quot; ile karşılaştırma arasındaki fark</a></li>
+      <li><a href="#b7">Gizli belgeleri yüklemeden karşılaştırmak</a></li>
+      <li><a href="#b8">Karşılaştırmada sık yapılan hatalar</a></li>
+      <li><a href="#b9">Hangi aracı ne zaman kullanmalısınız?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-iki-belge-arasindaki-fark-nasil-bulunur-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../pdf-karsilastir/"><strong>İki PDF'i Karşılaştır</strong><span>İki PDF sürümü arasındaki metin farklarını satır satır, belge bilgisi farklarını tabloda ve görsel farkları kırmızı vurguyla görün; raporu indirin. Dosya yüklenmez.</span></a></li>
+          <li><a href="../../metin-karsilastir/"><strong>Metin Karşılaştırma (Diff)</strong><span>İki metni satır, kelime ya da karakter düzeyinde karşılaştırın; eklenen ve silinenleri yan yana veya birleşik görünümde renkle görün, farkları kopyalayın. Metin sunucuya gitmez.</span></a></li>
+          <li><a href="../../pdf-metin-cikar/"><strong>PDF'den Metin Çıkar</strong><span>PDF'deki yazıyı sayfa aralığı seçerek çıkarın; satırları paragraf halinde birleştirin, kopyalayın ya da TXT / Word olarak indirin. Taranmış PDF'leri algılayıp OCR'a yönlendirir.</span></a></li>
+          <li><a href="../../pdf-ocr/"><strong>PDF OCR – Aranabilir PDF Yap</strong><span>Taranmış PDF'e görünmez metin katmanı ekleyin: belgede arama yapın, metni kopyalayın. Türkçe ve İngilizce OCR, sayfa aralığı, TXT çıktı. Dosya sunucuya gitmez.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Belge karşılaştırma (diff) nedir, nasıl çalışır?</h2>
+      <p><strong>Diff</strong>, İngilizce &quot;difference&quot; sözcüğünden gelir ve iki metin arasındaki farkları listeleyen yönteme verilen addır. Yazılımcıların kod sürümlerini izlemek için kullandığı bu yöntem bugün sözleşme, şartname, tez ve yönetmelik taslaklarının karşılaştırılmasında da standart hâle gelmiştir.</p>
+      <p>Algoritmanın temel fikri basittir: iki metinde <strong>aynı sırayla geçen en uzun ortak parçayı</strong> (en uzun ortak alt dizi, LCS) bulmak. Ortak dizide yer alan satırlar ya da kelimeler &quot;değişmedi&quot; sayılır; yalnızca ilk metinde olanlar <em>silinen</em>, yalnızca ikinci metinde olanlar <em>eklenen</em> olarak işaretlenir. Bir kelimenin değiştirilmesi aslında &quot;eskisi silindi, yenisi eklendi&quot; çiftidir.</p>
+      <p>Bu yaklaşımın güzel yanı, araya paragraf eklense bile geri kalan metnin kaymış görünmemesidir. Sıradan bir &quot;satır satır eşleştirme&quot; yapılsaydı, 3. satıra eklenen tek bir cümle sonraki tüm satırları farklı gösterirdi. LCS tabanlı diff ise eklenen satırı ayrı tutar, gerisini yeniden hizalar.</p>
+
+      <h2 id="b2">Satır, kelime ve karakter bazlı karşılaştırma farkı</h2>
+      <p>Karşılaştırmanın ayrıntı düzeyi (taneciği) sonucu doğrudan etkiler. Aynı iki metin satır düzeyinde 1 fark, kelime düzeyinde 2 fark, karakter düzeyinde ise 2 rakamlık fark olarak görünebilir. Hangi düzeyi seçeceğiniz, belgenin türüne ve aradığınız değişikliğin büyüklüğüne bağlıdır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Düzey</th><th>Neyi gösterir?</th><th>En uygun kullanım</th><th>Zayıf yanı</th></tr></thead>
+        <tbody>
+          <tr><td>Satır bazlı</td><td>Değişen satırın tamamını</td><td>Kod, liste, madde madde metin</td><td>Uzun paragraflarda küçük değişiklik gözden kaçar</td></tr>
+          <tr><td>Kelime bazlı</td><td>Satır içindeki değişen kelimeleri</td><td>Sözleşme, dilekçe, makale</td><td>Kelime sınırı olmayan değişikliklerde (ek, harf) kaba kalır</td></tr>
+          <tr><td>Karakter bazlı</td><td>Tek harf ve rakam farklarını</td><td>Tutar, IBAN, tarih, kod numarası</td><td>Çok değişen metinde okunması zordur</td></tr>
+        </tbody>
+      </table></div>
+      <p>Pratik yöntem şudur: önce satır bazlı görünümle belgenin hangi bölümlerinin değiştiğini görün, ardından değişen bölümlere kelime ya da karakter bazlı görünümle yakından bakın. <a href="../../metin-karsilastir/">Metin Karşılaştırma aracı</a> üç düzeyi de sunar ve sonuçları yan yana ya da birleşik görünümde gösterebilir.</p>
+
+      <h2 id="b3">Sözleşmenin iki sürümünde neyin değiştiğini bulmak: adım adım</h2>
+      <p>Karşı taraftan gelen &quot;son hâli&quot; ile sizin onayladığınız taslak arasında küçük ama önemli değişiklikler olabilir. Gözle okuyarak karşılaştırmak hem yorucu hem de risklidir; insan gözü tanıdık metinde rakam değişikliklerini kolayca atlar. Şu sırayı izleyin:</p>
+      <ol class="ba-steps">
+        <li>İki dosyanın da en son sürüm olduğundan emin olun; dosya adlarına tarih ya da sürüm numarası ekleyin (ör. sozlesme-v1, sozlesme-v2).</li>
+        <li>Dosyalar PDF ise <a href="../../pdf-karsilastir/">PDF Karşılaştır</a> aracına iki dosyayı yükleyin; Word belgesiyse metni kopyalayıp metin karşılaştırma aracına yapıştırabilirsiniz.</li>
+        <li>Önce sayfa sayısı ve belge bilgisi tablosuna bakın: sayfa sayısının değişmesi eklenmiş ya da çıkarılmış bir bölüm olduğunu gösterir.</li>
+        <li>Satır bazlı farkları gözden geçirin, ardından değişen satırları kelime düzeyinde inceleyin.</li>
+        <li>Tutar, süre, oran, tarih, taraf unvanı ve &quot;değildir / -mez&quot; gibi olumsuzluk ifadelerini ayrıca karakter düzeyinde kontrol edin.</li>
+        <li>Farkları .txt rapor olarak kaydedin ve hukuk danışmanınızla ya da karşı tarafla bu liste üzerinden konuşun.</li>
+      </ol>
+      <p>Şekildeki örnekte &quot;30 gün&quot; ifadesinin &quot;45 gün&quot;, &quot;%2&quot; oranının &quot;%3&quot; olarak değiştiği görülüyor. Satır bazlı görünüm yalnızca bir satırın değiştiğini söyler; kelime bazlı görünüm ise iki kritik değişikliği tek bakışta ortaya koyar.</p>
+
+      <h2 id="b4">Taranmış PDF'ler karşılaştırılabilir mi?</h2>
+      <p>PDF iki farklı şekilde oluşabilir. Word ya da benzeri bir programdan &quot;PDF olarak kaydet&quot; ile üretilen dosyalarda metin katmanı vardır; harfler seçilebilir, kopyalanabilir ve doğrudan karşılaştırılabilir. Tarayıcıdan ya da telefon kamerasından elde edilen PDF'ler ise yalnızca resimden oluşur; içinde &quot;metin&quot; yoktur.</p>
+      <p>Taranmış PDF'leri metin olarak karşılaştırmak için önce <strong>OCR</strong> (optik karakter tanıma) uygulanması gerekir. <a href="../../pdf-ocr/">PDF OCR aracı</a> sayfalara görünmez bir metin katmanı ekler; ardından <a href="../../pdf-metin-cikar/">PDF'den Metin Çıkarma</a> ile metni alıp karşılaştırabilirsiniz.</p>
+      <p>OCR'ın bir hata payı olduğunu unutmayın. Düşük çözünürlüklü ya da eğik taramalarda &quot;0&quot; ile &quot;O&quot;, &quot;1&quot; ile &quot;l&quot;, &quot;ı&quot; ile &quot;i&quot; karışabilir. Bu yüzden OCR sonrası çıkan farkların bir kısmı gerçek değişiklik değil, tanıma hatasıdır. Kritik rakamları her zaman taramanın kendisine bakarak doğrulayın.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>PDF türü</th><th>Nasıl anlaşılır?</th><th>Karşılaştırma yolu</th></tr></thead>
+        <tbody>
+          <tr><td>Metin katmanlı (dijital)</td><td>Metin fareyle seçilebiliyor</td><td>Doğrudan PDF ya da metin karşılaştırma</td></tr>
+          <tr><td>Taranmış (resim)</td><td>Metin seçilemiyor, tüm sayfa tek resim</td><td>Önce OCR, sonra metin karşılaştırma</td></tr>
+          <tr><td>Karma</td><td>Bazı sayfalar seçilebiliyor, bazıları değil</td><td>Taranmış sayfalara OCR, sonra karşılaştırma</td></tr>
+          <tr><td>Biçim odaklı</td><td>Metin aynı, görünüm farklı</td><td>Görsel (piksel) karşılaştırma</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b5">Biçim değişiklikleri karşılaştırmada görünür mü?</h2>
+      <p>Metin karşılaştırma yalnızca karakterlere bakar. Bir cümlenin kalın yazılması, yazı tipinin büyümesi, rengin değişmesi ya da tablonun yer değiştirmesi metin aynı kaldığı sürece fark olarak görünmez. Bu, çoğu sözleşme incelemesi için yeterlidir; çünkü hukuki sonuç doğuran şey kelimelerdir.</p>
+      <p>Ancak logo, imza, kaşe, tablo düzeni ya da grafik gibi görsel öğelerin değişip değişmediğini merak ediyorsanız <strong>görsel karşılaştırma</strong> kullanmanız gerekir. Bu yöntemde iki sayfa resme çevrilir ve piksel piksel üst üste konur; farklı pikseller kırmızıyla boyanır. PDF karşılaştırma aracındaki görsel mod tam olarak bunu yapar.</p>
+      <p>Görsel karşılaştırmanın da sınırları vardır: satırlar bir satır aşağı kaydığında sayfanın geri kalanı tamamen farklı görünebilir. Bu yüzden önce metin, sonra görsel karşılaştırma yapmak en verimli sıradır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-iki-belge-arasindaki-fark-nasil-bulunur-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Word'deki &quot;Değişiklikleri İzle&quot; ile karşılaştırma arasındaki fark</h2>
+      <p>Kelime işlemcilerdeki <em>değişiklikleri izle</em> özelliği, belge düzenlenirken yapılan her işlemi kaydeder: kim, ne zaman, neyi sildi ya da ekledi. Bu yöntem, belgenin tüm düzenleme sürecinin aynı dosya üzerinde ve özellik açıkken yapılmasına dayanır.</p>
+      <p>Karşılaştırma (diff) ise geçmişe bakmaz; yalnızca iki sonucu yan yana koyar. Karşı taraf izlemeyi kapatıp değişiklik yaptıysa, metni başka bir dosyaya kopyaladıysa ya da belgeyi PDF'e çevirdiyse izleme kaydı işe yaramaz; karşılaştırma ise yine çalışır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>Değişiklikleri izle</th><th>Karşılaştırma (diff)</th></tr></thead>
+        <tbody>
+          <tr><td>Neye dayanır?</td><td>Düzenleme sırasında tutulan kayda</td><td>İki dosyanın son hâline</td></tr>
+          <tr><td>Kimin değiştirdiği</td><td>Gösterilir</td><td>Gösterilmez</td></tr>
+          <tr><td>İzleme kapatılırsa</td><td>Değişiklik kaydedilmez</td><td>Fark yine bulunur</td></tr>
+          <tr><td>PDF ile çalışır mı?</td><td>Hayır</td><td>Evet</td></tr>
+          <tr><td>Güvenilirlik</td><td>Karşı tarafın dürüstlüğüne bağlı</td><td>Bağımsız doğrulama sağlar</td></tr>
+        </tbody>
+      </table></div>
+      <p>Önemli belgelerde iki yöntemi birlikte kullanmak en sağlıklısıdır: izleme kaydıyla müzakere sürecini yürütün, imzadan önce ise son sürümü onayladığınız sürümle bağımsız olarak karşılaştırın.</p>
+
+      <h2 id="b7">Gizli belgeleri yüklemeden karşılaştırmak</h2>
+      <p>Sözleşmeler, teklifler, maaş tabloları ve kişisel veri içeren belgeler, dosyayı sunucuya yükleyen çevrim içi hizmetlere verilmemelidir. Yüklenen dosyanın ne kadar süre saklandığını, kimlerin erişebildiğini ve yedeklere girip girmediğini dışarıdan bilmek mümkün değildir.</p>
+      <p>Bilişim Ajans'ın karşılaştırma araçları tarayıcınızda çalışan JavaScript ile işlem yapar; dosya bilgisayarınızdan çıkmaz. Sayfa yüklendikten sonra internet bağlantınızı kesseniz bile karşılaştırma çalışmaya devam eder; bu, verinin hiçbir yere gönderilmediğinin pratik bir kanıtıdır.</p>
+      <p>Ek güvenlik için karşılaştırma bittikten sonra sekmeyi kapatın. İki dosyanın birebir aynı olup olmadığını hızlıca anlamak isterseniz özet değerlerine de bakabilirsiniz; tek bir bayt farkı bile özeti tamamen değiştirir. Bu konuyu <a href="../../bilgi-bankasi/hash-nedir-sha256-md5/">hash ve SHA-256 rehberinde</a> ayrıntılı bulabilirsiniz.</p>
+
+      <h2 id="b8">Karşılaştırmada sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Boşluk ve satır sonu farklarını gerçek değişiklik sanmak:</strong> PDF'ten çıkarılan metinde satırlar sayfa genişliğine göre kırılır. Karşılaştırmadan önce satırları paragraf hâlinde birleştirmek ya da &quot;boşlukları yok say&quot; seçeneğini açmak gürültüyü azaltır.</li>
+        <li><strong>Türkçe karakter kodlaması:</strong> Bir sürümde &quot;ı&quot; yerine &quot;i&quot;, &quot;ş&quot; yerine &quot;s&quot; görünüyorsa sorun içerik değil kodlamadır. Ayrıntı için <a href="../../bilgi-bankasi/turkce-karakter-sorunu-nasil-duzeltilir/">Türkçe karakter sorunu rehberine</a> bakın.</li>
+        <li><strong>Yalnızca ilk sayfalara bakmak:</strong> Değişiklikler çoğu zaman ek protokol, ceza maddesi ya da son sayfadaki imza bölümünde yapılır.</li>
+        <li><strong>OCR hatasını değişiklik sanmak:</strong> Taranmış belgede bulunan farkı mutlaka orijinal görüntüyle kontrol edin.</li>
+        <li><strong>Tablo içeriğini atlamak:</strong> PDF tabloları metne çevrilirken hücre sırası değişebilir; tablolarda görsel karşılaştırma daha güvenilirdir.</li>
+        <li><strong>Yanlış dosya çiftini karşılaştırmak:</strong> &quot;son&quot;, &quot;son2&quot;, &quot;en son&quot; gibi adlar karışıklığa yol açar; sürüm numarası kullanın.</li>
+      </ul>
+
+      <h2 id="b9">Hangi aracı ne zaman kullanmalısınız?</h2>
+      <p>İhtiyacınıza göre şu yol haritasını izleyebilirsiniz. Elinizde iki dijital PDF varsa doğrudan PDF karşılaştırma aracını açın; hem metin farkını hem görsel farkı aynı ekranda görürsünüz. İki e-posta metni, iki madde listesi ya da iki kod parçası gibi düz metinler için metin karşılaştırma aracı daha hızlıdır.</p>
+      <p>Taranmış belgelerde sıra OCR, metin çıkarma ve karşılaştırmadır. Uzun listelerde önce tekrarlanan satırları temizlemek karşılaştırmayı sadeleştirir; bunun için <a href="../../bilgi-bankasi/tekrar-eden-satirlari-silme-liste-duzenleme/">liste düzenleme rehberine</a> göz atabilirsiniz. Karşılaştırmadan önce gereksiz sayfaları ayıklamak isterseniz <a href="../../bilgi-bankasi/pdf-sayfa-silme-ve-dondurme/">PDF sayfa silme rehberi</a> yardımcı olur.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>İki PDF arasındaki farklar nasıl bulunur?</summary><p>İki PDF'i karşılaştırma aracına yükleyin; araç metin katmanını okuyup satır ve kelime düzeyinde farkları renkli gösterir. Taranmış PDF'lerde önce OCR uygulamanız, ardından çıkan metni karşılaştırmanız gerekir.</p></details>
+      <details><summary>Sözleşmenin iki sürümünde neyin değiştiği nasıl görülür?</summary><p>Onayladığınız sürüm ile size gönderilen son sürümü kelime bazlı karşılaştırın. Tutar, süre, oran, tarih ve olumsuzluk ifadelerini ayrıca karakter düzeyinde kontrol edin; farkları rapor olarak kaydedip danışmanınızla paylaşın.</p></details>
+      <details><summary>Metin karşılaştırma (diff) nasıl çalışır?</summary><p>Diff, iki metinde aynı sırayla geçen en uzun ortak parçayı bulur. Bu ortak dizide olmayan parçalar ilk metinde varsa silinen, ikinci metinde varsa eklenen olarak işaretlenir; böylece araya eklenen satırlar geri kalanı kaydırmaz.</p></details>
+      <details><summary>Taranmış PDF'ler karşılaştırılabilir mi?</summary><p>Evet, ancak önce OCR ile metin katmanı oluşturulması gerekir. OCR tanıma hataları yapabileceği için bulunan farkları, özellikle rakam ve tutarları, taranmış görüntünün kendisiyle karşılaştırarak doğrulamak gerekir.</p></details>
+      <details><summary>Satır bazlı ve kelime bazlı karşılaştırma farkı nedir?</summary><p>Satır bazlı karşılaştırma değişen satırın tamamını işaretler ve belgenin hangi bölümünün değiştiğini gösterir. Kelime bazlı karşılaştırma ise satırın içinde yalnızca değişen kelimeleri vurgular; sözleşme ve dilekçe gibi metinlerde daha kullanışlıdır.</p></details>
+      <details><summary>Biçim değişiklikleri karşılaştırmada görünür mü?</summary><p>Metin karşılaştırmasında görünmez; kalın yazı, renk, yazı tipi ya da sayfa düzeni farkları karakterleri değiştirmez. Bu tür farkları görmek için iki sayfayı resim olarak üst üste koyan görsel karşılaştırmayı kullanmanız gerekir.</p></details>
+      <details><summary>Gizli belgeler yüklemeden nasıl karşılaştırılır?</summary><p>Dosyayı sunucuya göndermeyen, tarayıcıda çalışan araçlar kullanın. Bilişim Ajans araçları işlemi bilgisayarınızda yapar; sayfa açıldıktan sonra interneti kesseniz bile çalışmaya devam eder, böylece belge hiçbir yere gitmez.</p></details>
+      <details><summary>Word'de değişiklikleri izle ile karşılaştırma farkı nedir?</summary><p>Değişiklikleri izle, düzenleme sırasında kimin neyi değiştirdiğini kaydeder ama özellik kapatılırsa kayıt tutulmaz. Karşılaştırma ise iki dosyanın son hâline bakar, geçmişe ihtiyaç duymaz ve PDF'lerde de çalışır.</p></details>
+      <details><summary>İki dosyanın birebir aynı olduğu nasıl anlaşılır?</summary><p>En hızlı yol iki dosyanın SHA-256 özetini karşılaştırmaktır; özetler aynıysa dosyalar bayt bayt aynıdır. Özetler farklıysa farkın nerede olduğunu görmek için metin ya da PDF karşılaştırması yapmanız gerekir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../hash-nedir-sha256-md5/"><strong>Hash Nedir? SHA-256 ve MD5 ile Dosya Doğrulama Nasıl Yapılır</strong><span>Hash, her uzunluktaki veriden sabit uzunlukta, geri çevrilemeyen bir özet üretir. SHA-256 64, MD5 32 karakterdir. Dosya doğrulama, şifreleme farkı ve CRC32.</span></a></li>
+          <li><a href="../turkce-karakter-sorunu-nasil-duzeltilir/"><strong>Türkçe Karakter Sorunu Nasıl Düzeltilir? Bozuk ı, ş, ğ ve İ Harfleri</strong><span>Ã¼, ÅŸ, Ä± gibi bozuk harfler, UTF-8 metnin başka bir kodlamayla açılmasından olur. CSV, e-posta, altyazı ve web için kodlama seçimi, İ/ı sorunu ve çözüm adımları.</span></a></li>
+          <li><a href="../pdf-sayfa-silme-ve-dondurme/"><strong>PDF'den Sayfa Nasıl Silinir, Döndürülür ve Sıralanır? Ücretsiz Yöntem</strong><span>PDF'den sayfa silmek için sayfa numarasını ya da 2,5-7 gibi aralığı seçip yeni dosyayı kaydetmeniz yeter. Ters sayfayı döndürme, sıralama, ayırma ve boş sayfa ekleme.</span></a></li>
+          <li><a href="../4k-kac-piksel-cozunurluk-turleri/"><strong>4K Kaç Piksel? HD, Full HD, 2K, 4K ve 8K Çözünürlük Farkları Tablosu</strong><span>Televizyon ve monitörlerdeki 4K (UHD) 3840 × 2160, yani yaklaşık 8,3 milyon pikseldir; Full HD'nin dört katı. HD, 2K, QHD, 8K tablosu ve izleme mesafesi.</span></a></li>
+          <li><a href="../a4-kagit-boyutu-kac-cm/"><strong>A4 Kağıt Boyutu Kaç cm, Kaç Piksel? A3, A5 ve Diğer Kağıt Ölçüleri</strong><span>A4 kağıt 21 × 29,7 cm (210 × 297 mm) ölçüsündedir; 300 DPI'da 2480 × 3508 pikseldir. A0–A8, B ve C serisi, Letter farkı, inç karşılıkları ve zarf ölçüleri.</span></a></li>
+          <li><a href="../kelime-yogunlugu-nedir-seo/"><strong>Anahtar Kelime Yoğunluğu Nedir? Metinde Kelime Sıklığı Nasıl Ölçülür</strong><span>Anahtar kelime yoğunluğu = kelimenin geçiş sayısı ÷ toplam kelime × 100. SEO için ideal oran var mı, anahtar kelime doldurma, Türkçe ekler ve kelime frekansı analizi.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-iki-belge-arasindaki-fark-nasil-bulunur-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

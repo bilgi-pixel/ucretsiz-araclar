@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>PWM Nedir? Görev Döngüsü, 555 ve ADC Çözünürlüğü</title>
+  <meta name="description" content="PWM nedir, görev döngüsü nasıl hesaplanır? LED ve motor kontrolü, PWM frekansı, 555 ile PWM üretimi, 10 bit ADC adım gerilimi ve geliştirme kartı örnekleri.">
+  <meta name="keywords" content="pwm nedir, görev döngüsü nedir, duty cycle, geliştirme kartı pwm, adc çözünürlüğü, 10 bit adc, 555 zamanlayıcı, pwm frekansı, motor hız kontrolü pwm">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/pwm-nedir-arduino-adc/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="PWM Nedir? Görev Döngüsü, 555 ve ADC Çözünürlüğü">
+  <meta property="og:description" content="PWM nedir, görev döngüsü nasıl hesaplanır? LED ve motor kontrolü, PWM frekansı, 555 ile PWM üretimi, 10 bit ADC adım gerilimi ve geliştirme kartı örnekleri.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/pwm-nedir-arduino-adc/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"PWM Nedir? Görev Döngüsü, 555 Zamanlayıcı ve Geliştirme Kartında ADC Çözünürlüğü","description":"PWM nedir, görev döngüsü nasıl hesaplanır? LED ve motor kontrolü, PWM frekansı, 555 ile PWM üretimi, 10 bit ADC adım gerilimi ve geliştirme kartı örnekleri.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/pwm-nedir-arduino-adc/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1379,"keywords":"pwm nedir, görev döngüsü nedir, duty cycle, geliştirme kartı pwm, adc çözünürlüğü, 10 bit adc, 555 zamanlayıcı, pwm frekansı, motor hız kontrolü pwm","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"PWM Nedir? Görev Döngüsü, 555 Zamanlayıcı ve Geliştirme Kartında ADC Çözünürlüğü"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"PWM nedir, nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"PWM, dijital bir çıkışı çok hızlı açıp kapatarak açık kalma süresinin oranıyla yüke giden ortalama gücü ayarlama yöntemidir. LED, motor ve ısıtıcı gibi yükler bu hızlı değişimi ortalayarak ara bir gerilim uygulanmış gibi davranır."}},{"@type":"Question","name":"Görev döngüsü (duty cycle) nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Görev döngüsü, açık sürenin periyoda bölünüp 100 ile çarpılmasıyla bulunur. 1 kHz'lik sinyalde periyot 1 ms'dir; sinyal 0,25 ms açık kalıyorsa görev döngüsü %25, 5 V tepe için ortalama gerilim 1,25 V olur."}},{"@type":"Question","name":"Geliştirme kartında PWM ile LED parlaklığı nasıl ayarlanır?","acceptedAnswer":{"@type":"Answer","text":"LED seri bir dirençle PWM destekli pine bağlanır ve yazılımda 0 ile 255 arasında bir değer verilir. 64 yaklaşık %25, 128 yaklaşık %50 görev döngüsü sağlar; göz ışığı doğrusal algılamadığı için gama düzeltmesi geçişi yumuşatır."}},{"@type":"Question","name":"PWM frekansı neden önemlidir?","acceptedAnswer":{"@type":"Answer","text":"Frekans çok düşükse LED titrer, motor sarsılır ya da vızıldar; çok yüksekse anahtarlama kayıpları ve ısınma artar. LED için birkaç yüz hertz üzeri, sessiz motor kontrolü için yaklaşık 20 kHz üzeri frekanslar tercih edilir."}},{"@type":"Question","name":"ADC çözünürlüğü ne demek?","acceptedAnswer":{"@type":"Answer","text":"ADC çözünürlüğü, çeviricinin ölçüm aralığını kaç eşit basamağa böldüğünü bit sayısıyla anlatır. n bitlik ADC 2ⁿ seviye üretir; 10 bit 1.024, 12 bit 4.096 seviye demektir. Bit sayısı arttıkça daha küçük gerilim farkları ayırt edilir."}},{"@type":"Question","name":"10 bitlik ADC'de adım gerilimi kaçtır?","acceptedAnswer":{"@type":"Answer","text":"Adım gerilimi referans geriliminin 1.024'e bölünmesiyle bulunur. 5 V referansta 5 ÷ 1.024 ≈ 4,88 mV, 3,3 V referansta yaklaşık 3,22 mV'tur. 5 V referansla 2,5 V giriş 512 koduna karşılık gelir."}},{"@type":"Question","name":"555 entegresi ile PWM nasıl üretilir?","acceptedAnswer":{"@type":"Answer","text":"555 kararsız bağlantıda iki direnç ve bir kondansatörle kare dalga üretir; frekans yaklaşık 1,44 ÷ ((R1 + 2R2) × C) formülüyle bulunur. Standart bağlantıda görev döngüsü %50'nin üzerindedir; diyot ve potansiyometreyle geniş aralıkta ayarlanabilir."}},{"@type":"Question","name":"Motor hız kontrolünde PWM nasıl kullanılır?","acceptedAnswer":{"@type":"Answer","text":"PWM görev döngüsü artırıldıkça motorun gördüğü ortalama gerilim ve hızı artar. Pin motoru doğrudan sürmez; transistör, MOSFET ya da motor sürücü modülü kullanılır ve motora ters bağlı koruma diyotu eklenir."}},{"@type":"Question","name":"PWM çıkışından gerçek analog gerilim elde edilebilir mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, PWM çıkışına bir direnç ve kondansatörden oluşan alçak geçiren filtre eklenerek darbeler yumuşatılır ve yaklaşık sabit bir gerilim elde edilir. Filtrenin kesim frekansı PWM frekansının belirgin biçimde altında seçilmelidir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>PWM Nedir? Görev Döngüsü, 555 Zamanlayıcı ve Geliştirme Kartında ADC Çözünürlüğü</h1><p class="lead">PWM (darbe genişlik modülasyonu), <strong>bir sinyali çok hızlı açıp kapatarak ve açık kalma süresinin oranını değiştirerek</strong> yüke giden ortalama gücü ayarlama yöntemidir. Bu orana görev döngüsü denir: 5 V'luk bir sinyal periyodun %25'inde açıksa ortalama gerilim 1,25 V olur. LED parlaklığı, motor hızı ve ısıtıcı gücü bu yolla kontrol edilir. Ters yöndeki işi, yani analog gerilimi sayıya çevirmeyi ADC yapar: 5 V referanslı 10 bitlik bir ADC'de bir adım yaklaşık 4,88 mV'tur. Bu yazıda formülleri, 555 entegresiyle PWM üretimini ve geliştirme kartı örneklerini çözümlü anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Görev döngüsü (%) = açık süre ÷ periyot × 100; periyot = 1 ÷ frekans.</li>
+        <li>İdeal kare dalgada ortalama gerilim = tepe gerilimi × görev döngüsü; 5 V ve %25 için 1,25 V.</li>
+        <li>8 bitlik PWM'de karşılaştırma değeri 0–255 arasıdır; %25 görev döngüsü için yaklaşık 64.</li>
+        <li>ADC adım gerilimi (1 LSB) = referans gerilimi ÷ 2ⁿ; 5 V ve 10 bit için 5 ÷ 1.024 ≈ 4,88 mV.</li>
+        <li>Sayısal kod = giriş gerilimi ÷ adım gerilimi (aşağı yuvarlanır); 10 bit, 5 V referansta 2,5 V → 512.</li>
+        <li>555 kararsız devrede f ≈ 1,44 ÷ ((R1 + 2 × R2) × C); görev döngüsü standart bağlantıda %50'nin üzerindedir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Üç PWM sinyali: yüzde 25, 50 ve 75 görev döngüsü, 1 ms periyot, 5 V tepe; ortalama gerilimler 1,25 V, 2,5 V ve 3,75 V. Altta 10 bitlik ADC basamakları ve 2,5 V girişin 512 koduna dönüşmesi." viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">PWM görev döngüsü ve ortalama gerilim</text>
+  <g>
+    <text x="20" y="66" class="b">%25</text>
+    <polyline points="70,80 70,50 120,50 120,80 270,80 270,50 320,50 320,80 470,80 470,50 520,50 520,80 560,80" class="sp sw" fill="none"/>
+    <line x1="70" y1="72.5" x2="560" y2="72.5" class="sa dash" fill="none"/>
+    <text x="580" y="70" class="sm b">ort. 1,25 V</text>
+    <text x="20" y="136" class="b">%50</text>
+    <polyline points="70,150 70,120 170,120 170,150 270,150 270,120 370,120 370,150 470,150 470,120 570,120 570,150" class="sp sw" fill="none"/>
+    <line x1="70" y1="135" x2="560" y2="135" class="sa dash" fill="none"/>
+    <text x="580" y="140" class="sm b">ort. 2,5 V</text>
+    <text x="20" y="206" class="b">%75</text>
+    <polyline points="70,220 70,190 220,190 220,220 270,220 270,190 420,190 420,220 470,220 470,190 560,190" class="sp sw" fill="none"/>
+    <line x1="70" y1="197.5" x2="560" y2="197.5" class="sa dash" fill="none"/>
+    <text x="580" y="210" class="sm b">ort. 3,75 V</text>
+    <line x1="70" y1="234" x2="270" y2="234" class="st" fill="none"/>
+    <text x="170" y="250" class="sm mid">periyot T = 1 ms (1 kHz)</text>
+    <text x="400" y="250" class="sm t2">tepe 5 V · kesikli çizgi: ortalama</text>
+  </g>
+  <rect x="20" y="268" width="680" height="160" rx="12" class="sf sb"/>
+  <text x="40" y="294" class="b">10 bit ADC, 5 V referans</text>
+  <polyline points="40,410 70,410 70,395 100,395 100,380 130,380 130,365 160,365 160,350 190,350 190,335 220,335 220,320" class="sok sw" fill="none"/>
+  <text x="40" y="330" class="sm t2">her basamak</text>
+  <text x="40" y="346" class="sm t2">= 1 LSB</text>
+  <text x="260" y="324">1 LSB = 5 ÷ 1.024 = <tspan class="b p">4,88 mV</tspan></text>
+  <text x="260" y="350">Seviye sayısı: 2<tspan class="sm">10</tspan> = 1.024 (kod 0 … 1.023)</text>
+  <text x="260" y="376">2,5 V ÷ 4,88 mV = <tspan class="b p">kod 512</tspan></text>
+  <text x="260" y="402" class="sm t2">Kod → gerilim: 512 × 5 ÷ 1.024 = 2,5 V</text>
+</svg>
+      <figcaption>Periyot aynı (1 ms, 1 kHz) kalırken açık süre uzadıkça ortalama gerilim artar. Alt bölümde 5 V referanslı 10 bitlik ADC her 4,88 mV'u bir adım sayar; 2,5 V giriş 512 kodunu verir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">PWM nedir, nasıl çalışır?</a></li>
+      <li><a href="#b2">Görev döngüsü (duty cycle) nasıl hesaplanır?</a></li>
+      <li><a href="#b3">Geliştirme kartında PWM ile LED parlaklığı nasıl ayarlanır?</a></li>
+      <li><a href="#b4">PWM frekansı neden önemlidir?</a></li>
+      <li><a href="#b5">Motor hız kontrolünde PWM nasıl kullanılır?</a></li>
+      <li><a href="#b6">ADC çözünürlüğü ne demek? 10 bitlik ADC'de adım gerilimi</a></li>
+      <li><a href="#b7">555 entegresi ile PWM nasıl üretilir?</a></li>
+      <li><a href="#b8">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-pwm-nedir-arduino-adc-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../pwm-gorev-dongusu-hesapla/"><strong>PWM Görev Döngüsü Hesaplama</strong><span>PWM frekansı ve görev döngüsünden açık-kapalı süreleri, ortalama gerilimi ve sayaç değerini hesaplayın.</span></a></li>
+          <li><a href="../../adc-cozunurluk-hesapla/"><strong>ADC Çözünürlük ve Adım Gerilimi Hesaplama</strong><span>ADC bit sayısı ve referans geriliminden adım gerilimini (LSB), seviye sayısını ve bir gerilimin sayısal kodunu bulun.</span></a></li>
+          <li><a href="../../555-zamanlayici-hesapla/"><strong>555 Zamanlayıcı Devre Hesaplama</strong><span>555 entegresinin astable frekansını, görev döngüsünü ve monostable darbe süresini R ve C değerlerinden hesaplayın.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">PWM nedir, nasıl çalışır?</h2>
+      <p>PWM, İngilizce <em>Pulse Width Modulation</em> (darbe genişlik modülasyonu) ifadesinin kısaltmasıdır. Dijital bir çıkış yalnızca iki durumda olabilir: açık (örneğin 5 V) ya da kapalı (0 V). Ara bir gerilim üretemeyen bu çıkış, saniyede yüzlerce ya da binlerce kez açılıp kapatılır. Açık kalma süresi uzadıkça yüke giden ortalama enerji artar, kısaldıkça azalır.</p>
+      <p>Yük bu hızlı değişime tek tek tepki veremeyecek kadar &quot;yavaş&quot;sa, yani bir LED'in ışığını gözümüz, bir motorun dönüşünü rotorun ataleti ortalarsa, sonuç sanki ara bir gerilim uygulanmış gibidir. PWM'nin en büyük avantajı verimliliktir: anahtarlama elemanı ya tam açık ya tam kapalı olduğu için üzerinde az güç harcanır. Gerilimi direnç ya da doğrusal düzenleyiciyle düşürmek ise aradaki farkı ısı olarak harcar.</p>
+
+      <h2 id="b2">Görev döngüsü (duty cycle) nasıl hesaplanır?</h2>
+      <p>Bir PWM sinyalinin iki temel parametresi vardır: <strong>frekans</strong> (saniyedeki periyot sayısı) ve <strong>görev döngüsü</strong> (bir periyot içinde sinyalin açık kaldığı sürenin oranı). Periyot frekansın tersidir; 1 kHz'lik bir sinyalin periyodu 1 ms'dir.</p>
+      <div class="rh-formula">Periyot T = 1 ÷ f<br>Görev döngüsü D (%) = açık süre ÷ T × 100<br>Ortalama gerilim = V_tepe × D<br>Etkin (RMS) gerilim = V_tepe × √D<br>n bit sayaç değeri ≈ D × (2ⁿ − 1)</div>
+      <ol class="ba-steps">
+        <li>Frekans 1 kHz, görev döngüsü %25, tepe gerilimi 5 V olsun.</li>
+        <li>Periyot: 1 ÷ 1.000 = 1 ms. Açık süre: 0,25 × 1 ms = 0,25 ms; kapalı süre 0,75 ms.</li>
+        <li>Ortalama gerilim: 5 × 0,25 = 1,25 V.</li>
+        <li>Etkin (RMS) gerilim: 5 × √0,25 = 2,5 V. Dirençli bir ısıtıcıda güç oranı görev döngüsüne, yani %25'e eşittir.</li>
+        <li>8 bitlik sayaçta karşılaştırma değeri: 0,25 × 255 = 63,75 → 64. Gerçekleşen görev döngüsü 64 ÷ 255 = %25,1 olur.</li>
+      </ol>
+      <p>Ortalama gerilim ile etkin gerilim farklıdır: ortalama, motor ve LED gibi yüklerin &quot;hissettiği&quot; ortalama değeri; etkin gerilim ise dirençli yükte aynı ısıyı üreten doğru gerilimi anlatır. Bu hesapları <a href="../../pwm-gorev-dongusu-hesapla/">PWM Görev Döngüsü Hesaplama</a> aracıyla yapabilirsiniz. Güç, gerilim ve akım ilişkisi için <a href="../../bilgi-bankasi/watt-amper-volt-iliskisi/">watt, amper, volt ilişkisi</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="b3">Geliştirme kartında PWM ile LED parlaklığı nasıl ayarlanır?</h2>
+      <p>Hobi elektroniğinde yaygın kullanılan mikrodenetleyicili geliştirme kartlarının bazı dijital pinleri donanımsal PWM üretebilir. Birçok kartta yazılımın PWM komutu 8 bit çözünürlükle çalışır: 0 tamamen kapalı, 255 tamamen açık anlamına gelir. 128 değeri yaklaşık %50, 64 değeri yaklaşık %25 görev döngüsü verir. Bu pinlerdeki PWM frekansı karta göre değişir ve genellikle birkaç yüz hertz ile birkaç kilohertz arasındadır; kesin değeri kartınızın belgelerinden kontrol edin.</p>
+      <p>LED'i PWM pinine mutlaka seri bir akım sınırlama direnciyle bağlayın; direnç değeri PWM'den bağımsız olarak LED'in tam açık durumdaki akımına göre seçilir. Hesap yöntemi <a href="../../bilgi-bankasi/led-direnci-nasil-hesaplanir/">LED direnci nasıl hesaplanır</a> yazısında anlatılır. Gözümüz ışığı doğrusal algılamadığı için 0–255 arasında eşit adımlarla artırılan parlaklık başta hızlı, sonra yavaş artıyormuş gibi görünür; yumuşak bir geçiş için düşük değerlerde küçük, yüksek değerlerde büyük adımlar kullanılır (gama düzeltmesi).</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sayaç değeri (8 bit)</th><th>Görev döngüsü</th><th>Ortalama gerilim (5 V)</th><th>Algılanan etki</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>%0</td><td>0 V</td><td>LED sönük</td></tr>
+          <tr><td>32</td><td>%12,5</td><td>0,63 V</td><td>Belirgin ama loş</td></tr>
+          <tr><td>64</td><td>%25,1</td><td>1,25 V</td><td>Orta-loş</td></tr>
+          <tr><td>128</td><td>%50,2</td><td>2,51 V</td><td>Göze %50'den parlak görünür</td></tr>
+          <tr><td>255</td><td>%100</td><td>5 V</td><td>Tam parlak</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">LED'in ileri gerilimi nedeniyle LED üzerindeki gerilim bu ortalamadan farklıdır; tablo PWM çıkışının ortalamasını gösterir.</p>
+
+      <h2 id="b4">PWM frekansı neden önemlidir?</h2>
+      <p>Görev döngüsü ne kadar güç verileceğini, frekans ise bu gücün ne kadar &quot;düzgün&quot; verileceğini belirler. Frekans çok düşükse yük açılıp kapanmayı izlemeye başlar: LED titrer, motor sarsılarak döner. Frekans çok yüksekse anahtarlama kayıpları artar, transistör ısınır ve sinyal kenarları bozulabilir. Doğru frekans uygulamaya göre seçilir.</p>
+      <ul>
+        <li><strong>LED parlaklığı:</strong> Göz titremesini önlemek için genellikle birkaç yüz hertz ve üzeri yeterlidir; kamera kayıtlarında titreme görünmemesi için daha yüksek frekans tercih edilir.</li>
+        <li><strong>Küçük DC motorlar:</strong> Düşük frekanslar (yüzlerce hertz) motorda duyulabilir bir vızıltı yaratır; insan kulağının duyma sınırının üzerindeki frekanslar (yaklaşık 20 kHz üstü) sessiz çalışma sağlar.</li>
+        <li><strong>Servo motorlar:</strong> Görev döngüsü değil, darbe genişliği önemlidir; çoğu standart servo yaklaşık 50 Hz'lik (20 ms) periyotta 1–2 ms'lik darbelerle konum alır.</li>
+        <li><strong>Güç elektroniği:</strong> Gerilim dönüştürücüler onlarca kilohertz ile megahertz düzeyinde çalışır; frekans arttıkça bobin ve kondansatör küçülür.</li>
+      </ul>
+      <p>Mikrodenetleyicilerde frekans ile çözünürlük arasında bir denge vardır: sayaç saati sabitken frekansı artırmak sayacın daha erken sıfırlanması, yani daha az basamak (düşük çözünürlük) demektir. 16 MHz saatle 8 bitlik sayaç en fazla 16.000.000 ÷ 256 = 62,5 kHz frekansa ulaşır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-pwm-nedir-arduino-adc-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">Motor hız kontrolünde PWM nasıl kullanılır?</h2>
+      <p>DC motorun hızı, uygulanan ortalama gerilimle yaklaşık orantılıdır; PWM görev döngüsünü artırmak motoru hızlandırır. Ancak bir mikrodenetleyici pini motoru doğrudan sürecek kadar akım veremez ve motorun ürettiği gerilim sıçramaları pine zarar verebilir. Bu yüzden pin, motoru bir anahtarlama elemanı (transistör ya da MOSFET) veya hazır bir motor sürücü modülü üzerinden kontrol eder.</p>
+      <p>Motor bir bobindir; akım aniden kesildiğinde ters yönde yüksek bir gerilim üretir. Bu gerilimi güvenli biçimde söndürmek için motorun uçlarına ters bağlı bir diyot (serbest dolaşım diyotu) konur; çoğu motor sürücü modülünde bu koruma yerleşiktir. Motorun beslemesi ayrı bir kaynaktan verilse bile kartın ve sürücünün toprak (GND) hatları ortak olmalıdır. Yön değiştirmek için H köprüsü adı verilen dört anahtarlı bir yapı kullanılır.</p>
+      <p>Şebeke gerilimi (230 V AC) ile çalışan motor ve ısıtıcıları kontrol eden devreler hayati tehlike taşır; bu tür projeler yalnızca yetkin kişilerce, uygun yalıtım ve koruma elemanlarıyla yapılmalıdır. Düşük gerilimli projelerde bile pil ve adaptörlerin akım sınırlarına, kabloların kesitine ve ısınmaya dikkat edin.</p>
+
+      <h2 id="b6">ADC çözünürlüğü ne demek? 10 bitlik ADC'de adım gerilimi</h2>
+      <p>ADC (Analog-Dijital Çevirici), bir sensörden gelen sürekli gerilimi mikrodenetleyicinin işleyebileceği bir sayıya çevirir. Çözünürlük, ADC'nin ölçüm aralığını kaç eşit basamağa böldüğünü bit sayısıyla anlatır. n bitlik bir ADC 2ⁿ seviye üretir: 10 bit için 1.024 seviye, 12 bit için 4.096 seviye. Ölçüm aralığının üst sınırı referans gerilimidir (Vref).</p>
+      <div class="rh-formula">Seviye sayısı = 2ⁿ · En büyük kod = 2ⁿ − 1<br>Adım gerilimi (1 LSB) = Vref ÷ 2ⁿ<br>Sayısal kod = taban(Vgiriş ÷ LSB)<br>Gerilim ≈ kod × Vref ÷ 2ⁿ<br>İdeal SNR (dB) ≈ 6,02 × n + 1,76</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Çözünürlük</th><th>Seviye</th><th>LSB (Vref = 5 V)</th><th>LSB (Vref = 3,3 V)</th><th>İdeal SNR</th></tr></thead>
+        <tbody>
+          <tr><td>8 bit</td><td>256</td><td>19,53 mV</td><td>12,89 mV</td><td>49,9 dB</td></tr>
+          <tr><td>10 bit</td><td>1.024</td><td>4,88 mV</td><td>3,22 mV</td><td>62,0 dB</td></tr>
+          <tr><td>12 bit</td><td>4.096</td><td>1,22 mV</td><td>0,81 mV</td><td>74,0 dB</td></tr>
+          <tr><td>16 bit</td><td>65.536</td><td>76,3 µV</td><td>50,4 µV</td><td>98,1 dB</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Değerler ideal çeviriciler içindir. Gerçek ADC'lerde gürültü ve doğrusallık hataları nedeniyle etkin çözünürlük bit sayısının altında kalır.</p>
+      <p><strong>Çözümlü örnek:</strong> 10 bitlik ADC, 5 V referans. Adım gerilimi 5 ÷ 1.024 = 4,8828 mV. Girişte 2,5 V varsa kod 2,5 ÷ 0,0048828 = 512 olur. Girişte 1,8 V varsa 1,8 ÷ 0,0048828 = 368,6 sonucu aşağı yuvarlanır ve kod 368 olur; bu kod 368 × 5 ÷ 1.024 ≈ 1,797 V'a karşılık gelir, aradaki 3 mV'luk fark niceleme hatasıdır ve her zaman 1 LSB'den küçüktür. Bazı kaynaklar ve kodlar Vref ÷ (2ⁿ − 1), yani 5 ÷ 1.023 kullanır; fark küçüktür ama hesaplarda hangisini kullandığınızı tutarlı tutun. Bu hesapları <a href="../../adc-cozunurluk-hesapla/">ADC Çözünürlük Hesaplama</a> aracıyla yapabilir, kodun ikilik karşılığını <a href="../../bilgi-bankasi/ikilik-sayi-sistemi-nasil-cevrilir/">ikilik sayı sistemi</a> yazısından öğrenebilirsiniz.</p>
+      <p>ADC girişine referans geriliminden yüksek ya da toprağın altında bir gerilim uygulamak çeviriciye ve kartınıza zarar verebilir. Daha yüksek gerilimleri ölçmek için iki dirençli bir gerilim bölücü kullanılır; bölücünün çıkışı her koşulda Vref'in altında kalmalıdır. Dirençlerin hesabı <a href="../../bilgi-bankasi/ohm-kanunu-nedir/">Ohm kanunu</a> ile yapılır.</p>
+
+      <h2 id="b7">555 entegresi ile PWM nasıl üretilir?</h2>
+      <p>555 zamanlayıcı, mikrodenetleyici kullanmadan kare dalga üretmenin klasik yoludur. <strong>Kararsız (astable)</strong> bağlantıda iki direnç (R1, R2) ve bir kondansatör (C) kullanılır; kondansatör R1 + R2 üzerinden dolar, R2 üzerinden boşalır. Dolma süresi yüksek, boşalma süresi düşük çıkışı belirler.</p>
+      <div class="rh-formula">Yüksek süre t_H = 0,693 × (R1 + R2) × C<br>Düşük süre t_L = 0,693 × R2 × C<br>Frekans f ≈ 1,44 ÷ ((R1 + 2 × R2) × C)<br>Görev döngüsü D = (R1 + R2) ÷ (R1 + 2 × R2) × 100<br>Tek atımlı (monostable): T = 1,1 × R × C</div>
+      <ol class="ba-steps">
+        <li>R1 = 1 kΩ, R2 = 10 kΩ, C = 100 nF seçelim.</li>
+        <li>Yüksek süre: 0,693 × 11.000 × 100 × 10⁻⁹ ≈ 0,762 ms.</li>
+        <li>Düşük süre: 0,693 × 10.000 × 100 × 10⁻⁹ ≈ 0,693 ms.</li>
+        <li>Periyot 1,455 ms, frekans yaklaşık 687 Hz; 1,44 ÷ (21.000 × 100 × 10⁻⁹) formülü de yaklaşık 686 Hz verir.</li>
+        <li>Görev döngüsü: 11 ÷ 21 ≈ %52,4.</li>
+      </ol>
+      <p>Standart bağlantıda yüksek süre her zaman düşük süreden uzun olduğu için görev döngüsü %50'nin altına inemez. Ayarlanabilir PWM için R2'ye paralel bir diyot eklenir ve dolma-boşalma yolları bir potansiyometreyle ayrılır; böylece frekans yaklaşık sabit kalırken görev döngüsü %5–95 gibi geniş bir aralıkta değiştirilebilir. Kondansatörün dolma süresinin arkasındaki fizik <a href="../../bilgi-bankasi/rc-zaman-sabiti-kondansator-sarj-suresi/">RC zaman sabiti</a> yazısında, değerleri hesaplamak ise <a href="../../555-zamanlayici-hesapla/">555 Zamanlayıcı Hesaplama</a> aracındadır. Kondansatör üzerindeki &quot;104&quot; gibi kodlar 100 nF demektir.</p>
+
+      <h2 id="b8">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Pinden fazla akım çekmek:</strong> Motor, röle ve güçlü LED'leri doğrudan pine bağlamak kartı bozabilir; sürücü devre kullanın.</li>
+        <li><strong>Diyotu unutmak:</strong> Bobinli yüklerde ters gerilim koruması olmadan anahtarlama elemanı zarar görebilir.</li>
+        <li><strong>Ortak toprağı bağlamamak:</strong> Ayrı beslemeli devrelerde GND hatları birleştirilmezse kontrol sinyali çalışmaz.</li>
+        <li><strong>ADC'de referansı yanlış varsaymak:</strong> 3,3 V'luk kartta 5 V referansla hesap yapmak tüm ölçümleri yanlış ölçekler.</li>
+        <li><strong>PWM çıkışını analog gerilim sanmak:</strong> PWM pini gerçek bir ara gerilim vermez; ölçü aletiyle ortalamayı görürsünüz, ama düzgün bir analog sinyal için RC alçak geçiren filtre gerekir.</li>
+        <li><strong>Görev döngüsünü güçle karıştırmak:</strong> Ortalama gerilim D ile, dirençli yükteki güç de D ile orantılıdır; ancak etkin gerilim √D ile değişir.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>PWM nedir, nasıl çalışır?</summary><p>PWM, dijital bir çıkışı çok hızlı açıp kapatarak açık kalma süresinin oranıyla yüke giden ortalama gücü ayarlama yöntemidir. LED, motor ve ısıtıcı gibi yükler bu hızlı değişimi ortalayarak ara bir gerilim uygulanmış gibi davranır.</p></details>
+      <details><summary>Görev döngüsü (duty cycle) nasıl hesaplanır?</summary><p>Görev döngüsü, açık sürenin periyoda bölünüp 100 ile çarpılmasıyla bulunur. 1 kHz'lik sinyalde periyot 1 ms'dir; sinyal 0,25 ms açık kalıyorsa görev döngüsü %25, 5 V tepe için ortalama gerilim 1,25 V olur.</p></details>
+      <details><summary>Geliştirme kartında PWM ile LED parlaklığı nasıl ayarlanır?</summary><p>LED seri bir dirençle PWM destekli pine bağlanır ve yazılımda 0 ile 255 arasında bir değer verilir. 64 yaklaşık %25, 128 yaklaşık %50 görev döngüsü sağlar; göz ışığı doğrusal algılamadığı için gama düzeltmesi geçişi yumuşatır.</p></details>
+      <details><summary>PWM frekansı neden önemlidir?</summary><p>Frekans çok düşükse LED titrer, motor sarsılır ya da vızıldar; çok yüksekse anahtarlama kayıpları ve ısınma artar. LED için birkaç yüz hertz üzeri, sessiz motor kontrolü için yaklaşık 20 kHz üzeri frekanslar tercih edilir.</p></details>
+      <details><summary>ADC çözünürlüğü ne demek?</summary><p>ADC çözünürlüğü, çeviricinin ölçüm aralığını kaç eşit basamağa böldüğünü bit sayısıyla anlatır. n bitlik ADC 2ⁿ seviye üretir; 10 bit 1.024, 12 bit 4.096 seviye demektir. Bit sayısı arttıkça daha küçük gerilim farkları ayırt edilir.</p></details>
+      <details><summary>10 bitlik ADC'de adım gerilimi kaçtır?</summary><p>Adım gerilimi referans geriliminin 1.024'e bölünmesiyle bulunur. 5 V referansta 5 ÷ 1.024 ≈ 4,88 mV, 3,3 V referansta yaklaşık 3,22 mV'tur. 5 V referansla 2,5 V giriş 512 koduna karşılık gelir.</p></details>
+      <details><summary>555 entegresi ile PWM nasıl üretilir?</summary><p>555 kararsız bağlantıda iki direnç ve bir kondansatörle kare dalga üretir; frekans yaklaşık 1,44 ÷ ((R1 + 2R2) × C) formülüyle bulunur. Standart bağlantıda görev döngüsü %50'nin üzerindedir; diyot ve potansiyometreyle geniş aralıkta ayarlanabilir.</p></details>
+      <details><summary>Motor hız kontrolünde PWM nasıl kullanılır?</summary><p>PWM görev döngüsü artırıldıkça motorun gördüğü ortalama gerilim ve hızı artar. Pin motoru doğrudan sürmez; transistör, MOSFET ya da motor sürücü modülü kullanılır ve motora ters bağlı koruma diyotu eklenir.</p></details>
+      <details><summary>PWM çıkışından gerçek analog gerilim elde edilebilir mi?</summary><p>Evet, PWM çıkışına bir direnç ve kondansatörden oluşan alçak geçiren filtre eklenerek darbeler yumuşatılır ve yaklaşık sabit bir gerilim elde edilir. Filtrenin kesim frekansı PWM frekansının belirgin biçimde altında seçilmelidir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; elektrik işlerinde güvenlik önlemlerini alın; şebeke gerilimiyle çalışan devreleri yalnızca yetkin kişiler kurmalıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../led-direnci-nasil-hesaplanir/"><strong>LED Direnci Nasıl Hesaplanır? 5V ve 12V İçin Kaç Ohm Direnç Gerekir</strong><span>LED direnci R = (kaynak gerilimi − LED gerilimi) ÷ akım formülüyle bulunur. 5V kırmızı LED için 150 Ω, 12V beyaz LED için 470 Ω; güç hesabı ve seri-paralel bağlantı.</span></a></li>
+          <li><a href="../ohm-kanunu-nedir/"><strong>Ohm Kanunu Nedir? V=I·R Formülü, Akım-Gerilim-Direnç Örnekleri</strong><span>Ohm kanunu: gerilim = akım × direnç (V = I · R). Ohm üçgeni, birimler, seri ve paralel devre, elektriksel güç ve 8. sınıf ile 10. sınıf düzeyinde çözümlü örnekler.</span></a></li>
+          <li><a href="../rc-zaman-sabiti-kondansator-sarj-suresi/"><strong>RC Zaman Sabiti Nedir? Kondansatör Şarj Süresi, 5τ Kuralı ve RC Filtre</strong><span>RC zaman sabiti τ = R × C ile bulunur. Kondansatör 1τ'da %63,2, 5τ'da %99,3 dolar. Şarj-deşarj formülleri, kesim frekansı, enerji ve çözümlü örnekler.</span></a></li>
+          <li><a href="../ikilik-sayi-sistemi-nasil-cevrilir/"><strong>İkilik Sayı Sistemi Nedir? Binary, Onluk ve Onaltılık Çevirme Yöntemi</strong><span>Onluk sayı 2'ye art arda bölünüp kalanlar aşağıdan yukarı yazılarak ikiliğe çevrilir: 45 = 101101. Ters çeviri, hex ve sekizlik taban, toplama, ikiye tümleyen.</span></a></li>
+          <li><a href="../kondansator-kodu-nasil-okunur-104/"><strong>Kondansatör Kodu Nasıl Okunur? 104, 103, 223 ve Seri-Paralel Bağlama</strong><span>104 kondansatör 100 nF yani 0,1 µF'tır. Üç haneli kodun çözümü, J-K-M tolerans harfleri, voltaj kodları, seri-paralel bağlama formülleri ve çözümlü örnekler.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-pwm-nedir-arduino-adc-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

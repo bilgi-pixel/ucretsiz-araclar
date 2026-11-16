@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>User-Agent Nedir? Tarayıcı ve Cihaz Bilgisi Nasıl Okunur</title>
+  <meta name="description" content="User-Agent, tarayıcının her istekte sunucuya gönderdiği kimlik metnidir: tarayıcı, sürüm, işletim sistemi ve cihaz türü. Okuma, Client Hints ve MIME türü.">
+  <meta name="keywords" content="user agent nedir, user agent öğrenme, tarayıcı bilgisi, user agent string, http başlıkları, content-type nedir, mime türü, client hints nedir">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/user-agent-nedir-tarayici-bilgisi/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="User-Agent Nedir? Tarayıcı ve Cihaz Bilgisi Nasıl Okunur">
+  <meta property="og:description" content="User-Agent, tarayıcının her istekte sunucuya gönderdiği kimlik metnidir: tarayıcı, sürüm, işletim sistemi ve cihaz türü. Okuma, Client Hints ve MIME türü.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/user-agent-nedir-tarayici-bilgisi/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"User-Agent Nedir? Tarayıcı, Cihaz ve İşletim Sistemi Bilgisi Nasıl Okunur","description":"User-Agent, tarayıcının her istekte sunucuya gönderdiği kimlik metnidir: tarayıcı, sürüm, işletim sistemi ve cihaz türü. Okuma, Client Hints ve MIME türü.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/user-agent-nedir-tarayici-bilgisi/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1237,"keywords":"user agent nedir, user agent öğrenme, tarayıcı bilgisi, user agent string, http başlıkları, content-type nedir, mime türü, client hints nedir","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"User-Agent Nedir? Tarayıcı, Cihaz ve İşletim Sistemi Bilgisi Nasıl Okunur"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"User-Agent nedir, ne işe yarar?","acceptedAnswer":{"@type":"Answer","text":"User-Agent, tarayıcının ya da bir programın her web isteğiyle sunucuya gönderdiği kimlik metnidir. Siteler bu bilgiyle mobil düzen seçer, eski sürümlere uyarı gösterir, istatistik tutar ve arama motoru botlarını insan ziyaretçilerden ayırır."}},{"@type":"Question","name":"Kendi User-Agent bilgim nasıl öğrenilir?","acceptedAnswer":{"@type":"Answer","text":"Tarayıcının geliştirici araçlarını açıp Konsol sekmesine navigator.userAgent yazabilir ya da tarayıcı ve ekran bilgilerinizi gösteren bir araç sayfasını kullanabilirsiniz. Çıkan dizeyi çözümleyici araca yapıştırarak parçaların anlamını okuyabilirsiniz."}},{"@type":"Question","name":"User-Agent dizesindeki 'Mozilla/5.0' neden her tarayıcıda var?","acceptedAnswer":{"@type":"Answer","text":"Eskiden siteler gelişmiş özellikleri yalnızca bu belirteçle başlayan tarayıcılara gönderiyordu. Diğer tarayıcılar dışlanmamak için aynı belirteci eklediler; bugün anlam taşımasa da eski siteler bozulmasın diye tutulmaya devam ediyor."}},{"@type":"Question","name":"Siteler cihaz türünü nasıl anlar?","acceptedAnswer":{"@type":"Answer","text":"User-Agent'taki Mobile ve platform belirteçlerine, Client Hints'teki Sec-CH-UA-Mobile başlığına ve en önemlisi ekran genişliğine bakarlar. Modern siteler duyarlı tasarımla ekran genişliğine göre düzen değiştirdiği için cihaz türünü bilmek zorunda kalmaz."}},{"@type":"Question","name":"User-Agent değiştirmek gizlilik sağlar mı?","acceptedAnswer":{"@type":"Answer","text":"Çoğu zaman sağlamaz. Siteler ekran çözünürlüğü, saat dilimi, dil ve yazı tipleri gibi birçok ipucunu birleştirir; nadir bir User-Agent değeri sizi kalabalıktan daha da ayırt edilebilir yapabilir. İzleme korumaları ve çerez temizliği daha etkilidir."}},{"@type":"Question","name":"Content-Type (MIME türü) başlığı ne anlatır?","acceptedAnswer":{"@type":"Answer","text":"Content-Type, sunucunun gönderdiği içeriğin türünü text/html, application/json ya da image/png gibi standart bir etiketle bildirir. Tarayıcı dosyayı göstermeye, indirmeye ya da çalıştırmaya bu etikete ve varsa karakter kodlamasına bakarak karar verir."}},{"@type":"Question","name":"Client Hints User-Agent'ın yerini alıyor mu?","acceptedAnswer":{"@type":"Answer","text":"Tamamen değil. Client Hints, ayrıntılı bilgiyi yalnızca site istediğinde gönderen yeni bir yöntemdir ve User-Agent'taki ayrıntının azalmasını sağlar. User-Agent başlığı uyumluluk için gönderilmeye devam eder ama içeriği giderek sadeleşir."}},{"@type":"Question","name":"Botlar User-Agent ile nasıl tespit edilir?","acceptedAnswer":{"@type":"Answer","text":"Dürüst botlar dizelerinde bot, crawler ya da spider gibi sözcüklerle kendilerini tanıtır. Kötü niyetli programlar ise kendini tarayıcı gibi gösterebildiği için kesin doğrulama IP adresinin ters DNS kaydı gibi ek kontrollerle yapılır."}},{"@type":"Question","name":"User-Agent bilgisi kişisel veri sayılır mı?","acceptedAnswer":{"@type":"Answer","text":"Tek başına genellikle bir kişiyi doğrudan tanımlamaz, ancak IP adresi ve diğer tarayıcı özellikleriyle birleştirildiğinde kullanıcıyı ayırt etmeye yardımcı olabilir. Bu nedenle sunucu kayıtlarında saklanırken diğer kişisel verilerle aynı özen gösterilmelidir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>User-Agent Nedir? Tarayıcı, Cihaz ve İşletim Sistemi Bilgisi Nasıl Okunur</h1><p class="lead">User-Agent, tarayıcınızın ya da bir programın <strong>her web isteğiyle birlikte sunucuya gönderdiği kimlik metnidir</strong>; içinde tarayıcı adı ve sürümü, işletim sistemi, işleme motoru ve cihazın mobil olup olmadığı bilgisi bulunur. Siteler bu metne bakarak mobil sayfa gösterir, eski tarayıcılara uyarı verir ya da istatistik tutar. Bu sayfada User-Agent dizesinin parça parça nasıl okunduğunu, neden her tarayıcıda &quot;Mozilla/5.0&quot; yazdığını, kendi bilginizi nasıl öğreneceğinizi, Client Hints'in getirdiği değişikliği, Content-Type (MIME türü) başlığını ve botların nasıl tanındığını bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>User-Agent bir HTTP istek başlığıdır; tarayıcı her sayfa, resim ve dosya isteğinde bu başlığı gönderir.</li>
+        <li>Dize genellikle &quot;Mozilla/5.0 (platform) motor (uyumluluk) tarayıcı/sürüm&quot; kalıbındadır.</li>
+        <li>&quot;Mozilla/5.0&quot; ifadesi tarihsel uyumluluk için tutulur; bugün hiçbir anlam taşımaz ama silinirse bazı siteler bozulur.</li>
+        <li>Yeni tarayıcılar User-Agent'taki ayrıntıyı azaltıyor; ayrıntılı bilgi Client Hints (Sec-CH-UA) başlıklarıyla, gerektiğinde isteniyor.</li>
+        <li>User-Agent'ı değiştirmek gizlilik sağlamaz; nadir bir değer sizi kalabalıktan daha da ayırt edilebilir yapabilir.</li>
+        <li>Content-Type başlığı gönderilen içeriğin türünü (ör. text/html, application/json, image/png) MIME türüyle bildirir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Örnek bir User-Agent dizesinin parçalara ayrılmış hâli: Mozilla/5.0 uyumluluk belirteci, parantez içinde işletim sistemi ve mimari, işleme motoru, uyumluluk notu, tarayıcı adı ve sürümü." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">User-Agent dizesi parça parça</text>
+  <rect x="20" y="50" width="680" height="44" rx="6" class="sf sb"/>
+  <text x="360" y="77" class="sm mid"><tspan class="p b">Mozilla/5.0</tspan> (<tspan class="ok b">Windows NT 10.0; Win64; x64</tspan>) <tspan class="b">AppleWebKit/537.36</tspan> (KHTML, like Gecko) <tspan class="p b">Tarayıcı/131.0</tspan></text>
+  <g class="sm">
+    <rect x="20" y="118" width="160" height="96" rx="8" class="ps"/>
+    <text x="100" y="142" class="b mid">1. Belirteç</text>
+    <text x="100" y="166" class="mid">Mozilla/5.0</text>
+    <text x="100" y="190" class="mid mu">tarihsel, anlamsız</text>
+    <rect x="193" y="118" width="160" height="96" rx="8" class="oks"/>
+    <text x="273" y="142" class="b mid">2. Platform</text>
+    <text x="273" y="166" class="mid">işletim sistemi</text>
+    <text x="273" y="190" class="mid">ve işlemci mimarisi</text>
+    <rect x="366" y="118" width="160" height="96" rx="8" class="sf sb"/>
+    <text x="446" y="142" class="b mid">3. Motor</text>
+    <text x="446" y="166" class="mid">sayfayı çizen</text>
+    <text x="446" y="190" class="mid">işleme motoru</text>
+    <rect x="540" y="118" width="160" height="96" rx="8" class="ps"/>
+    <text x="620" y="142" class="b mid">4. Tarayıcı</text>
+    <text x="620" y="166" class="mid">ad ve ana sürüm</text>
+    <text x="620" y="190" class="mid mu">(alt sürüm 0.0.0)</text>
+  </g>
+  <text x="20" y="252" class="b">Siteler bu bilgiyle ne yapar?</text>
+  <g class="sm">
+    <rect x="20" y="266" width="220" height="60" rx="8" class="sf sb"/><text x="130" y="292" class="mid b">Mobil mi?</text><text x="130" y="312" class="mid">uygun düzeni seçer</text>
+    <rect x="250" y="266" width="220" height="60" rx="8" class="sf sb"/><text x="360" y="292" class="mid b">Eski sürüm mü?</text><text x="360" y="312" class="mid">uyarı ya da yedek kod</text>
+    <rect x="480" y="266" width="220" height="60" rx="8" class="sf sb"/><text x="590" y="292" class="mid b">Bot mu?</text><text x="590" y="312" class="mid">istatistikten ayırır</text>
+  </g>
+  <rect x="20" y="346" width="680" height="54" rx="8" class="dgs"/>
+  <text x="36" y="368" class="b dg">Unutmayın</text>
+  <text x="36" y="389" class="sm">User-Agent kullanıcı tarafından değiştirilebilir; güvenlik kararı için tek başına kanıt değildir.</text>
+</svg>
+      <figcaption>Bir masaüstü tarayıcının User-Agent dizesi beş parçadan oluşur. En güvenilir bilgiler parantez içindeki platform ve sondaki tarayıcı sürümüdür; baştaki belirteçler tarihsel uyumluluk içindir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">User-Agent nedir, ne işe yarar?</a></li>
+      <li><a href="#b2">User-Agent dizesi nasıl okunur?</a></li>
+      <li><a href="#b3">Neden her tarayıcıda &quot;Mozilla/5.0&quot; yazıyor?</a></li>
+      <li><a href="#b4">Kendi User-Agent bilginizi nasıl öğrenirsiniz?</a></li>
+      <li><a href="#b5">Siteler cihaz türünü nasıl anlar?</a></li>
+      <li><a href="#b6">Client Hints User-Agent'ın yerini alıyor mu?</a></li>
+      <li><a href="#b7">User-Agent değiştirmek gizlilik sağlar mı?</a></li>
+      <li><a href="#b8">Content-Type (MIME türü) başlığı ne anlatır?</a></li>
+      <li><a href="#b9">Botlar User-Agent ile nasıl tespit edilir?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-user-agent-nedir-tarayici-bilgisi-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../user-agent-coz/"><strong>User-Agent Çözümleme</strong><span>User-Agent dizgisinden tarayıcıyı, sürümünü, işletim sistemini, cihaz türünü ve bot olup olmadığını çıkarın.</span></a></li>
+          <li><a href="../../mime-turu-bul/"><strong>MIME Türü Bulma</strong><span>Dosya uzantısından MIME türünü, MIME türünden uzantıyı bulun; Content-Type başlığı ve yükleme denetimleri için.</span></a></li>
+          <li><a href="../../ekran-cozunurlugu/"><strong>Ekran Çözünürlüğü ve Tarayıcı Bilgisi</strong><span>Ekran çözünürlüğünüzü, tarayıcı görünüm alanını, piksel oranını, yenileme hızını, tarayıcı ve işletim sisteminizi görün; en-boy oranı hesaplayın. Hiçbir veri gönderilmez.</span></a></li>
+          <li><a href="../../url-ayristir/"><strong>URL Ayrıştırma (Parçalarına Ayırma)</strong><span>Web adresini şema, ana makine, port, yol, sorgu parametreleri ve parça olarak ayırın; parametreleri çözülmüş görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">User-Agent nedir, ne işe yarar?</h2>
+      <p>Bir web sayfasını açtığınızda tarayıcınız sunucuya bir HTTP isteği gönderir. Bu istekte hangi adresin istendiği bilgisinin yanında, <strong>başlık</strong> adı verilen ek satırlar da bulunur. User-Agent bu başlıklardan biridir ve &quot;isteği gönderen yazılım kim?&quot; sorusuna cevap verir.</p>
+      <p>Sunucular ve sayfadaki kodlar bu bilgiyi birçok amaçla kullanır: telefondan gelen ziyaretçiye mobil düzeni göstermek, belirli bir sürümdeki bilinen bir hatayı atlatmak, desteklenmeyen tarayıcıya uyarı göstermek, istatistiklerde hangi cihazların kullanıldığını saymak ya da arama motoru botlarını insan ziyaretçilerden ayırmak.</p>
+      <p>User-Agent yalnızca tarayıcılara özgü değildir. Komut satırı indirme programları, mobil uygulamalar, akıllı televizyonlar, oyun konsolları ve arama motoru tarayıcıları da kendi User-Agent değerlerini gönderir. Değer boşsa ya da çok sıra dışıysa birçok güvenlik duvarı isteği şüpheli sayar.</p>
+
+      <h2 id="b2">User-Agent dizesi nasıl okunur?</h2>
+      <p>Dize ilk bakışta karmaşık görünür, çünkü yıllar içinde her tarayıcı uyumluluk kaygısıyla öncekinin belirteçlerini de eklemiştir. Ama sabit bir mantığı vardır: önce genel belirteç, ardından parantez içinde platform, sonra motor bilgileri ve en sonda gerçek tarayıcı adı ve sürümü gelir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Parça</th><th>Örnek değer</th><th>Anlamı</th></tr></thead>
+        <tbody>
+          <tr><td>Genel belirteç</td><td>Mozilla/5.0</td><td>Tarihsel uyumluluk; tüm modern tarayıcılarda aynı</td></tr>
+          <tr><td>Platform</td><td>Windows NT 10.0; Win64; x64</td><td>64 bit masaüstü işletim sistemi</td></tr>
+          <tr><td>Platform (telefon)</td><td>Linux; Android 10; K</td><td>Mobil işletim sistemi; model bilgisi gizlenmiş</td></tr>
+          <tr><td>Motor</td><td>AppleWebKit/537.36 (KHTML, like Gecko)</td><td>Sayfayı çizen işleme motoru ve uyumluluk notu</td></tr>
+          <tr><td>Tarayıcı</td><td>Ad/131.0.0.0</td><td>Ana sürüm 131; alt sürümler sıfırlanmış</td></tr>
+          <tr><td>Mobil işareti</td><td>Mobile</td><td>Varsa cihaz telefon olarak değerlendirilir</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Değerler örnektir. Yeni tarayıcılar alt sürüm ve cihaz modeli gibi ayrıntıları sabit değerlerle değiştiriyor.</p>
+      <p>Dizeyi elle çözmek yerine <a href="../../user-agent-coz/">User-Agent Çözümleyici</a> aracına yapıştırabilirsiniz; araç tarayıcı adı ve sürümü, işletim sistemi, cihaz türü, işleme motoru ve bot olup olmadığını ayrı satırlarda gösterir.</p>
+
+      <h2 id="b3">Neden her tarayıcıda &quot;Mozilla/5.0&quot; yazıyor?</h2>
+      <p>1990'ların ortasında web siteleri, gelişmiş özellikleri (örneğin çerçeveler) yalnızca User-Agent'ı &quot;Mozilla&quot; ile başlayan tarayıcılara gönderiyordu; çünkü o dönemde bu özellikleri destekleyen tarayıcı oydu. Rakip tarayıcılar da aynı özellikleri desteklemeye başlayınca, sitelerin onları dışlamaması için kendi dizelerinin başına &quot;Mozilla&quot; yazdılar.</p>
+      <p>Bu durum zincirleme devam etti: yeni çıkan her tarayıcı, mevcut sitelerin kendisini doğru tanıması için öncekilerin belirteçlerini de ekledi. Bugün neredeyse her tarayıcının dizesinde başka tarayıcıların adları geçer. &quot;Mozilla/5.0&quot; artık hiçbir bilgi taşımaz ama kaldırılırsa eski kodlarla yazılmış bazı siteler bozulabilir; bu yüzden tutulmaya devam eder.</p>
+      <p>Bu tarihçenin pratik sonucu şudur: User-Agent içinde bir adın geçmesi, tarayıcının o olduğu anlamına gelmez. Doğru tanıma için dizenin sonundaki ve parantez içindeki belirteçlere bakılır; çözümleyici araçlar da bu sırayla çalışır.</p>
+
+      <h2 id="b4">Kendi User-Agent bilginizi nasıl öğrenirsiniz?</h2>
+      <ol class="ba-steps">
+        <li><a href="../../ekran-cozunurlugu/">Ekran Çözünürlüğü aracını</a> açın; tarayıcı, işletim sistemi ve ekran bilgileriniz hiçbir veri gönderilmeden aynı sayfada görünür.</li>
+        <li>Tam dizeyi görmek için tarayıcının geliştirici araçlarını (genellikle F12) açın, Konsol sekmesine <code>navigator.userAgent</code> yazıp Enter'a basın.</li>
+        <li>Ağ sekmesinde herhangi bir isteği seçerek &quot;İstek başlıkları&quot; bölümündeki User-Agent satırını da görebilirsiniz.</li>
+        <li>Dizeyi kopyalayıp User-Agent çözümleyiciye yapıştırarak parçaların anlamını okuyun.</li>
+      </ol>
+      <p>Destek ekibine bir sorun bildirirken User-Agent bilgisini eklemek, sorunun belirli bir tarayıcı sürümüne özgü olup olmadığını hızla anlamalarını sağlar. Ekran çözünürlüğü ve piksel oranı da çoğu görsel hatada önemli ipucudur; bu kavramlar için <a href="../../bilgi-bankasi/4k-kac-piksel-cozunurluk-turleri/">çözünürlük türleri rehberine</a> bakabilirsiniz.</p>
+
+      <h2 id="b5">Siteler cihaz türünü nasıl anlar?</h2>
+      <p>Cihaz türünü belirlemenin üç yaygın yolu vardır. Birincisi User-Agent'taki &quot;Mobile&quot; ve platform belirteçleridir; sunucu tarafında hızlı karar vermek için kullanılır. İkincisi Client Hints'teki <code>Sec-CH-UA-Mobile</code> başlığıdır; değeri &quot;?1&quot; ise cihaz mobildir. Üçüncüsü ve modern sitelerde en önemlisi, sayfanın kendisinin ekran genişliğine göre düzenini değiştirmesidir (duyarlı tasarım).</p>
+      <p>Duyarlı tasarımda site cihazın ne olduğunu bilmek zorunda değildir; ekranın kaç piksel genişliğinde olduğuna bakar. 360 piksellik bir telefon ile pencereyi daraltılmış bir masaüstü tarayıcı aynı düzeni görür. Bu yaklaşım User-Agent'a bağımlılığı azalttığı için önerilen yöntemdir; User-Agent ise yalnızca gerçekten gerekli durumlarda yardımcı ipucu olarak kullanılır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-user-agent-nedir-tarayici-bilgisi-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Client Hints User-Agent'ın yerini alıyor mu?</h2>
+      <p>User-Agent dizesi her istekte, istenmese bile çok sayıda ayrıntı gönderir. Bu ayrıntılar bir araya getirildiğinde kullanıcıyı ayırt etmeye yarayan bir &quot;parmak izi&quot;nin parçası olabilir. Bu nedenle bazı tarayıcılar dizeyi sadeleştirmeye başladı: alt sürüm numaraları sıfırlandı, işletim sistemi sürümü ve telefon modeli sabit değerlerle değiştirildi.</p>
+      <p>Ayrıntıya gerçekten ihtiyaç duyan siteler için <strong>User-Agent Client Hints</strong> adlı yeni bir yöntem geliştirildi. Tarayıcı varsayılan olarak yalnızca birkaç temel bilgiyi gönderir; site daha fazlasını isterse yanıtında bunu talep eder ve tarayıcı sonraki isteklerde ek başlıkları ekler.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Başlık</th><th>Taşıdığı bilgi</th><th>Varsayılan olarak gönderilir mi?</th></tr></thead>
+        <tbody>
+          <tr><td>Sec-CH-UA</td><td>Tarayıcı markası ve ana sürüm listesi</td><td>Evet</td></tr>
+          <tr><td>Sec-CH-UA-Mobile</td><td>Mobil cihaz mı (?1 / ?0)</td><td>Evet</td></tr>
+          <tr><td>Sec-CH-UA-Platform</td><td>İşletim sistemi adı</td><td>Evet</td></tr>
+          <tr><td>Sec-CH-UA-Platform-Version</td><td>İşletim sistemi sürümü</td><td>Hayır, site ister</td></tr>
+          <tr><td>Sec-CH-UA-Model</td><td>Cihaz modeli</td><td>Hayır, site ister</td></tr>
+          <tr><td>Sec-CH-UA-Full-Version-List</td><td>Tam sürüm numaraları</td><td>Hayır, site ister</td></tr>
+        </tbody>
+      </table></div>
+      <p>Client Hints yalnızca güvenli (HTTPS) bağlantılarda çalışır ve tüm tarayıcılar tarafından desteklenmez. Bu yüzden User-Agent başlığı ortadan kalkmayacak; ama içindeki ayrıntının giderek azalması beklenmelidir.</p>
+
+      <h2 id="b7">User-Agent değiştirmek gizlilik sağlar mı?</h2>
+      <p>Geliştirici araçları ve bazı eklentiler User-Agent'ı değiştirmenize izin verir. Bu, bir sitenin mobil görünümünü masaüstünde test etmek için kullanışlıdır. Ancak gizlilik aracı olarak beklenen etkiyi yapmaz.</p>
+      <p>Siteler ziyaretçiyi yalnızca User-Agent ile değil; ekran çözünürlüğü, saat dilimi, dil ayarı, yazı tipleri ve donanım özellikleri gibi birçok ipucunu birleştirerek tanıyabilir. User-Agent'ı nadir bir değerle değiştirmek, diğer ipuçlarıyla çelişen ve sizi kalabalıktan daha da ayıran bir iz oluşturabilir. Gizlilik için tarayıcının izleme korumalarını açmak, çerezleri düzenli temizlemek ve eklentileri azaltmak çok daha etkilidir.</p>
+
+      <h2 id="b8">Content-Type (MIME türü) başlığı ne anlatır?</h2>
+      <p>User-Agent &quot;kim istiyor?&quot; sorusunu cevaplarken, <strong>Content-Type</strong> başlığı &quot;gönderilen şey ne?&quot; sorusunu cevaplar. Sunucu bir yanıt gönderdiğinde içeriğin türünü MIME türü adı verilen standart bir etiketle bildirir; tarayıcı dosyayı nasıl işleyeceğine buna göre karar verir. Biçim &quot;tür/alt tür&quot; şeklindedir ve isteğe bağlı olarak karakter kodlaması eklenir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>MIME türü</th><th>İçerik</th><th>Yaygın uzantı</th></tr></thead>
+        <tbody>
+          <tr><td>text/html; charset=utf-8</td><td>Web sayfası</td><td>.html</td></tr>
+          <tr><td>application/json</td><td>JSON veri</td><td>.json</td></tr>
+          <tr><td>application/pdf</td><td>PDF belgesi</td><td>.pdf</td></tr>
+          <tr><td>image/png, image/jpeg, image/webp</td><td>Resim</td><td>.png, .jpg, .webp</td></tr>
+          <tr><td>text/csv</td><td>Virgülle ayrılmış tablo</td><td>.csv</td></tr>
+          <tr><td>application/octet-stream</td><td>Türü bilinmeyen ikili dosya</td><td>çeşitli</td></tr>
+        </tbody>
+      </table></div>
+      <p>Yanlış MIME türü tuhaf sorunlara yol açar: PDF'in tarayıcıda açılmak yerine indirilmesi, Türkçe karakterlerin bozuk görünmesi ya da bir betiğin güvenlik nedeniyle çalıştırılmaması gibi. Bir uzantının doğru MIME türünü <a href="../../mime-turu-bul/">MIME Türü Bulucu</a> ile öğrenebilirsiniz. Sunucunun hangi durum kodunu döndürdüğünü anlamak için <a href="../../bilgi-bankasi/http-durum-kodlari-404-500-nedir/">HTTP durum kodları rehberi</a>, JSON yanıtlarını okumak için <a href="../../bilgi-bankasi/json-nedir-nasil-okunur/">JSON rehberi</a> yardımcı olur.</p>
+
+      <h2 id="b9">Botlar User-Agent ile nasıl tespit edilir?</h2>
+      <p>Arama motorlarının tarayıcıları, sosyal medya bağlantı önizleyicileri ve izleme servisleri User-Agent'larında kendilerini açıkça tanıtır; dizede genellikle &quot;bot&quot;, &quot;crawler&quot;, &quot;spider&quot; ya da &quot;preview&quot; gibi sözcükler ve bir bilgi adresi bulunur. İstatistik araçları bu kalıplara bakarak bot trafiğini insan ziyaretçilerden ayırır.</p>
+      <p>Ancak kötü niyetli otomatik programlar kendilerini sıradan bir tarayıcı gibi tanıtabilir. Bu nedenle User-Agent tek başına güvenlik kararı için yeterli değildir. Büyük arama motorları, botlarının gerçekten kendilerine ait olup olmadığını doğrulamak için IP adresinin ters DNS kaydını kontrol etmeyi önerir. Sitenizin hangi bölümlerinin taranacağını ise <a href="../../bilgi-bankasi/robots-txt-nedir-nasil-yazilir/">robots.txt dosyasıyla</a> belirleyebilirsiniz; dürüst botlar bu kurallara uyar, kötü niyetliler uymaz.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>User-Agent nedir, ne işe yarar?</summary><p>User-Agent, tarayıcının ya da bir programın her web isteğiyle sunucuya gönderdiği kimlik metnidir. Siteler bu bilgiyle mobil düzen seçer, eski sürümlere uyarı gösterir, istatistik tutar ve arama motoru botlarını insan ziyaretçilerden ayırır.</p></details>
+      <details><summary>Kendi User-Agent bilgim nasıl öğrenilir?</summary><p>Tarayıcının geliştirici araçlarını açıp Konsol sekmesine navigator.userAgent yazabilir ya da tarayıcı ve ekran bilgilerinizi gösteren bir araç sayfasını kullanabilirsiniz. Çıkan dizeyi çözümleyici araca yapıştırarak parçaların anlamını okuyabilirsiniz.</p></details>
+      <details><summary>User-Agent dizesindeki 'Mozilla/5.0' neden her tarayıcıda var?</summary><p>Eskiden siteler gelişmiş özellikleri yalnızca bu belirteçle başlayan tarayıcılara gönderiyordu. Diğer tarayıcılar dışlanmamak için aynı belirteci eklediler; bugün anlam taşımasa da eski siteler bozulmasın diye tutulmaya devam ediyor.</p></details>
+      <details><summary>Siteler cihaz türünü nasıl anlar?</summary><p>User-Agent'taki Mobile ve platform belirteçlerine, Client Hints'teki Sec-CH-UA-Mobile başlığına ve en önemlisi ekran genişliğine bakarlar. Modern siteler duyarlı tasarımla ekran genişliğine göre düzen değiştirdiği için cihaz türünü bilmek zorunda kalmaz.</p></details>
+      <details><summary>User-Agent değiştirmek gizlilik sağlar mı?</summary><p>Çoğu zaman sağlamaz. Siteler ekran çözünürlüğü, saat dilimi, dil ve yazı tipleri gibi birçok ipucunu birleştirir; nadir bir User-Agent değeri sizi kalabalıktan daha da ayırt edilebilir yapabilir. İzleme korumaları ve çerez temizliği daha etkilidir.</p></details>
+      <details><summary>Content-Type (MIME türü) başlığı ne anlatır?</summary><p>Content-Type, sunucunun gönderdiği içeriğin türünü text/html, application/json ya da image/png gibi standart bir etiketle bildirir. Tarayıcı dosyayı göstermeye, indirmeye ya da çalıştırmaya bu etikete ve varsa karakter kodlamasına bakarak karar verir.</p></details>
+      <details><summary>Client Hints User-Agent'ın yerini alıyor mu?</summary><p>Tamamen değil. Client Hints, ayrıntılı bilgiyi yalnızca site istediğinde gönderen yeni bir yöntemdir ve User-Agent'taki ayrıntının azalmasını sağlar. User-Agent başlığı uyumluluk için gönderilmeye devam eder ama içeriği giderek sadeleşir.</p></details>
+      <details><summary>Botlar User-Agent ile nasıl tespit edilir?</summary><p>Dürüst botlar dizelerinde bot, crawler ya da spider gibi sözcüklerle kendilerini tanıtır. Kötü niyetli programlar ise kendini tarayıcı gibi gösterebildiği için kesin doğrulama IP adresinin ters DNS kaydı gibi ek kontrollerle yapılır.</p></details>
+      <details><summary>User-Agent bilgisi kişisel veri sayılır mı?</summary><p>Tek başına genellikle bir kişiyi doğrudan tanımlamaz, ancak IP adresi ve diğer tarayıcı özellikleriyle birleştirildiğinde kullanıcıyı ayırt etmeye yardımcı olabilir. Bu nedenle sunucu kayıtlarında saklanırken diğer kişisel verilerle aynı özen gösterilmelidir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../http-durum-kodlari-404-500-nedir/"><strong>HTTP Durum Kodları Nedir? 404, 500, 301 ve 403 Hataları Ne Anlama Gelir</strong><span>HTTP durum kodu, sunucunun isteğe verdiği üç haneli cevaptır. 404 sayfa bulunamadı, 500 sunucu hatası, 301 kalıcı yönlendirme demektir. Nedenleri ve çözümleri.</span></a></li>
+          <li><a href="../robots-txt-nedir-nasil-yazilir/"><strong>Robots.txt Nedir, Nasıl Yazılır? Disallow, Allow ve Sitemap Örnekleri</strong><span>Robots.txt, kök dizinde duran ve tarayıcılara hangi yolları taramayacaklarını söyleyen dosyadır. RFC 9309 kuralları, Disallow, Allow, Sitemap ve noindex farkı.</span></a></li>
+          <li><a href="../json-nedir-nasil-okunur/"><strong>JSON Nedir, Nasıl Okunur? JSON Formatı, Örnekleri ve Sık Yapılan Hatalar</strong><span>JSON, veriyi anahtar–değer çiftleri ve dizilerle taşıyan metin biçimidir. Nesne ve dizi farkı, 6 veri türü, Unexpected token hatası, kaçış karakterleri ve YAML/CSV.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-user-agent-nedir-tarayici-bilgisi-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
