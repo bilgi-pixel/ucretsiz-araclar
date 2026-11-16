@@ -144,3 +144,7 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   borç tutarına göre kademelenmiyor (TCMB: 30.000 TL altı %3,25 / 30.000–180.000 %3,75 / üstü %4,25). Kademe seçimi ve vergi dahil gösterim ekleyin.
 - `kwh-kcal-cevir` 4,184 J'lük termokimyasal kaloriyle, `btu-kcal-cevir` 4,1868 J'lük IT kaloriyle hesaplıyor; tek tanıma bağlayın ya da
   sayfalarda hangisi olduğunu belirtin.
+- `kelime-bulucu/kelimeler.txt` listesinde 12 harften uzun kelime yok; uzun kelimeler türetilemiyor. `hoparlor-kablo-hesapla` yalnızca
+  nominal empedansla hesaplıyor; gerçek empedansın daha düşük olabileceği uyarısı ekleyin.
+- Ba-Bs formları 565 Sıra No.lu VUK Tebliği ile Eylül 2024 döneminden itibaren kaldırıldı. `vergi-no-dogrula` metni "Ba-Bs bildirimlerinde
+  düzeltme gerektirebilir" diyor; güncelleyin. Yeni metinlerde Ba-Bs'yi yürürlükteymiş gibi anmayın.
