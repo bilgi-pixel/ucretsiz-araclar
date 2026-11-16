@@ -12,7 +12,7 @@ export default {
   inputs: [
     { id: 'temettu', label: 'Hisse başına brüt temettü (TL)', type: 'number', placeholder: 'Örn. 2,5', hint: 'Şirketin 1 TL nominal değerli pay başına açıkladığı brüt tutar.' },
     { id: 'fiyat', label: 'Hisse fiyatı (TL)', type: 'number', placeholder: 'Örn. 50', hint: 'Güncel fiyat ya da kendi alış maliyetiniz.' },
-    { id: 'stopaj', label: 'Stopaj oranı (%, isteğe bağlı)', type: 'number', placeholder: 'Örn. 10', hint: 'Geçerli güncel oranı yazın; boş bırakılırsa yalnızca brüt hesaplanır.' },
+    { id: 'stopaj', label: 'Stopaj oranı (%, isteğe bağlı)', type: 'number', placeholder: 'Örn. 15', hint: 'Geçerli güncel oranı yazın; boş bırakılırsa yalnızca brüt hesaplanır.' },
     { id: 'adet', label: 'Hisse adedi (isteğe bağlı)', type: 'number', placeholder: 'Örn. 1000' },
   ],
   compute(v, h) {
@@ -67,7 +67,7 @@ export default {
     ] },
     { h: 'Çözümlü örnek', p: [
       'Bir şirket pay başına brüt 2,50 TL temettü açıklamış, hisse borsada 50 TL\'den işlem görüyor olsun. Brüt temettü verimi 2,50 ÷ 50 × 100 = <strong>%5</strong> olur.',
-      'Stopaj oranı %10 kabul edilirse pay başına 0,25 TL kesilir ve net temettü 2,25 TL\'ye iner. Net temettü verimi 2,25 ÷ 50 × 100 = <strong>%4,5</strong> eder.',
+      'Stopaj oranı %15 kabul edilirse pay başına 0,375 TL kesilir ve net temettü 2,125 TL\'ye iner. Net temettü verimi 2,125 ÷ 50 × 100 = <strong>%4,25</strong> eder.',
       'İkinci bir örnek: pay başına brüt 4 TL dağıtan ve 80 TL\'den işlem gören bir hisseden 250 adet tutuyorsunuz. Brüt verim yine %5\'tir. Toplam brüt temettü 4 × 250 = 1.000 TL; %15 stopaj varsayımıyla net tutar 850 TL, net verim %4,25 olur.',
     ] },
     { h: 'Güncel fiyata göre mi, maliyete göre mi?', p: [

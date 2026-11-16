@@ -1,0 +1,93 @@
+export default {
+  slug: 'iq-testi',
+  title: 'IQ Testi (Ücretsiz Zekâ Testi)',
+  h1Tail: '30 soru, açıklamalı cevaplar',
+  pageTitle: 'IQ Testi: Ücretsiz Online Zekâ Testi (30 Soru, Açıklamalı)',
+  description: 'Ücretsiz online IQ testi tarzı alıştırma: şekil, sayı, sözel ve mantık türünde 30 soru, 25 dakika. Kayıt yok; cevap anahtarı ve açıklamalar anında görünür.',
+  card: 'Şekil, sayı, sözel ve mantık sorularından oluşan 30 soruluk karma zekâ testi; açıklamalı cevap anahtarıyla.',
+  category: 'zeka',
+  kind: 'test',
+  keywords: ['iq testi', 'ücretsiz iq testi', 'zeka testi', 'online iq testi', 'iq testi çöz', 'zeka testi soruları', 'türkçe iq testi', 'kayıtsız iq testi'],
+  lead: "Bu sayfadaki test, IQ testlerinde karşılaşılan soru türlerini bir araya getiren 30 soruluk karma bir alıştırmadır: şekil matrisleri, sayı ve harf dizileri, benzetmeler, mantık çıkarımları ve şekil döndürme. Süre 25 dakikadır; test bitince her sorunun doğru cevabını ve neden doğru olduğunu görürsünüz.",
+  test: { sure: 25, karisim: [['matris', 6], ['sayiDizisi', 5], ['benzetme', 4], ['mantik', 4], ['donus', 3], ['harfDizisi', 3], ['sayiBenzetme', 3], ['farkliKelime', 2]] },
+  howto: [
+    "<strong>Teste başla</strong> düğmesine basın. 25 dakikalık sayaç o anda çalışmaya başlar ve sağ üstte kalan süre görünür.",
+    "Her soruda tek doğru cevap vardır. Seçeneğe tıklayın ya da klavyeden seçeneğin numarasına (1–6) basın; fikrinizi değiştirirseniz başka bir seçeneğe basmanız yeterlidir.",
+    "Takıldığınız soruyu <strong>Boş geç</strong> ile atlayın. <strong>Önceki</strong> düğmesiyle ya da sol ok tuşuyla istediğiniz soruya geri dönebilirsiniz.",
+    "Son soruda <strong>Testi bitir</strong> düğmesine basın. Süre dolarsa test kendiliğinden biter ve o ana kadar işaretledikleriniz değerlendirilir.",
+    "Sonuç ekranında doğru, yanlış ve boş sayınızı, başarı yüzdenizi ve tür bazındaki dökümü inceleyin; ardından cevap anahtarındaki açıklamaları okuyun.",
+    "Yeni bir deneme için <strong>Yeni sorularla tekrar çöz</strong> düğmesini kullanın; sorular baştan üretilir.",
+  ],
+  sections: [
+    {
+      h: 'Testte hangi soru türleri var?',
+      p: ["Otuz soru sekiz farklı üreticiden gelir ve sonuç ekranında dört başlık altında toplanır: Görsel, Sayısal, Sözel ve Mantık. Sorular karışık sırayla gelir ama kolay olanlar başta, zor olanlar sonda yer alır."],
+      ul: [
+        "<strong>Şekil matrisi (6 soru):</strong> Üçe üç bir tabloda sağ alt hücre boştur. Şeklin türü, sayısı ve dolgu tonu satır ya da sütun boyunca bir kurala göre değişir; kuralı bulup eksik hücreyi altı seçenek arasından seçersiniz. Soyut düzen bulma becerisini yoklar.",
+        "<strong>Sayı dizisi (5 soru):</strong> Beş altı sayının ardından gelecek sayıyı bulursunuz. Sabit artış, katlanarak büyüme, farkın büyümesi, önceki iki terimin toplamı ya da iç içe iki dizi gibi kurallar kullanılır.",
+        "<strong>Sözel benzetme (4 soru):</strong> İlk kelime çiftindeki ilişkiyi ikinci çifte taşırsınız. Kavramlar arasındaki bağı (araç ve iş, parça ve bütün, zıtlık gibi) görmeyi gerektirir.",
+        "<strong>Mantık (4 soru):</strong> Uydurma sözcüklerle kurulmuş öncüllerden kesin çıkan sonucu ya da birkaç karşılaştırma cümlesinden boy sırasını bulursunuz.",
+        "<strong>Şekil döndürme (3 soru):</strong> Kareli zemindeki bir şeklin döndürülmüş hâlini, ayna görüntüleri arasından ayırt edersiniz. Uzamsal canlandırmayı yoklar.",
+        "<strong>Harf dizisi (3 soru):</strong> 29 harfli Türk alfabesinde belirli bir adımla ilerleyen dizinin sıradaki harfini bulursunuz.",
+        "<strong>Sayı benzetmesi (3 soru):</strong> İki sayı çiftinde uygulanan işlemi bulup üçüncü sayıya uygularsınız.",
+        "<strong>Farklı kelime (2 soru):</strong> Beş sözcükten dördünün ortak özelliğini bulup gruba uymayanı seçersiniz.",
+      ],
+    },
+    {
+      h: 'Çözümlü örnekler',
+      p: [
+        "<strong>Sayı dizisi:</strong> 3, 5, 9, 15, 23, ? dizisinde ardışık farklar 2, 4, 6 ve 8'dir; fark her adımda 2 büyüyor. Sıradaki fark 10 olacağından cevap 23 + 10 = <strong>33</strong> olur. Burada tuzak, son farkı (8) yeniden ekleyip 31 demektir; seçenekler arasında bu tür yakın değerler bilerek bulunur.",
+        "<strong>Şekil matrisi:</strong> İlk satırda birer, ikinci satırda ikişer, üçüncü satırda üçer şekil olsun; ilk sütun daire, ikinci sütun kare, üçüncü sütun üçgen olsun ve bütün şekiller gri olsun. Boş hücre üçüncü satır ile üçüncü sütunun kesişimindedir, yani cevap <strong>üç adet gri üçgendir</strong>. Her niteliği (şekil, sayı, ton) ayrı ayrı izlemek bu soruların anahtarıdır.",
+        "<strong>Mantık:</strong> 'Tüm zopiler tirmadır. Hiçbir tirma belon değildir.' öncüllerinden kesin olarak <strong>hiçbir zopinin belon olmadığı</strong> çıkar. 'Tüm tirmalar zopidir' gibi bir seçenek kulağa makul gelse de öncüllerde böyle bir bilgi yoktur.",
+        "<strong>Harf dizisi:</strong> A, C, D, F, Ğ, ? dizisinde her adımda alfabede iki harf ileri gidilir (B, Ç, E ve G atlanır). Ğ'den sonra H atlanır ve cevap <strong>I</strong> olur. Ç, Ğ, I, İ, Ö, Ş ve Ü harflerini saymayı unutmak en sık yapılan hatadır.",
+        "<strong>Şekil döndürme:</strong> L harfine benzeyen bir şekli masada çevirirseniz yine aynı L'yi elde edersiniz; ama kâğıdı ters yüz ederseniz ayna görüntüsü ortaya çıkar. Seçeneklerden yalnızca biri döndürmedir, diğer üçü ayna görüntüsüdür.",
+      ],
+    },
+    {
+      h: 'Sonuç ekranı nasıl okunur?',
+      p: [
+        "Test bittiğinde önce 30 üzerinden doğru sayınız görünür. Altındaki satırda doğru, yanlış ve boş sayıları, başarı yüzdesi ve yalnızca bu soru seti için geçerli bir düzey etiketi yer alır. Ardından tür bazında döküm gelir: Görsel 9, Sözel 9, Sayısal 8 ve Mantık 4 soru üzerinden kaç doğru yaptığınızı ayrı ayrı görürsünüz. Bu döküm, hangi alanda daha çok alıştırma yapmak isteyebileceğinizi gösterir.",
+        "En altta cevap anahtarı bulunur. Her soru yeniden gösterilir; doğru cevap, sizin işaretlediğiniz seçenek ve kuralın kısa açıklaması yazılır. Yanlış yaptığınız sorularda açıklamayı okuyup kuralı kendi cümlenizle tekrar etmek, bir sonraki denemede aynı tür soruyu tanımanızı kolaylaştırır.",
+        "<strong>Yeni sorularla tekrar çöz</strong> düğmesi baştan yeni bir soru seti üretir; sayılar, şekiller ve kurallar değişir. <strong>Aynı soruları yeniden çöz</strong> düğmesi ise aynı seti tekrar açar. Sonuç ekranının altındaki soru seti numarası, aynı seti daha sonra yeniden üretmek için kullanılan sayıdır.",
+      ],
+    },
+    {
+      h: 'Bu sonuç bir IQ puanı değildir',
+      p: [
+        "Bu test eğlence ve alıştırma amaçlıdır. Sonuç olarak bir IQ sayısı verilmez; çünkü böyle bir sayı üretmek için testin önce çok sayıda ve farklı yaşlardan kişiye uygulanması, puanların bu gruba göre ölçeklenmesi (norm çalışması) gerekir. Bu sayfadaki sorular için böyle bir çalışma yapılmamıştır. Gördüğünüz yüzde ve düzey etiketi yalnızca o an çözdüğünüz otuz sorudaki başarınızı anlatır.",
+        "Gerçek IQ ölçümü, norm çalışması yapılmış testlerle ve bu konuda eğitim almış bir uzmanın gözetiminde yapılır. Buradaki sonuç tanı koymak, okul ya da program yerleştirmesi yapmak, işe alım kararı vermek ya da bir kişiyi etiketlemek için kullanılmamalıdır. Öğrenme, dikkat ya da gelişimle ilgili bir endişeniz varsa bir uzmana başvurmak doğru yoldur.",
+        "Ayrıca tek bir oturumun sonucu yorgunluk, uykusuzluk, dikkat dağınıklığı, ekran boyutu ve soru türlerine aşinalık gibi etkenlerden etkilenir. İki deneme arasında birkaç soruluk fark olması olağandır.",
+      ],
+    },
+    {
+      h: 'Süre yönetimi ve çözüm ipuçları',
+      ul: [
+        "Otuz soru için 25 dakika, soru başına ortalama 50 saniye demektir. İlk sorular kolaydır; onları hızlı geçip zamanı sondaki zor sorulara saklayın.",
+        "Bir soruda bir dakikayı aştıysanız boş geçin ve sonda dönün. Testte yanlış cevap doğruyu götürmez; süre bitmeden boş kalanlara en makul tahmini işaretlemek zarar vermez.",
+        "Sayı dizilerinde önce ardışık farkları yazın. Farklar sabit değilse farkların farkına, oranlara ve tek-çift sıradaki terimlere ayrı ayrı bakın.",
+        "Matris sorularında bütün tabloya birden bakmak yerine tek bir niteliği seçin: önce yalnızca şekil türü, sonra sayı, sonra ton.",
+        "Mantık sorularında uydurma sözcüklere anlam yüklemeyin; yalnızca verilen cümlelerle düşünün. Sıralama sorularında adları kâğıda büyükten küçüğe yazmak işi kolaylaştırır.",
+        "Döndürme sorularında şeklin bir ucunu (örneğin çıkıntının hangi yöne baktığını) işaret alın ve o ucu zihninizde çevirin.",
+      ],
+    },
+    {
+      h: 'Sık yapılan hatalar ve pratiğin etkisi',
+      p: [
+        "En yaygın hata, ilk bulunan kuralı dizinin tamamında denemeden cevaba atlamaktır. İkinci yaygın hata, bir soruda inatlaşıp sondaki çözülebilir sorulara süre bırakmamaktır. Üçüncüsü ise harf dizilerinde Türk alfabesine özgü harfleri atlamaktır.",
+        "Bu tür soruları tekrar tekrar çözen kişilerin sonuçları genellikle yükselir; buna alıştırma etkisi denir. Yükselişin büyük bölümü soru kalıplarını tanımaktan ve süreyi daha iyi kullanmaktan gelir. Bu yüzden art arda denemelerde artan yüzde, zekânın değiştiği anlamına gelmez; o soru türünde ustalaştığınızı gösterir. Amacınız alıştırmaysa bu zaten istenen şeydir.",
+      ],
+    },
+  ],
+  faq: [
+    ['Bu test bana IQ puanımı verir mi?', "Hayır. Test bir IQ sayısı üretmez; yalnızca 30 sorudaki doğru sayınızı, başarı yüzdenizi ve tür bazındaki dökümü gösterir. IQ puanı, norm çalışması yapılmış testlerle ve uzman gözetiminde ölçülür."],
+    ['Test kaç soru ve kaç dakika sürüyor?', "Otuz soru vardır ve süre 25 dakikadır. Süre dolduğunda test kendiliğinden biter; isterseniz daha erken bitirebilirsiniz."],
+    ['Sorular her seferinde aynı mı?', "Hayır. Sayı, harf, mantık ve şekil soruları her denemede kurala göre yeniden üretilir; benzetme ve farklı kelime soruları ise bir soru havuzundan seçilir. Aynı seti yeniden görmek isterseniz sonuç ekranındaki 'Aynı soruları yeniden çöz' düğmesini kullanabilirsiniz."],
+    ['Yanlış cevaplar doğruları götürüyor mu?', "Hayır. Yalnızca doğru cevaplar sayılır; yanlış ve boş sorular puanı düşürmez. Sonuç ekranında yanlış ve boş sayıları ayrı ayrı gösterilir."],
+    ['Soruları boş bırakıp sonra dönebilir miyim?', "Evet. 'Boş geç' ile ilerleyip 'Önceki' düğmesiyle ya da sol ok tuşuyla geri dönebilirsiniz. Süre bitmeden işaretlediğiniz her cevap değerlendirilir."],
+    ['Sonucum düşük çıktı, bu ne anlama gelir?', "Yalnızca bu soru setinde, o anki koşullarda kaç soruyu çözdüğünüzü gösterir. Yorgunluk, dikkat dağınıklığı ve soru türlerine yabancılık sonucu belirgin biçimde etkiler. Açıklamaları okuyup yeni sorularla tekrar denediğinizde sonucun değiştiğini görürsünüz."],
+    ['Testi telefonda çözebilir miyim?', "Evet, sayfa dar ekranlarda da çalışır. Şekil sorularında seçenekleri rahat görmek için ekranı dik tutmanız ve parlaklığı yeterli seviyeye getirmeniz yararlı olur. Klavyesi olan cihazlarda 1–6 tuşları ve ok tuşları da kullanılabilir."],
+    ['Bu sonucu okul ya da iş başvurusunda kullanabilir miyim?', "Hayır. Bu test eğlence ve alıştırma amaçlıdır; tanı, okul yerleştirme ya da işe alım gibi kararlarda kullanılacak bir ölçüm değildir ve herhangi bir belge üretmez."],
+    ['Cevaplarım bir yere kaydediliyor mu?', "Hayır. Sorular tarayıcınızda üretilir, cevaplarınız ve sonucunuz hiçbir sunucuya gönderilmez. Kayıt, üyelik ya da e-posta istenmez; sayfayı kapattığınızda sonuç silinir."],
+  ],
+  related: ['hizli-iq-testi', 'gorsel-iq-testi', 'sayisal-zeka-testi', 'sozel-zeka-testi', 'mantik-testi', 'dikkat-testi'],
+};

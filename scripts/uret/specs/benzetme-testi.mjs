@@ -1,0 +1,100 @@
+export default {
+  slug: 'benzetme-testi',
+  title: 'Sözel Benzetme (Analoji) Testi',
+  h1Tail: 'ücretsiz, açıklamalı',
+  pageTitle: 'Sözel Benzetme (Analoji) Testi: 15 Soru, Açıklamalı Çözüm',
+  description: 'Sözel benzetme testi: 15 analoji sorusunu 10 dakikada çözün, cevap anahtarını ve her sorunun açıklamasını görün. Ücretsiz, kayıt yok, sorular her seferinde yenilenir.',
+  card: '15 soruluk sözel benzetme testi: kelime çiftleri arasındaki ilişkiyi bulun, açıklamalı cevapları görün.',
+  category: 'zeka',
+  kind: 'test',
+  keywords: ['benzetme testi', 'analoji testi', 'sözel benzetme soruları', 'kelime ilişkisi testi', 'analoji soruları çöz', 'sözel akıl yürütme testi', 'benzetme soruları açıklamalı', 'kelime benzetme alıştırması'],
+  lead: 'Bu testte 15 sözel benzetme sorusu çözersiniz: ilk kelime çiftindeki ilişkiyi bulup aynı ilişkiyi ikinci çiftte kurarsınız. Süre 10 dakikadır; sonunda doğru cevapları ve her sorunun kısa açıklamasını görürsünüz.',
+  test: { sure: 10, karisim: [['benzetme', 15]] },
+  howto: [
+    '<strong>Testi başlat</strong> düğmesine basın; 10 dakikalık süre o anda işlemeye başlar.',
+    'Her soruda "A : B = C : ?" biçiminde bir benzetme görürsünüz. Önce A ile B arasındaki ilişkiyi kendi cümlenizle söyleyin.',
+    'Aynı cümleyi C için kurun ve beş seçenekten cümleyi doğru tamamlayanı işaretleyin.',
+    'Emin olmadığınız soruyu boş bırakıp ilerleyin; süre bitmeden geri dönüp cevabınızı değiştirebilirsiniz.',
+    'Testi bitirdiğinizde doğru, yanlış ve boş sayınızı, başarı yüzdenizi ve bütün soruların açıklamalı cevap anahtarını inceleyin.',
+    'Dilerseniz <strong>yeni sorularla tekrar çöz</strong> seçeneğiyle farklı bir soru setiyle yeniden deneyin.',
+  ],
+  sections: [
+    {
+      h: 'Sözel benzetme (analoji) sorusu nedir?',
+      p: [
+        'Benzetme sorusu, iki kavram arasındaki ilişkiyi fark edip aynı ilişkiyi başka bir kavram çiftine taşımayı ister. Soru "Kalem : Yazmak = Fırça : ?" biçiminde yazılır ve "kalem yazmak için neyse, fırça da onun için odur" diye okunur. Burada önemli olan kelimelerin tek tek anlamı değil, aralarındaki bağdır.',
+        'Bu soru türü kelime bilgisini, kavramlar arası ilişki kurmayı ve bir kuralı yeni bir duruma uygulamayı aynı anda çalıştırır. Bu yüzden sözel akıl yürütme alıştırmalarının en bilinen türlerinden biridir. Bu sayfadaki testin tamamı benzetme sorularından oluşur; sayı, şekil ya da harf dizisi sorusu yoktur.',
+      ],
+    },
+    {
+      h: 'Testte karşılaşacağınız ilişki türleri',
+      p: ['Sorular geniş bir soru havuzundan rastgele seçilir ve her testte farklı ilişki türleri karışık gelir. En sık göreceğiniz türler şunlardır:'],
+      ul: [
+        '<strong>Parça - bütün:</strong> Sayfa kitabın, basamak merdivenin parçasıdır.',
+        '<strong>Alet - iş:</strong> Testere kesmeye, matkap delmeye yarar.',
+        '<strong>Canlı - barınak:</strong> Arı kovanda, at ahırda barınır.',
+        '<strong>Zıt anlam ve eş anlam:</strong> Uzun ile kısa zıt, hediye ile armağan eş anlamlıdır.',
+        '<strong>Meslek - araç, yer ya da ürün:</strong> Ressam fırçayla çalışır, doktor hastanede görev yapar, fırıncı ekmek üretir.',
+        '<strong>Ham madde - ürün:</strong> Cam kumdan, kâğıt ağaçtan elde edilir.',
+        '<strong>Yavru - ergin ve hayvan sesleri:</strong> İneğin yavrusu buzağıdır; at kişner, koyun meler.',
+        '<strong>Birim - ölçülen şey:</strong> Metre uzunluğu, saniye zamanı ölçer.',
+        '<strong>Derece ve sıra:</strong> Esintinin şiddetlisi fırtınadır; cumadan sonra cumartesi gelir.',
+        '<strong>Genel kültür:</strong> Ülke ile başkenti ya da canlı ile ait olduğu sınıf gibi herkesçe bilinen eşleşmeler.',
+      ],
+    },
+    {
+      h: 'Çözümlü örnekler',
+      p: [
+        '<strong>Örnek 1.</strong> "Kanat : Kuş = Yüzgeç : ?" Seçenekler: Balık, Deniz, Pul, Olta, Yüzmek. Önce ilk çifti cümleye dökelim: "Kanat, kuşun hareket etmesini sağlayan organıdır." Aynı cümleyi ikinci çifte uygulayalım: "Yüzgeç, ... hareket etmesini sağlayan organıdır." Boşluğa yalnızca <strong>Balık</strong> oturur. Deniz balığın yaşadığı yerdir, pul gövdesini kaplar, olta onu tutmaya yarar, yüzmek ise eylemdir; hiçbiri kurduğumuz cümleyi tamamlamaz.',
+        '<strong>Örnek 2.</strong> "Çisenti : Sağanak = Esinti : ?" Seçenekler: Fırtına, Bulut, Yaprak, Serinlik, Yelken. İlk çiftte iki kelime de yağmuru anlatır, ama biri hafif, diğeri şiddetlidir. Öyleyse ilişki "aynı olayın hafifi ve şiddetlisi"dir. Esinti hafif rüzgârdır; şiddetlisi <strong>Fırtına</strong> olur. Bulut ve yaprak rüzgârla ilgili görünse de derece ilişkisini taşımaz.',
+        '<strong>Örnek 3.</strong> "Üzüm : Asma = Elma : ?" Seçenekler: Ağaç, Çekirdek, Kabuk, Sepet, Meyve. Buradaki tuzak "Meyve" seçeneğidir, çünkü elma gerçekten bir meyvedir. Ancak ilk çiftteki ilişki "üzüm asmada yetişir" biçimindedir; tür bildirmez. Aynı cümle elma için "elma <strong>ağaçta</strong> yetişir" diye tamamlanır. Doğru olan bir bilgi ile soruda aranan ilişki her zaman aynı şey değildir.',
+      ],
+    },
+    {
+      h: 'Çözüm yöntemi: ilişkiyi cümleye dökün',
+      ol: [
+        'İlk çifti okuyun ve aralarındaki bağı kısa, kesin bir cümleyle söyleyin. "İkisi de mutfakla ilgili" gibi gevşek bir cümle işe yaramaz; "birincisi ikincisinin içine konur" gibi net bir cümle kurun.',
+        'Yöne dikkat edin. "Parça : Bütün" ile "Bütün : Parça" aynı değildir. İlk çiftte küçük olan başta ise ikinci çiftte de küçük olan başta olmalıdır.',
+        'Cümleyi üçüncü kelimeyle yeniden kurun ve seçeneklere bakmadan cevabı tahmin etmeye çalışın. Tahmininiz seçeneklerde varsa büyük olasılıkla doğrudur.',
+        'Birden fazla seçenek uyuyor gibi geliyorsa cümleniz fazla geneldir. Cümleyi daraltın: "birlikte kullanılır" yerine "birincisi ikincisini sıkmak için kullanılır" deyin.',
+        'Kalan seçenekleri eleyin. Çeldiriciler çoğunlukla üçüncü kelimeyle ilgili ama başka türden bir ilişki taşır: bulunduğu yer, parçası, rengi ya da onu kullanan kişi gibi.',
+      ],
+    },
+    {
+      h: 'Sık yapılan hatalar',
+      ul: [
+        '<strong>Çağrışımla cevaplamak:</strong> Üçüncü kelimeyi görünce akla ilk gelen sözcüğü seçmek en yaygın hatadır. "Balıkçı" denince "balık" akla gelir, ama ilişki "çalıştığı alan" ise cevap denizdir.',
+        '<strong>Kelime türünü gözden kaçırmak:</strong> İlk çiftin ikinci kelimesi bir eylemse (kesmek, yazmak) cevap da eylem olmalıdır; bir yer adıysa cevap da yer adı olur.',
+        '<strong>Yönü ters çevirmek:</strong> Yavru - ergin ile ergin - yavru, ham madde - ürün ile ürün - ham madde farklı sorulardır.',
+        '<strong>Doğru bilgiyi doğru cevap sanmak:</strong> Bir seçenek üçüncü kelime hakkında doğru bir şey söylüyor olabilir, ama ilk çiftteki ilişkiyi taşımıyorsa yanlıştır.',
+        '<strong>Bir soruda takılıp kalmak:</strong> 15 soruya 10 dakika, soru başına ortalama 40 saniye demektir. Takıldığınız soruyu boş geçip sona bırakın.',
+      ],
+    },
+    {
+      h: 'Sonuç ekranı ve yeniden çözme',
+      p: [
+        'Test bittiğinde ya da süre dolduğunda sonuç ekranı açılır. Burada doğru, yanlış ve boş bıraktığınız soru sayısını, başarı yüzdenizi ve soru türüne göre dökümü görürsünüz. Altında bütün soruların cevap anahtarı yer alır: sizin işaretlediğiniz seçenek, doğru seçenek ve ilişkiyi bir iki cümleyle anlatan açıklama.',
+        'Yanlış yaptığınız sorularda açıklamayı okuyup "ben ilişkiyi nasıl kurmuştum, doğrusu neydi" diye karşılaştırmak, yalnızca puana bakmaktan çok daha öğreticidir. <strong>Yeni sorularla tekrar çöz</strong> düğmesi soru havuzundan yeni bir set seçer; bu yüzden art arda çözdüğünüz testler birbirinin aynısı olmaz. Havuz sınırlı olduğu için birkaç testten sonra daha önce gördüğünüz bir soruyla yeniden karşılaşmanız doğaldır.',
+      ],
+    },
+    {
+      h: 'Bu test neyi ölçer, neyi ölçmez?',
+      p: [
+        'Bu sayfa eğlence ve alıştırma amacıyla hazırlanmıştır. Sonuç yalnızca bu 15 soruda kaç doğru yaptığınızı gösterir; bir IQ puanı değildir ve site size IQ sayısı vermez. Gerçek zekâ ölçümü, geniş gruplarda norm çalışması yapılmış testlerle ve uzman gözetiminde gerçekleştirilir.',
+        'Benzetme sorularındaki başarı kelime dağarcığına, genel kültüre, o günkü dikkatinize ve soru türüne alışkın olup olmadığınıza bağlıdır. Türkçe ana diliniz değilse ya da bir kelimeyi hiç duymadıysanız soruyu kaçırmanız akıl yürütme becerinizle ilgili bir şey söylemez. Bu nedenle sonuç tanı koyma, okul yerleştirme, işe alım ya da benzeri kararlar için kullanılmamalıdır.',
+        'Aynı tür soruları çözdükçe sonucunuzun yükselmesi beklenen bir durumdur; buna alıştırma etkisi denir. Yükselen şey çoğunlukla soru biçimine aşinalık ve çözüm hızıdır. Kelime dağarcığını geliştirmenin en sağlam yolu ise düzenli kitap okumak ve yeni karşılaşılan sözcüklerin anlamına bakmaktır.',
+      ],
+    },
+  ],
+  faq: [
+    ['Benzetme testi kaç soru ve ne kadar sürüyor?', 'Test 15 sözel benzetme sorusundan oluşur ve süre 10 dakikadır. Süre dolduğunda test kendiliğinden biter ve o ana kadar işaretlediğiniz cevaplar değerlendirilir. Erken bitirirseniz süreyi beklemeden sonucu görebilirsiniz.'],
+    ['Analoji ile benzetme aynı şey mi?', 'Evet. Analoji, iki şey arasındaki ilişkinin başka iki şey arasında da bulunması anlamına gelir; Türkçede bu soru türü için benzetme ya da kelime ilişkisi sorusu adları da kullanılır. Bu sayfadaki bütün sorular "A : B = C : ?" biçimindedir.'],
+    ['Sorular her seferinde aynı mı?', 'Hayır. Her testte sorular geniş bir havuzdan rastgele seçilir ve seçeneklerin sırası karıştırılır. Aynı test içinde bir soru iki kez gelmez. Çok sayıda test çözdüğünüzde daha önce gördüğünüz sorulara rastlamanız mümkündür.'],
+    ['Bu testin sonucu IQ puanım mı?', 'Hayır. Sonuç yalnızca doğru, yanlış ve boş sayınızı ve başarı yüzdenizi gösterir. Bu bir IQ puanı değildir, site IQ sayısı hesaplamaz. Zekâ ölçümü norm çalışması yapılmış testlerle, uzman tarafından ve uygun koşullarda yapılır.'],
+    ['Yanlış cevap doğruyu götürüyor mu?', 'Hayır. Yanlış cevaplar doğru sayınızdan düşülmez; sonuç ekranında doğru, yanlış ve boş sayıları ayrı ayrı gösterilir. Yine de rastgele işaretlemek yerine ilişkiyi cümleye döküp seçenek elemek daha öğreticidir.'],
+    ['Çocuklar bu testi çözebilir mi?', 'Sorular temiz ve anlaşılır bir dille yazılmıştır; ilkokulun son sınıflarından itibaren çocukların çoğu soruyu çözebilir. Birim, başkent ya da canlı sınıfı gibi bilgi gerektiren sorular küçük yaşlar için zor gelebilir. Çocukla birlikte çözüp açıklamaları beraber okumak iyi bir kelime çalışmasıdır; sonucu çocuğu etiketlemek için kullanmayın.'],
+    ['Benzetme sorularında nasıl daha iyi olurum?', 'İlk çiftteki ilişkiyi her seferinde kısa bir cümleyle söyleme alışkanlığı edinin, yönü kontrol edin ve cevabı seçeneklere bakmadan tahmin etmeye çalışın. Yanlış yaptığınız soruların açıklamalarını okuyun. Uzun vadede en büyük katkıyı düzenli okuma ve kelime dağarcığının genişlemesi sağlar.'],
+    ['Cevaplarım bir yere kaydediliyor mu?', 'Hayır. Sorular tarayıcınızda üretilir, cevaplarınız ve sonucunuz hiçbir sunucuya gönderilmez. Kayıt olmanız, ad ya da e-posta vermeniz gerekmez. Sayfayı kapattığınızda o testin sonucu da silinir.'],
+  ],
+  related: ['sozel-zeka-testi', 'farkli-olani-bul-testi', 'harf-dizisi-testi', 'iq-testi', 'mantik-testi', 'kelime-bulucu'],
+};

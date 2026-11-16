@@ -6,7 +6,7 @@ import { trackExternalRequests, expectNoConsoleErrors } from './helpers';
 // scripts/uret/derle.mjs tarafından üretilen form tabanlı araçlar: her araç için içerik,
 // reklam yerleşimi, hesap örnekleri (2 başarılı + 1 hata), 360 px taşma ve dış istek denetimi.
 type Case = { in?: Record<string, string>; out?: Record<string, string>; match?: Record<string, string>; text?: string; textMatch?: string; error?: boolean };
-type Tool = { slug: string; title: string; pdf?: boolean; types: Record<string, string>; defaults: Record<string, string>; cases: Case[] };
+type Tool = { slug: string; title: string; pdf?: boolean; kind?: string; n?: number; beklenen?: number; types: Record<string, string>; defaults: Record<string, string>; cases: Case[] };
 const tools: Tool[] = JSON.parse(readFileSync(join(__dirname, 'uretilen.json'), 'utf8'));
 
 for (const t of tools) {
@@ -31,6 +31,19 @@ for (const t of tools) {
     });
     expect(after).toBe(true);
 
+    if (t.kind === 'test') {
+      // Zekâ testi: sabit tohumla baştan sona çöz (hep ilk şık), sonuç ve cevap anahtarı doğru çıkmalı
+      await page.goto(`/${t.slug}/?tohum=7`);
+      await page.locator('#zk-basla').click();
+      for (let i = 0; i < t.n!; i++) {
+        await expect(page.locator('#zk-sira')).toHaveText(`Soru ${i + 1} / ${t.n}`);
+        await page.locator('.zk-sik').first().click();
+        await page.locator('#zk-ileri').click();
+      }
+      await expect(page.locator('#zk-son')).toBeVisible();
+      await expect(page.locator('#zk-puan')).toHaveText(`${t.beklenen} / ${t.n}`);
+      await expect(page.locator('#zk-cevaplar > li')).toHaveCount(t.n!);
+    }
     cases: for (const c of t.cases) {
       const v = { ...t.defaults, ...(c.in || {}) };
       for (const [id, val] of Object.entries(v)) {

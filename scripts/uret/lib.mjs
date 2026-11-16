@@ -23,6 +23,7 @@ export const CATS = {
   zaman: { ad: 'Tarih ve Zaman', alt: 'gün, hafta, süre, takvim', crumb: 'Tarih ve Zaman', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
   egitim: { ad: 'Eğitim', alt: 'not, ortalama, çalışma planı', crumb: 'Eğitim', icon: '<path d="M3 9l9-5 9 5-9 5zM7 11v5c3 2 7 2 10 0v-5"/>' },
   planlama: { ad: 'Planlayıcılar ve Çizelgeler', alt: 'günlük, haftalık, aylık; yazdırılabilir PDF', crumb: 'Planlayıcılar', icon: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>' },
+  zeka: { ad: 'Zekâ ve IQ Testleri', alt: 'sayısal, sözel, görsel, mantık, dikkat', crumb: 'Zekâ Testleri', icon: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>' },
   gunluk: { ad: 'Günlük Yaşam', alt: 'araç, mutfak, ev, hobi, teknoloji', crumb: 'Günlük Yaşam', icon: '<path d="M4 11l8-7 8 7M6 10v10h12V10"/>' },
 };
 
@@ -67,13 +68,21 @@ export async function validate(spec, slug, { known } = {}) {
   if (!spec || typeof spec !== 'object') return ['spec default export nesne değil'];
   need(spec.slug === slug, `slug dosya adıyla aynı olmalı (${slug})`);
   need(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug), 'slug yalnızca küçük harf, rakam ve tire içerir');
-  for (const k of ['title', 'pageTitle', 'description', 'card', 'lead', 'button']) need(typeof spec[k] === 'string' && spec[k].trim(), `${k} eksik`);
+  const isTest = spec.kind === 'test';
+  for (const k of ['title', 'pageTitle', 'description', 'card', 'lead', ...(isTest ? [] : ['button'])]) need(typeof spec[k] === 'string' && spec[k].trim(), `${k} eksik`);
   need(CATS[spec.category], `category şunlardan biri olmalı: ${Object.keys(CATS).join(', ')}`);
   if (typeof spec.pageTitle === 'string') need(spec.pageTitle.length >= 30 && spec.pageTitle.length <= 75, `pageTitle 30–75 karakter olmalı (şu an ${spec.pageTitle.length})`);
   if (typeof spec.description === 'string') need(spec.description.length >= 110 && spec.description.length <= 170, `description 110–170 karakter olmalı (şu an ${spec.description.length})`);
   if (typeof spec.card === 'string') need(spec.card.length >= 40 && spec.card.length <= 150, `card 40–150 karakter olmalı (şu an ${spec.card.length})`);
   need(Array.isArray(spec.keywords) && spec.keywords.length >= 5 && spec.keywords.length <= 10, 'keywords 5–10 öğe olmalı');
-  need(Array.isArray(spec.inputs) && spec.inputs.length >= 1 && spec.inputs.length <= 10, 'inputs 1–10 alan olmalı');
+  if (!isTest) need(Array.isArray(spec.inputs) && spec.inputs.length >= 1 && spec.inputs.length <= 10, 'inputs 1–10 alan olmalı');
+  if (isTest) {
+    const t = spec.test || {}, adlar = ['sayiDizisi', 'harfDizisi', 'sayiBenzetme', 'farkliSayi', 'mantik', 'matris', 'donus', 'dikkat', 'benzetme', 'farkliKelime'];
+    need(Number.isInteger(t.sure) && t.sure >= 3 && t.sure <= 45, 'test.sure 3–45 dakika (tam sayı) olmalı');
+    need(Array.isArray(t.karisim) && t.karisim.length && t.karisim.every((k) => Array.isArray(k) && adlar.includes(k[0]) && Number.isInteger(k[1]) && k[1] > 0 && (k[2] === undefined || [1, 2, 3].includes(k[2]))), `test.karisim [[üretici, adet, zorluk?], …] olmalı; üreticiler: ${adlar.join(', ')}`);
+    const n = (t.karisim || []).reduce((a, k) => a + (k[1] || 0), 0);
+    need(n >= 8 && n <= 40, `test toplam soru sayısı 8–40 olmalı (şu an ${n})`);
+  }
   const ids = new Set();
   for (const f of spec.inputs || []) {
     need(/^[a-z][a-zA-Z0-9]*$/.test(f.id || ''), `input id geçersiz: ${f.id}`);
@@ -83,7 +92,7 @@ export async function validate(spec, slug, { known } = {}) {
     need(typeof f.label === 'string' && f.label.trim(), `input ${f.id}: label eksik`);
     if (f.type === 'select') need(Array.isArray(f.options) && f.options.length >= 2 && f.options.every((o) => Array.isArray(o) && o.length === 2), `input ${f.id}: options [[deger, etiket], …] olmalı`);
   }
-  need(typeof spec.compute === 'function', 'compute fonksiyon olmalı');
+  if (!isTest) need(typeof spec.compute === 'function', 'compute fonksiyon olmalı');
   need(Array.isArray(spec.howto) && spec.howto.length >= 3 && spec.howto.length <= 6, 'howto 3–6 adım olmalı');
   need(Array.isArray(spec.sections) && spec.sections.length >= 4, 'sections en az 4 bölüm olmalı');
   for (const s of spec.sections || []) {
@@ -98,11 +107,12 @@ export async function validate(spec, slug, { known } = {}) {
   const allText = [spec.lead, ...spec.howto, ...spec.sections.flatMap((s) => [s.h, ...(s.p || []), ...(s.ul || []), ...(s.ol || [])]), ...spec.faq.flat()];
   const wc = allText.reduce((a, t) => a + words(t), 0);
   need(wc >= 800, `özgün metin en az 800 kelime olmalı (şu an ${wc})`);
-  const blob = JSON.stringify([spec.title, spec.pageTitle, spec.description, spec.card, spec.inputs.map((f) => [f.label, f.hint]), allText]);
+  const blob = JSON.stringify([spec.title, spec.pageTitle, spec.description, spec.card, (spec.inputs || []).map((f) => [f.label, f.hint]), allText]);
   need(!BANNED.test(blob), 'metinde bağlantı/URL ya da betik bulunamaz');
   need(!/&(lt|gt|amp|nbsp|quot|#\d+);/.test(JSON.stringify(allText)), 'metinde HTML varlığı (&lt; &gt; &amp; &nbsp;) kullanmayın; düz < > & yazın');
   need(new Set(spec.faq.map((q) => q[0])).size === spec.faq.length, 'faq soruları birbirinden farklı olmalı');
 
+  if (isTest) return E;
   // compute'u bağımsız modül olarak yükle (dış değişkene bağımlılık burada ortaya çıkar)
   const tmp = join(HERE, '.tmp'); mkdirSync(tmp, { recursive: true });
   const lp = join(tmp, `${slug}.${process.pid}.${Date.now()}.mjs`);
@@ -196,6 +206,29 @@ export function renderPage(spec, titles) {
   ] };
   const ld = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
   const half = Math.min(2, spec.sections.length - 1);
+  const arac = spec.kind === 'test' ? testSection(spec) : `    <section class="ba-tool" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Araç</h2>
+      <form id="form" class="ar-form" novalidate>
+        <div class="ar-grid">
+${spec.inputs.map(field).join('\n')}
+        </div>
+        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">${esc(spec.button)}</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
+      </form>
+      <div id="error" class="ba-error" role="alert"></div>
+      <div id="result" class="ba-result" aria-live="polite" hidden>
+        <h3>Sonuç</h3>
+        <dl id="rows" class="ar-results"></dl>
+        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
+        <p class="ar-note" id="note" hidden></p>
+${spec.pdf ? `        <div id="plan-wrap" class="ar-plan" hidden>
+          <p class="ar-plan-ipucu"><strong>Ekranda doldurun:</strong> önizlemede yazmak istediğiniz yere tıklayıp yazın, Enter ile bitirin. Yazdıklarınız bu tarayıcıda saklanır ve PDF'e eklenir; boş bırakırsanız planlayıcı boş iner.</p>
+          <div class="ar-plan-nav"><button id="pg-prev" class="ba-btn" type="button">‹ Önceki sayfa</button><span id="pg-info" aria-live="polite"></span><button id="pg-next" class="ba-btn" type="button">Sonraki sayfa ›</button><button id="pg-clear" class="ba-btn" type="button" hidden>Yazıları sil</button></div>
+          <div class="ar-plan-sahne"><canvas id="onizleme" class="ar-onizleme" role="img" aria-label="Planlayıcı önizlemesi; yazmak için tıklayın" hidden></canvas></div>
+        </div>
+` : ''}        <div class="ba-actions">${spec.pdf ? '<button id="pdf" class="ba-btn ba-btn-primary" type="button" hidden>PDF indir</button>' : ''}<button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
+        <p class="ar-status" id="copy-status" aria-live="polite"></p>
+      </div>
+    </section>`;
   const related = spec.related.filter((r) => titles.has(r));
   return `<!doctype html>
 <html lang="tr">
@@ -238,29 +271,7 @@ export function renderPage(spec, titles) {
       </div></section>
     <div class="ba-container">
 
-    <section class="ba-tool" aria-labelledby="h-tool">
-      <h2 id="h-tool" class="visually-hidden">Araç</h2>
-      <form id="form" class="ar-form" novalidate>
-        <div class="ar-grid">
-${spec.inputs.map(field).join('\n')}
-        </div>
-        <div class="ba-actions"><button id="calc" class="ba-btn ba-btn-primary" type="submit">${esc(spec.button)}</button><button id="clear" class="ba-btn" type="button">Temizle</button></div>
-      </form>
-      <div id="error" class="ba-error" role="alert"></div>
-      <div id="result" class="ba-result" aria-live="polite" hidden>
-        <h3>Sonuç</h3>
-        <dl id="rows" class="ar-results"></dl>
-        <div id="out-wrap" class="ar-out-wrap" hidden><label class="visually-hidden" for="out">Sonuç metni</label><textarea id="out" class="ar-out" readonly spellcheck="false"></textarea></div>
-        <p class="ar-note" id="note" hidden></p>
-${spec.pdf ? `        <div id="plan-wrap" class="ar-plan" hidden>
-          <p class="ar-plan-ipucu"><strong>Ekranda doldurun:</strong> önizlemede yazmak istediğiniz yere tıklayıp yazın, Enter ile bitirin. Yazdıklarınız bu tarayıcıda saklanır ve PDF'e eklenir; boş bırakırsanız planlayıcı boş iner.</p>
-          <div class="ar-plan-nav"><button id="pg-prev" class="ba-btn" type="button">‹ Önceki sayfa</button><span id="pg-info" aria-live="polite"></span><button id="pg-next" class="ba-btn" type="button">Sonraki sayfa ›</button><button id="pg-clear" class="ba-btn" type="button" hidden>Yazıları sil</button></div>
-          <div class="ar-plan-sahne"><canvas id="onizleme" class="ar-onizleme" role="img" aria-label="Planlayıcı önizlemesi; yazmak için tıklayın" hidden></canvas></div>
-        </div>
-` : ''}        <div class="ba-actions">${spec.pdf ? '<button id="pdf" class="ba-btn ba-btn-primary" type="button" hidden>PDF indir</button>' : ''}<button id="copy" class="ba-btn" type="button">Sonucu kopyala</button></div>
-        <p class="ar-status" id="copy-status" aria-live="polite"></p>
-      </div>
-    </section>
+${arac}
 
     <div class="ba-ad" data-slot="${slug}-a" aria-label="Reklam"></div>
 
@@ -309,7 +320,40 @@ ${related.map((r) => `        <li><a href="../${r}/">${esc(titles.get(r))}</a></
 `;
 }
 
+function testSection(spec) {
+  const n = spec.test.karisim.reduce((a, k) => a + k[1], 0);
+  return `    <section class="ba-tool zk" id="zk" data-ekran="bas" aria-labelledby="h-tool">
+      <h2 id="h-tool" class="visually-hidden">Test</h2>
+      <noscript><p class="ba-error is-active">Bu test JavaScript gerektirir. Tarayıcınızda JavaScript'i etkinleştirip sayfayı yenileyin.</p></noscript>
+      <div id="zk-bas">
+        <ul class="zk-bilgi"><li><b>${n}</b> soru</li><li><b>${spec.test.sure}</b> dakika</li><li>Kolaydan zora</li><li>Her seferinde yeni sorular</li></ul>
+        <p>Her sorunun tek doğru cevabı vardır. Emin olmadığınız soruyu boş geçip sonra dönebilirsiniz; süre dolunca test kendiliğinden biter. Sonunda doğru cevapları ve açıklamalarını görürsünüz.</p>
+        <div class="ba-actions"><button id="zk-basla" class="ba-btn ba-btn-primary ba-btn-lg" type="button">Teste başla</button></div>
+      </div>
+      <div id="zk-soru" hidden>
+        <div class="zk-ust"><span id="zk-sira"></span><span id="zk-tur" class="zk-cip"></span><output id="zk-sure" class="zk-sure" role="timer" aria-label="Kalan süre"></output></div>
+        <div class="zk-cubuk" aria-hidden="true"><span id="zk-bar"></span></div>
+        <div id="zk-metin" class="zk-metin" tabindex="-1"></div>
+        <div id="zk-siklar" class="zk-siklar" role="group" aria-label="Cevap seçenekleri"></div>
+        <div class="ba-actions"><button id="zk-geri" class="ba-btn" type="button">‹ Önceki</button><button id="zk-ileri" class="ba-btn ba-btn-primary" type="button">Sonraki soru</button></div>
+        <p class="ar-note">Klavye: 1–6 tuşlarıyla seçin, sağ ve sol ok tuşlarıyla sorular arasında geçin.</p>
+      </div>
+      <div id="zk-son" hidden>
+        <h3>Sonucunuz</h3>
+        <p id="zk-puan" class="zk-puan" tabindex="-1"></p>
+        <p id="zk-ozet" class="zk-ozet"></p>
+        <dl id="zk-turler" class="ar-results"></dl>
+        <p class="ar-note">Bu sonuç bir IQ puanı değildir. Gerçek IQ, geniş bir grupta denenmiş (norm çalışması yapılmış) testlerle ve bir uzman gözetiminde ölçülür; buradaki sonuç yalnızca bu soru setindeki başarınızı gösterir.</p>
+        <div class="ba-actions"><button id="zk-yeni" class="ba-btn ba-btn-primary" type="button">Yeni sorularla tekrar çöz</button><button id="zk-ayni" class="ba-btn" type="button">Aynı soruları yeniden çöz</button></div>
+        <h3>Cevap anahtarı ve açıklamalar</h3>
+        <ol id="zk-cevaplar" class="zk-cevaplar"></ol>
+        <p class="ar-note">Soru seti no: <span id="zk-tohum"></span></p>
+      </div>
+    </section>`;
+}
+
 export function toolJs(spec) {
+  if (spec.kind === 'test') return `// ${spec.title} — sorular tarayıcıda üretilir; cevaplar hiçbir yere gönderilmez.\nimport { mount } from '../assets/js/zeka-test.js';\n\nmount(${JSON.stringify({ sure: spec.test.sure, karisim: spec.test.karisim })});\n`;
   return `// ${spec.title} — arayüz; ortak form betiği hesabı tarayıcıda çalıştırır.\nimport { mount } from '../assets/js/arac.js';\nimport { compute } from './logic.js';\n\nmount(compute);\n`;
 }
 export function metaJson(spec) {

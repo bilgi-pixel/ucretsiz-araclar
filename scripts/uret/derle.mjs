@@ -34,7 +34,7 @@ for (const s of good) titles.set(s.slug, s.title);
 for (const spec of good) {
   const dir = join(WEB, spec.slug); mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'index.html'), renderPage(spec, titles));
-  writeFileSync(join(dir, 'logic.js'), logicSource(spec));
+  if (spec.kind !== 'test') writeFileSync(join(dir, 'logic.js'), logicSource(spec));
   writeFileSync(join(dir, 'tool.js'), toolJs(spec));
   writeFileSync(join(dir, 'meta.json'), metaJson(spec));
 }
@@ -75,7 +75,12 @@ sm = sm.replace('</urlset>', lines + '\n</urlset>');
 writeFileSync(join(WEB, 'sitemap.xml'), sm);
 
 // 6) test verisi + hub testindeki kart sayısı
+const { testUret } = await import('../../web/assets/js/zeka-sorular.js');
 const data = good.map((s) => {
+  if (s.kind === 'test') { // tohum 7 ile hep ilk şık seçilirse beklenen doğru sayısı
+    const q = testUret(s.test.karisim, 7);
+    return { slug: s.slug, title: s.title, kind: 'test', n: q.length, beklenen: q.filter((x) => x.dogru === 0).length, types: {}, defaults: {}, cases: [] };
+  }
   const ok = s.cases.filter((c) => !c.error).slice(0, 2), er = s.cases.filter((c) => c.error).slice(0, 1);
   const defaults = {}; for (const f of s.inputs) defaults[f.id] = f.value !== undefined ? String(f.value) : (f.type === 'select' ? String(f.options[0][0]) : '');
   return { slug: s.slug, title: s.title, pdf: !!s.pdf, types: Object.fromEntries(s.inputs.map((f) => [f.id, f.type])), defaults, cases: [...ok, ...er] };

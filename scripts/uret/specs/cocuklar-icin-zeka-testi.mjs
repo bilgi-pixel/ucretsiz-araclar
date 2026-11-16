@@ -1,0 +1,92 @@
+export default {
+  slug: 'cocuklar-icin-zeka-testi',
+  title: 'Çocuklar İçin Zekâ Testi (7–12 Yaş)',
+  h1Tail: 'kolay sorular, ebeveyn eşliğinde',
+  pageTitle: 'Çocuklar İçin Zekâ Testi (7–12 Yaş): Kolay ve Açıklamalı Sorular',
+  description: '7–12 yaş çocuklar için zekâ oyunu tadında 15 kolay soru: şekil, sayı, harf, mantık ve dikkat. Ücretsiz, kayıtsız; ebeveyn eşliğinde, açıklamalı cevaplarla.',
+  card: '7–12 yaş için 15 kolay soru: şekil tablosu, sayı ve harf dizisi, mantık ve dikkat. Ebeveynle birlikte çözmek için.',
+  category: 'zeka',
+  kind: 'test',
+  keywords: ['çocuklar için zeka testi', 'çocuk zeka testi', 'ilkokul zeka testi', '7-12 yaş zeka testi', 'çocuklar için zeka soruları', 'çocuk iq testi', 'çocuklar için mantık soruları', 'çocuklar için dikkat testi'],
+  lead: "Bu test 7–12 yaş arası çocuklar için hazırlanmış, kolay düzeyde 15 sorudan oluşan bir alıştırmadır: şekil tabloları, sayı ve harf dizileri, basit mantık soruları ve bir dikkat sorusu. Bir puanlama aracı değil, bir yetişkinle birlikte çözülüp üzerine konuşulacak bir zihin oyunu olarak düşünülmüştür.",
+  test: { sure: 15, karisim: [['matris', 4, 1], ['sayiDizisi', 4, 1], ['harfDizisi', 2, 1], ['mantik', 2, 1], ['sayiBenzetme', 2, 1], ['dikkat', 1, 1]] },
+  howto: [
+    "Çocuğunuzla birlikte sessiz bir yere oturun. Bunun bir sınav değil oyun olduğunu, bilemediği soruyu geçebileceğini söyleyin.",
+    "<strong>Teste başla</strong> düğmesine basın. Küçük yaştaki çocuklar için soruyu siz sesli okuyabilirsiniz; cevabı ise çocuğun bulmasına izin verin.",
+    "Çocuk seçtiği cevaba dokunsun ya da tıklasın. Fikir değiştirirse başka bir seçeneğe basması yeterlidir.",
+    "Zorlandığı soruda <strong>Boş geç</strong> düğmesini kullanın; <strong>Önceki</strong> düğmesiyle sonra geri dönebilirsiniz.",
+    "Son soruda <strong>Testi bitir</strong> düğmesine basın ve cevap anahtarındaki açıklamaları birlikte okuyun.",
+    "İsterse <strong>Yeni sorularla tekrar çöz</strong> düğmesiyle bir tur daha oynayın; sorular baştan üretilir.",
+  ],
+  sections: [
+    {
+      h: 'Testte hangi sorular var?',
+      p: ["On beş sorunun tamamı kolay düzeydedir ve altı farklı türden gelir. Soruların sırası her denemede karışır."],
+      ul: [
+        "<strong>Şekil tablosu (4 soru):</strong> Üçe üç bir tabloda sağ alt hücre boştur. Kolay düzeyde yalnızca tek bir özellik (şeklin türü, sayısı ya da dolgu tonu) satırdan satıra değişir. Düzeni fark etmeyi gerektirir.",
+        "<strong>Sayı dizisi (4 soru):</strong> Sayılar hep aynı miktarda artar, hep aynı miktarda azalır ya da her adımda 2 ya da 3 katına çıkar. Sıradaki sayı sorulur.",
+        "<strong>Harf dizisi (2 soru):</strong> Harfler alfabede art arda ya da birer harf atlayarak ilerler. Alfabe sırasını bilmeyi gerektirir.",
+        "<strong>Mantık (2 soru):</strong> Ya üç kişinin boyu karşılaştırılır ya da uydurma sözcüklerle 'tüm … dır' biçiminde iki cümle verilir.",
+        "<strong>Sayı çiftleri (2 soru):</strong> İki sayı çiftindeki kural bulunur (belirli bir sayı ekleme ya da belirli bir sayıyla çarpma) ve üçüncü sayıya uygulanır.",
+        "<strong>Dikkat (1 soru):</strong> Birbirine benzeyen karakterlerle dolu dört satırda belirli bir harfin ya da rakamın kaç kez geçtiği sayılır.",
+      ],
+    },
+    {
+      h: 'Birlikte çözebileceğiniz örnekler',
+      p: [
+        "<strong>Sayı dizisi:</strong> 4, 7, 10, 13, 16, ? Sayılar üçer üçer artıyor. 16'ya 3 eklenince <strong>19</strong> bulunur. Çocuğa 'bir sayıdan diğerine geçerken ne oluyor?' diye sormak, kuralı kendisinin söylemesine yardım eder.",
+        "<strong>Katlanan dizi:</strong> 2, 4, 8, 16, 32, ? Her sayı bir öncekinin iki katıdır; sıradaki sayı <strong>64</strong> olur. Artışın her adımda büyüdüğünü fark etmek, bunun toplama değil çarpma olduğunun ipucudur.",
+        "<strong>Harf dizisi:</strong> K, L, M, N, O, ? Harfler alfabede art arda geliyor. Türk alfabesinde O'dan sonra <strong>Ö</strong> gelir; P demek bu sorunun en sık yapılan hatasıdır. Ç, Ğ, I, İ, Ö, Ş ve Ü harflerini birlikte hatırlamak için iyi bir fırsattır.",
+        "<strong>Boy sıralaması:</strong> 'Ali, Banu'dan uzundur. Banu, Cem'den uzundur.' En uzun kim? Sıra Ali, Banu, Cem olur; cevap <strong>Ali</strong>'dir. Üç oyuncağı ya da üç kalemi boy sırasına dizmek soruyu somutlaştırır.",
+        "<strong>Sayı çiftleri:</strong> '3 → 8, 6 → 11, 4 → ?' Her iki çiftte de sayıya 5 eklenmiştir; 4'e 5 eklenince <strong>9</strong> bulunur.",
+        "<strong>Şekil tablosu:</strong> İlk satırda üç daire, ikinci satırda üç kare, üçüncü satırda iki üçgen ve bir boş hücre varsa, her satırda şekil aynı kaldığı için boş hücreye de <strong>üçgen</strong> gelir.",
+      ],
+    },
+    {
+      h: 'Sonuç ekranını çocuğunuzla nasıl okumalısınız?',
+      p: [
+        "Test bitince 15 üzerinden doğru sayısı, yanlış ve boş sayıları, başarı yüzdesi ve yalnızca bu soru setindeki doğru oranını sözle ifade eden bir etiket görünür. Altında tür bazında döküm yer alır: Sayısal 6, Görsel 4, Sözel 2, Mantık 2 ve Dikkat 1 soru üzerinden.",
+        "Bu sayıları çocuğa bir karne gibi sunmamanızı öneririz. Asıl değerli bölüm, sayfanın altındaki cevap anahtarıdır: her soru yeniden gösterilir ve kuralı bir cümleyle açıklanır. Yanlış yapılan soruya birlikte dönüp 'şimdi kuralı görebiliyor musun?' diye sormak, sonucu konuşmaktan çok daha öğreticidir.",
+        "Çocuk isterse <strong>Yeni sorularla tekrar çöz</strong> düğmesiyle yeni bir sete geçebilir. Sorular her seferinde baştan üretildiği için cevapları ezberlemesi mümkün değildir; öğrendiği şey kuralı arama alışkanlığıdır.",
+      ],
+    },
+    {
+      h: 'Önemli uyarı: bu test bir zekâ ölçümü değildir',
+      p: [
+        "Bu sayfa eğlence ve alıştırma içindir. Sonuç bir IQ puanı değildir, site bir IQ sayısı vermez ve çocuğunuzun zekâ düzeyi hakkında bir yargı içermez. Çocuklarda zihinsel gelişimin değerlendirilmesi, yaşa göre norm çalışması yapılmış testlerle ve bu alanda eğitim almış bir uzman tarafından yapılır.",
+        "Lütfen sonucu çocuğunuzu etiketlemek için kullanmayın. 'Zeki', 'yavaş', 'üstün' ya da 'geride' gibi sözler, on beş soruluk bir oyunun söyleyebileceğinden çok fazlasını söyler ve çocuğun kendine bakışını etkileyebilir. Aynı test 7 yaşındaki bir çocuk için oldukça zorlayıcı, 12 yaşındaki bir çocuk için kolay olabilir; yaşlar arasında karşılaştırma yapmak, kardeşleri ya da arkadaşları yarıştırmak doğru değildir.",
+        "Sonuç okul seçimi, sınıf yerleştirme, özel program başvurusu ya da herhangi bir tanı için kullanılamaz. Çocuğunuzun öğrenmesi, dikkati, dili ya da gelişimiyle ilgili bir endişeniz varsa öğretmeniyle ve bir çocuk gelişimi uzmanıyla, psikologla ya da çocuk hekimiyle görüşmek doğru adımdır.",
+      ],
+    },
+    {
+      h: 'Ebeveynler ve öğretmenler için öneriler',
+      ul: [
+        "Süre 15 dakikadır ve çoğu çocuk için yeterlidir. Sayaç çocuğu geriyorsa süreyi vurgulamayın; amaç hız değil düşünmektir.",
+        "Cevabı söylemek yerine ipucu soruları sorun: 'Bu satırdaki şekillerin ortak yanı ne?', 'Sayılar büyüyor mu, küçülüyor mu?'",
+        "Doğru sayısını değil çabayı ve yöntemi övün: 'Farkları tek tek sayman çok iyi bir fikirdi' gibi.",
+        "Yorgun, aç ya da uykulu olduğu bir anda çözdürmeyin; canı istemiyorsa bırakın, başka bir gün deneyin.",
+        "Dikkat sorusunda satırları parmakla ya da bir kâğıt parçasıyla takip etmesine izin verin; bu hile değil, iyi bir çalışma alışkanlığıdır.",
+        "Küçük yaşlarda Türk alfabesindeki 29 harfin sırasını önceden birlikte tekrar etmek harf sorularını kolaylaştırır.",
+      ],
+    },
+    {
+      h: 'Sık yapılan hatalar ve tekrarın etkisi',
+      p: [
+        "Çocukların en sık yaptığı hatalar; soruyu sonuna kadar okumadan cevap vermek ('en kısa' yerine 'en uzun' kişiyi seçmek), dizide yalnızca son iki sayıya bakmak, harf dizisinde Ö ve Ğ gibi harfleri atlamak ve dikkat sorusunda satır kaçırmaktır. Bunların hepsi aceleyle ilgilidir; yavaşlamak çoğu zaman yeterlidir.",
+        "Çocuk testi birkaç kez çözdüğünde doğru sayısı büyük olasılıkla artar. Bu alıştırma etkisidir: soru kalıplarını tanımaya başlamıştır. Bu güzel bir ilerlemedir, ama zekâsının değiştiğini değil, bu tür sorulara alıştığını gösterir. Ekran süresini makul tutmak için bir oturuşta bir ya da iki deneme yeterlidir.",
+      ],
+    },
+  ],
+  faq: [
+    ['Bu test çocuğumun IQ puanını gösterir mi?', "Hayır. Test bir IQ sayısı vermez; yalnızca 15 sorudan kaçının doğru çözüldüğünü gösterir. Çocuklarda zekâ değerlendirmesi, norm çalışması yapılmış testlerle ve uzman tarafından yapılır."],
+    ['Test hangi yaşlar için uygun?', "Sorular 7–12 yaş düşünülerek kolay düzeyde tutulmuştur. Okumayı yeni öğrenen çocuklarda soruları bir yetişkinin okuması gerekebilir; 12 yaş civarındaki çocuklar için sorular kolay gelebilir."],
+    ['Çocuğum testi tek başına çözebilir mi?', "Çözebilir, ancak bir yetişkinle birlikte çözmesini öneririz. Böylece anlamadığı soru açıklanır, sonuç ekranı birlikte yorumlanır ve sayılar çocuk tarafından yanlış anlamlandırılmaz."],
+    ['Sonuç düşük çıktı, endişelenmeli miyim?', "Bu sonuç tek başına endişe nedeni değildir. Yaş, yorgunluk, dikkat dağınıklığı ve soru türlerine yabancılık sonucu çok etkiler. Çocuğunuzun gelişimiyle ilgili ayrıca bir endişeniz varsa öğretmenine ve bir uzmana danışın."],
+    ['Sonuç yüksek çıktı, çocuğum üstün yetenekli mi?', "Bu test böyle bir sonuca varmak için uygun değildir. Kolay düzeydeki 15 soruda yüksek doğru sayısı, çocuğun bu soruları iyi çözdüğünü gösterir. Yetenek değerlendirmesi için uzman görüşü gerekir."],
+    ['Sorular her seferinde aynı mı?', "Hayır. Sayılar, harfler, şekiller ve adlar her denemede yeniden üretilir. Aynı seti tekrar çözmek isterseniz sonuç ekranındaki 'Aynı soruları yeniden çöz' düğmesini kullanabilirsiniz."],
+    ['Süre dolarsa ne olur?', "On beş dakika bittiğinde test kendiliğinden kapanır ve o ana kadar verilen cevaplar değerlendirilir. İşaretlenmeyen sorular boş sayılır; yanlış cevap puan götürmez."],
+    ['Sınıfta etkinlik olarak kullanılabilir mi?', "Evet, zihin ısındırma etkinliği olarak kullanılabilir. Her çocuk farklı sorular göreceği için sonuçları karşılaştırmak ya da sıralama yapmak yerine çözüm yollarını konuşmak daha uygundur."],
+    ['Çocuğumun cevapları bir yere kaydediliyor mu?', "Hayır. Sorular tarayıcıda üretilir; cevaplar ve sonuç hiçbir sunucuya gönderilmez. Ad, yaş, e-posta gibi hiçbir bilgi istenmez ve sayfa kapanınca sonuç silinir."],
+  ],
+  related: ['dikkat-testi', 'sekil-matris-testi', 'sayi-dizisi-testi', 'harf-dizisi-testi', 'farkli-olani-bul-testi', 'hizli-iq-testi'],
+};

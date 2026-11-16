@@ -1,0 +1,90 @@
+export default {
+  slug: 'sayisal-zeka-testi',
+  title: 'Sayısal Zekâ Testi',
+  h1Tail: '20 soru, çözümlü',
+  pageTitle: 'Sayısal Zekâ Testi: Sayı Dizisi ve Sayı İlişkisi Soruları',
+  description: 'Sayısal zekâ testi: sayı dizisi, sayı benzetmesi ve farklı sayıyı bulma türünde 20 soru, 15 dakika. Ücretsiz ve kayıtsız; her sorunun kuralı açıklanır.',
+  card: 'Sayı dizileri, sayı çiftleri ve gruba uymayan sayı sorularından oluşan 20 soruluk, açıklamalı sayısal test.',
+  category: 'zeka',
+  kind: 'test',
+  keywords: ['sayısal zeka testi', 'sayısal yetenek testi', 'sayı dizisi soruları', 'sayısal mantık testi', 'sayı örüntüsü soruları', 'farklı sayıyı bul', 'sayısal iq testi', 'sayı ilişkisi soruları'],
+  lead: "Bu test yalnızca sayılarla ilgilidir: 8 soruda dizinin sıradaki terimini, 6 soruda sayı çiftleri arasındaki işlemi, 6 soruda da gruba uymayan sayıyı bulursunuz. Yirmi soru için 15 dakikanız vardır ve hesap makinesi gerekmez.",
+  test: { sure: 15, karisim: [['sayiDizisi', 8], ['sayiBenzetme', 6], ['farkliSayi', 6]] },
+  howto: [
+    "İsterseniz yanınıza kâğıt kalem alın; ara farkları yazmak zor dizilerde işinizi kolaylaştırır. Sonra <strong>Teste başla</strong> düğmesine basın.",
+    "Dizi sorularında soru işaretinin yerine gelecek sayıyı beş seçenek arasından seçin.",
+    "Sayı çifti sorularında ilk iki çiftteki işlemi bulup üçüncü sayıya uygulayın.",
+    "Farklı sayı sorularında beş sayıdan dördünün ortak özelliğini bulun ve o özelliği taşımayanı işaretleyin.",
+    "Takıldığınız soruyu boş geçin, sonda geri dönün. Son soruda <strong>Testi bitir</strong> düğmesine basıp açıklamalı cevap anahtarını inceleyin.",
+  ],
+  sections: [
+    {
+      h: 'Sayı dizisi soruları: hangi kurallar kullanılır?',
+      p: ["Dizi sorularında beş ya da altı terim verilir, bir sonraki terim sorulur. Sorular kolaydan zora sıralanır ve aşağıdaki kurallardan biriyle üretilir."],
+      ul: [
+        "<strong>Sabit artış ya da azalış:</strong> 7, 11, 15, 19, 23 dizisinde her terim öncekinden 4 fazladır; sıradaki terim 27'dir.",
+        "<strong>Sabit çarpan:</strong> 3, 6, 12, 24, 48 dizisinde her terim öncekinin 2 katıdır; sıradaki terim 96'dır.",
+        "<strong>Büyüyen fark:</strong> Ardışık terimler arasındaki fark her adımda aynı miktarda artar.",
+        "<strong>Önceki iki terimin toplamı:</strong> 1, 4, 5, 9, 14 dizisinde 1 + 4 = 5, 4 + 5 = 9, 5 + 9 = 14 olduğundan sıradaki terim 9 + 14 = 23'tür.",
+        "<strong>İç içe iki dizi:</strong> Tek sıradaki terimler bir kurala, çift sıradakiler başka bir kurala uyar.",
+        "<strong>Kareler ve küpler:</strong> Terimler ardışık sayıların kareleri (bazen sabit bir sayı eklenmiş hâli) ya da küpleridir.",
+        "<strong>Çarp ve ekle:</strong> Her terim öncekinin 2 katına sabit bir sayı eklenerek bulunur.",
+        "<strong>Sırayla ekle ve çıkar:</strong> Bir adımda bir sayı eklenir, sonraki adımda başka bir sayı çıkarılır.",
+      ],
+    },
+    {
+      h: 'Çözümlü dizi örnekleri',
+      p: [
+        "<strong>Büyüyen fark:</strong> 4, 5, 8, 13, 20, ? dizisinde farklar 1, 3, 5 ve 7'dir; fark her adımda 2 artıyor. Sıradaki fark 9 olur ve cevap 20 + 9 = <strong>29</strong> çıkar. Son farkı yineleyip 27 demek en sık yapılan hatadır.",
+        "<strong>İç içe dizi:</strong> 4, 30, 7, 26, 10, 22, ? dizisinde terimler inişli çıkışlıdır; bu, iki dizinin birbirine geçtiğinin işaretidir. Tek sıradakiler 4, 7, 10 diye 3'er artar; çift sıradakiler 30, 26, 22 diye 4'er azalır. Sorulan terim tek sıradadır, cevap 10 + 3 = <strong>13</strong> olur.",
+        "<strong>Kare artı sabit:</strong> 5, 10, 17, 26, 37, ? dizisinde farklar 5, 7, 9, 11 diye ilerler; aynı zamanda terimler 2, 3, 4, 5 ve 6'nın karelerinin 1 fazlasıdır. Sıradaki terim 7'nin karesinin 1 fazlası, yani <strong>50</strong> olur. İki yoldan da aynı sonuca varmanız, kuralı doğru bulduğunuzun iyi bir sağlamasıdır.",
+        "<strong>Çarp ve ekle:</strong> 3, 7, 15, 31, 63, ? dizisinde her terim öncekinin 2 katının 1 fazlasıdır (3 × 2 + 1 = 7, 7 × 2 + 1 = 15). Sıradaki terim 63 × 2 + 1 = <strong>127</strong> olur.",
+        "<strong>Sırayla ekle ve çıkar:</strong> 8, 13, 11, 16, 14, 19, ? dizisinde sırayla 5 eklenip 2 çıkarılır. Son adımda 5 eklendiğine göre şimdi 2 çıkarılır ve cevap <strong>17</strong> olur.",
+      ],
+    },
+    {
+      h: 'Sayı benzetmesi ve farklı sayı soruları',
+      p: [
+        "<strong>Sayı benzetmesi:</strong> '4 → 13, 7 → 22, 5 → ?' sorusunda ilk çifte bakınca hem '9 ekle' hem de '3 ile çarp, 1 ekle' kuralı akla gelir. İkinci çift ayrımı yapar: 7 + 9 = 16 eder, 22 etmez; 7 × 3 + 1 ise 22 eder. Kural 3 katının 1 fazlasıdır ve cevap 5 × 3 + 1 = <strong>16</strong> olur. Bu sorularda kuralı mutlaka iki çiftte birden sınayın; tek çifte uyan kural çoğu zaman çeldiricidir. Kullanılan ilişkiler belirli bir katını alma, sabit sayı ekleme, karesini alma, katını alıp ekleme ve yarıya indirmedir.",
+        "<strong>Farklı sayı:</strong> 21, 35, 49, 40, 63 sayılarından dördü 7 ile tam bölünür; <strong>40</strong> bölünmez. 16, 49, 81, 60, 121 grubunda dördü tam karedir (4, 7, 9 ve 11'in kareleri); <strong>60</strong> değildir. 7, 13, 21, 29, 41 grubunda dördü asaldır; <strong>21</strong> ise 3 × 7 olduğu için asal değildir. Bu türde bakılacak dört özellik vardır: ortak bir bölene sahip olma, asallık, tam kare olma ve tek-çift ayrımı.",
+        "Farklı sayı sorularında 'en büyük olan' ya da 'tek haneli olan' gibi yüzeysel farklara kapılmayın. Aranan özellik her zaman dört sayının birden paylaştığı, beşincinin taşımadığı sayısal bir niteliktir.",
+      ],
+    },
+    {
+      h: 'Sonuç ekranı ve açıklamalar',
+      p: [
+        "Test bitince 20 üzerinden doğru sayınız, yanlış ve boş sayıları, başarı yüzdeniz ve bu soru setine özgü düzey etiketi görünür. Bu testteki soruların tümü Sayısal başlığındadır; bu yüzden tür dökümünde tek satır yer alır. Hangi alt türde zorlandığınızı cevap anahtarından izleyebilirsiniz.",
+        "Cevap anahtarı her sorunun kuralını bir cümleyle yazar: farkın kaçar arttığını, hangi sayıya bölünebilirliğin arandığını ya da çiftler arasındaki işlemin ne olduğunu. <strong>Yeni sorularla tekrar çöz</strong> düğmesiyle baştan üretilen yeni bir setle devam edebilirsiniz; sayılar ve kurallar her denemede değişir.",
+      ],
+    },
+    {
+      h: 'Bu test bir IQ ölçümü değildir',
+      p: [
+        "Sayısal zekâ testi adını taşısa da bu sayfa eğlence ve alıştırma amaçlıdır. Sonuç bir IQ puanı değildir ve site bir IQ sayısı vermez. Gerçek IQ ölçümü, norm çalışması yapılmış testlerle ve uzman gözetiminde yapılır; ayrıca sayısal sorular bu tür ölçümlerin yalnızca bir parçasıdır.",
+        "Buradaki başarı; dört işlem hızına, çarpım tablosuna hâkimiyete ve bu soru kalıplarını daha önce görmüş olmaya da bağlıdır. Sonuç tanı, okul yerleştirme ya da işe alım gibi kararlar için kullanılmamalıdır. Sınavlara hazırlanan öğrenciler için sayı örüntülerini tanımaya yönelik bir alıştırma olarak yararlı olabilir; bir sınavın soru dağılımını ya da puanını yansıtmaz.",
+      ],
+    },
+    {
+      h: 'Süre yönetimi, ipuçları ve sık hatalar',
+      ul: [
+        "Yirmi soru için 15 dakika, soru başına 45 saniye demektir. Farklı sayı ve kolay dizi soruları genellikle 20 saniyede çözülür; kazandığınız süreyi zor dizilere ayırın.",
+        "Dizilerde ilk iş ardışık farkları yazmaktır. Farklar düzenli değilse oranlara, sonra tek ve çift sıradaki terimlere ayrı ayrı bakın.",
+        "Terimler çok hızlı büyüyorsa çarpma, kare ya da küp kuralı düşünün; inip çıkıyorsa iç içe dizi ya da ekle-çıkar kuralı düşünün.",
+        "Bulduğunuz kuralı dizinin yalnızca son iki terimiyle değil, bütün terimleriyle sınayın.",
+        "1'den 12'ye kadar sayıların karelerini ve ilk beş küpü (1, 8, 27, 64, 125) ezbere bilmek kare ve küp dizilerini hemen tanımanızı sağlar.",
+        "Düzenli çözdükçe sonuçların yükselmesi beklenir. Bu alıştırma etkisi, kalıpları tanımanızdan gelir ve genel zekâ düzeyinin değiştiğini göstermez.",
+      ],
+    },
+  ],
+  faq: [
+    ['Sayısal zekâ testi sonucunda IQ puanı çıkıyor mu?', "Hayır. Yalnızca 20 sorudaki doğru sayınız ve başarı yüzdeniz gösterilir. IQ puanı, norm çalışması yapılmış testlerle ve uzman gözetiminde ölçülür."],
+    ['Hesap makinesi kullanmam gerekir mi?', "Hayır. Sorulardaki sayılar zihinden ya da kâğıt kalemle işlem yapılabilecek büyüklüktedir. Kâğıda ara farkları yazmak yeterlidir."],
+    ['Testte kaç soru var ve süre ne kadar?', "Sekiz sayı dizisi, altı sayı benzetmesi ve altı farklı sayı sorusu olmak üzere 20 soru vardır. Süre 15 dakikadır."],
+    ['Bir dizide birden fazla kural bulursam ne yapmalıyım?', "Kuralı verilen bütün terimlerle sınayın. Doğru kural her terimi açıklar ve seçeneklerden yalnızca birine götürür; yalnızca son terimlere uyan kural genellikle çeldiricidir."],
+    ['Farklı sayı sorularında hangi özelliklere bakılır?', "Dört özellik kullanılır: ortak bir sayıya bölünebilme, asal olma, tam kare olma ve tek ya da çift olma. Dört sayının paylaştığı özelliği bulduğunuzda uymayan sayı ortaya çıkar."],
+    ['Sorular her seferinde aynı mı geliyor?', "Hayır. Bütün sorular her denemede kurala göre yeniden üretilir; başlangıç sayıları, farklar ve çarpanlar değişir. Aynı seti yeniden çözmek için sonuç ekranındaki ilgili düğmeyi kullanabilirsiniz."],
+    ['Matematiğim zayıfsa bu test bana göre mi?', "Sorular dört işlem, kare, küp ve asal sayı bilgisinin ötesine geçmez. İlk sorular kolaydır; zorlandığınız yerde açıklamaları okuyup yeni sorularla denemek iyi bir alıştırma olur."],
+    ['Cevaplarım bir yere gönderiliyor mu?', "Hayır. Sorular tarayıcınızda üretilir, cevaplarınız ve sonucunuz hiçbir sunucuya gönderilmez. Kayıt gerekmez; sayfa kapanınca sonuç silinir."],
+  ],
+  related: ['sayi-dizisi-testi', 'farkli-olani-bul-testi', 'iq-testi', 'aritmetik-dizi-hesapla', 'geometrik-dizi-hesapla', 'asal-sayi-sorgula'],
+};

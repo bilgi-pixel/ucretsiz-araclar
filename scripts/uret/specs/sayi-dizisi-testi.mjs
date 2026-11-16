@@ -1,0 +1,105 @@
+export default {
+  slug: "sayi-dizisi-testi",
+  title: "Sayı Dizisi Testi",
+  h1Tail: "ücretsiz, açıklamalı",
+  pageTitle: "Sayı Dizisi Testi – 15 Soruluk Çözümlü Sayı Örüntüsü Testi",
+  description: "Ücretsiz sayı dizisi testi: 12 dakikada 15 soru, kolaydan zora. Sıradaki sayıyı bulun, sonunda her dizinin kuralını ve açıklamasını görün. Kayıt gerekmez.",
+  card: "15 soruluk sayı dizisi testi: dizinin kuralını bulun, sıradaki sayıyı seçin, açıklamalı cevap anahtarını görün.",
+  category: "zeka",
+  kind: "test",
+  keywords: [
+    "sayı dizisi testi",
+    "sayı dizisi soruları",
+    "sayı örüntüsü testi",
+    "sıradaki sayıyı bul",
+    "sayı dizisi çözümlü sorular",
+    "sayısal mantık testi",
+    "örüntü soruları",
+    "dizide soru işareti yerine hangi sayı gelir",
+  ],
+  lead: "Sayı Dizisi Testi, bir sayı sırasının arkasındaki kuralı bulup sıradaki terimi seçmenizi isteyen 15 soruluk, 12 dakikalık bir alıştırmadır. Sorular her açılışta yeniden üretilir ve test bitince her dizinin kuralı tek tek açıklanır.",
+  test: { sure: 12, karisim: [["sayiDizisi", 15]] },
+  howto: [
+    "<strong>Testi başlat</strong> düğmesine basın; 12 dakikalık süre o anda işlemeye başlar.",
+    "Ekrandaki dizide verilen sayıları inceleyin, aralarındaki ilişkiyi bulun ve soru işaretinin yerine gelmesi gereken sayıyı beş seçenek arasından işaretleyin.",
+    "Takıldığınız soruyu boş geçin; önceki ve sonraki sorular arasında dolaşıp süre bitmeden o soruya geri dönebilirsiniz.",
+    "Son soruda <strong>Testi bitir</strong> düğmesine basın ya da sürenin dolmasını bekleyin; test kendiliğinden sonlanır.",
+    "Sonuç ekranında doğru, yanlış ve boş sayınızı, başarı yüzdenizi ve her sorunun kuralını anlatan açıklamayı okuyun.",
+    "Farklı dizilerle yeniden denemek için <strong>yeni sorularla tekrar çöz</strong> seçeneğini kullanın.",
+  ],
+  sections: [
+    {
+      h: "Bu testte hangi dizi türleri çıkar?",
+      p: [
+        "Testteki 15 sorunun tamamı aynı biçimdedir: beş ya da altı sayı verilir, son terim soru işaretiyle gizlenir. Zorluk kolaydan zora doğru artar; ilk sorular tek adımlı kurallarla başlar, son sorularda iki kural birlikte çalışır. Karşınıza çıkabilecek başlıca kurallar şunlardır:",
+      ],
+      ul: [
+        "<strong>Sabit artış ya da azalış:</strong> Her terim bir öncekinden aynı miktarda büyük ya da küçüktür. Örnek: 7, 12, 17, 22, 27 dizisinde fark hep 5'tir.",
+        "<strong>Sabit çarpan:</strong> Her terim bir öncekinin 2 ya da 3 katıdır. Örnek: 3, 6, 12, 24, 48.",
+        "<strong>Artan fark:</strong> Terimler arasındaki fark da kendi içinde düzenli büyür.",
+        "<strong>İki terimin toplamı:</strong> Her sayı, kendinden önceki iki sayının toplamıdır.",
+        "<strong>Kareler ve küpler:</strong> Terimler ardışık sayıların kareleri, karelerinin birkaç fazlası ya da küpleridir.",
+        "<strong>İç içe iki dizi:</strong> Tek sıradaki terimler bir kurala, çift sıradakiler başka bir kurala uyar.",
+        "<strong>Çarp ve ekle:</strong> Her terim bir öncekinin 2 katına sabit bir sayı eklenerek bulunur.",
+        "<strong>Sırayla ekle ve çıkar:</strong> Bir adımda belli bir sayı eklenir, sonraki adımda başka bir sayı çıkarılır.",
+      ],
+    },
+    {
+      h: "Çözümlü örnekler",
+      p: [
+        "<strong>Örnek 1 (artan fark):</strong> 3, 5, 9, 15, 23, ? dizisinde ardışık farkları yazalım: 2, 4, 6, 8. Farklar her adımda 2 artıyor, öyleyse sıradaki fark 10 olmalı. 23 + 10 = <strong>33</strong>. Bu soruda en çekici yanlış seçenek 31'dir; son farkı (8) aynen tekrar edenler bu tuzağa düşer.",
+        "<strong>Örnek 2 (iç içe iki dizi):</strong> 4, 30, 7, 26, 10, 22, ? dizisinde sayılar bir büyüyüp bir küçüldüğü için tek bir kural aramak sonuç vermez. Terimleri birer atlayarak okuyun: 4, 7, 10 üçer artıyor; 30, 26, 22 dörder azalıyor. Soru işareti birinci dizinin sırasındadır, cevap 10 + 3 = <strong>13</strong> olur.",
+        "<strong>Örnek 3 (kare artı sabit):</strong> 6, 11, 18, 27, 38, ? dizisinde farklar 5, 7, 9, 11 çıkar; yani tek sayılar. Bu, kare sayıların imzasıdır. Gerçekten de terimler 2, 3, 4, 5 ve 6'nın karelerinin 2 fazlasıdır. Sıradaki terim 7'nin karesi artı 2, yani <strong>51</strong> olur.",
+        "<strong>Örnek 4 (çarp ve ekle):</strong> 3, 7, 15, 31, 63, ? dizisinde farklar 4, 8, 16, 32 diye ikiye katlanıyor. Kural, her terimin 2 katının 1 fazlasını almaktır: 63 × 2 + 1 = <strong>127</strong>.",
+      ],
+    },
+    {
+      h: "Kuralı bulmak için izlenecek sıra",
+      ol: [
+        "Önce ardışık terimlerin farkını alın. Farklar eşitse kural sabit artış ya da azalıştır.",
+        "Farklar eşit değil ama düzenliyse (2, 4, 6 ya da 5, 7, 9 gibi) farkların farkına bakın; artan fark ya da kare dizisi olabilir.",
+        "Sayılar çok hızlı büyüyorsa oranlara bakın: her terim bir öncekinin kaç katı? Tam kat çıkmıyorsa kat artı sabit olasılığını deneyin.",
+        "Dizi bir artıp bir azalıyorsa terimleri birer atlayarak iki ayrı dizi gibi inceleyin ya da sırayla ekleme-çıkarma kuralını deneyin.",
+        "Hiçbiri uymuyorsa her terimi önceki iki terimin toplamıyla karşılaştırın.",
+        "Bulduğunuz kuralı yalnızca son iki terimle değil, <strong>dizinin tamamıyla</strong> sınayın; sonra seçeneklere bakın.",
+      ],
+    },
+    {
+      h: "Sık yapılan hatalar ve süre yönetimi",
+      p: [
+        "15 soru için 12 dakika, soru başına ortalama 48 saniye demektir. İlk beş soru genellikle on beş yirmi saniyede çözülür; buradan artan süreyi son sorulara saklamak en akılcı yoldur. Bir soruda bir dakikayı aştıysanız boş geçip sona bırakın.",
+      ],
+      ul: [
+        "Kuralı yalnızca ilk iki ya da son iki terime bakarak belirlemek. Seçeneklerde çoğu zaman son farkın tekrarıyla elde edilen sayı da bulunur.",
+        "Sıra karıştırmak: iç içe dizilerde soru işaretinin hangi alt diziye ait olduğunu saymadan cevap vermek.",
+        "İşlem hatası. Kural doğru bulunsa bile toplama ya da çarpma aceleyle yanlış yapılabilir; doğru cevabın bir fazlası ve bir eksiği çoğunlukla seçeneklerde yer alır.",
+        "Tek bir soruya saplanıp kalanlara süre bırakmamak. Boş bırakılan soru ile yanlış cevaplanan soru başarı yüzdesinde aynı sonucu verir, bu yüzden son saniyelerde tahmin yürütmek kayıp getirmez.",
+      ],
+    },
+    {
+      h: "Sonuç ekranı ne gösterir, ne göstermez?",
+      p: [
+        "Test bittiğinde doğru, yanlış ve boş soru sayınız ile başarı yüzdeniz görünür. Altındaki cevap anahtarında her soru yeniden listelenir; doğru seçenek, sizin işaretlediğiniz seçenek ve dizinin kuralını bir cümleyle anlatan açıklama yer alır. Yanlış yaptığınız soruların açıklamasını okumak, testi tekrar çözmekten daha öğreticidir.",
+        "<strong>Bu sonuç bir IQ puanı değildir</strong> ve sayfa size bir IQ sayısı vermez. Gerçek zekâ ölçümü, geniş gruplarda denenip norm çalışması yapılmış testlerle ve bir uzmanın gözetiminde yapılır. Buradaki yüzde yalnızca o anki 15 soruda ne kadar başarılı olduğunuzu söyler; tanı, okul yerleştirme ya da işe alım gibi kararlara dayanak olamaz. Testi eğlence ve alıştırma amacıyla kullanın.",
+      ],
+    },
+    {
+      h: "Pratik yaptıkça neden daha iyi sonuç alırsınız?",
+      p: [
+        "Sayı dizisi soruları sınırlı sayıda kural ailesine dayanır. Birkaç test çözdükten sonra farklara bakma, oran deneme, terimleri atlayarak okuma gibi adımlar alışkanlığa dönüşür ve aynı soruları daha kısa sürede çözersiniz. Buna alıştırma etkisi denir. Yükselen yüzde, zekânın değiştiğini değil bu soru tipine aşinalığın arttığını gösterir.",
+        "Bu aşinalık yine de işe yarar: okul sınavlarının sayısal bölümlerinde ve genel yetenek sorularında benzer örüntüler çıkar. Düzenli kısa tekrarlar, tek seferde uzun çalışmaktan daha kalıcı olur. Sabit artışlı ve sabit çarpanlı dizilerin terimlerini elle doğrulamak isterseniz sitedeki aritmetik ve geometrik dizi araçlarından yararlanabilirsiniz.",
+      ],
+    },
+  ],
+  faq: [
+    ["Sayı Dizisi Testi kaç soru ve ne kadar sürüyor?", "Test 15 sorudan oluşur ve 12 dakika sürer. Süre dolduğunda test kendiliğinden biter; o ana kadar işaretlediğiniz cevaplar değerlendirilir."],
+    ["Sorular her seferinde aynı mı?", "Hayır. Diziler her başlatışta kurallara göre yeniden üretilir; başlangıç sayıları, artış miktarları ve kural türleri değişir. Bu yüzden cevapları ezberlemek mümkün değildir, yalnızca yöntem öğrenilir."],
+    ["Bu test IQ'mu ölçer mi?", "Hayır. Sonuç yalnızca bu soru setindeki doğru oranınızdır ve bir IQ puanı değildir. Gerçek IQ ölçümü norm çalışması yapılmış testlerle, uzman gözetiminde yapılır. Bu sayfa eğlence ve alıştırma içindir."],
+    ["Bir dizinin birden fazla doğru kuralı olabilir mi?", "Kısa dizilerde kuramsal olarak farklı kurallar uydurulabilir; ancak sorular en yalın kuralı temel alır ve seçeneklerde bu kurala uyan tek bir sayı bulunur. Bulduğunuz cevap seçeneklerde yoksa daha basit bir kural arayın."],
+    ["Yanlış cevap doğrularımı götürür mü?", "Hayır, yanlış cevap için puan düşülmez. Başarı yüzdesi doğru sayınızın toplam soru sayısına oranıdır. Emin olmadığınız soruda tahminde bulunmak sonucu kötüleştirmez."],
+    ["Hesap makinesi ya da kâğıt kalem kullanabilir miyim?", "Kendi alıştırmanız olduğu için serbestsiniz. Yine de sorular zihinden çözülebilecek büyüklükte sayılarla kurulur; farkları bir kâğıda not etmek çoğu zaman yeterlidir."],
+    ["Çocuklar bu testi çözebilir mi?", "Dört işlemi ve kare alma kavramını bilen öğrenciler ilk soruları rahat çözer; son sorular daha zorlayıcıdır. Sonucu çocuğu etiketlemek için kullanmayın; birlikte açıklamaları okuyup kuralı konuşmak çok daha yararlıdır."],
+    ["Cevaplarım bir yere kaydediliyor mu?", "Hayır. Sorular tarayıcınızda üretilir, cevaplarınız ve sonucunuz hiçbir sunucuya gönderilmez. Kayıt olmanız ya da kişisel bilgi vermeniz gerekmez; sayfayı kapattığınızda sonuç da silinir."],
+  ],
+  related: ["sayisal-zeka-testi", "harf-dizisi-testi", "mantik-testi", "iq-testi", "aritmetik-dizi-hesapla", "geometrik-dizi-hesapla"],
+};
