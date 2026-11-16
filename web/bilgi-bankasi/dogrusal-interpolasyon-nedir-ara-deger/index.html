@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Doğrusal İnterpolasyon Nedir? Ara Değer Formülü ve Örnek</title>
+  <meta name="description" content="Doğrusal interpolasyon, bilinen iki nokta arasındaki değeri doğru varsayımıyla bulur: y = y₁ + (x − x₁)(y₂ − y₁)/(x₂ − x₁). Örnek, hata payı ve ekstrapolasyon.">
+  <meta name="keywords" content="interpolasyon nedir, doğrusal interpolasyon, enterpolasyon formülü, ara değer bulma, tablodan değer okuma, ekstrapolasyon nedir, bilineer interpolasyon, buhar tablosu interpolasyon">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/dogrusal-interpolasyon-nedir-ara-deger/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Doğrusal İnterpolasyon Nedir? Ara Değer Formülü ve Örnek">
+  <meta property="og:description" content="Doğrusal interpolasyon, bilinen iki nokta arasındaki değeri doğru varsayımıyla bulur: y = y₁ + (x − x₁)(y₂ − y₁)/(x₂ − x₁). Örnek, hata payı ve ekstrapolasyon.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/dogrusal-interpolasyon-nedir-ara-deger/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Doğrusal İnterpolasyon Nedir? Tablodan Ara Değer Bulma Formülü ve Örnek","description":"Doğrusal interpolasyon, bilinen iki nokta arasındaki değeri doğru varsayımıyla bulur: y = y₁ + (x − x₁)(y₂ − y₁)/(x₂ − x₁). Örnek, hata payı ve ekstrapolasyon.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/dogrusal-interpolasyon-nedir-ara-deger/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1231,"keywords":"interpolasyon nedir, doğrusal interpolasyon, enterpolasyon formülü, ara değer bulma, tablodan değer okuma, ekstrapolasyon nedir, bilineer interpolasyon, buhar tablosu interpolasyon","articleSection":"Matematik ve Bilim","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Matematik ve Bilim","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#bilim"},{"@type":"ListItem","position":4,"name":"Doğrusal İnterpolasyon Nedir? Tablodan Ara Değer Bulma Formülü ve Örnek"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Doğrusal interpolasyon nedir?","acceptedAnswer":{"@type":"Answer","text":"Bir tabloda değeri bilinen iki nokta arasında kalan bir ara değeri, iki noktayı birleştiren düz bir doğru üzerinde varsayarak bulma yöntemidir. x aralıkta ne kadar ilerlemişse y de aynı oranda ilerler."}},{"@type":"Question","name":"İki nokta arasındaki ara değer nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"y = y₁ + (x − x₁) × (y₂ − y₁) ÷ (x₂ − x₁) formülü kullanılır. Örneğin 10 için 50, 20 için 80 biliniyorsa 14 için oran 0,4 olur ve y = 50 + 0,4 × 30 = 62 bulunur."}},{"@type":"Question","name":"Enterpolasyon ile ekstrapolasyon farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"İnterpolasyon bilinen iki noktanın arasındaki değeri, ekstrapolasyon ise bilinen aralığın dışındaki değeri tahmin eder. Formül aynıdır ama ekstrapolasyonda eğilimin devam edeceği varsayıldığı için hata riski çok daha yüksektir."}},{"@type":"Question","name":"Mühendislik tablolarında interpolasyon nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Aranan değerin hemen altındaki ve üstündeki iki satır seçilir, oran hesaplanır ve değer farkına uygulanır. Örneğin suyun buhar basıncı 20 °C'de 2,339 kPa, 30 °C'de 4,246 kPa ise 26 °C için yaklaşık 3,483 kPa bulunur."}},{"@type":"Question","name":"İnterpolasyon ne zaman hatalı sonuç verir?","acceptedAnswer":{"@type":"Answer","text":"Gerçek ilişki eğri olduğunda, aralıkta bir sıçrama bulunduğunda ya da veri gürültülü olduğunda hata yapar. Buhar basıncında 10 derecelik aralıkla yapılan doğrusal tahmin 25 °C'de yaklaşık yüzde 4 fazla çıkar."}},{"@type":"Question","name":"Eğim ile interpolasyon arasındaki ilişki nedir?","acceptedAnswer":{"@type":"Answer","text":"Formüldeki (y₂ − y₁) ÷ (x₂ − x₁) ifadesi iki noktadan geçen doğrunun eğimidir. Doğrusal interpolasyon, bu doğrunun denklemine aranan x değerini koymakla aynı işlemdir."}},{"@type":"Question","name":"Excel'de interpolasyon nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Elektronik tablo programında iki noktalı formülü doğrudan yazabilirsiniz: =B2+(D2-A2)*(B3-B2)/(A3-A2). Doğrusal tahmin fonksiyonları iki noktayla aynı sonucu verir, ama daha fazla noktada regresyon doğrusu kullanır."}},{"@type":"Question","name":"Çift yönlü (bilineer) interpolasyon nedir?","acceptedAnswer":{"@type":"Answer","text":"İki değişkenli tablolarda önce bir yönde iki ayrı doğrusal interpolasyon, sonra çıkan iki sonuç arasında diğer yönde bir doğrusal interpolasyon yapılmasıdır. Görüntü büyütme ve harita yükseklik modellerinde yaygındır."}},{"@type":"Question","name":"Doğrusal interpolasyon sonucu ne kadar güvenilirdir?","acceptedAnswer":{"@type":"Answer","text":"Tablo aralığı dar ve ilişki aralık içinde neredeyse doğrusal olduğunda çok güvenilirdir. Aralık genişledikçe ve ilişki eğrildikçe hata artar; hassas işlerde daha sık aralıklı tablo ya da eğri uydurma yöntemleri kullanılır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#bilim">Matematik ve Bilim</a></li></ol><h1>Doğrusal İnterpolasyon Nedir? Tablodan Ara Değer Bulma Formülü ve Örnek</h1><p class="lead">Doğrusal interpolasyon (enterpolasyon), bir tabloda değeri bilinen iki nokta arasında kalan bir ara değeri, iki noktayı birleştiren <strong>düz bir doğru üzerinde</strong> varsayarak bulma yöntemidir. Formülü y = y₁ + (x − x₁) × (y₂ − y₁) ÷ (x₂ − x₁)'dir: x, aralığın hangi oranındaysa y de aynı oranda ilerler. Örneğin x = 10 için y = 50, x = 20 için y = 80 ise x = 14 için y = 62 bulunur. Bu sayfada formülün eğimle ilişkisini, mühendislik tablolarında kullanımını, yöntemin ne zaman hata yaptığını, ekstrapolasyon farkını ve iki yönlü (bilineer) interpolasyonu çözümlü örneklerle anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Formül: y = y₁ + (x − x₁) × (y₂ − y₁) ÷ (x₂ − x₁).</li>
+        <li>Oran biçimi: t = (x − x₁) ÷ (x₂ − x₁), y = y₁ + t × (y₂ − y₁); t, 0 ile 1 arasındadır.</li>
+        <li>(y₂ − y₁) ÷ (x₂ − x₁) ifadesi iki noktadan geçen doğrunun eğimidir.</li>
+        <li>İnterpolasyon bilinen aralığın içinde, ekstrapolasyon dışında tahmindir; ekstrapolasyon çok daha risklidir.</li>
+        <li>Gerçek ilişki eğri ise doğrusal interpolasyon hata yapar; hata, tablo aralığı daraldıkça azalır.</li>
+        <li>İki değişkenli tablolarda bilineer interpolasyon, önce bir yönde sonra diğer yönde iki kez doğrusal interpolasyon yapar.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="İki bilinen nokta (10, 50) ve (20, 80) arasında çizilmiş doğru; x = 14 noktasında doğru üzerinde y = 62 okunuyor. Sağda aralık dışında x = 25 için ekstrapolasyonla 95 değeri kesikli çizgiyle gösteriliyor." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">İki nokta arasında ara değer</text>
+  <line x1="80" y1="360" x2="640" y2="360" class="st" fill="none"/>
+  <line x1="80" y1="360" x2="80" y2="50" class="st" fill="none"/>
+  <text x="652" y="364" class="sm">x</text><text x="72" y="46" class="sm end">y</text>
+  <g class="sm mid mu"><text x="200" y="382">10</text><text x="296" y="382">14</text><text x="440" y="382">20</text><text x="560" y="382">25</text></g>
+  <g class="sm end mu"><text x="72" y="294">50</text><text x="72" y="246">62</text><text x="72" y="174">80</text><text x="72" y="114">95</text></g>
+  <line x1="200" y1="290" x2="440" y2="170" class="sp sw" fill="none"/>
+  <line x1="440" y1="170" x2="560" y2="110" class="sp sw dash" fill="none"/>
+  <circle cx="200" cy="290" r="7" class="p"/><circle cx="440" cy="170" r="7" class="p"/>
+  <text x="200" y="316" class="sm mid b">(10, 50)</text><text x="440" y="200" class="sm mid b">(20, 80)</text>
+  <line x1="296" y1="360" x2="296" y2="242" class="sok dash" fill="none"/>
+  <line x1="80" y1="242" x2="296" y2="242" class="sok dash" fill="none"/>
+  <circle cx="296" cy="242" r="8" class="ok"/>
+  <text x="310" y="236" class="b ok">x = 14 → y = 62</text>
+  <circle cx="560" cy="110" r="6" class="dg"/>
+  <text x="560" y="96" class="sm mid dg b">ekstrapolasyon: 95</text>
+  <rect x="440" y="250" width="260" height="96" rx="10" class="sf sb"/>
+  <text x="456" y="274" class="b">Hesap</text>
+  <text x="456" y="298" class="sm">t = (14 − 10) ÷ (20 − 10) = 0,4</text>
+  <text x="456" y="320" class="sm">y = 50 + 0,4 × (80 − 50) = 62</text>
+  <text x="456" y="340" class="sm mu">eğim = 30 ÷ 10 = 3</text>
+</svg>
+      <figcaption>Bilinen iki nokta düz bir doğruyla birleştirilir. x = 14, aralığın %40'ındadır; bu yüzden y de 50'den 80'e giden yolun %40'ını, yani 12 birim alır ve 62 olur. Kesikli bölüm aralık dışındaki ekstrapolasyondur.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Doğrusal interpolasyon nedir?</a></li>
+      <li><a href="#b2">İki nokta arasındaki ara değer nasıl hesaplanır? Formül</a></li>
+      <li><a href="#b3">Eğim ile interpolasyon arasındaki ilişki</a></li>
+      <li><a href="#b4">Mühendislik tablolarında interpolasyon: buhar basıncı örneği</a></li>
+      <li><a href="#b5">İnterpolasyon ne zaman hatalı sonuç verir?</a></li>
+      <li><a href="#b6">Enterpolasyon ile ekstrapolasyon farkı nedir?</a></li>
+      <li><a href="#b7">Çift yönlü (bilineer) interpolasyon nedir?</a></li>
+      <li><a href="#b8">Elektronik tablo programında interpolasyon nasıl yapılır?</a></li>
+      <li><a href="#b9">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-dogrusal-interpolasyon-nedir-ara-deger-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../dogrusal-interpolasyon-hesapla/"><strong>Doğrusal İnterpolasyon Hesaplama</strong><span>Bilinen iki (x, y) noktası arasında istediğiniz x için y değerini doğrusal interpolasyonla hesaplayın.</span></a></li>
+          <li><a href="../../dogru-denklemi-bul/"><strong>İki Noktadan Doğru Denklemi Bulma</strong><span>İki noktadan geçen doğrunun denklemini y = mx + n ve genel biçimde yazın; eğimi ve eksen kesim noktalarını görün.</span></a></li>
+          <li><a href="../../egim-hesapla/"><strong>İki Noktadan Eğim Hesaplama</strong><span>İki noktanın koordinatlarından doğrunun eğimini, eğim açısını ve yüzde eğimini hesaplayın.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Doğrusal interpolasyon nedir?</h2>
+      <p>Mühendislik, fen ve istatistikte birçok değer tablolar hâlinde verilir: farklı sıcaklıklardaki buhar basıncı, farklı yaşlardaki büyüme ölçüleri, farklı sürelerdeki faiz katsayıları gibi. Tablolar ise yalnızca belirli noktaları içerir; aradığınız değer çoğu zaman iki satırın arasındadır. Bu ara değeri tahmin etmeye <strong>interpolasyon</strong> denir.</p>
+      <p>Doğrusal interpolasyon bu tahminin en basit yoludur: iki komşu tablo noktası arasındaki ilişkinin düz bir doğru gibi davrandığı varsayılır. Aradığınız x değeri iki bilinen x'in tam ortasındaysa y de iki bilinen y'nin ortasında alınır; aralığın dörtte birindeyse y de dörtte bir ilerler. Türkçe kaynaklarda &quot;enterpolasyon&quot; yazımı da yaygındır; ikisi aynı şeydir.</p>
+      <p>Yöntemin gücü sadeliğindedir. Hesap makinesiyle saniyeler içinde yapılır, tablo aralıkları yeterince sıksa çoğu uygulamada yeterli doğrulukta sonuç verir.</p>
+
+      <h2 id="b2">İki nokta arasındaki ara değer nasıl hesaplanır? Formül</h2>
+      <p>Bilinen iki nokta (x₁, y₁) ve (x₂, y₂), değerini aradığınız nokta x olsun. Önce x'in aralıkta ne kadar ilerlediğini gösteren oranı (t) bulun, sonra y aralığında aynı oranda ilerleyin.</p>
+      <div class="rh-formula">t = (x − x₁) ÷ (x₂ − x₁)<br>y = y₁ + t × (y₂ − y₁)<br>Tek satırda: y = y₁ + (x − x₁) × (y₂ − y₁) ÷ (x₂ − x₁)</div>
+      <ol class="ba-steps">
+        <li>Bilinen noktalar: x₁ = 10, y₁ = 50 ve x₂ = 20, y₂ = 80. Aranan: x = 14.</li>
+        <li>Oran: t = (14 − 10) ÷ (20 − 10) = 4 ÷ 10 = 0,4.</li>
+        <li>y aralığı: y₂ − y₁ = 80 − 50 = 30.</li>
+        <li>Sonuç: y = 50 + 0,4 × 30 = 50 + 12 = <strong>62</strong>.</li>
+      </ol>
+      <p>Kontrol için iki uç değeri formüle koyabilirsiniz: x = 10 için t = 0 ve y = 50; x = 20 için t = 1 ve y = 80 çıkar. Formül bilinen noktaları her zaman tam olarak verir. Hesabı elle yapmak yerine <a href="../../dogrusal-interpolasyon-hesapla/">Doğrusal İnterpolasyon Hesaplama aracına</a> iki noktayı ve aradığınız x değerini girebilirsiniz.</p>
+
+      <h2 id="b3">Eğim ile interpolasyon arasındaki ilişki</h2>
+      <p>Formüldeki (y₂ − y₁) ÷ (x₂ − x₁) ifadesi, iki noktadan geçen doğrunun <strong>eğimidir</strong> (m). Doğrusal interpolasyon aslında bu doğrunun denklemini yazıp istenen x'i yerine koymaktır: y = y₁ + m × (x − x₁). Örnekte eğim 30 ÷ 10 = 3'tür; yani x her 1 birim arttığında y 3 birim artar. x, 10'dan 14'e 4 birim ilerlediği için y de 4 × 3 = 12 birim artar.</p>
+      <p>Bu bakış açısı, interpolasyonun doğru denklemiyle aynı matematik olduğunu gösterir. Doğru denklemini y = mx + n biçiminde görmek isterseniz <a href="../../dogru-denklemi-bul/">İki Noktadan Doğru Denklemi Bulma</a>, yalnızca eğim için <a href="../../egim-hesapla/">İki Noktadan Eğim Hesaplama</a> aracını kullanabilirsiniz. Kavramın ayrıntısı <a href="../../bilgi-bankasi/dogrunun-egimi-nasil-bulunur/">doğrunun eğimi nasıl bulunur</a> yazısında.</p>
+
+      <h2 id="b4">Mühendislik tablolarında interpolasyon: buhar basıncı örneği</h2>
+      <p>Termodinamik derslerinde buhar tabloları en sık interpolasyon yapılan kaynaklardır. Suyun doyma buhar basıncı standart tablolarda 20 °C için yaklaşık 2,339 kPa, 30 °C için yaklaşık 4,246 kPa'dır. 26 °C için değer arayalım.</p>
+      <ol class="ba-steps">
+        <li>t = (26 − 20) ÷ (30 − 20) = 0,6.</li>
+        <li>Basınç farkı: 4,246 − 2,339 = 1,907 kPa.</li>
+        <li>Sonuç: p ≈ 2,339 + 0,6 × 1,907 ≈ 3,483 kPa.</li>
+      </ol>
+      <p>Tablolar çoğu zaman 5 °C ya da daha sık aralıklarla verilir; aralık daraldıkça sonuç gerçeğe yaklaşır. Aynı yöntem malzeme özellik tablolarında, istatistik dağılım tablolarında (<a href="../../bilgi-bankasi/z-skoru-nedir-nasil-hesaplanir/">z skoru tabloları</a> gibi) ve yükseklikle değişen atmosfer değerlerinde de kullanılır.</p>
+
+      <h2 id="b5">İnterpolasyon ne zaman hatalı sonuç verir?</h2>
+      <p>Doğrusal interpolasyon, iki nokta arasındaki gerçek ilişki eğri olduğunda hata yapar. Buhar basıncı sıcaklıkla üstel biçimde artar; eğri yukarı doğru kıvrıktır ve iki noktayı birleştiren doğru, eğrinin üstünde kalır. Bu yüzden doğrusal sonuç gerçek değerden biraz büyük çıkar.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sıcaklık</th><th>Tablodaki değer</th><th>Doğrusal interpolasyon (20–30 °C)</th><th>Fark</th></tr></thead>
+        <tbody>
+          <tr><td>20 °C</td><td>2,339 kPa</td><td>2,339 kPa</td><td>0</td></tr>
+          <tr><td>25 °C</td><td>≈ 3,169 kPa</td><td>≈ 3,293 kPa</td><td>≈ %3,9 fazla</td></tr>
+          <tr><td>30 °C</td><td>4,246 kPa</td><td>4,246 kPa</td><td>0</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">25 °C için tablodaki değer doğrudan okunabildiğinde, 10 derecelik aralıkla yapılan doğrusal tahminin yaklaşık %4 hata yaptığı görülür.</p>
+      <ul>
+        <li><strong>Eğrilik büyükse:</strong> Üstel, logaritmik ya da karesel ilişkilerde aralık geniş tutulmamalıdır.</li>
+        <li><strong>Aralıkta bir kırılma varsa:</strong> Faz değişimi, vergi dilimi geçişi ya da tarife eşiği gibi sıçramalar doğrusal varsayımı geçersiz kılar.</li>
+        <li><strong>Veri gürültülüyse:</strong> Ölçüm hataları içeren iki noktayı birleştirmek hatayı ara değere taşır; çok noktalı regresyon daha uygundur.</li>
+        <li><strong>Aralık dışına çıkılırsa:</strong> Bu artık interpolasyon değil, ekstrapolasyondur.</li>
+      </ul>
+      <p>Eğri ilişkilerde daha doğru sonuç için üç ya da daha fazla nokta kullanan polinom interpolasyon, logaritmik ölçekte doğrusal interpolasyon (üstel ilişkiler için) ya da tablonun daha sık aralıklı bir sürümü tercih edilir.</p>
+
+      <div class="ba-ad" data-slot="bilgi-dogrusal-interpolasyon-nedir-ara-deger-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Enterpolasyon ile ekstrapolasyon farkı nedir?</h2>
+      <p>İnterpolasyon, bilinen iki noktanın <strong>arasındaki</strong> değeri tahmin eder. Ekstrapolasyon ise bilinen aralığın <strong>dışındaki</strong> bir değeri, aynı eğilimin devam edeceği varsayımıyla tahmin eder. Formül aynıdır; t değeri 0'dan küçük ya da 1'den büyük çıkar.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Özellik</th><th>İnterpolasyon</th><th>Ekstrapolasyon</th></tr></thead>
+        <tbody>
+          <tr><td>Aranan x'in yeri</td><td>x₁ ile x₂ arasında</td><td>Aralığın dışında</td></tr>
+          <tr><td>t değeri</td><td>0 ≤ t ≤ 1</td><td>t &lt; 0 ya da t &gt; 1</td></tr>
+          <tr><td>Örnek (10→50, 20→80)</td><td>x = 14 → 62</td><td>x = 25 → 95, x = 4 → 32</td></tr>
+          <tr><td>Güvenilirlik</td><td>Görece yüksek</td><td>Belirsiz, aralıktan uzaklaştıkça hızla düşer</td></tr>
+          <tr><td>Tipik kullanım</td><td>Tablo okuma</td><td>Kısa vadeli eğilim tahmini</td></tr>
+        </tbody>
+      </table></div>
+      <p>Ekstrapolasyonun riski, verinin aralık dışında nasıl davrandığını bilmemenizdir. Bir bitkinin iki haftada 10 cm'den 20 cm'ye uzaması, bir yıl sonra 270 cm olacağı anlamına gelmez. Finansal tahminlerde, nüfus projeksiyonlarında ve büyüme eğrilerinde ekstrapolasyon yaparken sonucu kesin bir değer değil, varsayıma dayalı bir senaryo olarak sunmak gerekir.</p>
+
+      <h2 id="b7">Çift yönlü (bilineer) interpolasyon nedir?</h2>
+      <p>Bazı tablolarda değer iki değişkene bağlıdır: örneğin hem sıcaklık hem basınç satır ve sütunlarda yer alır. Aradığınız nokta hem satırlar hem sütunlar arasındaysa <strong>bilineer interpolasyon</strong> yapılır: önce bir yönde iki ayrı doğrusal interpolasyon, sonra çıkan iki sonuç arasında diğer yönde bir doğrusal interpolasyon daha.</p>
+      <ol class="ba-steps">
+        <li>Dört köşe değeri: (x₁, y₁) = 10, (x₂, y₁) = 20, (x₁, y₂) = 30, (x₂, y₂) = 40. Aranan nokta x yönünde aralığın %25'inde, y yönünde %60'ında.</li>
+        <li>Alt kenarda x yönünde: 10 + 0,25 × (20 − 10) = 12,5.</li>
+        <li>Üst kenarda x yönünde: 30 + 0,25 × (40 − 30) = 32,5.</li>
+        <li>İki sonuç arasında y yönünde: 12,5 + 0,6 × (32,5 − 12,5) = <strong>24,5</strong>.</li>
+      </ol>
+      <p>Hangi yönde önce başladığınız sonucu değiştirmez. Bilineer interpolasyon dijital görüntülerin büyütülmesinde, harita yükseklik modellerinde ve iki girişli mühendislik tablolarında yaygın olarak kullanılır.</p>
+
+      <h2 id="b8">Elektronik tablo programında interpolasyon nasıl yapılır?</h2>
+      <p>Elektronik tablo programlarında iki noktalı doğrusal interpolasyon için doğrudan formülü yazmak en şeffaf yoldur. x₁, y₁, x₂, y₂ ve x değerleri sırasıyla A2, B2, A3, B3 ve D2 hücrelerindeyse şu formül sonucu verir: <code>=B2+(D2-A2)*(B3-B2)/(A3-A2)</code>.</p>
+      <p>Programların doğrusal tahmin fonksiyonları (İngilizce sürümde FORECAST ya da FORECAST.LINEAR, Türkçe sürümde TAHMİN ya da TAHMİN.DOĞRUSAL) da yalnızca iki nokta verildiğinde aynı sonucu üretir. Ancak daha fazla nokta verirseniz bu fonksiyonlar tüm noktalara en uygun doğruyu (regresyon) kullanır ve sonuç, komşu iki nokta arasındaki interpolasyondan farklı olur. Uzun bir tablodan otomatik okuma yapacaksanız önce aranan x'in hangi iki satır arasında kaldığını bulan bir arama formülü, ardından yukarıdaki iki noktalı formül kullanılmalıdır.</p>
+
+      <h2 id="b9">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>x ve y'yi karıştırmak:</strong> Oran x farklarından hesaplanır ve y farkına uygulanır; tersini yapmak yanlış sonuç verir.</li>
+        <li><strong>Komşu olmayan satırları kullanmak:</strong> Aranan değerin hemen altındaki ve üstündeki satırları seçin.</li>
+        <li><strong>Birimleri karıştırmak:</strong> Tablonun birimi (kPa, bar, °C, K) ile sorudaki birim aynı olmalıdır.</li>
+        <li><strong>Ekstrapolasyonu interpolasyon gibi güvenilir saymak:</strong> Aralık dışındaki sonuçları ihtiyatla kullanın.</li>
+        <li><strong>Ara sonucu erken yuvarlamak:</strong> t oranını en az dört ondalıkla taşıyın, yuvarlamayı en sonda yapın.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Doğrusal interpolasyon nedir?</summary><p>Bir tabloda değeri bilinen iki nokta arasında kalan bir ara değeri, iki noktayı birleştiren düz bir doğru üzerinde varsayarak bulma yöntemidir. x aralıkta ne kadar ilerlemişse y de aynı oranda ilerler.</p></details>
+      <details><summary>İki nokta arasındaki ara değer nasıl hesaplanır?</summary><p>y = y₁ + (x − x₁) × (y₂ − y₁) ÷ (x₂ − x₁) formülü kullanılır. Örneğin 10 için 50, 20 için 80 biliniyorsa 14 için oran 0,4 olur ve y = 50 + 0,4 × 30 = 62 bulunur.</p></details>
+      <details><summary>Enterpolasyon ile ekstrapolasyon farkı nedir?</summary><p>İnterpolasyon bilinen iki noktanın arasındaki değeri, ekstrapolasyon ise bilinen aralığın dışındaki değeri tahmin eder. Formül aynıdır ama ekstrapolasyonda eğilimin devam edeceği varsayıldığı için hata riski çok daha yüksektir.</p></details>
+      <details><summary>Mühendislik tablolarında interpolasyon nasıl yapılır?</summary><p>Aranan değerin hemen altındaki ve üstündeki iki satır seçilir, oran hesaplanır ve değer farkına uygulanır. Örneğin suyun buhar basıncı 20 °C'de 2,339 kPa, 30 °C'de 4,246 kPa ise 26 °C için yaklaşık 3,483 kPa bulunur.</p></details>
+      <details><summary>İnterpolasyon ne zaman hatalı sonuç verir?</summary><p>Gerçek ilişki eğri olduğunda, aralıkta bir sıçrama bulunduğunda ya da veri gürültülü olduğunda hata yapar. Buhar basıncında 10 derecelik aralıkla yapılan doğrusal tahmin 25 °C'de yaklaşık yüzde 4 fazla çıkar.</p></details>
+      <details><summary>Eğim ile interpolasyon arasındaki ilişki nedir?</summary><p>Formüldeki (y₂ − y₁) ÷ (x₂ − x₁) ifadesi iki noktadan geçen doğrunun eğimidir. Doğrusal interpolasyon, bu doğrunun denklemine aranan x değerini koymakla aynı işlemdir.</p></details>
+      <details><summary>Excel'de interpolasyon nasıl yapılır?</summary><p>Elektronik tablo programında iki noktalı formülü doğrudan yazabilirsiniz: =B2+(D2-A2)*(B3-B2)/(A3-A2). Doğrusal tahmin fonksiyonları iki noktayla aynı sonucu verir, ama daha fazla noktada regresyon doğrusu kullanır.</p></details>
+      <details><summary>Çift yönlü (bilineer) interpolasyon nedir?</summary><p>İki değişkenli tablolarda önce bir yönde iki ayrı doğrusal interpolasyon, sonra çıkan iki sonuç arasında diğer yönde bir doğrusal interpolasyon yapılmasıdır. Görüntü büyütme ve harita yükseklik modellerinde yaygındır.</p></details>
+      <details><summary>Doğrusal interpolasyon sonucu ne kadar güvenilirdir?</summary><p>Tablo aralığı dar ve ilişki aralık içinde neredeyse doğrusal olduğunda çok güvenilirdir. Aralık genişledikçe ve ilişki eğrildikçe hata artar; hassas işlerde daha sık aralıklı tablo ya da eğri uydurma yöntemleri kullanılır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.meb.gov.tr/" rel="noopener">MEB – Ortaöğretim Matematik dersi öğretim programı</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../dogrunun-egimi-nasil-bulunur/"><strong>Doğrunun Eğimi Nasıl Bulunur? İki Noktadan Doğru Denklemi ve Uzaklık</strong><span>Doğrunun eğimi m = (y₂ − y₁) ÷ (x₂ − x₁) ile bulunur. İki noktadan doğru denklemi, eğim açısı, paralel ve dik doğrular, uzaklık ve orta nokta çözümlü örneklerle.</span></a></li>
+          <li><a href="../oran-oranti-nasil-cozulur/"><strong>Oran Orantı Nasıl Çözülür? Doğru ve Ters Orantı Formülleri, Örnekler</strong><span>Oran orantı nasıl çözülür? İçler dışlar çarpımı, doğru orantı (y/x sabit), ters orantı (x·y sabit), bileşik orantı, işçi-havuz, harita ölçeği ve tarif örnekleri.</span></a></li>
+          <li><a href="../z-skoru-nedir-nasil-hesaplanir/"><strong>Z Skoru Nedir, Nasıl Hesaplanır? Standart Puan, T Skoru ve Yüzdelik Dilim</strong><span>Z skoru = (x − ortalama) ÷ standart sapma. Negatif z ne demek, z tablosu nasıl okunur, z'den yüzdelik dilim ve T skoru nasıl bulunur; çözümlü sınav örnekleri.</span></a></li>
+          <li><a href="../alan-ve-hacim-formulleri/"><strong>Alan ve Hacim Formülleri: Kare, Daire, Üçgen, Silindir ve Küre</strong><span>Dairenin alanı πr², üçgenin alanı taban × yükseklik ÷ 2, silindirin hacmi πr²h, kürenin hacmi 4/3πr³. Formül tabloları, çözümlü örnekler ve m³–litre dönüşümü.</span></a></li>
+          <li><a href="../basinc-birimleri-bar-kpa-atm-psi/"><strong>Basınç Birimleri: 1 Bar Kaç kPa, kg/cm², atm ve psi Dönüşüm Tablosu</strong><span>1 bar = 100 kPa = 14,50 psi = 1,02 kg/cm²; 1 atm = 1,01325 bar = 760 mmHg. Basınç birimleri tablosu, MPa, mutlak-gösterge basıncı ve tesisat örnekleri.</span></a></li>
+          <li><a href="../basinc-nedir-nasil-hesaplanir/"><strong>Basınç Nedir? Katı, Sıvı ve Gaz Basıncı Formülleri ve Birimleri</strong><span>Basınç birim yüzeye dik etki eden kuvvettir: katıda P = F/A, sıvıda P = d·g·h. Pascal, bar ve atm çevirme, açık hava basıncı ve 8. sınıf düzeyinde çözümlü örnekler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-dogrusal-interpolasyon-nedir-ara-deger-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

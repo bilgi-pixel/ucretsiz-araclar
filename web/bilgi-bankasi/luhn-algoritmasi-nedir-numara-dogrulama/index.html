@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Luhn Algoritması Nedir? Mod 10 Kontrolü Adım Adım</title>
+  <meta name="description" content="Luhn (mod 10) algoritması, uzun numaralardaki yazım hatalarını son kontrol basamağıyla yakalayan bir denetimdir. Adım adım doğrulama, yakaladığı ve kaçırdığı hatalar.">
+  <meta name="keywords" content="luhn algoritması, mod 10 kontrolü, kontrol basamağı nedir, sağlama basamağı, numara doğrulama, imei luhn, iban kontrol hanesi, yazım hatası denetimi">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/luhn-algoritmasi-nedir-numara-dogrulama/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Luhn Algoritması Nedir? Mod 10 Kontrolü Adım Adım">
+  <meta property="og:description" content="Luhn (mod 10) algoritması, uzun numaralardaki yazım hatalarını son kontrol basamağıyla yakalayan bir denetimdir. Adım adım doğrulama, yakaladığı ve kaçırdığı hatalar.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/luhn-algoritmasi-nedir-numara-dogrulama/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Luhn Algoritması Nedir? Numaralarda Kontrol Basamağı ve Yazım Hatası Denetimi","description":"Luhn (mod 10) algoritması, uzun numaralardaki yazım hatalarını son kontrol basamağıyla yakalayan bir denetimdir. Adım adım doğrulama, yakaladığı ve kaçırdığı hatalar.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/luhn-algoritmasi-nedir-numara-dogrulama/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1102,"keywords":"luhn algoritması, mod 10 kontrolü, kontrol basamağı nedir, sağlama basamağı, numara doğrulama, imei luhn, iban kontrol hanesi, yazım hatası denetimi","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"Luhn Algoritması Nedir? Numaralarda Kontrol Basamağı ve Yazım Hatası Denetimi"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Luhn algoritması nedir?","acceptedAnswer":{"@type":"Answer","text":"Luhn, bir numaranın son hanesini kontrol basamağı olarak kullanan ve numaranın yanlış yazılıp yazılmadığını anlamaya yarayan mod 10 sağlama yöntemidir. Ödeme kartı ve IMEI gibi numaralarda yazım hatalarını yakalamak için kullanılır."}},{"@type":"Question","name":"Mod 10 kontrolü adım adım nasıl yapılır?","acceptedAnswer":{"@type":"Answer","text":"Sağdan başlayarak 2., 4., 6. hanelerin her biri ikiye katlanır ve 9'dan büyük sonuçlardan 9 çıkarılır. Tüm haneler toplanır; toplam 10'a tam bölünüyorsa numara denetimden geçer."}},{"@type":"Question","name":"Kontrol basamağı yazım hatalarını nasıl yakalar?","acceptedAnswer":{"@type":"Answer","text":"Bir hane değiştiğinde toplama katkısı da değişir ve toplam artık 10'un katı olmaz. Bu sayede tek hane hatalarının tamamı ve komşu hanelerin yer değiştirmesinin büyük çoğunluğu yakalanır."}},{"@type":"Question","name":"Luhn hangi numaralarda kullanılır?","acceptedAnswer":{"@type":"Answer","text":"Ödeme kartı numaraları ve cep telefonlarının IMEI numaraları Luhn ile denetlenir; bazı kurum ve sadakat kartı numaralarında da kullanılır. IBAN, TC kimlik ve vergi numaraları farklı algoritmalar kullanır."}},{"@type":"Question","name":"IBAN'ın kontrol haneleri Luhn ile mi hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Hayır. IBAN'daki ülke kodundan sonraki iki kontrol hanesi ISO 7064 mod 97 yöntemiyle hesaplanır. Bu yöntem Luhn'dan daha fazla hata türünü yakalar; IBAN Doğrulama aracı bu kontrolü yapar."}},{"@type":"Question","name":"Vergi numarası doğrulaması nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"10 haneli vergi kimlik numarası, ilk dokuz haneden özel bir ağırlık ve mod işlemiyle hesaplanan son haneyle denetlenir. Bu Luhn değildir ve algoritmaya uyması mükellef kaydının olduğunu göstermez."}},{"@type":"Question","name":"Luhn'dan geçen numara gerçek midir?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Denetimden geçmek yalnızca hanelerin kendi içinde tutarlı olduğunu gösterir; numaranın verilmiş, aktif ya da birine ait olduğunu kanıtlamaz. Rastgele dizilerin yaklaşık onda biri de tesadüfen geçer."}},{"@type":"Question","name":"Hangi hataları Luhn yakalayamaz?","acceptedAnswer":{"@type":"Answer","text":"09 ile 90'ın yer değiştirmesini, 22-55, 33-66 ve 44-77 gibi ikiz hataları ve birbirinden uzak hanelerin yer değiştirmesini çoğu zaman yakalayamaz. Birden çok hane hatası da tesadüfen gözden kaçabilir."}},{"@type":"Question","name":"Luhn aracı numara üretir mi?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Luhn Algoritması Kontrolü aracı yalnızca elinizdeki numaranın denetimden geçip geçmediğini gösterir. Numara üretmez, girdiğiniz değeri hiçbir sunucuya göndermez ve kaydetmez."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>Luhn Algoritması Nedir? Numaralarda Kontrol Basamağı ve Yazım Hatası Denetimi</h1><p class="lead">Luhn algoritması (mod 10 denetimi), bir numaranın son hanesini <strong>kontrol basamağı</strong> olarak kullanıp numaranın yanlış yazılıp yazılmadığını hızlıca anlamaya yarayan basit bir sağlama yöntemidir. Numaranın sağdan ikinci, dördüncü, altıncı… haneleri ikiye katlanır, iki basamaklı sonuçların rakamları toplanır ve tüm toplam 10'a tam bölünüyorsa numara denetimden geçer. Amaç yalnızca tek hane hatalarını ve komşu hanelerin yer değiştirmesini yakalamaktır; denetimden geçen bir numaranın gerçek, geçerli ya da birine ait olduğunu göstermez. Bu sayfada doğrulama adımlarını uydurma kısa bir örnekle anlatıyoruz.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Luhn algoritması, 1950'lerde geliştirilmiş ve ISO/IEC 7812 standardında yer alan bir sağlama (checksum) yöntemidir.</li>
+        <li>Doğrulamada sağdan başlanır; sağdan 2., 4., 6. … haneler ikiye katlanır, 9'dan büyük sonuçlardan 9 çıkarılır.</li>
+        <li>Tüm hanelerin toplamı 10'un katıysa numara Luhn denetiminden geçer, değilse bir yazım hatası vardır.</li>
+        <li>Tek hanelik hataların tamamını ve komşu iki hanenin yer değiştirmesinin büyük kısmını yakalar; 09↔90 değişimini yakalayamaz.</li>
+        <li>Luhn bir güvenlik önlemi değildir; denetimden geçmek numaranın gerçek, aktif ya da kullanıma uygun olduğunu göstermez.</li>
+        <li>IBAN mod 97, TC kimlik ve vergi kimlik numaraları ise kendi özel algoritmalarıyla denetlenir; bunlar Luhn değildir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Uydurma 1826 numarasının Luhn denetimi: sağdan ikinci ve dördüncü haneler ikiye katlanıyor, haneler toplanıyor, toplam 20 bulunuyor ve 10'a tam bölündüğü için denetimden geçiyor. Altta 1836 yazım hatasının toplamı 22 verdiği gösteriliyor." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">Luhn denetimi: uydurma örnek 1826</text>
+  <g class="mid">
+    <text x="160" y="62" class="sm mu">sağdan sıra →</text>
+    <text x="250" y="62" class="sm mu">4.</text><text x="350" y="62" class="sm mu">3.</text><text x="450" y="62" class="sm mu">2.</text><text x="550" y="62" class="sm mu">1. (kontrol)</text>
+    <rect x="215" y="72" width="70" height="60" rx="8" class="ps"/><text x="250" y="111" class="xl">1</text>
+    <rect x="315" y="72" width="70" height="60" rx="8" class="sf sb"/><text x="350" y="111" class="xl">8</text>
+    <rect x="415" y="72" width="70" height="60" rx="8" class="ps"/><text x="450" y="111" class="xl">2</text>
+    <rect x="515" y="72" width="70" height="60" rx="8" class="p"/><text x="550" y="111" class="xl sf">6</text>
+    <text x="160" y="164" class="sm">işlem</text>
+    <text x="250" y="164" class="sm p b">× 2</text><text x="350" y="164" class="sm mu">aynen</text><text x="450" y="164" class="sm p b">× 2</text><text x="550" y="164" class="sm mu">aynen</text>
+    <rect x="215" y="178" width="70" height="50" rx="8" class="sf sb"/><text x="250" y="210" class="lg b">2</text>
+    <rect x="315" y="178" width="70" height="50" rx="8" class="sf sb"/><text x="350" y="210" class="lg b">8</text>
+    <rect x="415" y="178" width="70" height="50" rx="8" class="sf sb"/><text x="450" y="210" class="lg b">4</text>
+    <rect x="515" y="178" width="70" height="50" rx="8" class="sf sb"/><text x="550" y="210" class="lg b">6</text>
+  </g>
+  <rect x="140" y="246" width="440" height="50" rx="10" class="oks"/>
+  <text x="360" y="277" class="mid b">2 + 8 + 4 + 6 = 20 → 10'a tam bölünür → geçer</text>
+  <rect x="20" y="316" width="330" height="88" rx="10" class="dgs"/>
+  <text x="36" y="342" class="b">Yazım hatası: 1836</text>
+  <text x="36" y="366" class="sm">3 × 2 = 6 → 2 + 8 + 6 + 6 = 22</text>
+  <text x="36" y="388" class="sm dg b">22 ÷ 10 kalan 2 → geçmez</text>
+  <rect x="370" y="316" width="330" height="88" rx="10" class="dgs"/>
+  <text x="386" y="342" class="b">Yer değiştirme: 1862</text>
+  <text x="386" y="366" class="sm">6 × 2 = 12 → 1+2 = 3 → 2 + 8 + 3 + 2 = 15</text>
+  <text x="386" y="388" class="sm dg b">15 ÷ 10 kalan 5 → geçmez</text>
+</svg>
+      <figcaption>Örnekteki 1826 numarası öğretim için uydurulmuş dört haneli bir dizidir ve hiçbir gerçek numaraya karşılık gelmez. Doğru yazıldığında toplam 20 (10'un katı) çıkar; tek bir hane değiştiğinde toplam 22 olur ve hata yakalanır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Luhn algoritması nedir, ne işe yarar?</a></li>
+      <li><a href="#b2">Mod 10 kontrolü adım adım nasıl yapılır?</a></li>
+      <li><a href="#b3">Çözümlü örnek: uydurma 1826 numarası</a></li>
+      <li><a href="#b4">Kontrol basamağı yazım hatalarını nasıl yakalar?</a></li>
+      <li><a href="#b5">Hangi hataları Luhn yakalayamaz?</a></li>
+      <li><a href="#b6">Luhn hangi numaralarda kullanılır, hangilerinde kullanılmaz?</a></li>
+      <li><a href="#b7">Luhn'dan geçen numara gerçek midir? Kötüye kullanım uyarısı</a></li>
+      <li><a href="#b8">Geliştiriciler için notlar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-luhn-algoritmasi-nedir-numara-dogrulama-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../luhn-kontrol/"><strong>Luhn Algoritması Kontrolü</strong><span>Bir numaranın Luhn (mod 10) denetiminden geçip geçmediğini adım adım görün; yazım hatalarını yakalayın.</span></a></li>
+          <li><a href="../../iban-dogrula/"><strong>IBAN Doğrulama ve Banka Bulma</strong><span>IBAN'ın kontrol hanesini (mod-97) ve uzunluğunu doğrulayın; Türkiye IBAN'ından banka kodu ve banka adını görün. Hesap sahibi sorgulanmaz, IBAN sunucuya gitmez.</span></a></li>
+          <li><a href="../../vergi-no-dogrula/"><strong>Vergi Kimlik No Algoritma Kontrolü</strong><span>10 haneli vergi kimlik numarasının (VKN) algoritma kuralına uyup uymadığını tek tek ya da toplu kontrol edin, sonucu CSV indirin. Mükellef sorgusu değildir; girdi sayfada kalır.</span></a></li>
+          <li><a href="../../barkod-olustur/"><strong>Barkod Oluşturucu</strong><span>EAN-13, EAN-8, UPC-A, Code 128, Code 39 ve ITF-14 barkodlarını oluşturun; kontrol basamağı otomatik hesaplanır, PNG ve SVG indirin. GS1 numarası üretmez, yalnızca elinizdeki numarayı çizer.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Luhn algoritması nedir, ne işe yarar?</h2>
+      <p>Uzun numaralar elle yazılırken ya da sesli okunurken hata yapmak çok kolaydır: bir rakam yanlış basılır ya da iki komşu rakam yer değiştirir. Bu tür hataları numaranın kendisinden anlayabilmek için numaraya fazladan bir hane eklenir. Bu haneye <strong>kontrol basamağı</strong> ya da sağlama basamağı denir ve diğer hanelerden belirli bir kuralla türetilir.</p>
+      <p>Luhn algoritması bu kurallardan en yaygın olanıdır. 1950'lerde bir mühendis tarafından geliştirilmiş, mekanik hesap makinelerinde bile kolayca uygulanabildiği için hızla yayılmıştır. Bugün uluslararası ISO/IEC 7812 standardında tanımlıdır ve ödeme kartı numaraları, cep telefonlarının IMEI numaraları ile bazı sadakat kartı ve kurum numaralarında kullanılır.</p>
+      <p>Luhn'un görevi dardır ve bu sınırı bilmek önemlidir: algoritma yalnızca hanelerin kendi içinde tutarlı olup olmadığını söyler. Numaranın bir kuruluş tarafından verilip verilmediğini, aktif olup olmadığını ya da kime ait olduğunu bilemez. Bu yüzden Luhn bir güvenlik ya da kimlik doğrulama yöntemi değil, bir <strong>yazım hatası filtresidir</strong>.</p>
+
+      <h2 id="b2">Mod 10 kontrolü adım adım nasıl yapılır?</h2>
+      <p>Doğrulama sağdan sola doğru yapılır. En sağdaki hane kontrol basamağıdır ve kendisi ikiye katlanmaz. Aşağıdaki adımlar herhangi bir uzunluktaki numaraya uygulanabilir:</p>
+      <div class="rh-formula">Katlanan hane: d × 2 (sonuç &gt; 9 ise − 9)<br>Koşul: toplam mod 10 = 0</div>
+      <ol class="ba-steps">
+        <li>Numaradaki boşluk ve tireleri silin, yalnızca rakamlar kalsın.</li>
+        <li>En sağdaki haneden başlayarak haneleri sıralayın. Sağdan 1., 3., 5. … haneler olduğu gibi kalır.</li>
+        <li>Sağdan 2., 4., 6. … haneleri ikiye katlayın.</li>
+        <li>Katlama sonucu 9'dan büyükse 9 çıkarın (bu, sonucun iki rakamını toplamakla aynı şeydir: 12 → 1 + 2 = 3).</li>
+        <li>Elde ettiğiniz tüm hane değerlerini toplayın.</li>
+        <li>Toplam 10'a tam bölünüyorsa (kalan 0 ise) numara Luhn denetiminden geçer; kalan varsa numarada hata vardır.</li>
+      </ol>
+      <p>Bu adımları uzun bir numarada elle yapmak zaman alır ve kendisi de hataya açıktır. <a href="../../luhn-kontrol/">Luhn Algoritması Kontrolü aracı</a> elinizdeki numaranın denetimden geçip geçmediğini her hanenin dönüşümüyle birlikte adım adım gösterir. Araç yalnızca denetim yapar; numara üretmez ve girdiğiniz değer tarayıcınızdan çıkmaz.</p>
+
+      <h2 id="b3">Çözümlü örnek: uydurma 1826 numarası</h2>
+      <p>Kavramı göstermek için hiçbir gerçek numaraya karşılık gelmeyen, öğretim amaçlı uydurulmuş dört haneli <strong>1826</strong> dizisini kullanalım. Sağdan sırayla haneler 6, 2, 8 ve 1'dir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Sağdan sıra</th><th>Hane</th><th>İşlem</th><th>Değer</th></tr></thead>
+        <tbody>
+          <tr><td>1 (kontrol basamağı)</td><td>6</td><td>Aynen</td><td>6</td></tr>
+          <tr><td>2</td><td>2</td><td>2 × 2 = 4</td><td>4</td></tr>
+          <tr><td>3</td><td>8</td><td>Aynen</td><td>8</td></tr>
+          <tr><td>4</td><td>1</td><td>1 × 2 = 2</td><td>2</td></tr>
+          <tr><td>Toplam</td><td></td><td>6 + 4 + 8 + 2</td><td>20</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">20, 10'a tam bölündüğü için uydurma örnek denetimden geçer.</p>
+      <p>Şimdi aynı numarayı yanlış yazdığımızı düşünelim. İkinci hane 2 yerine 3 yazılırsa (1836), sağdan 2. hane 3 × 2 = 6 olur ve toplam 6 + 6 + 8 + 2 = 22'ye çıkar. 22 sayısı 10'a bölünmez; hata yakalanmıştır.</p>
+      <p>Son iki hane yer değiştirirse (1862), sağdan 1. hane 2, sağdan 2. hane 6 olur. 6 × 2 = 12 ve 12 − 9 = 3 bulunur. Toplam 2 + 3 + 8 + 2 = 15'tir; yine 10'a bölünmez ve hata yakalanır.</p>
+
+      <h2 id="b4">Kontrol basamağı yazım hatalarını nasıl yakalar?</h2>
+      <p>Luhn'un gücü, ikiye katlama adımından gelir. Bir hane değiştiğinde, o hanenin toplama katkısı da mutlaka değişir: katlanmayan hanede fark doğrudan yansır, katlanan hanede ise 0–9 arasındaki her rakam farklı bir değere (0, 2, 4, 6, 8, 1, 3, 5, 7, 9) dönüşür. Bu yüzden <strong>tek bir hanedeki her hata</strong> toplamı değiştirir ve yakalanır.</p>
+      <p>İki komşu hanenin yer değiştirmesinde biri katlanan, diğeri katlanmayan konuma geçer. Çoğu rakam çiftinde bu değişim toplamı farklılaştırır. Tek istisna 0 ile 9 çiftidir: 0 ikiye katlanınca 0, 9 ikiye katlanınca 18 − 9 = 9 olur; yani ikisi de konum değiştirdiğinde toplam aynı kalır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-luhn-algoritmasi-nedir-numara-dogrulama-b" aria-label="Reklam"></div>
+
+      <h2 id="b5">Hangi hataları Luhn yakalayamaz?</h2>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Hata türü</th><th>Örnek (uydurma)</th><th>Luhn yakalar mı?</th></tr></thead>
+        <tbody>
+          <tr><td>Tek hane yanlış</td><td>1826 → 1836</td><td>Evet, her zaman</td></tr>
+          <tr><td>Komşu iki hane yer değiştirmiş</td><td>1826 → 1862</td><td>Evet (09 ↔ 90 dışında)</td></tr>
+          <tr><td>09 ile 90 yer değiştirmiş</td><td>0990 ↔ 0909</td><td>Hayır, toplam aynı kalır</td></tr>
+          <tr><td>İkiz hata (22 ↔ 55, 33 ↔ 66, 44 ↔ 77)</td><td>2255 ↔ 5522</td><td>Hayır</td></tr>
+          <tr><td>Uzak iki hanenin yer değiştirmesi</td><td>1. ve 3. hane</td><td>Çoğu zaman hayır</td></tr>
+          <tr><td>Birden çok hane hatası</td><td>İki ayrı yanlış hane</td><td>Rastlantıya bağlı</td></tr>
+          <tr><td>Tamamen uydurulmuş numara</td><td>Rastgele dizi</td><td>Denetim anlam taşımaz</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Tablodaki örnekler gerçek numara değildir; yalnızca hata türlerini göstermek için seçilmiştir.</p>
+      <p>Bu sınırlar nedeniyle daha yüksek güvenilirlik gereken yerlerde farklı yöntemler kullanılır. Örneğin IBAN'daki iki kontrol hanesi mod 97 yöntemiyle hesaplanır ve yer değiştirme hatalarının neredeyse tamamını yakalar. Rastgele uydurulmuş on numaradan biri de tesadüfen Luhn denetiminden geçer; bu, denetimin neden &quot;gerçek numara&quot; kanıtı olamayacağını açıkça gösterir.</p>
+
+      <h2 id="b6">Luhn hangi numaralarda kullanılır, hangilerinde kullanılmaz?</h2>
+      <p>Bir numaranın hangi denetimle korunduğunu bilmek, yanlış araçla kontrol yapıp yanlış sonuca varmayı önler. Türkiye'de sık karşılaşılan numaralar ve kullandıkları yöntemler şöyledir:</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Numara</th><th>Kontrol yöntemi</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Ödeme kartı numarası</td><td>Luhn (mod 10)</td><td>ISO/IEC 7812; denetim kartın geçerliliğini göstermez</td></tr>
+          <tr><td>IMEI (cep telefonu)</td><td>Luhn (mod 10)</td><td>15. hane kontrol basamağıdır</td></tr>
+          <tr><td>IBAN</td><td>Mod 97 (ISO 7064)</td><td>Ülke kodundan sonraki iki hane kontrol hanesidir</td></tr>
+          <tr><td>TC kimlik numarası</td><td>Özel iki haneli kural</td><td>Luhn değildir</td></tr>
+          <tr><td>Vergi kimlik numarası (10 hane)</td><td>Özel algoritma</td><td>Luhn değildir</td></tr>
+          <tr><td>EAN-13 barkod</td><td>Ağırlıklı mod 10 (1 ve 3 katsayılı)</td><td>Luhn'a benzer ama farklıdır</td></tr>
+        </tbody>
+      </table></div>
+      <p>IBAN denetimi için <a href="../../iban-dogrula/">IBAN Doğrulama aracını</a>, ayrıntısı için <a href="../../bilgi-bankasi/iban-nedir-kac-haneli/">IBAN nedir yazısını</a> kullanabilirsiniz. Vergi numarası için <a href="../../vergi-no-dogrula/">Vergi Kimlik No Algoritma Kontrolü</a> mevcuttur; TC kimlik numarasının kuralı <a href="../../bilgi-bankasi/tc-kimlik-numarasi-algoritmasi/">TC kimlik algoritması</a> yazısında, barkodların kontrol hanesi <a href="../../bilgi-bankasi/barkod-numarasi-nedir-869-ean13/">barkod numarası</a> yazısında anlatılır. Tüm bu denetimler yalnızca biçimi kontrol eder; hiçbiri kayıt sorgulaması değildir.</p>
+
+      <h2 id="b7">Luhn'dan geçen numara gerçek midir? Kötüye kullanım uyarısı</h2>
+      <p>Hayır. Luhn denetiminden geçmek, yalnızca hanelerin matematiksel olarak tutarlı olduğunu gösterir. Numaranın bir kuruluş tarafından verildiğini, kullanımda olduğunu, bakiye ya da yetki taşıdığını ve kime ait olduğunu göstermez. Bir kart ya da hesap numarasının gerçekten geçerli olup olmadığını yalnızca onu veren kuruluş kendi sistemlerinde doğrulayabilir.</p>
+      <p>Bu yüzden Luhn denetimini bir başvuru formunda kullanıcının yazım hatasını anında göstermek, veri girişini hızlandırmak ya da bir listedeki hatalı kayıtları ayıklamak gibi <strong>meşru doğrulama</strong> amaçlarıyla kullanın. Başkasına ait kart ya da kimlik bilgilerini izinsiz kullanmak, sahte numara üretip ödeme ya da kayıt sistemlerini yanıltmaya çalışmak Türk Ceza Kanunu kapsamında suç oluşturur. Bilişim Ajans araçları bu nedenle numara üretmez, yalnızca elinizdeki numarayı denetler.</p>
+      <p>Form geliştiriyorsanız Luhn denetimini yalnızca bir ön kontrol olarak düşünün: kullanıcıya &quot;numarayı kontrol edin&quot; uyarısı vermek için uygundur, ama asıl doğrulama her zaman numarayı veren kuruluşun sisteminde yapılmalıdır. Kart numaralarını kendi sunucunuzda saklamak ise ayrı ve sıkı güvenlik kurallarına tabidir.</p>
+
+      <h2 id="b8">Geliştiriciler için notlar</h2>
+      <ul>
+        <li>Numarayı sayı olarak değil, <strong>metin</strong> olarak işleyin; baştaki sıfırlar ve 15 haneden uzun numaralar sayı türünde bozulabilir.</li>
+        <li>Boşluk ve tireleri denetimden önce temizleyin, ama kullanıcının girdiği biçimi ekranda koruyun.</li>
+        <li>Uzunluk kontrolünü ayrıca yapın; Luhn tek başına numaranın kaç haneli olması gerektiğini söylemez.</li>
+        <li>Hata mesajında hangi hanenin yanlış olduğunu söylemeye çalışmayın; Luhn yalnızca bir hata olduğunu gösterir, yerini göstermez.</li>
+        <li>Test için gerçek kişilere ait numaraları değil, kendi uydurduğunuz kısa dizileri ve hizmet sağlayıcınızın test belgelerindeki örnekleri kullanın.</li>
+      </ul>
+      <p>Kullanıcı deneyimi açısından en iyi uygulama, denetimi kullanıcı yazmayı bitirdiğinde yapmak ve hatayı nazik, açık bir dille göstermektir. Her tuş vuruşunda kırmızı uyarı göstermek, numarayı henüz yazmakta olan kişiyi gereksiz yere tedirgin eder.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Luhn algoritması nedir?</summary><p>Luhn, bir numaranın son hanesini kontrol basamağı olarak kullanan ve numaranın yanlış yazılıp yazılmadığını anlamaya yarayan mod 10 sağlama yöntemidir. Ödeme kartı ve IMEI gibi numaralarda yazım hatalarını yakalamak için kullanılır.</p></details>
+      <details><summary>Mod 10 kontrolü adım adım nasıl yapılır?</summary><p>Sağdan başlayarak 2., 4., 6. hanelerin her biri ikiye katlanır ve 9'dan büyük sonuçlardan 9 çıkarılır. Tüm haneler toplanır; toplam 10'a tam bölünüyorsa numara denetimden geçer.</p></details>
+      <details><summary>Kontrol basamağı yazım hatalarını nasıl yakalar?</summary><p>Bir hane değiştiğinde toplama katkısı da değişir ve toplam artık 10'un katı olmaz. Bu sayede tek hane hatalarının tamamı ve komşu hanelerin yer değiştirmesinin büyük çoğunluğu yakalanır.</p></details>
+      <details><summary>Luhn hangi numaralarda kullanılır?</summary><p>Ödeme kartı numaraları ve cep telefonlarının IMEI numaraları Luhn ile denetlenir; bazı kurum ve sadakat kartı numaralarında da kullanılır. IBAN, TC kimlik ve vergi numaraları farklı algoritmalar kullanır.</p></details>
+      <details><summary>IBAN'ın kontrol haneleri Luhn ile mi hesaplanır?</summary><p>Hayır. IBAN'daki ülke kodundan sonraki iki kontrol hanesi ISO 7064 mod 97 yöntemiyle hesaplanır. Bu yöntem Luhn'dan daha fazla hata türünü yakalar; IBAN Doğrulama aracı bu kontrolü yapar.</p></details>
+      <details><summary>Vergi numarası doğrulaması nasıl çalışır?</summary><p>10 haneli vergi kimlik numarası, ilk dokuz haneden özel bir ağırlık ve mod işlemiyle hesaplanan son haneyle denetlenir. Bu Luhn değildir ve algoritmaya uyması mükellef kaydının olduğunu göstermez.</p></details>
+      <details><summary>Luhn'dan geçen numara gerçek midir?</summary><p>Hayır. Denetimden geçmek yalnızca hanelerin kendi içinde tutarlı olduğunu gösterir; numaranın verilmiş, aktif ya da birine ait olduğunu kanıtlamaz. Rastgele dizilerin yaklaşık onda biri de tesadüfen geçer.</p></details>
+      <details><summary>Hangi hataları Luhn yakalayamaz?</summary><p>09 ile 90'ın yer değiştirmesini, 22-55, 33-66 ve 44-77 gibi ikiz hataları ve birbirinden uzak hanelerin yer değiştirmesini çoğu zaman yakalayamaz. Birden çok hane hatası da tesadüfen gözden kaçabilir.</p></details>
+      <details><summary>Luhn aracı numara üretir mi?</summary><p>Hayır. Luhn Algoritması Kontrolü aracı yalnızca elinizdeki numaranın denetimden geçip geçmediğini gösterir. Numara üretmez, girdiğiniz değeri hiçbir sunucuya göndermez ve kaydetmez.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; Luhn denetimi kimlik, kart ya da hesap doğrulaması değildir; başkasına ait numaraları izinsiz kullanmak ve sahte numarayla sistemleri yanıltmaya çalışmak suçtur. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.iso.org/" rel="noopener">ISO – ISO/IEC 7812 kart numaralandırma standardı</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../tc-kimlik-numarasi-algoritmasi/"><strong>TC Kimlik Numarası Nasıl Oluşur? 11 Haneli Doğrulama Algoritması ve Vergi No Farkı</strong><span>TC kimlik numarası 11 hanelidir; 10. ve 11. haneler ilk dokuz haneden hesaplanan kontrol haneleridir. Doğrulama kuralları, mod 10, vergi no farkı.</span></a></li>
+          <li><a href="../iban-nedir-kac-haneli/"><strong>IBAN Nedir, Kaç Haneli? IBAN Nasıl Okunur ve Doğruluğu Nasıl Kontrol Edilir</strong><span>Türkiye'de IBAN 26 karakterdir: TR, 2 kontrol hanesi, 5 haneli banka kodu, 1 rezerv hane ve 16 haneli hesap numarası. IBAN nasıl okunur, mod 97 kontrolü nasıl işler?</span></a></li>
+          <li><a href="../barkod-numarasi-nedir-869-ean13/"><strong>Barkod Numarası Nedir? 869 Kodu, EAN-13 Kontrol Hanesi ve ISBN</strong><span>869 ile başlayan barkod, numaranın GS1 Türkiye üyesi bir firmaya verildiğini gösterir; üretim yerini değil. EAN-13 yapısı, kontrol hanesi hesabı ve ISBN ilişkisi.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-luhn-algoritmasi-nedir-numara-dogrulama-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

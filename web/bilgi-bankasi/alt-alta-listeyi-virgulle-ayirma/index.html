@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Alt Alta Listeyi Virgülle Ayırma ve Satırları Birleştirme</title>
+  <meta name="description" content="Alt alta liste tek satırda virgülle nasıl birleştirilir? Satır başına ve sonuna ek ekleme, SQL için tırnaklama, Excel sütunu birleştirme, sayı ayıklama, satır sayma.">
+  <meta name="keywords" content="alt alta listeyi virgülle ayırma, satırları birleştirme, listeyi tek satır yapma, satır başına ek ekleme, excel sütunu virgülle birleştirme, sql in listesi tırnak, metinden sayı ayıklama, satır sayısı sayma">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/alt-alta-listeyi-virgulle-ayirma/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Alt Alta Listeyi Virgülle Ayırma ve Satırları Birleştirme">
+  <meta property="og:description" content="Alt alta liste tek satırda virgülle nasıl birleştirilir? Satır başına ve sonuna ek ekleme, SQL için tırnaklama, Excel sütunu birleştirme, sayı ayıklama, satır sayma.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/alt-alta-listeyi-virgulle-ayirma/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Alt Alta Listeyi Virgülle Ayırma: Satırları Tek Satırda Birleştirme","description":"Alt alta liste tek satırda virgülle nasıl birleştirilir? Satır başına ve sonuna ek ekleme, SQL için tırnaklama, Excel sütunu birleştirme, sayı ayıklama, satır sayma.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/alt-alta-listeyi-virgulle-ayirma/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1341,"keywords":"alt alta listeyi virgülle ayırma, satırları birleştirme, listeyi tek satır yapma, satır başına ek ekleme, excel sütunu virgülle birleştirme, sql in listesi tırnak, metinden sayı ayıklama, satır sayısı sayma","articleSection":"Dosya, PDF ve Fotoğraf","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Dosya, PDF ve Fotoğraf","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#dijital"},{"@type":"ListItem","position":4,"name":"Alt Alta Listeyi Virgülle Ayırma: Satırları Tek Satırda Birleştirme"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Alt alta yazılmış bir liste tek satırda virgülle nasıl birleştirilir?","acceptedAnswer":{"@type":"Answer","text":"Listeyi Satırları Birleştir aracına yapıştırın, ayraç olarak virgül ve boşluk seçin, boş satırları silme ve kırpma seçeneklerini açın. Sonuç tek satırda virgülle ayrılmış olarak çıkar ve kopyalanabilir."}},{"@type":"Question","name":"Her satırın başına ve sonuna metin nasıl eklenir?","acceptedAnswer":{"@type":"Answer","text":"Ön Ek ve Son Ek Ekle aracına listeyi yapıştırın, başa eklenecek metni ön ek, sona eklenecek metni son ek alanına yazın. Araç her satıra aynı metni ekler; tırnak, madde işareti ya da uzantı eklemek için kullanılır."}},{"@type":"Question","name":"Excel sütunu virgüllü listeye nasıl çevrilir?","acceptedAnswer":{"@type":"Answer","text":"Türkçe Excel'de =METİNBİRLEŞTİR(\", \";DOĞRU;A1:A10) formülü aralığı tek hücrede birleştirir. Formül kullanmak istemiyorsanız sütunu kopyalayıp Satırları Birleştir aracına yapıştırmanız da aynı sonucu verir."}},{"@type":"Question","name":"SQL sorgusu için değerler tırnak içine nasıl alınır?","acceptedAnswer":{"@type":"Answer","text":"Önce her satıra ön ek ve son ek olarak tek tırnak ekleyin, sonra satırları virgül ve boşlukla birleştirin. Sonucu IN parantezinin içine koyun. Sayısal değerlere tırnak eklenmez, değer içindeki tek tırnak iki kez yazılır."}},{"@type":"Question","name":"Metindeki sayılar nasıl ayıklanıp toplanır?","acceptedAnswer":{"@type":"Answer","text":"Metni Metinden Sayı Ayıklama aracına yapıştırın. Araç metindeki tüm sayıları bulur, liste hâlinde gösterir ve adet, toplam, ortalama, en küçük ve en büyük değeri hesaplar. Türkçe ondalık virgülü doğru tanır."}},{"@type":"Question","name":"Listede kaç satır olduğu nasıl sayılır?","acceptedAnswer":{"@type":"Answer","text":"Satır Sayacı aracı toplam satır sayısını, dolu ve boş satırları ayrı ayrı, ayrıca benzersiz satır sayısını gösterir. Birleştirme sonrasındaki değer sayısının dolu satır sayısıyla eşit olması gerekir."}},{"@type":"Question","name":"Satırlar uzunluğa göre nasıl sıralanır?","acceptedAnswer":{"@type":"Answer","text":"Satırları Uzunluğa Göre Sırala aracı satırları karakter sayısına göre kısadan uzuna ya da uzundan kısaya dizer. Eşit uzunluktaki satırlar özgün sırasında kalabilir ya da alfabetik sıralanabilir."}},{"@type":"Question","name":"Virgüllü liste tekrar alt alta nasıl açılır?","acceptedAnswer":{"@type":"Answer","text":"Ayracı, yani virgül ve boşluğu, satır sonu karakteriyle değiştirin. Değerlerin içinde virgül geçiyorsa basit değiştirme değeri böler; bu durumda tırnak içindeki virgülleri koruyan bir yöntem ya da düzenli ifade gerekir."}},{"@type":"Question","name":"Birleştirdiğim liste bir sunucuya gönderiliyor mu?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Satırları Birleştir, Ön Ek ve Son Ek Ekle ve diğer metin araçları tamamen tarayıcınızda çalışır. Yapıştırdığınız metin hiçbir sunucuya iletilmez ve sayfayı kapattığınızda silinir."}},{"@type":"Question","name":"Birleştirilmiş listenin sonunda neden fazladan virgül çıkıyor?","acceptedAnswer":{"@type":"Answer","text":"Listenin son satırından sonra boş bir satır kalmışsa birleştirme o boş satırı da bir değer sayar ve sona virgül ekler. Boş satırları silme seçeneğini açarsanız ya da son satır sonunu silerseniz fazladan virgül oluşmaz."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#dijital">Dosya, PDF ve Fotoğraf</a></li></ol><h1>Alt Alta Listeyi Virgülle Ayırma: Satırları Tek Satırda Birleştirme</h1><p class="lead">Alt alta yazılmış bir listeyi virgülle ayırmak için her satır sonunu (satır başı karakterini) virgül ve boşlukla değiştirmeniz yeterlidir; Satırları Birleştir aracına listeyi yapıştırıp ayraç olarak &quot;, &quot; seçtiğinizde sonuç tek satırda çıkar. Aynı mantıkla her değeri tırnak içine alabilir, SQL sorgusu için IN listesi hazırlayabilir, Excel sütununu tek hücreye dökebilir ya da virgüllü listeyi tekrar alt alta açabilirsiniz. Bu rehber, ofiste ve yazılımda en sık gereken liste dönüşümlerini örnekleriyle anlatıyor.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Alt alta listeyi virgülle ayırmak = her satır sonunu &quot;, &quot; ile değiştirmek; boş satırlar önceden temizlenmelidir.</li>
+        <li>Her satırı tırnak içine almak için önce ön ek ve son ek olarak ' ekleyin, sonra virgülle birleştirin.</li>
+        <li>SQL IN listesi: 'elma', 'armut', 'kiraz' biçiminde, metin değerleri tek tırnakla, sayılar tırnaksız yazılır.</li>
+        <li>Excel'de METİNBİRLEŞTİR işlevi bir aralığı tek hücrede birleştirir: =METİNBİRLEŞTİR(&quot;, &quot;;DOĞRU;A1:A10).</li>
+        <li>Virgüllü listeyi tekrar alt alta açmak için &quot;, &quot; ayracını satır sonuyla değiştirmek yeterlidir.</li>
+        <li>Satır sayısı = satır sonu sayısı + 1; son satırdan sonra boş satır varsa sayaç bunu ayrıca gösterir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="Alt alta dört satırlık bir liste, ön ek ve son ek eklenerek tırnaklanıyor, ardından virgülle tek satırda birleşiyor; sonuç SQL IN listesine dönüşüyor." viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="30" class="lg b mid">Alt alta listeden virgüllü satıra</text>
+  <rect x="20" y="56" width="180" height="200" rx="8" class="sf sb"/>
+  <text x="110" y="82" class="b mid">1. Ham liste</text>
+  <g class="sm"><text x="40" y="112">elma</text><text x="40" y="138">armut</text><text x="40" y="164" class="mu">(boş satır)</text><text x="40" y="190">kiraz </text><text x="40" y="216">erik</text></g>
+  <text x="110" y="244" class="sm mid t2">5 satır, 1 boş</text>
+  <line x1="204" y1="156" x2="246" y2="156" class="sp sw" fill="none"/><polygon points="246,149 258,156 246,163" class="p"/>
+  <rect x="262" y="56" width="180" height="200" rx="8" class="ps"/>
+  <text x="352" y="82" class="b mid">2. Temizle + tırnak</text>
+  <g class="sm"><text x="282" y="112">'elma'</text><text x="282" y="138">'armut'</text><text x="282" y="164">'kiraz'</text><text x="282" y="190">'erik'</text></g>
+  <text x="352" y="244" class="sm mid t2">boş satır ve boşluk silindi</text>
+  <line x1="446" y1="156" x2="488" y2="156" class="sp sw" fill="none"/><polygon points="488,149 500,156 488,163" class="p"/>
+  <rect x="504" y="56" width="196" height="200" rx="8" class="oks"/>
+  <text x="602" y="82" class="b mid">3. Virgülle birleştir</text>
+  <text x="602" y="130" class="sm mid">'elma', 'armut',</text>
+  <text x="602" y="152" class="sm mid">'kiraz', 'erik'</text>
+  <text x="602" y="200" class="sm mid t2">ayraç: virgül + boşluk</text>
+  <text x="602" y="220" class="sm mid t2">4 değer, tek satır</text>
+  <rect x="20" y="276" width="680" height="88" rx="8" class="sf sb"/>
+  <rect x="20" y="276" width="8" height="88" class="p"/>
+  <text x="44" y="302" class="b">Sonuç SQL sorgusunda</text>
+  <text x="44" y="328" class="sm"><tspan class="b">WHERE</tspan> urun <tspan class="b">IN</tspan> ('elma', 'armut', 'kiraz', 'erik')</text>
+  <text x="44" y="352" class="sm t2">Ters yön: ", " ayracını satır sonuyla değiştirince liste yeniden alt alta açılır.</text>
+</svg>
+      <figcaption>Üç adımlı dönüşüm: liste temizlenir, her satıra tırnak eklenir, satırlar virgülle birleştirilir. Ters yönde ayraç satır sonuyla değiştirilerek liste yeniden açılır.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Alt alta liste neden virgülle birleştirilir?</a></li>
+      <li><a href="#b2">Adım adım: listeyi tek satırda virgülle birleştirme</a></li>
+      <li><a href="#b3">Her satırın başına ve sonuna metin ekleme</a></li>
+      <li><a href="#b4">SQL sorgusu için değerler tırnak içine nasıl alınır?</a></li>
+      <li><a href="#b5">Excel sütunu virgüllü listeye nasıl çevrilir?</a></li>
+      <li><a href="#b6">Virgüllü liste tekrar alt alta nasıl açılır?</a></li>
+      <li><a href="#b7">Metindeki sayıları ayıklama, satır sayma ve uzunluğa göre sıralama</a></li>
+      <li><a href="#b8">Hangi ayraç ne zaman kullanılır?</a></li>
+      <li><a href="#b9">Sık yapılan hatalar</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-alt-alta-listeyi-virgulle-ayirma-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../satirlari-birlestir/"><strong>Satırları Birleştirme</strong><span>Alt alta satırları tek satırda birleştirin; araya boşluk, virgül ya da istediğiniz ayracı koyun.</span></a></li>
+          <li><a href="../../onek-sonek-ekle/"><strong>Satırlara Ön Ek ve Son Ek Ekleme</strong><span>Her satırın başına ve sonuna aynı metni topluca ekleyin: tırnak, virgül, madde işareti, etiket ya da uzantı.</span></a></li>
+          <li><a href="../../sayi-ayikla/"><strong>Metinden Sayı Ayıklama</strong><span>Metindeki sayıları ayıklayın; adedini, toplamını, ortalamasını, en küçük ve en büyük değerini görün.</span></a></li>
+          <li><a href="../../satir-sayaci/"><strong>Satır Sayacı</strong><span>Metindeki toplam, dolu ve boş satırları sayın; en uzun satırı ve benzersiz satır sayısını görün.</span></a></li>
+          <li><a href="../../satir-sirala-uzunluk/"><strong>Satırları Uzunluğa Göre Sıralama</strong><span>Satırları karakter sayısına göre kısadan uzuna ya da uzundan kısaya dizin; en kısa ve en uzun satırı görün.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Alt alta liste neden virgülle birleştirilir?</h2>
+      <p>Excel sütunundan kopyalanan müşteri numaraları, bir e-postaya alt alta yazılmış ürün kodları ya da bir sistemden dışa aktarılan etiketler genellikle her değer ayrı satırda gelir. Oysa bu listeleri kullanacağınız yer çoğu zaman tek satır ister: bir arama kutusu, bir SQL sorgusunun IN ifadesi, bir web formundaki &quot;virgülle ayırarak yazın&quot; alanı ya da bir e-posta alıcı satırı.</p>
+      <p>Teknik olarak alt alta liste, değerlerin arasına görünmeyen bir <strong>satır sonu karakteri</strong> konmuş metindir. Windows'ta bu karakter çoğunlukla iki karakterlik CR LF, macOS ve Linux'ta tek karakterlik LF'dir. Virgülle ayırmak, bu satır sonlarını seçtiğiniz ayraçla değiştirmekten ibarettir. Satır sonu gibi görünmeyen karakterleri <a href="../../bilgi-bankasi/kacis-karakteri-nedir-n-t-ters-egik-cizgi/">kaçış karakteri yazısında</a> ayrıntılı bulabilirsiniz.</p>
+
+      <h2 id="b2">Adım adım: listeyi tek satırda virgülle birleştirme</h2>
+      <ol class="ba-steps">
+        <li>Listenizi kopyalayın ve <a href="../../satirlari-birlestir/">Satırları Birleştir</a> aracındaki metin alanına yapıştırın.</li>
+        <li>Ayraç olarak virgül ve boşluk (&quot;, &quot;) seçin. Yalnızca virgül gerekiyorsa boşluksuz &quot;,&quot; kullanın; noktalı virgül, dikey çizgi ya da kendi ayracınızı da yazabilirsiniz.</li>
+        <li>&quot;Boş satırları sil&quot; seçeneğini açın; aksi hâlde iki virgül arasında boş bir değer oluşur (&quot;elma, , armut&quot;).</li>
+        <li>Satır başı ve sonundaki boşlukları kırpın. &quot;kiraz &quot; ile &quot;kiraz&quot; bir veritabanı için farklı değerlerdir.</li>
+        <li>Sonucu kopyalayın ve kullanacağınız yere yapıştırın. Değer sayısını doğrulamak için birleştirmeden önce <a href="../../satir-sayaci/">Satır Sayacı</a> ile dolu satırları sayabilirsiniz.</li>
+      </ol>
+      <p>Bu işlem metninizi hiçbir sunucuya göndermeden, tarayıcınızda yapılır. Müşteri listesi, telefon numarası ya da iç kodlar gibi hassas verilerde bu önemli bir avantajdır.</p>
+
+      <h2 id="b3">Her satırın başına ve sonuna metin ekleme</h2>
+      <p>Birçok durumda değerlerin yalnızca virgülle ayrılması yetmez; her birinin tırnak içinde, parantezde ya da bir etiketin içinde olması gerekir. <a href="../../onek-sonek-ekle/">Ön Ek ve Son Ek Ekle</a> aracı her satıra aynı metni topluca ekler. Önce ekleme, sonra birleştirme yapılır.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>İhtiyaç</th><th>Ön ek</th><th>Son ek</th><th>Örnek satır sonucu</th></tr></thead>
+        <tbody>
+          <tr><td>Tek tırnaklı değer (SQL)</td><td>'</td><td>'</td><td>'elma'</td></tr>
+          <tr><td>Çift tırnaklı değer (JSON dizisi)</td><td>&quot;</td><td>&quot;</td><td>&quot;elma&quot;</td></tr>
+          <tr><td>Madde işaretli liste</td><td>- </td><td>(boş)</td><td>- elma</td></tr>
+          <tr><td>Numara önüne ülke kodu</td><td>+90</td><td>(boş)</td><td>+905xx...</td></tr>
+          <tr><td>Etiket (hashtag)</td><td>#</td><td>(boş)</td><td>#elma</td></tr>
+          <tr><td>Dosya adına uzantı</td><td>(boş)</td><td>.jpg</td><td>elma.jpg</td></tr>
+          <tr><td>Satır sonuna noktalı virgül</td><td>(boş)</td><td>;</td><td>elma;</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Ön ek ve son ek her satıra aynen eklenir. Ardından satırları birleştirirseniz tırnaklı ve virgüllü tek satır elde edersiniz.</p>
+      <p>JSON dizisi hazırlıyorsanız çift tırnaklı değerleri virgülle birleştirip başa &quot;[&quot; sona &quot;]&quot; koymanız yeterlidir. Sonucun geçerli olup olmadığını <a href="../../bilgi-bankasi/json-nedir-nasil-okunur/">JSON yazısında</a> anlatılan kurallarla kontrol edebilirsiniz.</p>
+
+      <h2 id="b4">SQL sorgusu için değerler tırnak içine nasıl alınır?</h2>
+      <p>Bir veritabanında belirli kayıtları aramak için en sık kullanılan kalıp <code>WHERE alan IN (...)</code> ifadesidir. Metin değerleri tek tırnak içinde, sayısal değerler tırnaksız yazılır. Elinizdeki 4 ürün adıyla dönüşüm şöyle ilerler:</p>
+      <div class="rh-formula">Girdi:  elma / armut / kiraz / erik  (alt alta)<br>Ön ek ', son ek '   →  'elma' / 'armut' / 'kiraz' / 'erik'<br>Ayraç &quot;, &quot; ile birleştir →  'elma', 'armut', 'kiraz', 'erik'<br>Sorgu: SELECT * FROM urunler WHERE ad IN ('elma', 'armut', 'kiraz', 'erik');</div>
+      <ul>
+        <li><strong>Değerin içinde tırnak varsa:</strong> SQL'de tek tırnak iki kez yazılarak kaçırılır: &quot;Ali'nin&quot; değeri <code>'Ali''nin'</code> olur. Bu satırları birleştirmeden önce düzeltin.</li>
+        <li><strong>Sayısal kimlikler:</strong> 1024, 2048 gibi müşteri numaraları için tırnak eklemeyin; doğrudan virgülle birleştirin.</li>
+        <li><strong>Çok uzun listeler:</strong> Bazı veritabanları IN listesindeki öğe sayısını sınırlar. Binlerce değerde geçici bir tabloya aktarmak daha sağlıklıdır.</li>
+        <li><strong>Uygulama kodunda:</strong> Kullanıcıdan gelen değerleri sorguya elle birleştirmek SQL enjeksiyonuna yol açar; uygulamalarda parametreli sorgu kullanın. Elle birleştirme yalnızca kendi yazdığınız tek seferlik sorgular içindir.</li>
+      </ul>
+      <p>Temel SQL komutlarına giriş için <a href="../../bilgi-bankasi/sql-nedir-temel-sorgular/">SQL nedir yazısına</a> göz atabilirsiniz.</p>
+
+      <h2 id="b5">Excel sütunu virgüllü listeye nasıl çevrilir?</h2>
+      <p>Excel'de iki yol vardır. Birincisi formüldür: Türkçe Excel'de <code>=METİNBİRLEŞTİR(&quot;, &quot;;DOĞRU;A1:A10)</code> yazdığınızda A1:A10 aralığı tek hücrede virgülle birleşir; ikinci bağımsız değişkendeki DOĞRU boş hücreleri atlar. İngilizce arayüzde aynı işlevin adı TEXTJOIN'dir ve bağımsız değişkenler virgülle ayrılır.</p>
+      <p>İkinci yol daha pratiktir: sütunu seçip kopyalayın ve doğrudan Satırları Birleştir aracına yapıştırın. Excel'den kopyalanan her hücre ayrı satır olarak gelir. Bu yöntem formül bilgisi gerektirmez ve sonucu başka bir programa aktarırken hücre sınırı sorununu ortadan kaldırır.</p>
+      <p>Tersi de mümkündür: virgüllü bir listeyi Excel'de sütunlara ayırmak için Veri sekmesindeki &quot;Metni Sütunlara Dönüştür&quot; komutunu kullanabilirsiniz. Değerleri satırlara dağıtmak istiyorsanız önce aşağıda anlatılan yöntemle listeyi alt alta açıp sonra yapıştırmak daha kolaydır. Dosya düzeyinde virgüllü veri için <a href="../../bilgi-bankasi/csv-dosyasi-nedir-excelde-nasil-acilir/">CSV yazısı</a> Türkçe Excel'deki noktalı virgül ayracı sorununu da açıklar.</p>
+
+      <div class="ba-ad" data-slot="bilgi-alt-alta-listeyi-virgulle-ayirma-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Virgüllü liste tekrar alt alta nasıl açılır?</h2>
+      <p>Birleştirmenin tersi, ayracı satır sonuyla değiştirmektir. Virgülden sonra boşluk varsa ayraç olarak &quot;, &quot; (virgül ve boşluk) kullanılmalıdır; yalnızca virgülü değiştirirseniz her satırın başında bir boşluk kalır. Ayracı bilmiyorsanız önce yalnızca virgülle ayırıp ardından satır başı boşluklarını kırpmak en güvenli yoldur.</p>
+      <p>Değerlerin içinde de virgül geçiyorsa (örneğin &quot;İstanbul, Kadıköy&quot;) basit değiştirme işlemi değeri ikiye böler. Bu tür verilerde değerler genellikle çift tırnak içinde gelir; CSV kurallarına göre tırnak içindeki virgül ayraç sayılmaz. Karmaşık desenler için <a href="../../bilgi-bankasi/regex-nedir-duzenli-ifade-ornekleri/">düzenli ifade (regex)</a> kullanmak gerekir.</p>
+
+      <h2 id="b7">Metindeki sayıları ayıklama, satır sayma ve uzunluğa göre sıralama</h2>
+      <p>Liste düzenlemenin diğer sık işleri de aynı mantıkla tek tıkla yapılabilir. Bir e-postada geçen tutarları toplamak, bir listenin kaç kalemden oluştuğunu bulmak ya da en uzun ürün adını görmek bunlara örnektir.</p>
+      <ul>
+        <li><strong>Sayı ayıklama:</strong> &quot;Fatura 1.250,50 TL, iade 300 TL, kargo 89,90 TL&quot; metnini <a href="../../sayi-ayikla/">Metinden Sayı Ayıklama</a> aracına verdiğinizde 1.250,50, 300 ve 89,90 değerleri listelenir; toplam 1.640,40 olarak hesaplanır. Türkçe ondalık virgül desteklenir.</li>
+        <li><strong>Satır sayma:</strong> Satır Sayacı toplam, dolu ve boş satır sayısını ayrı ayrı verir. 120 satırlık listede 3 boş satır varsa birleştirme sonucu 117 değer içermelidir.</li>
+        <li><strong>Uzunluğa göre sıralama:</strong> <a href="../../satir-sirala-uzunluk/">Satırları Uzunluğa Göre Sırala</a> aracı ürün adlarını kısadan uzuna dizer; karakter sınırı olan bir alana sığmayan satırları hemen görürsünüz.</li>
+        <li><strong>Tekrarları silme:</strong> Birleştirmeden önce aynı değerin iki kez geçmediğinden emin olmak için <a href="../../bilgi-bankasi/tekrar-eden-satirlari-silme-liste-duzenleme/">tekrar eden satırları silme</a> yöntemini kullanın.</li>
+      </ul>
+
+      <h2 id="b8">Hangi ayraç ne zaman kullanılır?</h2>
+      <p>Ayraç seçimi, listeyi yapıştıracağınız yerin beklediği biçime bağlıdır. Yanlış ayraç, değerlerin tek bir uzun değer gibi okunmasına ya da bir sayının ikiye bölünmesine yol açar. Aşağıdaki tablo en sık karşılaşılan hedefleri özetler.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Hedef</th><th>Önerilen ayraç</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>E-posta alıcı satırı</td><td>; ya da , </td><td>Programa göre değişir; birini deneyip doğrulayın</td></tr>
+          <tr><td>SQL IN listesi</td><td>, </td><td>Metin değerleri tek tırnakla</td></tr>
+          <tr><td>Etiket ya da anahtar kelime alanı</td><td>, </td><td>Çoğu form virgülü ayraç sayar</td></tr>
+          <tr><td>Türkçe Excel'e yapıştırılacak CSV</td><td>;</td><td>Ondalık virgülle karışmaz</td></tr>
+          <tr><td>Arama motorunda VEYA araması</td><td> OR </td><td>Büyük harfle yazılır</td></tr>
+          <tr><td>Düz metin cümlesi</td><td>, ve son öğeden önce &quot;ve&quot;</td><td>Son ayracı elle düzeltin</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="b9">Sık yapılan hatalar</h2>
+      <ul>
+        <li><strong>Boş satırları bırakmak:</strong> Sonda ya da arada kalan boş satırlar &quot;elma, , armut,&quot; gibi boş değerler ve sonda fazladan virgül üretir.</li>
+        <li><strong>Görünmeyen boşluklar:</strong> Excel'den gelen değerlerin sonunda boşluk ya da bölünemez boşluk olabilir; kırpma seçeneğini açın.</li>
+        <li><strong>Yanlış ayraç:</strong> Türkçe sistemlerde ondalık ayraç virgül olduğu için sayısal listelerde virgül karışıklık yaratabilir; böyle durumlarda noktalı virgül tercih edin.</li>
+        <li><strong>Tırnakları sonradan eklemeye çalışmak:</strong> Önce birleştirip sonra tırnak eklemek elle düzeltme gerektirir. Sıra her zaman: temizle, ek ekle, birleştir.</li>
+        <li><strong>Kontrol etmeden yapıştırmak:</strong> Birleştirilmiş değer sayısını satır sayısıyla karşılaştırın; fark varsa boş ya da tekrarlanan satır vardır.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Alt alta yazılmış bir liste tek satırda virgülle nasıl birleştirilir?</summary><p>Listeyi Satırları Birleştir aracına yapıştırın, ayraç olarak virgül ve boşluk seçin, boş satırları silme ve kırpma seçeneklerini açın. Sonuç tek satırda virgülle ayrılmış olarak çıkar ve kopyalanabilir.</p></details>
+      <details><summary>Her satırın başına ve sonuna metin nasıl eklenir?</summary><p>Ön Ek ve Son Ek Ekle aracına listeyi yapıştırın, başa eklenecek metni ön ek, sona eklenecek metni son ek alanına yazın. Araç her satıra aynı metni ekler; tırnak, madde işareti ya da uzantı eklemek için kullanılır.</p></details>
+      <details><summary>Excel sütunu virgüllü listeye nasıl çevrilir?</summary><p>Türkçe Excel'de =METİNBİRLEŞTİR(&quot;, &quot;;DOĞRU;A1:A10) formülü aralığı tek hücrede birleştirir. Formül kullanmak istemiyorsanız sütunu kopyalayıp Satırları Birleştir aracına yapıştırmanız da aynı sonucu verir.</p></details>
+      <details><summary>SQL sorgusu için değerler tırnak içine nasıl alınır?</summary><p>Önce her satıra ön ek ve son ek olarak tek tırnak ekleyin, sonra satırları virgül ve boşlukla birleştirin. Sonucu IN parantezinin içine koyun. Sayısal değerlere tırnak eklenmez, değer içindeki tek tırnak iki kez yazılır.</p></details>
+      <details><summary>Metindeki sayılar nasıl ayıklanıp toplanır?</summary><p>Metni Metinden Sayı Ayıklama aracına yapıştırın. Araç metindeki tüm sayıları bulur, liste hâlinde gösterir ve adet, toplam, ortalama, en küçük ve en büyük değeri hesaplar. Türkçe ondalık virgülü doğru tanır.</p></details>
+      <details><summary>Listede kaç satır olduğu nasıl sayılır?</summary><p>Satır Sayacı aracı toplam satır sayısını, dolu ve boş satırları ayrı ayrı, ayrıca benzersiz satır sayısını gösterir. Birleştirme sonrasındaki değer sayısının dolu satır sayısıyla eşit olması gerekir.</p></details>
+      <details><summary>Satırlar uzunluğa göre nasıl sıralanır?</summary><p>Satırları Uzunluğa Göre Sırala aracı satırları karakter sayısına göre kısadan uzuna ya da uzundan kısaya dizer. Eşit uzunluktaki satırlar özgün sırasında kalabilir ya da alfabetik sıralanabilir.</p></details>
+      <details><summary>Virgüllü liste tekrar alt alta nasıl açılır?</summary><p>Ayracı, yani virgül ve boşluğu, satır sonu karakteriyle değiştirin. Değerlerin içinde virgül geçiyorsa basit değiştirme değeri böler; bu durumda tırnak içindeki virgülleri koruyan bir yöntem ya da düzenli ifade gerekir.</p></details>
+      <details><summary>Birleştirdiğim liste bir sunucuya gönderiliyor mu?</summary><p>Hayır. Satırları Birleştir, Ön Ek ve Son Ek Ekle ve diğer metin araçları tamamen tarayıcınızda çalışır. Yapıştırdığınız metin hiçbir sunucuya iletilmez ve sayfayı kapattığınızda silinir.</p></details>
+      <details><summary>Birleştirilmiş listenin sonunda neden fazladan virgül çıkıyor?</summary><p>Listenin son satırından sonra boş bir satır kalmışsa birleştirme o boş satırı da bir değer sayar ve sona virgül ekler. Boş satırları silme seçeneğini açarsanız ya da son satır sonunu silerseniz fazladan virgül oluşmaz.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../tekrar-eden-satirlari-silme-liste-duzenleme/"><strong>Tekrar Eden Satırları Silme: Liste Temizleme ve Düzenleme Yolları</strong><span>Tekrar eden satırları silmek için ilk görülen satır tutulur, kopyalar atılır. Harf ve boşluk ayarları, boş satır, Türkçe sıralama ve virgülle birleştirme.</span></a></li>
+          <li><a href="../csv-dosyasi-nedir-excelde-nasil-acilir/"><strong>CSV Dosyası Nedir? Elektronik Tablo Programında Türkçe Karakter ve Sütun Sorunu Olmadan Açma</strong><span>CSV, değerleri virgül ya da noktalı virgülle ayıran düz metin tablodur. Tek sütunda açılma, bozuk Türkçe karakter, UTF-8 BOM ve ayraç seçimi sorunlarının çözümü.</span></a></li>
+          <li><a href="../sql-nedir-temel-sorgular/"><strong>SQL Nedir? SELECT, INSERT, UPDATE, DELETE ve Temel Sorgu Örnekleri</strong><span>SQL, ilişkisel veritabanlarını sorgulamak ve yönetmek için kullanılan standart dildir. SELECT, WHERE, ORDER BY, INSERT, UPDATE, DELETE örnekleri ve CSV aktarımı.</span></a></li>
+          <li><a href="../4k-kac-piksel-cozunurluk-turleri/"><strong>4K Kaç Piksel? HD, Full HD, 2K, 4K ve 8K Çözünürlük Farkları Tablosu</strong><span>Televizyon ve monitörlerdeki 4K (UHD) 3840 × 2160, yani yaklaşık 8,3 milyon pikseldir; Full HD'nin dört katı. HD, 2K, QHD, 8K tablosu ve izleme mesafesi.</span></a></li>
+          <li><a href="../a4-kagit-boyutu-kac-cm/"><strong>A4 Kağıt Boyutu Kaç cm, Kaç Piksel? A3, A5 ve Diğer Kağıt Ölçüleri</strong><span>A4 kağıt 21 × 29,7 cm (210 × 297 mm) ölçüsündedir; 300 DPI'da 2480 × 3508 pikseldir. A0–A8, B ve C serisi, Letter farkı, inç karşılıkları ve zarf ölçüleri.</span></a></li>
+          <li><a href="../kelime-yogunlugu-nedir-seo/"><strong>Anahtar Kelime Yoğunluğu Nedir? Metinde Kelime Sıklığı Nasıl Ölçülür</strong><span>Anahtar kelime yoğunluğu = kelimenin geçiş sayısı ÷ toplam kelime × 100. SEO için ideal oran var mı, anahtar kelime doldurma, Türkçe ekler ve kelime frekansı analizi.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-alt-alta-listeyi-virgulle-ayirma-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

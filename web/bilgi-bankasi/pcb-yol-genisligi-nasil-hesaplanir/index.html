@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>PCB Yol Genişliği Hesaplama: IPC-2221 Formülü ve Örnek</title>
+  <meta name="description" content="PCB yol genişliği akım, bakır kalınlığı ve izin verilen sıcaklık artışına göre IPC-2221 formülüyle bulunur. 1 oz bakır, 2 A örneği, iç ve dış katman farkı.">
+  <meta name="keywords" content="pcb yol genişliği hesaplama, pcb track width, ipc-2221 formülü, 1 oz bakır kaç mikron, 2 amper kaç mm yol, pcb iç katman yol, pcb sıcaklık artışı, güç yolu tasarımı">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/pcb-yol-genisligi-nasil-hesaplanir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="PCB Yol Genişliği Hesaplama: IPC-2221 Formülü ve Örnek">
+  <meta property="og:description" content="PCB yol genişliği akım, bakır kalınlığı ve izin verilen sıcaklık artışına göre IPC-2221 formülüyle bulunur. 1 oz bakır, 2 A örneği, iç ve dış katman farkı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/pcb-yol-genisligi-nasil-hesaplanir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"PCB Yol Genişliği Nasıl Hesaplanır? Akım, Bakır Kalınlığı ve Isınma","description":"PCB yol genişliği akım, bakır kalınlığı ve izin verilen sıcaklık artışına göre IPC-2221 formülüyle bulunur. 1 oz bakır, 2 A örneği, iç ve dış katman farkı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/pcb-yol-genisligi-nasil-hesaplanir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1389,"keywords":"pcb yol genişliği hesaplama, pcb track width, ipc-2221 formülü, 1 oz bakır kaç mikron, 2 amper kaç mm yol, pcb iç katman yol, pcb sıcaklık artışı, güç yolu tasarımı","articleSection":"İnternet ve Güvenlik","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"İnternet ve Güvenlik","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#teknoloji"},{"@type":"ListItem","position":4,"name":"PCB Yol Genişliği Nasıl Hesaplanır? Akım, Bakır Kalınlığı ve Isınma"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"PCB yol genişliği neye göre seçilir?","acceptedAnswer":{"@type":"Answer","text":"Yoldan geçecek sürekli akıma, bakır kalınlığına, izin verilen sıcaklık artışına ve yolun dış ya da iç katmanda olmasına göre seçilir. Uzun yollarda gerilim düşümü ve üreticinin en düşük genişlik kuralı da kontrol edilir."}},{"@type":"Question","name":"1 oz bakır kaç mikron kalınlıktadır?","acceptedAnswer":{"@type":"Answer","text":"1 oz bakır yaklaşık 35 mikrometre, yani 1,378 mil kalınlığındadır. Kalınlık ağırlıkla orantılıdır: 2 oz yaklaşık 70 µm, 0,5 oz yaklaşık 17,5 µm'dir; gerçek değer üretim sürecine göre biraz değişebilir."}},{"@type":"Question","name":"2 amper için kaç mm yol gerekir?","acceptedAnswer":{"@type":"Answer","text":"IPC-2221'e göre 1 oz bakırlı dış katmanda 10 °C artış için yaklaşık 0,78 mm, 20 °C artış için yaklaşık 0,51 mm gerekir. İç katmanda aynı akım için yaklaşık 2,03 mm hesaplanır; bunlar alt sınırdır."}},{"@type":"Question","name":"İç ve dış katman yolları neden farklı hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"Dış katman ısısını havaya verebilir, iç katman ise ısıyı iyi iletmeyen kart malzemesiyle sarılıdır. IPC-2221 bu farkı iç katman katsayısını yarıya indirerek yansıtır; iç yol yaklaşık 2,6 kat daha geniş çıkar."}},{"@type":"Question","name":"Sıcaklık artışı hesaba nasıl katılır?","acceptedAnswer":{"@type":"Answer","text":"ΔT, yolun ortam sıcaklığının üstüne çıkmasına izin verilen derece farkıdır. Formülde ΔT'nin 0,44 kuvveti kullanılır; izin verilen artış büyüdükçe gereken genişlik azalır ama kart ve bileşenler daha sıcak çalışır."}},{"@type":"Question","name":"IPC-2221 formülü nedir?","acceptedAnswer":{"@type":"Answer","text":"I = k × ΔT^0,44 × A^0,725 bağıntısıdır. I amper, ΔT santigrat derece, A mil kare cinsinden kesit alanıdır; k dış katman için 0,048, iç katman için 0,024 alınır. Genişlik, kesitin bakır kalınlığına bölünmesiyle bulunur."}},{"@type":"Question","name":"Yol genişliği ile kablo kesiti arasında benzerlik var mı?","acceptedAnswer":{"@type":"Answer","text":"Evet, ikisinde de kesit alanı direnci, direnç de ısınma ve gerilim düşümünü belirler ve bakırın özdirenci aynıdır. Fark soğuma biçimindedir; ince ve geniş PCB yolu ısıyı yüzeyden daha kolay atar."}},{"@type":"Question","name":"Güç yollarında hangi tasarım önlemleri alınır?","acceptedAnswer":{"@type":"Answer","text":"Yollar hesaplanandan geniş çizilir, bakır döküm ve paralel katmanlar kullanılır, geçişlerde birden çok viya konur ve konnektör girişlerindeki darboğazlar önlenir. Gerilim düşümü ve üretici kuralları da kontrol edilir."}},{"@type":"Question","name":"IPC-2152 ile IPC-2221 farkı nedir?","acceptedAnswer":{"@type":"Answer","text":"IPC-2152 daha yeni ve ayrıntılı bir standarttır; kart kalınlığı, bakır düzlemlere yakınlık ve malzeme özelliklerini de hesaba katar. IPC-2221'in basit bağıntısı özellikle iç katmanlarda daha tutucu sonuç verir."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#teknoloji">İnternet ve Güvenlik</a></li></ol><h1>PCB Yol Genişliği Nasıl Hesaplanır? Akım, Bakır Kalınlığı ve Isınma</h1><p class="lead">PCB yol genişliği; yoldan geçecek <strong>akıma</strong>, bakır folyonun <strong>kalınlığına</strong> ve yolun izin verilen <strong>sıcaklık artışına</strong> göre seçilir. En yaygın başlangıç hesabı IPC-2221 standardındaki I = k × ΔT<sup>0,44</sup> × A<sup>0,725</sup> bağıntısıdır; buradan gereken bakır kesiti, kesitten de bakır kalınlığına bölünerek genişlik bulunur. Örneğin 1 oz bakırlı bir dış katmanda 2 A akım ve 10 °C sıcaklık artışı için yaklaşık 0,78 mm genişlik çıkar. Bu sayfada formülü, iç ve dış katman farkını, çözümlü örnekleri ve güç yollarında alınan önlemleri bulacaksınız. Sonuçlar örnektir; tasarımınızda geçerli standardı ve üreticinizin kurallarını esas alın.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 7 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>IPC-2221 bağıntısı: I = k × ΔT^0,44 × A^0,725; I amper, ΔT °C, A mil² (1 mil = 0,0254 mm).</li>
+        <li>Katsayı k dış katmanlar için 0,048, iç katmanlar için 0,024'tür; iç katman ısıyı daha zor attığı için daha geniş yol gerekir.</li>
+        <li>1 oz bakır yaklaşık 35 µm (1,378 mil) kalınlığındadır; 2 oz yaklaşık 70 µm'dir.</li>
+        <li>1 oz dış katman, 10 °C artış: 1 A için yaklaşık 0,30 mm, 2 A için 0,78 mm, 3 A için 1,37 mm.</li>
+        <li>Aynı 2 A iç katmanda yaklaşık 2,03 mm genişlik ister; izin verilen artış 20 °C'ye çıkarsa dış katmanda 0,51 mm'ye iner.</li>
+        <li>Formül bir alt sınır verir; daha yeni IPC-2152 eğrileri, gerilim düşümü ve üretici kuralları ayrıca kontrol edilmelidir.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="PCB yol kesitinin şeması: genişlik ve bakır kalınlığı çarpılarak kesit alanı bulunuyor. Yanında 1 oz bakır ve 10 derece artış için 1, 2, 3 ve 5 amperde gereken dış katman yol genişlikleri çubuk grafik olarak." viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">Yol kesiti ve gereken genişlik</text>
+  <rect x="30" y="150" width="280" height="50" rx="4" class="s2 sb"/>
+  <rect x="30" y="150" width="280" height="50" rx="4" class="sf sb"/>
+  <text x="170" y="182" class="sm mid mu">FR-4 taban malzemesi</text>
+  <rect x="100" y="126" width="140" height="24" class="p"/>
+  <text x="170" y="143" class="sm mid sf b">bakır yol</text>
+  <line x1="100" y1="110" x2="240" y2="110" class="sp" fill="none"/>
+  <line x1="100" y1="104" x2="100" y2="116" class="sp" fill="none"/><line x1="240" y1="104" x2="240" y2="116" class="sp" fill="none"/>
+  <text x="170" y="100" class="sm mid b">genişlik (w)</text>
+  <line x1="252" y1="126" x2="252" y2="150" class="sp" fill="none"/>
+  <text x="260" y="143" class="sm b">t</text>
+  <text x="30" y="230" class="sm">1 oz ≈ 35 µm · 2 oz ≈ 70 µm</text>
+  <rect x="30" y="248" width="280" height="80" rx="8" class="ps"/>
+  <text x="44" y="274" class="b">IPC-2221</text>
+  <text x="44" y="298" class="sm">I = k × ΔT^0,44 × A^0,725</text>
+  <text x="44" y="318" class="sm">w = A ÷ t · dış k = 0,048 · iç k = 0,024</text>
+  <text x="520" y="64" class="b mid">1 oz, dış katman, ΔT = 10 °C</text>
+  <line x1="380" y1="330" x2="700" y2="330" class="st" fill="none"/>
+  <g class="mid">
+    <rect x="400" y="303" width="50" height="27" class="oks"/><text x="425" y="296" class="sm b">0,30</text><text x="425" y="350" class="sm">1 A</text>
+    <rect x="475" y="260" width="50" height="70" class="oks"/><text x="500" y="253" class="sm b">0,78</text><text x="500" y="350" class="sm">2 A</text>
+    <rect x="550" y="207" width="50" height="123" class="ps"/><text x="575" y="200" class="sm b">1,37</text><text x="575" y="350" class="sm">3 A</text>
+    <rect x="625" y="82" width="50" height="248" class="p"/><text x="650" y="102" class="sm b sf">2,77</text><text x="650" y="350" class="sm">5 A</text>
+  </g>
+  <text x="540" y="380" class="sm mid mu">Gereken en düşük genişlik (mm)</text>
+  <rect x="30" y="346" width="280" height="56" rx="8" class="sf sb"/>
+  <text x="44" y="370" class="sm b">Aynı 2 A iç katmanda: 2,03 mm</text>
+  <text x="44" y="390" class="sm">ΔT = 20 °C seçilirse dış katmanda: 0,51 mm</text>
+</svg>
+      <figcaption>Yol kesiti bir dikdörtgendir: kesit alanı = genişlik × bakır kalınlığı. Çubuklar 1 oz bakır, dış katman ve 10 °C sıcaklık artışı için IPC-2221 bağıntısıyla hesaplanan en düşük genişlikleri gösterir; akım iki katına çıktığında genişlik iki kattan fazla artar.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">PCB yol genişliği neye göre seçilir?</a></li>
+      <li><a href="#b2">1 oz bakır kaç mikron kalınlıktadır?</a></li>
+      <li><a href="#b3">IPC-2221 formülü nedir?</a></li>
+      <li><a href="#b4">2 amper için kaç mm yol gerekir? Çözümlü örnek</a></li>
+      <li><a href="#b5">Akım, katman ve sıcaklık artışına göre karşılaştırma</a></li>
+      <li><a href="#b6">İç ve dış katman yolları neden farklı hesaplanır?</a></li>
+      <li><a href="#b7">Sıcaklık artışı hesaba nasıl katılır?</a></li>
+      <li><a href="#b8">Yol genişliği ile kablo kesiti arasında benzerlik</a></li>
+      <li><a href="#b9">Güç yollarında hangi tasarım önlemleri alınır?</a></li>
+      <li><a href="#b10">Hesap aracı nasıl kullanılır?</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-pcb-yol-genisligi-nasil-hesaplanir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../pcb-yol-genisligi-hesapla/"><strong>PCB Yol Genişliği Hesaplama</strong><span>Akım, bakır kalınlığı ve sıcaklık artışına göre PCB yol genişliğini mm ve mil olarak hesaplayın; direnç ve gerilim düşümünü görün.</span></a></li>
+          <li><a href="../../kablo-kesiti-hesapla/"><strong>Kablo Kesiti Hesaplama</strong><span>Akım, mesafe ve gerilim düşümü sınırından gereken kablo kesitini ve en yakın standart mm² değerini bulun.</span></a></li>
+          <li><a href="../../ohm-kanunu-hesapla/"><strong>Ohm Kanunu Hesaplama</strong><span>Gerilim, akım, direnç ve güçten ikisini yazın; Ohm kanunuyla kalan iki değeri anında bulun.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">PCB yol genişliği neye göre seçilir?</h2>
+      <p>Baskılı devre kartındaki (PCB) bakır yollar, kablo gibi akım taşır ve kablo gibi bir direnç gösterir. Akım geçtikçe bu direnç ısı üretir. Yol çok inceyse ısınma artar; aşırı durumda bakır kabarabilir, kart malzemesi kararabilir ya da yol tamamen kopabilir. Yol genişliği seçiminin temel amacı, yolun beklenen akımda kabul edilebilir bir sıcaklıkta kalmasını sağlamaktır.</p>
+      <p>Bu hesaba dört etken girer: <strong>akım</strong> (sürekli akan ortalama değer, kısa tepe değil), <strong>bakır kalınlığı</strong> (folyo ağırlığı), <strong>izin verilen sıcaklık artışı</strong> (ortam sıcaklığının üstüne kaç derece çıkılmasına razı olunduğu) ve yolun <strong>dış ya da iç katmanda</strong> olması. Bunlara ek olarak uzun yollarda gerilim düşümü, yüksek gerilimli devrelerde yollar arası açıklık ve üretim yapacak firmanın en düşük yol genişliği kuralı da hesaba katılır.</p>
+      <p>Sinyal yolları çok az akım taşıdığı için genellikle üreticinin izin verdiği en ince genişlikte çizilir. Hesap asıl olarak besleme, motor, ısıtıcı, LED şeridi ve şarj devresi gibi <strong>güç yolları</strong> için önemlidir.</p>
+
+      <h2 id="b2">1 oz bakır kaç mikron kalınlıktadır?</h2>
+      <p>PCB endüstrisinde bakır kalınlığı geleneksel olarak ağırlıkla ifade edilir: 1 ons bakırın 1 fit karelik alana yayılmasıyla oluşan kalınlık &quot;1 oz&quot; diye anılır. Bu kalınlık yaklaşık <strong>35 mikrometre</strong> (34,8 µm) ya da 1,378 mil'dir. Kalınlık ağırlıkla doğru orantılı arttığı için 2 oz yaklaşık 70 µm, 0,5 oz yaklaşık 17,5 µm'dir.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Bakır ağırlığı</th><th>Kalınlık (µm)</th><th>Kalınlık (mil)</th><th>Tipik kullanım</th></tr></thead>
+        <tbody>
+          <tr><td>0,5 oz</td><td>≈ 17,5</td><td>0,69</td><td>İnce sinyal katmanları, iç katmanlar</td></tr>
+          <tr><td>1 oz</td><td>≈ 35</td><td>1,38</td><td>Genel amaçlı kartların çoğu</td></tr>
+          <tr><td>2 oz</td><td>≈ 70</td><td>2,76</td><td>Güç kartları, motor sürücüler</td></tr>
+          <tr><td>3 oz</td><td>≈ 105</td><td>4,13</td><td>Yüksek akımlı güç elektroniği</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Gerçek kalınlık kaplama ve aşındırma süreci nedeniyle üreticiye göre birkaç mikron farklı olabilir.</p>
+      <p>Kalın bakır, aynı akımı daha dar bir yolla taşımayı sağlar ama maliyeti artırır ve ince aralıklı bileşenlerin yerleşimini zorlaştırır. Bu yüzden çoğu tasarımda 1 oz bakırla başlanır, yalnızca güç bölgeleri genişletilir.</p>
+
+      <h2 id="b3">IPC-2221 formülü nedir?</h2>
+      <p>IPC-2221, baskılı devre tasarımı için genel kuralları içeren bir standarttır ve akım taşıma kapasitesi için deneysel verilere dayanan bir eğri uydurma bağıntısı verir. Bağıntı, yolun bakır kesit alanı ile taşıyabileceği akım arasındaki ilişkiyi kurar:</p>
+      <div class="rh-formula">I = k × ΔT^0,44 × A^0,725<br>A = ( I ÷ (k × ΔT^0,44) )^(1 ÷ 0,725)   [mil²]<br>Genişlik (mil) = A ÷ (1,378 × oz) · Genişlik (mm) = mil × 0,0254</div>
+      <ul>
+        <li><strong>I:</strong> sürekli akım, amper.</li>
+        <li><strong>ΔT:</strong> ortam sıcaklığının üstündeki izin verilen artış, °C (genellikle 10 ya da 20 °C seçilir).</li>
+        <li><strong>A:</strong> bakır kesit alanı, mil kare (genişlik × kalınlık).</li>
+        <li><strong>k:</strong> dış katman 0,048, iç katman 0,024.</li>
+      </ul>
+      <p>Bağıntı, kabaca 35 A'e kadar akım, 10–100 °C artış ve 0,5–3 oz bakır aralığında geçerli kabul edilir. Daha yeni IPC-2152 standardı, kart kalınlığı, bakır düzlemlere yakınlık ve malzeme özelliklerini de hesaba katan daha ayrıntılı eğriler sunar; çoğu durumda IPC-2221'in dış katman sonucu biraz ihtiyatlı, iç katman sonucu ise oldukça tutucu çıkar. Kritik tasarımlarda bu standarda ve termal analize başvurulur.</p>
+
+      <h2 id="b4">2 amper için kaç mm yol gerekir? Çözümlü örnek</h2>
+      <p>1 oz bakırlı, dış katmandaki bir yol için 2 A sürekli akım ve 10 °C izin verilen sıcaklık artışıyla hesap yapalım.</p>
+      <ol class="ba-steps">
+        <li>ΔT^0,44 değerini bulun: 10^0,44 ≈ 2,754.</li>
+        <li>Payda: k × ΔT^0,44 = 0,048 × 2,754 ≈ 0,1322.</li>
+        <li>I bölü payda: 2 ÷ 0,1322 ≈ 15,13.</li>
+        <li>Kesit alanı: 15,13^(1/0,725) = 15,13^1,379 ≈ 42,4 mil².</li>
+        <li>Genişlik: 42,4 ÷ 1,378 ≈ 30,8 mil.</li>
+        <li>Milimetreye çevirin: 30,8 × 0,0254 ≈ <strong>0,78 mm</strong>.</li>
+      </ol>
+      <p>Pratikte bu yolu 0,8 mm ya da yer varsa 1 mm çizmek mantıklıdır; hesap bir alt sınır verir. Aynı yol 50 mm uzunluktaysa 20 °C'de direnci yaklaşık 31,5 mΩ olur. 2 A akımda yol üzerinde yaklaşık 63 mV gerilim düşer ve yaklaşık 126 mW ısı açığa çıkar. Bu değerler, düşük gerilimli (örneğin 3,3 V) devrelerde gerilim düşümünün de ayrıca dikkate alınması gerektiğini gösterir. Direnç ve güç hesabının temeli için <a href="../../bilgi-bankasi/ohm-kanunu-nedir/">Ohm kanunu</a> yazısına bakabilirsiniz.</p>
+
+      <h2 id="b5">Akım, katman ve sıcaklık artışına göre karşılaştırma</h2>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Akım</th><th>Bakır</th><th>Katman</th><th>ΔT</th><th>En düşük genişlik</th></tr></thead>
+        <tbody>
+          <tr><td>0,5 A</td><td>1 oz</td><td>Dış</td><td>10 °C</td><td>≈ 0,12 mm</td></tr>
+          <tr><td>1 A</td><td>1 oz</td><td>Dış</td><td>10 °C</td><td>≈ 0,30 mm</td></tr>
+          <tr><td>2 A</td><td>1 oz</td><td>Dış</td><td>10 °C</td><td>≈ 0,78 mm</td></tr>
+          <tr><td>2 A</td><td>1 oz</td><td>Dış</td><td>20 °C</td><td>≈ 0,51 mm</td></tr>
+          <tr><td>2 A</td><td>2 oz</td><td>Dış</td><td>10 °C</td><td>≈ 0,39 mm</td></tr>
+          <tr><td>2 A</td><td>1 oz</td><td>İç</td><td>10 °C</td><td>≈ 2,03 mm</td></tr>
+          <tr><td>3 A</td><td>1 oz</td><td>Dış</td><td>10 °C</td><td>≈ 1,37 mm</td></tr>
+          <tr><td>5 A</td><td>1 oz</td><td>Dış</td><td>10 °C</td><td>≈ 2,77 mm</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Değerler IPC-2221 bağıntısıyla hesaplanmış örneklerdir ve alt sınırdır; tasarım standardınızı ve üretici kurallarını esas alın.</p>
+      <p>Tablodaki iki ilişki dikkat çekicidir. Birincisi, akım iki katına çıktığında genişlik iki kattan fazla artar (1 A için 0,30 mm, 2 A için 0,78 mm), çünkü üs 0,725'tir. İkincisi, bakır kalınlığını iki katına çıkarmak gereken genişliği tam yarıya indirir; çünkü kesit alanı aynı kalır.</p>
+
+      <div class="ba-ad" data-slot="bilgi-pcb-yol-genisligi-nasil-hesaplanir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">İç ve dış katman yolları neden farklı hesaplanır?</h2>
+      <p>Dış katmandaki yol, ısısını doğrudan havaya iletim ve ışınımla verebilir. İç katmandaki yol ise her iki yüzünden de cam elyaf takviyeli epoksi (FR-4) gibi ısıyı iyi iletmeyen bir malzemeyle sarılıdır. Isı daha yavaş uzaklaştığı için aynı akımda iç yol daha fazla ısınır.</p>
+      <p>IPC-2221 bu farkı katsayıyı yarıya indirerek yansıtır: iç katman için k = 0,024. Sonuç olarak aynı akım ve sıcaklık artışında iç yol, dış yolun yaklaşık 2,6 katı genişlik gerektirir. Daha yeni IPC-2152 verileri bu farkın gerçekte daha küçük olabileceğini gösterse de, ayrıntılı termal analiz yapmıyorsanız IPC-2221'in tutucu değeriyle çalışmak güvenli taraftır.</p>
+
+      <h2 id="b7">Sıcaklık artışı hesaba nasıl katılır?</h2>
+      <p>ΔT, yolun ortam sıcaklığının kaç derece üstüne çıkmasına izin verdiğinizdir; yolun mutlak sıcaklığı değildir. 40 °C'lik bir kutu içinde çalışan kartta 20 °C artış seçerseniz yol yaklaşık 60 °C'ye ulaşır. Yakındaki bileşenlerin, özellikle elektrolitik kondansatörlerin ve plastik konnektörlerin sıcaklık sınırları bu seçimi kısıtlar.</p>
+      <p>Genel uygulamada hassas ya da kapalı kutudaki kartlar için 10 °C, havalandırması iyi güç kartları için 20 °C artış seçilir. Daha yüksek artış daha dar yol demektir ama kart ömrünü ve yakın bileşenlerin güvenilirliğini azaltabilir. Kısa süreli tepe akımlar (motor kalkışı gibi) için ortalama akım esas alınır; ancak çok kısa sürede çok yüksek akım geçen yollar sigorta gibi davranabileceği için ayrıca değerlendirilmelidir.</p>
+
+      <h2 id="b8">Yol genişliği ile kablo kesiti arasında benzerlik</h2>
+      <p>Mantık aynıdır: her ikisinde de iletkenin kesit alanı direnci, direnç de ısınmayı ve gerilim düşümünü belirler. Bakırın özdirenci (yaklaşık 1,72 × 10<sup>-8</sup> Ω·m) her iki hesapta da aynıdır. Fark, soğumanın biçimindedir: kablo yalıtkan kılıf içinde yuvarlak bir iletkendir, PCB yolu ise bir yüzü kart malzemesine yapışık, çok ince ve geniş bir şerittir. Bu geometri PCB yolunun ısıyı yüzeyden daha kolay atmasını sağlar.</p>
+      <p>Kablo seçiminin mantığı için <a href="../../bilgi-bankasi/kablo-kesiti-nasil-secilir/">kablo kesiti nasıl seçilir</a> yazısına, akım ve güç ilişkisi için <a href="../../bilgi-bankasi/watt-amper-volt-iliskisi/">watt, amper ve volt ilişkisi</a> yazısına bakabilirsiniz. Şebeke gerilimindeki tesisat kabloları ise ayrı yönetmelik ve standartlara tabidir; PCB hesabıyla seçilmez.</p>
+
+      <h2 id="b9">Güç yollarında hangi tasarım önlemleri alınır?</h2>
+      <ul>
+        <li><strong>Yer varsa genişletin:</strong> Hesaplanan değer alt sınırdır; güç yollarını mümkün olduğunca geniş çizin.</li>
+        <li><strong>Bakır döküm (polygon) kullanın:</strong> Yüksek akımlı bölgelerde yol yerine geniş bakır alanlar ısıyı daha iyi dağıtır.</li>
+        <li><strong>Paralel yol ve katman:</strong> Aynı akımı iki katmandaki paralel yollara bölüp aralarını çok sayıda viyayla bağlamak kesiti artırır.</li>
+        <li><strong>Viyaları da hesaplayın:</strong> Tek bir küçük viya, geniş bir yolun darboğazı olabilir; güç geçişlerinde birden çok viya kullanın.</li>
+        <li><strong>Darboğazlara dikkat:</strong> Konnektör ve bileşen ayağına girerken yolun incelmesi en sıcak noktayı oluşturur.</li>
+        <li><strong>Gerilim düşümünü kontrol edin:</strong> Uzun ve düşük gerilimli besleme yollarında sıcaklık uygun olsa bile gerilim düşümü fazla olabilir.</li>
+        <li><strong>Üretici kurallarına uyun:</strong> En düşük yol genişliği, aralık ve bakır kalınlığı seçenekleri üreticiye göre değişir.</li>
+      </ul>
+
+      <h2 id="b10">Hesap aracı nasıl kullanılır?</h2>
+      <p><a href="../../pcb-yol-genisligi-hesapla/">PCB Yol Genişliği Hesaplama aracına</a> akımı, bakır kalınlığını, izin verilen sıcaklık artışını ve katmanı girin. Araç IPC-2221 bağıntısıyla en düşük genişliği mm ve mil olarak verir; yol uzunluğunu da yazarsanız yol direncini, gerilim düşümünü ve harcanan gücü hesaplar. Gerilim, akım ve direnç arasındaki dönüşümler için <a href="../../ohm-kanunu-hesapla/">Ohm Kanunu Hesaplama</a> aracını kullanabilirsiniz.</p>
+      <p>Sonuçları bir tasarım başlangıcı olarak görün. Ticari ürünlerde, güvenlik gerektiren uygulamalarda ve şebeke gerilimiyle çalışan devrelerde ilgili standartları, termal analizi ve deneyimli bir elektronik mühendisinin incelemesini esas alın.</p>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>PCB yol genişliği neye göre seçilir?</summary><p>Yoldan geçecek sürekli akıma, bakır kalınlığına, izin verilen sıcaklık artışına ve yolun dış ya da iç katmanda olmasına göre seçilir. Uzun yollarda gerilim düşümü ve üreticinin en düşük genişlik kuralı da kontrol edilir.</p></details>
+      <details><summary>1 oz bakır kaç mikron kalınlıktadır?</summary><p>1 oz bakır yaklaşık 35 mikrometre, yani 1,378 mil kalınlığındadır. Kalınlık ağırlıkla orantılıdır: 2 oz yaklaşık 70 µm, 0,5 oz yaklaşık 17,5 µm'dir; gerçek değer üretim sürecine göre biraz değişebilir.</p></details>
+      <details><summary>2 amper için kaç mm yol gerekir?</summary><p>IPC-2221'e göre 1 oz bakırlı dış katmanda 10 °C artış için yaklaşık 0,78 mm, 20 °C artış için yaklaşık 0,51 mm gerekir. İç katmanda aynı akım için yaklaşık 2,03 mm hesaplanır; bunlar alt sınırdır.</p></details>
+      <details><summary>İç ve dış katman yolları neden farklı hesaplanır?</summary><p>Dış katman ısısını havaya verebilir, iç katman ise ısıyı iyi iletmeyen kart malzemesiyle sarılıdır. IPC-2221 bu farkı iç katman katsayısını yarıya indirerek yansıtır; iç yol yaklaşık 2,6 kat daha geniş çıkar.</p></details>
+      <details><summary>Sıcaklık artışı hesaba nasıl katılır?</summary><p>ΔT, yolun ortam sıcaklığının üstüne çıkmasına izin verilen derece farkıdır. Formülde ΔT'nin 0,44 kuvveti kullanılır; izin verilen artış büyüdükçe gereken genişlik azalır ama kart ve bileşenler daha sıcak çalışır.</p></details>
+      <details><summary>IPC-2221 formülü nedir?</summary><p>I = k × ΔT^0,44 × A^0,725 bağıntısıdır. I amper, ΔT santigrat derece, A mil kare cinsinden kesit alanıdır; k dış katman için 0,048, iç katman için 0,024 alınır. Genişlik, kesitin bakır kalınlığına bölünmesiyle bulunur.</p></details>
+      <details><summary>Yol genişliği ile kablo kesiti arasında benzerlik var mı?</summary><p>Evet, ikisinde de kesit alanı direnci, direnç de ısınma ve gerilim düşümünü belirler ve bakırın özdirenci aynıdır. Fark soğuma biçimindedir; ince ve geniş PCB yolu ısıyı yüzeyden daha kolay atar.</p></details>
+      <details><summary>Güç yollarında hangi tasarım önlemleri alınır?</summary><p>Yollar hesaplanandan geniş çizilir, bakır döküm ve paralel katmanlar kullanılır, geçişlerde birden çok viya konur ve konnektör girişlerindeki darboğazlar önlenir. Gerilim düşümü ve üretici kuralları da kontrol edilir.</p></details>
+      <details><summary>IPC-2152 ile IPC-2221 farkı nedir?</summary><p>IPC-2152 daha yeni ve ayrıntılı bir standarttır; kart kalınlığı, bakır düzlemlere yakınlık ve malzeme özelliklerini de hesaba katar. IPC-2221'in basit bağıntısı özellikle iç katmanlarda daha tutucu sonuç verir.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır; hesaplanan değerler örnek ve alt sınırdır; tasarımınızda geçerli standardı, üretici kurallarını ve uzman mühendis incelemesini esas alın, şebeke gerilimli devrelerde yetkili uzmana danışın. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.ipc.org/" rel="noopener">IPC – IPC-2221 ve IPC-2152 tasarım standartları</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../kablo-kesiti-nasil-secilir/"><strong>Kablo Kesiti Nasıl Seçilir? Kaç mm² Kablo Kaç Amper Taşır Tablosu</strong><span>Kablo kesiti iki ölçüte göre seçilir: akım taşıma kapasitesi ve gerilim düşümü; büyük çıkan kesit kullanılır. 1,5 ve 2,5 mm² tablosu, örnek hesap ve güvenlik notları.</span></a></li>
+          <li><a href="../ohm-kanunu-nedir/"><strong>Ohm Kanunu Nedir? V=I·R Formülü, Akım-Gerilim-Direnç Örnekleri</strong><span>Ohm kanunu: gerilim = akım × direnç (V = I · R). Ohm üçgeni, birimler, seri ve paralel devre, elektriksel güç ve 8. sınıf ile 10. sınıf düzeyinde çözümlü örnekler.</span></a></li>
+          <li><a href="../watt-amper-volt-iliskisi/"><strong>Watt, Amper ve Volt İlişkisi: Kaç Watt Kaç Amper Çeker? Hesaplama</strong><span>Güç (W) = gerilim (V) × akım (A). 230 V'ta 2000 W cihaz yaklaşık 8,7 A çeker, 16 A sigorta yaklaşık 3.680 W taşır. Üç faz, uzatma kablosu ve 5V 2A örnekleri.</span></a></li>
+          <li><a href="../ieee-754-kayan-nokta-0-1-0-2/"><strong>0.1 + 0.2 Neden 0.30000000000000004? IEEE 754 Kayan Nokta</strong><span>0.1 ve 0.2 ikilik sistemde tam yazılamaz, en yakın değere yuvarlanır; toplam bu yüzden 0.30000000000000004 çıkar. IEEE 754, float-double farkı ve çözümler.</span></a></li>
+          <li><a href="../gb-kac-mb-veri-birimleri/"><strong>1 GB Kaç MB? Bit, Bayt, KB, MB, GB ve TB Veri Birimleri</strong><span>1 GB kaç MB, 1 TB kaç GB, 1 bayt kaç bit? 1000 ile 1024 farkı, 1 TB diskin neden 931 GB göründüğü, Mbps ile MB/s farkı ve örnek hesaplar.</span></a></li>
+          <li><a href="../ascii-unicode-utf8-farki/"><strong>ASCII, Unicode ve UTF-8 Nedir? Karakter Kodlaması Farkları Basitçe</strong><span>ASCII 128 karakterlik 7 bitlik tablodur; Unicode tüm yazıların karakter listesi, UTF-8 ise bu listeyi 1–4 baytla kaydetme yöntemidir. ANSI farkı ve Türkçe harfler.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-pcb-yol-genisligi-nasil-hesaplanir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>

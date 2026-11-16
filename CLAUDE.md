@@ -136,3 +136,7 @@ Kaynak `scripts/bilgi/makaleler/<slug>.mjs`; sayfalar elle düzenlenmez, `node s
   cetveliyle doğrulayın. `wordden-pdfe` PDF/A çıktısı vermiyor; sayfa metni bunu ima etmemeli.
 - `pdf-n-up` kitapçık modu 4'ün katına tamamlarken boş sayfaları en sona ekliyor; son sayfa arka kapaksa içe kayıyor.
   "Son sayfayı arka kapak olarak koru" seçeneği ekleyin.
+- `hedef-kilo-tarihi-hesapla` haftada 5 kg'a kadar tempo kabul ediyor; sağlıklı aralık haftada 0,5–1 kg. Üst sınırı düşürün ve aşırı
+  hızlarda uyarı gösterin. `pdf-gri-tonlama` sayfaları görüntüye çevirdiği için metin seçilemiyor; sayfada belirtin.
+  `ihbar-tazminati-hesapla` asgari ücret istisnası uygulayıp uygulamadığını açıkça göstermiyor.
+- `fersah-km-cevir`: "metrik fersah 6 km" seçeneğinin kaynağını doğrulayın.

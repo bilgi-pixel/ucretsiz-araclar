@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('ba-js');if(document.visibilityState!=='hidden')document.documentElement.classList.add('ba-in')</script>
+  <title>Bowling Puanı Nasıl Hesaplanır? Strike ve Spare Bonusu</title>
+  <meta name="description" content="Bowling puanı 10 frame üzerinden hesaplanır; strike sonraki iki atışı, spare sonraki bir atışı bonus olarak ekler. Çözümlü 172 puanlık örnek, 10. frame ve 300 kuralı.">
+  <meta name="keywords" content="bowling puanı nasıl hesaplanır, bowling strike bonusu, bowling spare nedir, bowling skor tablosu, bowling 10. frame, bowling 300 puan, bowling puan hesaplama, ardışık strike puanı">
+  <link rel="canonical" href="https://araclar.bilisimajans.com/bilgi-bankasi/bowling-puani-nasil-hesaplanir/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Bilişim Ajans Ücretsiz Araçlar">
+  <meta property="og:title" content="Bowling Puanı Nasıl Hesaplanır? Strike ve Spare Bonusu">
+  <meta property="og:description" content="Bowling puanı 10 frame üzerinden hesaplanır; strike sonraki iki atışı, spare sonraki bir atışı bonus olarak ekler. Çözümlü 172 puanlık örnek, 10. frame ve 300 kuralı.">
+  <meta property="og:url" content="https://araclar.bilisimajans.com/bilgi-bankasi/bowling-puani-nasil-hesaplanir/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/ba.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#7b2331">
+  <style>
+    .rh-tools { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 20px; margin: 24px 0; }
+    .rh-tools h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .rh-tools ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .rh-tools ul { grid-template-columns: repeat(2, 1fr); } }
+    .rh-tools a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .rh-tools a:hover, .rh-tools a:focus-visible { border-color: var(--ba-primary); }
+    .rh-tools strong { display: block; color: var(--ba-primary); margin-bottom: 4px; }
+    .rh-tools span { font-size: .92rem; color: var(--ba-text-2); }
+    .rh-note { border-left: 4px solid var(--ba-primary); background: var(--ba-surface-2); padding: 12px 16px; margin: 16px 0; border-radius: 0 var(--ba-radius-sm) var(--ba-radius-sm) 0; }
+    .ba-content { overflow-wrap: anywhere; }
+    .rh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+    .rh-table th, .rh-table td { border: 1px solid var(--ba-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .rh-table th { background: var(--ba-surface-2); }
+    .rh-table-wrap { overflow-x: auto; }
+    .rh-formula { background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 8px 0 16px; }
+    .bb-kisa { background: var(--ba-primary-soft); border: 1px solid var(--ba-border); border-left: 4px solid var(--ba-primary); border-radius: var(--ba-radius); padding: 16px 20px; margin: 24px 0; }
+    .bb-kisa h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .bb-kisa ul { margin: 0; padding-left: 20px; }
+    .bb-kisa li { margin: 4px 0; }
+    .bb-fig { margin: 24px 0; background: var(--ba-surface-2); border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 16px; }
+    .bb-fig svg { display: block; width: 100%; height: auto; max-height: 520px; }
+    .bb-fig figcaption { font-size: .92rem; color: var(--ba-text-2); margin-top: 10px; }
+    .bb-fig text { font-family: var(--ba-font); fill: var(--ba-text); font-size: 15px; }
+    .bb-fig .b { font-weight: 600; } .bb-fig .sm { font-size: 12px; } .bb-fig .lg { font-size: 19px; } .bb-fig .xl { font-size: 26px; font-weight: 700; }
+    .bb-fig .mid { text-anchor: middle; } .bb-fig .end { text-anchor: end; } .bb-fig .dash { stroke-dasharray: 5 5; }
+    .bb-fig .p { fill: var(--ba-primary); } .bb-fig .ps { fill: var(--ba-primary-soft); } .bb-fig .a { fill: var(--ba-accent); }
+    .bb-fig .s2 { fill: var(--ba-surface-2); } .bb-fig .sf { fill: var(--ba-surface); } .bb-fig .t { fill: var(--ba-text); }
+    .bb-fig .t2 { fill: var(--ba-text-2); } .bb-fig .mu { fill: var(--ba-text-muted); } .bb-fig .ok { fill: var(--ba-success); }
+    .bb-fig .oks { fill: var(--ba-success-soft); } .bb-fig .dg { fill: var(--ba-danger); } .bb-fig .dgs { fill: var(--ba-danger-soft); }
+    .bb-fig .c { fill: var(--ba-cmyk-c); } .bb-fig .m { fill: var(--ba-cmyk-m); } .bb-fig .y { fill: var(--ba-cmyk-y); }
+    .bb-fig text.p { fill: var(--ba-primary); } .bb-fig text.ok { fill: var(--ba-success); } .bb-fig text.dg { fill: var(--ba-danger); } .bb-fig text.mu { fill: var(--ba-text-muted); } .bb-fig text.t2 { fill: var(--ba-text-2); } .bb-fig text.sf { fill: var(--ba-surface); }
+    .bb-fig .sp { stroke: var(--ba-primary); } .bb-fig .sb { stroke: var(--ba-border-hover); } .bb-fig .st { stroke: var(--ba-text-2); }
+    .bb-fig .sa { stroke: var(--ba-accent); } .bb-fig .sok { stroke: var(--ba-success); } .bb-fig .sdg { stroke: var(--ba-danger); } .bb-fig .sw { stroke-width: 3; }
+    .bb-meta { font-size: .9rem; color: var(--ba-on-ink-2); margin-top: 8px; }
+    .bb-toc { border: 1px solid var(--ba-border); border-radius: var(--ba-radius); padding: 14px 18px; margin: 24px 0; }
+    .bb-toc h2 { font-size: 1rem; margin: 0 0 6px; } .bb-toc ol { margin: 0; padding-left: 20px; columns: 2 260px; } .bb-toc li { margin: 3px 0; }
+    @media (max-width: 560px) { .ba-nav a.bb-nav { display: none; } }
+    .rh-tools li, .bb-cards li { min-width: 0; } .rh-tools a, .bb-cards a { overflow-wrap: anywhere; }
+    main { overflow-wrap: break-word; } .bb-kisa li, .rh-note, .bb-toc li { overflow-wrap: anywhere; }
+    .bb-alt { color: var(--ba-text-2); }
+    .bb-src { font-size: .92rem; } .bb-src li { margin: 4px 0; overflow-wrap: anywhere; }
+    .bb-cards { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+    @media (min-width: 720px) { .bb-cards { grid-template-columns: repeat(2, 1fr); } }
+    .bb-cards a { display: block; min-height: 44px; padding: 14px 16px; background: var(--ba-surface); border: 1px solid var(--ba-border); border-radius: var(--ba-radius-sm); text-decoration: none; color: inherit; }
+    .bb-cards a:hover, .bb-cards a:focus-visible { border-color: var(--ba-primary); }
+    .bb-cards strong { display: block; color: var(--ba-primary); margin-bottom: 4px; } .bb-cards span { font-size: .92rem; color: var(--ba-text-2); }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Bowling Puanı Nasıl Hesaplanır? Strike, Spare ve 300 Puanlık Mükemmel Oyun","description":"Bowling puanı 10 frame üzerinden hesaplanır; strike sonraki iki atışı, spare sonraki bir atışı bonus olarak ekler. Çözümlü 172 puanlık örnek, 10. frame ve 300 kuralı.","inLanguage":"tr","mainEntityOfPage":"https://araclar.bilisimajans.com/bilgi-bankasi/bowling-puani-nasil-hesaplanir/","datePublished":"2026-11-15","dateModified":"2026-11-15","wordCount":1197,"keywords":"bowling puanı nasıl hesaplanır, bowling strike bonusu, bowling spare nedir, bowling skor tablosu, bowling 10. frame, bowling 300 puan, bowling puan hesaplama, ardışık strike puanı","articleSection":"Günlük Yaşam","author":{"@type":"Organization","name":"Bilişim Ajans","url":"https://bilisimajans.com/"},"publisher":{"@type":"Organization","name":"Bilişim Ajans","logo":{"@type":"ImageObject","url":"https://araclar.bilisimajans.com/assets/img/logo.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Araçlar","item":"https://araclar.bilisimajans.com/"},{"@type":"ListItem","position":2,"name":"Bilgi Bankası","item":"https://araclar.bilisimajans.com/bilgi-bankasi/"},{"@type":"ListItem","position":3,"name":"Günlük Yaşam","item":"https://araclar.bilisimajans.com/bilgi-bankasi/#gunluk"},{"@type":"ListItem","position":4,"name":"Bowling Puanı Nasıl Hesaplanır? Strike, Spare ve 300 Puanlık Mükemmel Oyun"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Bowling puanı nasıl hesaplanır?","acceptedAnswer":{"@type":"Answer","text":"On frame boyunca devrilen lobutlar toplanır; strike yapılan frame'e sonraki iki atış, spare yapılan frame'e sonraki bir atış bonus olarak eklenir. Her frame'in puanı birikimli toplam olarak skor tablosuna yazılır."}},{"@type":"Question","name":"Strike ve spare bonusları nasıl eklenir?","acceptedAnswer":{"@type":"Answer","text":"Strike, ilk atışta 10 lobutu devirmektir ve frame puanı 10 artı sonraki iki atıştır. Spare, iki atışta 10 lobutu devirmektir ve frame puanı 10 artı sonraki ilk atıştır."}},{"@type":"Question","name":"10. frame'de neden ekstra atış hakkı vardır?","acceptedAnswer":{"@type":"Answer","text":"Son frame'den sonra bonus atışlarını sağlayacak başka frame olmadığı için strike yapan oyuncuya iki, spare yapan oyuncuya bir ek atış verilir. Bu atışlar yalnızca 10. frame'in bonusunu tamamlar."}},{"@type":"Question","name":"En yüksek bowling puanı neden 300'dür?","acceptedAnswer":{"@type":"Answer","text":"Bir frame en fazla 30 puan alabilir: strike'ın 10 puanı ve sonraki iki strike'tan gelen 20 bonus. On frame'in her birinden 30 alındığında toplam 300 olur; bunun için 12 ardışık strike gerekir."}},{"@type":"Question","name":"Ortalama bir amatör kaç puan yapar?","acceptedAnswer":{"@type":"Answer","text":"Kesin bir değer yoktur, ama ara sıra oynayanlar çoğunlukla 80 ile 150 arasında puan yapar. Düzenli oynayan amatörler 150–180 aralığına çıkabilir; pist koşulları ve top seçimi sonucu belirgin biçimde etkiler."}},{"@type":"Question","name":"Ardışık strike'lar puanı nasıl katlar?","acceptedAnswer":{"@type":"Answer","text":"Her strike'ın bonusu sonraki atışlardan gelir; art arda strike yapıldığında bonuslar da strike olur. Üç ardışık strike'ın ilki 30 puan alır ve toplam, aynı frame'lerde 9 lobut devirmeye göre iki katından fazla olabilir."}},{"@type":"Question","name":"Bowling skor tablosu nasıl okunur?","acceptedAnswer":{"@type":"Answer","text":"Her kutunun üstünde atış işaretleri (X, /, -, rakam), altında o frame dahil birikimli toplam yazılır. Strike ve spare frame'lerinin toplamı bonus atışlar yapılana kadar boş kalır."}},{"@type":"Question","name":"Grup oyunlarında puan nasıl tutulur?","acceptedAnswer":{"@type":"Answer","text":"Her oyuncunun her oyunu ayrı hesaplanır, sonra toplam ve ortalama karşılaştırılır. Oyun Puan Tablosu aracı oyuncuların tur puanlarından toplamı, ortalamayı ve sıralamayı tek ekranda gösterir."}},{"@type":"Question","name":"Bowlingde faul olursa ne olur?","acceptedAnswer":{"@type":"Answer","text":"Atış sırasında faul çizgisi aşılırsa o atışta devrilen lobutlar sayılmaz ve atış 0 olarak yazılır, skor tablosunda F ile gösterilir. Atış hakkı kullanılmış sayılır."}}]}]}
+  </script>
+</head>
+<body>
+  <div class="ba-topbar"><div class="ba-container"><div class="l"><a href="tel:+904122230466"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>0412 223 04 66</a><a class="wa" href="https://wa.me/905425122120" rel="noopener" title="WhatsApp ile yazın"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>0542 512 21 20</a><a class="hide-m" href="mailto:bilgi@bilisimajans.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg>bilgi@bilisimajans.com</a></div><div class="r"><span>%100 ücretsiz</span><i aria-hidden="true"></i><span>kayıt yok</span><i aria-hidden="true"></i><span>dosya yüklenmez</span></div></div></div>
+  <header class="ba-header"><div class="ba-container"><a class="ba-logo" href="../../" aria-label="Bilişim Ajans Ücretsiz Araçlar ana sayfa"><span class="ba-logo-img"><img src="../../assets/img/logo.png" alt="Bilişim Ajans" width="213" height="32"></span><span>Ücretsiz<br>Araçlar</span></a><nav class="ba-nav" aria-label="Site"><a href="../../">Tüm Araçlar</a><a class="bb-nav" href="../../bilgi-bankasi/">Bilgi Bankası</a><a class="ba-nav-site" href="https://bilisimajans.com/">bilisimajans.com</a></nav></div></header>
+  <main>
+    <section class="ba-hero"><div class="ba-container ba-narrow"><ol class="ba-crumb" aria-label="Konum"><li><a href="../../">Araçlar</a></li><li><a href="../">Bilgi Bankası</a></li><li><a href="../#gunluk">Günlük Yaşam</a></li></ol><h1>Bowling Puanı Nasıl Hesaplanır? Strike, Spare ve 300 Puanlık Mükemmel Oyun</h1><p class="lead">Bowling puanı, 10 frame (çerçeve) boyunca devrilen lobutların toplanmasıyla hesaplanır; ancak tüm lobutları ilk atışta devirmek (<strong>strike</strong>) o frame'e sonraki iki atışın, iki atışta devirmek (<strong>spare</strong>) ise sonraki bir atışın puanını bonus olarak ekler. Bu yüzden bir frame'in puanı çoğu zaman sonraki atışlar yapılmadan yazılamaz. Her frame'de en fazla 30 puan alınabildiği için mükemmel oyun 10 × 30 = 300 puandır ve bunun için art arda 12 strike gerekir. Bu sayfada skor tablosunun okunuşunu, 10. frame kuralını ve frame frame çözülmüş bir oyun örneğini bulacaksınız.</p><p class="bb-meta">Güncelleme: <time datetime="2026-11-15">15.11.2026</time> · 6 dk okuma · Bilişim Ajans Bilgi Bankası</p></div></section>
+    <div class="ba-container ba-narrow">
+
+    <section class="bb-kisa" aria-labelledby="h-kisa">
+      <h2 id="h-kisa">Kısa cevap</h2>
+      <ul>
+        <li>Bir oyun 10 frame'dir; her frame'de 10 lobuta en fazla iki atış yapılır.</li>
+        <li>Açık frame (tüm lobutlar devrilmezse): frame puanı iki atışta devrilen lobut sayısıdır.</li>
+        <li>Spare (/): iki atışta 10 lobut; frame puanı 10 + sonraki ilk atış.</li>
+        <li>Strike (X): ilk atışta 10 lobut; frame puanı 10 + sonraki iki atış.</li>
+        <li>10. frame'de strike ya da spare yapan oyuncu, bonusu tamamlamak için ek atış hakkı kazanır; bu frame'de en fazla 3 atış yapılır.</li>
+        <li>Her frame en fazla 30 puan verir; 12 ardışık strike ile 300 puanlık mükemmel oyun oluşur.</li>
+      </ul>
+    </section>
+
+    <figure class="bb-fig">
+      <svg role="img" aria-label="On frame'lik bir bowling skor tablosu: X, 7/, 9-, X, X, 81, 6/, X, 72 ve X9/ atışları ile her frame'in altındaki birikimli puanlar 20, 39, 48, 76, 95, 104, 124, 143, 152 ve 172." viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+  <text x="360" y="28" class="lg b mid">Örnek oyun: 172 puan</text>
+  <g class="mid">
+    <text x="49" y="62" class="sm mu">1</text><text x="117" y="62" class="sm mu">2</text><text x="185" y="62" class="sm mu">3</text><text x="253" y="62" class="sm mu">4</text><text x="321" y="62" class="sm mu">5</text>
+    <text x="389" y="62" class="sm mu">6</text><text x="457" y="62" class="sm mu">7</text><text x="525" y="62" class="sm mu">8</text><text x="593" y="62" class="sm mu">9</text><text x="666" y="62" class="sm mu">10</text>
+    <rect x="16" y="70" width="66" height="96" class="ps sb"/><text x="49" y="100" class="lg b p">X</text><text x="49" y="150" class="lg b">20</text>
+    <rect x="84" y="70" width="66" height="96" class="sf sb"/><text x="117" y="100" class="lg b">7 /</text><text x="117" y="150" class="lg b">39</text>
+    <rect x="152" y="70" width="66" height="96" class="sf sb"/><text x="185" y="100" class="lg b">9 -</text><text x="185" y="150" class="lg b">48</text>
+    <rect x="220" y="70" width="66" height="96" class="ps sb"/><text x="253" y="100" class="lg b p">X</text><text x="253" y="150" class="lg b">76</text>
+    <rect x="288" y="70" width="66" height="96" class="ps sb"/><text x="321" y="100" class="lg b p">X</text><text x="321" y="150" class="lg b">95</text>
+    <rect x="356" y="70" width="66" height="96" class="sf sb"/><text x="389" y="100" class="lg b">8 1</text><text x="389" y="150" class="lg b">104</text>
+    <rect x="424" y="70" width="66" height="96" class="sf sb"/><text x="457" y="100" class="lg b">6 /</text><text x="457" y="150" class="lg b">124</text>
+    <rect x="492" y="70" width="66" height="96" class="ps sb"/><text x="525" y="100" class="lg b p">X</text><text x="525" y="150" class="lg b">143</text>
+    <rect x="560" y="70" width="66" height="96" class="sf sb"/><text x="593" y="100" class="lg b">7 2</text><text x="593" y="150" class="lg b">152</text>
+    <rect x="628" y="70" width="76" height="96" class="oks sb"/><text x="666" y="100" class="lg b">X 9 /</text><text x="666" y="150" class="lg b">172</text>
+  </g>
+  <line x1="16" y1="116" x2="704" y2="116" class="sb" fill="none"/>
+  <rect x="16" y="190" width="340" height="96" rx="10" class="sf sb"/>
+  <text x="32" y="216" class="b">Strike (4. frame)</text>
+  <text x="32" y="242" class="sm">10 + sonraki iki atış (X ve 8)</text>
+  <text x="32" y="266" class="sm">10 + 10 + 8 = <tspan class="b p">28</tspan> → 48 + 28 = 76</text>
+  <rect x="364" y="190" width="340" height="96" rx="10" class="sf sb"/>
+  <text x="380" y="216" class="b">Spare (7. frame)</text>
+  <text x="380" y="242" class="sm">10 + sonraki ilk atış (X)</text>
+  <text x="380" y="266" class="sm">10 + 10 = <tspan class="b p">20</tspan> → 104 + 20 = 124</text>
+  <rect x="16" y="302" width="688" height="82" rx="10" class="ps"/>
+  <text x="32" y="328" class="b">10. frame: X 9 / = 10 + 9 + 1 = 20</text>
+  <text x="32" y="352" class="sm">Strike yapıldığı için iki ek atış hakkı doğdu; ek atışlar yalnızca bonusu tamamlar.</text>
+  <text x="32" y="372" class="sm">Mükemmel oyun: 12 ardışık strike → her frame 30 → 300 puan.</text>
+</svg>
+      <figcaption>Örnek oyunun skor tablosu. Üst satırda atışlar (X strike, / spare, - ıskalama), alt satırda birikimli toplam vardır. 4. frame'deki strike, 5. frame'deki strike ve 6. frame'in ilk atışı (8) ile 10 + 10 + 8 = 28 puan getirir.</figcaption>
+    </figure>
+
+    <nav class="bb-toc" aria-labelledby="h-toc"><h2 id="h-toc">Bu sayfada</h2><ol>
+      <li><a href="#b1">Bowling puanlamasının temel kuralları</a></li>
+      <li><a href="#b2">Strike ve spare bonusları nasıl eklenir?</a></li>
+      <li><a href="#b3">Çözümlü örnek: frame frame 172 puan</a></li>
+      <li><a href="#b4">10. frame'de neden ekstra atış hakkı vardır?</a></li>
+      <li><a href="#b5">En yüksek bowling puanı neden 300'dür?</a></li>
+      <li><a href="#b6">Ardışık strike'lar puanı nasıl katlar?</a></li>
+      <li><a href="#b7">Bowling skor tablosu nasıl okunur?</a></li>
+      <li><a href="#b8">Ortalama bir amatör kaç puan yapar? Grup oyunlarında puan tutma</a></li>
+      <li><a href="#b9">Sık yapılan hesap hataları</a></li>
+      <li><a href="#sss">Sık sorulan sorular</a></li>
+    </ol></nav>
+
+    <div class="ba-ad" data-slot="bilgi-bowling-puani-nasil-hesaplanir-a" aria-label="Reklam"></div>
+
+    <section class="rh-tools" aria-labelledby="h-araclar">
+      <h2 id="h-araclar">Bu konuda kullanabileceğiniz ücretsiz araçlar</h2>
+      <ul>
+          <li><a href="../../bowling-puani-hesapla/"><strong>Bowling Puanı Hesaplama</strong><span>Atışlarınızı X, / ve rakamlarla yazın; strike ve spare bonuslarıyla çerçeve çerçeve bowling skorunuzu hesaplayın.</span></a></li>
+          <li><a href="../../oyun-puan-tablosu/"><strong>Oyun Puan Tablosu Hesaplama</strong><span>Oyuncuların tur puanlarını yazın; toplam, ortalama ve sıralamayı görün. Okey, 101, kâğıt ve kutu oyunları için skor tablosu.</span></a></li>
+      </ul>
+    </section>
+
+    <section class="ba-content">
+
+      <h2 id="b1">Bowling puanlamasının temel kuralları</h2>
+      <p>Onlu bowlingde bir oyun 10 frame'den oluşur. Her frame'de oyuncu, üçgen biçiminde dizilmiş 10 lobutu devirmek için en fazla iki atış yapar. İlk atışta tüm lobutlar devrilirse frame orada biter. Devrilen her lobut bir puandır; ama asıl farkı strike ve spare bonusları yaratır.</p>
+      <p>Bonus sistemi, iyi atışları ödüllendirmek için tasarlanmıştır: tüm lobutları devirmek yalnızca 10 puan değil, sonraki atışlarınızın da o frame'e eklenmesi demektir. Bu nedenle art arda strike yapmak puanı hızla katlar ve bir frame'de alınabilecek en yüksek puan 30'a çıkar.</p>
+      <p>Skor tablosunda kullanılan işaretler standarttır: <strong>X</strong> strike, <strong>/</strong> spare, <strong>-</strong> ıskalama (o atışta lobut devrilmedi), <strong>F</strong> faul (çizgi aşıldı, atış 0 sayılır). Rakamlar ise o atışta devrilen lobut sayısını gösterir.</p>
+
+      <h2 id="b2">Strike ve spare bonusları nasıl eklenir?</h2>
+      <div class="rh-formula">Açık frame = a + b<br>Spare = 10 + sonraki 1 atış<br>Strike = 10 + sonraki 2 atış</div>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Frame türü</th><th>İşaret</th><th>Frame puanı</th><th>Örnek</th></tr></thead>
+        <tbody>
+          <tr><td>Açık frame</td><td>8 1</td><td>İki atışta devrilen lobut</td><td>8 + 1 = 9</td></tr>
+          <tr><td>Spare</td><td>7 /</td><td>10 + sonraki ilk atış</td><td>7 / ardından 9 → 10 + 9 = 19</td></tr>
+          <tr><td>Strike</td><td>X</td><td>10 + sonraki iki atış</td><td>X ardından 8 1 → 10 + 8 + 1 = 19</td></tr>
+          <tr><td>Strike ardından strike</td><td>X X</td><td>10 + 10 + sonraki atış</td><td>X X 8 → 10 + 10 + 8 = 28</td></tr>
+          <tr><td>Üç ardışık strike</td><td>X X X</td><td>10 + 10 + 10</td><td>30 (en yüksek frame puanı)</td></tr>
+        </tbody>
+      </table></div>
+      <p>Bonus için atışlar sayılır, frame'ler değil. Strike'tan sonraki iki atış, sonraki frame'in iki atışı olabileceği gibi, sonraki frame de strike ise o strike ve ondan sonraki frame'in ilk atışı olur. Bu küçük ayrıntı, ardışık strike'larda puanın neden bu kadar hızlı arttığını açıklar.</p>
+
+      <h2 id="b3">Çözümlü örnek: frame frame 172 puan</h2>
+      <p>Atışlar şöyle olsun: <strong>X | 7 / | 9 - | X | X | 8 1 | 6 / | X | 7 2 | X 9 /</strong>. Her frame'in puanını ve birikimli toplamı adım adım hesaplayalım.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Frame</th><th>Atışlar</th><th>Hesap</th><th>Frame puanı</th><th>Toplam</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>X</td><td>10 + 7 + 3 (sonraki iki atış)</td><td>20</td><td>20</td></tr>
+          <tr><td>2</td><td>7 /</td><td>10 + 9 (sonraki ilk atış)</td><td>19</td><td>39</td></tr>
+          <tr><td>3</td><td>9 -</td><td>9 + 0</td><td>9</td><td>48</td></tr>
+          <tr><td>4</td><td>X</td><td>10 + 10 + 8</td><td>28</td><td>76</td></tr>
+          <tr><td>5</td><td>X</td><td>10 + 8 + 1</td><td>19</td><td>95</td></tr>
+          <tr><td>6</td><td>8 1</td><td>8 + 1</td><td>9</td><td>104</td></tr>
+          <tr><td>7</td><td>6 /</td><td>10 + 10 (sonraki atış strike)</td><td>20</td><td>124</td></tr>
+          <tr><td>8</td><td>X</td><td>10 + 7 + 2</td><td>19</td><td>143</td></tr>
+          <tr><td>9</td><td>7 2</td><td>7 + 2</td><td>9</td><td>152</td></tr>
+          <tr><td>10</td><td>X 9 /</td><td>10 + 9 + 1</td><td>20</td><td>172</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Toplam 172 puan. 1. frame'in puanı ancak 2. frame'in iki atışı yapıldıktan sonra yazılabilir.</p>
+      <p>Bu örnekte 5 strike ve 3 spare (10. frame dahil) vardır. Bonusları çıkarıp yalnızca devrilen lobutları toplasaydık 10 frame'de çok daha düşük bir sayı bulurduk; aradaki fark bonusların gücünü gösterir. Kendi oyununuzu hesaplamak için atışlarınızı <a href="../../bowling-puani-hesapla/">Bowling Puanı Hesaplama aracına</a> X, / ve rakamlarla yazmanız yeterlidir; araç her frame'in toplamını ayrı ayrı gösterir.</p>
+
+      <h2 id="b4">10. frame'de neden ekstra atış hakkı vardır?</h2>
+      <p>İlk dokuz frame'de strike ve spare bonusu, sonraki frame'lerin atışlarından gelir. 10. frame'den sonra ise başka frame yoktur. Bu frame'de strike ya da spare yapan oyuncunun bonusu yarım kalmasın diye ek atış hakkı tanınır. Ek atışlar yeni bir frame değildir; yalnızca 10. frame'in bonusunu tamamlar.</p>
+      <ul>
+        <li><strong>10. frame'de açık frame:</strong> İki atış yapılır, oyun biter. Örnek: 7 2 → 9 puan.</li>
+        <li><strong>10. frame'de spare:</strong> Bir ek atış yapılır. Örnek: 6 / 8 → 10 + 8 = 18 puan.</li>
+        <li><strong>10. frame'de strike:</strong> İki ek atış yapılır. Örnek: X 9 / → 10 + 9 + 1 = 20; X X X → 30 puan.</li>
+      </ul>
+      <p>Bu nedenle 10. frame'de en fazla üç atış yapılır. Strike sonrasındaki ek atışlarda lobutlar yeniden dizilir; ilk ek atışta strike yapılmazsa ikinci ek atış kalan lobutlara yapılır ve ikisinin toplamı 10'u geçemez.</p>
+
+      <h2 id="b5">En yüksek bowling puanı neden 300'dür?</h2>
+      <p>Bir frame'in alabileceği en yüksek puan, strike'ın kendi 10 puanı ile sonraki iki atışın da strike olmasıyla gelen 20 bonus puanın toplamıdır: 30. On frame'in her birinden 30 alındığında toplam 10 × 30 = <strong>300</strong> olur.</p>
+      <p>Bunun için kaç strike gerektiğini sayalım: ilk 9 frame'de 9 strike, 10. frame'de bir strike ve bu strike'ın bonusu için iki ek atışta iki strike daha. Toplam <strong>12 ardışık strike</strong>. Tek bir atışta bile 9 lobut devrilse mükemmel oyun bozulur; son atışta 9 lobut devrilirse puan 299 olur.</p>
+      <div class="rh-table-wrap"><table class="rh-table">
+        <thead><tr><th>Senaryo</th><th>Puan</th></tr></thead>
+        <tbody>
+          <tr><td>12 ardışık strike</td><td>300</td></tr>
+          <tr><td>11 strike, son atış 9 lobut</td><td>299</td></tr>
+          <tr><td>Her frame'de 9 / ve son ek atış 9 (tümü spare)</td><td>190</td></tr>
+          <tr><td>Her frame'de 9 - (hiç bonus yok)</td><td>90</td></tr>
+          <tr><td>Her frame'de 4 4</td><td>80</td></tr>
+        </tbody>
+      </table></div>
+      <p class="bb-alt">Tümü spare olan bir oyunda her frame 10 + 9 = 19 puan verir; 10 × 19 = 190.</p>
+
+      <div class="ba-ad" data-slot="bilgi-bowling-puani-nasil-hesaplanir-b" aria-label="Reklam"></div>
+
+      <h2 id="b6">Ardışık strike'lar puanı nasıl katlar?</h2>
+      <p>Art arda yapılan strike'lar, her birinin bonusunu bir sonrakine bağlar. İki ardışık strike'tan ilki 10 + 10 + (üçüncü atış) puan alır; üç ardışık strike'ın ilki ise tam 30 puan alır. Bowling dilinde iki ardışık strike'a &quot;double&quot;, üç ardışık strike'a &quot;turkey&quot; denir.</p>
+      <p>Bunu sayılarla görelim. Bir oyuncu 1., 2. ve 3. frame'lerde strike, 4. frame'de 8 1 yapsın. 1. frame: 10 + 10 + 10 = 30. 2. frame: 10 + 10 + 8 = 28. 3. frame: 10 + 8 + 1 = 19. 4. frame: 9. Dört frame sonunda toplam 86'dır. Aynı oyuncu bu dört frame'de hiç strike yapmayıp her seferinde 9 lobut devirseydi toplam 36 olurdu.</p>
+
+      <h2 id="b7">Bowling skor tablosu nasıl okunur?</h2>
+      <p>Elektronik skor ekranları ve kâğıt tablolar aynı düzeni kullanır. Her frame bir kutudur; kutunun üst kısmında atış işaretleri, alt kısmında o frame'e kadar olan birikimli toplam yazılır. Strike ve spare yapılan frame'lerin toplamı, bonus atışları yapılana kadar boş bırakılır.</p>
+      <ol class="ba-steps">
+        <li>Üst satırdaki işaretleri okuyun: X strike, / spare, - ıskalama, F faul, rakam devrilen lobut sayısı.</li>
+        <li>Alt satırdaki sayı, o frame dahil tüm frame'lerin toplamıdır; frame puanını bulmak için bir öncekinden çıkarın.</li>
+        <li>Boş toplam kutusu, o frame'in bonusunun henüz tamamlanmadığını gösterir.</li>
+        <li>10. kutuda üç atış yeri vardır; ek atışlar yalnızca strike ya da spare yapıldıysa kullanılır.</li>
+      </ol>
+
+      <h2 id="b8">Ortalama bir amatör kaç puan yapar? Grup oyunlarında puan tutma</h2>
+      <p>Kesin bir ortalama vermek zordur; puan, deneyime, top ağırlığına ve pist yağlama koşullarına göre çok değişir. Genel bir gözlem olarak ara sıra oynayan kişiler çoğunlukla 80 ile 150 arasında puan yapar, düzenli oynayan amatörler 150–180 aralığına çıkabilir. Lig ve turnuvalarda oyuncular arasındaki farkı dengelemek için &quot;handikap&quot; adı verilen ek puan sistemleri kullanılır.</p>
+      <p>Arkadaş grubuyla oynarken her oyunu ayrı tutup sonunda toplam ve ortalama almak en adil yöntemdir. Birden çok oyun ve oyuncunun toplamını, ortalamasını ve sıralamasını görmek için <a href="../../oyun-puan-tablosu/">Oyun Puan Tablosu Hesaplama aracını</a> kullanabilirsiniz. Takımları rastgele kurmak isterseniz <a href="../../bilgi-bankasi/rastgele-takim-nasil-olusturulur/">rastgele takım oluşturma</a> yazısı, ortalama hesabının farklı türleri için <a href="../../bilgi-bankasi/ortalama-medyan-mod-nedir/">ortalama, medyan ve mod</a> yazısı yardımcı olur.</p>
+
+      <h2 id="b9">Sık yapılan hesap hataları</h2>
+      <ul>
+        <li><strong>Strike bonusunu sonraki frame olarak saymak:</strong> Bonus, sonraki iki frame değil, sonraki iki <em>atıştır</em>.</li>
+        <li><strong>Spare'e iki atış bonus eklemek:</strong> Spare yalnızca sonraki ilk atışı ekler.</li>
+        <li><strong>10. frame'deki ek atışları ayrı frame saymak:</strong> Ek atışlar yalnızca 10. frame'in bonusudur, kendi bonusları yoktur.</li>
+        <li><strong>Faul atışını unutmak:</strong> Faul yapılan atış 0 sayılır ama atış hakkı kullanılmış olur.</li>
+        <li><strong>Frame toplamını erken yazmak:</strong> Strike ve spare frame'lerinin toplamı bonus atışlar yapılmadan kesinleşmez.</li>
+      </ul>
+
+      <h2 id="sss">Sık sorulan sorular</h2>
+      <details><summary>Bowling puanı nasıl hesaplanır?</summary><p>On frame boyunca devrilen lobutlar toplanır; strike yapılan frame'e sonraki iki atış, spare yapılan frame'e sonraki bir atış bonus olarak eklenir. Her frame'in puanı birikimli toplam olarak skor tablosuna yazılır.</p></details>
+      <details><summary>Strike ve spare bonusları nasıl eklenir?</summary><p>Strike, ilk atışta 10 lobutu devirmektir ve frame puanı 10 artı sonraki iki atıştır. Spare, iki atışta 10 lobutu devirmektir ve frame puanı 10 artı sonraki ilk atıştır.</p></details>
+      <details><summary>10. frame'de neden ekstra atış hakkı vardır?</summary><p>Son frame'den sonra bonus atışlarını sağlayacak başka frame olmadığı için strike yapan oyuncuya iki, spare yapan oyuncuya bir ek atış verilir. Bu atışlar yalnızca 10. frame'in bonusunu tamamlar.</p></details>
+      <details><summary>En yüksek bowling puanı neden 300'dür?</summary><p>Bir frame en fazla 30 puan alabilir: strike'ın 10 puanı ve sonraki iki strike'tan gelen 20 bonus. On frame'in her birinden 30 alındığında toplam 300 olur; bunun için 12 ardışık strike gerekir.</p></details>
+      <details><summary>Ortalama bir amatör kaç puan yapar?</summary><p>Kesin bir değer yoktur, ama ara sıra oynayanlar çoğunlukla 80 ile 150 arasında puan yapar. Düzenli oynayan amatörler 150–180 aralığına çıkabilir; pist koşulları ve top seçimi sonucu belirgin biçimde etkiler.</p></details>
+      <details><summary>Ardışık strike'lar puanı nasıl katlar?</summary><p>Her strike'ın bonusu sonraki atışlardan gelir; art arda strike yapıldığında bonuslar da strike olur. Üç ardışık strike'ın ilki 30 puan alır ve toplam, aynı frame'lerde 9 lobut devirmeye göre iki katından fazla olabilir.</p></details>
+      <details><summary>Bowling skor tablosu nasıl okunur?</summary><p>Her kutunun üstünde atış işaretleri (X, /, -, rakam), altında o frame dahil birikimli toplam yazılır. Strike ve spare frame'lerinin toplamı bonus atışlar yapılana kadar boş kalır.</p></details>
+      <details><summary>Grup oyunlarında puan nasıl tutulur?</summary><p>Her oyuncunun her oyunu ayrı hesaplanır, sonra toplam ve ortalama karşılaştırılır. Oyun Puan Tablosu aracı oyuncuların tur puanlarından toplamı, ortalamayı ve sıralamayı tek ekranda gösterir.</p></details>
+      <details><summary>Bowlingde faul olursa ne olur?</summary><p>Atış sırasında faul çizgisi aşılırsa o atışta devrilen lobutlar sayılmaz ve atış 0 olarak yazılır, skor tablosunda F ile gösterilir. Atış hakkı kullanılmış sayılır.</p></details>
+
+      <div class="rh-note"><strong>Not:</strong> Bu sayfa genel bilgilendirme amaçlıdır. Mevzuat, oran ve tutarlar değişebilir; kesin bilgi için ilgili resmî kurumun güncel duyurularını esas alın.</div>
+
+      <h2>Kaynaklar</h2>
+      <ul class="bb-src">
+        <li><a href="https://www.worldbowling.org/" rel="noopener">World Bowling – Uluslararası bowling federasyonu</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-ilgili">
+      <h2 id="h-ilgili">Bilgi Bankası'nda ilgili konular</h2>
+      <ul class="bb-cards">
+          <li><a href="../rastgele-takim-nasil-olusturulur/"><strong>Rastgele Takım Nasıl Oluşturulur? Halı Saha, Sınıf ve Turnuva Kurası</strong><span>İsim listesi rastgele takımlara listeyi yansız karıştırıp sırayla dağıtarak bölünür. Seviye dengeli yılan dağıtımı, tek sayıda kişi, eleme tablosu ve kura paylaşımı.</span></a></li>
+          <li><a href="../ortalama-medyan-mod-nedir/"><strong>Aritmetik Ortalama, Medyan, Mod ve Açıklık Nedir? Nasıl Bulunur</strong><span>Medyan sıralı verinin ortasındaki değer, mod en sık tekrar eden değer, açıklık en büyük ile en küçüğün farkıdır. Tek-çift veri, çeyrekler açıklığı ve örnekler.</span></a></li>
+          <li><a href="../gol-averaji-nasil-hesaplanir-lig-fiksturu/"><strong>Gol Averajı Nasıl Hesaplanır? Puan Durumu, İkili Averaj ve Lig Fikstürü</strong><span>Gol averajı = atılan gol − yenilen gol. Türkiye liglerinde puan eşitliğinde önce aralarındaki maçlara (ikili averaj) bakılır. Fikstür, bay haftası ve eleme tablosu.</span></a></li>
+          <li><a href="../deniz-mili-kac-km-knot-nedir/"><strong>1 Deniz Mili Kaç Km? Knot Nedir, Gemi ve Uçak Hızı Nasıl Ölçülür</strong><span>1 deniz mili tam 1,852 km'dir; 1 knot saatte 1 deniz mili, yani 1,852 km/sa eder. Kara mili farkı, gemi ve uçakta knot kullanımı, rüzgâr hızı ve tekne gövde hızı.</span></a></li>
+          <li><a href="../1-fl-oz-kac-ml-santilitre/"><strong>1 fl oz Kaç ml? Parfüm ve İçecek Etiketinde oz, cl ve ml Karşılıkları</strong><span>1 ABD sıvı onsu (fl oz) 29,5735 ml, 1 İngiliz sıvı onsu 28,4131 ml'dir. 3,4 oz parfüm yaklaşık 100 ml, 70 cl 700 ml eder. Ons-gram farkı ve uçak sıvı kuralı.</span></a></li>
+          <li><a href="../1-galon-kac-litre-varil/"><strong>1 Galon Kaç Litre? ABD ve İngiliz Galonu, Varil ve Pint Farkı</strong><span>1 ABD galonu 3,785 litre, 1 İngiliz galonu 4,546 litredir. 1 petrol varili 42 ABD galonu yani 158,987 litre eder. Pint, quart, damacana ve yakıt fiyatı çevirileri.</span></a></li>
+      </ul>
+      <p><a href="../">Bilgi Bankası'nın tamamı →</a></p>
+    </section>
+
+    <div class="ba-ad" data-slot="bilgi-bowling-puani-nasil-hesaplanir-c" aria-label="Reklam"></div>
+    </div>
+  </main>
+
+  <footer class="ba-footer">
+    <div class="ba-cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="ba-container ba-footer-grid">
+      <div class="ba-footer-brand"><strong><i aria-hidden="true"></i>Bilişim Ajans</strong><p>Ücretsiz, kayıtsız ve dosya yüklemeyen online araçlar. Diyarbakır merkezli <a href="https://bilisimajans.com/">Bilişim Ajans</a>'ın topluluğa açık projesi; tüm kod GitHub'da.</p><p class="ba-footer-line">%100 ücretsiz · kayıt yok · dosya yüklenmez</p></div>
+      <div><h2 class="ba-footer-h">Araçlar</h2><ul><li><a href="../../pdf-birlestir/">PDF Birleştir</a></li><li><a href="../../pdf-bol/">PDF Böl</a></li><li><a href="../../pdf-kucult/">PDF Küçült</a></li><li><a href="../../resimden-pdfe/">Resimden PDF'e</a></li><li><a href="../../wordden-pdfe/">Word'den PDF'e</a></li><li><a href="../../resim-kucult/">Resim Küçült</a></li><li><a href="../../">Tüm araçlar</a></li></ul></div>
+      <div><h2 class="ba-footer-h">Kurumsal</h2><ul><li><a href="../../hakkimizda/">Hakkımızda</a></li><li><a href="../../gizlilik/">Gizlilik Politikası</a></li><li><a href="https://bilisimajans.com/iletisim">İletişim</a></li><li><a href="https://github.com/bilgi-pixel/ucretsiz-araclar" rel="noopener">GitHub</a></li></ul></div>
+    </div>
+    <div class="ba-footer-bottom"><div class="ba-container"><span>© 2026 Bilişim Ajans Bilgisayar ve Bilişim Hizmetleri · Tüm araçlar ücretsizdir.</span><a href="https://bilisimajans.com/">bilisimajans.com</a></div></div>
+  </footer>
+  <script src="../../assets/js/ads.js" defer></script>
+  <script type="module" src="../../assets/js/pwa.js"></script>
+  <script type="module" src="../../assets/js/motion.js"></script>
+</body>
+</html>
